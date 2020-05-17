@@ -5,12 +5,12 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class GenericArgumentException&lt;G&gt;
+    <title>Class GenericArgumentException&lt;T&gt;
    | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class GenericArgumentException&lt;G&gt;
+    <meta name="title" content="Class GenericArgumentException&lt;T&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.52.0.0">
+    <meta name="generator" content="docfx 2.53.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -71,7 +71,7 @@
             <article class="content wrap" id="_content" data-uid="DotNext.GenericArgumentException`1">
   
   
-  <h1 id="DotNext_GenericArgumentException_1" data-uid="DotNext.GenericArgumentException`1" class="text-break">Class GenericArgumentException&lt;G&gt;
+  <h1 id="DotNext_GenericArgumentException_1" data-uid="DotNext.GenericArgumentException`1" class="text-break">Class GenericArgumentException&lt;T&gt;
   </h1>
   <div class="markdown level0 summary"><p>The exception that is thrown when one of the generic arguments
 provided to a type is not valid.</p>
@@ -84,7 +84,7 @@ provided to a type is not valid.</p>
     <div class="level2"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.systemexception">SystemException</a></div>
     <div class="level3"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></div>
     <div class="level4"><a class="xref" href="DotNext.GenericArgumentException.html">GenericArgumentException</a></div>
-    <div class="level5"><span class="xref">GenericArgumentException&lt;G&gt;</span></div>
+    <div class="level5"><span class="xref">GenericArgumentException&lt;T&gt;</span></div>
   </div>
   <div classs="implements">
     <h5>Implements</h5>
@@ -157,7 +157,7 @@ provided to a type is not valid.</p>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_GenericArgumentException_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class GenericArgumentException&lt;G&gt; : GenericArgumentException, ISerializable</code></pre>
+    <pre><code class="lang-csharp hljs">public class GenericArgumentException&lt;T&gt; : GenericArgumentException, ISerializable</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -169,7 +169,7 @@ provided to a type is not valid.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">G</span></td>
+        <td><span class="parametername">T</span></td>
         <td><p>Captured generic argument treated as invalid.</p>
 </td>
       </tr>
@@ -256,16 +256,16 @@ provided to a type is not valid.</p>
       <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, T[])</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2____1____2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;, out R1, out R2)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2____1____2__">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, Func&lt;T, TResult1&gt;, Func&lt;T, TResult2&gt;, out TResult1, out TResult2)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2_____1____2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, ValueFunc&lt;T, R1&gt;, ValueFunc&lt;T, R2&gt;, out R1, out R2)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2_____1____2__">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, ValueFunc&lt;T, TResult1&gt;, ValueFunc&lt;T, TResult2&gt;, out TResult1, out TResult2)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2__">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, Func&lt;T, TResult1&gt;, Func&lt;T, TResult2&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2___">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, ValueFunc&lt;T, R1&gt;, ValueFunc&lt;T, R2&gt;)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2___">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, ValueFunc&lt;T, TResult1&gt;, ValueFunc&lt;T, TResult2&gt;)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_">LockAcquisition.AcquireReadLock&lt;T&gt;(T)</a>

@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class Conversion
    | .NEXT ">
-    <meta name="generator" content="docfx 2.52.0.0">
+    <meta name="generator" content="docfx 2.53.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -118,7 +118,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_Conversion_AsDynamic_System_Threading_Tasks_Task_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Conversion.AsDynamic(System.Threading.Tasks.Task)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Conversion.cs/#L71">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Conversion.cs/#L72">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Conversion_AsDynamic_" data-uid="DotNext.Threading.Tasks.Conversion.AsDynamic*"></a>
   <h4 id="DotNext_Threading_Tasks_Conversion_AsDynamic_System_Threading_Tasks_Task_" data-uid="DotNext.Threading.Tasks.Conversion.AsDynamic(System.Threading.Tasks.Task)">AsDynamic(Task)</h4>
@@ -177,15 +177,15 @@ by <code>await</code> operator is equal to <a class="xref" href="https://docs.mi
     <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Conversion.cs/#L25">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Conversion_Convert_" data-uid="DotNext.Threading.Tasks.Conversion.Convert*"></a>
-  <h4 id="DotNext_Threading_Tasks_Conversion_Convert__2_System_Threading_Tasks_Task___0__" data-uid="DotNext.Threading.Tasks.Conversion.Convert``2(System.Threading.Tasks.Task{``0})">Convert&lt;I, O&gt;(Task&lt;I&gt;)</h4>
+  <h4 id="DotNext_Threading_Tasks_Conversion_Convert__2_System_Threading_Tasks_Task___0__" data-uid="DotNext.Threading.Tasks.Conversion.Convert``2(System.Threading.Tasks.Task{``0})">Convert&lt;TInput, TOutput&gt;(Task&lt;TInput&gt;)</h4>
   <div class="markdown level1 summary"><p>Converts one type of task into another.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Task&lt;O&gt; Convert&lt;I, O&gt;(this Task&lt;I&gt; task)
+    <pre><code class="lang-csharp hljs">public static Task&lt;TOutput&gt; Convert&lt;TInput, TOutput&gt;(this Task&lt;TInput&gt; task)
 
-    where I : O</code></pre>
+    where TInput : TOutput</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -198,7 +198,7 @@ by <code>await</code> operator is equal to <a class="xref" href="https://docs.mi
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;I&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;TInput&gt;</td>
         <td><span class="parametername">task</span></td>
         <td><p>The task to convert.</p>
 </td>
@@ -215,7 +215,7 @@ by <code>await</code> operator is equal to <a class="xref" href="https://docs.mi
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;O&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;TOutput&gt;</td>
         <td><p>The converted task.</p>
 </td>
       </tr>
@@ -231,12 +231,12 @@ by <code>await</code> operator is equal to <a class="xref" href="https://docs.mi
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">I</span></td>
+        <td><span class="parametername">TInput</span></td>
         <td><p>The source task type.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">O</span></td>
+        <td><span class="parametername">TOutput</span></td>
         <td><p>The target task type.</p>
 </td>
       </tr>
@@ -247,16 +247,16 @@ by <code>await</code> operator is equal to <a class="xref" href="https://docs.mi
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_Conversion_Convert__2_System_Threading_Tasks_Task___0__System_Converter___0___1__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Conversion.Convert%60%602(System.Threading.Tasks.Task%7B%60%600%7D%2CSystem.Converter%7B%60%600%2C%60%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Conversion.cs/#L35">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Conversion.cs/#L36">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Conversion_Convert_" data-uid="DotNext.Threading.Tasks.Conversion.Convert*"></a>
-  <h4 id="DotNext_Threading_Tasks_Conversion_Convert__2_System_Threading_Tasks_Task___0__System_Converter___0___1__" data-uid="DotNext.Threading.Tasks.Conversion.Convert``2(System.Threading.Tasks.Task{``0},System.Converter{``0,``1})">Convert&lt;I, O&gt;(Task&lt;I&gt;, Converter&lt;I, O&gt;)</h4>
+  <h4 id="DotNext_Threading_Tasks_Conversion_Convert__2_System_Threading_Tasks_Task___0__System_Converter___0___1__" data-uid="DotNext.Threading.Tasks.Conversion.Convert``2(System.Threading.Tasks.Task{``0},System.Converter{``0,``1})">Convert&lt;TInput, TOutput&gt;(Task&lt;TInput&gt;, Converter&lt;TInput, TOutput&gt;)</h4>
   <div class="markdown level1 summary"><p>Converts one type of task into another.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Task&lt;O&gt; Convert&lt;I, O&gt;(this Task&lt;I&gt; task, Converter&lt;I, O&gt; converter)</code></pre>
+    <pre><code class="lang-csharp hljs">public static Task&lt;TOutput&gt; Convert&lt;TInput, TOutput&gt;(this Task&lt;TInput&gt; task, Converter&lt;TInput, TOutput&gt; converter)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -269,13 +269,13 @@ by <code>await</code> operator is equal to <a class="xref" href="https://docs.mi
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;I&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;TInput&gt;</td>
         <td><span class="parametername">task</span></td>
         <td><p>The task to convert.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.converter-2">Converter</a>&lt;I, O&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.converter-2">Converter</a>&lt;TInput, TOutput&gt;</td>
         <td><span class="parametername">converter</span></td>
         <td><p>Non-blocking conversion function.</p>
 </td>
@@ -292,7 +292,7 @@ by <code>await</code> operator is equal to <a class="xref" href="https://docs.mi
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;O&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;TOutput&gt;</td>
         <td><p>The converted task.</p>
 </td>
       </tr>
@@ -308,12 +308,12 @@ by <code>await</code> operator is equal to <a class="xref" href="https://docs.mi
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">I</span></td>
+        <td><span class="parametername">TInput</span></td>
         <td><p>The source task type.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">O</span></td>
+        <td><span class="parametername">TOutput</span></td>
         <td><p>The target task type.</p>
 </td>
       </tr>
@@ -324,16 +324,16 @@ by <code>await</code> operator is equal to <a class="xref" href="https://docs.mi
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_Conversion_Convert__2_System_Threading_Tasks_Task___0__System_Converter___0_System_Threading_Tasks_Task___1___.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Conversion.Convert%60%602(System.Threading.Tasks.Task%7B%60%600%7D%2CSystem.Converter%7B%60%600%2CSystem.Threading.Tasks.Task%7B%60%601%7D%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Conversion.cs/#L57">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Conversion.cs/#L58">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Conversion_Convert_" data-uid="DotNext.Threading.Tasks.Conversion.Convert*"></a>
-  <h4 id="DotNext_Threading_Tasks_Conversion_Convert__2_System_Threading_Tasks_Task___0__System_Converter___0_System_Threading_Tasks_Task___1___" data-uid="DotNext.Threading.Tasks.Conversion.Convert``2(System.Threading.Tasks.Task{``0},System.Converter{``0,System.Threading.Tasks.Task{``1}})">Convert&lt;I, O&gt;(Task&lt;I&gt;, Converter&lt;I, Task&lt;O&gt;&gt;)</h4>
+  <h4 id="DotNext_Threading_Tasks_Conversion_Convert__2_System_Threading_Tasks_Task___0__System_Converter___0_System_Threading_Tasks_Task___1___" data-uid="DotNext.Threading.Tasks.Conversion.Convert``2(System.Threading.Tasks.Task{``0},System.Converter{``0,System.Threading.Tasks.Task{``1}})">Convert&lt;TInput, TOutput&gt;(Task&lt;TInput&gt;, Converter&lt;TInput, Task&lt;TOutput&gt;&gt;)</h4>
   <div class="markdown level1 summary"><p>Converts one type of task into another.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Task&lt;O&gt; Convert&lt;I, O&gt;(this Task&lt;I&gt; task, Converter&lt;I, Task&lt;O&gt;&gt; converter)</code></pre>
+    <pre><code class="lang-csharp hljs">public static Task&lt;TOutput&gt; Convert&lt;TInput, TOutput&gt;(this Task&lt;TInput&gt; task, Converter&lt;TInput, Task&lt;TOutput&gt;&gt; converter)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -346,13 +346,13 @@ by <code>await</code> operator is equal to <a class="xref" href="https://docs.mi
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;I&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;TInput&gt;</td>
         <td><span class="parametername">task</span></td>
         <td><p>The task to convert.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.converter-2">Converter</a>&lt;I, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;O&gt;&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.converter-2">Converter</a>&lt;TInput, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;TOutput&gt;&gt;</td>
         <td><span class="parametername">converter</span></td>
         <td><p>Asynchronous conversion function.</p>
 </td>
@@ -369,7 +369,7 @@ by <code>await</code> operator is equal to <a class="xref" href="https://docs.mi
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;O&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;TOutput&gt;</td>
         <td><p>The converted task.</p>
 </td>
       </tr>
@@ -385,12 +385,12 @@ by <code>await</code> operator is equal to <a class="xref" href="https://docs.mi
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">I</span></td>
+        <td><span class="parametername">TInput</span></td>
         <td><p>The source task type.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">O</span></td>
+        <td><span class="parametername">TOutput</span></td>
         <td><p>The target task type.</p>
 </td>
       </tr>
@@ -401,7 +401,7 @@ by <code>await</code> operator is equal to <a class="xref" href="https://docs.mi
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_Conversion_ToNullable__1_System_Threading_Tasks_Task___0__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Conversion.ToNullable%60%601(System.Threading.Tasks.Task%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Conversion.cs/#L44">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Conversion.cs/#L45">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Conversion_ToNullable_" data-uid="DotNext.Threading.Tasks.Conversion.ToNullable*"></a>
   <h4 id="DotNext_Threading_Tasks_Conversion_ToNullable__1_System_Threading_Tasks_Task___0__" data-uid="DotNext.Threading.Tasks.Conversion.ToNullable``1(System.Threading.Tasks.Task{``0})">ToNullable&lt;T&gt;(Task&lt;T&gt;)</h4>

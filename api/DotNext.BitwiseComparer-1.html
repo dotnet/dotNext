@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class BitwiseComparer&lt;T&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.52.0.0">
+    <meta name="generator" content="docfx 2.53.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -180,15 +180,15 @@ or <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collection
     <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/BitwiseComparer.cs/#L70">View Source</a>
   </span>
   <a id="DotNext_BitwiseComparer_1_Compare_" data-uid="DotNext.BitwiseComparer`1.Compare*"></a>
-  <h4 id="DotNext_BitwiseComparer_1_Compare__1__0____0__" data-uid="DotNext.BitwiseComparer`1.Compare``1(`0@,``0@)">Compare&lt;G&gt;(T, G)</h4>
+  <h4 id="DotNext_BitwiseComparer_1_Compare__1__0____0__" data-uid="DotNext.BitwiseComparer`1.Compare``1(`0@,``0@)">Compare&lt;TOther&gt;(T, TOther)</h4>
   <div class="markdown level1 summary"><p>Compares bits of two values of the different type.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static int Compare&lt;G&gt;(in T first, in G second)
+    <pre><code class="lang-csharp hljs">public static int Compare&lt;TOther&gt;(in T first, in TOther second)
 
-    where G : struct</code></pre>
+    where TOther : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -207,7 +207,7 @@ or <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collection
 </td>
       </tr>
       <tr>
-        <td><span class="xref">G</span></td>
+        <td><span class="xref">TOther</span></td>
         <td><span class="parametername">second</span></td>
         <td><p>The second value to compare.</p>
 </td>
@@ -240,7 +240,7 @@ or <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collection
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">G</span></td>
+        <td><span class="parametername">TOther</span></td>
         <td><p>Type of the second value.</p>
 </td>
       </tr>
@@ -254,15 +254,15 @@ or <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collection
     <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/BitwiseComparer.cs/#L41">View Source</a>
   </span>
   <a id="DotNext_BitwiseComparer_1_Equals_" data-uid="DotNext.BitwiseComparer`1.Equals*"></a>
-  <h4 id="DotNext_BitwiseComparer_1_Equals__1__0____0__" data-uid="DotNext.BitwiseComparer`1.Equals``1(`0@,``0@)">Equals&lt;G&gt;(T, G)</h4>
+  <h4 id="DotNext_BitwiseComparer_1_Equals__1__0____0__" data-uid="DotNext.BitwiseComparer`1.Equals``1(`0@,``0@)">Equals&lt;TOther&gt;(T, TOther)</h4>
   <div class="markdown level1 summary"><p>Checks bitwise equality between two values of different value types.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static bool Equals&lt;G&gt;(in T first, in G second)
+    <pre><code class="lang-csharp hljs">public static bool Equals&lt;TOther&gt;(in T first, in TOther second)
 
-    where G : struct</code></pre>
+    where TOther : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -281,7 +281,7 @@ or <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collection
 </td>
       </tr>
       <tr>
-        <td><span class="xref">G</span></td>
+        <td><span class="xref">TOther</span></td>
         <td><span class="parametername">second</span></td>
         <td><p>The second value to check.</p>
 </td>
@@ -314,7 +314,7 @@ or <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collection
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">G</span></td>
+        <td><span class="parametername">TOther</span></td>
         <td><p>Type of second value.</p>
 </td>
       </tr>
@@ -385,7 +385,7 @@ even if it is overridden by value type.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_BitwiseComparer_1_GetHashCode__0__System_Int32_DotNext_ValueFunc_System_Int32_System_Int32_System_Int32___System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.BitwiseComparer%601.GetHashCode(%600%40%2CSystem.Int32%2CDotNext.ValueFunc%7BSystem.Int32%2CSystem.Int32%2CSystem.Int32%7D%40%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/BitwiseComparer.cs/#L138">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/BitwiseComparer.cs/#L139">View Source</a>
   </span>
   <a id="DotNext_BitwiseComparer_1_GetHashCode_" data-uid="DotNext.BitwiseComparer`1.GetHashCode*"></a>
   <h4 id="DotNext_BitwiseComparer_1_GetHashCode__0__System_Int32_DotNext_ValueFunc_System_Int32_System_Int32_System_Int32___System_Boolean_" data-uid="DotNext.BitwiseComparer`1.GetHashCode(`0@,System.Int32,DotNext.ValueFunc{System.Int32,System.Int32,System.Int32}@,System.Boolean)">GetHashCode(T, Int32, ValueFunc&lt;Int32, Int32, Int32&gt;, Boolean)</h4>
@@ -457,7 +457,7 @@ even if it is overridden by value type.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_BitwiseComparer_1_GetHashCode__0__System_Int32_System_Func_System_Int32_System_Int32_System_Int32__System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.BitwiseComparer%601.GetHashCode(%600%40%2CSystem.Int32%2CSystem.Func%7BSystem.Int32%2CSystem.Int32%2CSystem.Int32%7D%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/BitwiseComparer.cs/#L153">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/BitwiseComparer.cs/#L154">View Source</a>
   </span>
   <a id="DotNext_BitwiseComparer_1_GetHashCode_" data-uid="DotNext.BitwiseComparer`1.GetHashCode*"></a>
   <h4 id="DotNext_BitwiseComparer_1_GetHashCode__0__System_Int32_System_Func_System_Int32_System_Int32_System_Int32__System_Boolean_" data-uid="DotNext.BitwiseComparer`1.GetHashCode(`0@,System.Int32,System.Func{System.Int32,System.Int32,System.Int32},System.Boolean)">GetHashCode(T, Int32, Func&lt;Int32, Int32, Int32&gt;, Boolean)</h4>
@@ -531,7 +531,7 @@ even if it is overridden by value type.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_BitwiseComparer_1_System_Collections_Generic_IComparer_T__Compare__0__0_.md&amp;value=---%0Auid%3A%20DotNext.BitwiseComparer%601.System%23Collections%23Generic%23IComparer%7BT%7D%23Compare(%600%2C%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/BitwiseComparer.cs/#L161">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/BitwiseComparer.cs/#L164">View Source</a>
   </span>
   <a id="DotNext_BitwiseComparer_1_System_Collections_Generic_IComparer_T__Compare_" data-uid="DotNext.BitwiseComparer`1.System#Collections#Generic#IComparer{T}#Compare*"></a>
   <h4 id="DotNext_BitwiseComparer_1_System_Collections_Generic_IComparer_T__Compare__0__0_" data-uid="DotNext.BitwiseComparer`1.System#Collections#Generic#IComparer{T}#Compare(`0,`0)">IComparer&lt;T&gt;.Compare(T, T)</h4>
@@ -583,7 +583,7 @@ even if it is overridden by value type.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_BitwiseComparer_1_System_Collections_Generic_IEqualityComparer_T__Equals__0__0_.md&amp;value=---%0Auid%3A%20DotNext.BitwiseComparer%601.System%23Collections%23Generic%23IEqualityComparer%7BT%7D%23Equals(%600%2C%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/BitwiseComparer.cs/#L157">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/BitwiseComparer.cs/#L158">View Source</a>
   </span>
   <a id="DotNext_BitwiseComparer_1_System_Collections_Generic_IEqualityComparer_T__Equals_" data-uid="DotNext.BitwiseComparer`1.System#Collections#Generic#IEqualityComparer{T}#Equals*"></a>
   <h4 id="DotNext_BitwiseComparer_1_System_Collections_Generic_IEqualityComparer_T__Equals__0__0_" data-uid="DotNext.BitwiseComparer`1.System#Collections#Generic#IEqualityComparer{T}#Equals(`0,`0)">IEqualityComparer&lt;T&gt;.Equals(T, T)</h4>
@@ -635,7 +635,7 @@ even if it is overridden by value type.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_BitwiseComparer_1_System_Collections_Generic_IEqualityComparer_T__GetHashCode__0_.md&amp;value=---%0Auid%3A%20DotNext.BitwiseComparer%601.System%23Collections%23Generic%23IEqualityComparer%7BT%7D%23GetHashCode(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/BitwiseComparer.cs/#L159">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/BitwiseComparer.cs/#L161">View Source</a>
   </span>
   <a id="DotNext_BitwiseComparer_1_System_Collections_Generic_IEqualityComparer_T__GetHashCode_" data-uid="DotNext.BitwiseComparer`1.System#Collections#Generic#IEqualityComparer{T}#GetHashCode*"></a>
   <h4 id="DotNext_BitwiseComparer_1_System_Collections_Generic_IEqualityComparer_T__GetHashCode__0_" data-uid="DotNext.BitwiseComparer`1.System#Collections#Generic#IEqualityComparer{T}#GetHashCode(`0)">IEqualityComparer&lt;T&gt;.GetHashCode(T)</h4>
@@ -719,16 +719,16 @@ even if it is overridden by value type.</p>
       <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, T[])</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2____1____2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;, out R1, out R2)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2____1____2__">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, Func&lt;T, TResult1&gt;, Func&lt;T, TResult2&gt;, out TResult1, out TResult2)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2_____1____2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, ValueFunc&lt;T, R1&gt;, ValueFunc&lt;T, R2&gt;, out R1, out R2)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2_____1____2__">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, ValueFunc&lt;T, TResult1&gt;, ValueFunc&lt;T, TResult2&gt;, out TResult1, out TResult2)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2__">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, Func&lt;T, TResult1&gt;, Func&lt;T, TResult2&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2___">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, ValueFunc&lt;T, R1&gt;, ValueFunc&lt;T, R2&gt;)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2___">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, ValueFunc&lt;T, TResult1&gt;, ValueFunc&lt;T, TResult2&gt;)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_">LockAcquisition.AcquireReadLock&lt;T&gt;(T)</a>

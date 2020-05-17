@@ -8,7 +8,7 @@
     <title>Alloc vs Pooling | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Alloc vs Pooling | .NEXT ">
-    <meta name="generator" content="docfx 2.52.0.0">
+    <meta name="generator" content="docfx 2.53.1.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -148,6 +148,19 @@ stream.Write(new byte[512], 0, 512);
 </code></pre>
 <h1 id="growable-buffers">Growable Buffers</h1>
 <p>If size of the required buffer is not known and can grow dynamically then you need to use <a href="buffers.html">Dynamic Buffers</a> that are based on memory pooling mechanism as well.</p>
+<p>Dynamic buffers can be combined with <a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.stream">streams</a> easily using extension methods from <a href="https://sakno.github.io/dotNext/api/DotNext.IO.StreamSource.html">StreamSource</a> class, so you can avoid limitation of <code>RentedMemoryStream</code> class. With <a href="https://sakno.github.io/dotNext/api/DotNext.Buffers.PooledArrayBufferWriter-1.html">PooledArrayBufferWriter&lt;T&gt;</a> class, it's possible to read/write bytes using stream and utilize memory pooling:</p>
+<pre><code class="lang-csharp">using DotNext.Buffers;
+using DotNext.IO;
+
+using var writer = new PooledBufferWriter&lt;byte&gt;(ArrayPool&lt;byte&gt;.Shared);
+
+// write bytes using stream
+using Stream writeStream = StreamSource.AsStream(writer);
+writeStream.Write(new byte[1024]);
+
+// read bytes using stream
+using Stream readStream = StreamSource.GetWrittenBytesAsStream(writer);
+</code></pre>
 </article>
           </div>
           

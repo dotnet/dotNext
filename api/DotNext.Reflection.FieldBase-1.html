@@ -5,12 +5,12 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class FieldBase&lt;V&gt;
+    <title>Class FieldBase&lt;TValue&gt;
    | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class FieldBase&lt;V&gt;
+    <meta name="title" content="Class FieldBase&lt;TValue&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.52.0.0">
+    <meta name="generator" content="docfx 2.53.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -71,7 +71,7 @@
             <article class="content wrap" id="_content" data-uid="DotNext.Reflection.FieldBase`1">
   
   
-  <h1 id="DotNext_Reflection_FieldBase_1" data-uid="DotNext.Reflection.FieldBase`1" class="text-break">Class FieldBase&lt;V&gt;
+  <h1 id="DotNext_Reflection_FieldBase_1" data-uid="DotNext.Reflection.FieldBase`1" class="text-break">Class FieldBase&lt;TValue&gt;
   </h1>
   <div class="markdown level0 summary"><p>Represents reflected field.</p>
 </div>
@@ -81,9 +81,9 @@
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.memberinfo">MemberInfo</a></div>
     <div class="level2"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.fieldinfo">FieldInfo</a></div>
-    <div class="level3"><span class="xref">FieldBase&lt;V&gt;</span></div>
-      <div class="level4"><a class="xref" href="DotNext.Reflection.Field-1.html">Field&lt;V&gt;</a></div>
-      <div class="level4"><a class="xref" href="DotNext.Reflection.Field-2.html">Field&lt;T, V&gt;</a></div>
+    <div class="level3"><span class="xref">FieldBase&lt;TValue&gt;</span></div>
+      <div class="level4"><a class="xref" href="DotNext.Reflection.Field-1.html">Field&lt;TValue&gt;</a></div>
+      <div class="level4"><a class="xref" href="DotNext.Reflection.Field-2.html">Field&lt;T, TValue&gt;</a></div>
   </div>
   <div classs="implements">
     <h5>Implements</h5>
@@ -159,7 +159,7 @@
   <h6><strong>Assembly</strong>: DotNext.Reflection.dll</h6>
   <h5 id="DotNext_Reflection_FieldBase_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public abstract class FieldBase&lt;V&gt; : FieldInfo, IField, IMember&lt;FieldInfo&gt;, ICustomAttributeProvider, IEquatable&lt;FieldInfo&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public abstract class FieldBase&lt;TValue&gt; : FieldInfo, IField, IMember&lt;FieldInfo&gt;, ICustomAttributeProvider, IEquatable&lt;FieldInfo&gt;</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -171,7 +171,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">V</span></td>
+        <td><span class="parametername">TValue</span></td>
         <td><p>Type of field value.</p>
 </td>
       </tr>
@@ -184,7 +184,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_Attributes.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.Attributes%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L103">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L101">View Source</a>
   </span>
   <a id="DotNext_Reflection_FieldBase_1_Attributes_" data-uid="DotNext.Reflection.FieldBase`1.Attributes*"></a>
   <h4 id="DotNext_Reflection_FieldBase_1_Attributes" data-uid="DotNext.Reflection.FieldBase`1.Attributes">Attributes</h4>
@@ -217,7 +217,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_CustomAttributes.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.CustomAttributes%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L98">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L96">View Source</a>
   </span>
   <a id="DotNext_Reflection_FieldBase_1_CustomAttributes_" data-uid="DotNext.Reflection.FieldBase`1.CustomAttributes*"></a>
   <h4 id="DotNext_Reflection_FieldBase_1_CustomAttributes" data-uid="DotNext.Reflection.FieldBase`1.CustomAttributes">CustomAttributes</h4>
@@ -283,7 +283,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_FieldHandle.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.FieldHandle%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L108">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L106">View Source</a>
   </span>
   <a id="DotNext_Reflection_FieldBase_1_FieldHandle_" data-uid="DotNext.Reflection.FieldBase`1.FieldHandle*"></a>
   <h4 id="DotNext_Reflection_FieldBase_1_FieldHandle" data-uid="DotNext.Reflection.FieldBase`1.FieldHandle">FieldHandle</h4>
@@ -316,7 +316,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_FieldType.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.FieldType%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L113">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L111">View Source</a>
   </span>
   <a id="DotNext_Reflection_FieldBase_1_FieldType_" data-uid="DotNext.Reflection.FieldBase`1.FieldType*"></a>
   <h4 id="DotNext_Reflection_FieldBase_1_FieldType" data-uid="DotNext.Reflection.FieldBase`1.FieldType">FieldType</h4>
@@ -349,7 +349,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_IsReadOnly.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.IsReadOnly%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L190">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L188">View Source</a>
   </span>
   <a id="DotNext_Reflection_FieldBase_1_IsReadOnly_" data-uid="DotNext.Reflection.FieldBase`1.IsReadOnly*"></a>
   <h4 id="DotNext_Reflection_FieldBase_1_IsReadOnly" data-uid="DotNext.Reflection.FieldBase`1.IsReadOnly">IsReadOnly</h4>
@@ -380,7 +380,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_IsSecurityCritical.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.IsSecurityCritical%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L153">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L151">View Source</a>
   </span>
   <a id="DotNext_Reflection_FieldBase_1_IsSecurityCritical_" data-uid="DotNext.Reflection.FieldBase`1.IsSecurityCritical*"></a>
   <h4 id="DotNext_Reflection_FieldBase_1_IsSecurityCritical" data-uid="DotNext.Reflection.FieldBase`1.IsSecurityCritical">IsSecurityCritical</h4>
@@ -414,7 +414,7 @@ and therefore can perform critical operations.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_IsSecuritySafeCritical.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.IsSecuritySafeCritical%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L159">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L157">View Source</a>
   </span>
   <a id="DotNext_Reflection_FieldBase_1_IsSecuritySafeCritical_" data-uid="DotNext.Reflection.FieldBase`1.IsSecuritySafeCritical*"></a>
   <h4 id="DotNext_Reflection_FieldBase_1_IsSecuritySafeCritical" data-uid="DotNext.Reflection.FieldBase`1.IsSecuritySafeCritical">IsSecuritySafeCritical</h4>
@@ -448,7 +448,7 @@ whether it can perform critical operations and can be accessed by transparent co
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_IsSecurityTransparent.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.IsSecurityTransparent%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L165">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L163">View Source</a>
   </span>
   <a id="DotNext_Reflection_FieldBase_1_IsSecurityTransparent_" data-uid="DotNext.Reflection.FieldBase`1.IsSecurityTransparent*"></a>
   <h4 id="DotNext_Reflection_FieldBase_1_IsSecurityTransparent" data-uid="DotNext.Reflection.FieldBase`1.IsSecurityTransparent">IsSecurityTransparent</h4>
@@ -649,7 +649,7 @@ and therefore cannot perform critical operations.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_Equals_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.Equals(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L212">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L211">View Source</a>
   </span>
   <a id="DotNext_Reflection_FieldBase_1_Equals_" data-uid="DotNext.Reflection.FieldBase`1.Equals*"></a>
   <h4 id="DotNext_Reflection_FieldBase_1_Equals_System_Object_" data-uid="DotNext.Reflection.FieldBase`1.Equals(System.Object)">Equals(Object)</h4>
@@ -701,7 +701,7 @@ and therefore cannot perform critical operations.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_Equals_System_Reflection_FieldInfo_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.Equals(System.Reflection.FieldInfo)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L199">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L198">View Source</a>
   </span>
   <a id="DotNext_Reflection_FieldBase_1_Equals_" data-uid="DotNext.Reflection.FieldBase`1.Equals*"></a>
   <h4 id="DotNext_Reflection_FieldBase_1_Equals_System_Reflection_FieldInfo_" data-uid="DotNext.Reflection.FieldBase`1.Equals(System.Reflection.FieldInfo)">Equals(FieldInfo)</h4>
@@ -861,12 +861,11 @@ and therefore cannot perform critical operations.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_GetCustomAttributesData.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.GetCustomAttributesData%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L93">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L91">View Source</a>
   </span>
   <a id="DotNext_Reflection_FieldBase_1_GetCustomAttributesData_" data-uid="DotNext.Reflection.FieldBase`1.GetCustomAttributesData*"></a>
   <h4 id="DotNext_Reflection_FieldBase_1_GetCustomAttributesData" data-uid="DotNext.Reflection.FieldBase`1.GetCustomAttributesData">GetCustomAttributesData()</h4>
-  <div class="markdown level1 summary"><p>Gets a collection that contains this member's custom attributes.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -894,7 +893,7 @@ and therefore cannot perform critical operations.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.GetHashCode%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L205">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L204">View Source</a>
   </span>
   <a id="DotNext_Reflection_FieldBase_1_GetHashCode_" data-uid="DotNext.Reflection.FieldBase`1.GetHashCode*"></a>
   <h4 id="DotNext_Reflection_FieldBase_1_GetHashCode" data-uid="DotNext.Reflection.FieldBase`1.GetHashCode">GetHashCode()</h4>
@@ -928,7 +927,7 @@ and therefore cannot perform critical operations.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_GetOptionalCustomModifiers.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.GetOptionalCustomModifiers%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L119">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L117">View Source</a>
   </span>
   <a id="DotNext_Reflection_FieldBase_1_GetOptionalCustomModifiers_" data-uid="DotNext.Reflection.FieldBase`1.GetOptionalCustomModifiers*"></a>
   <h4 id="DotNext_Reflection_FieldBase_1_GetOptionalCustomModifiers" data-uid="DotNext.Reflection.FieldBase`1.GetOptionalCustomModifiers">GetOptionalCustomModifiers()</h4>
@@ -962,7 +961,7 @@ and therefore cannot perform critical operations.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_GetRawConstantValue.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.GetRawConstantValue%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L126">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L124">View Source</a>
   </span>
   <a id="DotNext_Reflection_FieldBase_1_GetRawConstantValue_" data-uid="DotNext.Reflection.FieldBase`1.GetRawConstantValue*"></a>
   <h4 id="DotNext_Reflection_FieldBase_1_GetRawConstantValue" data-uid="DotNext.Reflection.FieldBase`1.GetRawConstantValue">GetRawConstantValue()</h4>
@@ -997,7 +996,7 @@ the return value is <span class="xref">null</span>.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_GetRequiredCustomModifiers.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.GetRequiredCustomModifiers%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L132">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L130">View Source</a>
   </span>
   <a id="DotNext_Reflection_FieldBase_1_GetRequiredCustomModifiers_" data-uid="DotNext.Reflection.FieldBase`1.GetRequiredCustomModifiers*"></a>
   <h4 id="DotNext_Reflection_FieldBase_1_GetRequiredCustomModifiers" data-uid="DotNext.Reflection.FieldBase`1.GetRequiredCustomModifiers">GetRequiredCustomModifiers()</h4>
@@ -1031,7 +1030,7 @@ the return value is <span class="xref">null</span>.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_GetValue_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.GetValue(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L139">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L137">View Source</a>
   </span>
   <a id="DotNext_Reflection_FieldBase_1_GetValue_" data-uid="DotNext.Reflection.FieldBase`1.GetValue*"></a>
   <h4 id="DotNext_Reflection_FieldBase_1_GetValue_System_Object_" data-uid="DotNext.Reflection.FieldBase`1.GetValue(System.Object)">GetValue(Object)</h4>
@@ -1086,13 +1085,13 @@ the return value is <span class="xref">null</span>.</p>
     <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L27">View Source</a>
   </span>
   <a id="DotNext_Reflection_FieldBase_1_GetValue_" data-uid="DotNext.Reflection.FieldBase`1.GetValue*"></a>
-  <h4 id="DotNext_Reflection_FieldBase_1_GetValue_System_Object__0__" data-uid="DotNext.Reflection.FieldBase`1.GetValue(System.Object,`0@)">GetValue(Object, out V)</h4>
+  <h4 id="DotNext_Reflection_FieldBase_1_GetValue_System_Object__0__" data-uid="DotNext.Reflection.FieldBase`1.GetValue(System.Object,`0@)">GetValue(Object, out TValue)</h4>
   <div class="markdown level1 summary"><p>Returns the value of a field supported by a given object.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public abstract bool GetValue(object obj, out V value)</code></pre>
+    <pre><code class="lang-csharp hljs">public abstract bool GetValue(object obj, out TValue value)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1111,7 +1110,7 @@ the return value is <span class="xref">null</span>.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">V</span></td>
+        <td><span class="xref">TValue</span></td>
         <td><span class="parametername">value</span></td>
         <td><p>An object containing the value of the field reflected by this instance.</p>
 </td>
@@ -1139,7 +1138,7 @@ the return value is <span class="xref">null</span>.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_GetValueDirect_System_TypedReference_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.GetValueDirect(System.TypedReference)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L146">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L144">View Source</a>
   </span>
   <a id="DotNext_Reflection_FieldBase_1_GetValueDirect_" data-uid="DotNext.Reflection.FieldBase`1.GetValueDirect*"></a>
   <h4 id="DotNext_Reflection_FieldBase_1_GetValueDirect_System_TypedReference_" data-uid="DotNext.Reflection.FieldBase`1.GetValueDirect(System.TypedReference)">GetValueDirect(TypedReference)</h4>
@@ -1253,13 +1252,13 @@ public override sealed object GetValueDirect(TypedReference obj)</code></pre>
     <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L35">View Source</a>
   </span>
   <a id="DotNext_Reflection_FieldBase_1_SetValue_" data-uid="DotNext.Reflection.FieldBase`1.SetValue*"></a>
-  <h4 id="DotNext_Reflection_FieldBase_1_SetValue_System_Object__0_" data-uid="DotNext.Reflection.FieldBase`1.SetValue(System.Object,`0)">SetValue(Object, V)</h4>
+  <h4 id="DotNext_Reflection_FieldBase_1_SetValue_System_Object__0_" data-uid="DotNext.Reflection.FieldBase`1.SetValue(System.Object,`0)">SetValue(Object, TValue)</h4>
   <div class="markdown level1 summary"><p>Sets the value of the field supported by the given object.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public abstract bool SetValue(object obj, V value)</code></pre>
+    <pre><code class="lang-csharp hljs">public abstract bool SetValue(object obj, TValue value)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1278,7 +1277,7 @@ public override sealed object GetValueDirect(TypedReference obj)</code></pre>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">V</span></td>
+        <td><span class="xref">TValue</span></td>
         <td><span class="parametername">value</span></td>
         <td><p>The value to assign to the field.</p>
 </td>
@@ -1306,7 +1305,7 @@ public override sealed object GetValueDirect(TypedReference obj)</code></pre>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_SetValue_System_Object_System_Object_System_Reflection_BindingFlags_System_Reflection_Binder_System_Globalization_CultureInfo_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.SetValue(System.Object%2CSystem.Object%2CSystem.Reflection.BindingFlags%2CSystem.Reflection.Binder%2CSystem.Globalization.CultureInfo)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L175">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L173">View Source</a>
   </span>
   <a id="DotNext_Reflection_FieldBase_1_SetValue_" data-uid="DotNext.Reflection.FieldBase`1.SetValue*"></a>
   <h4 id="DotNext_Reflection_FieldBase_1_SetValue_System_Object_System_Object_System_Reflection_BindingFlags_System_Reflection_Binder_System_Globalization_CultureInfo_" data-uid="DotNext.Reflection.FieldBase`1.SetValue(System.Object,System.Object,System.Reflection.BindingFlags,System.Reflection.Binder,System.Globalization.CultureInfo)">SetValue(Object, Object, BindingFlags, Binder, CultureInfo)</h4>
@@ -1366,7 +1365,7 @@ public override sealed object GetValueDirect(TypedReference obj)</code></pre>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_SetValueDirect_System_TypedReference_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.SetValueDirect(System.TypedReference%2CSystem.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L183">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L181">View Source</a>
   </span>
   <a id="DotNext_Reflection_FieldBase_1_SetValueDirect_" data-uid="DotNext.Reflection.FieldBase`1.SetValueDirect*"></a>
   <h4 id="DotNext_Reflection_FieldBase_1_SetValueDirect_System_TypedReference_System_Object_" data-uid="DotNext.Reflection.FieldBase`1.SetValueDirect(System.TypedReference,System.Object)">SetValueDirect(TypedReference, Object)</h4>
@@ -1409,7 +1408,7 @@ public override sealed void SetValueDirect(TypedReference obj, object value)</co
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_ToString.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L223">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L222">View Source</a>
   </span>
   <a id="DotNext_Reflection_FieldBase_1_ToString_" data-uid="DotNext.Reflection.FieldBase`1.ToString*"></a>
   <h4 id="DotNext_Reflection_FieldBase_1_ToString" data-uid="DotNext.Reflection.FieldBase`1.ToString">ToString()</h4>
@@ -1445,7 +1444,7 @@ public override sealed void SetValueDirect(TypedReference obj, object value)</co
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_FieldBase_1_DotNext_Reflection_IMember_System_Reflection_FieldInfo__RuntimeMember.md&amp;value=---%0Auid%3A%20DotNext.Reflection.FieldBase%601.DotNext%23Reflection%23IMember%7BSystem%23Reflection%23FieldInfo%7D%23RuntimeMember%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L192">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Field.cs/#L191">View Source</a>
   </span>
   <a id="DotNext_Reflection_FieldBase_1_DotNext_Reflection_IMember_System_Reflection_FieldInfo__RuntimeMember_" data-uid="DotNext.Reflection.FieldBase`1.DotNext#Reflection#IMember{System#Reflection#FieldInfo}#RuntimeMember*"></a>
   <h4 id="DotNext_Reflection_FieldBase_1_DotNext_Reflection_IMember_System_Reflection_FieldInfo__RuntimeMember" data-uid="DotNext.Reflection.FieldBase`1.DotNext#Reflection#IMember{System#Reflection#FieldInfo}#RuntimeMember">IMember&lt;FieldInfo&gt;.RuntimeMember</h4>
@@ -1475,7 +1474,7 @@ public override sealed void SetValueDirect(TypedReference obj, object value)</co
       <a class="xref" href="DotNext.Reflection.IField.html">IField</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Reflection.IMember-1.html">IMember&lt;M&gt;</a>
+      <a class="xref" href="DotNext.Reflection.IMember-1.html">IMember&lt;TMember&gt;</a>
   </div>
   <div>
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.icustomattributeprovider">System.Reflection.ICustomAttributeProvider</a>
@@ -1518,19 +1517,19 @@ public override sealed void SetValueDirect(TypedReference obj, object value)</co
       <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, T[])</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2____1____2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;, out R1, out R2)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2____1____2__">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, Func&lt;T, TResult1&gt;, Func&lt;T, TResult2&gt;, out TResult1, out TResult2)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2_____1____2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, ValueFunc&lt;T, R1&gt;, ValueFunc&lt;T, R2&gt;, out R1, out R2)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2_____1____2__">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, ValueFunc&lt;T, TResult1&gt;, ValueFunc&lt;T, TResult2&gt;, out TResult1, out TResult2)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2__">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, Func&lt;T, TResult1&gt;, Func&lt;T, TResult2&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2___">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, ValueFunc&lt;T, R1&gt;, ValueFunc&lt;T, R2&gt;)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2___">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, ValueFunc&lt;T, TResult1&gt;, ValueFunc&lt;T, TResult2&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Reflection.CustomAttribute.html#DotNext_Reflection_CustomAttribute_IsDefined__1_System_Reflection_ICustomAttributeProvider_System_Boolean_">CustomAttribute.IsDefined&lt;A&gt;(ICustomAttributeProvider, Boolean)</a>
+      <a class="xref" href="DotNext.Reflection.CustomAttribute.html#DotNext_Reflection_CustomAttribute_IsDefined__1_System_Reflection_ICustomAttributeProvider_System_Boolean_">CustomAttribute.IsDefined&lt;TAttribute&gt;(ICustomAttributeProvider, Boolean)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_">LockAcquisition.AcquireReadLock&lt;T&gt;(T)</a>
@@ -1551,10 +1550,10 @@ public override sealed void SetValueDirect(TypedReference obj, object value)</co
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_System_TimeSpan_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T, TimeSpan)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Reflection.Reflector.html#DotNext_Reflection_Reflector_Unreflect__1_System_Reflection_FieldInfo_">Reflector.Unreflect&lt;V&gt;(FieldInfo)</a>
+      <a class="xref" href="DotNext.Reflection.Reflector.html#DotNext_Reflection_Reflector_Unreflect__1_System_Reflection_FieldInfo_">Reflector.Unreflect&lt;TValue&gt;(FieldInfo)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Reflection.Reflector.html#DotNext_Reflection_Reflector_Unreflect__2_System_Reflection_FieldInfo_">Reflector.Unreflect&lt;T, V&gt;(FieldInfo)</a>
+      <a class="xref" href="DotNext.Reflection.Reflector.html#DotNext_Reflection_Reflector_Unreflect__2_System_Reflection_FieldInfo_">Reflector.Unreflect&lt;T, TValue&gt;(FieldInfo)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Reflection.Reflector.html#DotNext_Reflection_Reflector_Unreflect_System_Reflection_FieldInfo_System_Reflection_BindingFlags_">Reflector.Unreflect(FieldInfo, BindingFlags)</a>

@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class ValueTaskSynchronization
    | .NEXT ">
-    <meta name="generator" content="docfx 2.52.0.0">
+    <meta name="generator" content="docfx 2.53.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -360,7 +360,7 @@ Don't use these methods just to avoid allocation of memory inside of managed hea
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
         <td><span class="parametername">task4</span></td>
-        <td><p>The third task to await.</p>
+        <td><p>The fourth task to await.</p>
 </td>
       </tr>
       <tr>
@@ -1056,13 +1056,13 @@ Don't use these methods just to avoid allocation of memory inside of managed hea
     <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskSynchronization.cs/#L182">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny_" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny*"></a>
-  <h4 id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny__1_System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___0__" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny``1(System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``0})">WhenAny&lt;R&gt;(ValueTask&lt;R&gt;, ValueTask&lt;R&gt;)</h4>
+  <h4 id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny__1_System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___0__" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny``1(System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``0})">WhenAny&lt;TResult&gt;(ValueTask&lt;TResult&gt;, ValueTask&lt;TResult&gt;)</h4>
   <div class="markdown level1 summary"><p>Creates a task that will complete when any of the supplied tasks have completed.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ValueTask&lt;ValueTask&lt;R&gt;&gt; WhenAny&lt;R&gt;(ValueTask&lt;R&gt; task1, ValueTask&lt;R&gt; task2)</code></pre>
+    <pre><code class="lang-csharp hljs">public static ValueTask&lt;ValueTask&lt;TResult&gt;&gt; WhenAny&lt;TResult&gt;(ValueTask&lt;TResult&gt; task1, ValueTask&lt;TResult&gt; task2)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1075,13 +1075,13 @@ Don't use these methods just to avoid allocation of memory inside of managed hea
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;R&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;TResult&gt;</td>
         <td><span class="parametername">task1</span></td>
         <td><p>The first task to wait on for completion.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;R&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;TResult&gt;</td>
         <td><span class="parametername">task2</span></td>
         <td><p>The second task to wait on for completion.</p>
 </td>
@@ -1098,7 +1098,7 @@ Don't use these methods just to avoid allocation of memory inside of managed hea
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;R&gt;&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;TResult&gt;&gt;</td>
         <td><p>A task that represents the completion of one of the supplied tasks. The return task's <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1.result#System_Threading_Tasks_ValueTask_1_Result">Result</a> is the task that completed.</p>
 </td>
       </tr>
@@ -1114,7 +1114,7 @@ Don't use these methods just to avoid allocation of memory inside of managed hea
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">R</span></td>
+        <td><span class="parametername">TResult</span></td>
         <td><p>The type of the result produced by the tasks.</p>
 </td>
       </tr>
@@ -1131,13 +1131,13 @@ Don't use these methods just to avoid allocation of memory inside of managed hea
     <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskSynchronization.cs/#L230">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny_" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny*"></a>
-  <h4 id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny__1_System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___0__" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny``1(System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``0})">WhenAny&lt;R&gt;(ValueTask&lt;R&gt;, ValueTask&lt;R&gt;, ValueTask&lt;R&gt;)</h4>
+  <h4 id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny__1_System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___0__" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny``1(System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``0})">WhenAny&lt;TResult&gt;(ValueTask&lt;TResult&gt;, ValueTask&lt;TResult&gt;, ValueTask&lt;TResult&gt;)</h4>
   <div class="markdown level1 summary"><p>Creates a task that will complete when any of the supplied tasks have completed.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ValueTask&lt;ValueTask&lt;R&gt;&gt; WhenAny&lt;R&gt;(ValueTask&lt;R&gt; task1, ValueTask&lt;R&gt; task2, ValueTask&lt;R&gt; task3)</code></pre>
+    <pre><code class="lang-csharp hljs">public static ValueTask&lt;ValueTask&lt;TResult&gt;&gt; WhenAny&lt;TResult&gt;(ValueTask&lt;TResult&gt; task1, ValueTask&lt;TResult&gt; task2, ValueTask&lt;TResult&gt; task3)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1150,19 +1150,19 @@ Don't use these methods just to avoid allocation of memory inside of managed hea
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;R&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;TResult&gt;</td>
         <td><span class="parametername">task1</span></td>
         <td><p>The first task to wait on for completion.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;R&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;TResult&gt;</td>
         <td><span class="parametername">task2</span></td>
         <td><p>The second task to wait on for completion.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;R&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;TResult&gt;</td>
         <td><span class="parametername">task3</span></td>
         <td><p>The third task to wait on for completion.</p>
 </td>
@@ -1179,7 +1179,7 @@ Don't use these methods just to avoid allocation of memory inside of managed hea
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;R&gt;&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;TResult&gt;&gt;</td>
         <td><p>A task that represents the completion of one of the supplied tasks. The return task's <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1.result#System_Threading_Tasks_ValueTask_1_Result">Result</a> is the task that completed.</p>
 </td>
       </tr>
@@ -1195,7 +1195,7 @@ Don't use these methods just to avoid allocation of memory inside of managed hea
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">R</span></td>
+        <td><span class="parametername">TResult</span></td>
         <td><p>The type of the result produced by the tasks.</p>
 </td>
       </tr>
@@ -1212,13 +1212,13 @@ Don't use these methods just to avoid allocation of memory inside of managed hea
     <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskSynchronization.cs/#L286">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny_" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny*"></a>
-  <h4 id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny__1_System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___0__" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny``1(System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``0})">WhenAny&lt;R&gt;(ValueTask&lt;R&gt;, ValueTask&lt;R&gt;, ValueTask&lt;R&gt;, ValueTask&lt;R&gt;)</h4>
+  <h4 id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny__1_System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___0__" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny``1(System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``0})">WhenAny&lt;TResult&gt;(ValueTask&lt;TResult&gt;, ValueTask&lt;TResult&gt;, ValueTask&lt;TResult&gt;, ValueTask&lt;TResult&gt;)</h4>
   <div class="markdown level1 summary"><p>Creates a task that will complete when any of the supplied tasks have completed.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ValueTask&lt;ValueTask&lt;R&gt;&gt; WhenAny&lt;R&gt;(ValueTask&lt;R&gt; task1, ValueTask&lt;R&gt; task2, ValueTask&lt;R&gt; task3, ValueTask&lt;R&gt; task4)</code></pre>
+    <pre><code class="lang-csharp hljs">public static ValueTask&lt;ValueTask&lt;TResult&gt;&gt; WhenAny&lt;TResult&gt;(ValueTask&lt;TResult&gt; task1, ValueTask&lt;TResult&gt; task2, ValueTask&lt;TResult&gt; task3, ValueTask&lt;TResult&gt; task4)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1231,25 +1231,25 @@ Don't use these methods just to avoid allocation of memory inside of managed hea
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;R&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;TResult&gt;</td>
         <td><span class="parametername">task1</span></td>
         <td><p>The first task to wait on for completion.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;R&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;TResult&gt;</td>
         <td><span class="parametername">task2</span></td>
         <td><p>The second task to wait on for completion.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;R&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;TResult&gt;</td>
         <td><span class="parametername">task3</span></td>
         <td><p>The third task to wait on for completion.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;R&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;TResult&gt;</td>
         <td><span class="parametername">task4</span></td>
         <td><p>The fourth task to wait on for completion.</p>
 </td>
@@ -1266,7 +1266,7 @@ Don't use these methods just to avoid allocation of memory inside of managed hea
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;R&gt;&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;TResult&gt;&gt;</td>
         <td><p>A task that represents the completion of one of the supplied tasks. The return task's <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1.result#System_Threading_Tasks_ValueTask_1_Result">Result</a> is the task that completed.</p>
 </td>
       </tr>
@@ -1282,7 +1282,7 @@ Don't use these methods just to avoid allocation of memory inside of managed hea
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">R</span></td>
+        <td><span class="parametername">TResult</span></td>
         <td><p>The type of the result produced by the tasks.</p>
 </td>
       </tr>
@@ -1299,13 +1299,13 @@ Don't use these methods just to avoid allocation of memory inside of managed hea
     <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskSynchronization.cs/#L350">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny_" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny*"></a>
-  <h4 id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny__1_System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___0__" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny``1(System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``0})">WhenAny&lt;R&gt;(ValueTask&lt;R&gt;, ValueTask&lt;R&gt;, ValueTask&lt;R&gt;, ValueTask&lt;R&gt;, ValueTask&lt;R&gt;)</h4>
+  <h4 id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny__1_System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___0__" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny``1(System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``0})">WhenAny&lt;TResult&gt;(ValueTask&lt;TResult&gt;, ValueTask&lt;TResult&gt;, ValueTask&lt;TResult&gt;, ValueTask&lt;TResult&gt;, ValueTask&lt;TResult&gt;)</h4>
   <div class="markdown level1 summary"><p>Creates a task that will complete when any of the supplied tasks have completed.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ValueTask&lt;ValueTask&lt;R&gt;&gt; WhenAny&lt;R&gt;(ValueTask&lt;R&gt; task1, ValueTask&lt;R&gt; task2, ValueTask&lt;R&gt; task3, ValueTask&lt;R&gt; task4, ValueTask&lt;R&gt; task5)</code></pre>
+    <pre><code class="lang-csharp hljs">public static ValueTask&lt;ValueTask&lt;TResult&gt;&gt; WhenAny&lt;TResult&gt;(ValueTask&lt;TResult&gt; task1, ValueTask&lt;TResult&gt; task2, ValueTask&lt;TResult&gt; task3, ValueTask&lt;TResult&gt; task4, ValueTask&lt;TResult&gt; task5)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1318,33 +1318,33 @@ Don't use these methods just to avoid allocation of memory inside of managed hea
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;R&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;TResult&gt;</td>
         <td><span class="parametername">task1</span></td>
         <td><p>The first task to wait on for completion.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;R&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;TResult&gt;</td>
         <td><span class="parametername">task2</span></td>
         <td><p>The second task to wait on for completion.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;R&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;TResult&gt;</td>
         <td><span class="parametername">task3</span></td>
         <td><p>The third task to wait on for completion.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;R&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;TResult&gt;</td>
         <td><span class="parametername">task4</span></td>
         <td><p>The fourth task to wait on for completion.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;R&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;TResult&gt;</td>
         <td><span class="parametername">task5</span></td>
-        <td><p>The fourth task to wait on for completion.</p>
+        <td><p>The fifth task to wait on for completion.</p>
 </td>
       </tr>
     </tbody>
@@ -1359,7 +1359,7 @@ Don't use these methods just to avoid allocation of memory inside of managed hea
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;R&gt;&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;TResult&gt;&gt;</td>
         <td><p>A task that represents the completion of one of the supplied tasks. The return task's <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1.result#System_Threading_Tasks_ValueTask_1_Result">Result</a> is the task that completed.</p>
 </td>
       </tr>
@@ -1375,7 +1375,7 @@ Don't use these methods just to avoid allocation of memory inside of managed hea
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">R</span></td>
+        <td><span class="parametername">TResult</span></td>
         <td><p>The type of the result produced by the tasks.</p>
 </td>
       </tr>

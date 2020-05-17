@@ -5,12 +5,12 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Delegate Event&lt;T, D&gt;.Accessor
+    <title>Delegate Event&lt;T, THandler&gt;.Accessor
    | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Delegate Event&lt;T, D&gt;.Accessor
+    <meta name="title" content="Delegate Event&lt;T, THandler&gt;.Accessor
    | .NEXT ">
-    <meta name="generator" content="docfx 2.52.0.0">
+    <meta name="generator" content="docfx 2.53.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -71,7 +71,7 @@
             <article class="content wrap" id="_content" data-uid="DotNext.Reflection.Event`2.Accessor">
   
   
-  <h1 id="DotNext_Reflection_Event_2_Accessor" data-uid="DotNext.Reflection.Event`2.Accessor" class="text-break">Delegate Event&lt;T, D&gt;.Accessor
+  <h1 id="DotNext_Reflection_Event_2_Accessor" data-uid="DotNext.Reflection.Event`2.Accessor" class="text-break">Delegate Event&lt;T, THandler&gt;.Accessor
   </h1>
   <div class="markdown level0 summary"><p>Represents event accessor.</p>
 </div>
@@ -80,7 +80,7 @@
   <h6><strong>Assembly</strong>: DotNext.Reflection.dll</h6>
   <h5 id="DotNext_Reflection_Event_2_Accessor_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public delegate void Accessor(in T instance, D handler);</code></pre>
+    <pre><code class="lang-csharp hljs">public delegate void Accessor(in T instance, THandler handler);</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -99,7 +99,7 @@
 </td>
       </tr>
       <tr>
-        <td><span class="xref">D</span></td>
+        <td><span class="xref">THandler</span></td>
         <td><span class="parametername">handler</span></td>
         <td><p>The event handler.</p>
 </td>
@@ -132,7 +132,7 @@
       <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireUpgradeableReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.DelegateHelpers.html#DotNext_DelegateHelpers_ChangeType__1_System_Delegate_">DelegateHelpers.ChangeType&lt;D&gt;(Delegate)</a>
+      <a class="xref" href="DotNext.DelegateHelpers.html#DotNext_DelegateHelpers_ChangeType__1_System_Delegate_">DelegateHelpers.ChangeType&lt;TDelegate&gt;(Delegate)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_GetUserData__1___0_">ObjectExtensions.GetUserData&lt;T&gt;(T)</a>
@@ -144,19 +144,19 @@
       <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, T[])</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2____1____2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;, out R1, out R2)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2____1____2__">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, Func&lt;T, TResult1&gt;, Func&lt;T, TResult2&gt;, out TResult1, out TResult2)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2_____1____2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, ValueFunc&lt;T, R1&gt;, ValueFunc&lt;T, R2&gt;, out R1, out R2)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2_____1____2__">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, ValueFunc&lt;T, TResult1&gt;, ValueFunc&lt;T, TResult2&gt;, out TResult1, out TResult2)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2__">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, Func&lt;T, TResult1&gt;, Func&lt;T, TResult2&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2___">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, ValueFunc&lt;T, R1&gt;, ValueFunc&lt;T, R2&gt;)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2___">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, ValueFunc&lt;T, TResult1&gt;, ValueFunc&lt;T, TResult2&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Threading.AsyncDelegate.html#DotNext_Threading_AsyncDelegate_InvokeAsync__1___0_System_Action___0__System_Threading_CancellationToken_">AsyncDelegate.InvokeAsync&lt;D&gt;(D, Action&lt;D&gt;, CancellationToken)</a>
+      <a class="xref" href="DotNext.Threading.AsyncDelegate.html#DotNext_Threading_AsyncDelegate_InvokeAsync__1___0_System_Action___0__System_Threading_CancellationToken_">AsyncDelegate.InvokeAsync&lt;TDelegate&gt;(TDelegate, Action&lt;TDelegate&gt;, CancellationToken)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_">LockAcquisition.AcquireReadLock&lt;T&gt;(T)</a>
@@ -190,7 +190,7 @@
                     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Event_2_Accessor.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Event%602.Accessor%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Event.cs/#L372" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Event.cs/#L376" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

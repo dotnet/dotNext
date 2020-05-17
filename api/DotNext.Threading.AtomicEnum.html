@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class AtomicEnum
    | .NEXT ">
-    <meta name="generator" content="docfx 2.52.0.0">
+    <meta name="generator" content="docfx 2.53.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -118,10 +118,10 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicEnum_VolatileRead__1___0__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicEnum.VolatileRead%60%601(%60%600%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L31">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L32">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicEnum_VolatileRead_" data-uid="DotNext.Threading.AtomicEnum.VolatileRead*"></a>
-  <h4 id="DotNext_Threading_AtomicEnum_VolatileRead__1___0__" data-uid="DotNext.Threading.AtomicEnum.VolatileRead``1(``0@)">VolatileRead&lt;E&gt;(ref E)</h4>
+  <h4 id="DotNext_Threading_AtomicEnum_VolatileRead__1___0__" data-uid="DotNext.Threading.AtomicEnum.VolatileRead``1(``0@)">VolatileRead&lt;TEnum&gt;(ref TEnum)</h4>
   <div class="markdown level1 summary"><p>Reads the value of the specified field. On systems that require it, inserts a
 memory barrier that prevents the processor from reordering memory operations
 as follows: If a read or write appears after this method in the code, the processor
@@ -130,9 +130,9 @@ cannot move it before this method.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static E VolatileRead&lt;E&gt;(this ref E value)
+    <pre><code class="lang-csharp hljs">public static TEnum VolatileRead&lt;TEnum&gt;(this ref TEnum value)
 
-    where E : struct, Enum</code></pre>
+    where TEnum : struct, Enum</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -145,7 +145,7 @@ cannot move it before this method.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">E</span></td>
+        <td><span class="xref">TEnum</span></td>
         <td><span class="parametername">value</span></td>
         <td><p>The field to read.</p>
 </td>
@@ -162,7 +162,7 @@ cannot move it before this method.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">E</span></td>
+        <td><span class="xref">TEnum</span></td>
         <td><p>The value that was read. This value is the latest written by any processor in
 the computer, regardless of the number of processors or the state of processor
 cache.</p>
@@ -180,8 +180,9 @@ cache.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">E</span></td>
-        <td></td>
+        <td><span class="parametername">TEnum</span></td>
+        <td><p>The enum type.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -190,10 +191,10 @@ cache.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicEnum_VolatileWrite__1___0____0_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicEnum.VolatileWrite%60%601(%60%600%40%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L66">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L70">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicEnum_VolatileWrite_" data-uid="DotNext.Threading.AtomicEnum.VolatileWrite*"></a>
-  <h4 id="DotNext_Threading_AtomicEnum_VolatileWrite__1___0____0_" data-uid="DotNext.Threading.AtomicEnum.VolatileWrite``1(``0@,``0)">VolatileWrite&lt;E&gt;(ref E, E)</h4>
+  <h4 id="DotNext_Threading_AtomicEnum_VolatileWrite__1___0____0_" data-uid="DotNext.Threading.AtomicEnum.VolatileWrite``1(``0@,``0)">VolatileWrite&lt;TEnum&gt;(ref TEnum, TEnum)</h4>
   <div class="markdown level1 summary"><p>Writes the specified value to the specified field. On systems that require it,
 inserts a memory barrier that prevents the processor from reordering memory operations
 as follows: If a read or write appears before this method in the code, the processor
@@ -202,9 +203,9 @@ cannot move it after this method.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void VolatileWrite&lt;E&gt;(this ref E value, E newValue)
+    <pre><code class="lang-csharp hljs">public static void VolatileWrite&lt;TEnum&gt;(this ref TEnum value, TEnum newValue)
 
-    where E : struct, Enum</code></pre>
+    where TEnum : struct, Enum</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -217,13 +218,13 @@ cannot move it after this method.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">E</span></td>
+        <td><span class="xref">TEnum</span></td>
         <td><span class="parametername">value</span></td>
         <td><p>The field where the value is written.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">E</span></td>
+        <td><span class="xref">TEnum</span></td>
         <td><span class="parametername">newValue</span></td>
         <td><p>The value to write. The value is written immediately so that it is visible to
 all processors in the computer.</p>
@@ -241,8 +242,9 @@ all processors in the computer.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">E</span></td>
-        <td></td>
+        <td><span class="parametername">TEnum</span></td>
+        <td><p>The enum type.</p>
+</td>
       </tr>
     </tbody>
   </table>

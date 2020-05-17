@@ -5,12 +5,12 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class Type&lt;T&gt;.Event&lt;H&gt;
+    <title>Class Type&lt;T&gt;.Event&lt;THandler&gt;
    | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class Type&lt;T&gt;.Event&lt;H&gt;
+    <meta name="title" content="Class Type&lt;T&gt;.Event&lt;THandler&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.52.0.0">
+    <meta name="generator" content="docfx 2.53.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -71,7 +71,7 @@
             <article class="content wrap" id="_content" data-uid="DotNext.Reflection.Type`1.Event`1">
   
   
-  <h1 id="DotNext_Reflection_Type_1_Event_1" data-uid="DotNext.Reflection.Type`1.Event`1" class="text-break">Class Type&lt;T&gt;.Event&lt;H&gt;
+  <h1 id="DotNext_Reflection_Type_1_Event_1" data-uid="DotNext.Reflection.Type`1.Event`1" class="text-break">Class Type&lt;T&gt;.Event&lt;THandler&gt;
   </h1>
   <div class="markdown level0 summary"><p>Provides typed access to instance event declared in type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</p>
 </div>
@@ -79,7 +79,7 @@
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><span class="xref">Type&lt;T&gt;.Event&lt;H&gt;</span></div>
+    <div class="level1"><span class="xref">Type&lt;T&gt;.Event&lt;THandler&gt;</span></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -109,9 +109,9 @@
   <h6><strong>Assembly</strong>: DotNext.Reflection.dll</h6>
   <h5 id="DotNext_Reflection_Type_1_Event_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static class Event&lt;H&gt;
+    <pre><code class="lang-csharp hljs">public static class Event&lt;THandler&gt;
 
-    where H : MulticastDelegate</code></pre>
+    where THandler : MulticastDelegate</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -123,7 +123,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">H</span></td>
+        <td><span class="parametername">THandler</span></td>
         <td><p>Type of event handler.</p>
 </td>
       </tr>
@@ -145,7 +145,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Event&lt;T, H&gt; Get(string eventName, bool nonPublic = false)</code></pre>
+    <pre><code class="lang-csharp hljs">public static Event&lt;T, THandler&gt; Get(string eventName, bool nonPublic = false)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -181,7 +181,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.Event-2.html">Event</a>&lt;T, H&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.Event-2.html">Event</a>&lt;T, THandler&gt;</td>
         <td><p>Instance event; or <span class="xref">null</span>, if event doesn't exist.</p>
 </td>
       </tr>
@@ -201,7 +201,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Event&lt;H&gt; GetStatic(string eventName, bool nonPublic = false)</code></pre>
+    <pre><code class="lang-csharp hljs">public static Event&lt;THandler&gt; GetStatic(string eventName, bool nonPublic = false)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -237,7 +237,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.Event-1.html">Event</a>&lt;H&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.Event-1.html">Event</a>&lt;THandler&gt;</td>
         <td><p>Static event; or <span class="xref">null</span>, if event doesn't exist.</p>
 </td>
       </tr>
@@ -257,7 +257,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Event&lt;T, H&gt; Require(string eventName, bool nonPublic = false)</code></pre>
+    <pre><code class="lang-csharp hljs">public static Event&lt;T, THandler&gt; Require(string eventName, bool nonPublic = false)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -293,7 +293,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.Event-2.html">Event</a>&lt;T, H&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.Event-2.html">Event</a>&lt;T, THandler&gt;</td>
         <td><p>Instance event.</p>
 </td>
       </tr>
@@ -329,7 +329,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Event&lt;H&gt; RequireStatic(string eventName, bool nonPublic = false)</code></pre>
+    <pre><code class="lang-csharp hljs">public static Event&lt;THandler&gt; RequireStatic(string eventName, bool nonPublic = false)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -365,7 +365,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.Event-1.html">Event</a>&lt;H&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.Event-1.html">Event</a>&lt;THandler&gt;</td>
         <td><p>Static event.</p>
 </td>
       </tr>

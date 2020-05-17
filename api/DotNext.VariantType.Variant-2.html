@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Struct Variant&lt;T1, T2&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.52.0.0">
+    <meta name="generator" content="docfx 2.53.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -202,7 +202,7 @@ keyword and late binding.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_VariantType_Variant_2_First.md&amp;value=---%0Auid%3A%20DotNext.VariantType.Variant%602.First%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L48">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L49">View Source</a>
   </span>
   <a id="DotNext_VariantType_Variant_2_First_" data-uid="DotNext.VariantType.Variant`2.First*"></a>
   <h4 id="DotNext_VariantType_Variant_2_First" data-uid="DotNext.VariantType.Variant`2.First">First</h4>
@@ -264,7 +264,7 @@ keyword and late binding.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_VariantType_Variant_2_Second.md&amp;value=---%0Auid%3A%20DotNext.VariantType.Variant%602.Second%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L53">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L54">View Source</a>
   </span>
   <a id="DotNext_VariantType_Variant_2_Second_" data-uid="DotNext.VariantType.Variant`2.Second*"></a>
   <h4 id="DotNext_VariantType_Variant_2_Second" data-uid="DotNext.VariantType.Variant`2.Second">Second</h4>
@@ -297,16 +297,16 @@ keyword and late binding.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_VariantType_Variant_2_Convert__1_DotNext_ValueFunc__0___0___DotNext_ValueFunc__1___0___.md&amp;value=---%0Auid%3A%20DotNext.VariantType.Variant%602.Convert%60%601(DotNext.ValueFunc%7B%600%2C%60%600%7D%40%2CDotNext.ValueFunc%7B%601%2C%60%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L62">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L63">View Source</a>
   </span>
   <a id="DotNext_VariantType_Variant_2_Convert_" data-uid="DotNext.VariantType.Variant`2.Convert*"></a>
-  <h4 id="DotNext_VariantType_Variant_2_Convert__1_DotNext_ValueFunc__0___0___DotNext_ValueFunc__1___0___" data-uid="DotNext.VariantType.Variant`2.Convert``1(DotNext.ValueFunc{`0,``0}@,DotNext.ValueFunc{`1,``0}@)">Convert&lt;R&gt;(ValueFunc&lt;T1, R&gt;, ValueFunc&lt;T2, R&gt;)</h4>
+  <h4 id="DotNext_VariantType_Variant_2_Convert__1_DotNext_ValueFunc__0___0___DotNext_ValueFunc__1___0___" data-uid="DotNext.VariantType.Variant`2.Convert``1(DotNext.ValueFunc{`0,``0}@,DotNext.ValueFunc{`1,``0}@)">Convert&lt;TResult&gt;(ValueFunc&lt;T1, TResult&gt;, ValueFunc&lt;T2, TResult&gt;)</h4>
   <div class="markdown level1 summary"><p>Converts the stored value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Optional&lt;R&gt; Convert&lt;R&gt;(in ValueFunc&lt;T1, R&gt; mapper1, in ValueFunc&lt;T2, R&gt; mapper2)</code></pre>
+    <pre><code class="lang-csharp hljs">public Optional&lt;TResult&gt; Convert&lt;TResult&gt;(in ValueFunc&lt;T1, TResult&gt; mapper1, in ValueFunc&lt;T2, TResult&gt; mapper2)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -319,13 +319,13 @@ keyword and late binding.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;T1, R&gt;</td>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;T1, TResult&gt;</td>
         <td><span class="parametername">mapper1</span></td>
         <td><p>The converter for the first possible type.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;T2, R&gt;</td>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;T2, TResult&gt;</td>
         <td><span class="parametername">mapper2</span></td>
         <td><p>The converter for the second possible type.</p>
 </td>
@@ -342,7 +342,7 @@ keyword and late binding.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;R&gt;</td>
+        <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;TResult&gt;</td>
         <td><p>Conversion result; or <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_Empty">Empty</a> if stored value is <span class="xref">null</span>.</p>
 </td>
       </tr>
@@ -358,7 +358,7 @@ keyword and late binding.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">R</span></td>
+        <td><span class="parametername">TResult</span></td>
         <td><p>The type of conversion result.</p>
 </td>
       </tr>
@@ -369,16 +369,16 @@ keyword and late binding.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_VariantType_Variant_2_Convert__1_System_Converter__0___0__System_Converter__1___0__.md&amp;value=---%0Auid%3A%20DotNext.VariantType.Variant%602.Convert%60%601(System.Converter%7B%600%2C%60%600%7D%2CSystem.Converter%7B%601%2C%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L76">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L77">View Source</a>
   </span>
   <a id="DotNext_VariantType_Variant_2_Convert_" data-uid="DotNext.VariantType.Variant`2.Convert*"></a>
-  <h4 id="DotNext_VariantType_Variant_2_Convert__1_System_Converter__0___0__System_Converter__1___0__" data-uid="DotNext.VariantType.Variant`2.Convert``1(System.Converter{`0,``0},System.Converter{`1,``0})">Convert&lt;R&gt;(Converter&lt;T1, R&gt;, Converter&lt;T2, R&gt;)</h4>
+  <h4 id="DotNext_VariantType_Variant_2_Convert__1_System_Converter__0___0__System_Converter__1___0__" data-uid="DotNext.VariantType.Variant`2.Convert``1(System.Converter{`0,``0},System.Converter{`1,``0})">Convert&lt;TResult&gt;(Converter&lt;T1, TResult&gt;, Converter&lt;T2, TResult&gt;)</h4>
   <div class="markdown level1 summary"><p>Converts the stored value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Optional&lt;R&gt; Convert&lt;R&gt;(Converter&lt;T1, R&gt; mapper1, Converter&lt;T2, R&gt; mapper2)</code></pre>
+    <pre><code class="lang-csharp hljs">public Optional&lt;TResult&gt; Convert&lt;TResult&gt;(Converter&lt;T1, TResult&gt; mapper1, Converter&lt;T2, TResult&gt; mapper2)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -391,13 +391,13 @@ keyword and late binding.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.converter-2">Converter</a>&lt;T1, R&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.converter-2">Converter</a>&lt;T1, TResult&gt;</td>
         <td><span class="parametername">mapper1</span></td>
         <td><p>The converter for the first possible type.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.converter-2">Converter</a>&lt;T2, R&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.converter-2">Converter</a>&lt;T2, TResult&gt;</td>
         <td><span class="parametername">mapper2</span></td>
         <td><p>The converter for the second possible type.</p>
 </td>
@@ -414,7 +414,7 @@ keyword and late binding.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;R&gt;</td>
+        <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;TResult&gt;</td>
         <td><p>Conversion result; or <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_Empty">Empty</a> if stored value is <span class="xref">null</span>.</p>
 </td>
       </tr>
@@ -430,7 +430,7 @@ keyword and late binding.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">R</span></td>
+        <td><span class="parametername">TResult</span></td>
         <td><p>The type of conversion result.</p>
 </td>
       </tr>
@@ -441,18 +441,18 @@ keyword and late binding.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_VariantType_Variant_2_Convert__2_DotNext_ValueFunc__0___0___DotNext_ValueFunc__1___1___.md&amp;value=---%0Auid%3A%20DotNext.VariantType.Variant%602.Convert%60%602(DotNext.ValueFunc%7B%600%2C%60%600%7D%40%2CDotNext.ValueFunc%7B%601%2C%60%601%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L87">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L88">View Source</a>
   </span>
   <a id="DotNext_VariantType_Variant_2_Convert_" data-uid="DotNext.VariantType.Variant`2.Convert*"></a>
-  <h4 id="DotNext_VariantType_Variant_2_Convert__2_DotNext_ValueFunc__0___0___DotNext_ValueFunc__1___1___" data-uid="DotNext.VariantType.Variant`2.Convert``2(DotNext.ValueFunc{`0,``0}@,DotNext.ValueFunc{`1,``1}@)">Convert&lt;U1, U2&gt;(ValueFunc&lt;T1, U1&gt;, ValueFunc&lt;T2, U2&gt;)</h4>
+  <h4 id="DotNext_VariantType_Variant_2_Convert__2_DotNext_ValueFunc__0___0___DotNext_ValueFunc__1___1___" data-uid="DotNext.VariantType.Variant`2.Convert``2(DotNext.ValueFunc{`0,``0}@,DotNext.ValueFunc{`1,``1}@)">Convert&lt;TResult1, TResult2&gt;(ValueFunc&lt;T1, TResult1&gt;, ValueFunc&lt;T2, TResult2&gt;)</h4>
   <div class="markdown level1 summary"><p>Converts this variant value into another value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Variant&lt;U1, U2&gt; Convert&lt;U1, U2&gt;(in ValueFunc&lt;T1, U1&gt; mapper1, in ValueFunc&lt;T2, U2&gt; mapper2)
+    <pre><code class="lang-csharp hljs">public Variant&lt;TResult1, TResult2&gt; Convert&lt;TResult1, TResult2&gt;(in ValueFunc&lt;T1, TResult1&gt; mapper1, in ValueFunc&lt;T2, TResult2&gt; mapper2)
 
-    where U1 : class where U2 : class</code></pre>
+    where TResult1 : class where TResult2 : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -465,13 +465,13 @@ keyword and late binding.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;T1, U1&gt;</td>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;T1, TResult1&gt;</td>
         <td><span class="parametername">mapper1</span></td>
         <td><p>The converter for the first possible type.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;T2, U2&gt;</td>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;T2, TResult2&gt;</td>
         <td><span class="parametername">mapper2</span></td>
         <td><p>The converter for the second possible type.</p>
 </td>
@@ -488,7 +488,7 @@ keyword and late binding.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.VariantType.Variant-2.html">Variant</a>&lt;U1, U2&gt;</td>
+        <td><a class="xref" href="DotNext.VariantType.Variant-2.html">Variant</a>&lt;TResult1, TResult2&gt;</td>
         <td><p>The variant value converted from this variant value.</p>
 </td>
       </tr>
@@ -504,12 +504,12 @@ keyword and late binding.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">U1</span></td>
+        <td><span class="parametername">TResult1</span></td>
         <td><p>The first possible type of the conversion result.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">U2</span></td>
+        <td><span class="parametername">TResult2</span></td>
         <td><p>The second possible type of the conversion result.</p>
 </td>
       </tr>
@@ -520,18 +520,18 @@ keyword and late binding.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_VariantType_Variant_2_Convert__2_System_Converter__0___0__System_Converter__1___1__.md&amp;value=---%0Auid%3A%20DotNext.VariantType.Variant%602.Convert%60%602(System.Converter%7B%600%2C%60%600%7D%2CSystem.Converter%7B%601%2C%60%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L105">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L106">View Source</a>
   </span>
   <a id="DotNext_VariantType_Variant_2_Convert_" data-uid="DotNext.VariantType.Variant`2.Convert*"></a>
-  <h4 id="DotNext_VariantType_Variant_2_Convert__2_System_Converter__0___0__System_Converter__1___1__" data-uid="DotNext.VariantType.Variant`2.Convert``2(System.Converter{`0,``0},System.Converter{`1,``1})">Convert&lt;U1, U2&gt;(Converter&lt;T1, U1&gt;, Converter&lt;T2, U2&gt;)</h4>
+  <h4 id="DotNext_VariantType_Variant_2_Convert__2_System_Converter__0___0__System_Converter__1___1__" data-uid="DotNext.VariantType.Variant`2.Convert``2(System.Converter{`0,``0},System.Converter{`1,``1})">Convert&lt;TResult1, TResult2&gt;(Converter&lt;T1, TResult1&gt;, Converter&lt;T2, TResult2&gt;)</h4>
   <div class="markdown level1 summary"><p>Converts this variant value into another value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Variant&lt;U1, U2&gt; Convert&lt;U1, U2&gt;(Converter&lt;T1, U1&gt; mapper1, Converter&lt;T2, U2&gt; mapper2)
+    <pre><code class="lang-csharp hljs">public Variant&lt;TResult1, TResult2&gt; Convert&lt;TResult1, TResult2&gt;(Converter&lt;T1, TResult1&gt; mapper1, Converter&lt;T2, TResult2&gt; mapper2)
 
-    where U1 : class where U2 : class</code></pre>
+    where TResult1 : class where TResult2 : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -544,13 +544,13 @@ keyword and late binding.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.converter-2">Converter</a>&lt;T1, U1&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.converter-2">Converter</a>&lt;T1, TResult1&gt;</td>
         <td><span class="parametername">mapper1</span></td>
         <td><p>The converter for the first possible type.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.converter-2">Converter</a>&lt;T2, U2&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.converter-2">Converter</a>&lt;T2, TResult2&gt;</td>
         <td><span class="parametername">mapper2</span></td>
         <td><p>The converter for the second possible type.</p>
 </td>
@@ -567,7 +567,7 @@ keyword and late binding.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.VariantType.Variant-2.html">Variant</a>&lt;U1, U2&gt;</td>
+        <td><a class="xref" href="DotNext.VariantType.Variant-2.html">Variant</a>&lt;TResult1, TResult2&gt;</td>
         <td><p>The variant value converted from this variant value.</p>
 </td>
       </tr>
@@ -583,12 +583,12 @@ keyword and late binding.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">U1</span></td>
+        <td><span class="parametername">TResult1</span></td>
         <td><p>The first possible type of the conversion result.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">U2</span></td>
+        <td><span class="parametername">TResult2</span></td>
         <td><p>The second possible type of the conversion result.</p>
 </td>
       </tr>
@@ -599,7 +599,7 @@ keyword and late binding.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_VariantType_Variant_2_Deconstruct__0___1__.md&amp;value=---%0Auid%3A%20DotNext.VariantType.Variant%602.Deconstruct(%600%40%2C%601%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L125">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L126">View Source</a>
   </span>
   <a id="DotNext_VariantType_Variant_2_Deconstruct_" data-uid="DotNext.VariantType.Variant`2.Deconstruct*"></a>
   <h4 id="DotNext_VariantType_Variant_2_Deconstruct__0___1__" data-uid="DotNext.VariantType.Variant`2.Deconstruct(`0@,`1@)">Deconstruct(out T1, out T2)</h4>
@@ -643,7 +643,7 @@ or positional pattern matching.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_VariantType_Variant_2_Equals_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.VariantType.Variant%602.Equals(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L228">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L232">View Source</a>
   </span>
   <a id="DotNext_VariantType_Variant_2_Equals_" data-uid="DotNext.VariantType.Variant`2.Equals*"></a>
   <h4 id="DotNext_VariantType_Variant_2_Equals_System_Object_" data-uid="DotNext.VariantType.Variant`2.Equals(System.Object)">Equals(Object)</h4>
@@ -695,10 +695,10 @@ or positional pattern matching.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_VariantType_Variant_2_Equals__1___0_.md&amp;value=---%0Auid%3A%20DotNext.VariantType.Variant%602.Equals%60%601(%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L167">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L168">View Source</a>
   </span>
   <a id="DotNext_VariantType_Variant_2_Equals_" data-uid="DotNext.VariantType.Variant`2.Equals*"></a>
-  <h4 id="DotNext_VariantType_Variant_2_Equals__1___0_" data-uid="DotNext.VariantType.Variant`2.Equals``1(``0)">Equals&lt;V&gt;(V)</h4>
+  <h4 id="DotNext_VariantType_Variant_2_Equals__1___0_" data-uid="DotNext.VariantType.Variant`2.Equals``1(``0)">Equals&lt;TOther&gt;(TOther)</h4>
   <div class="markdown level1 summary"><p>Determines whether the value stored in this variant
 container is equal to the value stored in the given variant
 container.</p>
@@ -706,9 +706,9 @@ container.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool Equals&lt;V&gt;(V other)
+    <pre><code class="lang-csharp hljs">public bool Equals&lt;TOther&gt;(TOther other)
 
-    where V : IVariant</code></pre>
+    where TOther : IVariant</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -721,7 +721,7 @@ container.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">V</span></td>
+        <td><span class="xref">TOther</span></td>
         <td><span class="parametername">other</span></td>
         <td><p>Other variant value to compare.</p>
 </td>
@@ -756,7 +756,7 @@ container; otherwise, <span class="xref">false</span>.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">V</span></td>
+        <td><span class="parametername">TOther</span></td>
         <td><p>The type of variant container.</p>
 </td>
       </tr>
@@ -767,7 +767,7 @@ container; otherwise, <span class="xref">false</span>.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_VariantType_Variant_2_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.VariantType.Variant%602.GetHashCode%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L221">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L225">View Source</a>
   </span>
   <a id="DotNext_VariantType_Variant_2_GetHashCode_" data-uid="DotNext.VariantType.Variant`2.GetHashCode*"></a>
   <h4 id="DotNext_VariantType_Variant_2_GetHashCode" data-uid="DotNext.VariantType.Variant`2.GetHashCode">GetHashCode()</h4>
@@ -801,7 +801,7 @@ container; otherwise, <span class="xref">false</span>.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_VariantType_Variant_2_Permute.md&amp;value=---%0Auid%3A%20DotNext.VariantType.Variant%602.Permute%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L114">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L115">View Source</a>
   </span>
   <a id="DotNext_VariantType_Variant_2_Permute_" data-uid="DotNext.VariantType.Variant`2.Permute*"></a>
   <h4 id="DotNext_VariantType_Variant_2_Permute" data-uid="DotNext.VariantType.Variant`2.Permute">Permute()</h4>
@@ -833,7 +833,7 @@ container; otherwise, <span class="xref">false</span>.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_VariantType_Variant_2_ToString.md&amp;value=---%0Auid%3A%20DotNext.VariantType.Variant%602.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L215">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L219">View Source</a>
   </span>
   <a id="DotNext_VariantType_Variant_2_ToString_" data-uid="DotNext.VariantType.Variant`2.ToString*"></a>
   <h4 id="DotNext_VariantType_Variant_2_ToString" data-uid="DotNext.VariantType.Variant`2.ToString">ToString()</h4>
@@ -873,7 +873,7 @@ for the stored value.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_VariantType_Variant_2_op_Equality_DotNext_VariantType_Variant__0__1__DotNext_VariantType_Variant__0__1__.md&amp;value=---%0Auid%3A%20DotNext.VariantType.Variant%602.op_Equality(DotNext.VariantType.Variant%7B%600%2C%601%7D%2CDotNext.VariantType.Variant%7B%600%2C%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L183">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L185">View Source</a>
   </span>
   <a id="DotNext_VariantType_Variant_2_op_Equality_" data-uid="DotNext.VariantType.Variant`2.op_Equality*"></a>
   <h4 id="DotNext_VariantType_Variant_2_op_Equality_DotNext_VariantType_Variant__0__1__DotNext_VariantType_Variant__0__1__" data-uid="DotNext.VariantType.Variant`2.op_Equality(DotNext.VariantType.Variant{`0,`1},DotNext.VariantType.Variant{`0,`1})">Equality(Variant&lt;T1, T2&gt;, Variant&lt;T1, T2&gt;)</h4>
@@ -933,7 +933,7 @@ to compare stored values.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_VariantType_Variant_2_op_Explicit_DotNext_VariantType_Variant__0__1____0.md&amp;value=---%0Auid%3A%20DotNext.VariantType.Variant%602.op_Explicit(DotNext.VariantType.Variant%7B%600%2C%601%7D)~%600%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L141">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L142">View Source</a>
   </span>
   <a id="DotNext_VariantType_Variant_2_op_Explicit_" data-uid="DotNext.VariantType.Variant`2.op_Explicit*"></a>
   <h4 id="DotNext_VariantType_Variant_2_op_Explicit_DotNext_VariantType_Variant__0__1____0" data-uid="DotNext.VariantType.Variant`2.op_Explicit(DotNext.VariantType.Variant{`0,`1})~`0">Explicit(Variant&lt;T1, T2&gt; to T1)</h4>
@@ -982,7 +982,7 @@ to compare stored values.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_VariantType_Variant_2_op_Explicit_DotNext_VariantType_Variant__0__1____1.md&amp;value=---%0Auid%3A%20DotNext.VariantType.Variant%602.op_Explicit(DotNext.VariantType.Variant%7B%600%2C%601%7D)~%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L153">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L154">View Source</a>
   </span>
   <a id="DotNext_VariantType_Variant_2_op_Explicit_" data-uid="DotNext.VariantType.Variant`2.op_Explicit*"></a>
   <h4 id="DotNext_VariantType_Variant_2_op_Explicit_DotNext_VariantType_Variant__0__1____1" data-uid="DotNext.VariantType.Variant`2.op_Explicit(DotNext.VariantType.Variant{`0,`1})~`1">Explicit(Variant&lt;T1, T2&gt; to T2)</h4>
@@ -1031,7 +1031,7 @@ to compare stored values.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_VariantType_Variant_2_op_False_DotNext_VariantType_Variant__0__1__.md&amp;value=---%0Auid%3A%20DotNext.VariantType.Variant%602.op_False(DotNext.VariantType.Variant%7B%600%2C%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L205">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L209">View Source</a>
   </span>
   <a id="DotNext_VariantType_Variant_2_op_False_" data-uid="DotNext.VariantType.Variant`2.op_False*"></a>
   <h4 id="DotNext_VariantType_Variant_2_op_False_DotNext_VariantType_Variant__0__1__" data-uid="DotNext.VariantType.Variant`2.op_False(DotNext.VariantType.Variant{`0,`1})">False(Variant&lt;T1, T2&gt;)</h4>
@@ -1055,7 +1055,8 @@ to compare stored values.</p>
       <tr>
         <td><a class="xref" href="DotNext.VariantType.Variant-2.html">Variant</a>&lt;T1, T2&gt;</td>
         <td><span class="parametername">variant</span></td>
-        <td></td>
+        <td><p>The variant value to convert.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -1079,7 +1080,7 @@ to compare stored values.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_VariantType_Variant_2_op_Implicit__0__DotNext_VariantType_Variant__0__1_.md&amp;value=---%0Auid%3A%20DotNext.VariantType.Variant%602.op_Implicit(%600)~DotNext.VariantType.Variant%7B%600%2C%601%7D%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L135">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L136">View Source</a>
   </span>
   <a id="DotNext_VariantType_Variant_2_op_Implicit_" data-uid="DotNext.VariantType.Variant`2.op_Implicit*"></a>
   <h4 id="DotNext_VariantType_Variant_2_op_Implicit__0__DotNext_VariantType_Variant__0__1_" data-uid="DotNext.VariantType.Variant`2.op_Implicit(`0)~DotNext.VariantType.Variant{`0,`1}">Implicit(T1 to Variant&lt;T1, T2&gt;)</h4>
@@ -1128,7 +1129,7 @@ to compare stored values.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_VariantType_Variant_2_op_Implicit__1__DotNext_VariantType_Variant__0__1_.md&amp;value=---%0Auid%3A%20DotNext.VariantType.Variant%602.op_Implicit(%601)~DotNext.VariantType.Variant%7B%600%2C%601%7D%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L147">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L148">View Source</a>
   </span>
   <a id="DotNext_VariantType_Variant_2_op_Implicit_" data-uid="DotNext.VariantType.Variant`2.op_Implicit*"></a>
   <h4 id="DotNext_VariantType_Variant_2_op_Implicit__1__DotNext_VariantType_Variant__0__1_" data-uid="DotNext.VariantType.Variant`2.op_Implicit(`1)~DotNext.VariantType.Variant{`0,`1}">Implicit(T2 to Variant&lt;T1, T2&gt;)</h4>
@@ -1177,7 +1178,7 @@ to compare stored values.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_VariantType_Variant_2_op_Inequality_DotNext_VariantType_Variant__0__1__DotNext_VariantType_Variant__0__1__.md&amp;value=---%0Auid%3A%20DotNext.VariantType.Variant%602.op_Inequality(DotNext.VariantType.Variant%7B%600%2C%601%7D%2CDotNext.VariantType.Variant%7B%600%2C%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L195">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L197">View Source</a>
   </span>
   <a id="DotNext_VariantType_Variant_2_op_Inequality_" data-uid="DotNext.VariantType.Variant`2.op_Inequality*"></a>
   <h4 id="DotNext_VariantType_Variant_2_op_Inequality_DotNext_VariantType_Variant__0__1__DotNext_VariantType_Variant__0__1__" data-uid="DotNext.VariantType.Variant`2.op_Inequality(DotNext.VariantType.Variant{`0,`1},DotNext.VariantType.Variant{`0,`1})">Inequality(Variant&lt;T1, T2&gt;, Variant&lt;T1, T2&gt;)</h4>
@@ -1237,7 +1238,7 @@ to compare stored values.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_VariantType_Variant_2_op_True_DotNext_VariantType_Variant__0__1__.md&amp;value=---%0Auid%3A%20DotNext.VariantType.Variant%602.op_True(DotNext.VariantType.Variant%7B%600%2C%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L200">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L203">View Source</a>
   </span>
   <a id="DotNext_VariantType_Variant_2_op_True_" data-uid="DotNext.VariantType.Variant`2.op_True*"></a>
   <h4 id="DotNext_VariantType_Variant_2_op_True_DotNext_VariantType_Variant__0__1__" data-uid="DotNext.VariantType.Variant`2.op_True(DotNext.VariantType.Variant{`0,`1})">True(Variant&lt;T1, T2&gt;)</h4>
@@ -1261,7 +1262,8 @@ to compare stored values.</p>
       <tr>
         <td><a class="xref" href="DotNext.VariantType.Variant-2.html">Variant</a>&lt;T1, T2&gt;</td>
         <td><span class="parametername">variant</span></td>
-        <td></td>
+        <td><p>The variant value to convert.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -1287,7 +1289,7 @@ to compare stored values.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_VariantType_Variant_2_DotNext_VariantType_IVariant_Value.md&amp;value=---%0Auid%3A%20DotNext.VariantType.Variant%602.DotNext%23VariantType%23IVariant%23Value%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L43">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L44">View Source</a>
   </span>
   <a id="DotNext_VariantType_Variant_2_DotNext_VariantType_IVariant_Value_" data-uid="DotNext.VariantType.Variant`2.DotNext#VariantType#IVariant#Value*"></a>
   <h4 id="DotNext_VariantType_Variant_2_DotNext_VariantType_IVariant_Value" data-uid="DotNext.VariantType.Variant`2.DotNext#VariantType#IVariant#Value">IVariant.Value</h4>
@@ -1317,7 +1319,7 @@ to compare stored values.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_VariantType_Variant_2_System_Dynamic_IDynamicMetaObjectProvider_GetMetaObject_System_Linq_Expressions_Expression_.md&amp;value=---%0Auid%3A%20DotNext.VariantType.Variant%602.System%23Dynamic%23IDynamicMetaObjectProvider%23GetMetaObject(System.Linq.Expressions.Expression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L231">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L236">View Source</a>
   </span>
   <a id="DotNext_VariantType_Variant_2_System_Dynamic_IDynamicMetaObjectProvider_GetMetaObject_" data-uid="DotNext.VariantType.Variant`2.System#Dynamic#IDynamicMetaObjectProvider#GetMetaObject*"></a>
   <h4 id="DotNext_VariantType_Variant_2_System_Dynamic_IDynamicMetaObjectProvider_GetMetaObject_System_Linq_Expressions_Expression_" data-uid="DotNext.VariantType.Variant`2.System#Dynamic#IDynamicMetaObjectProvider#GetMetaObject(System.Linq.Expressions.Expression)">IDynamicMetaObjectProvider.GetMetaObject(Expression)</h4>
@@ -1364,7 +1366,7 @@ to compare stored values.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_VariantType_Variant_2_System_IEquatable_DotNext_VariantType_Variant_T1_T2___Equals_DotNext_VariantType_Variant__0__1__.md&amp;value=---%0Auid%3A%20DotNext.VariantType.Variant%602.System%23IEquatable%7BDotNext%23VariantType%23Variant%7BT1%2CT2%7D%7D%23Equals(DotNext.VariantType.Variant%7B%600%2C%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L171">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L173">View Source</a>
   </span>
   <a id="DotNext_VariantType_Variant_2_System_IEquatable_DotNext_VariantType_Variant_T1_T2___Equals_" data-uid="DotNext.VariantType.Variant`2.System#IEquatable{DotNext#VariantType#Variant{T1,T2}}#Equals*"></a>
   <h4 id="DotNext_VariantType_Variant_2_System_IEquatable_DotNext_VariantType_Variant_T1_T2___Equals_DotNext_VariantType_Variant__0__1__" data-uid="DotNext.VariantType.Variant`2.System#IEquatable{DotNext#VariantType#Variant{T1,T2}}#Equals(DotNext.VariantType.Variant{`0,`1})">IEquatable&lt;Variant&lt;T1, T2&gt;&gt;.Equals(Variant&lt;T1, T2&gt;)</h4>

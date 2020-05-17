@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Struct UserDataStorage
    | .NEXT ">
-    <meta name="generator" content="docfx 2.52.0.0">
+    <meta name="generator" content="docfx 2.53.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -105,7 +105,7 @@ the same lifetime as its owner.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_CopyTo_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.CopyTo(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L417">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L421">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_CopyTo_" data-uid="DotNext.UserDataStorage.CopyTo*"></a>
   <h4 id="DotNext_UserDataStorage_CopyTo_System_Object_" data-uid="DotNext.UserDataStorage.CopyTo(System.Object)">CopyTo(Object)</h4>
@@ -139,7 +139,7 @@ the same lifetime as its owner.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_Equals_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.Equals(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L441">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L447">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_Equals_" data-uid="DotNext.UserDataStorage.Equals*"></a>
   <h4 id="DotNext_UserDataStorage_Equals_System_Object_" data-uid="DotNext.UserDataStorage.Equals(System.Object)">Equals(Object)</h4>
@@ -192,16 +192,16 @@ the given object.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_Get__1_DotNext_UserDataSlot___0__.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.Get%60%601(DotNext.UserDataSlot%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L243">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L247">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_Get_" data-uid="DotNext.UserDataStorage.Get*"></a>
-  <h4 id="DotNext_UserDataStorage_Get__1_DotNext_UserDataSlot___0__" data-uid="DotNext.UserDataStorage.Get``1(DotNext.UserDataSlot{``0})">Get&lt;V&gt;(UserDataSlot&lt;V&gt;)</h4>
+  <h4 id="DotNext_UserDataStorage_Get__1_DotNext_UserDataSlot___0__" data-uid="DotNext.UserDataStorage.Get``1(DotNext.UserDataSlot{``0})">Get&lt;TValue&gt;(UserDataSlot&lt;TValue&gt;)</h4>
   <div class="markdown level1 summary"><p>Gets user data.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public V Get&lt;V&gt;(UserDataSlot&lt;V&gt; slot)</code></pre>
+    <pre><code class="lang-csharp hljs">public TValue Get&lt;TValue&gt;(UserDataSlot&lt;TValue&gt; slot)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -214,7 +214,7 @@ the given object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;V&gt;</td>
+        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</td>
         <td><span class="parametername">slot</span></td>
         <td><p>The slot identifying user data.</p>
 </td>
@@ -231,7 +231,7 @@ the given object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">V</span></td>
+        <td><span class="xref">TValue</span></td>
         <td><p>User data; or <code>default(V)</code> if there is no user data associated with <code data-dev-comment-type="paramref" class="paramref">slot</code>.</p>
 </td>
       </tr>
@@ -247,7 +247,7 @@ the given object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">V</span></td>
+        <td><span class="parametername">TValue</span></td>
         <td><p>Type of data.</p>
 </td>
       </tr>
@@ -258,16 +258,16 @@ the given object.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_Get__1_DotNext_UserDataSlot___0____0_.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.Get%60%601(DotNext.UserDataSlot%7B%60%600%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L229">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L233">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_Get_" data-uid="DotNext.UserDataStorage.Get*"></a>
-  <h4 id="DotNext_UserDataStorage_Get__1_DotNext_UserDataSlot___0____0_" data-uid="DotNext.UserDataStorage.Get``1(DotNext.UserDataSlot{``0},``0)">Get&lt;V&gt;(UserDataSlot&lt;V&gt;, V)</h4>
+  <h4 id="DotNext_UserDataStorage_Get__1_DotNext_UserDataSlot___0____0_" data-uid="DotNext.UserDataStorage.Get``1(DotNext.UserDataSlot{``0},``0)">Get&lt;TValue&gt;(UserDataSlot&lt;TValue&gt;, TValue)</h4>
   <div class="markdown level1 summary"><p>Gets user data.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public V Get&lt;V&gt;(UserDataSlot&lt;V&gt; slot, V defaultValue)</code></pre>
+    <pre><code class="lang-csharp hljs">public TValue Get&lt;TValue&gt;(UserDataSlot&lt;TValue&gt; slot, TValue defaultValue)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -280,13 +280,13 @@ the given object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;V&gt;</td>
+        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</td>
         <td><span class="parametername">slot</span></td>
         <td><p>The slot identifying user data.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">V</span></td>
+        <td><span class="xref">TValue</span></td>
         <td><span class="parametername">defaultValue</span></td>
         <td><p>Default value to be returned if no user data contained in this collection.</p>
 </td>
@@ -303,7 +303,7 @@ the given object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">V</span></td>
+        <td><span class="xref">TValue</span></td>
         <td><p>User data.</p>
 </td>
       </tr>
@@ -319,7 +319,7 @@ the given object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">V</span></td>
+        <td><span class="parametername">TValue</span></td>
         <td><p>Type of data.</p>
 </td>
       </tr>
@@ -330,7 +330,7 @@ the given object.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.GetHashCode%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L433">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L439">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_GetHashCode_" data-uid="DotNext.UserDataStorage.GetHashCode*"></a>
   <h4 id="DotNext_UserDataStorage_GetHashCode" data-uid="DotNext.UserDataStorage.GetHashCode">GetHashCode()</h4>
@@ -364,18 +364,18 @@ the given object.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_GetOrSet__1_DotNext_UserDataSlot___0__.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.GetOrSet%60%601(DotNext.UserDataSlot%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L256">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L260">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_GetOrSet_" data-uid="DotNext.UserDataStorage.GetOrSet*"></a>
-  <h4 id="DotNext_UserDataStorage_GetOrSet__1_DotNext_UserDataSlot___0__" data-uid="DotNext.UserDataStorage.GetOrSet``1(DotNext.UserDataSlot{``0})">GetOrSet&lt;V&gt;(UserDataSlot&lt;V&gt;)</h4>
+  <h4 id="DotNext_UserDataStorage_GetOrSet__1_DotNext_UserDataSlot___0__" data-uid="DotNext.UserDataStorage.GetOrSet``1(DotNext.UserDataSlot{``0})">GetOrSet&lt;TValue&gt;(UserDataSlot&lt;TValue&gt;)</h4>
   <div class="markdown level1 summary"><p>Gets existing user data or creates a new data and return it.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public V GetOrSet&lt;V&gt;(UserDataSlot&lt;V&gt; slot)
+    <pre><code class="lang-csharp hljs">public TValue GetOrSet&lt;TValue&gt;(UserDataSlot&lt;TValue&gt; slot)
 
-    where V : new()</code></pre>
+    where TValue : new()</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -388,7 +388,7 @@ the given object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;V&gt;</td>
+        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</td>
         <td><span class="parametername">slot</span></td>
         <td><p>The slot identifying user data.</p>
 </td>
@@ -405,7 +405,7 @@ the given object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">V</span></td>
+        <td><span class="xref">TValue</span></td>
         <td><p>The data associated with the slot.</p>
 </td>
       </tr>
@@ -421,7 +421,7 @@ the given object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">V</span></td>
+        <td><span class="parametername">TValue</span></td>
         <td><p>The type of user data associated with arbitrary object.</p>
 </td>
       </tr>
@@ -432,16 +432,16 @@ the given object.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_GetOrSet__1_DotNext_UserDataSlot___0__DotNext_ValueFunc___0___.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.GetOrSet%60%601(DotNext.UserDataSlot%7B%60%600%7D%2CDotNext.ValueFunc%7B%60%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L319">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L323">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_GetOrSet_" data-uid="DotNext.UserDataStorage.GetOrSet*"></a>
-  <h4 id="DotNext_UserDataStorage_GetOrSet__1_DotNext_UserDataSlot___0__DotNext_ValueFunc___0___" data-uid="DotNext.UserDataStorage.GetOrSet``1(DotNext.UserDataSlot{``0},DotNext.ValueFunc{``0}@)">GetOrSet&lt;V&gt;(UserDataSlot&lt;V&gt;, ValueFunc&lt;V&gt;)</h4>
+  <h4 id="DotNext_UserDataStorage_GetOrSet__1_DotNext_UserDataSlot___0__DotNext_ValueFunc___0___" data-uid="DotNext.UserDataStorage.GetOrSet``1(DotNext.UserDataSlot{``0},DotNext.ValueFunc{``0}@)">GetOrSet&lt;TValue&gt;(UserDataSlot&lt;TValue&gt;, ValueFunc&lt;TValue&gt;)</h4>
   <div class="markdown level1 summary"><p>Gets existing user data or creates a new data and return it.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public V GetOrSet&lt;V&gt;(UserDataSlot&lt;V&gt; slot, in ValueFunc&lt;V&gt; valueFactory)</code></pre>
+    <pre><code class="lang-csharp hljs">public TValue GetOrSet&lt;TValue&gt;(UserDataSlot&lt;TValue&gt; slot, in ValueFunc&lt;TValue&gt; valueFactory)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -454,13 +454,13 @@ the given object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;V&gt;</td>
+        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</td>
         <td><span class="parametername">slot</span></td>
         <td><p>The slot identifying user data.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="DotNext.ValueFunc-1.html">ValueFunc</a>&lt;V&gt;</td>
+        <td><a class="xref" href="DotNext.ValueFunc-1.html">ValueFunc</a>&lt;TValue&gt;</td>
         <td><span class="parametername">valueFactory</span></td>
         <td><p>The value supplier which is called when no user data exists.</p>
 </td>
@@ -477,7 +477,7 @@ the given object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">V</span></td>
+        <td><span class="xref">TValue</span></td>
         <td><p>The data associated with the slot.</p>
 </td>
       </tr>
@@ -493,7 +493,7 @@ the given object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">V</span></td>
+        <td><span class="parametername">TValue</span></td>
         <td><p>The type of user data associated with arbitrary object.</p>
 </td>
       </tr>
@@ -504,16 +504,16 @@ the given object.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_GetOrSet__1_DotNext_UserDataSlot___0__System_Func___0__.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.GetOrSet%60%601(DotNext.UserDataSlot%7B%60%600%7D%2CSystem.Func%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L284">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L288">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_GetOrSet_" data-uid="DotNext.UserDataStorage.GetOrSet*"></a>
-  <h4 id="DotNext_UserDataStorage_GetOrSet__1_DotNext_UserDataSlot___0__System_Func___0__" data-uid="DotNext.UserDataStorage.GetOrSet``1(DotNext.UserDataSlot{``0},System.Func{``0})">GetOrSet&lt;V&gt;(UserDataSlot&lt;V&gt;, Func&lt;V&gt;)</h4>
+  <h4 id="DotNext_UserDataStorage_GetOrSet__1_DotNext_UserDataSlot___0__System_Func___0__" data-uid="DotNext.UserDataStorage.GetOrSet``1(DotNext.UserDataSlot{``0},System.Func{``0})">GetOrSet&lt;TValue&gt;(UserDataSlot&lt;TValue&gt;, Func&lt;TValue&gt;)</h4>
   <div class="markdown level1 summary"><p>Gets existing user data or creates a new data and return it.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public V GetOrSet&lt;V&gt;(UserDataSlot&lt;V&gt; slot, Func&lt;V&gt; valueFactory)</code></pre>
+    <pre><code class="lang-csharp hljs">public TValue GetOrSet&lt;TValue&gt;(UserDataSlot&lt;TValue&gt; slot, Func&lt;TValue&gt; valueFactory)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -526,13 +526,13 @@ the given object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;V&gt;</td>
+        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</td>
         <td><span class="parametername">slot</span></td>
         <td><p>The slot identifying user data.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;V&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;TValue&gt;</td>
         <td><span class="parametername">valueFactory</span></td>
         <td><p>The value supplier which is called when no user data exists.</p>
 </td>
@@ -549,7 +549,7 @@ the given object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">V</span></td>
+        <td><span class="xref">TValue</span></td>
         <td><p>The data associated with the slot.</p>
 </td>
       </tr>
@@ -565,7 +565,7 @@ the given object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">V</span></td>
+        <td><span class="parametername">TValue</span></td>
         <td><p>The type of user data associated with arbitrary object.</p>
 </td>
       </tr>
@@ -576,18 +576,18 @@ the given object.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_GetOrSet__2_DotNext_UserDataSlot___0__.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.GetOrSet%60%602(DotNext.UserDataSlot%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L270">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L274">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_GetOrSet_" data-uid="DotNext.UserDataStorage.GetOrSet*"></a>
-  <h4 id="DotNext_UserDataStorage_GetOrSet__2_DotNext_UserDataSlot___0__" data-uid="DotNext.UserDataStorage.GetOrSet``2(DotNext.UserDataSlot{``0})">GetOrSet&lt;B, D&gt;(UserDataSlot&lt;B&gt;)</h4>
+  <h4 id="DotNext_UserDataStorage_GetOrSet__2_DotNext_UserDataSlot___0__" data-uid="DotNext.UserDataStorage.GetOrSet``2(DotNext.UserDataSlot{``0})">GetOrSet&lt;TBase, T&gt;(UserDataSlot&lt;TBase&gt;)</h4>
   <div class="markdown level1 summary"><p>Gets existing user data or creates a new data and return it.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public B GetOrSet&lt;B, D&gt;(UserDataSlot&lt;B&gt; slot)
+    <pre><code class="lang-csharp hljs">public TBase GetOrSet&lt;TBase, T&gt;(UserDataSlot&lt;TBase&gt; slot)
 
-    where D : class, B, new()</code></pre>
+    where T : class, TBase, new()</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -600,7 +600,7 @@ the given object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;B&gt;</td>
+        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TBase&gt;</td>
         <td><span class="parametername">slot</span></td>
         <td><p>The slot identifying user data.</p>
 </td>
@@ -617,7 +617,7 @@ the given object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">B</span></td>
+        <td><span class="xref">TBase</span></td>
         <td><p>The data associated with the slot.</p>
 </td>
       </tr>
@@ -633,12 +633,12 @@ the given object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">B</span></td>
+        <td><span class="parametername">TBase</span></td>
         <td><p>The type of user data associated with arbitrary object.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">D</span></td>
+        <td><span class="parametername">T</span></td>
         <td><p>The derived type with public parameterless constructor.</p>
 </td>
       </tr>
@@ -649,16 +649,16 @@ the given object.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_GetOrSet__2_DotNext_UserDataSlot___1____0_DotNext_ValueFunc___0___1___.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.GetOrSet%60%602(DotNext.UserDataSlot%7B%60%601%7D%2C%60%600%2CDotNext.ValueFunc%7B%60%600%2C%60%601%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L331">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L335">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_GetOrSet_" data-uid="DotNext.UserDataStorage.GetOrSet*"></a>
-  <h4 id="DotNext_UserDataStorage_GetOrSet__2_DotNext_UserDataSlot___1____0_DotNext_ValueFunc___0___1___" data-uid="DotNext.UserDataStorage.GetOrSet``2(DotNext.UserDataSlot{``1},``0,DotNext.ValueFunc{``0,``1}@)">GetOrSet&lt;T, V&gt;(UserDataSlot&lt;V&gt;, T, ValueFunc&lt;T, V&gt;)</h4>
+  <h4 id="DotNext_UserDataStorage_GetOrSet__2_DotNext_UserDataSlot___1____0_DotNext_ValueFunc___0___1___" data-uid="DotNext.UserDataStorage.GetOrSet``2(DotNext.UserDataSlot{``1},``0,DotNext.ValueFunc{``0,``1}@)">GetOrSet&lt;T, TValue&gt;(UserDataSlot&lt;TValue&gt;, T, ValueFunc&lt;T, TValue&gt;)</h4>
   <div class="markdown level1 summary"><p>Gets existing user data or creates a new data and return it.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public V GetOrSet&lt;T, V&gt;(UserDataSlot&lt;V&gt; slot, T arg, in ValueFunc&lt;T, V&gt; valueFactory)</code></pre>
+    <pre><code class="lang-csharp hljs">public TValue GetOrSet&lt;T, TValue&gt;(UserDataSlot&lt;TValue&gt; slot, T arg, in ValueFunc&lt;T, TValue&gt; valueFactory)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -671,7 +671,7 @@ the given object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;V&gt;</td>
+        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</td>
         <td><span class="parametername">slot</span></td>
         <td><p>The slot identifying user data.</p>
 </td>
@@ -683,7 +683,7 @@ the given object.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;T, V&gt;</td>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;T, TValue&gt;</td>
         <td><span class="parametername">valueFactory</span></td>
         <td><p>The value supplier which is called when no user data exists.</p>
 </td>
@@ -700,7 +700,7 @@ the given object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">V</span></td>
+        <td><span class="xref">TValue</span></td>
         <td><p>The data associated with the slot.</p>
 </td>
       </tr>
@@ -721,7 +721,7 @@ the given object.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">V</span></td>
+        <td><span class="parametername">TValue</span></td>
         <td><p>The type of user data associated with arbitrary object.</p>
 </td>
       </tr>
@@ -732,16 +732,16 @@ the given object.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_GetOrSet__2_DotNext_UserDataSlot___1____0_System_Func___0___1__.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.GetOrSet%60%602(DotNext.UserDataSlot%7B%60%601%7D%2C%60%600%2CSystem.Func%7B%60%600%2C%60%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L295">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L299">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_GetOrSet_" data-uid="DotNext.UserDataStorage.GetOrSet*"></a>
-  <h4 id="DotNext_UserDataStorage_GetOrSet__2_DotNext_UserDataSlot___1____0_System_Func___0___1__" data-uid="DotNext.UserDataStorage.GetOrSet``2(DotNext.UserDataSlot{``1},``0,System.Func{``0,``1})">GetOrSet&lt;T, V&gt;(UserDataSlot&lt;V&gt;, T, Func&lt;T, V&gt;)</h4>
+  <h4 id="DotNext_UserDataStorage_GetOrSet__2_DotNext_UserDataSlot___1____0_System_Func___0___1__" data-uid="DotNext.UserDataStorage.GetOrSet``2(DotNext.UserDataSlot{``1},``0,System.Func{``0,``1})">GetOrSet&lt;T, TValue&gt;(UserDataSlot&lt;TValue&gt;, T, Func&lt;T, TValue&gt;)</h4>
   <div class="markdown level1 summary"><p>Gets existing user data or creates a new data and return it.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public V GetOrSet&lt;T, V&gt;(UserDataSlot&lt;V&gt; slot, T arg, Func&lt;T, V&gt; valueFactory)</code></pre>
+    <pre><code class="lang-csharp hljs">public TValue GetOrSet&lt;T, TValue&gt;(UserDataSlot&lt;TValue&gt; slot, T arg, Func&lt;T, TValue&gt; valueFactory)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -754,7 +754,7 @@ the given object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;V&gt;</td>
+        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</td>
         <td><span class="parametername">slot</span></td>
         <td><p>The slot identifying user data.</p>
 </td>
@@ -766,7 +766,7 @@ the given object.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;T, V&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;T, TValue&gt;</td>
         <td><span class="parametername">valueFactory</span></td>
         <td><p>The value supplier which is called when no user data exists.</p>
 </td>
@@ -783,7 +783,7 @@ the given object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">V</span></td>
+        <td><span class="xref">TValue</span></td>
         <td><p>The data associated with the slot.</p>
 </td>
       </tr>
@@ -804,7 +804,7 @@ the given object.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">V</span></td>
+        <td><span class="parametername">TValue</span></td>
         <td><p>The type of user data associated with arbitrary object.</p>
 </td>
       </tr>
@@ -815,16 +815,16 @@ the given object.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_GetOrSet__3_DotNext_UserDataSlot___2____0___1_DotNext_ValueFunc___0___1___2___.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.GetOrSet%60%603(DotNext.UserDataSlot%7B%60%602%7D%2C%60%600%2C%60%601%2CDotNext.ValueFunc%7B%60%600%2C%60%601%2C%60%602%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L348">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L352">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_GetOrSet_" data-uid="DotNext.UserDataStorage.GetOrSet*"></a>
-  <h4 id="DotNext_UserDataStorage_GetOrSet__3_DotNext_UserDataSlot___2____0___1_DotNext_ValueFunc___0___1___2___" data-uid="DotNext.UserDataStorage.GetOrSet``3(DotNext.UserDataSlot{``2},``0,``1,DotNext.ValueFunc{``0,``1,``2}@)">GetOrSet&lt;T1, T2, V&gt;(UserDataSlot&lt;V&gt;, T1, T2, ValueFunc&lt;T1, T2, V&gt;)</h4>
+  <h4 id="DotNext_UserDataStorage_GetOrSet__3_DotNext_UserDataSlot___2____0___1_DotNext_ValueFunc___0___1___2___" data-uid="DotNext.UserDataStorage.GetOrSet``3(DotNext.UserDataSlot{``2},``0,``1,DotNext.ValueFunc{``0,``1,``2}@)">GetOrSet&lt;T1, T2, TValue&gt;(UserDataSlot&lt;TValue&gt;, T1, T2, ValueFunc&lt;T1, T2, TValue&gt;)</h4>
   <div class="markdown level1 summary"><p>Gets existing user data or creates a new data and return it.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public V GetOrSet&lt;T1, T2, V&gt;(UserDataSlot&lt;V&gt; slot, T1 arg1, T2 arg2, in ValueFunc&lt;T1, T2, V&gt; valueFactory)</code></pre>
+    <pre><code class="lang-csharp hljs">public TValue GetOrSet&lt;T1, T2, TValue&gt;(UserDataSlot&lt;TValue&gt; slot, T1 arg1, T2 arg2, in ValueFunc&lt;T1, T2, TValue&gt; valueFactory)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -837,7 +837,7 @@ the given object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;V&gt;</td>
+        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</td>
         <td><span class="parametername">slot</span></td>
         <td><p>The slot identifying user data.</p>
 </td>
@@ -855,7 +855,7 @@ the given object.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="DotNext.ValueFunc-3.html">ValueFunc</a>&lt;T1, T2, V&gt;</td>
+        <td><a class="xref" href="DotNext.ValueFunc-3.html">ValueFunc</a>&lt;T1, T2, TValue&gt;</td>
         <td><span class="parametername">valueFactory</span></td>
         <td><p>The value supplier which is called when no user data exists.</p>
 </td>
@@ -872,7 +872,7 @@ the given object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">V</span></td>
+        <td><span class="xref">TValue</span></td>
         <td><p>The data associated with the slot.</p>
 </td>
       </tr>
@@ -894,11 +894,11 @@ the given object.</p>
       </tr>
       <tr>
         <td><span class="parametername">T2</span></td>
-        <td><p>The type of the first argument to be passed into factory.</p>
+        <td><p>The type of the second argument to be passed into factory.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">V</span></td>
+        <td><span class="parametername">TValue</span></td>
         <td><p>The type of user data associated with arbitrary object.</p>
 </td>
       </tr>
@@ -909,16 +909,16 @@ the given object.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_GetOrSet__3_DotNext_UserDataSlot___2____0___1_System_Func___0___1___2__.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.GetOrSet%60%603(DotNext.UserDataSlot%7B%60%602%7D%2C%60%600%2C%60%601%2CSystem.Func%7B%60%600%2C%60%601%2C%60%602%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L309">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L313">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_GetOrSet_" data-uid="DotNext.UserDataStorage.GetOrSet*"></a>
-  <h4 id="DotNext_UserDataStorage_GetOrSet__3_DotNext_UserDataSlot___2____0___1_System_Func___0___1___2__" data-uid="DotNext.UserDataStorage.GetOrSet``3(DotNext.UserDataSlot{``2},``0,``1,System.Func{``0,``1,``2})">GetOrSet&lt;T1, T2, V&gt;(UserDataSlot&lt;V&gt;, T1, T2, Func&lt;T1, T2, V&gt;)</h4>
+  <h4 id="DotNext_UserDataStorage_GetOrSet__3_DotNext_UserDataSlot___2____0___1_System_Func___0___1___2__" data-uid="DotNext.UserDataStorage.GetOrSet``3(DotNext.UserDataSlot{``2},``0,``1,System.Func{``0,``1,``2})">GetOrSet&lt;T1, T2, TValue&gt;(UserDataSlot&lt;TValue&gt;, T1, T2, Func&lt;T1, T2, TValue&gt;)</h4>
   <div class="markdown level1 summary"><p>Gets existing user data or creates a new data and return it.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public V GetOrSet&lt;T1, T2, V&gt;(UserDataSlot&lt;V&gt; slot, T1 arg1, T2 arg2, Func&lt;T1, T2, V&gt; valueFactory)</code></pre>
+    <pre><code class="lang-csharp hljs">public TValue GetOrSet&lt;T1, T2, TValue&gt;(UserDataSlot&lt;TValue&gt; slot, T1 arg1, T2 arg2, Func&lt;T1, T2, TValue&gt; valueFactory)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -931,7 +931,7 @@ the given object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;V&gt;</td>
+        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</td>
         <td><span class="parametername">slot</span></td>
         <td><p>The slot identifying user data.</p>
 </td>
@@ -949,7 +949,7 @@ the given object.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;T1, T2, V&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;T1, T2, TValue&gt;</td>
         <td><span class="parametername">valueFactory</span></td>
         <td><p>The value supplier which is called when no user data exists.</p>
 </td>
@@ -966,7 +966,7 @@ the given object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">V</span></td>
+        <td><span class="xref">TValue</span></td>
         <td><p>The data associated with the slot.</p>
 </td>
       </tr>
@@ -988,11 +988,11 @@ the given object.</p>
       </tr>
       <tr>
         <td><span class="parametername">T2</span></td>
-        <td><p>The type of the first argument to be passed into factory.</p>
+        <td><p>The type of the second argument to be passed into factory.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">V</span></td>
+        <td><span class="parametername">TValue</span></td>
         <td><p>The type of user data associated with arbitrary object.</p>
 </td>
       </tr>
@@ -1003,16 +1003,16 @@ the given object.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_Remove__1_DotNext_UserDataSlot___0__.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.Remove%60%601(DotNext.UserDataSlot%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L388">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L392">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_Remove_" data-uid="DotNext.UserDataStorage.Remove*"></a>
-  <h4 id="DotNext_UserDataStorage_Remove__1_DotNext_UserDataSlot___0__" data-uid="DotNext.UserDataStorage.Remove``1(DotNext.UserDataSlot{``0})">Remove&lt;V&gt;(UserDataSlot&lt;V&gt;)</h4>
+  <h4 id="DotNext_UserDataStorage_Remove__1_DotNext_UserDataSlot___0__" data-uid="DotNext.UserDataStorage.Remove``1(DotNext.UserDataSlot{``0})">Remove&lt;TValue&gt;(UserDataSlot&lt;TValue&gt;)</h4>
   <div class="markdown level1 summary"><p>Removes user data slot.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool Remove&lt;V&gt;(UserDataSlot&lt;V&gt; slot)</code></pre>
+    <pre><code class="lang-csharp hljs">public bool Remove&lt;TValue&gt;(UserDataSlot&lt;TValue&gt; slot)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1025,7 +1025,7 @@ the given object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;V&gt;</td>
+        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</td>
         <td><span class="parametername">slot</span></td>
         <td><p>The slot identifying user data.</p>
 </td>
@@ -1058,7 +1058,7 @@ the given object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">V</span></td>
+        <td><span class="parametername">TValue</span></td>
         <td><p>The type of user data.</p>
 </td>
       </tr>
@@ -1069,16 +1069,16 @@ the given object.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_Remove__1_DotNext_UserDataSlot___0____0__.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.Remove%60%601(DotNext.UserDataSlot%7B%60%600%7D%2C%60%600%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L401">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L405">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_Remove_" data-uid="DotNext.UserDataStorage.Remove*"></a>
-  <h4 id="DotNext_UserDataStorage_Remove__1_DotNext_UserDataSlot___0____0__" data-uid="DotNext.UserDataStorage.Remove``1(DotNext.UserDataSlot{``0},``0@)">Remove&lt;V&gt;(UserDataSlot&lt;V&gt;, out V)</h4>
+  <h4 id="DotNext_UserDataStorage_Remove__1_DotNext_UserDataSlot___0____0__" data-uid="DotNext.UserDataStorage.Remove``1(DotNext.UserDataSlot{``0},``0@)">Remove&lt;TValue&gt;(UserDataSlot&lt;TValue&gt;, out TValue)</h4>
   <div class="markdown level1 summary"><p>Removes user data slot.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool Remove&lt;V&gt;(UserDataSlot&lt;V&gt; slot, out V userData)</code></pre>
+    <pre><code class="lang-csharp hljs">public bool Remove&lt;TValue&gt;(UserDataSlot&lt;TValue&gt; slot, out TValue userData)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1091,13 +1091,13 @@ the given object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;V&gt;</td>
+        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</td>
         <td><span class="parametername">slot</span></td>
         <td><p>The slot identifying user data.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">V</span></td>
+        <td><span class="xref">TValue</span></td>
         <td><span class="parametername">userData</span></td>
         <td><p>Remove user data.</p>
 </td>
@@ -1130,7 +1130,7 @@ the given object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">V</span></td>
+        <td><span class="parametername">TValue</span></td>
         <td><p>The type of user data.</p>
 </td>
       </tr>
@@ -1141,16 +1141,16 @@ the given object.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_Set__1_DotNext_UserDataSlot___0____0_.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.Set%60%601(DotNext.UserDataSlot%7B%60%600%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L379">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L383">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_Set_" data-uid="DotNext.UserDataStorage.Set*"></a>
-  <h4 id="DotNext_UserDataStorage_Set__1_DotNext_UserDataSlot___0____0_" data-uid="DotNext.UserDataStorage.Set``1(DotNext.UserDataSlot{``0},``0)">Set&lt;V&gt;(UserDataSlot&lt;V&gt;, V)</h4>
+  <h4 id="DotNext_UserDataStorage_Set__1_DotNext_UserDataSlot___0____0_" data-uid="DotNext.UserDataStorage.Set``1(DotNext.UserDataSlot{``0},``0)">Set&lt;TValue&gt;(UserDataSlot&lt;TValue&gt;, TValue)</h4>
   <div class="markdown level1 summary"><p>Sets user data.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void Set&lt;V&gt;(UserDataSlot&lt;V&gt; slot, V userData)</code></pre>
+    <pre><code class="lang-csharp hljs">public void Set&lt;TValue&gt;(UserDataSlot&lt;TValue&gt; slot, TValue userData)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1163,13 +1163,13 @@ the given object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;V&gt;</td>
+        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</td>
         <td><span class="parametername">slot</span></td>
         <td><p>The slot identifying user data.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">V</span></td>
+        <td><span class="xref">TValue</span></td>
         <td><span class="parametername">userData</span></td>
         <td><p>User data to be saved in this collection.</p>
 </td>
@@ -1186,7 +1186,7 @@ the given object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">V</span></td>
+        <td><span class="parametername">TValue</span></td>
         <td><p>Type of data.</p>
 </td>
       </tr>
@@ -1197,7 +1197,7 @@ the given object.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_ToString.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L447">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L453">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_ToString_" data-uid="DotNext.UserDataStorage.ToString*"></a>
   <h4 id="DotNext_UserDataStorage_ToString" data-uid="DotNext.UserDataStorage.ToString">ToString()</h4>
@@ -1231,16 +1231,16 @@ the given object.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_TryGet__1_DotNext_UserDataSlot___0____0__.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.TryGet%60%601(DotNext.UserDataSlot%7B%60%600%7D%2C%60%600%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L361">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L365">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_TryGet_" data-uid="DotNext.UserDataStorage.TryGet*"></a>
-  <h4 id="DotNext_UserDataStorage_TryGet__1_DotNext_UserDataSlot___0____0__" data-uid="DotNext.UserDataStorage.TryGet``1(DotNext.UserDataSlot{``0},``0@)">TryGet&lt;V&gt;(UserDataSlot&lt;V&gt;, out V)</h4>
+  <h4 id="DotNext_UserDataStorage_TryGet__1_DotNext_UserDataSlot___0____0__" data-uid="DotNext.UserDataStorage.TryGet``1(DotNext.UserDataSlot{``0},``0@)">TryGet&lt;TValue&gt;(UserDataSlot&lt;TValue&gt;, out TValue)</h4>
   <div class="markdown level1 summary"><p>Tries to get user data.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool TryGet&lt;V&gt;(UserDataSlot&lt;V&gt; slot, out V userData)</code></pre>
+    <pre><code class="lang-csharp hljs">public bool TryGet&lt;TValue&gt;(UserDataSlot&lt;TValue&gt; slot, out TValue userData)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1253,13 +1253,13 @@ the given object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;V&gt;</td>
+        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</td>
         <td><span class="parametername">slot</span></td>
         <td><p>The slot identifying user data.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">V</span></td>
+        <td><span class="xref">TValue</span></td>
         <td><span class="parametername">userData</span></td>
         <td><p>User data.</p>
 </td>
@@ -1292,7 +1292,7 @@ the given object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">V</span></td>
+        <td><span class="parametername">TValue</span></td>
         <td><p>Type of data.</p>
 </td>
       </tr>
@@ -1305,7 +1305,7 @@ the given object.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_op_Equality_DotNext_UserDataStorage_DotNext_UserDataStorage_.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.op_Equality(DotNext.UserDataStorage%2CDotNext.UserDataStorage)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L455">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L461">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_op_Equality_" data-uid="DotNext.UserDataStorage.op_Equality*"></a>
   <h4 id="DotNext_UserDataStorage_op_Equality_DotNext_UserDataStorage_DotNext_UserDataStorage_" data-uid="DotNext.UserDataStorage.op_Equality(DotNext.UserDataStorage,DotNext.UserDataStorage)">Equality(UserDataStorage, UserDataStorage)</h4>
@@ -1361,7 +1361,7 @@ the given object.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_UserDataStorage_op_Inequality_DotNext_UserDataStorage_DotNext_UserDataStorage_.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.op_Inequality(DotNext.UserDataStorage%2CDotNext.UserDataStorage)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L464">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L470">View Source</a>
   </span>
   <a id="DotNext_UserDataStorage_op_Inequality_" data-uid="DotNext.UserDataStorage.op_Inequality*"></a>
   <h4 id="DotNext_UserDataStorage_op_Inequality_DotNext_UserDataStorage_DotNext_UserDataStorage_" data-uid="DotNext.UserDataStorage.op_Inequality(DotNext.UserDataStorage,DotNext.UserDataStorage)">Inequality(UserDataStorage, UserDataStorage)</h4>

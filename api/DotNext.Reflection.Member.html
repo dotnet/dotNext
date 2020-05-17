@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class Member
    | .NEXT ">
-    <meta name="generator" content="docfx 2.52.0.0">
+    <meta name="generator" content="docfx 2.53.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -73,7 +73,7 @@
   
   <h1 id="DotNext_Reflection_Member" data-uid="DotNext.Reflection.Member" class="text-break">Class Member
   </h1>
-  <div class="markdown level0 summary"><p>Provides extension methods for interface <a class="xref" href="DotNext.Reflection.IMember-2.html">IMember&lt;M, D&gt;</a> or <a class="xref" href="DotNext.Reflection.IMember-1.html">IMember&lt;M&gt;</a>.</p>
+  <div class="markdown level0 summary"><p>Provides extension methods for interface <a class="xref" href="DotNext.Reflection.IMember-2.html">IMember&lt;TMember, TInvoker&gt;</a> or <a class="xref" href="DotNext.Reflection.IMember-1.html">IMember&lt;TMember&gt;</a>.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
@@ -118,18 +118,18 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Member_ArgList__2_DotNext_Reflection_IMember___0_DotNext_Procedure___1___.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Member.ArgList%60%602(DotNext.Reflection.IMember%7B%60%600%2CDotNext.Procedure%7B%60%601%7D%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L159">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L160">View Source</a>
   </span>
   <a id="DotNext_Reflection_Member_ArgList_" data-uid="DotNext.Reflection.Member.ArgList*"></a>
-  <h4 id="DotNext_Reflection_Member_ArgList__2_DotNext_Reflection_IMember___0_DotNext_Procedure___1___" data-uid="DotNext.Reflection.Member.ArgList``2(DotNext.Reflection.IMember{``0,DotNext.Procedure{``1}})">ArgList&lt;M, A&gt;(IMember&lt;M, Procedure&lt;A&gt;&gt;)</h4>
+  <h4 id="DotNext_Reflection_Member_ArgList__2_DotNext_Reflection_IMember___0_DotNext_Procedure___1___" data-uid="DotNext.Reflection.Member.ArgList``2(DotNext.Reflection.IMember{``0,DotNext.Procedure{``1}})">ArgList&lt;TMember, TArgs&gt;(IMember&lt;TMember, Procedure&lt;TArgs&gt;&gt;)</h4>
   <div class="markdown level1 summary"><p>Allocates uninitialized structure for placing arguments.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static A ArgList&lt;M, A&gt;(this IMember&lt;M, Procedure&lt;A&gt;&gt; member)
+    <pre><code class="lang-csharp hljs">public static TArgs ArgList&lt;TMember, TArgs&gt;(this IMember&lt;TMember, Procedure&lt;TArgs&gt;&gt; member)
 
-    where M : MemberInfo where A : struct</code></pre>
+    where TMember : MemberInfo where TArgs : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -142,7 +142,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;M, <a class="xref" href="DotNext.Procedure-1.html">Procedure</a>&lt;A&gt;&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;TMember, <a class="xref" href="DotNext.Procedure-1.html">Procedure</a>&lt;TArgs&gt;&gt;</td>
         <td><span class="parametername">member</span></td>
         <td><p>Callable member.</p>
 </td>
@@ -159,7 +159,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">A</span></td>
+        <td><span class="xref">TArgs</span></td>
         <td><p>Allocated list of arguments.</p>
 </td>
       </tr>
@@ -175,12 +175,12 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">M</span></td>
+        <td><span class="parametername">TMember</span></td>
         <td><p>The type of the member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">A</span></td>
+        <td><span class="parametername">TArgs</span></td>
         <td><p>Type of arguments list.</p>
 </td>
       </tr>
@@ -191,18 +191,18 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Member_ArgList__3_DotNext_Reflection_IMember___0_DotNext_Function___1___2___.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Member.ArgList%60%603(DotNext.Reflection.IMember%7B%60%600%2CDotNext.Function%7B%60%601%2C%60%602%7D%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L133">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L134">View Source</a>
   </span>
   <a id="DotNext_Reflection_Member_ArgList_" data-uid="DotNext.Reflection.Member.ArgList*"></a>
-  <h4 id="DotNext_Reflection_Member_ArgList__3_DotNext_Reflection_IMember___0_DotNext_Function___1___2___" data-uid="DotNext.Reflection.Member.ArgList``3(DotNext.Reflection.IMember{``0,DotNext.Function{``1,``2}})">ArgList&lt;M, A, R&gt;(IMember&lt;M, Function&lt;A, R&gt;&gt;)</h4>
+  <h4 id="DotNext_Reflection_Member_ArgList__3_DotNext_Reflection_IMember___0_DotNext_Function___1___2___" data-uid="DotNext.Reflection.Member.ArgList``3(DotNext.Reflection.IMember{``0,DotNext.Function{``1,``2}})">ArgList&lt;TMember, TArgs, TResult&gt;(IMember&lt;TMember, Function&lt;TArgs, TResult&gt;&gt;)</h4>
   <div class="markdown level1 summary"><p>Allocates uninitialized structure for placing arguments.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static A ArgList&lt;M, A, R&gt;(this IMember&lt;M, Function&lt;A, R&gt;&gt; member)
+    <pre><code class="lang-csharp hljs">public static TArgs ArgList&lt;TMember, TArgs, TResult&gt;(this IMember&lt;TMember, Function&lt;TArgs, TResult&gt;&gt; member)
 
-    where M : MemberInfo where A : struct</code></pre>
+    where TMember : MemberInfo where TArgs : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -215,7 +215,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;M, <a class="xref" href="DotNext.Function-2.html">Function</a>&lt;A, R&gt;&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;TMember, <a class="xref" href="DotNext.Function-2.html">Function</a>&lt;TArgs, TResult&gt;&gt;</td>
         <td><span class="parametername">member</span></td>
         <td><p>Callable member.</p>
 </td>
@@ -232,7 +232,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">A</span></td>
+        <td><span class="xref">TArgs</span></td>
         <td><p>Allocated list of arguments.</p>
 </td>
       </tr>
@@ -248,17 +248,17 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">M</span></td>
+        <td><span class="parametername">TMember</span></td>
         <td><p>Type of callable member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">A</span></td>
+        <td><span class="parametername">TArgs</span></td>
         <td><p>Type of arguments list.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">R</span></td>
+        <td><span class="parametername">TResult</span></td>
         <td><p>Type of function result.</p>
 </td>
       </tr>
@@ -269,18 +269,18 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Member_ArgList__3_DotNext_Reflection_IMember___0_DotNext_Procedure___1___2___.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Member.ArgList%60%603(DotNext.Reflection.IMember%7B%60%600%2CDotNext.Procedure%7B%60%601%2C%60%602%7D%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L147">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L148">View Source</a>
   </span>
   <a id="DotNext_Reflection_Member_ArgList_" data-uid="DotNext.Reflection.Member.ArgList*"></a>
-  <h4 id="DotNext_Reflection_Member_ArgList__3_DotNext_Reflection_IMember___0_DotNext_Procedure___1___2___" data-uid="DotNext.Reflection.Member.ArgList``3(DotNext.Reflection.IMember{``0,DotNext.Procedure{``1,``2}})">ArgList&lt;M, T, A&gt;(IMember&lt;M, Procedure&lt;T, A&gt;&gt;)</h4>
+  <h4 id="DotNext_Reflection_Member_ArgList__3_DotNext_Reflection_IMember___0_DotNext_Procedure___1___2___" data-uid="DotNext.Reflection.Member.ArgList``3(DotNext.Reflection.IMember{``0,DotNext.Procedure{``1,``2}})">ArgList&lt;TMember, T, TArgs&gt;(IMember&lt;TMember, Procedure&lt;T, TArgs&gt;&gt;)</h4>
   <div class="markdown level1 summary"><p>Allocates uninitialized structure for placing arguments.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static A ArgList&lt;M, T, A&gt;(this IMember&lt;M, Procedure&lt;T, A&gt;&gt; member)
+    <pre><code class="lang-csharp hljs">public static TArgs ArgList&lt;TMember, T, TArgs&gt;(this IMember&lt;TMember, Procedure&lt;T, TArgs&gt;&gt; member)
 
-    where M : MemberInfo where A : struct</code></pre>
+    where TMember : MemberInfo where TArgs : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -293,7 +293,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;M, <a class="xref" href="DotNext.Procedure-2.html">Procedure</a>&lt;T, A&gt;&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;TMember, <a class="xref" href="DotNext.Procedure-2.html">Procedure</a>&lt;T, TArgs&gt;&gt;</td>
         <td><span class="parametername">member</span></td>
         <td><p>Callable member.</p>
 </td>
@@ -310,7 +310,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">A</span></td>
+        <td><span class="xref">TArgs</span></td>
         <td><p>Allocated list of arguments.</p>
 </td>
       </tr>
@@ -326,7 +326,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">M</span></td>
+        <td><span class="parametername">TMember</span></td>
         <td><p>The type of the member.</p>
 </td>
       </tr>
@@ -336,7 +336,7 @@
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">A</span></td>
+        <td><span class="parametername">TArgs</span></td>
         <td><p>Type of arguments list.</p>
 </td>
       </tr>
@@ -347,18 +347,18 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Member_ArgList__4_DotNext_Reflection_IMember___0_DotNext_Function___1___2___3___.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Member.ArgList%60%604(DotNext.Reflection.IMember%7B%60%600%2CDotNext.Function%7B%60%601%2C%60%602%2C%60%603%7D%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L119">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L120">View Source</a>
   </span>
   <a id="DotNext_Reflection_Member_ArgList_" data-uid="DotNext.Reflection.Member.ArgList*"></a>
-  <h4 id="DotNext_Reflection_Member_ArgList__4_DotNext_Reflection_IMember___0_DotNext_Function___1___2___3___" data-uid="DotNext.Reflection.Member.ArgList``4(DotNext.Reflection.IMember{``0,DotNext.Function{``1,``2,``3}})">ArgList&lt;M, T, A, R&gt;(IMember&lt;M, Function&lt;T, A, R&gt;&gt;)</h4>
+  <h4 id="DotNext_Reflection_Member_ArgList__4_DotNext_Reflection_IMember___0_DotNext_Function___1___2___3___" data-uid="DotNext.Reflection.Member.ArgList``4(DotNext.Reflection.IMember{``0,DotNext.Function{``1,``2,``3}})">ArgList&lt;TMember, T, TArgs, TResult&gt;(IMember&lt;TMember, Function&lt;T, TArgs, TResult&gt;&gt;)</h4>
   <div class="markdown level1 summary"><p>Allocates uninitialized structure for placing arguments.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static A ArgList&lt;M, T, A, R&gt;(this IMember&lt;M, Function&lt;T, A, R&gt;&gt; member)
+    <pre><code class="lang-csharp hljs">public static TArgs ArgList&lt;TMember, T, TArgs, TResult&gt;(this IMember&lt;TMember, Function&lt;T, TArgs, TResult&gt;&gt; member)
 
-    where M : MemberInfo where A : struct</code></pre>
+    where TMember : MemberInfo where TArgs : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -371,7 +371,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;M, <a class="xref" href="DotNext.Function-3.html">Function</a>&lt;T, A, R&gt;&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;TMember, <a class="xref" href="DotNext.Function-3.html">Function</a>&lt;T, TArgs, TResult&gt;&gt;</td>
         <td><span class="parametername">member</span></td>
         <td><p>Callable member.</p>
 </td>
@@ -388,7 +388,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">A</span></td>
+        <td><span class="xref">TArgs</span></td>
         <td><p>Allocated structure for placing arguments.</p>
 </td>
       </tr>
@@ -404,7 +404,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">M</span></td>
+        <td><span class="parametername">TMember</span></td>
         <td><p>The type of the member.</p>
 </td>
       </tr>
@@ -414,12 +414,12 @@
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">A</span></td>
+        <td><span class="parametername">TArgs</span></td>
         <td><p>The type representing invocation arguments.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">R</span></td>
+        <td><span class="parametername">TResult</span></td>
         <td><p>The return type.</p>
 </td>
       </tr>
@@ -430,18 +430,18 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Member_Invoke__1_DotNext_Reflection_IMember___0_System_Action__.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Member.Invoke%60%601(DotNext.Reflection.IMember%7B%60%600%2CSystem.Action%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L417">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L418">View Source</a>
   </span>
   <a id="DotNext_Reflection_Member_Invoke_" data-uid="DotNext.Reflection.Member.Invoke*"></a>
-  <h4 id="DotNext_Reflection_Member_Invoke__1_DotNext_Reflection_IMember___0_System_Action__" data-uid="DotNext.Reflection.Member.Invoke``1(DotNext.Reflection.IMember{``0,System.Action})">Invoke&lt;M&gt;(IMember&lt;M, Action&gt;)</h4>
+  <h4 id="DotNext_Reflection_Member_Invoke__1_DotNext_Reflection_IMember___0_System_Action__" data-uid="DotNext.Reflection.Member.Invoke``1(DotNext.Reflection.IMember{``0,System.Action})">Invoke&lt;TMember&gt;(IMember&lt;TMember, Action&gt;)</h4>
   <div class="markdown level1 summary"><p>Invokes member as action.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void Invoke&lt;M&gt;(this IMember&lt;M, Action&gt; member)
+    <pre><code class="lang-csharp hljs">public static void Invoke&lt;TMember&gt;(this IMember&lt;TMember, Action&gt; member)
 
-    where M : MemberInfo</code></pre>
+    where TMember : MemberInfo</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -454,7 +454,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;M, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action">Action</a>&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;TMember, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action">Action</a>&gt;</td>
         <td><span class="parametername">member</span></td>
         <td><p>Callable member.</p>
 </td>
@@ -471,7 +471,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">M</span></td>
+        <td><span class="parametername">TMember</span></td>
         <td><p>The type of the member.</p>
 </td>
       </tr>
@@ -482,18 +482,18 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Member_Invoke__10_DotNext_Reflection_IMember___0_System_Action___1___2___3___4___5___6___7___8___9_____1___2___3___4___5___6___7___8___9_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Member.Invoke%60%6010(DotNext.Reflection.IMember%7B%60%600%2CSystem.Action%7B%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2C%60%608%2C%60%609%7D%7D%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2C%60%608%2C%60%609)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L597">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L598">View Source</a>
   </span>
   <a id="DotNext_Reflection_Member_Invoke_" data-uid="DotNext.Reflection.Member.Invoke*"></a>
-  <h4 id="DotNext_Reflection_Member_Invoke__10_DotNext_Reflection_IMember___0_System_Action___1___2___3___4___5___6___7___8___9_____1___2___3___4___5___6___7___8___9_" data-uid="DotNext.Reflection.Member.Invoke``10(DotNext.Reflection.IMember{``0,System.Action{``1,``2,``3,``4,``5,``6,``7,``8,``9}},``1,``2,``3,``4,``5,``6,``7,``8,``9)">Invoke&lt;M, P1, P2, P3, P4, P5, P6, P7, P8, P9&gt;(IMember&lt;M, Action&lt;P1, P2, P3, P4, P5, P6, P7, P8, P9&gt;&gt;, P1, P2, P3, P4, P5, P6, P7, P8, P9)</h4>
+  <h4 id="DotNext_Reflection_Member_Invoke__10_DotNext_Reflection_IMember___0_System_Action___1___2___3___4___5___6___7___8___9_____1___2___3___4___5___6___7___8___9_" data-uid="DotNext.Reflection.Member.Invoke``10(DotNext.Reflection.IMember{``0,System.Action{``1,``2,``3,``4,``5,``6,``7,``8,``9}},``1,``2,``3,``4,``5,``6,``7,``8,``9)">Invoke&lt;TMember, T1, T2, T3, T4, T5, T6, T7, T8, T9&gt;(IMember&lt;TMember, Action&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9&gt;&gt;, T1, T2, T3, T4, T5, T6, T7, T8, T9)</h4>
   <div class="markdown level1 summary"><p>Invokes member as procedure.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void Invoke&lt;M, P1, P2, P3, P4, P5, P6, P7, P8, P9&gt;(this IMember&lt;M, Action&lt;P1, P2, P3, P4, P5, P6, P7, P8, P9&gt;&gt; member, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8, P9 arg9)
+    <pre><code class="lang-csharp hljs">public static void Invoke&lt;TMember, T1, T2, T3, T4, T5, T6, T7, T8, T9&gt;(this IMember&lt;TMember, Action&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9&gt;&gt; member, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9)
 
-    where M : MemberInfo</code></pre>
+    where TMember : MemberInfo</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -506,61 +506,61 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;M, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-9">Action</a>&lt;P1, P2, P3, P4, P5, P6, P7, P8, P9&gt;&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;TMember, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-9">Action</a>&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9&gt;&gt;</td>
         <td><span class="parametername">member</span></td>
         <td><p>Callable member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P1</span></td>
+        <td><span class="xref">T1</span></td>
         <td><span class="parametername">arg1</span></td>
         <td><p>The first procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P2</span></td>
+        <td><span class="xref">T2</span></td>
         <td><span class="parametername">arg2</span></td>
         <td><p>The second procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P3</span></td>
+        <td><span class="xref">T3</span></td>
         <td><span class="parametername">arg3</span></td>
         <td><p>The third procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P4</span></td>
+        <td><span class="xref">T4</span></td>
         <td><span class="parametername">arg4</span></td>
         <td><p>The fourth procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P5</span></td>
+        <td><span class="xref">T5</span></td>
         <td><span class="parametername">arg5</span></td>
         <td><p>The fifth procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P6</span></td>
+        <td><span class="xref">T6</span></td>
         <td><span class="parametername">arg6</span></td>
         <td><p>The sixth procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P7</span></td>
+        <td><span class="xref">T7</span></td>
         <td><span class="parametername">arg7</span></td>
         <td><p>The seventh procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P8</span></td>
+        <td><span class="xref">T8</span></td>
         <td><span class="parametername">arg8</span></td>
         <td><p>The eighth procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P9</span></td>
+        <td><span class="xref">T9</span></td>
         <td><span class="parametername">arg9</span></td>
         <td><p>The ninth procedure argument.</p>
 </td>
@@ -577,52 +577,52 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">M</span></td>
+        <td><span class="parametername">TMember</span></td>
         <td><p>The type of the member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P1</span></td>
+        <td><span class="parametername">T1</span></td>
         <td><p>The type of the first procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P2</span></td>
+        <td><span class="parametername">T2</span></td>
         <td><p>The type of the second procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P3</span></td>
+        <td><span class="parametername">T3</span></td>
         <td><p>The type of the third procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P4</span></td>
+        <td><span class="parametername">T4</span></td>
         <td><p>The type of the fourth procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P5</span></td>
+        <td><span class="parametername">T5</span></td>
         <td><p>The type of the fifth procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P6</span></td>
+        <td><span class="parametername">T6</span></td>
         <td><p>The type of the sixth procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P7</span></td>
+        <td><span class="parametername">T7</span></td>
         <td><p>The type of the seventh procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P8</span></td>
+        <td><span class="parametername">T8</span></td>
         <td><p>The type of the eighth procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P9</span></td>
+        <td><span class="parametername">T9</span></td>
         <td><p>The type of the ninth procedure argument.</p>
 </td>
       </tr>
@@ -633,18 +633,18 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Member_Invoke__10_DotNext_Reflection_IMember___0_System_Func___1___2___3___4___5___6___7___8___9_____1___2___3___4___5___6___7___8_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Member.Invoke%60%6010(DotNext.Reflection.IMember%7B%60%600%2CSystem.Func%7B%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2C%60%608%2C%60%609%7D%7D%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2C%60%608)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L342">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L343">View Source</a>
   </span>
   <a id="DotNext_Reflection_Member_Invoke_" data-uid="DotNext.Reflection.Member.Invoke*"></a>
-  <h4 id="DotNext_Reflection_Member_Invoke__10_DotNext_Reflection_IMember___0_System_Func___1___2___3___4___5___6___7___8___9_____1___2___3___4___5___6___7___8_" data-uid="DotNext.Reflection.Member.Invoke``10(DotNext.Reflection.IMember{``0,System.Func{``1,``2,``3,``4,``5,``6,``7,``8,``9}},``1,``2,``3,``4,``5,``6,``7,``8)">Invoke&lt;M, P1, P2, P3, P4, P5, P6, P7, P8, R&gt;(IMember&lt;M, Func&lt;P1, P2, P3, P4, P5, P6, P7, P8, R&gt;&gt;, P1, P2, P3, P4, P5, P6, P7, P8)</h4>
+  <h4 id="DotNext_Reflection_Member_Invoke__10_DotNext_Reflection_IMember___0_System_Func___1___2___3___4___5___6___7___8___9_____1___2___3___4___5___6___7___8_" data-uid="DotNext.Reflection.Member.Invoke``10(DotNext.Reflection.IMember{``0,System.Func{``1,``2,``3,``4,``5,``6,``7,``8,``9}},``1,``2,``3,``4,``5,``6,``7,``8)">Invoke&lt;TMember, T1, T2, T3, T4, T5, T6, T7, T8, TResult&gt;(IMember&lt;TMember, Func&lt;T1, T2, T3, T4, T5, T6, T7, T8, TResult&gt;&gt;, T1, T2, T3, T4, T5, T6, T7, T8)</h4>
   <div class="markdown level1 summary"><p>Invokes member as function.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static R Invoke&lt;M, P1, P2, P3, P4, P5, P6, P7, P8, R&gt;(this IMember&lt;M, Func&lt;P1, P2, P3, P4, P5, P6, P7, P8, R&gt;&gt; member, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8)
+    <pre><code class="lang-csharp hljs">public static TResult Invoke&lt;TMember, T1, T2, T3, T4, T5, T6, T7, T8, TResult&gt;(this IMember&lt;TMember, Func&lt;T1, T2, T3, T4, T5, T6, T7, T8, TResult&gt;&gt; member, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8)
 
-    where M : MemberInfo</code></pre>
+    where TMember : MemberInfo</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -657,55 +657,55 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;M, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-9">Func</a>&lt;P1, P2, P3, P4, P5, P6, P7, P8, R&gt;&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;TMember, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-9">Func</a>&lt;T1, T2, T3, T4, T5, T6, T7, T8, TResult&gt;&gt;</td>
         <td><span class="parametername">member</span></td>
         <td><p>Callable member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P1</span></td>
+        <td><span class="xref">T1</span></td>
         <td><span class="parametername">arg1</span></td>
         <td><p>The first function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P2</span></td>
+        <td><span class="xref">T2</span></td>
         <td><span class="parametername">arg2</span></td>
         <td><p>The second function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P3</span></td>
+        <td><span class="xref">T3</span></td>
         <td><span class="parametername">arg3</span></td>
         <td><p>The third function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P4</span></td>
+        <td><span class="xref">T4</span></td>
         <td><span class="parametername">arg4</span></td>
         <td><p>The fourth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P5</span></td>
+        <td><span class="xref">T5</span></td>
         <td><span class="parametername">arg5</span></td>
         <td><p>The fifth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P6</span></td>
+        <td><span class="xref">T6</span></td>
         <td><span class="parametername">arg6</span></td>
-        <td><p>The fifth function argument.</p>
+        <td><p>The sixth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P7</span></td>
+        <td><span class="xref">T7</span></td>
         <td><span class="parametername">arg7</span></td>
         <td><p>The seventh function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P8</span></td>
+        <td><span class="xref">T8</span></td>
         <td><span class="parametername">arg8</span></td>
         <td><p>The eighth function argument.</p>
 </td>
@@ -722,7 +722,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">R</span></td>
+        <td><span class="xref">TResult</span></td>
         <td><p>Return value.</p>
 </td>
       </tr>
@@ -738,52 +738,52 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">M</span></td>
+        <td><span class="parametername">TMember</span></td>
         <td><p>The type of the member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P1</span></td>
+        <td><span class="parametername">T1</span></td>
         <td><p>The type of the first function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P2</span></td>
+        <td><span class="parametername">T2</span></td>
         <td><p>The type of the second function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P3</span></td>
+        <td><span class="parametername">T3</span></td>
         <td><p>The type of the third function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P4</span></td>
+        <td><span class="parametername">T4</span></td>
         <td><p>The type of the fourth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P5</span></td>
+        <td><span class="parametername">T5</span></td>
         <td><p>The type of the fifth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P6</span></td>
+        <td><span class="parametername">T6</span></td>
         <td><p>The type of the sixth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P7</span></td>
+        <td><span class="parametername">T7</span></td>
         <td><p>The type of the seventh function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P8</span></td>
+        <td><span class="parametername">T8</span></td>
         <td><p>The type of the eighth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">R</span></td>
+        <td><span class="parametername">TResult</span></td>
         <td><p>Type of function result.</p>
 </td>
       </tr>
@@ -794,18 +794,18 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Member_Invoke__11_DotNext_Reflection_IMember___0_System_Action___1___2___3___4___5___6___7___8___9___10_____1___2___3___4___5___6___7___8___9___10_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Member.Invoke%60%6011(DotNext.Reflection.IMember%7B%60%600%2CSystem.Action%7B%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2C%60%608%2C%60%609%2C%60%6010%7D%7D%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2C%60%608%2C%60%609%2C%60%6010)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L627">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L628">View Source</a>
   </span>
   <a id="DotNext_Reflection_Member_Invoke_" data-uid="DotNext.Reflection.Member.Invoke*"></a>
-  <h4 id="DotNext_Reflection_Member_Invoke__11_DotNext_Reflection_IMember___0_System_Action___1___2___3___4___5___6___7___8___9___10_____1___2___3___4___5___6___7___8___9___10_" data-uid="DotNext.Reflection.Member.Invoke``11(DotNext.Reflection.IMember{``0,System.Action{``1,``2,``3,``4,``5,``6,``7,``8,``9,``10}},``1,``2,``3,``4,``5,``6,``7,``8,``9,``10)">Invoke&lt;M, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10&gt;(IMember&lt;M, Action&lt;P1, P2, P3, P4, P5, P6, P7, P8, P9, P10&gt;&gt;, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10)</h4>
+  <h4 id="DotNext_Reflection_Member_Invoke__11_DotNext_Reflection_IMember___0_System_Action___1___2___3___4___5___6___7___8___9___10_____1___2___3___4___5___6___7___8___9___10_" data-uid="DotNext.Reflection.Member.Invoke``11(DotNext.Reflection.IMember{``0,System.Action{``1,``2,``3,``4,``5,``6,``7,``8,``9,``10}},``1,``2,``3,``4,``5,``6,``7,``8,``9,``10)">Invoke&lt;TMember, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10&gt;(IMember&lt;TMember, Action&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, T10&gt;&gt;, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)</h4>
   <div class="markdown level1 summary"><p>Invokes member as procedure.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void Invoke&lt;M, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10&gt;(this IMember&lt;M, Action&lt;P1, P2, P3, P4, P5, P6, P7, P8, P9, P10&gt;&gt; member, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8, P9 arg9, P10 arg10)
+    <pre><code class="lang-csharp hljs">public static void Invoke&lt;TMember, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10&gt;(this IMember&lt;TMember, Action&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, T10&gt;&gt; member, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10)
 
-    where M : MemberInfo</code></pre>
+    where TMember : MemberInfo</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -818,67 +818,67 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;M, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-10">Action</a>&lt;P1, P2, P3, P4, P5, P6, P7, P8, P9, P10&gt;&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;TMember, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-10">Action</a>&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, T10&gt;&gt;</td>
         <td><span class="parametername">member</span></td>
         <td><p>Callable member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P1</span></td>
+        <td><span class="xref">T1</span></td>
         <td><span class="parametername">arg1</span></td>
         <td><p>The first procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P2</span></td>
+        <td><span class="xref">T2</span></td>
         <td><span class="parametername">arg2</span></td>
         <td><p>The second procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P3</span></td>
+        <td><span class="xref">T3</span></td>
         <td><span class="parametername">arg3</span></td>
         <td><p>The third procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P4</span></td>
+        <td><span class="xref">T4</span></td>
         <td><span class="parametername">arg4</span></td>
         <td><p>The fourth procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P5</span></td>
+        <td><span class="xref">T5</span></td>
         <td><span class="parametername">arg5</span></td>
         <td><p>The fifth procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P6</span></td>
+        <td><span class="xref">T6</span></td>
         <td><span class="parametername">arg6</span></td>
         <td><p>The sixth procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P7</span></td>
+        <td><span class="xref">T7</span></td>
         <td><span class="parametername">arg7</span></td>
         <td><p>The seventh procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P8</span></td>
+        <td><span class="xref">T8</span></td>
         <td><span class="parametername">arg8</span></td>
         <td><p>The eighth procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P9</span></td>
+        <td><span class="xref">T9</span></td>
         <td><span class="parametername">arg9</span></td>
         <td><p>The ninth procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P10</span></td>
+        <td><span class="xref">T10</span></td>
         <td><span class="parametername">arg10</span></td>
         <td><p>The tenth procedure argument.</p>
 </td>
@@ -895,57 +895,57 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">M</span></td>
+        <td><span class="parametername">TMember</span></td>
         <td><p>The type of the member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P1</span></td>
+        <td><span class="parametername">T1</span></td>
         <td><p>The type of the first procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P2</span></td>
+        <td><span class="parametername">T2</span></td>
         <td><p>The type of the second procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P3</span></td>
+        <td><span class="parametername">T3</span></td>
         <td><p>The type of the third procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P4</span></td>
+        <td><span class="parametername">T4</span></td>
         <td><p>The type of the fourth procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P5</span></td>
+        <td><span class="parametername">T5</span></td>
         <td><p>The type of the fifth procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P6</span></td>
+        <td><span class="parametername">T6</span></td>
         <td><p>The type of the sixth procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P7</span></td>
+        <td><span class="parametername">T7</span></td>
         <td><p>The type of the seventh procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P8</span></td>
+        <td><span class="parametername">T8</span></td>
         <td><p>The type of the eighth procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P9</span></td>
+        <td><span class="parametername">T9</span></td>
         <td><p>The type of the ninth procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P10</span></td>
+        <td><span class="parametername">T10</span></td>
         <td><p>The type of the tenth procedure argument.</p>
 </td>
       </tr>
@@ -956,18 +956,18 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Member_Invoke__11_DotNext_Reflection_IMember___0_System_Func___1___2___3___4___5___6___7___8___9___10_____1___2___3___4___5___6___7___8___9_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Member.Invoke%60%6011(DotNext.Reflection.IMember%7B%60%600%2CSystem.Func%7B%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2C%60%608%2C%60%609%2C%60%6010%7D%7D%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2C%60%608%2C%60%609)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L372">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L373">View Source</a>
   </span>
   <a id="DotNext_Reflection_Member_Invoke_" data-uid="DotNext.Reflection.Member.Invoke*"></a>
-  <h4 id="DotNext_Reflection_Member_Invoke__11_DotNext_Reflection_IMember___0_System_Func___1___2___3___4___5___6___7___8___9___10_____1___2___3___4___5___6___7___8___9_" data-uid="DotNext.Reflection.Member.Invoke``11(DotNext.Reflection.IMember{``0,System.Func{``1,``2,``3,``4,``5,``6,``7,``8,``9,``10}},``1,``2,``3,``4,``5,``6,``7,``8,``9)">Invoke&lt;M, P1, P2, P3, P4, P5, P6, P7, P8, P9, R&gt;(IMember&lt;M, Func&lt;P1, P2, P3, P4, P5, P6, P7, P8, P9, R&gt;&gt;, P1, P2, P3, P4, P5, P6, P7, P8, P9)</h4>
+  <h4 id="DotNext_Reflection_Member_Invoke__11_DotNext_Reflection_IMember___0_System_Func___1___2___3___4___5___6___7___8___9___10_____1___2___3___4___5___6___7___8___9_" data-uid="DotNext.Reflection.Member.Invoke``11(DotNext.Reflection.IMember{``0,System.Func{``1,``2,``3,``4,``5,``6,``7,``8,``9,``10}},``1,``2,``3,``4,``5,``6,``7,``8,``9)">Invoke&lt;TMember, T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult&gt;(IMember&lt;TMember, Func&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult&gt;&gt;, T1, T2, T3, T4, T5, T6, T7, T8, T9)</h4>
   <div class="markdown level1 summary"><p>Invokes member as function.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static R Invoke&lt;M, P1, P2, P3, P4, P5, P6, P7, P8, P9, R&gt;(this IMember&lt;M, Func&lt;P1, P2, P3, P4, P5, P6, P7, P8, P9, R&gt;&gt; member, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8, P9 arg9)
+    <pre><code class="lang-csharp hljs">public static TResult Invoke&lt;TMember, T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult&gt;(this IMember&lt;TMember, Func&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult&gt;&gt; member, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9)
 
-    where M : MemberInfo</code></pre>
+    where TMember : MemberInfo</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -980,61 +980,61 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;M, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-10">Func</a>&lt;P1, P2, P3, P4, P5, P6, P7, P8, P9, R&gt;&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;TMember, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-10">Func</a>&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult&gt;&gt;</td>
         <td><span class="parametername">member</span></td>
         <td><p>Callable member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P1</span></td>
+        <td><span class="xref">T1</span></td>
         <td><span class="parametername">arg1</span></td>
         <td><p>The first function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P2</span></td>
+        <td><span class="xref">T2</span></td>
         <td><span class="parametername">arg2</span></td>
         <td><p>The second function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P3</span></td>
+        <td><span class="xref">T3</span></td>
         <td><span class="parametername">arg3</span></td>
         <td><p>The third function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P4</span></td>
+        <td><span class="xref">T4</span></td>
         <td><span class="parametername">arg4</span></td>
         <td><p>The fourth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P5</span></td>
+        <td><span class="xref">T5</span></td>
         <td><span class="parametername">arg5</span></td>
         <td><p>The fifth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P6</span></td>
+        <td><span class="xref">T6</span></td>
         <td><span class="parametername">arg6</span></td>
-        <td><p>The fifth function argument.</p>
+        <td><p>The sixth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P7</span></td>
+        <td><span class="xref">T7</span></td>
         <td><span class="parametername">arg7</span></td>
         <td><p>The seventh function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P8</span></td>
+        <td><span class="xref">T8</span></td>
         <td><span class="parametername">arg8</span></td>
         <td><p>The eighth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P9</span></td>
+        <td><span class="xref">T9</span></td>
         <td><span class="parametername">arg9</span></td>
         <td><p>The ninth function argument.</p>
 </td>
@@ -1051,7 +1051,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">R</span></td>
+        <td><span class="xref">TResult</span></td>
         <td><p>Return value.</p>
 </td>
       </tr>
@@ -1067,57 +1067,57 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">M</span></td>
+        <td><span class="parametername">TMember</span></td>
         <td><p>The type of the member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P1</span></td>
+        <td><span class="parametername">T1</span></td>
         <td><p>The type of the first function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P2</span></td>
+        <td><span class="parametername">T2</span></td>
         <td><p>The type of the second function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P3</span></td>
+        <td><span class="parametername">T3</span></td>
         <td><p>The type of the third function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P4</span></td>
+        <td><span class="parametername">T4</span></td>
         <td><p>The type of the fourth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P5</span></td>
+        <td><span class="parametername">T5</span></td>
         <td><p>The type of the fifth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P6</span></td>
+        <td><span class="parametername">T6</span></td>
         <td><p>The type of the sixth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P7</span></td>
+        <td><span class="parametername">T7</span></td>
         <td><p>The type of the seventh function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P8</span></td>
+        <td><span class="parametername">T8</span></td>
         <td><p>The type of the eighth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P9</span></td>
+        <td><span class="parametername">T9</span></td>
         <td><p>The type of the ninth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">R</span></td>
+        <td><span class="parametername">TResult</span></td>
         <td><p>Type of function result.</p>
 </td>
       </tr>
@@ -1128,18 +1128,18 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Member_Invoke__12_DotNext_Reflection_IMember___0_System_Func___1___2___3___4___5___6___7___8___9___10___11_____1___2___3___4___5___6___7___8___9___10_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Member.Invoke%60%6012(DotNext.Reflection.IMember%7B%60%600%2CSystem.Func%7B%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2C%60%608%2C%60%609%2C%60%6010%2C%60%6011%7D%7D%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2C%60%608%2C%60%609%2C%60%6010)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L404">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L405">View Source</a>
   </span>
   <a id="DotNext_Reflection_Member_Invoke_" data-uid="DotNext.Reflection.Member.Invoke*"></a>
-  <h4 id="DotNext_Reflection_Member_Invoke__12_DotNext_Reflection_IMember___0_System_Func___1___2___3___4___5___6___7___8___9___10___11_____1___2___3___4___5___6___7___8___9___10_" data-uid="DotNext.Reflection.Member.Invoke``12(DotNext.Reflection.IMember{``0,System.Func{``1,``2,``3,``4,``5,``6,``7,``8,``9,``10,``11}},``1,``2,``3,``4,``5,``6,``7,``8,``9,``10)">Invoke&lt;M, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, R&gt;(IMember&lt;M, Func&lt;P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, R&gt;&gt;, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10)</h4>
+  <h4 id="DotNext_Reflection_Member_Invoke__12_DotNext_Reflection_IMember___0_System_Func___1___2___3___4___5___6___7___8___9___10___11_____1___2___3___4___5___6___7___8___9___10_" data-uid="DotNext.Reflection.Member.Invoke``12(DotNext.Reflection.IMember{``0,System.Func{``1,``2,``3,``4,``5,``6,``7,``8,``9,``10,``11}},``1,``2,``3,``4,``5,``6,``7,``8,``9,``10)">Invoke&lt;TMember, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult&gt;(IMember&lt;TMember, Func&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult&gt;&gt;, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)</h4>
   <div class="markdown level1 summary"><p>Invokes member as function.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static R Invoke&lt;M, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, R&gt;(this IMember&lt;M, Func&lt;P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, R&gt;&gt; member, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8, P9 arg9, P10 arg10)
+    <pre><code class="lang-csharp hljs">public static TResult Invoke&lt;TMember, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult&gt;(this IMember&lt;TMember, Func&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult&gt;&gt; member, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10)
 
-    where M : MemberInfo</code></pre>
+    where TMember : MemberInfo</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1152,67 +1152,67 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;M, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-11">Func</a>&lt;P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, R&gt;&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;TMember, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-11">Func</a>&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult&gt;&gt;</td>
         <td><span class="parametername">member</span></td>
         <td><p>Callable member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P1</span></td>
+        <td><span class="xref">T1</span></td>
         <td><span class="parametername">arg1</span></td>
         <td><p>The first function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P2</span></td>
+        <td><span class="xref">T2</span></td>
         <td><span class="parametername">arg2</span></td>
         <td><p>The second function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P3</span></td>
+        <td><span class="xref">T3</span></td>
         <td><span class="parametername">arg3</span></td>
         <td><p>The third function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P4</span></td>
+        <td><span class="xref">T4</span></td>
         <td><span class="parametername">arg4</span></td>
         <td><p>The fourth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P5</span></td>
+        <td><span class="xref">T5</span></td>
         <td><span class="parametername">arg5</span></td>
         <td><p>The fifth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P6</span></td>
+        <td><span class="xref">T6</span></td>
         <td><span class="parametername">arg6</span></td>
-        <td><p>The fifth function argument.</p>
+        <td><p>The sixth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P7</span></td>
+        <td><span class="xref">T7</span></td>
         <td><span class="parametername">arg7</span></td>
         <td><p>The seventh function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P8</span></td>
+        <td><span class="xref">T8</span></td>
         <td><span class="parametername">arg8</span></td>
         <td><p>The eighth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P9</span></td>
+        <td><span class="xref">T9</span></td>
         <td><span class="parametername">arg9</span></td>
         <td><p>The ninth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P10</span></td>
+        <td><span class="xref">T10</span></td>
         <td><span class="parametername">arg10</span></td>
         <td><p>The tenth function argument.</p>
 </td>
@@ -1229,7 +1229,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">R</span></td>
+        <td><span class="xref">TResult</span></td>
         <td><p>Return value.</p>
 </td>
       </tr>
@@ -1245,62 +1245,62 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">M</span></td>
+        <td><span class="parametername">TMember</span></td>
         <td><p>The type of the member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P1</span></td>
+        <td><span class="parametername">T1</span></td>
         <td><p>The type of the first function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P2</span></td>
+        <td><span class="parametername">T2</span></td>
         <td><p>The type of the second function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P3</span></td>
+        <td><span class="parametername">T3</span></td>
         <td><p>The type of the third function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P4</span></td>
+        <td><span class="parametername">T4</span></td>
         <td><p>The type of the fourth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P5</span></td>
+        <td><span class="parametername">T5</span></td>
         <td><p>The type of the fifth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P6</span></td>
+        <td><span class="parametername">T6</span></td>
         <td><p>The type of the sixth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P7</span></td>
+        <td><span class="parametername">T7</span></td>
         <td><p>The type of the seventh function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P8</span></td>
+        <td><span class="parametername">T8</span></td>
         <td><p>The type of the eighth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P9</span></td>
+        <td><span class="parametername">T9</span></td>
         <td><p>The type of the ninth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P10</span></td>
+        <td><span class="parametername">T10</span></td>
         <td><p>The type of the tenth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">R</span></td>
+        <td><span class="parametername">TResult</span></td>
         <td><p>Type of function result.</p>
 </td>
       </tr>
@@ -1311,18 +1311,18 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Member_Invoke__2_DotNext_Reflection_IMember___0_DotNext_Function_System_ValueTuple___1___.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Member.Invoke%60%602(DotNext.Reflection.IMember%7B%60%600%2CDotNext.Function%7BSystem.ValueTuple%2C%60%601%7D%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L104">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L105">View Source</a>
   </span>
   <a id="DotNext_Reflection_Member_Invoke_" data-uid="DotNext.Reflection.Member.Invoke*"></a>
-  <h4 id="DotNext_Reflection_Member_Invoke__2_DotNext_Reflection_IMember___0_DotNext_Function_System_ValueTuple___1___" data-uid="DotNext.Reflection.Member.Invoke``2(DotNext.Reflection.IMember{``0,DotNext.Function{System.ValueTuple,``1}})">Invoke&lt;M, R&gt;(IMember&lt;M, Function&lt;ValueTuple, R&gt;&gt;)</h4>
+  <h4 id="DotNext_Reflection_Member_Invoke__2_DotNext_Reflection_IMember___0_DotNext_Function_System_ValueTuple___1___" data-uid="DotNext.Reflection.Member.Invoke``2(DotNext.Reflection.IMember{``0,DotNext.Function{System.ValueTuple,``1}})">Invoke&lt;TMember, TResult&gt;(IMember&lt;TMember, Function&lt;ValueTuple, TResult&gt;&gt;)</h4>
   <div class="markdown level1 summary"><p>Invokes member without arguments.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static R Invoke&lt;M, R&gt;(this IMember&lt;M, Function&lt;ValueTuple, R&gt;&gt; member)
+    <pre><code class="lang-csharp hljs">public static TResult Invoke&lt;TMember, TResult&gt;(this IMember&lt;TMember, Function&lt;ValueTuple, TResult&gt;&gt; member)
 
-    where M : MemberInfo</code></pre>
+    where TMember : MemberInfo</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1335,7 +1335,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;M, <a class="xref" href="DotNext.Function-2.html">Function</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetuple">ValueTuple</a>, R&gt;&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;TMember, <a class="xref" href="DotNext.Function-2.html">Function</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetuple">ValueTuple</a>, TResult&gt;&gt;</td>
         <td><span class="parametername">member</span></td>
         <td><p>Callable member.</p>
 </td>
@@ -1352,7 +1352,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">R</span></td>
+        <td><span class="xref">TResult</span></td>
         <td><p>Invocation result.</p>
 </td>
       </tr>
@@ -1368,12 +1368,12 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">M</span></td>
+        <td><span class="parametername">TMember</span></td>
         <td><p>The type of the member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">R</span></td>
+        <td><span class="parametername">TResult</span></td>
         <td><p>The return type.</p>
 </td>
       </tr>
@@ -1384,18 +1384,18 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Member_Invoke__2_DotNext_Reflection_IMember___0_DotNext_Reflection_MemberGetter___1___.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Member.Invoke%60%602(DotNext.Reflection.IMember%7B%60%600%2CDotNext.Reflection.MemberGetter%7B%60%601%7D%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L642">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L643">View Source</a>
   </span>
   <a id="DotNext_Reflection_Member_Invoke_" data-uid="DotNext.Reflection.Member.Invoke*"></a>
-  <h4 id="DotNext_Reflection_Member_Invoke__2_DotNext_Reflection_IMember___0_DotNext_Reflection_MemberGetter___1___" data-uid="DotNext.Reflection.Member.Invoke``2(DotNext.Reflection.IMember{``0,DotNext.Reflection.MemberGetter{``1}})">Invoke&lt;M, V&gt;(IMember&lt;M, MemberGetter&lt;V&gt;&gt;)</h4>
+  <h4 id="DotNext_Reflection_Member_Invoke__2_DotNext_Reflection_IMember___0_DotNext_Reflection_MemberGetter___1___" data-uid="DotNext.Reflection.Member.Invoke``2(DotNext.Reflection.IMember{``0,DotNext.Reflection.MemberGetter{``1}})">Invoke&lt;TMember, TValue&gt;(IMember&lt;TMember, MemberGetter&lt;TValue&gt;&gt;)</h4>
   <div class="markdown level1 summary"><p>Gets property or field value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static V Invoke&lt;M, V&gt;(this IMember&lt;M, MemberGetter&lt;V&gt;&gt; member)
+    <pre><code class="lang-csharp hljs">public static TValue Invoke&lt;TMember, TValue&gt;(this IMember&lt;TMember, MemberGetter&lt;TValue&gt;&gt; member)
 
-    where M : MemberInfo</code></pre>
+    where TMember : MemberInfo</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1408,7 +1408,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;M, <a class="xref" href="DotNext.Reflection.MemberGetter-1.html">MemberGetter</a>&lt;V&gt;&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;TMember, <a class="xref" href="DotNext.Reflection.MemberGetter-1.html">MemberGetter</a>&lt;TValue&gt;&gt;</td>
         <td><span class="parametername">member</span></td>
         <td><p>The property or field.</p>
 </td>
@@ -1425,7 +1425,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">V</span></td>
+        <td><span class="xref">TValue</span></td>
         <td><p>The member value.</p>
 </td>
       </tr>
@@ -1441,12 +1441,12 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">M</span></td>
+        <td><span class="parametername">TMember</span></td>
         <td><p>The type of the member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">V</span></td>
+        <td><span class="parametername">TValue</span></td>
         <td><p>The type of the member value.</p>
 </td>
       </tr>
@@ -1457,18 +1457,18 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Member_Invoke__2_DotNext_Reflection_IMember___0_DotNext_Reflection_MemberSetter___1_____1_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Member.Invoke%60%602(DotNext.Reflection.IMember%7B%60%600%2CDotNext.Reflection.MemberSetter%7B%60%601%7D%7D%2C%60%601)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L670">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L671">View Source</a>
   </span>
   <a id="DotNext_Reflection_Member_Invoke_" data-uid="DotNext.Reflection.Member.Invoke*"></a>
-  <h4 id="DotNext_Reflection_Member_Invoke__2_DotNext_Reflection_IMember___0_DotNext_Reflection_MemberSetter___1_____1_" data-uid="DotNext.Reflection.Member.Invoke``2(DotNext.Reflection.IMember{``0,DotNext.Reflection.MemberSetter{``1}},``1)">Invoke&lt;M, V&gt;(IMember&lt;M, MemberSetter&lt;V&gt;&gt;, V)</h4>
+  <h4 id="DotNext_Reflection_Member_Invoke__2_DotNext_Reflection_IMember___0_DotNext_Reflection_MemberSetter___1_____1_" data-uid="DotNext.Reflection.Member.Invoke``2(DotNext.Reflection.IMember{``0,DotNext.Reflection.MemberSetter{``1}},``1)">Invoke&lt;TMember, TValue&gt;(IMember&lt;TMember, MemberSetter&lt;TValue&gt;&gt;, TValue)</h4>
   <div class="markdown level1 summary"><p>Sets property or field.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void Invoke&lt;M, V&gt;(this IMember&lt;M, MemberSetter&lt;V&gt;&gt; member, V value)
+    <pre><code class="lang-csharp hljs">public static void Invoke&lt;TMember, TValue&gt;(this IMember&lt;TMember, MemberSetter&lt;TValue&gt;&gt; member, TValue value)
 
-    where M : MemberInfo</code></pre>
+    where TMember : MemberInfo</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1481,13 +1481,13 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;M, <a class="xref" href="DotNext.Reflection.MemberSetter-1.html">MemberSetter</a>&lt;V&gt;&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;TMember, <a class="xref" href="DotNext.Reflection.MemberSetter-1.html">MemberSetter</a>&lt;TValue&gt;&gt;</td>
         <td><span class="parametername">member</span></td>
         <td><p>The property or field.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">V</span></td>
+        <td><span class="xref">TValue</span></td>
         <td><span class="parametername">value</span></td>
         <td><p>The new value of the field or property.</p>
 </td>
@@ -1504,12 +1504,12 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">M</span></td>
+        <td><span class="parametername">TMember</span></td>
         <td><p>The type of the member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">V</span></td>
+        <td><span class="parametername">TValue</span></td>
         <td><p>The type of the member value.</p>
 </td>
       </tr>
@@ -1520,18 +1520,18 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Member_Invoke__2_DotNext_Reflection_IMember___0_System_Action___1_____1_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Member.Invoke%60%602(DotNext.Reflection.IMember%7B%60%600%2CSystem.Action%7B%60%601%7D%7D%2C%60%601)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L429">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L430">View Source</a>
   </span>
   <a id="DotNext_Reflection_Member_Invoke_" data-uid="DotNext.Reflection.Member.Invoke*"></a>
-  <h4 id="DotNext_Reflection_Member_Invoke__2_DotNext_Reflection_IMember___0_System_Action___1_____1_" data-uid="DotNext.Reflection.Member.Invoke``2(DotNext.Reflection.IMember{``0,System.Action{``1}},``1)">Invoke&lt;M, P&gt;(IMember&lt;M, Action&lt;P&gt;&gt;, P)</h4>
+  <h4 id="DotNext_Reflection_Member_Invoke__2_DotNext_Reflection_IMember___0_System_Action___1_____1_" data-uid="DotNext.Reflection.Member.Invoke``2(DotNext.Reflection.IMember{``0,System.Action{``1}},``1)">Invoke&lt;TMember, TParam&gt;(IMember&lt;TMember, Action&lt;TParam&gt;&gt;, TParam)</h4>
   <div class="markdown level1 summary"><p>Invokes member as procedure.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void Invoke&lt;M, P&gt;(this IMember&lt;M, Action&lt;P&gt;&gt; member, P arg)
+    <pre><code class="lang-csharp hljs">public static void Invoke&lt;TMember, TParam&gt;(this IMember&lt;TMember, Action&lt;TParam&gt;&gt; member, TParam arg)
 
-    where M : MemberInfo</code></pre>
+    where TMember : MemberInfo</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1544,13 +1544,13 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;M, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;P&gt;&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;TMember, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;TParam&gt;&gt;</td>
         <td><span class="parametername">member</span></td>
         <td><p>Callable member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P</span></td>
+        <td><span class="xref">TParam</span></td>
         <td><span class="parametername">arg</span></td>
         <td><p>The first procedure argument.</p>
 </td>
@@ -1567,12 +1567,12 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">M</span></td>
+        <td><span class="parametername">TMember</span></td>
         <td><p>The type of the member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P</span></td>
+        <td><span class="parametername">TParam</span></td>
         <td><p>The type of the first procedure argument.</p>
 </td>
       </tr>
@@ -1583,18 +1583,18 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Member_Invoke__2_DotNext_Reflection_IMember___0_System_Func___1___.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Member.Invoke%60%602(DotNext.Reflection.IMember%7B%60%600%2CSystem.Func%7B%60%601%7D%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L174">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L175">View Source</a>
   </span>
   <a id="DotNext_Reflection_Member_Invoke_" data-uid="DotNext.Reflection.Member.Invoke*"></a>
-  <h4 id="DotNext_Reflection_Member_Invoke__2_DotNext_Reflection_IMember___0_System_Func___1___" data-uid="DotNext.Reflection.Member.Invoke``2(DotNext.Reflection.IMember{``0,System.Func{``1}})">Invoke&lt;M, R&gt;(IMember&lt;M, Func&lt;R&gt;&gt;)</h4>
+  <h4 id="DotNext_Reflection_Member_Invoke__2_DotNext_Reflection_IMember___0_System_Func___1___" data-uid="DotNext.Reflection.Member.Invoke``2(DotNext.Reflection.IMember{``0,System.Func{``1}})">Invoke&lt;TMember, TResult&gt;(IMember&lt;TMember, Func&lt;TResult&gt;&gt;)</h4>
   <div class="markdown level1 summary"><p>Invokes member as function.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static R Invoke&lt;M, R&gt;(this IMember&lt;M, Func&lt;R&gt;&gt; member)
+    <pre><code class="lang-csharp hljs">public static TResult Invoke&lt;TMember, TResult&gt;(this IMember&lt;TMember, Func&lt;TResult&gt;&gt; member)
 
-    where M : MemberInfo</code></pre>
+    where TMember : MemberInfo</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1607,7 +1607,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;M, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;R&gt;&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;TMember, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;TResult&gt;&gt;</td>
         <td><span class="parametername">member</span></td>
         <td><p>Callable member.</p>
 </td>
@@ -1624,7 +1624,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">R</span></td>
+        <td><span class="xref">TResult</span></td>
         <td><p>Return value.</p>
 </td>
       </tr>
@@ -1640,12 +1640,12 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">M</span></td>
+        <td><span class="parametername">TMember</span></td>
         <td><p>The type of the member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">R</span></td>
+        <td><span class="parametername">TResult</span></td>
         <td><p>Type of function result.</p>
 </td>
       </tr>
@@ -1656,18 +1656,18 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Member_Invoke__3_DotNext_Reflection_IMember___0_DotNext_Function___1___2_____1__.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Member.Invoke%60%603(DotNext.Reflection.IMember%7B%60%600%2CDotNext.Function%7B%60%601%2C%60%602%7D%7D%2C%60%601%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L57">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L58">View Source</a>
   </span>
   <a id="DotNext_Reflection_Member_Invoke_" data-uid="DotNext.Reflection.Member.Invoke*"></a>
-  <h4 id="DotNext_Reflection_Member_Invoke__3_DotNext_Reflection_IMember___0_DotNext_Function___1___2_____1__" data-uid="DotNext.Reflection.Member.Invoke``3(DotNext.Reflection.IMember{``0,DotNext.Function{``1,``2}},``1@)">Invoke&lt;M, A, R&gt;(IMember&lt;M, Function&lt;A, R&gt;&gt;, A)</h4>
+  <h4 id="DotNext_Reflection_Member_Invoke__3_DotNext_Reflection_IMember___0_DotNext_Function___1___2_____1__" data-uid="DotNext.Reflection.Member.Invoke``3(DotNext.Reflection.IMember{``0,DotNext.Function{``1,``2}},``1@)">Invoke&lt;TMember, TArgs, TResult&gt;(IMember&lt;TMember, Function&lt;TArgs, TResult&gt;&gt;, TArgs)</h4>
   <div class="markdown level1 summary"><p>Invokes member.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static R Invoke&lt;M, A, R&gt;(this IMember&lt;M, Function&lt;A, R&gt;&gt; member, in A arguments)
+    <pre><code class="lang-csharp hljs">public static TResult Invoke&lt;TMember, TArgs, TResult&gt;(this IMember&lt;TMember, Function&lt;TArgs, TResult&gt;&gt; member, in TArgs arguments)
 
-    where M : MemberInfo where A : struct</code></pre>
+    where TMember : MemberInfo where TArgs : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1680,13 +1680,13 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;M, <a class="xref" href="DotNext.Function-2.html">Function</a>&lt;A, R&gt;&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;TMember, <a class="xref" href="DotNext.Function-2.html">Function</a>&lt;TArgs, TResult&gt;&gt;</td>
         <td><span class="parametername">member</span></td>
         <td><p>Callable member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">A</span></td>
+        <td><span class="xref">TArgs</span></td>
         <td><span class="parametername">arguments</span></td>
         <td><p>Invocation arguments placed onto stack.</p>
 </td>
@@ -1703,7 +1703,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">R</span></td>
+        <td><span class="xref">TResult</span></td>
         <td><p>Invocation result.</p>
 </td>
       </tr>
@@ -1719,17 +1719,17 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">M</span></td>
+        <td><span class="parametername">TMember</span></td>
         <td><p>The type of the member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">A</span></td>
+        <td><span class="parametername">TArgs</span></td>
         <td><p>The type representing invocation arguments.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">R</span></td>
+        <td><span class="parametername">TResult</span></td>
         <td><p>The return type.</p>
 </td>
       </tr>
@@ -1740,18 +1740,18 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Member_Invoke__3_DotNext_Reflection_IMember___0_DotNext_Function___1_System_ValueTuple___2_____1__.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Member.Invoke%60%603(DotNext.Reflection.IMember%7B%60%600%2CDotNext.Function%7B%60%601%2CSystem.ValueTuple%2C%60%602%7D%7D%2C%60%601%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L91">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L92">View Source</a>
   </span>
   <a id="DotNext_Reflection_Member_Invoke_" data-uid="DotNext.Reflection.Member.Invoke*"></a>
-  <h4 id="DotNext_Reflection_Member_Invoke__3_DotNext_Reflection_IMember___0_DotNext_Function___1_System_ValueTuple___2_____1__" data-uid="DotNext.Reflection.Member.Invoke``3(DotNext.Reflection.IMember{``0,DotNext.Function{``1,System.ValueTuple,``2}},``1@)">Invoke&lt;M, T, R&gt;(IMember&lt;M, Function&lt;T, ValueTuple, R&gt;&gt;, T)</h4>
+  <h4 id="DotNext_Reflection_Member_Invoke__3_DotNext_Reflection_IMember___0_DotNext_Function___1_System_ValueTuple___2_____1__" data-uid="DotNext.Reflection.Member.Invoke``3(DotNext.Reflection.IMember{``0,DotNext.Function{``1,System.ValueTuple,``2}},``1@)">Invoke&lt;TMember, T, TResult&gt;(IMember&lt;TMember, Function&lt;T, ValueTuple, TResult&gt;&gt;, T)</h4>
   <div class="markdown level1 summary"><p>Invokes instance member without arguments.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static R Invoke&lt;M, T, R&gt;(this IMember&lt;M, Function&lt;T, ValueTuple, R&gt;&gt; member, in T this)
+    <pre><code class="lang-csharp hljs">public static TResult Invoke&lt;TMember, T, TResult&gt;(this IMember&lt;TMember, Function&lt;T, ValueTuple, TResult&gt;&gt; member, in T this)
 
-    where M : MemberInfo</code></pre>
+    where TMember : MemberInfo</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1764,7 +1764,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;M, <a class="xref" href="DotNext.Function-3.html">Function</a>&lt;T, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetuple">ValueTuple</a>, R&gt;&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;TMember, <a class="xref" href="DotNext.Function-3.html">Function</a>&lt;T, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetuple">ValueTuple</a>, TResult&gt;&gt;</td>
         <td><span class="parametername">member</span></td>
         <td><p>Callable member.</p>
 </td>
@@ -1787,7 +1787,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">R</span></td>
+        <td><span class="xref">TResult</span></td>
         <td><p>Invocation result.</p>
 </td>
       </tr>
@@ -1803,7 +1803,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">M</span></td>
+        <td><span class="parametername">TMember</span></td>
         <td><p>The type of the member.</p>
 </td>
       </tr>
@@ -1813,7 +1813,7 @@
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">R</span></td>
+        <td><span class="parametername">TResult</span></td>
         <td><p>The return type.</p>
 </td>
       </tr>
@@ -1824,18 +1824,18 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Member_Invoke__3_DotNext_Reflection_IMember___0_DotNext_Reflection_MemberGetter___1___2_____1__.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Member.Invoke%60%603(DotNext.Reflection.IMember%7B%60%600%2CDotNext.Reflection.MemberGetter%7B%60%601%2C%60%602%7D%7D%2C%60%601%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L657">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L658">View Source</a>
   </span>
   <a id="DotNext_Reflection_Member_Invoke_" data-uid="DotNext.Reflection.Member.Invoke*"></a>
-  <h4 id="DotNext_Reflection_Member_Invoke__3_DotNext_Reflection_IMember___0_DotNext_Reflection_MemberGetter___1___2_____1__" data-uid="DotNext.Reflection.Member.Invoke``3(DotNext.Reflection.IMember{``0,DotNext.Reflection.MemberGetter{``1,``2}},``1@)">Invoke&lt;M, T, V&gt;(IMember&lt;M, MemberGetter&lt;T, V&gt;&gt;, T)</h4>
+  <h4 id="DotNext_Reflection_Member_Invoke__3_DotNext_Reflection_IMember___0_DotNext_Reflection_MemberGetter___1___2_____1__" data-uid="DotNext.Reflection.Member.Invoke``3(DotNext.Reflection.IMember{``0,DotNext.Reflection.MemberGetter{``1,``2}},``1@)">Invoke&lt;TMember, T, TValue&gt;(IMember&lt;TMember, MemberGetter&lt;T, TValue&gt;&gt;, T)</h4>
   <div class="markdown level1 summary"><p>Gets property or field value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static V Invoke&lt;M, T, V&gt;(this IMember&lt;M, MemberGetter&lt;T, V&gt;&gt; member, in T this)
+    <pre><code class="lang-csharp hljs">public static TValue Invoke&lt;TMember, T, TValue&gt;(this IMember&lt;TMember, MemberGetter&lt;T, TValue&gt;&gt; member, in T this)
 
-    where M : MemberInfo</code></pre>
+    where TMember : MemberInfo</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1848,7 +1848,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;M, <a class="xref" href="DotNext.Reflection.MemberGetter-2.html">MemberGetter</a>&lt;T, V&gt;&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;TMember, <a class="xref" href="DotNext.Reflection.MemberGetter-2.html">MemberGetter</a>&lt;T, TValue&gt;&gt;</td>
         <td><span class="parametername">member</span></td>
         <td><p>The property or field.</p>
 </td>
@@ -1871,7 +1871,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">V</span></td>
+        <td><span class="xref">TValue</span></td>
         <td><p>The member value.</p>
 </td>
       </tr>
@@ -1887,7 +1887,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">M</span></td>
+        <td><span class="parametername">TMember</span></td>
         <td><p>The type of the member.</p>
 </td>
       </tr>
@@ -1897,7 +1897,7 @@
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">V</span></td>
+        <td><span class="parametername">TValue</span></td>
         <td><p>The type of the member value.</p>
 </td>
       </tr>
@@ -1908,18 +1908,18 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Member_Invoke__3_DotNext_Reflection_IMember___0_DotNext_Reflection_MemberSetter___1___2_____1____2_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Member.Invoke%60%603(DotNext.Reflection.IMember%7B%60%600%2CDotNext.Reflection.MemberSetter%7B%60%601%2C%60%602%7D%7D%2C%60%601%40%2C%60%602)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L685">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L686">View Source</a>
   </span>
   <a id="DotNext_Reflection_Member_Invoke_" data-uid="DotNext.Reflection.Member.Invoke*"></a>
-  <h4 id="DotNext_Reflection_Member_Invoke__3_DotNext_Reflection_IMember___0_DotNext_Reflection_MemberSetter___1___2_____1____2_" data-uid="DotNext.Reflection.Member.Invoke``3(DotNext.Reflection.IMember{``0,DotNext.Reflection.MemberSetter{``1,``2}},``1@,``2)">Invoke&lt;M, T, V&gt;(IMember&lt;M, MemberSetter&lt;T, V&gt;&gt;, T, V)</h4>
+  <h4 id="DotNext_Reflection_Member_Invoke__3_DotNext_Reflection_IMember___0_DotNext_Reflection_MemberSetter___1___2_____1____2_" data-uid="DotNext.Reflection.Member.Invoke``3(DotNext.Reflection.IMember{``0,DotNext.Reflection.MemberSetter{``1,``2}},``1@,``2)">Invoke&lt;TMember, T, TValue&gt;(IMember&lt;TMember, MemberSetter&lt;T, TValue&gt;&gt;, T, TValue)</h4>
   <div class="markdown level1 summary"><p>Sets property or field.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void Invoke&lt;M, T, V&gt;(this IMember&lt;M, MemberSetter&lt;T, V&gt;&gt; member, in T this, V value)
+    <pre><code class="lang-csharp hljs">public static void Invoke&lt;TMember, T, TValue&gt;(this IMember&lt;TMember, MemberSetter&lt;T, TValue&gt;&gt; member, in T this, TValue value)
 
-    where M : MemberInfo</code></pre>
+    where TMember : MemberInfo</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1932,7 +1932,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;M, <a class="xref" href="DotNext.Reflection.MemberSetter-2.html">MemberSetter</a>&lt;T, V&gt;&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;TMember, <a class="xref" href="DotNext.Reflection.MemberSetter-2.html">MemberSetter</a>&lt;T, TValue&gt;&gt;</td>
         <td><span class="parametername">member</span></td>
         <td><p>The property or field.</p>
 </td>
@@ -1944,7 +1944,7 @@
 </td>
       </tr>
       <tr>
-        <td><span class="xref">V</span></td>
+        <td><span class="xref">TValue</span></td>
         <td><span class="parametername">value</span></td>
         <td><p>The new value of the field or property.</p>
 </td>
@@ -1961,7 +1961,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">M</span></td>
+        <td><span class="parametername">TMember</span></td>
         <td><p>The type of the member.</p>
 </td>
       </tr>
@@ -1971,7 +1971,7 @@
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">V</span></td>
+        <td><span class="parametername">TValue</span></td>
         <td><p>The type of the member value.</p>
 </td>
       </tr>
@@ -1982,18 +1982,18 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Member_Invoke__3_DotNext_Reflection_IMember___0_System_Action___1___2_____1___2_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Member.Invoke%60%603(DotNext.Reflection.IMember%7B%60%600%2CSystem.Action%7B%60%601%2C%60%602%7D%7D%2C%60%601%2C%60%602)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L443">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L444">View Source</a>
   </span>
   <a id="DotNext_Reflection_Member_Invoke_" data-uid="DotNext.Reflection.Member.Invoke*"></a>
-  <h4 id="DotNext_Reflection_Member_Invoke__3_DotNext_Reflection_IMember___0_System_Action___1___2_____1___2_" data-uid="DotNext.Reflection.Member.Invoke``3(DotNext.Reflection.IMember{``0,System.Action{``1,``2}},``1,``2)">Invoke&lt;M, P1, P2&gt;(IMember&lt;M, Action&lt;P1, P2&gt;&gt;, P1, P2)</h4>
+  <h4 id="DotNext_Reflection_Member_Invoke__3_DotNext_Reflection_IMember___0_System_Action___1___2_____1___2_" data-uid="DotNext.Reflection.Member.Invoke``3(DotNext.Reflection.IMember{``0,System.Action{``1,``2}},``1,``2)">Invoke&lt;TMember, T1, T2&gt;(IMember&lt;TMember, Action&lt;T1, T2&gt;&gt;, T1, T2)</h4>
   <div class="markdown level1 summary"><p>Invokes member as procedure.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void Invoke&lt;M, P1, P2&gt;(this IMember&lt;M, Action&lt;P1, P2&gt;&gt; member, P1 arg1, P2 arg2)
+    <pre><code class="lang-csharp hljs">public static void Invoke&lt;TMember, T1, T2&gt;(this IMember&lt;TMember, Action&lt;T1, T2&gt;&gt; member, T1 arg1, T2 arg2)
 
-    where M : MemberInfo</code></pre>
+    where TMember : MemberInfo</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -2006,19 +2006,19 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;M, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-2">Action</a>&lt;P1, P2&gt;&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;TMember, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-2">Action</a>&lt;T1, T2&gt;&gt;</td>
         <td><span class="parametername">member</span></td>
         <td><p>Callable member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P1</span></td>
+        <td><span class="xref">T1</span></td>
         <td><span class="parametername">arg1</span></td>
         <td><p>The first procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P2</span></td>
+        <td><span class="xref">T2</span></td>
         <td><span class="parametername">arg2</span></td>
         <td><p>The second procedure argument.</p>
 </td>
@@ -2035,17 +2035,17 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">M</span></td>
+        <td><span class="parametername">TMember</span></td>
         <td><p>The type of the member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P1</span></td>
+        <td><span class="parametername">T1</span></td>
         <td><p>The type of the first procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P2</span></td>
+        <td><span class="parametername">T2</span></td>
         <td><p>The type of the second procedure argument.</p>
 </td>
       </tr>
@@ -2056,18 +2056,18 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Member_Invoke__3_DotNext_Reflection_IMember___0_System_Func___1___2_____1_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Member.Invoke%60%603(DotNext.Reflection.IMember%7B%60%600%2CSystem.Func%7B%60%601%2C%60%602%7D%7D%2C%60%601)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L188">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L189">View Source</a>
   </span>
   <a id="DotNext_Reflection_Member_Invoke_" data-uid="DotNext.Reflection.Member.Invoke*"></a>
-  <h4 id="DotNext_Reflection_Member_Invoke__3_DotNext_Reflection_IMember___0_System_Func___1___2_____1_" data-uid="DotNext.Reflection.Member.Invoke``3(DotNext.Reflection.IMember{``0,System.Func{``1,``2}},``1)">Invoke&lt;M, P, R&gt;(IMember&lt;M, Func&lt;P, R&gt;&gt;, P)</h4>
+  <h4 id="DotNext_Reflection_Member_Invoke__3_DotNext_Reflection_IMember___0_System_Func___1___2_____1_" data-uid="DotNext.Reflection.Member.Invoke``3(DotNext.Reflection.IMember{``0,System.Func{``1,``2}},``1)">Invoke&lt;TMember, TParam, TResult&gt;(IMember&lt;TMember, Func&lt;TParam, TResult&gt;&gt;, TParam)</h4>
   <div class="markdown level1 summary"><p>Invokes member as function.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static R Invoke&lt;M, P, R&gt;(this IMember&lt;M, Func&lt;P, R&gt;&gt; member, P arg)
+    <pre><code class="lang-csharp hljs">public static TResult Invoke&lt;TMember, TParam, TResult&gt;(this IMember&lt;TMember, Func&lt;TParam, TResult&gt;&gt; member, TParam arg)
 
-    where M : MemberInfo</code></pre>
+    where TMember : MemberInfo</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -2080,13 +2080,13 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;M, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;P, R&gt;&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;TMember, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;TParam, TResult&gt;&gt;</td>
         <td><span class="parametername">member</span></td>
         <td><p>Callable member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P</span></td>
+        <td><span class="xref">TParam</span></td>
         <td><span class="parametername">arg</span></td>
         <td><p>The first function argument.</p>
 </td>
@@ -2103,7 +2103,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">R</span></td>
+        <td><span class="xref">TResult</span></td>
         <td><p>Return value.</p>
 </td>
       </tr>
@@ -2119,17 +2119,17 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">M</span></td>
+        <td><span class="parametername">TMember</span></td>
         <td><p>The type of the member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P</span></td>
+        <td><span class="parametername">TParam</span></td>
         <td><p>The type of the first function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">R</span></td>
+        <td><span class="parametername">TResult</span></td>
         <td><p>Type of function result.</p>
 </td>
       </tr>
@@ -2140,18 +2140,18 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Member_Invoke__4_DotNext_Reflection_IMember___0_DotNext_Function___1___2___3_____1____2__.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Member.Invoke%60%604(DotNext.Reflection.IMember%7B%60%600%2CDotNext.Function%7B%60%601%2C%60%602%2C%60%603%7D%7D%2C%60%601%40%2C%60%602%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L75">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L76">View Source</a>
   </span>
   <a id="DotNext_Reflection_Member_Invoke_" data-uid="DotNext.Reflection.Member.Invoke*"></a>
-  <h4 id="DotNext_Reflection_Member_Invoke__4_DotNext_Reflection_IMember___0_DotNext_Function___1___2___3_____1____2__" data-uid="DotNext.Reflection.Member.Invoke``4(DotNext.Reflection.IMember{``0,DotNext.Function{``1,``2,``3}},``1@,``2@)">Invoke&lt;M, T, A, R&gt;(IMember&lt;M, Function&lt;T, A, R&gt;&gt;, T, A)</h4>
+  <h4 id="DotNext_Reflection_Member_Invoke__4_DotNext_Reflection_IMember___0_DotNext_Function___1___2___3_____1____2__" data-uid="DotNext.Reflection.Member.Invoke``4(DotNext.Reflection.IMember{``0,DotNext.Function{``1,``2,``3}},``1@,``2@)">Invoke&lt;TMember, T, TArgs, TResult&gt;(IMember&lt;TMember, Function&lt;T, TArgs, TResult&gt;&gt;, T, TArgs)</h4>
   <div class="markdown level1 summary"><p>Invokes instance member.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static R Invoke&lt;M, T, A, R&gt;(this IMember&lt;M, Function&lt;T, A, R&gt;&gt; member, in T this, in A arguments)
+    <pre><code class="lang-csharp hljs">public static TResult Invoke&lt;TMember, T, TArgs, TResult&gt;(this IMember&lt;TMember, Function&lt;T, TArgs, TResult&gt;&gt; member, in T this, in TArgs arguments)
 
-    where M : MemberInfo where A : struct</code></pre>
+    where TMember : MemberInfo where TArgs : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -2164,7 +2164,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;M, <a class="xref" href="DotNext.Function-3.html">Function</a>&lt;T, A, R&gt;&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;TMember, <a class="xref" href="DotNext.Function-3.html">Function</a>&lt;T, TArgs, TResult&gt;&gt;</td>
         <td><span class="parametername">member</span></td>
         <td><p>Callable member.</p>
 </td>
@@ -2176,7 +2176,7 @@
 </td>
       </tr>
       <tr>
-        <td><span class="xref">A</span></td>
+        <td><span class="xref">TArgs</span></td>
         <td><span class="parametername">arguments</span></td>
         <td><p>Invocation arguments placed onto stack.</p>
 </td>
@@ -2193,7 +2193,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">R</span></td>
+        <td><span class="xref">TResult</span></td>
         <td><p>Invocation result.</p>
 </td>
       </tr>
@@ -2209,7 +2209,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">M</span></td>
+        <td><span class="parametername">TMember</span></td>
         <td><p>The type of the member.</p>
 </td>
       </tr>
@@ -2219,12 +2219,12 @@
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">A</span></td>
+        <td><span class="parametername">TArgs</span></td>
         <td><p>The type representing invocation arguments.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">R</span></td>
+        <td><span class="parametername">TResult</span></td>
         <td><p>The return type.</p>
 </td>
       </tr>
@@ -2235,18 +2235,18 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Member_Invoke__4_DotNext_Reflection_IMember___0_System_Action___1___2___3_____1___2___3_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Member.Invoke%60%604(DotNext.Reflection.IMember%7B%60%600%2CSystem.Action%7B%60%601%2C%60%602%2C%60%603%7D%7D%2C%60%601%2C%60%602%2C%60%603)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L459">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L460">View Source</a>
   </span>
   <a id="DotNext_Reflection_Member_Invoke_" data-uid="DotNext.Reflection.Member.Invoke*"></a>
-  <h4 id="DotNext_Reflection_Member_Invoke__4_DotNext_Reflection_IMember___0_System_Action___1___2___3_____1___2___3_" data-uid="DotNext.Reflection.Member.Invoke``4(DotNext.Reflection.IMember{``0,System.Action{``1,``2,``3}},``1,``2,``3)">Invoke&lt;M, P1, P2, P3&gt;(IMember&lt;M, Action&lt;P1, P2, P3&gt;&gt;, P1, P2, P3)</h4>
+  <h4 id="DotNext_Reflection_Member_Invoke__4_DotNext_Reflection_IMember___0_System_Action___1___2___3_____1___2___3_" data-uid="DotNext.Reflection.Member.Invoke``4(DotNext.Reflection.IMember{``0,System.Action{``1,``2,``3}},``1,``2,``3)">Invoke&lt;TMember, T1, T2, T3&gt;(IMember&lt;TMember, Action&lt;T1, T2, T3&gt;&gt;, T1, T2, T3)</h4>
   <div class="markdown level1 summary"><p>Invokes member as procedure.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void Invoke&lt;M, P1, P2, P3&gt;(this IMember&lt;M, Action&lt;P1, P2, P3&gt;&gt; member, P1 arg1, P2 arg2, P3 arg3)
+    <pre><code class="lang-csharp hljs">public static void Invoke&lt;TMember, T1, T2, T3&gt;(this IMember&lt;TMember, Action&lt;T1, T2, T3&gt;&gt; member, T1 arg1, T2 arg2, T3 arg3)
 
-    where M : MemberInfo</code></pre>
+    where TMember : MemberInfo</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -2259,25 +2259,25 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;M, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-3">Action</a>&lt;P1, P2, P3&gt;&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;TMember, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-3">Action</a>&lt;T1, T2, T3&gt;&gt;</td>
         <td><span class="parametername">member</span></td>
         <td><p>Callable member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P1</span></td>
+        <td><span class="xref">T1</span></td>
         <td><span class="parametername">arg1</span></td>
         <td><p>The first procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P2</span></td>
+        <td><span class="xref">T2</span></td>
         <td><span class="parametername">arg2</span></td>
         <td><p>The second procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P3</span></td>
+        <td><span class="xref">T3</span></td>
         <td><span class="parametername">arg3</span></td>
         <td><p>The third procedure argument.</p>
 </td>
@@ -2294,22 +2294,22 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">M</span></td>
+        <td><span class="parametername">TMember</span></td>
         <td><p>The type of the member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P1</span></td>
+        <td><span class="parametername">T1</span></td>
         <td><p>The type of the first procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P2</span></td>
+        <td><span class="parametername">T2</span></td>
         <td><p>The type of the second procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P3</span></td>
+        <td><span class="parametername">T3</span></td>
         <td><p>The type of the third procedure argument.</p>
 </td>
       </tr>
@@ -2320,18 +2320,18 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Member_Invoke__4_DotNext_Reflection_IMember___0_System_Func___1___2___3_____1___2_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Member.Invoke%60%604(DotNext.Reflection.IMember%7B%60%600%2CSystem.Func%7B%60%601%2C%60%602%2C%60%603%7D%7D%2C%60%601%2C%60%602)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L204">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L205">View Source</a>
   </span>
   <a id="DotNext_Reflection_Member_Invoke_" data-uid="DotNext.Reflection.Member.Invoke*"></a>
-  <h4 id="DotNext_Reflection_Member_Invoke__4_DotNext_Reflection_IMember___0_System_Func___1___2___3_____1___2_" data-uid="DotNext.Reflection.Member.Invoke``4(DotNext.Reflection.IMember{``0,System.Func{``1,``2,``3}},``1,``2)">Invoke&lt;M, P1, P2, R&gt;(IMember&lt;M, Func&lt;P1, P2, R&gt;&gt;, P1, P2)</h4>
+  <h4 id="DotNext_Reflection_Member_Invoke__4_DotNext_Reflection_IMember___0_System_Func___1___2___3_____1___2_" data-uid="DotNext.Reflection.Member.Invoke``4(DotNext.Reflection.IMember{``0,System.Func{``1,``2,``3}},``1,``2)">Invoke&lt;TMember, T1, T2, TResult&gt;(IMember&lt;TMember, Func&lt;T1, T2, TResult&gt;&gt;, T1, T2)</h4>
   <div class="markdown level1 summary"><p>Invokes member as function.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static R Invoke&lt;M, P1, P2, R&gt;(this IMember&lt;M, Func&lt;P1, P2, R&gt;&gt; member, P1 arg1, P2 arg2)
+    <pre><code class="lang-csharp hljs">public static TResult Invoke&lt;TMember, T1, T2, TResult&gt;(this IMember&lt;TMember, Func&lt;T1, T2, TResult&gt;&gt; member, T1 arg1, T2 arg2)
 
-    where M : MemberInfo</code></pre>
+    where TMember : MemberInfo</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -2344,19 +2344,19 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;M, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;P1, P2, R&gt;&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;TMember, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;T1, T2, TResult&gt;&gt;</td>
         <td><span class="parametername">member</span></td>
         <td><p>Callable member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P1</span></td>
+        <td><span class="xref">T1</span></td>
         <td><span class="parametername">arg1</span></td>
         <td><p>The first function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P2</span></td>
+        <td><span class="xref">T2</span></td>
         <td><span class="parametername">arg2</span></td>
         <td><p>The second function argument.</p>
 </td>
@@ -2373,7 +2373,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">R</span></td>
+        <td><span class="xref">TResult</span></td>
         <td><p>Return value.</p>
 </td>
       </tr>
@@ -2389,22 +2389,22 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">M</span></td>
+        <td><span class="parametername">TMember</span></td>
         <td><p>The type of the member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P1</span></td>
+        <td><span class="parametername">T1</span></td>
         <td><p>The type of the first function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P2</span></td>
+        <td><span class="parametername">T2</span></td>
         <td><p>The type of the second function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">R</span></td>
+        <td><span class="parametername">TResult</span></td>
         <td><p>Type of function result.</p>
 </td>
       </tr>
@@ -2415,18 +2415,18 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Member_Invoke__5_DotNext_Reflection_IMember___0_System_Action___1___2___3___4_____1___2___3___4_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Member.Invoke%60%605(DotNext.Reflection.IMember%7B%60%600%2CSystem.Action%7B%60%601%2C%60%602%2C%60%603%2C%60%604%7D%7D%2C%60%601%2C%60%602%2C%60%603%2C%60%604)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L477">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L478">View Source</a>
   </span>
   <a id="DotNext_Reflection_Member_Invoke_" data-uid="DotNext.Reflection.Member.Invoke*"></a>
-  <h4 id="DotNext_Reflection_Member_Invoke__5_DotNext_Reflection_IMember___0_System_Action___1___2___3___4_____1___2___3___4_" data-uid="DotNext.Reflection.Member.Invoke``5(DotNext.Reflection.IMember{``0,System.Action{``1,``2,``3,``4}},``1,``2,``3,``4)">Invoke&lt;M, P1, P2, P3, P4&gt;(IMember&lt;M, Action&lt;P1, P2, P3, P4&gt;&gt;, P1, P2, P3, P4)</h4>
+  <h4 id="DotNext_Reflection_Member_Invoke__5_DotNext_Reflection_IMember___0_System_Action___1___2___3___4_____1___2___3___4_" data-uid="DotNext.Reflection.Member.Invoke``5(DotNext.Reflection.IMember{``0,System.Action{``1,``2,``3,``4}},``1,``2,``3,``4)">Invoke&lt;TMember, T1, T2, T3, T4&gt;(IMember&lt;TMember, Action&lt;T1, T2, T3, T4&gt;&gt;, T1, T2, T3, T4)</h4>
   <div class="markdown level1 summary"><p>Invokes member as procedure.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void Invoke&lt;M, P1, P2, P3, P4&gt;(this IMember&lt;M, Action&lt;P1, P2, P3, P4&gt;&gt; member, P1 arg1, P2 arg2, P3 arg3, P4 arg4)
+    <pre><code class="lang-csharp hljs">public static void Invoke&lt;TMember, T1, T2, T3, T4&gt;(this IMember&lt;TMember, Action&lt;T1, T2, T3, T4&gt;&gt; member, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
 
-    where M : MemberInfo</code></pre>
+    where TMember : MemberInfo</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -2439,31 +2439,31 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;M, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-4">Action</a>&lt;P1, P2, P3, P4&gt;&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;TMember, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-4">Action</a>&lt;T1, T2, T3, T4&gt;&gt;</td>
         <td><span class="parametername">member</span></td>
         <td><p>Callable member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P1</span></td>
+        <td><span class="xref">T1</span></td>
         <td><span class="parametername">arg1</span></td>
         <td><p>The first procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P2</span></td>
+        <td><span class="xref">T2</span></td>
         <td><span class="parametername">arg2</span></td>
         <td><p>The second procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P3</span></td>
+        <td><span class="xref">T3</span></td>
         <td><span class="parametername">arg3</span></td>
         <td><p>The third procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P4</span></td>
+        <td><span class="xref">T4</span></td>
         <td><span class="parametername">arg4</span></td>
         <td><p>The fourth procedure argument.</p>
 </td>
@@ -2480,27 +2480,27 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">M</span></td>
+        <td><span class="parametername">TMember</span></td>
         <td><p>The type of the member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P1</span></td>
+        <td><span class="parametername">T1</span></td>
         <td><p>The type of the first procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P2</span></td>
+        <td><span class="parametername">T2</span></td>
         <td><p>The type of the second procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P3</span></td>
+        <td><span class="parametername">T3</span></td>
         <td><p>The type of the third procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P4</span></td>
+        <td><span class="parametername">T4</span></td>
         <td><p>The type of the fourth procedure argument.</p>
 </td>
       </tr>
@@ -2511,18 +2511,18 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Member_Invoke__5_DotNext_Reflection_IMember___0_System_Func___1___2___3___4_____1___2___3_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Member.Invoke%60%605(DotNext.Reflection.IMember%7B%60%600%2CSystem.Func%7B%60%601%2C%60%602%2C%60%603%2C%60%604%7D%7D%2C%60%601%2C%60%602%2C%60%603)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L222">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L223">View Source</a>
   </span>
   <a id="DotNext_Reflection_Member_Invoke_" data-uid="DotNext.Reflection.Member.Invoke*"></a>
-  <h4 id="DotNext_Reflection_Member_Invoke__5_DotNext_Reflection_IMember___0_System_Func___1___2___3___4_____1___2___3_" data-uid="DotNext.Reflection.Member.Invoke``5(DotNext.Reflection.IMember{``0,System.Func{``1,``2,``3,``4}},``1,``2,``3)">Invoke&lt;M, P1, P2, P3, R&gt;(IMember&lt;M, Func&lt;P1, P2, P3, R&gt;&gt;, P1, P2, P3)</h4>
+  <h4 id="DotNext_Reflection_Member_Invoke__5_DotNext_Reflection_IMember___0_System_Func___1___2___3___4_____1___2___3_" data-uid="DotNext.Reflection.Member.Invoke``5(DotNext.Reflection.IMember{``0,System.Func{``1,``2,``3,``4}},``1,``2,``3)">Invoke&lt;TMember, T1, T2, T3, TResult&gt;(IMember&lt;TMember, Func&lt;T1, T2, T3, TResult&gt;&gt;, T1, T2, T3)</h4>
   <div class="markdown level1 summary"><p>Invokes member as function.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static R Invoke&lt;M, P1, P2, P3, R&gt;(this IMember&lt;M, Func&lt;P1, P2, P3, R&gt;&gt; member, P1 arg1, P2 arg2, P3 arg3)
+    <pre><code class="lang-csharp hljs">public static TResult Invoke&lt;TMember, T1, T2, T3, TResult&gt;(this IMember&lt;TMember, Func&lt;T1, T2, T3, TResult&gt;&gt; member, T1 arg1, T2 arg2, T3 arg3)
 
-    where M : MemberInfo</code></pre>
+    where TMember : MemberInfo</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -2535,25 +2535,25 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;M, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-4">Func</a>&lt;P1, P2, P3, R&gt;&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;TMember, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-4">Func</a>&lt;T1, T2, T3, TResult&gt;&gt;</td>
         <td><span class="parametername">member</span></td>
         <td><p>Callable member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P1</span></td>
+        <td><span class="xref">T1</span></td>
         <td><span class="parametername">arg1</span></td>
         <td><p>The first function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P2</span></td>
+        <td><span class="xref">T2</span></td>
         <td><span class="parametername">arg2</span></td>
         <td><p>The second function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P3</span></td>
+        <td><span class="xref">T3</span></td>
         <td><span class="parametername">arg3</span></td>
         <td><p>The third function argument.</p>
 </td>
@@ -2570,7 +2570,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">R</span></td>
+        <td><span class="xref">TResult</span></td>
         <td><p>Return value.</p>
 </td>
       </tr>
@@ -2586,27 +2586,27 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">M</span></td>
+        <td><span class="parametername">TMember</span></td>
         <td><p>The type of the member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P1</span></td>
+        <td><span class="parametername">T1</span></td>
         <td><p>The type of the first function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P2</span></td>
+        <td><span class="parametername">T2</span></td>
         <td><p>The type of the second function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P3</span></td>
+        <td><span class="parametername">T3</span></td>
         <td><p>The type of the third function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">R</span></td>
+        <td><span class="parametername">TResult</span></td>
         <td><p>Type of function result.</p>
 </td>
       </tr>
@@ -2617,18 +2617,18 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Member_Invoke__6_DotNext_Reflection_IMember___0_System_Action___1___2___3___4___5_____1___2___3___4___5_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Member.Invoke%60%606(DotNext.Reflection.IMember%7B%60%600%2CSystem.Action%7B%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%7D%7D%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L497">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L498">View Source</a>
   </span>
   <a id="DotNext_Reflection_Member_Invoke_" data-uid="DotNext.Reflection.Member.Invoke*"></a>
-  <h4 id="DotNext_Reflection_Member_Invoke__6_DotNext_Reflection_IMember___0_System_Action___1___2___3___4___5_____1___2___3___4___5_" data-uid="DotNext.Reflection.Member.Invoke``6(DotNext.Reflection.IMember{``0,System.Action{``1,``2,``3,``4,``5}},``1,``2,``3,``4,``5)">Invoke&lt;M, P1, P2, P3, P4, P5&gt;(IMember&lt;M, Action&lt;P1, P2, P3, P4, P5&gt;&gt;, P1, P2, P3, P4, P5)</h4>
+  <h4 id="DotNext_Reflection_Member_Invoke__6_DotNext_Reflection_IMember___0_System_Action___1___2___3___4___5_____1___2___3___4___5_" data-uid="DotNext.Reflection.Member.Invoke``6(DotNext.Reflection.IMember{``0,System.Action{``1,``2,``3,``4,``5}},``1,``2,``3,``4,``5)">Invoke&lt;TMember, T1, T2, T3, T4, T5&gt;(IMember&lt;TMember, Action&lt;T1, T2, T3, T4, T5&gt;&gt;, T1, T2, T3, T4, T5)</h4>
   <div class="markdown level1 summary"><p>Invokes member as procedure.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void Invoke&lt;M, P1, P2, P3, P4, P5&gt;(this IMember&lt;M, Action&lt;P1, P2, P3, P4, P5&gt;&gt; member, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5)
+    <pre><code class="lang-csharp hljs">public static void Invoke&lt;TMember, T1, T2, T3, T4, T5&gt;(this IMember&lt;TMember, Action&lt;T1, T2, T3, T4, T5&gt;&gt; member, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
 
-    where M : MemberInfo</code></pre>
+    where TMember : MemberInfo</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -2641,37 +2641,37 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;M, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-5">Action</a>&lt;P1, P2, P3, P4, P5&gt;&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;TMember, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-5">Action</a>&lt;T1, T2, T3, T4, T5&gt;&gt;</td>
         <td><span class="parametername">member</span></td>
         <td><p>Callable member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P1</span></td>
+        <td><span class="xref">T1</span></td>
         <td><span class="parametername">arg1</span></td>
         <td><p>The first procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P2</span></td>
+        <td><span class="xref">T2</span></td>
         <td><span class="parametername">arg2</span></td>
         <td><p>The second procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P3</span></td>
+        <td><span class="xref">T3</span></td>
         <td><span class="parametername">arg3</span></td>
         <td><p>The third procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P4</span></td>
+        <td><span class="xref">T4</span></td>
         <td><span class="parametername">arg4</span></td>
         <td><p>The fourth procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P5</span></td>
+        <td><span class="xref">T5</span></td>
         <td><span class="parametername">arg5</span></td>
         <td><p>The fifth procedure argument.</p>
 </td>
@@ -2688,32 +2688,32 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">M</span></td>
+        <td><span class="parametername">TMember</span></td>
         <td><p>The type of the member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P1</span></td>
+        <td><span class="parametername">T1</span></td>
         <td><p>The type of the first procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P2</span></td>
+        <td><span class="parametername">T2</span></td>
         <td><p>The type of the second procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P3</span></td>
+        <td><span class="parametername">T3</span></td>
         <td><p>The type of the third procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P4</span></td>
+        <td><span class="parametername">T4</span></td>
         <td><p>The type of the fourth procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P5</span></td>
+        <td><span class="parametername">T5</span></td>
         <td><p>The type of the fifth procedure argument.</p>
 </td>
       </tr>
@@ -2724,18 +2724,18 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Member_Invoke__6_DotNext_Reflection_IMember___0_System_Func___1___2___3___4___5_____1___2___3___4_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Member.Invoke%60%606(DotNext.Reflection.IMember%7B%60%600%2CSystem.Func%7B%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%7D%7D%2C%60%601%2C%60%602%2C%60%603%2C%60%604)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L242">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L243">View Source</a>
   </span>
   <a id="DotNext_Reflection_Member_Invoke_" data-uid="DotNext.Reflection.Member.Invoke*"></a>
-  <h4 id="DotNext_Reflection_Member_Invoke__6_DotNext_Reflection_IMember___0_System_Func___1___2___3___4___5_____1___2___3___4_" data-uid="DotNext.Reflection.Member.Invoke``6(DotNext.Reflection.IMember{``0,System.Func{``1,``2,``3,``4,``5}},``1,``2,``3,``4)">Invoke&lt;M, P1, P2, P3, P4, R&gt;(IMember&lt;M, Func&lt;P1, P2, P3, P4, R&gt;&gt;, P1, P2, P3, P4)</h4>
+  <h4 id="DotNext_Reflection_Member_Invoke__6_DotNext_Reflection_IMember___0_System_Func___1___2___3___4___5_____1___2___3___4_" data-uid="DotNext.Reflection.Member.Invoke``6(DotNext.Reflection.IMember{``0,System.Func{``1,``2,``3,``4,``5}},``1,``2,``3,``4)">Invoke&lt;TMember, T1, T2, T3, T4, TResult&gt;(IMember&lt;TMember, Func&lt;T1, T2, T3, T4, TResult&gt;&gt;, T1, T2, T3, T4)</h4>
   <div class="markdown level1 summary"><p>Invokes member as function.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static R Invoke&lt;M, P1, P2, P3, P4, R&gt;(this IMember&lt;M, Func&lt;P1, P2, P3, P4, R&gt;&gt; member, P1 arg1, P2 arg2, P3 arg3, P4 arg4)
+    <pre><code class="lang-csharp hljs">public static TResult Invoke&lt;TMember, T1, T2, T3, T4, TResult&gt;(this IMember&lt;TMember, Func&lt;T1, T2, T3, T4, TResult&gt;&gt; member, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
 
-    where M : MemberInfo</code></pre>
+    where TMember : MemberInfo</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -2748,31 +2748,31 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;M, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-5">Func</a>&lt;P1, P2, P3, P4, R&gt;&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;TMember, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-5">Func</a>&lt;T1, T2, T3, T4, TResult&gt;&gt;</td>
         <td><span class="parametername">member</span></td>
         <td><p>Callable member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P1</span></td>
+        <td><span class="xref">T1</span></td>
         <td><span class="parametername">arg1</span></td>
         <td><p>The first function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P2</span></td>
+        <td><span class="xref">T2</span></td>
         <td><span class="parametername">arg2</span></td>
         <td><p>The second function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P3</span></td>
+        <td><span class="xref">T3</span></td>
         <td><span class="parametername">arg3</span></td>
         <td><p>The third function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P4</span></td>
+        <td><span class="xref">T4</span></td>
         <td><span class="parametername">arg4</span></td>
         <td><p>The fourth function argument.</p>
 </td>
@@ -2789,7 +2789,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">R</span></td>
+        <td><span class="xref">TResult</span></td>
         <td><p>Return value.</p>
 </td>
       </tr>
@@ -2805,32 +2805,32 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">M</span></td>
+        <td><span class="parametername">TMember</span></td>
         <td><p>The type of the member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P1</span></td>
+        <td><span class="parametername">T1</span></td>
         <td><p>The type of the first function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P2</span></td>
+        <td><span class="parametername">T2</span></td>
         <td><p>The type of the second function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P3</span></td>
+        <td><span class="parametername">T3</span></td>
         <td><p>The type of the third function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P4</span></td>
+        <td><span class="parametername">T4</span></td>
         <td><p>The type of the fourth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">R</span></td>
+        <td><span class="parametername">TResult</span></td>
         <td><p>Type of function result.</p>
 </td>
       </tr>
@@ -2841,18 +2841,18 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Member_Invoke__7_DotNext_Reflection_IMember___0_System_Action___1___2___3___4___5___6_____1___2___3___4___5___6_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Member.Invoke%60%607(DotNext.Reflection.IMember%7B%60%600%2CSystem.Action%7B%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%7D%7D%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L519">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L520">View Source</a>
   </span>
   <a id="DotNext_Reflection_Member_Invoke_" data-uid="DotNext.Reflection.Member.Invoke*"></a>
-  <h4 id="DotNext_Reflection_Member_Invoke__7_DotNext_Reflection_IMember___0_System_Action___1___2___3___4___5___6_____1___2___3___4___5___6_" data-uid="DotNext.Reflection.Member.Invoke``7(DotNext.Reflection.IMember{``0,System.Action{``1,``2,``3,``4,``5,``6}},``1,``2,``3,``4,``5,``6)">Invoke&lt;M, P1, P2, P3, P4, P5, P6&gt;(IMember&lt;M, Action&lt;P1, P2, P3, P4, P5, P6&gt;&gt;, P1, P2, P3, P4, P5, P6)</h4>
+  <h4 id="DotNext_Reflection_Member_Invoke__7_DotNext_Reflection_IMember___0_System_Action___1___2___3___4___5___6_____1___2___3___4___5___6_" data-uid="DotNext.Reflection.Member.Invoke``7(DotNext.Reflection.IMember{``0,System.Action{``1,``2,``3,``4,``5,``6}},``1,``2,``3,``4,``5,``6)">Invoke&lt;TMember, T1, T2, T3, T4, T5, T6&gt;(IMember&lt;TMember, Action&lt;T1, T2, T3, T4, T5, T6&gt;&gt;, T1, T2, T3, T4, T5, T6)</h4>
   <div class="markdown level1 summary"><p>Invokes member as procedure.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void Invoke&lt;M, P1, P2, P3, P4, P5, P6&gt;(this IMember&lt;M, Action&lt;P1, P2, P3, P4, P5, P6&gt;&gt; member, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6)
+    <pre><code class="lang-csharp hljs">public static void Invoke&lt;TMember, T1, T2, T3, T4, T5, T6&gt;(this IMember&lt;TMember, Action&lt;T1, T2, T3, T4, T5, T6&gt;&gt; member, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6)
 
-    where M : MemberInfo</code></pre>
+    where TMember : MemberInfo</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -2865,43 +2865,43 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;M, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-6">Action</a>&lt;P1, P2, P3, P4, P5, P6&gt;&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;TMember, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-6">Action</a>&lt;T1, T2, T3, T4, T5, T6&gt;&gt;</td>
         <td><span class="parametername">member</span></td>
         <td><p>Callable member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P1</span></td>
+        <td><span class="xref">T1</span></td>
         <td><span class="parametername">arg1</span></td>
         <td><p>The first procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P2</span></td>
+        <td><span class="xref">T2</span></td>
         <td><span class="parametername">arg2</span></td>
         <td><p>The second procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P3</span></td>
+        <td><span class="xref">T3</span></td>
         <td><span class="parametername">arg3</span></td>
         <td><p>The third procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P4</span></td>
+        <td><span class="xref">T4</span></td>
         <td><span class="parametername">arg4</span></td>
         <td><p>The fourth procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P5</span></td>
+        <td><span class="xref">T5</span></td>
         <td><span class="parametername">arg5</span></td>
         <td><p>The fifth procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P6</span></td>
+        <td><span class="xref">T6</span></td>
         <td><span class="parametername">arg6</span></td>
         <td><p>The sixth procedure argument.</p>
 </td>
@@ -2918,37 +2918,37 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">M</span></td>
+        <td><span class="parametername">TMember</span></td>
         <td><p>The type of the member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P1</span></td>
+        <td><span class="parametername">T1</span></td>
         <td><p>The type of the first procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P2</span></td>
+        <td><span class="parametername">T2</span></td>
         <td><p>The type of the second procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P3</span></td>
+        <td><span class="parametername">T3</span></td>
         <td><p>The type of the third procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P4</span></td>
+        <td><span class="parametername">T4</span></td>
         <td><p>The type of the fourth procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P5</span></td>
+        <td><span class="parametername">T5</span></td>
         <td><p>The type of the fifth procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P6</span></td>
+        <td><span class="parametername">T6</span></td>
         <td><p>The type of the sixth procedure argument.</p>
 </td>
       </tr>
@@ -2959,18 +2959,18 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Member_Invoke__7_DotNext_Reflection_IMember___0_System_Func___1___2___3___4___5___6_____1___2___3___4___5_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Member.Invoke%60%607(DotNext.Reflection.IMember%7B%60%600%2CSystem.Func%7B%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%7D%7D%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L264">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L265">View Source</a>
   </span>
   <a id="DotNext_Reflection_Member_Invoke_" data-uid="DotNext.Reflection.Member.Invoke*"></a>
-  <h4 id="DotNext_Reflection_Member_Invoke__7_DotNext_Reflection_IMember___0_System_Func___1___2___3___4___5___6_____1___2___3___4___5_" data-uid="DotNext.Reflection.Member.Invoke``7(DotNext.Reflection.IMember{``0,System.Func{``1,``2,``3,``4,``5,``6}},``1,``2,``3,``4,``5)">Invoke&lt;M, P1, P2, P3, P4, P5, R&gt;(IMember&lt;M, Func&lt;P1, P2, P3, P4, P5, R&gt;&gt;, P1, P2, P3, P4, P5)</h4>
+  <h4 id="DotNext_Reflection_Member_Invoke__7_DotNext_Reflection_IMember___0_System_Func___1___2___3___4___5___6_____1___2___3___4___5_" data-uid="DotNext.Reflection.Member.Invoke``7(DotNext.Reflection.IMember{``0,System.Func{``1,``2,``3,``4,``5,``6}},``1,``2,``3,``4,``5)">Invoke&lt;TMember, T1, T2, T3, T4, T5, TResult&gt;(IMember&lt;TMember, Func&lt;T1, T2, T3, T4, T5, TResult&gt;&gt;, T1, T2, T3, T4, T5)</h4>
   <div class="markdown level1 summary"><p>Invokes member as function.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static R Invoke&lt;M, P1, P2, P3, P4, P5, R&gt;(this IMember&lt;M, Func&lt;P1, P2, P3, P4, P5, R&gt;&gt; member, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5)
+    <pre><code class="lang-csharp hljs">public static TResult Invoke&lt;TMember, T1, T2, T3, T4, T5, TResult&gt;(this IMember&lt;TMember, Func&lt;T1, T2, T3, T4, T5, TResult&gt;&gt; member, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
 
-    where M : MemberInfo</code></pre>
+    where TMember : MemberInfo</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -2983,37 +2983,37 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;M, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-6">Func</a>&lt;P1, P2, P3, P4, P5, R&gt;&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;TMember, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-6">Func</a>&lt;T1, T2, T3, T4, T5, TResult&gt;&gt;</td>
         <td><span class="parametername">member</span></td>
         <td><p>Callable member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P1</span></td>
+        <td><span class="xref">T1</span></td>
         <td><span class="parametername">arg1</span></td>
         <td><p>The first function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P2</span></td>
+        <td><span class="xref">T2</span></td>
         <td><span class="parametername">arg2</span></td>
         <td><p>The second function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P3</span></td>
+        <td><span class="xref">T3</span></td>
         <td><span class="parametername">arg3</span></td>
         <td><p>The third function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P4</span></td>
+        <td><span class="xref">T4</span></td>
         <td><span class="parametername">arg4</span></td>
         <td><p>The fourth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P5</span></td>
+        <td><span class="xref">T5</span></td>
         <td><span class="parametername">arg5</span></td>
         <td><p>The fifth function argument.</p>
 </td>
@@ -3030,7 +3030,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">R</span></td>
+        <td><span class="xref">TResult</span></td>
         <td><p>Return value.</p>
 </td>
       </tr>
@@ -3046,37 +3046,37 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">M</span></td>
+        <td><span class="parametername">TMember</span></td>
         <td><p>The type of the member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P1</span></td>
+        <td><span class="parametername">T1</span></td>
         <td><p>The type of the first function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P2</span></td>
+        <td><span class="parametername">T2</span></td>
         <td><p>The type of the second function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P3</span></td>
+        <td><span class="parametername">T3</span></td>
         <td><p>The type of the third function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P4</span></td>
+        <td><span class="parametername">T4</span></td>
         <td><p>The type of the fourth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P5</span></td>
+        <td><span class="parametername">T5</span></td>
         <td><p>The type of the fifth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">R</span></td>
+        <td><span class="parametername">TResult</span></td>
         <td><p>Type of function result.</p>
 </td>
       </tr>
@@ -3087,18 +3087,18 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Member_Invoke__8_DotNext_Reflection_IMember___0_System_Action___1___2___3___4___5___6___7_____1___2___3___4___5___6___7_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Member.Invoke%60%608(DotNext.Reflection.IMember%7B%60%600%2CSystem.Action%7B%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%7D%7D%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L543">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L544">View Source</a>
   </span>
   <a id="DotNext_Reflection_Member_Invoke_" data-uid="DotNext.Reflection.Member.Invoke*"></a>
-  <h4 id="DotNext_Reflection_Member_Invoke__8_DotNext_Reflection_IMember___0_System_Action___1___2___3___4___5___6___7_____1___2___3___4___5___6___7_" data-uid="DotNext.Reflection.Member.Invoke``8(DotNext.Reflection.IMember{``0,System.Action{``1,``2,``3,``4,``5,``6,``7}},``1,``2,``3,``4,``5,``6,``7)">Invoke&lt;M, P1, P2, P3, P4, P5, P6, P7&gt;(IMember&lt;M, Action&lt;P1, P2, P3, P4, P5, P6, P7&gt;&gt;, P1, P2, P3, P4, P5, P6, P7)</h4>
+  <h4 id="DotNext_Reflection_Member_Invoke__8_DotNext_Reflection_IMember___0_System_Action___1___2___3___4___5___6___7_____1___2___3___4___5___6___7_" data-uid="DotNext.Reflection.Member.Invoke``8(DotNext.Reflection.IMember{``0,System.Action{``1,``2,``3,``4,``5,``6,``7}},``1,``2,``3,``4,``5,``6,``7)">Invoke&lt;TMember, T1, T2, T3, T4, T5, T6, T7&gt;(IMember&lt;TMember, Action&lt;T1, T2, T3, T4, T5, T6, T7&gt;&gt;, T1, T2, T3, T4, T5, T6, T7)</h4>
   <div class="markdown level1 summary"><p>Invokes member as procedure.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void Invoke&lt;M, P1, P2, P3, P4, P5, P6, P7&gt;(this IMember&lt;M, Action&lt;P1, P2, P3, P4, P5, P6, P7&gt;&gt; member, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7)
+    <pre><code class="lang-csharp hljs">public static void Invoke&lt;TMember, T1, T2, T3, T4, T5, T6, T7&gt;(this IMember&lt;TMember, Action&lt;T1, T2, T3, T4, T5, T6, T7&gt;&gt; member, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7)
 
-    where M : MemberInfo</code></pre>
+    where TMember : MemberInfo</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -3111,49 +3111,49 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;M, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-7">Action</a>&lt;P1, P2, P3, P4, P5, P6, P7&gt;&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;TMember, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-7">Action</a>&lt;T1, T2, T3, T4, T5, T6, T7&gt;&gt;</td>
         <td><span class="parametername">member</span></td>
         <td><p>Callable member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P1</span></td>
+        <td><span class="xref">T1</span></td>
         <td><span class="parametername">arg1</span></td>
         <td><p>The first procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P2</span></td>
+        <td><span class="xref">T2</span></td>
         <td><span class="parametername">arg2</span></td>
         <td><p>The second procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P3</span></td>
+        <td><span class="xref">T3</span></td>
         <td><span class="parametername">arg3</span></td>
         <td><p>The third procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P4</span></td>
+        <td><span class="xref">T4</span></td>
         <td><span class="parametername">arg4</span></td>
         <td><p>The fourth procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P5</span></td>
+        <td><span class="xref">T5</span></td>
         <td><span class="parametername">arg5</span></td>
         <td><p>The fifth procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P6</span></td>
+        <td><span class="xref">T6</span></td>
         <td><span class="parametername">arg6</span></td>
         <td><p>The sixth procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P7</span></td>
+        <td><span class="xref">T7</span></td>
         <td><span class="parametername">arg7</span></td>
         <td><p>The seventh procedure argument.</p>
 </td>
@@ -3170,42 +3170,42 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">M</span></td>
+        <td><span class="parametername">TMember</span></td>
         <td><p>The type of the member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P1</span></td>
+        <td><span class="parametername">T1</span></td>
         <td><p>The type of the first procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P2</span></td>
+        <td><span class="parametername">T2</span></td>
         <td><p>The type of the second procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P3</span></td>
+        <td><span class="parametername">T3</span></td>
         <td><p>The type of the third procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P4</span></td>
+        <td><span class="parametername">T4</span></td>
         <td><p>The type of the fourth procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P5</span></td>
+        <td><span class="parametername">T5</span></td>
         <td><p>The type of the fifth procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P6</span></td>
+        <td><span class="parametername">T6</span></td>
         <td><p>The type of the sixth procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P7</span></td>
+        <td><span class="parametername">T7</span></td>
         <td><p>The type of the seventh procedure argument.</p>
 </td>
       </tr>
@@ -3216,18 +3216,18 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Member_Invoke__8_DotNext_Reflection_IMember___0_System_Func___1___2___3___4___5___6___7_____1___2___3___4___5___6_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Member.Invoke%60%608(DotNext.Reflection.IMember%7B%60%600%2CSystem.Func%7B%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%7D%7D%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L288">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L289">View Source</a>
   </span>
   <a id="DotNext_Reflection_Member_Invoke_" data-uid="DotNext.Reflection.Member.Invoke*"></a>
-  <h4 id="DotNext_Reflection_Member_Invoke__8_DotNext_Reflection_IMember___0_System_Func___1___2___3___4___5___6___7_____1___2___3___4___5___6_" data-uid="DotNext.Reflection.Member.Invoke``8(DotNext.Reflection.IMember{``0,System.Func{``1,``2,``3,``4,``5,``6,``7}},``1,``2,``3,``4,``5,``6)">Invoke&lt;M, P1, P2, P3, P4, P5, P6, R&gt;(IMember&lt;M, Func&lt;P1, P2, P3, P4, P5, P6, R&gt;&gt;, P1, P2, P3, P4, P5, P6)</h4>
+  <h4 id="DotNext_Reflection_Member_Invoke__8_DotNext_Reflection_IMember___0_System_Func___1___2___3___4___5___6___7_____1___2___3___4___5___6_" data-uid="DotNext.Reflection.Member.Invoke``8(DotNext.Reflection.IMember{``0,System.Func{``1,``2,``3,``4,``5,``6,``7}},``1,``2,``3,``4,``5,``6)">Invoke&lt;TMember, T1, T2, T3, T4, T5, T6, TResult&gt;(IMember&lt;TMember, Func&lt;T1, T2, T3, T4, T5, T6, TResult&gt;&gt;, T1, T2, T3, T4, T5, T6)</h4>
   <div class="markdown level1 summary"><p>Invokes member as function.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static R Invoke&lt;M, P1, P2, P3, P4, P5, P6, R&gt;(this IMember&lt;M, Func&lt;P1, P2, P3, P4, P5, P6, R&gt;&gt; member, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6)
+    <pre><code class="lang-csharp hljs">public static TResult Invoke&lt;TMember, T1, T2, T3, T4, T5, T6, TResult&gt;(this IMember&lt;TMember, Func&lt;T1, T2, T3, T4, T5, T6, TResult&gt;&gt; member, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6)
 
-    where M : MemberInfo</code></pre>
+    where TMember : MemberInfo</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -3240,45 +3240,45 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;M, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-7">Func</a>&lt;P1, P2, P3, P4, P5, P6, R&gt;&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;TMember, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-7">Func</a>&lt;T1, T2, T3, T4, T5, T6, TResult&gt;&gt;</td>
         <td><span class="parametername">member</span></td>
         <td><p>Callable member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P1</span></td>
+        <td><span class="xref">T1</span></td>
         <td><span class="parametername">arg1</span></td>
         <td><p>The first function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P2</span></td>
+        <td><span class="xref">T2</span></td>
         <td><span class="parametername">arg2</span></td>
         <td><p>The second function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P3</span></td>
+        <td><span class="xref">T3</span></td>
         <td><span class="parametername">arg3</span></td>
         <td><p>The third function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P4</span></td>
+        <td><span class="xref">T4</span></td>
         <td><span class="parametername">arg4</span></td>
         <td><p>The fourth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P5</span></td>
+        <td><span class="xref">T5</span></td>
         <td><span class="parametername">arg5</span></td>
         <td><p>The fifth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P6</span></td>
+        <td><span class="xref">T6</span></td>
         <td><span class="parametername">arg6</span></td>
-        <td><p>The fifth function argument.</p>
+        <td><p>The sixth function argument.</p>
 </td>
       </tr>
     </tbody>
@@ -3293,7 +3293,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">R</span></td>
+        <td><span class="xref">TResult</span></td>
         <td><p>Return value.</p>
 </td>
       </tr>
@@ -3309,42 +3309,42 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">M</span></td>
+        <td><span class="parametername">TMember</span></td>
         <td><p>The type of the member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P1</span></td>
+        <td><span class="parametername">T1</span></td>
         <td><p>The type of the first function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P2</span></td>
+        <td><span class="parametername">T2</span></td>
         <td><p>The type of the second function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P3</span></td>
+        <td><span class="parametername">T3</span></td>
         <td><p>The type of the third function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P4</span></td>
+        <td><span class="parametername">T4</span></td>
         <td><p>The type of the fourth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P5</span></td>
+        <td><span class="parametername">T5</span></td>
         <td><p>The type of the fifth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P6</span></td>
+        <td><span class="parametername">T6</span></td>
         <td><p>The type of the sixth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">R</span></td>
+        <td><span class="parametername">TResult</span></td>
         <td><p>Type of function result.</p>
 </td>
       </tr>
@@ -3355,18 +3355,18 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Member_Invoke__9_DotNext_Reflection_IMember___0_System_Action___1___2___3___4___5___6___7___8_____1___2___3___4___5___6___7___8_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Member.Invoke%60%609(DotNext.Reflection.IMember%7B%60%600%2CSystem.Action%7B%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2C%60%608%7D%7D%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2C%60%608)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L569">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L570">View Source</a>
   </span>
   <a id="DotNext_Reflection_Member_Invoke_" data-uid="DotNext.Reflection.Member.Invoke*"></a>
-  <h4 id="DotNext_Reflection_Member_Invoke__9_DotNext_Reflection_IMember___0_System_Action___1___2___3___4___5___6___7___8_____1___2___3___4___5___6___7___8_" data-uid="DotNext.Reflection.Member.Invoke``9(DotNext.Reflection.IMember{``0,System.Action{``1,``2,``3,``4,``5,``6,``7,``8}},``1,``2,``3,``4,``5,``6,``7,``8)">Invoke&lt;M, P1, P2, P3, P4, P5, P6, P7, P8&gt;(IMember&lt;M, Action&lt;P1, P2, P3, P4, P5, P6, P7, P8&gt;&gt;, P1, P2, P3, P4, P5, P6, P7, P8)</h4>
+  <h4 id="DotNext_Reflection_Member_Invoke__9_DotNext_Reflection_IMember___0_System_Action___1___2___3___4___5___6___7___8_____1___2___3___4___5___6___7___8_" data-uid="DotNext.Reflection.Member.Invoke``9(DotNext.Reflection.IMember{``0,System.Action{``1,``2,``3,``4,``5,``6,``7,``8}},``1,``2,``3,``4,``5,``6,``7,``8)">Invoke&lt;TMember, T1, T2, T3, T4, T5, T6, T7, T8&gt;(IMember&lt;TMember, Action&lt;T1, T2, T3, T4, T5, T6, T7, T8&gt;&gt;, T1, T2, T3, T4, T5, T6, T7, T8)</h4>
   <div class="markdown level1 summary"><p>Invokes member as procedure.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void Invoke&lt;M, P1, P2, P3, P4, P5, P6, P7, P8&gt;(this IMember&lt;M, Action&lt;P1, P2, P3, P4, P5, P6, P7, P8&gt;&gt; member, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8)
+    <pre><code class="lang-csharp hljs">public static void Invoke&lt;TMember, T1, T2, T3, T4, T5, T6, T7, T8&gt;(this IMember&lt;TMember, Action&lt;T1, T2, T3, T4, T5, T6, T7, T8&gt;&gt; member, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8)
 
-    where M : MemberInfo</code></pre>
+    where TMember : MemberInfo</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -3379,55 +3379,55 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;M, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-8">Action</a>&lt;P1, P2, P3, P4, P5, P6, P7, P8&gt;&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;TMember, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-8">Action</a>&lt;T1, T2, T3, T4, T5, T6, T7, T8&gt;&gt;</td>
         <td><span class="parametername">member</span></td>
         <td><p>Callable member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P1</span></td>
+        <td><span class="xref">T1</span></td>
         <td><span class="parametername">arg1</span></td>
         <td><p>The first procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P2</span></td>
+        <td><span class="xref">T2</span></td>
         <td><span class="parametername">arg2</span></td>
         <td><p>The second procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P3</span></td>
+        <td><span class="xref">T3</span></td>
         <td><span class="parametername">arg3</span></td>
         <td><p>The third procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P4</span></td>
+        <td><span class="xref">T4</span></td>
         <td><span class="parametername">arg4</span></td>
         <td><p>The fourth procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P5</span></td>
+        <td><span class="xref">T5</span></td>
         <td><span class="parametername">arg5</span></td>
         <td><p>The fifth procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P6</span></td>
+        <td><span class="xref">T6</span></td>
         <td><span class="parametername">arg6</span></td>
         <td><p>The sixth procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P7</span></td>
+        <td><span class="xref">T7</span></td>
         <td><span class="parametername">arg7</span></td>
         <td><p>The seventh procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P8</span></td>
+        <td><span class="xref">T8</span></td>
         <td><span class="parametername">arg8</span></td>
         <td><p>The eighth procedure argument.</p>
 </td>
@@ -3444,47 +3444,47 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">M</span></td>
+        <td><span class="parametername">TMember</span></td>
         <td><p>The type of the member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P1</span></td>
+        <td><span class="parametername">T1</span></td>
         <td><p>The type of the first procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P2</span></td>
+        <td><span class="parametername">T2</span></td>
         <td><p>The type of the second procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P3</span></td>
+        <td><span class="parametername">T3</span></td>
         <td><p>The type of the third procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P4</span></td>
+        <td><span class="parametername">T4</span></td>
         <td><p>The type of the fourth procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P5</span></td>
+        <td><span class="parametername">T5</span></td>
         <td><p>The type of the fifth procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P6</span></td>
+        <td><span class="parametername">T6</span></td>
         <td><p>The type of the sixth procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P7</span></td>
+        <td><span class="parametername">T7</span></td>
         <td><p>The type of the seventh procedure argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P8</span></td>
+        <td><span class="parametername">T8</span></td>
         <td><p>The type of the eighth procedure argument.</p>
 </td>
       </tr>
@@ -3495,18 +3495,18 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Member_Invoke__9_DotNext_Reflection_IMember___0_System_Func___1___2___3___4___5___6___7___8_____1___2___3___4___5___6___7_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Member.Invoke%60%609(DotNext.Reflection.IMember%7B%60%600%2CSystem.Func%7B%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2C%60%608%7D%7D%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L314">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L315">View Source</a>
   </span>
   <a id="DotNext_Reflection_Member_Invoke_" data-uid="DotNext.Reflection.Member.Invoke*"></a>
-  <h4 id="DotNext_Reflection_Member_Invoke__9_DotNext_Reflection_IMember___0_System_Func___1___2___3___4___5___6___7___8_____1___2___3___4___5___6___7_" data-uid="DotNext.Reflection.Member.Invoke``9(DotNext.Reflection.IMember{``0,System.Func{``1,``2,``3,``4,``5,``6,``7,``8}},``1,``2,``3,``4,``5,``6,``7)">Invoke&lt;M, P1, P2, P3, P4, P5, P6, P7, R&gt;(IMember&lt;M, Func&lt;P1, P2, P3, P4, P5, P6, P7, R&gt;&gt;, P1, P2, P3, P4, P5, P6, P7)</h4>
+  <h4 id="DotNext_Reflection_Member_Invoke__9_DotNext_Reflection_IMember___0_System_Func___1___2___3___4___5___6___7___8_____1___2___3___4___5___6___7_" data-uid="DotNext.Reflection.Member.Invoke``9(DotNext.Reflection.IMember{``0,System.Func{``1,``2,``3,``4,``5,``6,``7,``8}},``1,``2,``3,``4,``5,``6,``7)">Invoke&lt;TMember, T1, T2, T3, T4, T5, T6, T7, TResult&gt;(IMember&lt;TMember, Func&lt;T1, T2, T3, T4, T5, T6, T7, TResult&gt;&gt;, T1, T2, T3, T4, T5, T6, T7)</h4>
   <div class="markdown level1 summary"><p>Invokes member as function.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static R Invoke&lt;M, P1, P2, P3, P4, P5, P6, P7, R&gt;(this IMember&lt;M, Func&lt;P1, P2, P3, P4, P5, P6, P7, R&gt;&gt; member, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7)
+    <pre><code class="lang-csharp hljs">public static TResult Invoke&lt;TMember, T1, T2, T3, T4, T5, T6, T7, TResult&gt;(this IMember&lt;TMember, Func&lt;T1, T2, T3, T4, T5, T6, T7, TResult&gt;&gt; member, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7)
 
-    where M : MemberInfo</code></pre>
+    where TMember : MemberInfo</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -3519,49 +3519,49 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;M, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-8">Func</a>&lt;P1, P2, P3, P4, P5, P6, P7, R&gt;&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;TMember, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-8">Func</a>&lt;T1, T2, T3, T4, T5, T6, T7, TResult&gt;&gt;</td>
         <td><span class="parametername">member</span></td>
         <td><p>Callable member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P1</span></td>
+        <td><span class="xref">T1</span></td>
         <td><span class="parametername">arg1</span></td>
         <td><p>The first function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P2</span></td>
+        <td><span class="xref">T2</span></td>
         <td><span class="parametername">arg2</span></td>
         <td><p>The second function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P3</span></td>
+        <td><span class="xref">T3</span></td>
         <td><span class="parametername">arg3</span></td>
         <td><p>The third function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P4</span></td>
+        <td><span class="xref">T4</span></td>
         <td><span class="parametername">arg4</span></td>
         <td><p>The fourth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P5</span></td>
+        <td><span class="xref">T5</span></td>
         <td><span class="parametername">arg5</span></td>
         <td><p>The fifth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P6</span></td>
+        <td><span class="xref">T6</span></td>
         <td><span class="parametername">arg6</span></td>
-        <td><p>The fifth function argument.</p>
+        <td><p>The sixth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P7</span></td>
+        <td><span class="xref">T7</span></td>
         <td><span class="parametername">arg7</span></td>
         <td><p>The seventh function argument.</p>
 </td>
@@ -3578,7 +3578,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">R</span></td>
+        <td><span class="xref">TResult</span></td>
         <td><p>Return value.</p>
 </td>
       </tr>
@@ -3594,47 +3594,47 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">M</span></td>
+        <td><span class="parametername">TMember</span></td>
         <td><p>The type of the member.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P1</span></td>
+        <td><span class="parametername">T1</span></td>
         <td><p>The type of the first function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P2</span></td>
+        <td><span class="parametername">T2</span></td>
         <td><p>The type of the second function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P3</span></td>
+        <td><span class="parametername">T3</span></td>
         <td><p>The type of the third function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P4</span></td>
+        <td><span class="parametername">T4</span></td>
         <td><p>The type of the fourth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P5</span></td>
+        <td><span class="parametername">T5</span></td>
         <td><p>The type of the fifth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P6</span></td>
+        <td><span class="parametername">T6</span></td>
         <td><p>The type of the sixth function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P7</span></td>
+        <td><span class="parametername">T7</span></td>
         <td><p>The type of the seventh function argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">R</span></td>
+        <td><span class="parametername">TResult</span></td>
         <td><p>Type of function result.</p>
 </td>
       </tr>
@@ -3651,7 +3651,7 @@
                     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Member.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Member%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L46" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IMember.cs/#L47" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

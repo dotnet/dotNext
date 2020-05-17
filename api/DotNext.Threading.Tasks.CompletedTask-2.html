@@ -5,12 +5,12 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class CompletedTask&lt;T, C&gt;
+    <title>Class CompletedTask&lt;T, TConstant&gt;
    | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class CompletedTask&lt;T, C&gt;
+    <meta name="title" content="Class CompletedTask&lt;T, TConstant&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.52.0.0">
+    <meta name="generator" content="docfx 2.53.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -71,7 +71,7 @@
             <article class="content wrap" id="_content" data-uid="DotNext.Threading.Tasks.CompletedTask`2">
   
   
-  <h1 id="DotNext_Threading_Tasks_CompletedTask_2" data-uid="DotNext.Threading.Tasks.CompletedTask`2" class="text-break">Class CompletedTask&lt;T, C&gt;
+  <h1 id="DotNext_Threading_Tasks_CompletedTask_2" data-uid="DotNext.Threading.Tasks.CompletedTask`2" class="text-break">Class CompletedTask&lt;T, TConstant&gt;
   </h1>
   <div class="markdown level0 summary"><p>Represents cache of completed tasks.</p>
 </div>
@@ -79,7 +79,7 @@
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><span class="xref">CompletedTask&lt;T, C&gt;</span></div>
+    <div class="level1"><span class="xref">CompletedTask&lt;T, TConstant&gt;</span></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -109,9 +109,9 @@
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Threading_Tasks_CompletedTask_2_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static class CompletedTask&lt;T, C&gt;
+    <pre><code class="lang-csharp hljs">public static class CompletedTask&lt;T, TConstant&gt;
 
-    where C : Constant&lt;T&gt;, new()</code></pre>
+    where TConstant : Constant&lt;T&gt;, new()</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -128,7 +128,7 @@
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">C</span></td>
+        <td><span class="parametername">TConstant</span></td>
         <td><p>The constant value to be assigned to the completed task.</p>
 </td>
       </tr>
@@ -144,7 +144,7 @@
     <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/CompletedTask.cs/#L20">View Source</a>
   </span>
   <h4 id="DotNext_Threading_Tasks_CompletedTask_2_Task" data-uid="DotNext.Threading.Tasks.CompletedTask`2.Task">Task</h4>
-  <div class="markdown level1 summary"><p>Represents the completed task containing a value passed as constant through <code data-dev-comment-type="typeparamref" class="typeparamref">C</code> generic parameter.</p>
+  <div class="markdown level1 summary"><p>Represents the completed task containing a value passed as constant through <code data-dev-comment-type="typeparamref" class="typeparamref">TConstant</code> generic parameter.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>

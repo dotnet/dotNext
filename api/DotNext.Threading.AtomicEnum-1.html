@@ -5,12 +5,12 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Struct AtomicEnum&lt;E&gt;
+    <title>Struct AtomicEnum&lt;TEnum&gt;
    | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Struct AtomicEnum&lt;E&gt;
+    <meta name="title" content="Struct AtomicEnum&lt;TEnum&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.52.0.0">
+    <meta name="generator" content="docfx 2.53.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -71,14 +71,14 @@
             <article class="content wrap" id="_content" data-uid="DotNext.Threading.AtomicEnum`1">
   
   
-  <h1 id="DotNext_Threading_AtomicEnum_1" data-uid="DotNext.Threading.AtomicEnum`1" class="text-break">Struct AtomicEnum&lt;E&gt;
+  <h1 id="DotNext_Threading_AtomicEnum_1" data-uid="DotNext.Threading.AtomicEnum`1" class="text-break">Struct AtomicEnum&lt;TEnum&gt;
   </h1>
   <div class="markdown level0 summary"><p>Represents atomic enum value.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div classs="implements">
     <h5>Implements</h5>
-    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;E&gt;</div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;TEnum&gt;</div>
     <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.runtime.serialization.iserializable">ISerializable</a></div>
   </div>
   <div class="inheritedMembers">
@@ -98,7 +98,7 @@
   <h5 id="DotNext_Threading_AtomicEnum_1_syntax">Syntax</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[Serializable]
-public struct AtomicEnum&lt;E&gt; : IEquatable&lt;E&gt;, ISerializable where E : struct, Enum</code></pre>
+public struct AtomicEnum&lt;TEnum&gt; : IEquatable&lt;TEnum&gt;, ISerializable where TEnum : struct, Enum</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -110,8 +110,9 @@ public struct AtomicEnum&lt;E&gt; : IEquatable&lt;E&gt;, ISerializable where E :
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">E</span></td>
-        <td></td>
+        <td><span class="parametername">TEnum</span></td>
+        <td><p>The enum type.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -122,16 +123,16 @@ public struct AtomicEnum&lt;E&gt; : IEquatable&lt;E&gt;, ISerializable where E :
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicEnum_1__ctor__0_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicEnum%601.%23ctor(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L106">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L113">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicEnum_1__ctor_" data-uid="DotNext.Threading.AtomicEnum`1.#ctor*"></a>
-  <h4 id="DotNext_Threading_AtomicEnum_1__ctor__0_" data-uid="DotNext.Threading.AtomicEnum`1.#ctor(`0)">AtomicEnum(E)</h4>
+  <h4 id="DotNext_Threading_AtomicEnum_1__ctor__0_" data-uid="DotNext.Threading.AtomicEnum`1.#ctor(`0)">AtomicEnum(TEnum)</h4>
   <div class="markdown level1 summary"><p>Initializes a new atomic boolean container with initial value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public AtomicEnum(E value)</code></pre>
+    <pre><code class="lang-csharp hljs">public AtomicEnum(TEnum value)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -144,7 +145,7 @@ public struct AtomicEnum&lt;E&gt; : IEquatable&lt;E&gt;, ISerializable where E :
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">E</span></td>
+        <td><span class="xref">TEnum</span></td>
         <td><span class="parametername">value</span></td>
         <td><p>Initial value of the atomic boolean.</p>
 </td>
@@ -158,7 +159,7 @@ public struct AtomicEnum&lt;E&gt; : IEquatable&lt;E&gt;, ISerializable where E :
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicEnum_1_Value.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicEnum%601.Value%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L117">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L124">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicEnum_1_Value_" data-uid="DotNext.Threading.AtomicEnum`1.Value*"></a>
   <h4 id="DotNext_Threading_AtomicEnum_1_Value" data-uid="DotNext.Threading.AtomicEnum`1.Value">Value</h4>
@@ -167,7 +168,7 @@ public struct AtomicEnum&lt;E&gt; : IEquatable&lt;E&gt;, ISerializable where E :
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public E Value { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">public TEnum Value { get; set; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -179,7 +180,7 @@ public struct AtomicEnum&lt;E&gt; : IEquatable&lt;E&gt;, ISerializable where E :
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">E</span></td>
+        <td><span class="xref">TEnum</span></td>
         <td></td>
       </tr>
     </tbody>
@@ -191,17 +192,17 @@ public struct AtomicEnum&lt;E&gt; : IEquatable&lt;E&gt;, ISerializable where E :
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicEnum_1_AccumulateAndGet__0_DotNext_ValueFunc__0__0__0___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicEnum%601.AccumulateAndGet(%600%2CDotNext.ValueFunc%7B%600%2C%600%2C%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L209">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L216">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicEnum_1_AccumulateAndGet_" data-uid="DotNext.Threading.AtomicEnum`1.AccumulateAndGet*"></a>
-  <h4 id="DotNext_Threading_AtomicEnum_1_AccumulateAndGet__0_DotNext_ValueFunc__0__0__0___" data-uid="DotNext.Threading.AtomicEnum`1.AccumulateAndGet(`0,DotNext.ValueFunc{`0,`0,`0}@)">AccumulateAndGet(E, ValueFunc&lt;E, E, E&gt;)</h4>
+  <h4 id="DotNext_Threading_AtomicEnum_1_AccumulateAndGet__0_DotNext_ValueFunc__0__0__0___" data-uid="DotNext.Threading.AtomicEnum`1.AccumulateAndGet(`0,DotNext.ValueFunc{`0,`0,`0}@)">AccumulateAndGet(TEnum, ValueFunc&lt;TEnum, TEnum, TEnum&gt;)</h4>
   <div class="markdown level1 summary"><p>Atomically updates the current value with the results of applying the given function
 to the current and given values, returning the updated value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public E AccumulateAndGet(E x, in ValueFunc&lt;E, E, E&gt; accumulator)</code></pre>
+    <pre><code class="lang-csharp hljs">public TEnum AccumulateAndGet(TEnum x, in ValueFunc&lt;TEnum, TEnum, TEnum&gt; accumulator)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -214,15 +215,15 @@ to the current and given values, returning the updated value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">E</span></td>
+        <td><span class="xref">TEnum</span></td>
         <td><span class="parametername">x</span></td>
         <td><p>Accumulator operand.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="DotNext.ValueFunc-3.html">ValueFunc</a>&lt;E, E, E&gt;</td>
+        <td><a class="xref" href="DotNext.ValueFunc-3.html">ValueFunc</a>&lt;TEnum, TEnum, TEnum&gt;</td>
         <td><span class="parametername">accumulator</span></td>
-        <td><p>A side-effect-free function of two arguments</p>
+        <td><p>A side-effect-free function of two arguments.</p>
 </td>
       </tr>
     </tbody>
@@ -237,7 +238,7 @@ to the current and given values, returning the updated value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">E</span></td>
+        <td><span class="xref">TEnum</span></td>
         <td><p>The updated value.</p>
 </td>
       </tr>
@@ -251,17 +252,17 @@ to the current and given values, returning the updated value.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicEnum_1_AccumulateAndGet__0_System_Func__0__0__0__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicEnum%601.AccumulateAndGet(%600%2CSystem.Func%7B%600%2C%600%2C%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L196">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L203">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicEnum_1_AccumulateAndGet_" data-uid="DotNext.Threading.AtomicEnum`1.AccumulateAndGet*"></a>
-  <h4 id="DotNext_Threading_AtomicEnum_1_AccumulateAndGet__0_System_Func__0__0__0__" data-uid="DotNext.Threading.AtomicEnum`1.AccumulateAndGet(`0,System.Func{`0,`0,`0})">AccumulateAndGet(E, Func&lt;E, E, E&gt;)</h4>
+  <h4 id="DotNext_Threading_AtomicEnum_1_AccumulateAndGet__0_System_Func__0__0__0__" data-uid="DotNext.Threading.AtomicEnum`1.AccumulateAndGet(`0,System.Func{`0,`0,`0})">AccumulateAndGet(TEnum, Func&lt;TEnum, TEnum, TEnum&gt;)</h4>
   <div class="markdown level1 summary"><p>Atomically updates the current value with the results of applying the given function
 to the current and given values, returning the updated value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public E AccumulateAndGet(E x, Func&lt;E, E, E&gt; accumulator)</code></pre>
+    <pre><code class="lang-csharp hljs">public TEnum AccumulateAndGet(TEnum x, Func&lt;TEnum, TEnum, TEnum&gt; accumulator)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -274,15 +275,15 @@ to the current and given values, returning the updated value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">E</span></td>
+        <td><span class="xref">TEnum</span></td>
         <td><span class="parametername">x</span></td>
         <td><p>Accumulator operand.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;E, E, E&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;TEnum, TEnum, TEnum&gt;</td>
         <td><span class="parametername">accumulator</span></td>
-        <td><p>A side-effect-free function of two arguments</p>
+        <td><p>A side-effect-free function of two arguments.</p>
 </td>
       </tr>
     </tbody>
@@ -297,7 +298,7 @@ to the current and given values, returning the updated value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">E</span></td>
+        <td><span class="xref">TEnum</span></td>
         <td><p>The updated value.</p>
 </td>
       </tr>
@@ -311,16 +312,16 @@ to the current and given values, returning the updated value.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicEnum_1_CompareAndSet__0__0_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicEnum%601.CompareAndSet(%600%2C%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L141">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L148">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicEnum_1_CompareAndSet_" data-uid="DotNext.Threading.AtomicEnum`1.CompareAndSet*"></a>
-  <h4 id="DotNext_Threading_AtomicEnum_1_CompareAndSet__0__0_" data-uid="DotNext.Threading.AtomicEnum`1.CompareAndSet(`0,`0)">CompareAndSet(E, E)</h4>
+  <h4 id="DotNext_Threading_AtomicEnum_1_CompareAndSet__0__0_" data-uid="DotNext.Threading.AtomicEnum`1.CompareAndSet(`0,`0)">CompareAndSet(TEnum, TEnum)</h4>
   <div class="markdown level1 summary"><p>Atomically sets referenced value to the given updated value if the current value == the expected value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool CompareAndSet(E expected, E update)</code></pre>
+    <pre><code class="lang-csharp hljs">public bool CompareAndSet(TEnum expected, TEnum update)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -333,13 +334,13 @@ to the current and given values, returning the updated value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">E</span></td>
+        <td><span class="xref">TEnum</span></td>
         <td><span class="parametername">expected</span></td>
         <td><p>The expected value.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">E</span></td>
+        <td><span class="xref">TEnum</span></td>
         <td><span class="parametername">update</span></td>
         <td><p>The new value.</p>
 </td>
@@ -367,16 +368,16 @@ to the current and given values, returning the updated value.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicEnum_1_CompareExchange__0__0_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicEnum%601.CompareExchange(%600%2C%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L131">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L138">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicEnum_1_CompareExchange_" data-uid="DotNext.Threading.AtomicEnum`1.CompareExchange*"></a>
-  <h4 id="DotNext_Threading_AtomicEnum_1_CompareExchange__0__0_" data-uid="DotNext.Threading.AtomicEnum`1.CompareExchange(`0,`0)">CompareExchange(E, E)</h4>
+  <h4 id="DotNext_Threading_AtomicEnum_1_CompareExchange__0__0_" data-uid="DotNext.Threading.AtomicEnum`1.CompareExchange(`0,`0)">CompareExchange(TEnum, TEnum)</h4>
   <div class="markdown level1 summary"><p>Atomically sets referenced value to the given updated value if the current value == the expected value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public E CompareExchange(E update, E expected)</code></pre>
+    <pre><code class="lang-csharp hljs">public TEnum CompareExchange(TEnum update, TEnum expected)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -389,13 +390,13 @@ to the current and given values, returning the updated value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">E</span></td>
+        <td><span class="xref">TEnum</span></td>
         <td><span class="parametername">update</span></td>
         <td><p>The new value.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">E</span></td>
+        <td><span class="xref">TEnum</span></td>
         <td><span class="parametername">expected</span></td>
         <td><p>The expected value.</p>
 </td>
@@ -412,7 +413,7 @@ to the current and given values, returning the updated value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">E</span></td>
+        <td><span class="xref">TEnum</span></td>
         <td><p>The original value.</p>
 </td>
       </tr>
@@ -423,17 +424,17 @@ to the current and given values, returning the updated value.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicEnum_1_Equals__0_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicEnum%601.Equals(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L280">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L287">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicEnum_1_Equals_" data-uid="DotNext.Threading.AtomicEnum`1.Equals*"></a>
-  <h4 id="DotNext_Threading_AtomicEnum_1_Equals__0_" data-uid="DotNext.Threading.AtomicEnum`1.Equals(`0)">Equals(E)</h4>
+  <h4 id="DotNext_Threading_AtomicEnum_1_Equals__0_" data-uid="DotNext.Threading.AtomicEnum`1.Equals(`0)">Equals(TEnum)</h4>
   <div class="markdown level1 summary"><p>Determines whether stored value is equal to
 value passed as argument.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool Equals(E other)</code></pre>
+    <pre><code class="lang-csharp hljs">public bool Equals(TEnum other)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -446,7 +447,7 @@ value passed as argument.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">E</span></td>
+        <td><span class="xref">TEnum</span></td>
         <td><span class="parametername">other</span></td>
         <td><p>Other value to compare.</p>
 </td>
@@ -474,7 +475,7 @@ value passed as argument.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicEnum_1_Equals_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicEnum%601.Equals(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L288">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L295">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicEnum_1_Equals_" data-uid="DotNext.Threading.AtomicEnum`1.Equals*"></a>
   <h4 id="DotNext_Threading_AtomicEnum_1_Equals_System_Object_" data-uid="DotNext.Threading.AtomicEnum`1.Equals(System.Object)">Equals(Object)</h4>
@@ -527,17 +528,17 @@ value as the passed argument.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicEnum_1_GetAndAccumulate__0_DotNext_ValueFunc__0__0__0___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicEnum%601.GetAndAccumulate(%600%2CDotNext.ValueFunc%7B%600%2C%600%2C%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L235">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L242">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicEnum_1_GetAndAccumulate_" data-uid="DotNext.Threading.AtomicEnum`1.GetAndAccumulate*"></a>
-  <h4 id="DotNext_Threading_AtomicEnum_1_GetAndAccumulate__0_DotNext_ValueFunc__0__0__0___" data-uid="DotNext.Threading.AtomicEnum`1.GetAndAccumulate(`0,DotNext.ValueFunc{`0,`0,`0}@)">GetAndAccumulate(E, ValueFunc&lt;E, E, E&gt;)</h4>
+  <h4 id="DotNext_Threading_AtomicEnum_1_GetAndAccumulate__0_DotNext_ValueFunc__0__0__0___" data-uid="DotNext.Threading.AtomicEnum`1.GetAndAccumulate(`0,DotNext.ValueFunc{`0,`0,`0}@)">GetAndAccumulate(TEnum, ValueFunc&lt;TEnum, TEnum, TEnum&gt;)</h4>
   <div class="markdown level1 summary"><p>Atomically updates the current value with the results of applying the given function
 to the current and given values, returning the original value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public E GetAndAccumulate(E x, in ValueFunc&lt;E, E, E&gt; accumulator)</code></pre>
+    <pre><code class="lang-csharp hljs">public TEnum GetAndAccumulate(TEnum x, in ValueFunc&lt;TEnum, TEnum, TEnum&gt; accumulator)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -550,15 +551,15 @@ to the current and given values, returning the original value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">E</span></td>
+        <td><span class="xref">TEnum</span></td>
         <td><span class="parametername">x</span></td>
         <td><p>Accumulator operand.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="DotNext.ValueFunc-3.html">ValueFunc</a>&lt;E, E, E&gt;</td>
+        <td><a class="xref" href="DotNext.ValueFunc-3.html">ValueFunc</a>&lt;TEnum, TEnum, TEnum&gt;</td>
         <td><span class="parametername">accumulator</span></td>
-        <td><p>A side-effect-free function of two arguments</p>
+        <td><p>A side-effect-free function of two arguments.</p>
 </td>
       </tr>
     </tbody>
@@ -573,7 +574,7 @@ to the current and given values, returning the original value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">E</span></td>
+        <td><span class="xref">TEnum</span></td>
         <td><p>The original value.</p>
 </td>
       </tr>
@@ -587,17 +588,17 @@ to the current and given values, returning the original value.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicEnum_1_GetAndAccumulate__0_System_Func__0__0__0__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicEnum%601.GetAndAccumulate(%600%2CSystem.Func%7B%600%2C%600%2C%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L222">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L229">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicEnum_1_GetAndAccumulate_" data-uid="DotNext.Threading.AtomicEnum`1.GetAndAccumulate*"></a>
-  <h4 id="DotNext_Threading_AtomicEnum_1_GetAndAccumulate__0_System_Func__0__0__0__" data-uid="DotNext.Threading.AtomicEnum`1.GetAndAccumulate(`0,System.Func{`0,`0,`0})">GetAndAccumulate(E, Func&lt;E, E, E&gt;)</h4>
+  <h4 id="DotNext_Threading_AtomicEnum_1_GetAndAccumulate__0_System_Func__0__0__0__" data-uid="DotNext.Threading.AtomicEnum`1.GetAndAccumulate(`0,System.Func{`0,`0,`0})">GetAndAccumulate(TEnum, Func&lt;TEnum, TEnum, TEnum&gt;)</h4>
   <div class="markdown level1 summary"><p>Atomically updates the current value with the results of applying the given function
 to the current and given values, returning the original value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public E GetAndAccumulate(E x, Func&lt;E, E, E&gt; accumulator)</code></pre>
+    <pre><code class="lang-csharp hljs">public TEnum GetAndAccumulate(TEnum x, Func&lt;TEnum, TEnum, TEnum&gt; accumulator)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -610,15 +611,15 @@ to the current and given values, returning the original value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">E</span></td>
+        <td><span class="xref">TEnum</span></td>
         <td><span class="parametername">x</span></td>
         <td><p>Accumulator operand.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;E, E, E&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;TEnum, TEnum, TEnum&gt;</td>
         <td><span class="parametername">accumulator</span></td>
-        <td><p>A side-effect-free function of two arguments</p>
+        <td><p>A side-effect-free function of two arguments.</p>
 </td>
       </tr>
     </tbody>
@@ -633,7 +634,7 @@ to the current and given values, returning the original value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">E</span></td>
+        <td><span class="xref">TEnum</span></td>
         <td><p>The original value.</p>
 </td>
       </tr>
@@ -647,16 +648,16 @@ to the current and given values, returning the original value.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicEnum_1_GetAndSet__0_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicEnum%601.GetAndSet(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L149">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L156">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicEnum_1_GetAndSet_" data-uid="DotNext.Threading.AtomicEnum`1.GetAndSet*"></a>
-  <h4 id="DotNext_Threading_AtomicEnum_1_GetAndSet__0_" data-uid="DotNext.Threading.AtomicEnum`1.GetAndSet(`0)">GetAndSet(E)</h4>
+  <h4 id="DotNext_Threading_AtomicEnum_1_GetAndSet__0_" data-uid="DotNext.Threading.AtomicEnum`1.GetAndSet(`0)">GetAndSet(TEnum)</h4>
   <div class="markdown level1 summary"><p>Modifies the current value atomically.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public E GetAndSet(E update)</code></pre>
+    <pre><code class="lang-csharp hljs">public TEnum GetAndSet(TEnum update)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -669,7 +670,7 @@ to the current and given values, returning the original value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">E</span></td>
+        <td><span class="xref">TEnum</span></td>
         <td><span class="parametername">update</span></td>
         <td><p>A new value to be stored into this container.</p>
 </td>
@@ -686,7 +687,7 @@ to the current and given values, returning the original value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">E</span></td>
+        <td><span class="xref">TEnum</span></td>
         <td><p>Original value before modification.</p>
 </td>
       </tr>
@@ -697,17 +698,17 @@ to the current and given values, returning the original value.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicEnum_1_GetAndUpdate_DotNext_ValueFunc__0__0___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicEnum%601.GetAndUpdate(DotNext.ValueFunc%7B%600%2C%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L271">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L278">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicEnum_1_GetAndUpdate_" data-uid="DotNext.Threading.AtomicEnum`1.GetAndUpdate*"></a>
-  <h4 id="DotNext_Threading_AtomicEnum_1_GetAndUpdate_DotNext_ValueFunc__0__0___" data-uid="DotNext.Threading.AtomicEnum`1.GetAndUpdate(DotNext.ValueFunc{`0,`0}@)">GetAndUpdate(ValueFunc&lt;E, E&gt;)</h4>
+  <h4 id="DotNext_Threading_AtomicEnum_1_GetAndUpdate_DotNext_ValueFunc__0__0___" data-uid="DotNext.Threading.AtomicEnum`1.GetAndUpdate(DotNext.ValueFunc{`0,`0}@)">GetAndUpdate(ValueFunc&lt;TEnum, TEnum&gt;)</h4>
   <div class="markdown level1 summary"><p>Atomically updates the stored value with the results
 of applying the given function, returning the original value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public E GetAndUpdate(in ValueFunc&lt;E, E&gt; updater)</code></pre>
+    <pre><code class="lang-csharp hljs">public TEnum GetAndUpdate(in ValueFunc&lt;TEnum, TEnum&gt; updater)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -720,9 +721,9 @@ of applying the given function, returning the original value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;E, E&gt;</td>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;TEnum, TEnum&gt;</td>
         <td><span class="parametername">updater</span></td>
-        <td><p>A side-effect-free function</p>
+        <td><p>A side-effect-free function.</p>
 </td>
       </tr>
     </tbody>
@@ -737,7 +738,7 @@ of applying the given function, returning the original value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">E</span></td>
+        <td><span class="xref">TEnum</span></td>
         <td><p>The original value.</p>
 </td>
       </tr>
@@ -748,17 +749,17 @@ of applying the given function, returning the original value.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicEnum_1_GetAndUpdate_System_Func__0__0__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicEnum%601.GetAndUpdate(System.Func%7B%600%2C%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L262">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L269">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicEnum_1_GetAndUpdate_" data-uid="DotNext.Threading.AtomicEnum`1.GetAndUpdate*"></a>
-  <h4 id="DotNext_Threading_AtomicEnum_1_GetAndUpdate_System_Func__0__0__" data-uid="DotNext.Threading.AtomicEnum`1.GetAndUpdate(System.Func{`0,`0})">GetAndUpdate(Func&lt;E, E&gt;)</h4>
+  <h4 id="DotNext_Threading_AtomicEnum_1_GetAndUpdate_System_Func__0__0__" data-uid="DotNext.Threading.AtomicEnum`1.GetAndUpdate(System.Func{`0,`0})">GetAndUpdate(Func&lt;TEnum, TEnum&gt;)</h4>
   <div class="markdown level1 summary"><p>Atomically updates the stored value with the results
 of applying the given function, returning the original value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public E GetAndUpdate(Func&lt;E, E&gt; updater)</code></pre>
+    <pre><code class="lang-csharp hljs">public TEnum GetAndUpdate(Func&lt;TEnum, TEnum&gt; updater)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -771,9 +772,9 @@ of applying the given function, returning the original value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;E, E&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;TEnum, TEnum&gt;</td>
         <td><span class="parametername">updater</span></td>
-        <td><p>A side-effect-free function</p>
+        <td><p>A side-effect-free function.</p>
 </td>
       </tr>
     </tbody>
@@ -788,7 +789,7 @@ of applying the given function, returning the original value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">E</span></td>
+        <td><span class="xref">TEnum</span></td>
         <td><p>The original value.</p>
 </td>
       </tr>
@@ -799,7 +800,7 @@ of applying the given function, returning the original value.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicEnum_1_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicEnum%601.GetHashCode%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L299">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L306">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicEnum_1_GetHashCode_" data-uid="DotNext.Threading.AtomicEnum`1.GetHashCode*"></a>
   <h4 id="DotNext_Threading_AtomicEnum_1_GetHashCode" data-uid="DotNext.Threading.AtomicEnum`1.GetHashCode">GetHashCode()</h4>
@@ -833,16 +834,16 @@ of applying the given function, returning the original value.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicEnum_1_SetAndGet__0_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicEnum%601.SetAndGet(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L157">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L164">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicEnum_1_SetAndGet_" data-uid="DotNext.Threading.AtomicEnum`1.SetAndGet*"></a>
-  <h4 id="DotNext_Threading_AtomicEnum_1_SetAndGet__0_" data-uid="DotNext.Threading.AtomicEnum`1.SetAndGet(`0)">SetAndGet(E)</h4>
+  <h4 id="DotNext_Threading_AtomicEnum_1_SetAndGet__0_" data-uid="DotNext.Threading.AtomicEnum`1.SetAndGet(`0)">SetAndGet(TEnum)</h4>
   <div class="markdown level1 summary"><p>Modifies the current value atomically.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public E SetAndGet(E update)</code></pre>
+    <pre><code class="lang-csharp hljs">public TEnum SetAndGet(TEnum update)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -855,7 +856,7 @@ of applying the given function, returning the original value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">E</span></td>
+        <td><span class="xref">TEnum</span></td>
         <td><span class="parametername">update</span></td>
         <td><p>A new value to be stored into this container.</p>
 </td>
@@ -872,7 +873,7 @@ of applying the given function, returning the original value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">E</span></td>
+        <td><span class="xref">TEnum</span></td>
         <td><p>A new value passed as argument.</p>
 </td>
       </tr>
@@ -883,7 +884,7 @@ of applying the given function, returning the original value.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicEnum_1_ToString.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicEnum%601.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L305">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L312">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicEnum_1_ToString_" data-uid="DotNext.Threading.AtomicEnum`1.ToString*"></a>
   <h4 id="DotNext_Threading_AtomicEnum_1_ToString" data-uid="DotNext.Threading.AtomicEnum`1.ToString">ToString()</h4>
@@ -917,17 +918,17 @@ of applying the given function, returning the original value.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicEnum_1_UpdateAndGet_DotNext_ValueFunc__0__0___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicEnum%601.UpdateAndGet(DotNext.ValueFunc%7B%600%2C%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L253">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L260">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicEnum_1_UpdateAndGet_" data-uid="DotNext.Threading.AtomicEnum`1.UpdateAndGet*"></a>
-  <h4 id="DotNext_Threading_AtomicEnum_1_UpdateAndGet_DotNext_ValueFunc__0__0___" data-uid="DotNext.Threading.AtomicEnum`1.UpdateAndGet(DotNext.ValueFunc{`0,`0}@)">UpdateAndGet(ValueFunc&lt;E, E&gt;)</h4>
+  <h4 id="DotNext_Threading_AtomicEnum_1_UpdateAndGet_DotNext_ValueFunc__0__0___" data-uid="DotNext.Threading.AtomicEnum`1.UpdateAndGet(DotNext.ValueFunc{`0,`0}@)">UpdateAndGet(ValueFunc&lt;TEnum, TEnum&gt;)</h4>
   <div class="markdown level1 summary"><p>Atomically updates the stored value with the results
 of applying the given function, returning the updated value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public E UpdateAndGet(in ValueFunc&lt;E, E&gt; updater)</code></pre>
+    <pre><code class="lang-csharp hljs">public TEnum UpdateAndGet(in ValueFunc&lt;TEnum, TEnum&gt; updater)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -940,9 +941,9 @@ of applying the given function, returning the updated value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;E, E&gt;</td>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;TEnum, TEnum&gt;</td>
         <td><span class="parametername">updater</span></td>
-        <td><p>A side-effect-free function</p>
+        <td><p>A side-effect-free function.</p>
 </td>
       </tr>
     </tbody>
@@ -957,7 +958,7 @@ of applying the given function, returning the updated value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">E</span></td>
+        <td><span class="xref">TEnum</span></td>
         <td><p>The updated value.</p>
 </td>
       </tr>
@@ -968,17 +969,17 @@ of applying the given function, returning the updated value.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicEnum_1_UpdateAndGet_System_Func__0__0__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicEnum%601.UpdateAndGet(System.Func%7B%600%2C%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L244">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L251">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicEnum_1_UpdateAndGet_" data-uid="DotNext.Threading.AtomicEnum`1.UpdateAndGet*"></a>
-  <h4 id="DotNext_Threading_AtomicEnum_1_UpdateAndGet_System_Func__0__0__" data-uid="DotNext.Threading.AtomicEnum`1.UpdateAndGet(System.Func{`0,`0})">UpdateAndGet(Func&lt;E, E&gt;)</h4>
+  <h4 id="DotNext_Threading_AtomicEnum_1_UpdateAndGet_System_Func__0__0__" data-uid="DotNext.Threading.AtomicEnum`1.UpdateAndGet(System.Func{`0,`0})">UpdateAndGet(Func&lt;TEnum, TEnum&gt;)</h4>
   <div class="markdown level1 summary"><p>Atomically updates the stored value with the results
 of applying the given function, returning the updated value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public E UpdateAndGet(Func&lt;E, E&gt; updater)</code></pre>
+    <pre><code class="lang-csharp hljs">public TEnum UpdateAndGet(Func&lt;TEnum, TEnum&gt; updater)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -991,9 +992,9 @@ of applying the given function, returning the updated value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;E, E&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;TEnum, TEnum&gt;</td>
         <td><span class="parametername">updater</span></td>
-        <td><p>A side-effect-free function</p>
+        <td><p>A side-effect-free function.</p>
 </td>
       </tr>
     </tbody>
@@ -1008,7 +1009,7 @@ of applying the given function, returning the updated value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">E</span></td>
+        <td><span class="xref">TEnum</span></td>
         <td><p>The updated value.</p>
 </td>
       </tr>
@@ -1021,7 +1022,7 @@ of applying the given function, returning the updated value.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicEnum_1_System_Runtime_Serialization_ISerializable_GetObjectData_System_Runtime_Serialization_SerializationInfo_System_Runtime_Serialization_StreamingContext_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicEnum%601.System%23Runtime%23Serialization%23ISerializable%23GetObjectData(System.Runtime.Serialization.SerializationInfo%2CSystem.Runtime.Serialization.StreamingContext)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L307">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L315">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicEnum_1_System_Runtime_Serialization_ISerializable_GetObjectData_" data-uid="DotNext.Threading.AtomicEnum`1.System#Runtime#Serialization#ISerializable#GetObjectData*"></a>
   <h4 id="DotNext_Threading_AtomicEnum_1_System_Runtime_Serialization_ISerializable_GetObjectData_System_Runtime_Serialization_SerializationInfo_System_Runtime_Serialization_StreamingContext_" data-uid="DotNext.Threading.AtomicEnum`1.System#Runtime#Serialization#ISerializable#GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">ISerializable.GetObjectData(SerializationInfo, StreamingContext)</h4>
@@ -1078,7 +1079,7 @@ of applying the given function, returning the updated value.</p>
                     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicEnum_1.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicEnum%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L92" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicEnum.cs/#L99" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

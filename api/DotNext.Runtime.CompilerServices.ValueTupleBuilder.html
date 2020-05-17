@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class ValueTupleBuilder
    | .NEXT ">
-    <meta name="generator" content="docfx 2.52.0.0">
+    <meta name="generator" content="docfx 2.53.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -234,15 +234,15 @@ items.</p>
     <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Runtime/CompilerServices/ValueTupleBuilder.cs/#L60">View Source</a>
   </span>
   <a id="DotNext_Runtime_CompilerServices_ValueTupleBuilder_Build_" data-uid="DotNext.Runtime.CompilerServices.ValueTupleBuilder.Build*"></a>
-  <h4 id="DotNext_Runtime_CompilerServices_ValueTupleBuilder_Build__1_System_Func_System_Type___0____0__" data-uid="DotNext.Runtime.CompilerServices.ValueTupleBuilder.Build``1(System.Func{System.Type,``0},``0@)">Build&lt;E&gt;(Func&lt;Type, E&gt;, out E)</h4>
+  <h4 id="DotNext_Runtime_CompilerServices_ValueTupleBuilder_Build__1_System_Func_System_Type___0____0__" data-uid="DotNext.Runtime.CompilerServices.ValueTupleBuilder.Build``1(System.Func{System.Type,``0},``0@)">Build&lt;TException&gt;(Func&lt;Type, TException&gt;, out TException)</h4>
   <div class="markdown level1 summary"><p>Constructs expression tree based on value tuple type.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public MemberExpression[] Build&lt;E&gt;(Func&lt;Type, E&gt; expressionFactory, out E expression)
+    <pre><code class="lang-csharp hljs">public MemberExpression[] Build&lt;TException&gt;(Func&lt;Type, TException&gt; expressionFactory, out TException expression)
 
-    where E : Expression</code></pre>
+    where TException : Expression</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -255,13 +255,13 @@ items.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.type">Type</a>, E&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.type">Type</a>, TException&gt;</td>
         <td><span class="parametername">expressionFactory</span></td>
         <td><p>A function accepting value tuple type and returning expression tree.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">E</span></td>
+        <td><span class="xref">TException</span></td>
         <td><span class="parametername">expression</span></td>
         <td><p>Constructed expression.</p>
 </td>
@@ -294,7 +294,7 @@ items.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">E</span></td>
+        <td><span class="parametername">TException</span></td>
         <td><p>Type of expression tree.</p>
 </td>
       </tr>
@@ -305,7 +305,7 @@ items.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_CompilerServices_ValueTupleBuilder_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.CompilerServices.ValueTupleBuilder.Dispose(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Runtime/CompilerServices/ValueTupleBuilder.cs/#L102">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Runtime/CompilerServices/ValueTupleBuilder.cs/#L103">View Source</a>
   </span>
   <a id="DotNext_Runtime_CompilerServices_ValueTupleBuilder_Dispose_" data-uid="DotNext.Runtime.CompilerServices.ValueTupleBuilder.Dispose*"></a>
   <h4 id="DotNext_Runtime_CompilerServices_ValueTupleBuilder_Dispose_System_Boolean_" data-uid="DotNext.Runtime.CompilerServices.ValueTupleBuilder.Dispose(System.Boolean)">Dispose(Boolean)</h4>
@@ -373,7 +373,7 @@ items.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_CompilerServices_ValueTupleBuilder_System_Collections_IEnumerable_GetEnumerator.md&amp;value=---%0Auid%3A%20DotNext.Runtime.CompilerServices.ValueTupleBuilder.System%23Collections%23IEnumerable%23GetEnumerator%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Runtime/CompilerServices/ValueTupleBuilder.cs/#L96">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Runtime/CompilerServices/ValueTupleBuilder.cs/#L97">View Source</a>
   </span>
   <a id="DotNext_Runtime_CompilerServices_ValueTupleBuilder_System_Collections_IEnumerable_GetEnumerator_" data-uid="DotNext.Runtime.CompilerServices.ValueTupleBuilder.System#Collections#IEnumerable#GetEnumerator*"></a>
   <h4 id="DotNext_Runtime_CompilerServices_ValueTupleBuilder_System_Collections_IEnumerable_GetEnumerator" data-uid="DotNext.Runtime.CompilerServices.ValueTupleBuilder.System#Collections#IEnumerable#GetEnumerator">IEnumerable.GetEnumerator()</h4>
@@ -440,16 +440,16 @@ items.</p>
       <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, T[])</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2____1____2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;, out R1, out R2)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2____1____2__">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, Func&lt;T, TResult1&gt;, Func&lt;T, TResult2&gt;, out TResult1, out TResult2)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2_____1____2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, ValueFunc&lt;T, R1&gt;, ValueFunc&lt;T, R2&gt;, out R1, out R2)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2_____1____2__">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, ValueFunc&lt;T, TResult1&gt;, ValueFunc&lt;T, TResult2&gt;, out TResult1, out TResult2)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2__">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, Func&lt;T, TResult1&gt;, Func&lt;T, TResult2&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2___">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, ValueFunc&lt;T, R1&gt;, ValueFunc&lt;T, R2&gt;)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2___">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, ValueFunc&lt;T, TResult1&gt;, ValueFunc&lt;T, TResult2&gt;)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_SequenceHashCode_System_Collections_Generic_IEnumerable_System_Object__System_Boolean_">Sequence.SequenceHashCode(IEnumerable&lt;Object&gt;, Boolean)</a>

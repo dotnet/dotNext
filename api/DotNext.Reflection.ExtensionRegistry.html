@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class ExtensionRegistry
    | .NEXT ">
-    <meta name="generator" content="docfx 2.52.0.0">
+    <meta name="generator" content="docfx 2.53.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -170,12 +170,12 @@ for the specified type and be available using strongly typed reflection via <a c
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_ExtensionRegistry_RegisterInstance_System_Reflection_MethodInfo_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.ExtensionRegistry.RegisterInstance(System.Reflection.MethodInfo)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/ExtensionRegistry.cs/#L91">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/ExtensionRegistry.cs/#L92">View Source</a>
   </span>
   <a id="DotNext_Reflection_ExtensionRegistry_RegisterInstance_" data-uid="DotNext.Reflection.ExtensionRegistry.RegisterInstance*"></a>
   <h4 id="DotNext_Reflection_ExtensionRegistry_RegisterInstance_System_Reflection_MethodInfo_" data-uid="DotNext.Reflection.ExtensionRegistry.RegisterInstance(System.Reflection.MethodInfo)">RegisterInstance(MethodInfo)</h4>
   <div class="markdown level1 summary"><p>Registers extension method as instance method which will be included into strongly typed
-reflection lookup performed by <a class="xref" href="DotNext.Reflection.Type-1.Method.html#DotNext_Reflection_Type_1_Method_Get__1_System_String_DotNext_Reflection_MethodLookup_System_Boolean_">Get&lt;D&gt;(String, MethodLookup, Boolean)</a> and related methods.</p>
+reflection lookup performed by <a class="xref" href="DotNext.Reflection.Type-1.Method.html#DotNext_Reflection_Type_1_Method_Get__1_System_String_DotNext_Reflection_MethodLookup_System_Boolean_">Get&lt;TSignature&gt;(String, MethodLookup, Boolean)</a> and related methods.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -205,20 +205,20 @@ reflection lookup performed by <a class="xref" href="DotNext.Reflection.Type-1.M
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_ExtensionRegistry_RegisterInstance__1___0_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.ExtensionRegistry.RegisterInstance%60%601(%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/ExtensionRegistry.cs/#L106">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/ExtensionRegistry.cs/#L107">View Source</a>
   </span>
   <a id="DotNext_Reflection_ExtensionRegistry_RegisterInstance_" data-uid="DotNext.Reflection.ExtensionRegistry.RegisterInstance*"></a>
-  <h4 id="DotNext_Reflection_ExtensionRegistry_RegisterInstance__1___0_" data-uid="DotNext.Reflection.ExtensionRegistry.RegisterInstance``1(``0)">RegisterInstance&lt;D&gt;(D)</h4>
+  <h4 id="DotNext_Reflection_ExtensionRegistry_RegisterInstance__1___0_" data-uid="DotNext.Reflection.ExtensionRegistry.RegisterInstance``1(``0)">RegisterInstance&lt;TExtension&gt;(TExtension)</h4>
   <div class="markdown level1 summary"><p>Registers extension method which will be included into strongly typed
-reflection lookup performed by <a class="xref" href="DotNext.Reflection.Reflector.html#DotNext_Reflection_Reflector_Unreflect__1_System_Reflection_MethodInfo_">Unreflect&lt;D&gt;(MethodInfo)</a>
-or <a class="xref" href="DotNext.Reflection.Type-1.Method.html#DotNext_Reflection_Type_1_Method_Get__1_System_String_DotNext_Reflection_MethodLookup_System_Boolean_">Get&lt;D&gt;(String, MethodLookup, Boolean)</a> methods.</p>
+reflection lookup performed by <a class="xref" href="DotNext.Reflection.Reflector.html#DotNext_Reflection_Reflector_Unreflect__1_System_Reflection_MethodInfo_">Unreflect&lt;TDelegate&gt;(MethodInfo)</a>
+or <a class="xref" href="DotNext.Reflection.Type-1.Method.html#DotNext_Reflection_Type_1_Method_Get__1_System_String_DotNext_Reflection_MethodLookup_System_Boolean_">Get&lt;TSignature&gt;(String, MethodLookup, Boolean)</a> methods.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void RegisterInstance&lt;D&gt;(D delegate)
+    <pre><code class="lang-csharp hljs">public static void RegisterInstance&lt;TExtension&gt;(TExtension delegate)
 
-    where D : Delegate</code></pre>
+    where TExtension : Delegate</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -231,7 +231,7 @@ or <a class="xref" href="DotNext.Reflection.Type-1.Method.html#DotNext_Reflectio
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">D</span></td>
+        <td><span class="xref">TExtension</span></td>
         <td><span class="parametername">delegate</span></td>
         <td><p>The delegate instance representing extension method.</p>
 </td>
@@ -248,7 +248,7 @@ or <a class="xref" href="DotNext.Reflection.Type-1.Method.html#DotNext_Reflectio
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">D</span></td>
+        <td><span class="parametername">TExtension</span></td>
         <td><p>The type of the delegate.</p>
 </td>
       </tr>
@@ -259,12 +259,12 @@ or <a class="xref" href="DotNext.Reflection.Type-1.Method.html#DotNext_Reflectio
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_ExtensionRegistry_RegisterStatic__1_System_Reflection_MethodInfo_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.ExtensionRegistry.RegisterStatic%60%601(System.Reflection.MethodInfo)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/ExtensionRegistry.cs/#L73">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/ExtensionRegistry.cs/#L74">View Source</a>
   </span>
   <a id="DotNext_Reflection_ExtensionRegistry_RegisterStatic_" data-uid="DotNext.Reflection.ExtensionRegistry.RegisterStatic*"></a>
   <h4 id="DotNext_Reflection_ExtensionRegistry_RegisterStatic__1_System_Reflection_MethodInfo_" data-uid="DotNext.Reflection.ExtensionRegistry.RegisterStatic``1(System.Reflection.MethodInfo)">RegisterStatic&lt;T&gt;(MethodInfo)</h4>
   <div class="markdown level1 summary"><p>Registers static method for the specified type in ad-hoc manner so
-it will be available using <a class="xref" href="DotNext.Reflection.Type-1.Method.html#DotNext_Reflection_Type_1_Method_Get__1_System_String_DotNext_Reflection_MethodLookup_System_Boolean_">Get&lt;D&gt;(String, MethodLookup, Boolean)</a> and related methods.</p>
+it will be available using <a class="xref" href="DotNext.Reflection.Type-1.Method.html#DotNext_Reflection_Type_1_Method_Get__1_System_String_DotNext_Reflection_MethodLookup_System_Boolean_">Get&lt;TSignature&gt;(String, MethodLookup, Boolean)</a> and related methods.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -310,19 +310,19 @@ it will be available using <a class="xref" href="DotNext.Reflection.Type-1.Metho
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_ExtensionRegistry_RegisterStatic__2___1_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.ExtensionRegistry.RegisterStatic%60%602(%60%601)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/ExtensionRegistry.cs/#L82">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/ExtensionRegistry.cs/#L83">View Source</a>
   </span>
   <a id="DotNext_Reflection_ExtensionRegistry_RegisterStatic_" data-uid="DotNext.Reflection.ExtensionRegistry.RegisterStatic*"></a>
-  <h4 id="DotNext_Reflection_ExtensionRegistry_RegisterStatic__2___1_" data-uid="DotNext.Reflection.ExtensionRegistry.RegisterStatic``2(``1)">RegisterStatic&lt;T, D&gt;(D)</h4>
+  <h4 id="DotNext_Reflection_ExtensionRegistry_RegisterStatic__2___1_" data-uid="DotNext.Reflection.ExtensionRegistry.RegisterStatic``2(``1)">RegisterStatic&lt;T, TExtension&gt;(TExtension)</h4>
   <div class="markdown level1 summary"><p>Registers static method for the specified type in ad-hoc manner so
-it will be available using <a class="xref" href="DotNext.Reflection.Type-1.Method.html#DotNext_Reflection_Type_1_Method_Get__1_System_String_DotNext_Reflection_MethodLookup_System_Boolean_">Get&lt;D&gt;(String, MethodLookup, Boolean)</a> and related methods.</p>
+it will be available using <a class="xref" href="DotNext.Reflection.Type-1.Method.html#DotNext_Reflection_Type_1_Method_Get__1_System_String_DotNext_Reflection_MethodLookup_System_Boolean_">Get&lt;TSignature&gt;(String, MethodLookup, Boolean)</a> and related methods.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void RegisterStatic&lt;T, D&gt;(D delegate)
+    <pre><code class="lang-csharp hljs">public static void RegisterStatic&lt;T, TExtension&gt;(TExtension delegate)
 
-    where D : Delegate</code></pre>
+    where TExtension : Delegate</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -335,7 +335,7 @@ it will be available using <a class="xref" href="DotNext.Reflection.Type-1.Metho
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">D</span></td>
+        <td><span class="xref">TExtension</span></td>
         <td><span class="parametername">delegate</span></td>
         <td><p>The delegate instance representing extension method.</p>
 </td>
@@ -357,7 +357,7 @@ it will be available using <a class="xref" href="DotNext.Reflection.Type-1.Metho
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">D</span></td>
+        <td><span class="parametername">TExtension</span></td>
         <td><p>The type of the delegate.</p>
 </td>
       </tr>
@@ -414,16 +414,16 @@ it will be available using <a class="xref" href="DotNext.Reflection.Type-1.Metho
       <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, T[])</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2____1____2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;, out R1, out R2)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2____1____2__">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, Func&lt;T, TResult1&gt;, Func&lt;T, TResult2&gt;, out TResult1, out TResult2)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2_____1____2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, ValueFunc&lt;T, R1&gt;, ValueFunc&lt;T, R2&gt;, out R1, out R2)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2_____1____2__">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, ValueFunc&lt;T, TResult1&gt;, ValueFunc&lt;T, TResult2&gt;, out TResult1, out TResult2)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2__">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, Func&lt;T, TResult1&gt;, Func&lt;T, TResult2&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2___">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, ValueFunc&lt;T, R1&gt;, ValueFunc&lt;T, R2&gt;)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2___">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, ValueFunc&lt;T, TResult1&gt;, ValueFunc&lt;T, TResult2&gt;)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_SequenceHashCode_System_Collections_Generic_IEnumerable_System_Object__System_Boolean_">Sequence.SequenceHashCode(IEnumerable&lt;Object&gt;, Boolean)</a>
@@ -477,10 +477,10 @@ it will be available using <a class="xref" href="DotNext.Reflection.Type-1.Metho
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_System_TimeSpan_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T, TimeSpan)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_Convert__2_System_Collections_Generic_IReadOnlyCollection___0__DotNext_ValueFunc___0___1___">Collection.Convert&lt;I, O&gt;(IReadOnlyCollection&lt;I&gt;, ValueFunc&lt;I, O&gt;)</a>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_Convert__2_System_Collections_Generic_IReadOnlyCollection___0__DotNext_ValueFunc___0___1___">Collection.Convert&lt;TInput, TOutput&gt;(IReadOnlyCollection&lt;TInput&gt;, ValueFunc&lt;TInput, TOutput&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_Convert__2_System_Collections_Generic_IReadOnlyCollection___0__System_Converter___0___1__">Collection.Convert&lt;I, O&gt;(IReadOnlyCollection&lt;I&gt;, Converter&lt;I, O&gt;)</a>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_Convert__2_System_Collections_Generic_IReadOnlyCollection___0__System_Converter___0___1__">Collection.Convert&lt;TInput, TOutput&gt;(IReadOnlyCollection&lt;TInput&gt;, Converter&lt;TInput, TOutput&gt;)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>

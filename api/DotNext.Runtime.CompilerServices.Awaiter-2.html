@@ -5,12 +5,12 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Struct Awaiter&lt;TAwaiter, R&gt;
+    <title>Struct Awaiter&lt;TAwaiter, TResult&gt;
    | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Struct Awaiter&lt;TAwaiter, R&gt;
+    <meta name="title" content="Struct Awaiter&lt;TAwaiter, TResult&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.52.0.0">
+    <meta name="generator" content="docfx 2.53.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -71,7 +71,7 @@
             <article class="content wrap" id="_content" data-uid="DotNext.Runtime.CompilerServices.Awaiter`2">
   
   
-  <h1 id="DotNext_Runtime_CompilerServices_Awaiter_2" data-uid="DotNext.Runtime.CompilerServices.Awaiter`2" class="text-break">Struct Awaiter&lt;TAwaiter, R&gt;
+  <h1 id="DotNext_Runtime_CompilerServices_Awaiter_2" data-uid="DotNext.Runtime.CompilerServices.Awaiter`2" class="text-break">Struct Awaiter&lt;TAwaiter, TResult&gt;
   </h1>
   <div class="markdown level0 summary"><p>Represents awaiter pattern for type <code data-dev-comment-type="typeparamref" class="typeparamref">TAwaiter</code>
 with non-<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.void">Void</a> result.</p>
@@ -106,7 +106,7 @@ with non-<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.void
   <h6><strong>Assembly</strong>: DotNext.Reflection.dll</h6>
   <h5 id="DotNext_Runtime_CompilerServices_Awaiter_2_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public struct Awaiter&lt;TAwaiter, R&gt; : INotifyCompletion where TAwaiter : INotifyCompletion</code></pre>
+    <pre><code class="lang-csharp hljs">public struct Awaiter&lt;TAwaiter, TResult&gt; : INotifyCompletion where TAwaiter : INotifyCompletion</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -119,12 +119,12 @@ with non-<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.void
     <tbody>
       <tr>
         <td><span class="parametername">TAwaiter</span></td>
-        <td><p>Any type implementing awaiter pattern</p>
+        <td><p>Any type implementing awaiter pattern.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">R</span></td>
-        <td><p>Type of asynchronous result</p>
+        <td><span class="parametername">TResult</span></td>
+        <td><p>Type of asynchronous result.</p>
 </td>
       </tr>
     </tbody>
@@ -214,7 +214,7 @@ with non-<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.void
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public R GetResult()</code></pre>
+    <pre><code class="lang-csharp hljs">public TResult GetResult()</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -226,7 +226,7 @@ with non-<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.void
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">R</span></td>
+        <td><span class="xref">TResult</span></td>
         <td><p>The result of the completed task.</p>
 </td>
       </tr>
@@ -258,7 +258,7 @@ with non-<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.void
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_CompilerServices_Awaiter_2_GetResult__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.CompilerServices.Awaiter%602.GetResult(%600%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Runtime/CompilerServices/Awaiter.cs/#L65">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Runtime/CompilerServices/Awaiter.cs/#L66">View Source</a>
   </span>
   <a id="DotNext_Runtime_CompilerServices_Awaiter_2_GetResult_" data-uid="DotNext.Runtime.CompilerServices.Awaiter`2.GetResult*"></a>
   <h4 id="DotNext_Runtime_CompilerServices_Awaiter_2_GetResult__0__" data-uid="DotNext.Runtime.CompilerServices.Awaiter`2.GetResult(`0@)">GetResult(TAwaiter)</h4>
@@ -267,7 +267,7 @@ with non-<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.void
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static R GetResult(in TAwaiter awaiter)</code></pre>
+    <pre><code class="lang-csharp hljs">public static TResult GetResult(in TAwaiter awaiter)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -297,7 +297,7 @@ with non-<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.void
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">R</span></td>
+        <td><span class="xref">TResult</span></td>
         <td><p>The result of the completed task.</p>
 </td>
       </tr>
@@ -331,16 +331,16 @@ with non-<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.void
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_CompilerServices_Awaiter_2_op_Implicit_DotNext_Runtime_CompilerServices_Awaiter__0__1_____0.md&amp;value=---%0Auid%3A%20DotNext.Runtime.CompilerServices.Awaiter%602.op_Implicit(DotNext.Runtime.CompilerServices.Awaiter%7B%600%2C%601%7D%40)~%600%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Runtime/CompilerServices/Awaiter.cs/#L56">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Runtime/CompilerServices/Awaiter.cs/#L57">View Source</a>
   </span>
   <a id="DotNext_Runtime_CompilerServices_Awaiter_2_op_Implicit_" data-uid="DotNext.Runtime.CompilerServices.Awaiter`2.op_Implicit*"></a>
-  <h4 id="DotNext_Runtime_CompilerServices_Awaiter_2_op_Implicit_DotNext_Runtime_CompilerServices_Awaiter__0__1_____0" data-uid="DotNext.Runtime.CompilerServices.Awaiter`2.op_Implicit(DotNext.Runtime.CompilerServices.Awaiter{`0,`1}@)~`0">Implicit(Awaiter&lt;TAwaiter, R&gt; to TAwaiter)</h4>
+  <h4 id="DotNext_Runtime_CompilerServices_Awaiter_2_op_Implicit_DotNext_Runtime_CompilerServices_Awaiter__0__1_____0" data-uid="DotNext.Runtime.CompilerServices.Awaiter`2.op_Implicit(DotNext.Runtime.CompilerServices.Awaiter{`0,`1}@)~`0">Implicit(Awaiter&lt;TAwaiter, TResult&gt; to TAwaiter)</h4>
   <div class="markdown level1 summary"><p>Extracts underlying awaiter object from this wrapper.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static implicit operator TAwaiter(in Awaiter&lt;TAwaiter, R&gt; awaiter)</code></pre>
+    <pre><code class="lang-csharp hljs">public static implicit operator TAwaiter(in Awaiter&lt;TAwaiter, TResult&gt; awaiter)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -353,7 +353,7 @@ with non-<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.void
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Runtime.CompilerServices.Awaiter-2.html">Awaiter</a>&lt;TAwaiter, R&gt;</td>
+        <td><a class="xref" href="DotNext.Runtime.CompilerServices.Awaiter-2.html">Awaiter</a>&lt;TAwaiter, TResult&gt;</td>
         <td><span class="parametername">awaiter</span></td>
         <td><p>Generic awaiter object.</p>
 </td>
@@ -382,7 +382,7 @@ with non-<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.void
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_CompilerServices_Awaiter_2_System_Runtime_CompilerServices_INotifyCompletion_OnCompleted_System_Action_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.CompilerServices.Awaiter%602.System%23Runtime%23CompilerServices%23INotifyCompletion%23OnCompleted(System.Action)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Runtime/CompilerServices/Awaiter.cs/#L50">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Runtime/CompilerServices/Awaiter.cs/#L51">View Source</a>
   </span>
   <a id="DotNext_Runtime_CompilerServices_Awaiter_2_System_Runtime_CompilerServices_INotifyCompletion_OnCompleted_" data-uid="DotNext.Runtime.CompilerServices.Awaiter`2.System#Runtime#CompilerServices#INotifyCompletion#OnCompleted*"></a>
   <h4 id="DotNext_Runtime_CompilerServices_Awaiter_2_System_Runtime_CompilerServices_INotifyCompletion_OnCompleted_System_Action_" data-uid="DotNext.Runtime.CompilerServices.Awaiter`2.System#Runtime#CompilerServices#INotifyCompletion#OnCompleted(System.Action)">INotifyCompletion.OnCompleted(Action)</h4>

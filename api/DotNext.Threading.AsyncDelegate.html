@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class AsyncDelegate
    | .NEXT ">
-    <meta name="generator" content="docfx 2.52.0.0">
+    <meta name="generator" content="docfx 2.53.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -250,15 +250,15 @@ with full support of async/await feature.</p>
     <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AsyncDelegate.cs/#L27">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncDelegate_InvokeAsync_" data-uid="DotNext.Threading.AsyncDelegate.InvokeAsync*"></a>
-  <h4 id="DotNext_Threading_AsyncDelegate_InvokeAsync__1___0_System_Action___0__System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncDelegate.InvokeAsync``1(``0,System.Action{``0},System.Threading.CancellationToken)">InvokeAsync&lt;D&gt;(D, Action&lt;D&gt;, CancellationToken)</h4>
+  <h4 id="DotNext_Threading_AsyncDelegate_InvokeAsync__1___0_System_Action___0__System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncDelegate.InvokeAsync``1(``0,System.Action{``0},System.Threading.CancellationToken)">InvokeAsync&lt;TDelegate&gt;(TDelegate, Action&lt;TDelegate&gt;, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Invokes a delegate of arbitrary type asynchronously.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static AsyncDelegateFuture InvokeAsync&lt;D&gt;(this D delegate, Action&lt;D&gt; invoker, CancellationToken token = default(CancellationToken))
+    <pre><code class="lang-csharp hljs">public static AsyncDelegateFuture InvokeAsync&lt;TDelegate&gt;(this TDelegate delegate, Action&lt;TDelegate&gt; invoker, CancellationToken token = default(CancellationToken))
 
-    where D : MulticastDelegate</code></pre>
+    where TDelegate : MulticastDelegate</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -271,13 +271,13 @@ with full support of async/await feature.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">D</span></td>
+        <td><span class="xref">TDelegate</span></td>
         <td><span class="parametername">delegate</span></td>
         <td><p>A delegate to be invoked asynchronously.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;D&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;TDelegate&gt;</td>
         <td><span class="parametername">invoker</span></td>
         <td><p>Synchronous invoker of the delegate from invocation list.</p>
 </td>
@@ -316,7 +316,7 @@ with full support of async/await feature.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">D</span></td>
+        <td><span class="parametername">TDelegate</span></td>
         <td><p>Type of delegate to invoke.</p>
 </td>
       </tr>
@@ -408,13 +408,13 @@ with full support of async/await feature.</p>
     <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AsyncDelegate.cs/#L40">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncDelegate_InvokeAsync_" data-uid="DotNext.Threading.AsyncDelegate.InvokeAsync*"></a>
-  <h4 id="DotNext_Threading_AsyncDelegate_InvokeAsync__1_System_EventHandler___0__System_Object___0_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncDelegate.InvokeAsync``1(System.EventHandler{``0},System.Object,``0,System.Threading.CancellationToken)">InvokeAsync&lt;E&gt;(EventHandler&lt;E&gt;, Object, E, CancellationToken)</h4>
+  <h4 id="DotNext_Threading_AsyncDelegate_InvokeAsync__1_System_EventHandler___0__System_Object___0_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncDelegate.InvokeAsync``1(System.EventHandler{``0},System.Object,``0,System.Threading.CancellationToken)">InvokeAsync&lt;TEventArgs&gt;(EventHandler&lt;TEventArgs&gt;, Object, TEventArgs, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Invokes event handlers asynchronously.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static AsyncDelegateFuture InvokeAsync&lt;E&gt;(this EventHandler&lt;E&gt; handler, object sender, E args, CancellationToken token = default(CancellationToken))</code></pre>
+    <pre><code class="lang-csharp hljs">public static AsyncDelegateFuture InvokeAsync&lt;TEventArgs&gt;(this EventHandler&lt;TEventArgs&gt; handler, object sender, TEventArgs args, CancellationToken token = default(CancellationToken))</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -427,7 +427,7 @@ with full support of async/await feature.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.eventhandler-1">EventHandler</a>&lt;E&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.eventhandler-1">EventHandler</a>&lt;TEventArgs&gt;</td>
         <td><span class="parametername">handler</span></td>
         <td><p>A set event handlers combined as single delegate.</p>
 </td>
@@ -439,7 +439,7 @@ with full support of async/await feature.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">E</span></td>
+        <td><span class="xref">TEventArgs</span></td>
         <td><span class="parametername">args</span></td>
         <td><p>Event arguments.</p>
 </td>
@@ -478,7 +478,7 @@ with full support of async/await feature.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">E</span></td>
+        <td><span class="parametername">TEventArgs</span></td>
         <td><p>Type of event object.</p>
 </td>
       </tr>

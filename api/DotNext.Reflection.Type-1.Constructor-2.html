@@ -5,12 +5,12 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class Type&lt;T&gt;.Constructor&lt;P1, P2&gt;
+    <title>Class Type&lt;T&gt;.Constructor&lt;T1, T2&gt;
    | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class Type&lt;T&gt;.Constructor&lt;P1, P2&gt;
+    <meta name="title" content="Class Type&lt;T&gt;.Constructor&lt;T1, T2&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.52.0.0">
+    <meta name="generator" content="docfx 2.53.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -71,7 +71,7 @@
             <article class="content wrap" id="_content" data-uid="DotNext.Reflection.Type`1.Constructor`2">
   
   
-  <h1 id="DotNext_Reflection_Type_1_Constructor_2" data-uid="DotNext.Reflection.Type`1.Constructor`2" class="text-break">Class Type&lt;T&gt;.Constructor&lt;P1, P2&gt;
+  <h1 id="DotNext_Reflection_Type_1_Constructor_2" data-uid="DotNext.Reflection.Type`1.Constructor`2" class="text-break">Class Type&lt;T&gt;.Constructor&lt;T1, T2&gt;
   </h1>
   <div class="markdown level0 summary"><p>Provides access to constructor of type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code> with two parameters.</p>
 </div>
@@ -79,7 +79,7 @@
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><span class="xref">Type&lt;T&gt;.Constructor&lt;P1, P2&gt;</span></div>
+    <div class="level1"><span class="xref">Type&lt;T&gt;.Constructor&lt;T1, T2&gt;</span></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -109,7 +109,7 @@
   <h6><strong>Assembly</strong>: DotNext.Reflection.dll</h6>
   <h5 id="DotNext_Reflection_Type_1_Constructor_2_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static class Constructor&lt;P1, P2&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static class Constructor&lt;T1, T2&gt;</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -121,12 +121,12 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">P1</span></td>
+        <td><span class="parametername">T1</span></td>
         <td><p>Type of first constructor parameter.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">P2</span></td>
+        <td><span class="parametername">T2</span></td>
         <td><p>Type of second constructor parameter.</p>
 </td>
       </tr>
@@ -144,12 +144,12 @@
   <a id="DotNext_Reflection_Type_1_Constructor_2_Get_" data-uid="DotNext.Reflection.Type`1.Constructor`2.Get*"></a>
   <h4 id="DotNext_Reflection_Type_1_Constructor_2_Get_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Constructor`2.Get(System.Boolean)">Get(Boolean)</h4>
   <div class="markdown level1 summary"><p>Returns constructor <code data-dev-comment-type="typeparamref" class="typeparamref">T</code> with two
-parameters of type <code data-dev-comment-type="typeparamref" class="typeparamref">P1</code> and <code data-dev-comment-type="typeparamref" class="typeparamref">P2</code>.</p>
+parameters of type <code data-dev-comment-type="typeparamref" class="typeparamref">T1</code> and <code data-dev-comment-type="typeparamref" class="typeparamref">T2</code>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Constructor&lt;Func&lt;P1, P2, T&gt;&gt; Get(bool nonPublic = false)</code></pre>
+    <pre><code class="lang-csharp hljs">public static Constructor&lt;Func&lt;T1, T2, T&gt;&gt; Get(bool nonPublic = false)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -179,7 +179,7 @@ parameters of type <code data-dev-comment-type="typeparamref" class="typeparamre
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.Constructor-1.html">Constructor</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;P1, P2, T&gt;&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.Constructor-1.html">Constructor</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;T1, T2, T&gt;&gt;</td>
         <td><p>Reflected constructor with two parameters; or <span class="xref">null</span>, if it doesn't exist.</p>
 </td>
       </tr>
@@ -193,13 +193,13 @@ parameters of type <code data-dev-comment-type="typeparamref" class="typeparamre
     <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Ctors.cs/#L201">View Source</a>
   </span>
   <a id="DotNext_Reflection_Type_1_Constructor_2_Invoke_" data-uid="DotNext.Reflection.Type`1.Constructor`2.Invoke*"></a>
-  <h4 id="DotNext_Reflection_Type_1_Constructor_2_Invoke__1__2_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Constructor`2.Invoke(`1,`2,System.Boolean)">Invoke(P1, P2, Boolean)</h4>
+  <h4 id="DotNext_Reflection_Type_1_Constructor_2_Invoke__1__2_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Constructor`2.Invoke(`1,`2,System.Boolean)">Invoke(T1, T2, Boolean)</h4>
   <div class="markdown level1 summary"><p>Invokes constructor.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static T Invoke(P1 arg1, P2 arg2, bool nonPublic = false)</code></pre>
+    <pre><code class="lang-csharp hljs">public static T Invoke(T1 arg1, T2 arg2, bool nonPublic = false)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -212,13 +212,13 @@ parameters of type <code data-dev-comment-type="typeparamref" class="typeparamre
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">P1</span></td>
+        <td><span class="xref">T1</span></td>
         <td><span class="parametername">arg1</span></td>
         <td><p>First constructor argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P2</span></td>
+        <td><span class="xref">T2</span></td>
         <td><span class="parametername">arg2</span></td>
         <td><p>Second constructor argument.</p>
 </td>
@@ -273,12 +273,12 @@ parameters of type <code data-dev-comment-type="typeparamref" class="typeparamre
   <a id="DotNext_Reflection_Type_1_Constructor_2_Require_" data-uid="DotNext.Reflection.Type`1.Constructor`2.Require*"></a>
   <h4 id="DotNext_Reflection_Type_1_Constructor_2_Require_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Constructor`2.Require(System.Boolean)">Require(Boolean)</h4>
   <div class="markdown level1 summary"><p>Returns constructor <code data-dev-comment-type="typeparamref" class="typeparamref">T</code> with two
-parameters of type <code data-dev-comment-type="typeparamref" class="typeparamref">P1</code> and <code data-dev-comment-type="typeparamref" class="typeparamref">P2</code>.</p>
+parameters of type <code data-dev-comment-type="typeparamref" class="typeparamref">T1</code> and <code data-dev-comment-type="typeparamref" class="typeparamref">T2</code>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Constructor&lt;Func&lt;P1, P2, T&gt;&gt; Require(bool nonPublic = false)</code></pre>
+    <pre><code class="lang-csharp hljs">public static Constructor&lt;Func&lt;T1, T2, T&gt;&gt; Require(bool nonPublic = false)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -308,7 +308,7 @@ parameters of type <code data-dev-comment-type="typeparamref" class="typeparamre
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.Constructor-1.html">Constructor</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;P1, P2, T&gt;&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.Constructor-1.html">Constructor</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;T1, T2, T&gt;&gt;</td>
         <td><p>Reflected constructor with two parameters.</p>
 </td>
       </tr>
@@ -338,13 +338,13 @@ parameters of type <code data-dev-comment-type="typeparamref" class="typeparamre
     <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Ctors.cs/#L187">View Source</a>
   </span>
   <a id="DotNext_Reflection_Type_1_Constructor_2_TryInvoke_" data-uid="DotNext.Reflection.Type`1.Constructor`2.TryInvoke*"></a>
-  <h4 id="DotNext_Reflection_Type_1_Constructor_2_TryInvoke__1__2_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Constructor`2.TryInvoke(`1,`2,System.Boolean)">TryInvoke(P1, P2, Boolean)</h4>
+  <h4 id="DotNext_Reflection_Type_1_Constructor_2_TryInvoke__1__2_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Constructor`2.TryInvoke(`1,`2,System.Boolean)">TryInvoke(T1, T2, Boolean)</h4>
   <div class="markdown level1 summary"><p>Invokes constructor.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Optional&lt;T&gt; TryInvoke(P1 arg1, P2 arg2, bool nonPublic = false)</code></pre>
+    <pre><code class="lang-csharp hljs">public static Optional&lt;T&gt; TryInvoke(T1 arg1, T2 arg2, bool nonPublic = false)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -357,13 +357,13 @@ parameters of type <code data-dev-comment-type="typeparamref" class="typeparamre
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">P1</span></td>
+        <td><span class="xref">T1</span></td>
         <td><span class="parametername">arg1</span></td>
         <td><p>First constructor argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">P2</span></td>
+        <td><span class="xref">T2</span></td>
         <td><span class="parametername">arg2</span></td>
         <td><p>Second constructor argument.</p>
 </td>

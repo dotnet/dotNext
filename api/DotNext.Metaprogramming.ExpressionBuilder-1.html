@@ -5,12 +5,12 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class ExpressionBuilder&lt;E&gt;
+    <title>Class ExpressionBuilder&lt;TExpression&gt;
    | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class ExpressionBuilder&lt;E&gt;
+    <meta name="title" content="Class ExpressionBuilder&lt;TExpression&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.52.0.0">
+    <meta name="generator" content="docfx 2.53.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -71,7 +71,7 @@
             <article class="content wrap" id="_content" data-uid="DotNext.Metaprogramming.ExpressionBuilder`1">
   
   
-  <h1 id="DotNext_Metaprogramming_ExpressionBuilder_1" data-uid="DotNext.Metaprogramming.ExpressionBuilder`1" class="text-break">Class ExpressionBuilder&lt;E&gt;
+  <h1 id="DotNext_Metaprogramming_ExpressionBuilder_1" data-uid="DotNext.Metaprogramming.ExpressionBuilder`1" class="text-break">Class ExpressionBuilder&lt;TExpression&gt;
   </h1>
   <div class="markdown level0 summary"><p>Represents compound expression builder.</p>
 </div>
@@ -79,7 +79,7 @@
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><span class="xref">ExpressionBuilder&lt;E&gt;</span></div>
+    <div class="level1"><span class="xref">ExpressionBuilder&lt;TExpression&gt;</span></div>
       <div class="level2"><a class="xref" href="DotNext.Metaprogramming.ConditionalBuilder.html">ConditionalBuilder</a></div>
       <div class="level2"><a class="xref" href="DotNext.Metaprogramming.MatchBuilder.html">MatchBuilder</a></div>
       <div class="level2"><a class="xref" href="DotNext.Metaprogramming.SwitchBuilder.html">SwitchBuilder</a></div>
@@ -113,7 +113,7 @@
   <h6><strong>Assembly</strong>: DotNext.Metaprogramming.dll</h6>
   <h5 id="DotNext_Metaprogramming_ExpressionBuilder_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public abstract class ExpressionBuilder&lt;E&gt; : IExpressionBuilder&lt;E&gt; where E : Expression</code></pre>
+    <pre><code class="lang-csharp hljs">public abstract class ExpressionBuilder&lt;TExpression&gt; : IExpressionBuilder&lt;TExpression&gt; where TExpression : Expression</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -125,7 +125,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">E</span></td>
+        <td><span class="parametername">TExpression</span></td>
         <td><p>Type of expression to be constructed.</p>
 </td>
       </tr>
@@ -142,7 +142,7 @@ be shared between threads.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_ExpressionBuilder_1_End.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.ExpressionBuilder%601.End%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/ExpressionBuilder.cs/#L72">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/ExpressionBuilder.cs/#L73">View Source</a>
   </span>
   <a id="DotNext_Metaprogramming_ExpressionBuilder_1_End_" data-uid="DotNext.Metaprogramming.ExpressionBuilder`1.End*"></a>
   <h4 id="DotNext_Metaprogramming_ExpressionBuilder_1_End" data-uid="DotNext.Metaprogramming.ExpressionBuilder`1.End">End()</h4>
@@ -184,7 +184,7 @@ and adds constructed expression as statement to the entire lexical scope.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ExpressionBuilder&lt;E&gt; OfType(Type expressionType)</code></pre>
+    <pre><code class="lang-csharp hljs">public ExpressionBuilder&lt;TExpression&gt; OfType(Type expressionType)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -214,7 +214,7 @@ and adds constructed expression as statement to the entire lexical scope.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder-1.html">ExpressionBuilder</a>&lt;E&gt;</td>
+        <td><a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder-1.html">ExpressionBuilder</a>&lt;TExpression&gt;</td>
         <td><p>This builder.</p>
 </td>
       </tr>
@@ -237,7 +237,7 @@ and adds constructed expression as statement to the entire lexical scope.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ExpressionBuilder&lt;E&gt; OfType&lt;T&gt;()</code></pre>
+    <pre><code class="lang-csharp hljs">public ExpressionBuilder&lt;TExpression&gt; OfType&lt;T&gt;()</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -249,7 +249,7 @@ and adds constructed expression as statement to the entire lexical scope.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder-1.html">ExpressionBuilder</a>&lt;E&gt;</td>
+        <td><a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder-1.html">ExpressionBuilder</a>&lt;TExpression&gt;</td>
         <td><p>This builder.</p>
 </td>
       </tr>
@@ -306,16 +306,16 @@ and adds constructed expression as statement to the entire lexical scope.</p>
       <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, T[])</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2____1____2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;, out R1, out R2)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2____1____2__">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, Func&lt;T, TResult1&gt;, Func&lt;T, TResult2&gt;, out TResult1, out TResult2)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2_____1____2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, ValueFunc&lt;T, R1&gt;, ValueFunc&lt;T, R2&gt;, out R1, out R2)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2_____1____2__">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, ValueFunc&lt;T, TResult1&gt;, ValueFunc&lt;T, TResult2&gt;, out TResult1, out TResult2)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2__">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, Func&lt;T, TResult1&gt;, Func&lt;T, TResult2&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2___">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, ValueFunc&lt;T, R1&gt;, ValueFunc&lt;T, R2&gt;)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2___">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, ValueFunc&lt;T, TResult1&gt;, ValueFunc&lt;T, TResult2&gt;)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_">LockAcquisition.AcquireReadLock&lt;T&gt;(T)</a>
@@ -349,7 +349,7 @@ and adds constructed expression as statement to the entire lexical scope.</p>
                     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_ExpressionBuilder_1.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.ExpressionBuilder%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/ExpressionBuilder.cs/#L17" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/ExpressionBuilder.cs/#L18" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

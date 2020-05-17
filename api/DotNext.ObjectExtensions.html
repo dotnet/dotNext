@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class ObjectExtensions
    | .NEXT ">
-    <meta name="generator" content="docfx 2.52.0.0">
+    <meta name="generator" content="docfx 2.53.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -118,16 +118,16 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2___.md&amp;value=---%0Auid%3A%20DotNext.ObjectExtensions.Decompose%60%603(%60%600%2CDotNext.ValueFunc%7B%60%600%2C%60%601%7D%40%2CDotNext.ValueFunc%7B%60%600%2C%60%602%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ObjectExtensions.cs/#L128">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ObjectExtensions.cs/#L132">View Source</a>
   </span>
   <a id="DotNext_ObjectExtensions_Decompose_" data-uid="DotNext.ObjectExtensions.Decompose*"></a>
-  <h4 id="DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2___" data-uid="DotNext.ObjectExtensions.Decompose``3(``0,DotNext.ValueFunc{``0,``1}@,DotNext.ValueFunc{``0,``2}@)">Decompose&lt;T, R1, R2&gt;(T, ValueFunc&lt;T, R1&gt;, ValueFunc&lt;T, R2&gt;)</h4>
+  <h4 id="DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2___" data-uid="DotNext.ObjectExtensions.Decompose``3(``0,DotNext.ValueFunc{``0,``1}@,DotNext.ValueFunc{``0,``2}@)">Decompose&lt;T, TResult1, TResult2&gt;(T, ValueFunc&lt;T, TResult1&gt;, ValueFunc&lt;T, TResult2&gt;)</h4>
   <div class="markdown level1 summary"><p>Performs decomposition of object into tuple.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static (R1, R2) Decompose&lt;T, R1, R2&gt;(this T obj, in ValueFunc&lt;T, R1&gt; decomposer1, in ValueFunc&lt;T, R2&gt; decomposer2)
+    <pre><code class="lang-csharp hljs">public static (TResult1, TResult2) Decompose&lt;T, TResult1, TResult2&gt;(this T obj, in ValueFunc&lt;T, TResult1&gt; decomposer1, in ValueFunc&lt;T, TResult2&gt; decomposer2)
 
     where T : class</code></pre>
   </div>
@@ -148,13 +148,13 @@
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;T, R1&gt;</td>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;T, TResult1&gt;</td>
         <td><span class="parametername">decomposer1</span></td>
         <td><p>First decomposition function.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;T, R2&gt;</td>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;T, TResult2&gt;</td>
         <td><span class="parametername">decomposer2</span></td>
         <td><p>Second decomposition function.</p>
 </td>
@@ -171,7 +171,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetuple-2">ValueTuple</a>&lt;R1, R2&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetuple-2">ValueTuple</a>&lt;TResult1, TResult2&gt;</td>
         <td><p>Decomposition result.</p>
 </td>
       </tr>
@@ -192,12 +192,12 @@
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">R1</span></td>
+        <td><span class="parametername">TResult1</span></td>
         <td><p>Type of the first decomposition result.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">R2</span></td>
+        <td><span class="parametername">TResult2</span></td>
         <td><p>Type of the second decomposition result.</p>
 </td>
       </tr>
@@ -208,16 +208,16 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2_____1____2__.md&amp;value=---%0Auid%3A%20DotNext.ObjectExtensions.Decompose%60%603(%60%600%2CDotNext.ValueFunc%7B%60%600%2C%60%601%7D%40%2CDotNext.ValueFunc%7B%60%600%2C%60%602%7D%40%2C%60%601%40%2C%60%602%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ObjectExtensions.cs/#L97">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ObjectExtensions.cs/#L101">View Source</a>
   </span>
   <a id="DotNext_ObjectExtensions_Decompose_" data-uid="DotNext.ObjectExtensions.Decompose*"></a>
-  <h4 id="DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2_____1____2__" data-uid="DotNext.ObjectExtensions.Decompose``3(``0,DotNext.ValueFunc{``0,``1}@,DotNext.ValueFunc{``0,``2}@,``1@,``2@)">Decompose&lt;T, R1, R2&gt;(T, ValueFunc&lt;T, R1&gt;, ValueFunc&lt;T, R2&gt;, out R1, out R2)</h4>
+  <h4 id="DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2_____1____2__" data-uid="DotNext.ObjectExtensions.Decompose``3(``0,DotNext.ValueFunc{``0,``1}@,DotNext.ValueFunc{``0,``2}@,``1@,``2@)">Decompose&lt;T, TResult1, TResult2&gt;(T, ValueFunc&lt;T, TResult1&gt;, ValueFunc&lt;T, TResult2&gt;, out TResult1, out TResult2)</h4>
   <div class="markdown level1 summary"><p>Performs decomposition of object into two values.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void Decompose&lt;T, R1, R2&gt;(this T obj, in ValueFunc&lt;T, R1&gt; decomposer1, in ValueFunc&lt;T, R2&gt; decomposer2, out R1 result1, out R2 result2)
+    <pre><code class="lang-csharp hljs">public static void Decompose&lt;T, TResult1, TResult2&gt;(this T obj, in ValueFunc&lt;T, TResult1&gt; decomposer1, in ValueFunc&lt;T, TResult2&gt; decomposer2, out TResult1 result1, out TResult2 result2)
 
     where T : class</code></pre>
   </div>
@@ -238,25 +238,25 @@
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;T, R1&gt;</td>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;T, TResult1&gt;</td>
         <td><span class="parametername">decomposer1</span></td>
         <td><p>First decomposition function.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;T, R2&gt;</td>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;T, TResult2&gt;</td>
         <td><span class="parametername">decomposer2</span></td>
         <td><p>Second decomposition function.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">R1</span></td>
+        <td><span class="xref">TResult1</span></td>
         <td><span class="parametername">result1</span></td>
         <td><p>First decomposition result.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">R2</span></td>
+        <td><span class="xref">TResult2</span></td>
         <td><span class="parametername">result2</span></td>
         <td><p>Second decomposition result.</p>
 </td>
@@ -278,12 +278,12 @@
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">R1</span></td>
+        <td><span class="parametername">TResult1</span></td>
         <td><p>Type of the first decomposition result.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">R2</span></td>
+        <td><span class="parametername">TResult2</span></td>
         <td><p>Type of the second decomposition result.</p>
 </td>
       </tr>
@@ -294,16 +294,16 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2__.md&amp;value=---%0Auid%3A%20DotNext.ObjectExtensions.Decompose%60%603(%60%600%2CSystem.Func%7B%60%600%2C%60%601%7D%2CSystem.Func%7B%60%600%2C%60%602%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ObjectExtensions.cs/#L114">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ObjectExtensions.cs/#L118">View Source</a>
   </span>
   <a id="DotNext_ObjectExtensions_Decompose_" data-uid="DotNext.ObjectExtensions.Decompose*"></a>
-  <h4 id="DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2__" data-uid="DotNext.ObjectExtensions.Decompose``3(``0,System.Func{``0,``1},System.Func{``0,``2})">Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;)</h4>
+  <h4 id="DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2__" data-uid="DotNext.ObjectExtensions.Decompose``3(``0,System.Func{``0,``1},System.Func{``0,``2})">Decompose&lt;T, TResult1, TResult2&gt;(T, Func&lt;T, TResult1&gt;, Func&lt;T, TResult2&gt;)</h4>
   <div class="markdown level1 summary"><p>Performs decomposition of object into tuple.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static (R1, R2) Decompose&lt;T, R1, R2&gt;(this T obj, Func&lt;T, R1&gt; decomposer1, Func&lt;T, R2&gt; decomposer2)
+    <pre><code class="lang-csharp hljs">public static (TResult1, TResult2) Decompose&lt;T, TResult1, TResult2&gt;(this T obj, Func&lt;T, TResult1&gt; decomposer1, Func&lt;T, TResult2&gt; decomposer2)
 
     where T : class</code></pre>
   </div>
@@ -324,13 +324,13 @@
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;T, R1&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;T, TResult1&gt;</td>
         <td><span class="parametername">decomposer1</span></td>
         <td><p>First decomposition function.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;T, R2&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;T, TResult2&gt;</td>
         <td><span class="parametername">decomposer2</span></td>
         <td><p>Second decomposition function.</p>
 </td>
@@ -347,7 +347,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetuple-2">ValueTuple</a>&lt;R1, R2&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetuple-2">ValueTuple</a>&lt;TResult1, TResult2&gt;</td>
         <td><p>Decomposition result.</p>
 </td>
       </tr>
@@ -368,12 +368,12 @@
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">R1</span></td>
+        <td><span class="parametername">TResult1</span></td>
         <td><p>Type of the first decomposition result.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">R2</span></td>
+        <td><span class="parametername">TResult2</span></td>
         <td><p>Type of the second decomposition result.</p>
 </td>
       </tr>
@@ -384,16 +384,16 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2____1____2__.md&amp;value=---%0Auid%3A%20DotNext.ObjectExtensions.Decompose%60%603(%60%600%2CSystem.Func%7B%60%600%2C%60%601%7D%2CSystem.Func%7B%60%600%2C%60%602%7D%2C%60%601%40%2C%60%602%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ObjectExtensions.cs/#L82">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ObjectExtensions.cs/#L86">View Source</a>
   </span>
   <a id="DotNext_ObjectExtensions_Decompose_" data-uid="DotNext.ObjectExtensions.Decompose*"></a>
-  <h4 id="DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2____1____2__" data-uid="DotNext.ObjectExtensions.Decompose``3(``0,System.Func{``0,``1},System.Func{``0,``2},``1@,``2@)">Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;, out R1, out R2)</h4>
+  <h4 id="DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2____1____2__" data-uid="DotNext.ObjectExtensions.Decompose``3(``0,System.Func{``0,``1},System.Func{``0,``2},``1@,``2@)">Decompose&lt;T, TResult1, TResult2&gt;(T, Func&lt;T, TResult1&gt;, Func&lt;T, TResult2&gt;, out TResult1, out TResult2)</h4>
   <div class="markdown level1 summary"><p>Performs decomposition of object into two values.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void Decompose&lt;T, R1, R2&gt;(this T obj, Func&lt;T, R1&gt; decomposer1, Func&lt;T, R2&gt; decomposer2, out R1 result1, out R2 result2)
+    <pre><code class="lang-csharp hljs">public static void Decompose&lt;T, TResult1, TResult2&gt;(this T obj, Func&lt;T, TResult1&gt; decomposer1, Func&lt;T, TResult2&gt; decomposer2, out TResult1 result1, out TResult2 result2)
 
     where T : class</code></pre>
   </div>
@@ -414,25 +414,25 @@
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;T, R1&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;T, TResult1&gt;</td>
         <td><span class="parametername">decomposer1</span></td>
         <td><p>First decomposition function.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;T, R2&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;T, TResult2&gt;</td>
         <td><span class="parametername">decomposer2</span></td>
         <td><p>Second decomposition function.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">R1</span></td>
+        <td><span class="xref">TResult1</span></td>
         <td><span class="parametername">result1</span></td>
         <td><p>First decomposition result.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">R2</span></td>
+        <td><span class="xref">TResult2</span></td>
         <td><span class="parametername">result2</span></td>
         <td><p>Second decomposition result.</p>
 </td>
@@ -454,12 +454,12 @@
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">R1</span></td>
+        <td><span class="parametername">TResult1</span></td>
         <td><p>Type of the first decomposition result.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">R2</span></td>
+        <td><span class="parametername">TResult2</span></td>
         <td><p>Type of the second decomposition result.</p>
 </td>
       </tr>
@@ -470,7 +470,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ObjectExtensions_GetUserData__1___0_.md&amp;value=---%0Auid%3A%20DotNext.ObjectExtensions.GetUserData%60%601(%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ObjectExtensions.cs/#L29">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ObjectExtensions.cs/#L30">View Source</a>
   </span>
   <a id="DotNext_ObjectExtensions_GetUserData_" data-uid="DotNext.ObjectExtensions.GetUserData*"></a>
   <h4 id="DotNext_ObjectExtensions_GetUserData__1___0_" data-uid="DotNext.ObjectExtensions.GetUserData``1(``0)">GetUserData&lt;T&gt;(T)</h4>
@@ -529,7 +529,8 @@ without modification of it.</p>
     <tbody>
       <tr>
         <td><span class="parametername">T</span></td>
-        <td></td>
+        <td><p>The type of the object.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -538,14 +539,14 @@ without modification of it.</p>
 User data storage is not a part of object type declaration.
 Modification of user data doesn't cause modification of internal state of the object.
 The storage is associated with the object reference.
-Any user data are transient and can't be passed across process boundaries (i.e. serialization is not supported)</p>
+Any user data are transient and can't be passed across process boundaries (i.e. serialization is not supported).</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ObjectExtensions_IsOneOf__1___0___0___.md&amp;value=---%0Auid%3A%20DotNext.ObjectExtensions.IsOneOf%60%601(%60%600%2C%60%600%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ObjectExtensions.cs/#L67">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ObjectExtensions.cs/#L71">View Source</a>
   </span>
   <a id="DotNext_ObjectExtensions_IsOneOf_" data-uid="DotNext.ObjectExtensions.IsOneOf*"></a>
   <h4 id="DotNext_ObjectExtensions_IsOneOf__1___0___0___" data-uid="DotNext.ObjectExtensions.IsOneOf``1(``0,``0[])">IsOneOf&lt;T&gt;(T, T[])</h4>
@@ -624,7 +625,7 @@ to check equality between two objects.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ObjectExtensions_IsOneOf__1___0_System_Collections_Generic_IEnumerable___0__.md&amp;value=---%0Auid%3A%20DotNext.ObjectExtensions.IsOneOf%60%601(%60%600%2CSystem.Collections.Generic.IEnumerable%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ObjectExtensions.cs/#L46">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ObjectExtensions.cs/#L47">View Source</a>
   </span>
   <a id="DotNext_ObjectExtensions_IsOneOf_" data-uid="DotNext.ObjectExtensions.IsOneOf*"></a>
   <h4 id="DotNext_ObjectExtensions_IsOneOf__1___0_System_Collections_Generic_IEnumerable___0__" data-uid="DotNext.ObjectExtensions.IsOneOf``1(``0,System.Collections.Generic.IEnumerable{``0})">IsOneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</h4>

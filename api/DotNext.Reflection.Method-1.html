@@ -5,12 +5,12 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class Method&lt;D&gt;
+    <title>Class Method&lt;TSignature&gt;
    | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class Method&lt;D&gt;
+    <meta name="title" content="Class Method&lt;TSignature&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.52.0.0">
+    <meta name="generator" content="docfx 2.53.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -71,7 +71,7 @@
             <article class="content wrap" id="_content" data-uid="DotNext.Reflection.Method`1">
   
   
-  <h1 id="DotNext_Reflection_Method_1" data-uid="DotNext.Reflection.Method`1" class="text-break">Class Method&lt;D&gt;
+  <h1 id="DotNext_Reflection_Method_1" data-uid="DotNext.Reflection.Method`1" class="text-break">Class Method&lt;TSignature&gt;
   </h1>
   <div class="markdown level0 summary"><p>Represents reflected method.</p>
 </div>
@@ -82,16 +82,16 @@
     <div class="level1"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.memberinfo">MemberInfo</a></div>
     <div class="level2"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.methodbase">MethodBase</a></div>
     <div class="level3"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.methodinfo">MethodInfo</a></div>
-    <div class="level4"><span class="xref">Method&lt;D&gt;</span></div>
+    <div class="level4"><span class="xref">Method&lt;TSignature&gt;</span></div>
   </div>
   <div classs="implements">
     <h5>Implements</h5>
-    <div><a class="xref" href="DotNext.Reflection.IMethod-1.html">IMethod</a>&lt;D&gt;</div>
-    <div><a class="xref" href="DotNext.Reflection.IMethod-2.html">IMethod</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.methodinfo">MethodInfo</a>, D&gt;</div>
-    <div><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.methodinfo">MethodInfo</a>, D&gt;</div>
+    <div><a class="xref" href="DotNext.Reflection.IMethod-1.html">IMethod</a>&lt;TSignature&gt;</div>
+    <div><a class="xref" href="DotNext.Reflection.IMethod-2.html">IMethod</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.methodinfo">MethodInfo</a>, TSignature&gt;</div>
+    <div><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.methodinfo">MethodInfo</a>, TSignature&gt;</div>
     <div><a class="xref" href="DotNext.Reflection.IMember-1.html">IMember</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.methodinfo">MethodInfo</a>&gt;</div>
     <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.icustomattributeprovider">ICustomAttributeProvider</a></div>
-    <div><span class="xref">System.IConvertible</span>&lt;D&gt;</div>
+    <div><span class="xref">System.IConvertible</span>&lt;TSignature&gt;</div>
     <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.methodinfo">MethodInfo</a>&gt;</div>
   </div>
   <div class="inheritedMembers">
@@ -170,7 +170,7 @@
   <h6><strong>Assembly</strong>: DotNext.Reflection.dll</h6>
   <h5 id="DotNext_Reflection_Method_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class Method&lt;D&gt; : MethodInfo, IMethod&lt;D&gt;, IMethod&lt;MethodInfo, D&gt;, IMember&lt;MethodInfo, D&gt;, IMember&lt;MethodInfo&gt;, ICustomAttributeProvider, IConvertible&lt;D&gt;, IEquatable&lt;MethodInfo&gt; where D : MulticastDelegate</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class Method&lt;TSignature&gt; : MethodInfo, IMethod&lt;TSignature&gt;, IMethod&lt;MethodInfo, TSignature&gt;, IMember&lt;MethodInfo, TSignature&gt;, IMember&lt;MethodInfo&gt;, ICustomAttributeProvider, IConvertible&lt;TSignature&gt;, IEquatable&lt;MethodInfo&gt; where TSignature : MulticastDelegate</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -182,7 +182,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">D</span></td>
+        <td><span class="parametername">TSignature</span></td>
         <td><p>Type of delegate describing signature of the reflected method.</p>
 </td>
       </tr>
@@ -1641,7 +1641,7 @@ and returns  the resulting constructed method.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Method_1_ToString.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L303">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L306">View Source</a>
   </span>
   <a id="DotNext_Reflection_Method_1_ToString_" data-uid="DotNext.Reflection.Method`1.ToString*"></a>
   <h4 id="DotNext_Reflection_Method_1_ToString" data-uid="DotNext.Reflection.Method`1.ToString">ToString()</h4>
@@ -1680,13 +1680,13 @@ and returns  the resulting constructed method.</p>
     <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L293">View Source</a>
   </span>
   <a id="DotNext_Reflection_Method_1_op_Implicit_" data-uid="DotNext.Reflection.Method`1.op_Implicit*"></a>
-  <h4 id="DotNext_Reflection_Method_1_op_Implicit_DotNext_Reflection_Method__0____0" data-uid="DotNext.Reflection.Method`1.op_Implicit(DotNext.Reflection.Method{`0})~`0">Implicit(Method&lt;D&gt; to D)</h4>
+  <h4 id="DotNext_Reflection_Method_1_op_Implicit_DotNext_Reflection_Method__0____0" data-uid="DotNext.Reflection.Method`1.op_Implicit(DotNext.Reflection.Method{`0})~`0">Implicit(Method&lt;TSignature&gt; to TSignature)</h4>
   <div class="markdown level1 summary"><p>Gets a delegate representing this method.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static implicit operator D(Method&lt;D&gt; method)</code></pre>
+    <pre><code class="lang-csharp hljs">public static implicit operator TSignature(Method&lt;TSignature&gt; method)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1699,7 +1699,7 @@ and returns  the resulting constructed method.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;D&gt;</td>
+        <td><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;TSignature&gt;</td>
         <td><span class="parametername">method</span></td>
         <td><p>The reflected method.</p>
 </td>
@@ -1716,7 +1716,7 @@ and returns  the resulting constructed method.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">D</span></td>
+        <td><span class="xref">TSignature</span></td>
         <td></td>
       </tr>
     </tbody>
@@ -1725,18 +1725,18 @@ and returns  the resulting constructed method.</p>
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Method_1_DotNext_Reflection_IMember_System_Reflection_MethodInfo_D__Invoker.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.DotNext%23Reflection%23IMember%7BSystem%23Reflection%23MethodInfo%2CD%7D%23Invoker%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Method_1_DotNext_Reflection_IMember_System_Reflection_MethodInfo_TSignature__Invoker.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.DotNext%23Reflection%23IMember%7BSystem%23Reflection%23MethodInfo%2CTSignature%7D%23Invoker%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L297">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L300">View Source</a>
   </span>
-  <a id="DotNext_Reflection_Method_1_DotNext_Reflection_IMember_System_Reflection_MethodInfo_D__Invoker_" data-uid="DotNext.Reflection.Method`1.DotNext#Reflection#IMember{System#Reflection#MethodInfo,D}#Invoker*"></a>
-  <h4 id="DotNext_Reflection_Method_1_DotNext_Reflection_IMember_System_Reflection_MethodInfo_D__Invoker" data-uid="DotNext.Reflection.Method`1.DotNext#Reflection#IMember{System#Reflection#MethodInfo,D}#Invoker">IMember&lt;MethodInfo, D&gt;.Invoker</h4>
+  <a id="DotNext_Reflection_Method_1_DotNext_Reflection_IMember_System_Reflection_MethodInfo_TSignature__Invoker_" data-uid="DotNext.Reflection.Method`1.DotNext#Reflection#IMember{System#Reflection#MethodInfo,TSignature}#Invoker*"></a>
+  <h4 id="DotNext_Reflection_Method_1_DotNext_Reflection_IMember_System_Reflection_MethodInfo_TSignature__Invoker" data-uid="DotNext.Reflection.Method`1.DotNext#Reflection#IMember{System#Reflection#MethodInfo,TSignature}#Invoker">IMember&lt;MethodInfo, TSignature&gt;.Invoker</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">D IMember&lt;MethodInfo, D&gt;.Invoker { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">TSignature IMember&lt;MethodInfo, TSignature&gt;.Invoker { get; }</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1748,7 +1748,7 @@ and returns  the resulting constructed method.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">D</span></td>
+        <td><span class="xref">TSignature</span></td>
         <td></td>
       </tr>
     </tbody>
@@ -1758,7 +1758,7 @@ and returns  the resulting constructed method.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Method_1_DotNext_Reflection_IMember_System_Reflection_MethodInfo__RuntimeMember.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.DotNext%23Reflection%23IMember%7BSystem%23Reflection%23MethodInfo%7D%23RuntimeMember%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L296">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L297">View Source</a>
   </span>
   <a id="DotNext_Reflection_Method_1_DotNext_Reflection_IMember_System_Reflection_MethodInfo__RuntimeMember_" data-uid="DotNext.Reflection.Method`1.DotNext#Reflection#IMember{System#Reflection#MethodInfo}#RuntimeMember*"></a>
   <h4 id="DotNext_Reflection_Method_1_DotNext_Reflection_IMember_System_Reflection_MethodInfo__RuntimeMember" data-uid="DotNext.Reflection.Method`1.DotNext#Reflection#IMember{System#Reflection#MethodInfo}#RuntimeMember">IMember&lt;MethodInfo&gt;.RuntimeMember</h4>
@@ -1785,16 +1785,16 @@ and returns  the resulting constructed method.</p>
   </table>
   <h3 id="implements">Implements</h3>
   <div>
-      <a class="xref" href="DotNext.Reflection.IMethod-1.html">IMethod&lt;D&gt;</a>
+      <a class="xref" href="DotNext.Reflection.IMethod-1.html">IMethod&lt;TSignature&gt;</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Reflection.IMethod-2.html">IMethod&lt;M, D&gt;</a>
+      <a class="xref" href="DotNext.Reflection.IMethod-2.html">IMethod&lt;TMethod, TSignature&gt;</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Reflection.IMember-2.html">IMember&lt;M, D&gt;</a>
+      <a class="xref" href="DotNext.Reflection.IMember-2.html">IMember&lt;TMember, TInvoker&gt;</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Reflection.IMember-1.html">IMember&lt;M&gt;</a>
+      <a class="xref" href="DotNext.Reflection.IMember-1.html">IMember&lt;TMember&gt;</a>
   </div>
   <div>
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.icustomattributeprovider">System.Reflection.ICustomAttributeProvider</a>
@@ -1831,7 +1831,7 @@ and returns  the resulting constructed method.</p>
       <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireUpgradeableReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.DelegateHelpers.html#DotNext_DelegateHelpers_CreateDelegate__1_System_Reflection_MethodInfo_System_Object_">DelegateHelpers.CreateDelegate&lt;D&gt;(MethodInfo, Object)</a>
+      <a class="xref" href="DotNext.DelegateHelpers.html#DotNext_DelegateHelpers_CreateDelegate__1_System_Reflection_MethodInfo_System_Object_">DelegateHelpers.CreateDelegate&lt;TDelegate&gt;(MethodInfo, Object)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_GetUserData__1___0_">ObjectExtensions.GetUserData&lt;T&gt;(T)</a>
@@ -1843,19 +1843,19 @@ and returns  the resulting constructed method.</p>
       <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, T[])</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2____1____2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;, out R1, out R2)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2____1____2__">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, Func&lt;T, TResult1&gt;, Func&lt;T, TResult2&gt;, out TResult1, out TResult2)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2_____1____2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, ValueFunc&lt;T, R1&gt;, ValueFunc&lt;T, R2&gt;, out R1, out R2)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2_____1____2__">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, ValueFunc&lt;T, TResult1&gt;, ValueFunc&lt;T, TResult2&gt;, out TResult1, out TResult2)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2__">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, Func&lt;T, TResult1&gt;, Func&lt;T, TResult2&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2___">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, ValueFunc&lt;T, R1&gt;, ValueFunc&lt;T, R2&gt;)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2___">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, ValueFunc&lt;T, TResult1&gt;, ValueFunc&lt;T, TResult2&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Reflection.CustomAttribute.html#DotNext_Reflection_CustomAttribute_IsDefined__1_System_Reflection_ICustomAttributeProvider_System_Boolean_">CustomAttribute.IsDefined&lt;A&gt;(ICustomAttributeProvider, Boolean)</a>
+      <a class="xref" href="DotNext.Reflection.CustomAttribute.html#DotNext_Reflection_CustomAttribute_IsDefined__1_System_Reflection_ICustomAttributeProvider_System_Boolean_">CustomAttribute.IsDefined&lt;TAttribute&gt;(ICustomAttributeProvider, Boolean)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Reflection.MethodExtensions.html#DotNext_Reflection_MethodExtensions_GetParameterTypes_System_Reflection_MethodBase_">MethodExtensions.GetParameterTypes(MethodBase)</a>
@@ -1888,7 +1888,7 @@ and returns  the resulting constructed method.</p>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_System_TimeSpan_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T, TimeSpan)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Reflection.Reflector.html#DotNext_Reflection_Reflector_Unreflect__1_System_Reflection_MethodInfo_">Reflector.Unreflect&lt;D&gt;(MethodInfo)</a>
+      <a class="xref" href="DotNext.Reflection.Reflector.html#DotNext_Reflection_Reflector_Unreflect__1_System_Reflection_MethodInfo_">Reflector.Unreflect&lt;TDelegate&gt;(MethodInfo)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Reflection.Reflector.html#DotNext_Reflection_Reflector_Unreflect_System_Reflection_MethodInfo_">Reflector.Unreflect(MethodInfo)</a>

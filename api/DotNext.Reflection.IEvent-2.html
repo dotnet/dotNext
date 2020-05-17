@@ -5,12 +5,12 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Interface IEvent&lt;T, H&gt;
+    <title>Interface IEvent&lt;T, THandler&gt;
    | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Interface IEvent&lt;T, H&gt;
+    <meta name="title" content="Interface IEvent&lt;T, THandler&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.52.0.0">
+    <meta name="generator" content="docfx 2.53.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -71,7 +71,7 @@
             <article class="content wrap" id="_content" data-uid="DotNext.Reflection.IEvent`2">
   
   
-  <h1 id="DotNext_Reflection_IEvent_2" data-uid="DotNext.Reflection.IEvent`2" class="text-break">Interface IEvent&lt;T, H&gt;
+  <h1 id="DotNext_Reflection_IEvent_2" data-uid="DotNext.Reflection.IEvent`2" class="text-break">Interface IEvent&lt;T, THandler&gt;
   </h1>
   <div class="markdown level0 summary"><p>Represents instance event.</p>
 </div>
@@ -98,7 +98,7 @@
   <h6><strong>Assembly</strong>: DotNext.Reflection.dll</h6>
   <h5 id="DotNext_Reflection_IEvent_2_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public interface IEvent&lt;T, in H&gt; : IEvent, IMember&lt;EventInfo&gt;, ICustomAttributeProvider where H : MulticastDelegate</code></pre>
+    <pre><code class="lang-csharp hljs">public interface IEvent&lt;T, in THandler&gt; : IEvent, IMember&lt;EventInfo&gt;, ICustomAttributeProvider where THandler : MulticastDelegate</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -115,7 +115,7 @@
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">H</span></td>
+        <td><span class="parametername">THandler</span></td>
         <td><p>Type of event handler.</p>
 </td>
       </tr>
@@ -131,13 +131,13 @@
     <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IEvent.cs/#L47">View Source</a>
   </span>
   <a id="DotNext_Reflection_IEvent_2_AddEventHandler_" data-uid="DotNext.Reflection.IEvent`2.AddEventHandler*"></a>
-  <h4 id="DotNext_Reflection_IEvent_2_AddEventHandler__0___1_" data-uid="DotNext.Reflection.IEvent`2.AddEventHandler(`0@,`1)">AddEventHandler(T, H)</h4>
+  <h4 id="DotNext_Reflection_IEvent_2_AddEventHandler__0___1_" data-uid="DotNext.Reflection.IEvent`2.AddEventHandler(`0@,`1)">AddEventHandler(T, THandler)</h4>
   <div class="markdown level1 summary"><p>Add event handler.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">void AddEventHandler(in T instance, H handler)</code></pre>
+    <pre><code class="lang-csharp hljs">void AddEventHandler(in T instance, THandler handler)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -156,7 +156,7 @@
 </td>
       </tr>
       <tr>
-        <td><span class="xref">H</span></td>
+        <td><span class="xref">THandler</span></td>
         <td><span class="parametername">handler</span></td>
         <td><p>An event handler to add.</p>
 </td>
@@ -171,13 +171,13 @@
     <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IEvent.cs/#L54">View Source</a>
   </span>
   <a id="DotNext_Reflection_IEvent_2_RemoveEventHandler_" data-uid="DotNext.Reflection.IEvent`2.RemoveEventHandler*"></a>
-  <h4 id="DotNext_Reflection_IEvent_2_RemoveEventHandler__0___1_" data-uid="DotNext.Reflection.IEvent`2.RemoveEventHandler(`0@,`1)">RemoveEventHandler(T, H)</h4>
+  <h4 id="DotNext_Reflection_IEvent_2_RemoveEventHandler__0___1_" data-uid="DotNext.Reflection.IEvent`2.RemoveEventHandler(`0@,`1)">RemoveEventHandler(T, THandler)</h4>
   <div class="markdown level1 summary"><p>Remove event handler.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">void RemoveEventHandler(in T instance, H handler)</code></pre>
+    <pre><code class="lang-csharp hljs">void RemoveEventHandler(in T instance, THandler handler)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -196,7 +196,7 @@
 </td>
       </tr>
       <tr>
-        <td><span class="xref">H</span></td>
+        <td><span class="xref">THandler</span></td>
         <td><span class="parametername">handler</span></td>
         <td><p>An event handler to remove.</p>
 </td>
@@ -238,19 +238,19 @@
       <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, T[])</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2____1____2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;, out R1, out R2)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2____1____2__">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, Func&lt;T, TResult1&gt;, Func&lt;T, TResult2&gt;, out TResult1, out TResult2)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2_____1____2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, ValueFunc&lt;T, R1&gt;, ValueFunc&lt;T, R2&gt;, out R1, out R2)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2_____1____2__">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, ValueFunc&lt;T, TResult1&gt;, ValueFunc&lt;T, TResult2&gt;, out TResult1, out TResult2)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2__">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, Func&lt;T, TResult1&gt;, Func&lt;T, TResult2&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2___">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, ValueFunc&lt;T, R1&gt;, ValueFunc&lt;T, R2&gt;)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2___">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, ValueFunc&lt;T, TResult1&gt;, ValueFunc&lt;T, TResult2&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Reflection.CustomAttribute.html#DotNext_Reflection_CustomAttribute_IsDefined__1_System_Reflection_ICustomAttributeProvider_System_Boolean_">CustomAttribute.IsDefined&lt;A&gt;(ICustomAttributeProvider, Boolean)</a>
+      <a class="xref" href="DotNext.Reflection.CustomAttribute.html#DotNext_Reflection_CustomAttribute_IsDefined__1_System_Reflection_ICustomAttributeProvider_System_Boolean_">CustomAttribute.IsDefined&lt;TAttribute&gt;(ICustomAttributeProvider, Boolean)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_">LockAcquisition.AcquireReadLock&lt;T&gt;(T)</a>

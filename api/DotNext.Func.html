@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class Func
    | .NEXT ">
-    <meta name="generator" content="docfx 2.52.0.0">
+    <meta name="generator" content="docfx 2.53.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -122,13 +122,13 @@ predefined functions.</p>
     <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Func.cs/#L96">View Source</a>
   </span>
   <a id="DotNext_Func_AsConverter_" data-uid="DotNext.Func.AsConverter*"></a>
-  <h4 id="DotNext_Func_AsConverter__2_System_Func___0___1__" data-uid="DotNext.Func.AsConverter``2(System.Func{``0,``1})">AsConverter&lt;I, O&gt;(Func&lt;I, O&gt;)</h4>
+  <h4 id="DotNext_Func_AsConverter__2_System_Func___0___1__" data-uid="DotNext.Func.AsConverter``2(System.Func{``0,``1})">AsConverter&lt;TInput, TOutput&gt;(Func&lt;TInput, TOutput&gt;)</h4>
   <div class="markdown level1 summary"><p>Converts <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func&lt;T,TResult&gt;</a> into <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.converter-2">Converter&lt;TInput,TOutput&gt;</a>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Converter&lt;I, O&gt; AsConverter&lt;I, O&gt;(this Func&lt;I, O&gt; function)</code></pre>
+    <pre><code class="lang-csharp hljs">public static Converter&lt;TInput, TOutput&gt; AsConverter&lt;TInput, TOutput&gt;(this Func&lt;TInput, TOutput&gt; function)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -141,7 +141,7 @@ predefined functions.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;I, O&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;TInput, TOutput&gt;</td>
         <td><span class="parametername">function</span></td>
         <td><p>The function to convert.</p>
 </td>
@@ -158,7 +158,7 @@ predefined functions.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.converter-2">Converter</a>&lt;I, O&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.converter-2">Converter</a>&lt;TInput, TOutput&gt;</td>
         <td><p>A delegate of type <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.converter-2">Converter&lt;TInput,TOutput&gt;</a> referencing the same method as original delegate.</p>
 </td>
       </tr>
@@ -174,12 +174,12 @@ predefined functions.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">I</span></td>
+        <td><span class="parametername">TInput</span></td>
         <td><p>Type of input argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">O</span></td>
+        <td><span class="parametername">TOutput</span></td>
         <td><p>Return type of the converter.</p>
 </td>
       </tr>
@@ -311,16 +311,16 @@ without any modifications.</p>
     <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Func.cs/#L65">View Source</a>
   </span>
   <a id="DotNext_Func_Identity_" data-uid="DotNext.Func.Identity*"></a>
-  <h4 id="DotNext_Func_Identity__2" data-uid="DotNext.Func.Identity``2">Identity&lt;I, O&gt;()</h4>
+  <h4 id="DotNext_Func_Identity__2" data-uid="DotNext.Func.Identity``2">Identity&lt;TInput, TOutput&gt;()</h4>
   <div class="markdown level1 summary"><p>The function which returns input argument
 without any modifications.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Func&lt;I, O&gt; Identity&lt;I, O&gt;()
+    <pre><code class="lang-csharp hljs">public static Func&lt;TInput, TOutput&gt; Identity&lt;TInput, TOutput&gt;()
 
-    where I : O</code></pre>
+    where TInput : TOutput</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -332,7 +332,7 @@ without any modifications.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;I, O&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;TInput, TOutput&gt;</td>
         <td><p>The identity function.</p>
 </td>
       </tr>
@@ -348,12 +348,12 @@ without any modifications.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">I</span></td>
+        <td><span class="parametername">TInput</span></td>
         <td><p>Type of input.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">O</span></td>
+        <td><span class="parametername">TOutput</span></td>
         <td><p>Type of output.</p>
 </td>
       </tr>
@@ -477,13 +477,13 @@ is not <span class="xref">null</span>.</p>
     <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Func.cs/#L105">View Source</a>
   </span>
   <a id="DotNext_Func_TryInvoke_" data-uid="DotNext.Func.TryInvoke*"></a>
-  <h4 id="DotNext_Func_TryInvoke__1_System_Func___0__" data-uid="DotNext.Func.TryInvoke``1(System.Func{``0})">TryInvoke&lt;R&gt;(Func&lt;R&gt;)</h4>
+  <h4 id="DotNext_Func_TryInvoke__1_System_Func___0__" data-uid="DotNext.Func.TryInvoke``1(System.Func{``0})">TryInvoke&lt;TResult&gt;(Func&lt;TResult&gt;)</h4>
   <div class="markdown level1 summary"><p>Invokes function without throwing the exception.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Result&lt;R&gt; TryInvoke&lt;R&gt;(this Func&lt;R&gt; function)</code></pre>
+    <pre><code class="lang-csharp hljs">public static Result&lt;TResult&gt; TryInvoke&lt;TResult&gt;(this Func&lt;TResult&gt; function)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -496,7 +496,7 @@ is not <span class="xref">null</span>.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;R&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;TResult&gt;</td>
         <td><span class="parametername">function</span></td>
         <td><p>The function to invoke.</p>
 </td>
@@ -513,7 +513,7 @@ is not <span class="xref">null</span>.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Result-1.html">Result</a>&lt;R&gt;</td>
+        <td><a class="xref" href="DotNext.Result-1.html">Result</a>&lt;TResult&gt;</td>
         <td><p>The invocation result.</p>
 </td>
       </tr>
@@ -529,7 +529,7 @@ is not <span class="xref">null</span>.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">R</span></td>
+        <td><span class="parametername">TResult</span></td>
         <td><p>The result type.</p>
 </td>
       </tr>
@@ -540,16 +540,16 @@ is not <span class="xref">null</span>.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Func_TryInvoke__10_System_Func___0___1___2___3___4___5___6___7___8___9____0___1___2___3___4___5___6___7___8_.md&amp;value=---%0Auid%3A%20DotNext.Func.TryInvoke%60%6010(System.Func%7B%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2C%60%608%2C%60%609%7D%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2C%60%608)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Func.cs/#L384">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Func.cs/#L393">View Source</a>
   </span>
   <a id="DotNext_Func_TryInvoke_" data-uid="DotNext.Func.TryInvoke*"></a>
-  <h4 id="DotNext_Func_TryInvoke__10_System_Func___0___1___2___3___4___5___6___7___8___9____0___1___2___3___4___5___6___7___8_" data-uid="DotNext.Func.TryInvoke``10(System.Func{``0,``1,``2,``3,``4,``5,``6,``7,``8,``9},``0,``1,``2,``3,``4,``5,``6,``7,``8)">TryInvoke&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, R&gt;(Func&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, R&gt;, T1, T2, T3, T4, T5, T6, T7, T8, T9)</h4>
+  <h4 id="DotNext_Func_TryInvoke__10_System_Func___0___1___2___3___4___5___6___7___8___9____0___1___2___3___4___5___6___7___8_" data-uid="DotNext.Func.TryInvoke``10(System.Func{``0,``1,``2,``3,``4,``5,``6,``7,``8,``9},``0,``1,``2,``3,``4,``5,``6,``7,``8)">TryInvoke&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult&gt;(Func&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult&gt;, T1, T2, T3, T4, T5, T6, T7, T8, T9)</h4>
   <div class="markdown level1 summary"><p>Invokes function without throwing the exception.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Result&lt;R&gt; TryInvoke&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, R&gt;(this Func&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, R&gt; function, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9)</code></pre>
+    <pre><code class="lang-csharp hljs">public static Result&lt;TResult&gt; TryInvoke&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult&gt;(this Func&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult&gt; function, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -562,7 +562,7 @@ is not <span class="xref">null</span>.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-10">Func</a>&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, R&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-10">Func</a>&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult&gt;</td>
         <td><span class="parametername">function</span></td>
         <td><p>The function to invoke.</p>
 </td>
@@ -633,7 +633,7 @@ is not <span class="xref">null</span>.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Result-1.html">Result</a>&lt;R&gt;</td>
+        <td><a class="xref" href="DotNext.Result-1.html">Result</a>&lt;TResult&gt;</td>
         <td><p>The invocation result.</p>
 </td>
       </tr>
@@ -694,7 +694,7 @@ is not <span class="xref">null</span>.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">R</span></td>
+        <td><span class="parametername">TResult</span></td>
         <td><p>The result type.</p>
 </td>
       </tr>
@@ -705,16 +705,16 @@ is not <span class="xref">null</span>.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Func_TryInvoke__11_System_Func___0___1___2___3___4___5___6___7___8___9___10____0___1___2___3___4___5___6___7___8___9_.md&amp;value=---%0Auid%3A%20DotNext.Func.TryInvoke%60%6011(System.Func%7B%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2C%60%608%2C%60%609%2C%60%6010%7D%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2C%60%608%2C%60%609)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Func.cs/#L425">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Func.cs/#L435">View Source</a>
   </span>
   <a id="DotNext_Func_TryInvoke_" data-uid="DotNext.Func.TryInvoke*"></a>
-  <h4 id="DotNext_Func_TryInvoke__11_System_Func___0___1___2___3___4___5___6___7___8___9___10____0___1___2___3___4___5___6___7___8___9_" data-uid="DotNext.Func.TryInvoke``11(System.Func{``0,``1,``2,``3,``4,``5,``6,``7,``8,``9,``10},``0,``1,``2,``3,``4,``5,``6,``7,``8,``9)">TryInvoke&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R&gt;(Func&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R&gt;, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)</h4>
+  <h4 id="DotNext_Func_TryInvoke__11_System_Func___0___1___2___3___4___5___6___7___8___9___10____0___1___2___3___4___5___6___7___8___9_" data-uid="DotNext.Func.TryInvoke``11(System.Func{``0,``1,``2,``3,``4,``5,``6,``7,``8,``9,``10},``0,``1,``2,``3,``4,``5,``6,``7,``8,``9)">TryInvoke&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult&gt;(Func&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult&gt;, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)</h4>
   <div class="markdown level1 summary"><p>Invokes function without throwing the exception.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Result&lt;R&gt; TryInvoke&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R&gt;(this Func&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R&gt; function, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10)</code></pre>
+    <pre><code class="lang-csharp hljs">public static Result&lt;TResult&gt; TryInvoke&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult&gt;(this Func&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult&gt; function, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -727,7 +727,7 @@ is not <span class="xref">null</span>.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-11">Func</a>&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-11">Func</a>&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult&gt;</td>
         <td><span class="parametername">function</span></td>
         <td><p>The function to invoke.</p>
 </td>
@@ -804,7 +804,7 @@ is not <span class="xref">null</span>.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Result-1.html">Result</a>&lt;R&gt;</td>
+        <td><a class="xref" href="DotNext.Result-1.html">Result</a>&lt;TResult&gt;</td>
         <td><p>The invocation result.</p>
 </td>
       </tr>
@@ -870,7 +870,7 @@ is not <span class="xref">null</span>.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">R</span></td>
+        <td><span class="parametername">TResult</span></td>
         <td><p>The result type.</p>
 </td>
       </tr>
@@ -881,16 +881,16 @@ is not <span class="xref">null</span>.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Func_TryInvoke__2_System_Func___0___1____0_.md&amp;value=---%0Auid%3A%20DotNext.Func.TryInvoke%60%602(System.Func%7B%60%600%2C%60%601%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Func.cs/#L128">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Func.cs/#L129">View Source</a>
   </span>
   <a id="DotNext_Func_TryInvoke_" data-uid="DotNext.Func.TryInvoke*"></a>
-  <h4 id="DotNext_Func_TryInvoke__2_System_Func___0___1____0_" data-uid="DotNext.Func.TryInvoke``2(System.Func{``0,``1},``0)">TryInvoke&lt;T, R&gt;(Func&lt;T, R&gt;, T)</h4>
+  <h4 id="DotNext_Func_TryInvoke__2_System_Func___0___1____0_" data-uid="DotNext.Func.TryInvoke``2(System.Func{``0,``1},``0)">TryInvoke&lt;T, TResult&gt;(Func&lt;T, TResult&gt;, T)</h4>
   <div class="markdown level1 summary"><p>Invokes function without throwing the exception.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Result&lt;R&gt; TryInvoke&lt;T, R&gt;(this Func&lt;T, R&gt; function, T arg)</code></pre>
+    <pre><code class="lang-csharp hljs">public static Result&lt;TResult&gt; TryInvoke&lt;T, TResult&gt;(this Func&lt;T, TResult&gt; function, T arg)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -903,7 +903,7 @@ is not <span class="xref">null</span>.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;T, R&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;T, TResult&gt;</td>
         <td><span class="parametername">function</span></td>
         <td><p>The function to invoke.</p>
 </td>
@@ -926,7 +926,7 @@ is not <span class="xref">null</span>.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Result-1.html">Result</a>&lt;R&gt;</td>
+        <td><a class="xref" href="DotNext.Result-1.html">Result</a>&lt;TResult&gt;</td>
         <td><p>The invocation result.</p>
 </td>
       </tr>
@@ -947,7 +947,7 @@ is not <span class="xref">null</span>.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">R</span></td>
+        <td><span class="parametername">TResult</span></td>
         <td><p>The result type.</p>
 </td>
       </tr>
@@ -958,16 +958,16 @@ is not <span class="xref">null</span>.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Func_TryInvoke__3_System_Func___0___1___2____0___1_.md&amp;value=---%0Auid%3A%20DotNext.Func.TryInvoke%60%603(System.Func%7B%60%600%2C%60%601%2C%60%602%7D%2C%60%600%2C%60%601)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Func.cs/#L153">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Func.cs/#L155">View Source</a>
   </span>
   <a id="DotNext_Func_TryInvoke_" data-uid="DotNext.Func.TryInvoke*"></a>
-  <h4 id="DotNext_Func_TryInvoke__3_System_Func___0___1___2____0___1_" data-uid="DotNext.Func.TryInvoke``3(System.Func{``0,``1,``2},``0,``1)">TryInvoke&lt;T1, T2, R&gt;(Func&lt;T1, T2, R&gt;, T1, T2)</h4>
+  <h4 id="DotNext_Func_TryInvoke__3_System_Func___0___1___2____0___1_" data-uid="DotNext.Func.TryInvoke``3(System.Func{``0,``1,``2},``0,``1)">TryInvoke&lt;T1, T2, TResult&gt;(Func&lt;T1, T2, TResult&gt;, T1, T2)</h4>
   <div class="markdown level1 summary"><p>Invokes function without throwing the exception.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Result&lt;R&gt; TryInvoke&lt;T1, T2, R&gt;(this Func&lt;T1, T2, R&gt; function, T1 arg1, T2 arg2)</code></pre>
+    <pre><code class="lang-csharp hljs">public static Result&lt;TResult&gt; TryInvoke&lt;T1, T2, TResult&gt;(this Func&lt;T1, T2, TResult&gt; function, T1 arg1, T2 arg2)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -980,7 +980,7 @@ is not <span class="xref">null</span>.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;T1, T2, R&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;T1, T2, TResult&gt;</td>
         <td><span class="parametername">function</span></td>
         <td><p>The function to invoke.</p>
 </td>
@@ -1009,7 +1009,7 @@ is not <span class="xref">null</span>.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Result-1.html">Result</a>&lt;R&gt;</td>
+        <td><a class="xref" href="DotNext.Result-1.html">Result</a>&lt;TResult&gt;</td>
         <td><p>The invocation result.</p>
 </td>
       </tr>
@@ -1035,7 +1035,7 @@ is not <span class="xref">null</span>.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">R</span></td>
+        <td><span class="parametername">TResult</span></td>
         <td><p>The result type.</p>
 </td>
       </tr>
@@ -1046,16 +1046,16 @@ is not <span class="xref">null</span>.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Func_TryInvoke__4_System_Func___0___1___2___3____0___1___2_.md&amp;value=---%0Auid%3A%20DotNext.Func.TryInvoke%60%604(System.Func%7B%60%600%2C%60%601%2C%60%602%2C%60%603%7D%2C%60%600%2C%60%601%2C%60%602)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Func.cs/#L180">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Func.cs/#L183">View Source</a>
   </span>
   <a id="DotNext_Func_TryInvoke_" data-uid="DotNext.Func.TryInvoke*"></a>
-  <h4 id="DotNext_Func_TryInvoke__4_System_Func___0___1___2___3____0___1___2_" data-uid="DotNext.Func.TryInvoke``4(System.Func{``0,``1,``2,``3},``0,``1,``2)">TryInvoke&lt;T1, T2, T3, R&gt;(Func&lt;T1, T2, T3, R&gt;, T1, T2, T3)</h4>
+  <h4 id="DotNext_Func_TryInvoke__4_System_Func___0___1___2___3____0___1___2_" data-uid="DotNext.Func.TryInvoke``4(System.Func{``0,``1,``2,``3},``0,``1,``2)">TryInvoke&lt;T1, T2, T3, TResult&gt;(Func&lt;T1, T2, T3, TResult&gt;, T1, T2, T3)</h4>
   <div class="markdown level1 summary"><p>Invokes function without throwing the exception.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Result&lt;R&gt; TryInvoke&lt;T1, T2, T3, R&gt;(this Func&lt;T1, T2, T3, R&gt; function, T1 arg1, T2 arg2, T3 arg3)</code></pre>
+    <pre><code class="lang-csharp hljs">public static Result&lt;TResult&gt; TryInvoke&lt;T1, T2, T3, TResult&gt;(this Func&lt;T1, T2, T3, TResult&gt; function, T1 arg1, T2 arg2, T3 arg3)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1068,7 +1068,7 @@ is not <span class="xref">null</span>.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-4">Func</a>&lt;T1, T2, T3, R&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-4">Func</a>&lt;T1, T2, T3, TResult&gt;</td>
         <td><span class="parametername">function</span></td>
         <td><p>The function to invoke.</p>
 </td>
@@ -1103,7 +1103,7 @@ is not <span class="xref">null</span>.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Result-1.html">Result</a>&lt;R&gt;</td>
+        <td><a class="xref" href="DotNext.Result-1.html">Result</a>&lt;TResult&gt;</td>
         <td><p>The invocation result.</p>
 </td>
       </tr>
@@ -1134,7 +1134,7 @@ is not <span class="xref">null</span>.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">R</span></td>
+        <td><span class="parametername">TResult</span></td>
         <td><p>The result type.</p>
 </td>
       </tr>
@@ -1145,16 +1145,16 @@ is not <span class="xref">null</span>.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Func_TryInvoke__5_System_Func___0___1___2___3___4____0___1___2___3_.md&amp;value=---%0Auid%3A%20DotNext.Func.TryInvoke%60%605(System.Func%7B%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%7D%2C%60%600%2C%60%601%2C%60%602%2C%60%603)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Func.cs/#L209">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Func.cs/#L213">View Source</a>
   </span>
   <a id="DotNext_Func_TryInvoke_" data-uid="DotNext.Func.TryInvoke*"></a>
-  <h4 id="DotNext_Func_TryInvoke__5_System_Func___0___1___2___3___4____0___1___2___3_" data-uid="DotNext.Func.TryInvoke``5(System.Func{``0,``1,``2,``3,``4},``0,``1,``2,``3)">TryInvoke&lt;T1, T2, T3, T4, R&gt;(Func&lt;T1, T2, T3, T4, R&gt;, T1, T2, T3, T4)</h4>
+  <h4 id="DotNext_Func_TryInvoke__5_System_Func___0___1___2___3___4____0___1___2___3_" data-uid="DotNext.Func.TryInvoke``5(System.Func{``0,``1,``2,``3,``4},``0,``1,``2,``3)">TryInvoke&lt;T1, T2, T3, T4, TResult&gt;(Func&lt;T1, T2, T3, T4, TResult&gt;, T1, T2, T3, T4)</h4>
   <div class="markdown level1 summary"><p>Invokes function without throwing the exception.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Result&lt;R&gt; TryInvoke&lt;T1, T2, T3, T4, R&gt;(this Func&lt;T1, T2, T3, T4, R&gt; function, T1 arg1, T2 arg2, T3 arg3, T4 arg4)</code></pre>
+    <pre><code class="lang-csharp hljs">public static Result&lt;TResult&gt; TryInvoke&lt;T1, T2, T3, T4, TResult&gt;(this Func&lt;T1, T2, T3, T4, TResult&gt; function, T1 arg1, T2 arg2, T3 arg3, T4 arg4)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1167,7 +1167,7 @@ is not <span class="xref">null</span>.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-5">Func</a>&lt;T1, T2, T3, T4, R&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-5">Func</a>&lt;T1, T2, T3, T4, TResult&gt;</td>
         <td><span class="parametername">function</span></td>
         <td><p>The function to invoke.</p>
 </td>
@@ -1208,7 +1208,7 @@ is not <span class="xref">null</span>.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Result-1.html">Result</a>&lt;R&gt;</td>
+        <td><a class="xref" href="DotNext.Result-1.html">Result</a>&lt;TResult&gt;</td>
         <td><p>The invocation result.</p>
 </td>
       </tr>
@@ -1244,7 +1244,7 @@ is not <span class="xref">null</span>.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">R</span></td>
+        <td><span class="parametername">TResult</span></td>
         <td><p>The result type.</p>
 </td>
       </tr>
@@ -1255,16 +1255,16 @@ is not <span class="xref">null</span>.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Func_TryInvoke__6_System_Func___0___1___2___3___4___5____0___1___2___3___4_.md&amp;value=---%0Auid%3A%20DotNext.Func.TryInvoke%60%606(System.Func%7B%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%7D%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Func.cs/#L240">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Func.cs/#L245">View Source</a>
   </span>
   <a id="DotNext_Func_TryInvoke_" data-uid="DotNext.Func.TryInvoke*"></a>
-  <h4 id="DotNext_Func_TryInvoke__6_System_Func___0___1___2___3___4___5____0___1___2___3___4_" data-uid="DotNext.Func.TryInvoke``6(System.Func{``0,``1,``2,``3,``4,``5},``0,``1,``2,``3,``4)">TryInvoke&lt;T1, T2, T3, T4, T5, R&gt;(Func&lt;T1, T2, T3, T4, T5, R&gt;, T1, T2, T3, T4, T5)</h4>
+  <h4 id="DotNext_Func_TryInvoke__6_System_Func___0___1___2___3___4___5____0___1___2___3___4_" data-uid="DotNext.Func.TryInvoke``6(System.Func{``0,``1,``2,``3,``4,``5},``0,``1,``2,``3,``4)">TryInvoke&lt;T1, T2, T3, T4, T5, TResult&gt;(Func&lt;T1, T2, T3, T4, T5, TResult&gt;, T1, T2, T3, T4, T5)</h4>
   <div class="markdown level1 summary"><p>Invokes function without throwing the exception.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Result&lt;R&gt; TryInvoke&lt;T1, T2, T3, T4, T5, R&gt;(this Func&lt;T1, T2, T3, T4, T5, R&gt; function, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)</code></pre>
+    <pre><code class="lang-csharp hljs">public static Result&lt;TResult&gt; TryInvoke&lt;T1, T2, T3, T4, T5, TResult&gt;(this Func&lt;T1, T2, T3, T4, T5, TResult&gt; function, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1277,7 +1277,7 @@ is not <span class="xref">null</span>.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-6">Func</a>&lt;T1, T2, T3, T4, T5, R&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-6">Func</a>&lt;T1, T2, T3, T4, T5, TResult&gt;</td>
         <td><span class="parametername">function</span></td>
         <td><p>The function to invoke.</p>
 </td>
@@ -1324,7 +1324,7 @@ is not <span class="xref">null</span>.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Result-1.html">Result</a>&lt;R&gt;</td>
+        <td><a class="xref" href="DotNext.Result-1.html">Result</a>&lt;TResult&gt;</td>
         <td><p>The invocation result.</p>
 </td>
       </tr>
@@ -1365,7 +1365,7 @@ is not <span class="xref">null</span>.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">R</span></td>
+        <td><span class="parametername">TResult</span></td>
         <td><p>The result type.</p>
 </td>
       </tr>
@@ -1376,16 +1376,16 @@ is not <span class="xref">null</span>.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Func_TryInvoke__7_System_Func___0___1___2___3___4___5___6____0___1___2___3___4___5_.md&amp;value=---%0Auid%3A%20DotNext.Func.TryInvoke%60%607(System.Func%7B%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%7D%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Func.cs/#L273">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Func.cs/#L279">View Source</a>
   </span>
   <a id="DotNext_Func_TryInvoke_" data-uid="DotNext.Func.TryInvoke*"></a>
-  <h4 id="DotNext_Func_TryInvoke__7_System_Func___0___1___2___3___4___5___6____0___1___2___3___4___5_" data-uid="DotNext.Func.TryInvoke``7(System.Func{``0,``1,``2,``3,``4,``5,``6},``0,``1,``2,``3,``4,``5)">TryInvoke&lt;T1, T2, T3, T4, T5, T6, R&gt;(Func&lt;T1, T2, T3, T4, T5, T6, R&gt;, T1, T2, T3, T4, T5, T6)</h4>
+  <h4 id="DotNext_Func_TryInvoke__7_System_Func___0___1___2___3___4___5___6____0___1___2___3___4___5_" data-uid="DotNext.Func.TryInvoke``7(System.Func{``0,``1,``2,``3,``4,``5,``6},``0,``1,``2,``3,``4,``5)">TryInvoke&lt;T1, T2, T3, T4, T5, T6, TResult&gt;(Func&lt;T1, T2, T3, T4, T5, T6, TResult&gt;, T1, T2, T3, T4, T5, T6)</h4>
   <div class="markdown level1 summary"><p>Invokes function without throwing the exception.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Result&lt;R&gt; TryInvoke&lt;T1, T2, T3, T4, T5, T6, R&gt;(this Func&lt;T1, T2, T3, T4, T5, T6, R&gt; function, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6)</code></pre>
+    <pre><code class="lang-csharp hljs">public static Result&lt;TResult&gt; TryInvoke&lt;T1, T2, T3, T4, T5, T6, TResult&gt;(this Func&lt;T1, T2, T3, T4, T5, T6, TResult&gt; function, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1398,7 +1398,7 @@ is not <span class="xref">null</span>.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-7">Func</a>&lt;T1, T2, T3, T4, T5, T6, R&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-7">Func</a>&lt;T1, T2, T3, T4, T5, T6, TResult&gt;</td>
         <td><span class="parametername">function</span></td>
         <td><p>The function to invoke.</p>
 </td>
@@ -1451,7 +1451,7 @@ is not <span class="xref">null</span>.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Result-1.html">Result</a>&lt;R&gt;</td>
+        <td><a class="xref" href="DotNext.Result-1.html">Result</a>&lt;TResult&gt;</td>
         <td><p>The invocation result.</p>
 </td>
       </tr>
@@ -1497,7 +1497,7 @@ is not <span class="xref">null</span>.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">R</span></td>
+        <td><span class="parametername">TResult</span></td>
         <td><p>The result type.</p>
 </td>
       </tr>
@@ -1508,16 +1508,16 @@ is not <span class="xref">null</span>.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Func_TryInvoke__8_System_Func___0___1___2___3___4___5___6___7____0___1___2___3___4___5___6_.md&amp;value=---%0Auid%3A%20DotNext.Func.TryInvoke%60%608(System.Func%7B%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%7D%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Func.cs/#L308">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Func.cs/#L315">View Source</a>
   </span>
   <a id="DotNext_Func_TryInvoke_" data-uid="DotNext.Func.TryInvoke*"></a>
-  <h4 id="DotNext_Func_TryInvoke__8_System_Func___0___1___2___3___4___5___6___7____0___1___2___3___4___5___6_" data-uid="DotNext.Func.TryInvoke``8(System.Func{``0,``1,``2,``3,``4,``5,``6,``7},``0,``1,``2,``3,``4,``5,``6)">TryInvoke&lt;T1, T2, T3, T4, T5, T6, T7, R&gt;(Func&lt;T1, T2, T3, T4, T5, T6, T7, R&gt;, T1, T2, T3, T4, T5, T6, T7)</h4>
+  <h4 id="DotNext_Func_TryInvoke__8_System_Func___0___1___2___3___4___5___6___7____0___1___2___3___4___5___6_" data-uid="DotNext.Func.TryInvoke``8(System.Func{``0,``1,``2,``3,``4,``5,``6,``7},``0,``1,``2,``3,``4,``5,``6)">TryInvoke&lt;T1, T2, T3, T4, T5, T6, T7, TResult&gt;(Func&lt;T1, T2, T3, T4, T5, T6, T7, TResult&gt;, T1, T2, T3, T4, T5, T6, T7)</h4>
   <div class="markdown level1 summary"><p>Invokes function without throwing the exception.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Result&lt;R&gt; TryInvoke&lt;T1, T2, T3, T4, T5, T6, T7, R&gt;(this Func&lt;T1, T2, T3, T4, T5, T6, T7, R&gt; function, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7)</code></pre>
+    <pre><code class="lang-csharp hljs">public static Result&lt;TResult&gt; TryInvoke&lt;T1, T2, T3, T4, T5, T6, T7, TResult&gt;(this Func&lt;T1, T2, T3, T4, T5, T6, T7, TResult&gt; function, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1530,7 +1530,7 @@ is not <span class="xref">null</span>.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-8">Func</a>&lt;T1, T2, T3, T4, T5, T6, T7, R&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-8">Func</a>&lt;T1, T2, T3, T4, T5, T6, T7, TResult&gt;</td>
         <td><span class="parametername">function</span></td>
         <td><p>The function to invoke.</p>
 </td>
@@ -1589,7 +1589,7 @@ is not <span class="xref">null</span>.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Result-1.html">Result</a>&lt;R&gt;</td>
+        <td><a class="xref" href="DotNext.Result-1.html">Result</a>&lt;TResult&gt;</td>
         <td><p>The invocation result.</p>
 </td>
       </tr>
@@ -1640,7 +1640,7 @@ is not <span class="xref">null</span>.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">R</span></td>
+        <td><span class="parametername">TResult</span></td>
         <td><p>The result type.</p>
 </td>
       </tr>
@@ -1651,16 +1651,16 @@ is not <span class="xref">null</span>.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Func_TryInvoke__9_System_Func___0___1___2___3___4___5___6___7___8____0___1___2___3___4___5___6___7_.md&amp;value=---%0Auid%3A%20DotNext.Func.TryInvoke%60%609(System.Func%7B%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2C%60%608%7D%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Func.cs/#L345">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Func.cs/#L353">View Source</a>
   </span>
   <a id="DotNext_Func_TryInvoke_" data-uid="DotNext.Func.TryInvoke*"></a>
-  <h4 id="DotNext_Func_TryInvoke__9_System_Func___0___1___2___3___4___5___6___7___8____0___1___2___3___4___5___6___7_" data-uid="DotNext.Func.TryInvoke``9(System.Func{``0,``1,``2,``3,``4,``5,``6,``7,``8},``0,``1,``2,``3,``4,``5,``6,``7)">TryInvoke&lt;T1, T2, T3, T4, T5, T6, T7, T8, R&gt;(Func&lt;T1, T2, T3, T4, T5, T6, T7, T8, R&gt;, T1, T2, T3, T4, T5, T6, T7, T8)</h4>
+  <h4 id="DotNext_Func_TryInvoke__9_System_Func___0___1___2___3___4___5___6___7___8____0___1___2___3___4___5___6___7_" data-uid="DotNext.Func.TryInvoke``9(System.Func{``0,``1,``2,``3,``4,``5,``6,``7,``8},``0,``1,``2,``3,``4,``5,``6,``7)">TryInvoke&lt;T1, T2, T3, T4, T5, T6, T7, T8, TResult&gt;(Func&lt;T1, T2, T3, T4, T5, T6, T7, T8, TResult&gt;, T1, T2, T3, T4, T5, T6, T7, T8)</h4>
   <div class="markdown level1 summary"><p>Invokes function without throwing the exception.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Result&lt;R&gt; TryInvoke&lt;T1, T2, T3, T4, T5, T6, T7, T8, R&gt;(this Func&lt;T1, T2, T3, T4, T5, T6, T7, T8, R&gt; function, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8)</code></pre>
+    <pre><code class="lang-csharp hljs">public static Result&lt;TResult&gt; TryInvoke&lt;T1, T2, T3, T4, T5, T6, T7, T8, TResult&gt;(this Func&lt;T1, T2, T3, T4, T5, T6, T7, T8, TResult&gt; function, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1673,7 +1673,7 @@ is not <span class="xref">null</span>.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-9">Func</a>&lt;T1, T2, T3, T4, T5, T6, T7, T8, R&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-9">Func</a>&lt;T1, T2, T3, T4, T5, T6, T7, T8, TResult&gt;</td>
         <td><span class="parametername">function</span></td>
         <td><p>The function to invoke.</p>
 </td>
@@ -1738,7 +1738,7 @@ is not <span class="xref">null</span>.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Result-1.html">Result</a>&lt;R&gt;</td>
+        <td><a class="xref" href="DotNext.Result-1.html">Result</a>&lt;TResult&gt;</td>
         <td><p>The invocation result.</p>
 </td>
       </tr>
@@ -1794,7 +1794,7 @@ is not <span class="xref">null</span>.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">R</span></td>
+        <td><span class="parametername">TResult</span></td>
         <td><p>The result type.</p>
 </td>
       </tr>
