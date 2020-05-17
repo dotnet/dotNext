@@ -3,7 +3,7 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <RootNamespace>DotNext</RootNamespace>
     <Nullable>enable</Nullable>
-    <Version>2.3.5</Version>
+    <Version>2.4.0</Version>
     <Authors>Roman Sakno</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>Asynchronous locks and .NET threading extensions</Description>
@@ -51,7 +51,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="DotNext" Version="[2.3.5, 3)" />
+    <PackageReference Include="DotNext" Version="[2.4.0, 3)" />
   </ItemGroup>
 
   <ItemGroup>

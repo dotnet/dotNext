@@ -5,7 +5,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <Nullable>enable</Nullable>
     <StartupObject>RaftNode.Program</StartupObject>
-    <Version>2.3.5</Version>
+    <Version>2.4.0</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Bench|AnyCPU'">
