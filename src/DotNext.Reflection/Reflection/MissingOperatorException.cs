@@ -4,8 +4,8 @@ using System.Linq.Expressions;
 namespace DotNext.Reflection
 {
     /// <summary>
-	/// Indicates that requested operator doesn't exist.
-	/// </summary>
+    /// Indicates that requested operator doesn't exist.
+    /// </summary>
     public sealed class MissingOperatorException : ConstraintViolationException
     {
         /// <summary>

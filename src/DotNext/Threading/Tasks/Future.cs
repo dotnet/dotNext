@@ -31,8 +31,8 @@ namespace DotNext.Threading.Tasks
         /// <summary>
         /// Represents awaiter of the asynchronous computation result represented by future object.
         /// </summary>
-        /// <typeparam name="R"></typeparam>
-        public interface IAwaiter<out R> : IFuture
+        /// <typeparam name="TResult">The result of asynchronous operation.</typeparam>
+        public interface IAwaiter<out TResult> : IFuture
         {
             /// <summary>
             /// Ends the wait for the completion of the asynchronous task.
@@ -40,7 +40,7 @@ namespace DotNext.Threading.Tasks
             /// <returns>The result of asynchronous computation.</returns>
             /// <exception cref="OperationCanceledException">Cancellation requested and caller specified that exception should be thrown.</exception>
             /// <exception cref="IncompletedFutureException">The current future is not completed.</exception>
-            R GetResult();
+            TResult GetResult();
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace DotNext.Threading.Tasks
             private Continuation(Action callback, TaskScheduler scheduler)
             {
                 this.callback = callback;
-                this.context = scheduler;
+                context = scheduler;
             }
 
             private void Invoke()
@@ -101,8 +101,8 @@ namespace DotNext.Threading.Tasks
             }
         }
 
-        private Action? continuation;
         private readonly bool runContinuationsAsynchronously;
+        private Action? continuation;
 
         /// <summary>
         /// Initializes a new Future.
@@ -162,6 +162,7 @@ namespace DotNext.Threading.Tasks
         /// <returns>The task representing the current awaitable object.</returns>
         public abstract T AsTask();
 
+        /// <inheritdoc/>
         T IConvertible<T>.Convert() => AsTask();
     }
 }

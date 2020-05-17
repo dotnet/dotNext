@@ -16,7 +16,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Rejected = 0,
             Granted,
             Canceled,
-            NotAvailable
+            NotAvailable,
         }
 
         [StructLayout(LayoutKind.Auto)]
@@ -45,6 +45,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     result = VotingResult.NotAvailable;
                     term = -1L;
                 }
+
                 return new Result<VotingResult>(term, result);
             }
 
@@ -75,14 +76,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (IsDisposed)
                     return;
                 var result = await state.Task.ConfigureAwait(false);
-                if (result.Term > Term) //current node is outdated
+
+                // current node is outdated
+                if (result.Term > Term)
                 {
                     stateMachine.MoveToFollowerState(false, result.Term);
                     return;
                 }
+
                 switch (result.Value)
                 {
-                    case VotingResult.Canceled: //candidate timeout happened
+                    case VotingResult.Canceled: // candidate timeout happened
                         stateMachine.MoveToFollowerState(false);
                         return;
                     case VotingResult.Granted:
@@ -106,9 +110,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             stateMachine.Logger.VotingCompleted(votes);
             if (votingCancellation.IsCancellationRequested || votes <= 0 || localMember is null)
-                stateMachine.MoveToFollowerState(true); //no clear consensus
+                stateMachine.MoveToFollowerState(true); // no clear consensus
             else
-                stateMachine.MoveToLeaderState(localMember); //becomes a leader
+                stateMachine.MoveToLeaderState(localMember); // becomes a leader
         }
 
         /// <summary>
@@ -121,7 +125,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             stateMachine.Logger.VotingStarted(timeout);
             ICollection<VotingState> voters = new LinkedList<VotingState>();
             votingCancellation.CancelAfter(timeout);
-            //start voting in parallel
+
+            // start voting in parallel
             foreach (var member in stateMachine.Members)
                 voters.Add(new VotingState(member, Term, auditTrail, votingCancellation.Token));
             votingTask = EndVoting(voters);
@@ -146,6 +151,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (task != null && task.IsCompleted)
                     task.Dispose();
             }
+
             base.Dispose(disposing);
         }
     }

@@ -17,23 +17,23 @@ namespace DotNext.Reflection
     /// <summary>
     /// Represents static field.
     /// </summary>
-    /// <typeparam name="F">Type of field .</typeparam>
-    public interface IField<F> : IField
+    /// <typeparam name="TValue">Type of field .</typeparam>
+    public interface IField<TValue> : IField
     {
         /// <summary>
         /// Obtains managed pointer to the static field.
         /// </summary>
         /// <value>The managed pointer to the static field.</value>
         [MaybeNull]
-        ref F Value { get; }
+        ref TValue Value { get; }
     }
 
     /// <summary>
     /// Represents instance field.
     /// </summary>
     /// <typeparam name="T">Field declaring type.</typeparam>
-    /// <typeparam name="F">Type of field.</typeparam>
-    public interface IField<T, F> : IField
+    /// <typeparam name="TValue">Type of field.</typeparam>
+    public interface IField<T, TValue> : IField
     {
         /// <summary>
         /// Obtains managed pointer to the field.
@@ -41,6 +41,6 @@ namespace DotNext.Reflection
         /// <param name="this">A reference to <c>this</c> parameter.</param>
         /// <returns>The managed pointer to the instance field.</returns>
         [MaybeNull]
-        ref F this[[DisallowNull]in T @this] { get; }
+        ref TValue this[[DisallowNull]in T @this] { get; }
     }
 }

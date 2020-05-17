@@ -10,6 +10,7 @@ namespace DotNext.Reflection
     internal static class Operator
     {
         internal static ExpressionType ToExpressionType(this UnaryOperator @operator) => (ExpressionType)@operator;
+
         internal static ExpressionType ToExpressionType(this BinaryOperator @operator) => (ExpressionType)@operator;
 
         internal readonly struct Kind : IEquatable<Kind>
@@ -17,6 +18,7 @@ namespace DotNext.Reflection
             private sealed class EqualityComparer : IEqualityComparer<Kind>
             {
                 public int GetHashCode(Kind key) => key.GetHashCode();
+
                 public bool Equals(Kind first, Kind second) => first.Equals(second);
             }
 
@@ -32,6 +34,7 @@ namespace DotNext.Reflection
             }
 
             public static implicit operator UnaryOperator(in Kind key) => (UnaryOperator)key.operatorType;
+
             public static implicit operator BinaryOperator(in Kind key) => (BinaryOperator)key.operatorType;
 
             public static implicit operator ExpressionType(in Kind key) => key.operatorType;
@@ -43,16 +46,18 @@ namespace DotNext.Reflection
             }
 
             public bool Equals(Kind other) => operatorType == other.operatorType && overloaded == other.overloaded;
+
             public override bool Equals(object? other)
                 => other is Kind key && Equals(key);
+
             public override int GetHashCode() => overloaded ? (int)operatorType + 100 : (int)operatorType;
 
             private InvalidOperationException OperatorNotExists()
                 => new InvalidOperationException(ExceptionMessages.MissingOperator(operatorType));
 
-            internal UnaryExpression MakeUnary<R>(in Operand operand)
+            internal UnaryExpression MakeUnary<TResult>(in Operand operand)
             {
-                var result = Expression.MakeUnary(operatorType, operand.Argument, typeof(R));
+                var result = Expression.MakeUnary(operatorType, operand.Argument, typeof(TResult));
                 return result.Method is null ^ overloaded ? result : throw OperatorNotExists();
             }
 
@@ -78,9 +83,12 @@ namespace DotNext.Reflection
         internal static bool Upcast(this ref Operand operand)
         {
             var baseType = operand.Argument.Type.BaseType;
-            //do not walk through inheritance hierarchy for value types
+
+            // do not walk through inheritance hierarchy for value types
             if (baseType is null || operand.Argument.Type.IsValueType)
+            {
                 return false;
+            }
             else
             {
                 operand = new Operand(operand.Source, baseType);
@@ -107,23 +115,23 @@ namespace DotNext.Reflection
     /// <summary>
     /// Abstract class for all reflected operators.
     /// </summary>
-    /// <typeparam name="D">Type of delegate representing operator signature.</typeparam>
-    public abstract class Operator<D> : IOperator<D>
-        where D : Delegate
+    /// <typeparam name="TSignature">Type of delegate representing operator signature.</typeparam>
+    public abstract class Operator<TSignature> : IOperator<TSignature>
+        where TSignature : Delegate
     {
-        private protected abstract class Cache<Op> : Cache<Operator.Kind, Op>
-            where Op : class, IOperator<D>
+        private protected abstract class Cache<TOperand> : Cache<Operator.Kind, TOperand>
+            where TOperand : class, IOperator<TSignature>
         {
-            private static readonly UserDataSlot<Cache<Op>> Slot = UserDataSlot<Cache<Op>>.Allocate();
+            private static readonly UserDataSlot<Cache<TOperand>> Slot = UserDataSlot<Cache<TOperand>>.Allocate();
 
-            internal static Cache<Op> Of<C>(Type cacheHolder)
-                where C : Cache<Op>, new()
-                => cacheHolder.GetUserData().GetOrSet<Cache<Op>, C>(Slot);
+            internal static Cache<TOperand> Of<TCache>(Type cacheHolder)
+                where TCache : Cache<TOperand>, new()
+                => cacheHolder.GetUserData().GetOrSet<Cache<TOperand>, TCache>(Slot);
         }
 
-        private protected readonly D Invoker;
+        private protected readonly TSignature Invoker;
 
-        private protected Operator(D invoker, ExpressionType type, MethodInfo? overloaded)
+        private protected Operator(TSignature invoker, ExpressionType type, MethodInfo? overloaded)
         {
             Type = type;
             Invoker = invoker;
@@ -137,10 +145,13 @@ namespace DotNext.Reflection
 
         private protected abstract Type DeclaringType { get; }
 
+        /// <inheritdoc/>
         MemberInfo IMember<MemberInfo>.RuntimeMember => Method ?? (MemberInfo)new BuiltinOperatorInfo(DeclaringType, Type);
 
-        D IMember<MemberInfo, D>.Invoker => Invoker;
+        /// <inheritdoc/>
+        TSignature IMember<MemberInfo, TSignature>.Invoker => Invoker;
 
+        /// <inheritdoc/>
         string IMember<MemberInfo>.Name => Type.ToString();
 
         /// <summary>
@@ -148,18 +159,18 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="op">The reflected operator.</param>
         [return: NotNullIfNotNull("op")]
-        public static implicit operator D?(Operator<D>? op) => op?.Invoker;
+        public static implicit operator TSignature?(Operator<TSignature>? op) => op?.Invoker;
 
         /// <summary>
         /// Gets type of operator.
         /// </summary>
         public ExpressionType Type { get; }
 
-        private static Expression<D>? Convert(ParameterExpression parameter, Expression operand, Type conversionType, bool @checked)
+        private static Expression<TSignature>? Convert(ParameterExpression parameter, Expression operand, Type conversionType, bool @checked)
         {
             try
             {
-                return Expression.Lambda<D>(@checked ? Expression.ConvertChecked(operand, conversionType) : Expression.Convert(operand, conversionType), parameter);
+                return Expression.Lambda<TSignature>(@checked ? Expression.ConvertChecked(operand, conversionType) : Expression.Convert(operand, conversionType), parameter);
             }
             catch (ArgumentException e)
             {
@@ -168,14 +179,15 @@ namespace DotNext.Reflection
             }
             catch (InvalidOperationException)
             {
-                //do not walk through inheritance hierarchy for value types
-                if (parameter.Type.IsValueType) return null;
+                // do not walk through inheritance hierarchy for value types
+                if (parameter.Type.IsValueType)
+                    return null;
                 var lookup = operand.Type.BaseType;
                 return lookup is null ? null : Convert(parameter, Expression.Convert(parameter, lookup), conversionType, @checked);
             }
         }
 
-        private protected static Expression<D>? MakeConvert<T>(ParameterExpression parameter, bool @checked) => Convert(parameter, parameter, typeof(T), @checked);
+        private protected static Expression<TSignature>? MakeConvert<T>(ParameterExpression parameter, bool @checked) => Convert(parameter, parameter, typeof(T), @checked);
 
         /// <summary>
         /// Determines whether this object reflects the same operator as other object.
@@ -184,8 +196,8 @@ namespace DotNext.Reflection
         /// <returns><see langword="true"/>, if  this object reflects the same operator as other object; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object? other) => other switch
         {
-            Operator<D> op => Type == op.Type && Method == op.Method,
-            D invoker => Equals(this.Invoker, invoker),
+            Operator<TSignature> op => Type == op.Type && Method == op.Method,
+            TSignature invoker => Equals(Invoker, invoker),
             _ => false,
         };
 
@@ -193,7 +205,7 @@ namespace DotNext.Reflection
         /// Computes hash code of the reflected operator.
         /// </summary>
         /// <returns>The hash code of the reflected operator.</returns>
-        public override int GetHashCode() => HashCode.Combine(typeof(D), Type, Method);
+        public override int GetHashCode() => HashCode.Combine(typeof(TSignature), Type, Method);
 
         /// <summary>
         /// Returns textual representation of the reflected operator.
@@ -206,11 +218,11 @@ namespace DotNext.Reflection
     /// A delegate representing unary operator.
     /// </summary>
     /// <param name="operand">Operand.</param>
-    /// <typeparam name="T">Type of operand.</typeparam>
-    /// <typeparam name="R">Type of operator result.</typeparam>
+    /// <typeparam name="TOperand">Type of operand.</typeparam>
+    /// <typeparam name="TResult">Type of operator result.</typeparam>
     /// <returns>Result of unary operation.</returns>
     [return: MaybeNull]
-    public delegate R Operator<T, out R>(in T operand);
+    public delegate TResult Operator<TOperand, out TResult>(in TOperand operand);
 
     /// <summary>
     /// Represents binary operator.
@@ -219,8 +231,8 @@ namespace DotNext.Reflection
     /// <param name="second">Second operand.</param>
     /// <typeparam name="T1">Type of first operand.</typeparam>
     /// <typeparam name="T2">Type of second operand.</typeparam>
-    /// <typeparam name="R">Type of operator result.</typeparam>
+    /// <typeparam name="TResult">Type of operator result.</typeparam>
     /// <returns>Result of binary operator.</returns>
     [return: MaybeNull]
-    public delegate R Operator<T1, T2, out R>(in T1 first, in T2 second);
+    public delegate TResult Operator<T1, T2, out TResult>(in T1 first, in T2 second);
 }

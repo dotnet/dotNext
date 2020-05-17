@@ -36,6 +36,7 @@ namespace DotNext.IO
         public async ValueTask LoadFromAsync(IDataTransferObject source, CancellationToken token = default)
         {
             if (content.CanSeek && content.CanWrite)
+            {
                 try
                 {
                     await source.WriteToAsync(content, DefaultBufferSize, token).ConfigureAwait(false);
@@ -44,8 +45,11 @@ namespace DotNext.IO
                 {
                     content.Seek(0, SeekOrigin.Begin);
                 }
+            }
             else
+            {
                 throw new NotSupportedException();
+            }
         }
 
         /// <summary>
@@ -53,8 +57,10 @@ namespace DotNext.IO
         /// </summary>
         public virtual bool IsReusable => content.CanSeek;
 
+        /// <inheritdoc/>
         long? IDataTransferObject.Length => content.CanSeek ? content.Length : default(long?);
 
+        /// <inheritdoc/>
         async ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
         {
             try
@@ -69,7 +75,7 @@ namespace DotNext.IO
         }
 
         /// <summary>
-        /// Parses the encapsulated stream. 
+        /// Parses the encapsulated stream.
         /// </summary>
         /// <param name="parser">The parser instance.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>

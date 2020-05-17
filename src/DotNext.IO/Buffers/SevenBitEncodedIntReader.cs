@@ -24,7 +24,9 @@ namespace DotNext.Buffers
             {
                 consumedBytes += 1;
                 if (reader.Append(b))
+                {
                     remainingBytes -= 1;
+                }
                 else
                 {
                     remainingBytes = 0;

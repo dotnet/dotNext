@@ -37,7 +37,8 @@ namespace DotNext.Net.NetworkInformation
             for (int currentMtu; mtuLowerBound <= mtuUpperBound; token.ThrowIfCancellationRequested())
             {
                 currentMtu = (mtuLowerBound + mtuUpperBound) / 2;
-                //TODO: Should be optimized. See https://github.com/dotnet/runtime/issues/34856
+
+                // TODO: Should be optimized. See https://github.com/dotnet/runtime/issues/34856
                 var buffer = new byte[currentMtu];
                 var reply = Send(address, timeout, buffer, options);
                 switch (reply.Status)
@@ -49,7 +50,7 @@ namespace DotNext.Net.NetworkInformation
                         mtuLowerBound = currentMtu + 1;
                         continue;
                     case IPStatus.TimedOut:
-                        //TODO: This is required due to https://github.com/dotnet/runtime/issues/34855
+                        // TODO: This is required due to https://github.com/dotnet/runtime/issues/34855
                         if (Environment.OSVersion.Platform == PlatformID.Unix)
                             goto case IPStatus.PacketTooBig;
                         else
@@ -59,6 +60,7 @@ namespace DotNext.Net.NetworkInformation
                         continue;
                 }
             }
+
             return bestMtu;
         }
 
@@ -83,7 +85,8 @@ namespace DotNext.Net.NetworkInformation
             for (int currentMtu; mtuLowerBound <= mtuUpperBound; token.ThrowIfCancellationRequested())
             {
                 currentMtu = (mtuLowerBound + mtuUpperBound) / 2;
-                //TODO: Should be optimized. See https://github.com/dotnet/runtime/issues/34856
+
+                // TODO: Should be optimized. See https://github.com/dotnet/runtime/issues/34856
                 var buffer = new byte[currentMtu];
                 var reply = await SendPingAsync(address, timeout, buffer, options).ConfigureAwait(false);
                 switch (reply.Status)
@@ -100,6 +103,7 @@ namespace DotNext.Net.NetworkInformation
                         continue;
                 }
             }
+
             return bestMtu;
         }
     }

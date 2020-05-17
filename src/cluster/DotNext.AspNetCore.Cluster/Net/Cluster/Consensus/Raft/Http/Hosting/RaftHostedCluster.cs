@@ -1,16 +1,18 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using IServer = Microsoft.AspNetCore.Hosting.Server.IServer;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
 {
+    [SuppressMessage("Usage", "CA1812", Justification = "This class is instantiated by DI container")]
     internal sealed class RaftHostedCluster : RaftHttpCluster
     {
         private sealed class WebHostConfigurer
@@ -41,6 +43,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
                     hostBuilder.Configure(webHost);
                     appBuilder = hostBuilder.Configure + appBuilder;
                 }
+
                 webHost.Configure(appBuilder);
             }
 

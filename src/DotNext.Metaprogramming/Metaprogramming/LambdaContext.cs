@@ -200,7 +200,7 @@ namespace DotNext.Metaprogramming
         /// <param name="arg7">The expression representing the seventh argument.</param>
         /// <param name="arg8">The expression representing the eighth argument.</param>
         /// <param name="arg9">The expression representing the ninth argument.</param>
-        /// <param name="arg10">The expression representing the ninth argument.</param>
+        /// <param name="arg10">The expression representing the tenth argument.</param>
         /// <exception cref="ObjectDisposedException">This context is no longer available.</exception>
         public void Deconstruct(out ParameterExpression arg1, out ParameterExpression arg2, out ParameterExpression arg3, out ParameterExpression arg4, out ParameterExpression arg5, out ParameterExpression arg6, out ParameterExpression arg7, out ParameterExpression arg8, out ParameterExpression arg9, out ParameterExpression arg10)
         {
@@ -225,17 +225,22 @@ namespace DotNext.Metaprogramming
         /// To add recursive call as statement, use <see cref="CodeGenerator.Invoke(Expression, Expression[])"/> instead.
         /// </remarks>
         /// <param name="args">The arguments to be passed into function.</param>
+        /// <returns>The invocation expression.</returns>
         /// <exception cref="ObjectDisposedException">This context is no longer available.</exception>
         public InvocationExpression Invoke(params Expression[] args) => Expression.Invoke(Lambda.Self, args);
 
+        /// <inheritdoc/>
         int IReadOnlyCollection<ParameterExpression>.Count => Lambda.Parameters.Count;
 
         private IEnumerator<ParameterExpression> GetEnumerator() => Lambda.Parameters.GetEnumerator();
 
+        /// <inheritdoc/>
         IEnumerator<ParameterExpression> IEnumerable<ParameterExpression>.GetEnumerator() => GetEnumerator();
 
+        /// <inheritdoc/>
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
+        /// <inheritdoc/>
         void IDisposable.Dispose()
         {
             lambda.Free();

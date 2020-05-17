@@ -1,10 +1,15 @@
-﻿using Fody;
+﻿using System;
+using System.Collections.Generic;
+using Fody;
 using Mono.Cecil;
 using Mono.Collections.Generic;
-using System.Collections.Generic;
 
 namespace DotNext.Runtime.CompilerServices
 {
+    /// <summary>
+    /// Encapsulates weaving logic.
+    /// </summary>
+    [CLSCompliant(false)]
     public sealed class ModuleWeaver : BaseModuleWeaver
     {
         private static void ProcessModifier<TWeaver>(TWeaver weaver, Collection<CustomAttribute> attributes)
@@ -19,13 +24,16 @@ namespace DotNext.Runtime.CompilerServices
                 attributesToRemove.Add(attr);
                 weaver.AttachModifier(modifierType, required);
             }
-            //remove fake attributes
+
+            // remove fake attributes
             foreach (var attr in attributesToRemove)
                 attributes.Remove(attr);
         }
 
+        /// <inheritdoc/>
         public override bool ShouldCleanReference => true;
 
+        /// <inheritdoc/>
         public override void Execute()
         {
             foreach (var type in ModuleDefinition.GetTypes())
@@ -44,6 +52,7 @@ namespace DotNext.Runtime.CompilerServices
             }
         }
 
+        /// <inheritdoc/>
         public override IEnumerable<string> GetAssembliesForScanning()
         {
             yield return "netstandard";

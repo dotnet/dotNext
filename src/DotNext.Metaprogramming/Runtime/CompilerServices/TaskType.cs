@@ -26,8 +26,11 @@ namespace DotNext.Runtime.CompilerServices
         {
             this.taskType = taskType;
             if (taskType.IsOneOf(typeof(ValueTask), typeof(Task)))
+            {
                 resultType = null;
+            }
             else
+            {
                 using (var supportedTasks = (typeof(Task<>), typeof(ValueTask<>)).AsEnumerable().GetEnumerator())
                 {
                     move_next:
@@ -38,6 +41,7 @@ namespace DotNext.Runtime.CompilerServices
                     else
                         goto move_next;
                 }
+            }
         }
 
         internal MethodCallExpression AdjustTaskType(MethodCallExpression startMachineCall)

@@ -22,7 +22,7 @@
             /// <summary>
             /// Represents constant value.
             /// </summary>
-            public const long Value = 0;
+            public new const long Value = 0;
 
             /// <summary>
             /// Initializes a new constant value.
@@ -41,7 +41,7 @@
             /// <summary>
             /// Represents constant value.
             /// </summary>
-            public const long Value = long.MaxValue;
+            public new const long Value = long.MaxValue;
 
             /// <summary>
             /// Initializes a new constant value.
@@ -60,7 +60,7 @@
             /// <summary>
             /// Represents constant value.
             /// </summary>
-            public const long Value = long.MinValue;
+            public new const long Value = long.MinValue;
 
             /// <summary>
             /// Initializes a new constant value.

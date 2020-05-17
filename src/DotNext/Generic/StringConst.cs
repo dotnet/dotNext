@@ -22,7 +22,7 @@
             /// <summary>
             /// Represents constant value.
             /// </summary>
-            public const string Value = null;
+            public new const string Value = null;
 
             /// <summary>
             /// Initializes a new <see langword="null"/> string constant.
@@ -41,7 +41,7 @@
             /// <summary>
             /// Represents constant value.
             /// </summary>
-            public const string Value = "";
+            public new const string Value = "";
 
             /// <summary>
             /// Creates empty string constant.

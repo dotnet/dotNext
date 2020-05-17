@@ -7,36 +7,40 @@ namespace DotNext.Reflection
 {
     using ReaderWriterSpinLock = Threading.ReaderWriterSpinLock;
 
-    internal abstract class Cache<K, V>
-        where V : class
+    internal abstract class Cache<TKey, TValue>
+        where TValue : class
     {
         /*
          * Can't use ConcurrentDictionary here because GetOrAdd method can call factory multiple times for the same key
          */
-        private readonly IDictionary<K, V> elements;
+        private readonly IDictionary<TKey, TValue> elements;
         private ReaderWriterSpinLock syncObject;
 
-        private protected Cache(IEqualityComparer<K> comparer) => elements = new Dictionary<K, V>(comparer);
+        private protected Cache(IEqualityComparer<TKey> comparer) => elements = new Dictionary<TKey, TValue>(comparer);
 
         private protected Cache()
-            : this(EqualityComparer<K>.Default)
+            : this(EqualityComparer<TKey>.Default)
         {
         }
 
-        private protected abstract V? Create(K cacheKey);
+        private protected abstract TValue? Create(TKey cacheKey);
 
-        internal V? GetOrCreate(K cacheKey)
+        internal TValue? GetOrCreate(TKey cacheKey)
         {
             syncObject.EnterReadLock();
-            var exists = elements.TryGetValue(cacheKey, out V? item);
+            var exists = elements.TryGetValue(cacheKey, out TValue? item);
             syncObject.ExitReadLock();
             if (exists)
                 goto exit;
-            //non-fast path, discover item
+
+            // non-fast path, discover item
             syncObject.EnterWriteLock();
             if (elements.TryGetValue(cacheKey, out item))
+            {
                 syncObject.ExitWriteLock();
+            }
             else
+            {
                 try
                 {
                     item = Create(cacheKey);
@@ -47,6 +51,8 @@ namespace DotNext.Reflection
                 {
                     syncObject.ExitWriteLock();
                 }
+            }
+
             exit:
             return item;
         }
@@ -71,20 +77,20 @@ namespace DotNext.Reflection
         public override int GetHashCode() => HashCode.Combine(NonPublic, Name);
     }
 
-    internal abstract class MemberCache<M, E> : Cache<MemberKey, E>
-        where M : MemberInfo
-        where E : class, IMember<M>
+    internal abstract class MemberCache<TMember, TDescriptor> : Cache<MemberKey, TDescriptor>
+        where TMember : MemberInfo
+        where TDescriptor : class, IMember<TMember>
     {
-        private static readonly UserDataSlot<MemberCache<M, E>> Slot = UserDataSlot<MemberCache<M, E>>.Allocate();
+        private static readonly UserDataSlot<MemberCache<TMember, TDescriptor>> Slot = UserDataSlot<MemberCache<TMember, TDescriptor>>.Allocate();
 
-        internal E? GetOrCreate(string memberName, bool nonPublic) => GetOrCreate(new MemberKey(memberName, nonPublic));
+        internal TDescriptor? GetOrCreate(string memberName, bool nonPublic) => GetOrCreate(new MemberKey(memberName, nonPublic));
 
-        private protected abstract E? Create(string memberName, bool nonPublic);
+        private protected abstract TDescriptor? Create(string memberName, bool nonPublic);
 
-        private protected sealed override E? Create(MemberKey key) => Create(key.Name, key.NonPublic);
+        private protected sealed override TDescriptor? Create(MemberKey key) => Create(key.Name, key.NonPublic);
 
-        internal static MemberCache<M, E> Of<C>(MemberInfo member)
-            where C : MemberCache<M, E>, new()
-            => member.GetUserData().GetOrSet<MemberCache<M, E>, C>(Slot);
+        internal static MemberCache<TMember, TDescriptor> Of<TCache>(MemberInfo member)
+            where TCache : MemberCache<TMember, TDescriptor>, new()
+            => member.GetUserData().GetOrSet<MemberCache<TMember, TDescriptor>, TCache>(Slot);
     }
 }

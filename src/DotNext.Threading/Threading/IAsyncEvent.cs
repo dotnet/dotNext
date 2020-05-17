@@ -47,7 +47,7 @@ namespace DotNext.Threading
     public static class AsyncEvent
     {
         /// <summary>
-        /// Turns caller into idle state until the current event is set. 
+        /// Turns caller into idle state until the current event is set.
         /// </summary>
         /// <param name="event">An event to synchronize with.</param>
         /// <param name="timeout">The interval to wait for the signaled state.</param>
@@ -55,7 +55,7 @@ namespace DotNext.Threading
         public static Task<bool> WaitAsync(this IAsyncEvent @event, TimeSpan timeout) => @event.WaitAsync(timeout, CancellationToken.None);
 
         /// <summary>
-        /// Turns caller into idle state until the current event is set. 
+        /// Turns caller into idle state until the current event is set.
         /// </summary>
         /// <remarks>
         /// This method can potentially blocks execution of async flow infinitely.
@@ -66,7 +66,7 @@ namespace DotNext.Threading
         public static Task WaitAsync(this IAsyncEvent @event, CancellationToken token) => @event.WaitAsync(InfiniteTimeSpan, token);
 
         /// <summary>
-        /// Turns caller into idle state until the current event is set. 
+        /// Turns caller into idle state until the current event is set.
         /// </summary>
         /// <remarks>
         /// This method can potentially blocks execution of async flow infinitely.

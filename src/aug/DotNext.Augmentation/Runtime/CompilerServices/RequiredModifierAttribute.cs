@@ -8,6 +8,7 @@ namespace DotNext.Runtime.CompilerServices
     /// <remarks>
     /// This attribute will be replaced by <c>modreq</c> IL directive.
     /// </remarks>
+    [CLSCompliant(false)]
     public sealed class RequiredModifierAttribute : ModifierAttribute
     {
         /// <summary>

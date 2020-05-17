@@ -25,8 +25,8 @@ namespace DotNext.IO.Pipelines
         private struct HashReader : IBufferReader<HashBuilder>
         {
             private readonly HashBuilder builder;
-            private int remainingBytes;
             private readonly bool limited;
+            private int remainingBytes;
 
             internal HashReader(HashAlgorithm algorithm, int? count)
             {
@@ -69,7 +69,9 @@ namespace DotNext.IO.Pipelines
                 writer = output.GetMemory(5);
                 offset = 0;
             }
+
             internal readonly int Count => offset;
+
             void SevenBitEncodedInt.IWriter.WriteByte(byte value)
             {
                 writer.Span[offset++] = value;
@@ -85,6 +87,7 @@ namespace DotNext.IO.Pipelines
                 readResult.ThrowIfCancellationRequested(token);
                 parser.Append<TResult, TParser>(readResult.Buffer, out consumed);
             }
+
             return parser.Complete();
         }
 
@@ -113,7 +116,7 @@ namespace DotNext.IO.Pipelines
             if (length == 0)
                 return string.Empty;
             using var resultBuffer = new ArrayBuffer<char>(length);
-            return await ReadAsync<string, StringReader<ArrayBuffer<char>>>(reader, new StringReader<ArrayBuffer<char>>(context, resultBuffer), token);
+            return await ReadAsync<string, StringReader<ArrayBuffer<char>>>(reader, new StringReader<ArrayBuffer<char>>(context, resultBuffer), token).ConfigureAwait(false);
         }
 
         private static async ValueTask<int> ReadLengthAsync(this PipeReader reader, StringLengthEncoding lengthFormat, CancellationToken token)
@@ -137,6 +140,7 @@ namespace DotNext.IO.Pipelines
                     result = reader.Read7BitEncodedIntAsync(token);
                     break;
             }
+
             var length = await result.ConfigureAwait(false);
             length.ReverseIfNeeded(littleEndian);
             return length;
@@ -308,7 +312,9 @@ namespace DotNext.IO.Pipelines
         {
             ValueTask<FlushResult> result;
             if (lengthFormat is null)
+            {
                 result = new ValueTask<FlushResult>(new FlushResult(false, false));
+            }
             else
             {
                 var length = encoding.GetByteCount(value.Span);
@@ -331,6 +337,7 @@ namespace DotNext.IO.Pipelines
                         break;
                 }
             }
+
             return result;
         }
 

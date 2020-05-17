@@ -12,45 +12,50 @@ namespace DotNext
     public static class ValueTypeExtensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static string ToString<T>(T value, IFormatProvider? provider = null) where T : struct, IConvertible => value.ToString(provider);
+        internal static string ToString<T>(T value, IFormatProvider? provider = null)
+            where T : struct, IConvertible => value.ToString(provider);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static string ToString<T>(T value, string format, IFormatProvider? provider = null) where T : struct, IFormattable => value.ToString(format, provider);
+        internal static string ToString<T>(T value, string format, IFormatProvider? provider = null)
+            where T : struct, IFormattable => value.ToString(format, provider);
 
         /// <summary>
-		/// Checks whether the specified value is equal to one
-		/// of the specified values.
-		/// </summary>
-		/// <remarks>
-		/// This method uses <see cref="IEquatable{T}.Equals(T)"/>
-		/// to check equality between two values.
-		/// </remarks>
-		/// <typeparam name="T">The type of object to compare.</typeparam>
-		/// <param name="value">The value to compare with other.</param>
-		/// <param name="values">Candidate objects.</param>
-		/// <returns><see langword="true"/>, if <paramref name="value"/> is equal to one of <paramref name="values"/>.</returns>
-		public static bool IsOneOf<T>(this T value, IEnumerable<T> values)
+        /// Checks whether the specified value is equal to one
+        /// of the specified values.
+        /// </summary>
+        /// <remarks>
+        /// This method uses <see cref="IEquatable{T}.Equals(T)"/>
+        /// to check equality between two values.
+        /// </remarks>
+        /// <typeparam name="T">The type of object to compare.</typeparam>
+        /// <param name="value">The value to compare with other.</param>
+        /// <param name="values">Candidate objects.</param>
+        /// <returns><see langword="true"/>, if <paramref name="value"/> is equal to one of <paramref name="values"/>.</returns>
+        public static bool IsOneOf<T>(this T value, IEnumerable<T> values)
             where T : struct, IEquatable<T>
         {
             foreach (var v in values)
+            {
                 if (v.Equals(value))
                     return true;
+            }
+
             return false;
         }
 
         /// <summary>
-		/// Checks whether the specified value is equal to one
-		/// of the specified values.
-		/// </summary>
-		/// <remarks>
-		/// This method uses <see cref="IEquatable{T}.Equals(T)"/>
-		/// to check equality between two values.
-		/// </remarks>
-		/// <typeparam name="T">The type of object to compare.</typeparam>
-		/// <param name="value">The value to compare with other.</param>
-		/// <param name="values">Candidate objects.</param>
-		/// <returns><see langword="true"/>, if <paramref name="value"/> is equal to one of <paramref name="values"/>.</returns>
-		public static bool IsOneOf<T>(this T value, params T[] values)
+        /// Checks whether the specified value is equal to one
+        /// of the specified values.
+        /// </summary>
+        /// <remarks>
+        /// This method uses <see cref="IEquatable{T}.Equals(T)"/>
+        /// to check equality between two values.
+        /// </remarks>
+        /// <typeparam name="T">The type of object to compare.</typeparam>
+        /// <param name="value">The value to compare with other.</param>
+        /// <param name="values">Candidate objects.</param>
+        /// <returns><see langword="true"/>, if <paramref name="value"/> is equal to one of <paramref name="values"/>.</returns>
+        public static bool IsOneOf<T>(this T value, params T[] values)
             where T : struct, IEquatable<T>
             => value.IsOneOf((IEnumerable<T>)values);
 
@@ -61,14 +66,15 @@ namespace DotNext
         /// <param name="nullable">Nullable value.</param>
         /// <param name="value">Underlying value.</param>
         /// <returns><see langword="true"/> if <paramref name="nullable"/> is not <see langword="null"/>; otherwise, <see langword="false"/>.</returns>
-        public static bool TryGetValue<T>(this T? nullable, out T value) where T : struct
+        public static bool TryGetValue<T>(this T? nullable, out T value)
+            where T : struct
         {
             value = nullable.GetValueOrDefault();
             return nullable.HasValue;
         }
 
-        //use this method carefully because it doesn't
-        //control overflow
+        // use this method carefully because it doesn't
+        // control overflow
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static char Add(this char x, char y)
         {
@@ -78,8 +84,8 @@ namespace DotNext
             return Return<char>();
         }
 
-        //use this method carefully because it doesn't
-        //control overflow
+        // use this method carefully because it doesn't
+        // control overflow
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static char Subtract(this char x, char y)
         {

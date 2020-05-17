@@ -17,10 +17,10 @@ namespace DotNext.Buffers
         where T : unmanaged
     {
         private readonly bool fromPool;
-
         internal Action<IUnmanagedMemoryOwner<T>>? OnDisposed;
 
-        internal UnmanagedMemoryOwner(int length, bool zeroMem, bool fromPool) : base(length, zeroMem) => this.fromPool = fromPool;
+        internal UnmanagedMemoryOwner(int length, bool zeroMem, bool fromPool)
+            : base(length, zeroMem) => this.fromPool = fromPool;
 
         unsafe object ICloneable.Clone()
         {
@@ -59,6 +59,7 @@ namespace DotNext.Buffers
         public Pointer<T>.Enumerator GetEnumerator() => Pointer.GetEnumerator(Length);
 
         IEnumerator<T> IEnumerable<T>.GetEnumerator() => GetEnumerator();
+
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         /// <summary>

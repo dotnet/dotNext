@@ -41,9 +41,9 @@ namespace DotNext.Reflection
             return (Parameters: parameters, ArgList: arglist, ArgListParameter: argListParameter);
         }
 
-        internal static (Type[] Parameters, Expression[] ArgList, ParameterExpression ArgListParameter) Reflect<A>()
-            where A : struct
-            => Reflect(typeof(A));
+        internal static (Type[] Parameters, Expression[] ArgList, ParameterExpression ArgListParameter) Reflect<TArgs>()
+            where TArgs : struct
+            => Reflect(typeof(TArgs));
 
         private static Expression NormalizeArgument(Type actualParameter, Expression expectedArgument, out ParameterExpression? localVar, out Expression? prologue, out Expression? epilogue)
         {
@@ -53,13 +53,15 @@ namespace DotNext.Reflection
                 return expectedArgument;
             }
             else if (expectedArgument.Type == typeof(object))
+            {
                 if (actualParameter.IsByRef)
                 {
-                    //T local = args.param is null ? default(T) : (T)args;
-                    //...call(ref local)
-                    //args.param = (object)local;
+                    // T local = args.param is null ? default(T) : (T)args;
+                    // ...call(ref local)
+                    // args.param = (object)local;
                     localVar = Expression.Variable(actualParameter.GetElementType());
-                    prologue = Expression.Assign(localVar, Expression.Condition(Expression.ReferenceEqual(expectedArgument, Expression.Constant(null, expectedArgument.Type)),
+                    prologue = Expression.Assign(localVar, Expression.Condition(
+                        Expression.ReferenceEqual(expectedArgument, Expression.Constant(null, expectedArgument.Type)),
                         Expression.Default(actualParameter.GetElementType()),
                         Expression.Convert(expectedArgument, actualParameter.GetElementType())));
                     epilogue = localVar.Type.IsValueType ?
@@ -70,10 +72,12 @@ namespace DotNext.Reflection
                 else
                 {
                     epilogue = prologue = localVar = null;
-                    return Expression.Condition(Expression.ReferenceEqual(expectedArgument, Expression.Constant(null, expectedArgument.Type)),
+                    return Expression.Condition(
+                        Expression.ReferenceEqual(expectedArgument, Expression.Constant(null, expectedArgument.Type)),
                         Expression.Default(actualParameter),
                         Expression.Convert(expectedArgument, actualParameter));
                 }
+            }
             else if (actualParameter.IsByRef)
             {
                 epilogue = prologue = localVar = null;
@@ -91,8 +95,11 @@ namespace DotNext.Reflection
             if (actualParameters.LongLength != expectedArguments.LongLength)
                 return false;
             for (var i = 0L; i < actualParameters.LongLength; i++)
+            {
                 if ((expectedArguments[i] = NormalizeArgument(actualParameters[i], expectedArguments[i], out var localVar, out var pro, out var epi)) is null)
+                {
                     return false;
+                }
                 else
                 {
                     if (!(localVar is null))
@@ -102,6 +109,8 @@ namespace DotNext.Reflection
                     if (!(epi is null))
                         epilogue.Add(epi);
                 }
+            }
+
             return true;
         }
     }

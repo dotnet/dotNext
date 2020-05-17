@@ -21,7 +21,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
             2.REQ(StreamStart) with information about content-type and length of the record
             2.REP(Ack) Wait for command: NextEntry to start sending content, Continue to send next chunk, None to finalize transmission
-        
+
             3.REQ(Fragment) with the chunk of record data
             3.REP(Ack) Wait for command: NextEntry to start sending content, Continue to send next chunk, None to finalize transmission
 
@@ -127,13 +127,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
     {
         private delegate ValueTask<FlushResult> LogEntryFragmentWriter(PipeWriter writer, ref TEntry entry, CancellationToken token);
 
-        private static readonly LogEntryFragmentWriter[] fragmentWriters =
+        private static readonly LogEntryFragmentWriter[] FragmentWriters =
         {
             WriteLogEntryLength,
             WriteLogEntryTerm,
             WriteLogEntryTimestamp,
             WriteLogEntrySnapshotMarker,
-            WriteLogEntryContent
+            WriteLogEntryContent,
         };
 
         private protected EntriesExchange(long term, long prevLogIndex, long prevLogTerm, long commitIndex, PipeOptions? options = null)
@@ -164,6 +164,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             {
                 canceled = true;
             }
+
             return new FlushResult(canceled, false);
         }
 
@@ -172,7 +173,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         internal static async Task WriteEntryAsync(PipeWriter writer, TEntry entry, CancellationToken token)
         {
-            foreach (var serializer in fragmentWriters)
+            foreach (var serializer in FragmentWriters)
             {
                 var flushResult = await serializer(writer, ref entry, token).ConfigureAwait(false);
                 if (flushResult.IsCompleted)
@@ -180,6 +181,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 if (flushResult.IsCanceled)
                     break;
             }
+
             await writer.CompleteAsync().ConfigureAwait(false);
         }
     }
@@ -205,7 +207,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             int count;
             FlowControl control;
-            if (currentIndex >= 0)   //write portion of log entry
+
+            // write portion of log entry
+            if (currentIndex >= 0)
             {
                 count = await pipe.Reader.CopyToAsync(payload, token).ConfigureAwait(false);
                 if (count == payload.Length)
@@ -213,11 +217,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 else
                     control = FlowControl.StreamEnd;
             }
-            else    //send announcement
+            else
             {
+                // send announcement
                 count = WriteAnnouncement(payload.Span, entries.Count);
                 control = FlowControl.None;
             }
+
             return (new PacketHeaders(MessageType.AppendEntries, control), count, true);
         }
 
@@ -237,10 +243,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             {
                 AbortIO();
                 await writeSession.ConfigureAwait(false);
-                await pipe.Reader.CompleteAsync();
+                await pipe.Reader.CompleteAsync().ConfigureAwait(false);
                 pipe.Reset();
             }
-            this.writeSession = WriteEntryAsync(token);
+
+            writeSession = WriteEntryAsync(token);
         }
 
         public override async ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint endpoint, CancellationToken token)

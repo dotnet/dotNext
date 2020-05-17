@@ -21,7 +21,8 @@ namespace DotNext
         /// <typeparam name="T">The type of the value.</typeparam>
         /// <param name="task">The task returning optional value.</param>
         /// <returns>Nullable value.</returns>
-        public static async Task<T?> OrNull<T>(this Task<Optional<T>> task) where T : struct
+        public static async Task<T?> OrNull<T>(this Task<Optional<T>> task)
+            where T : struct
             => (await task.ConfigureAwait(false)).OrNull();
 
         /// <summary>
@@ -30,20 +31,20 @@ namespace DotNext
         /// <typeparam name="T">The type of the value.</typeparam>
         /// <param name="task">The task returning optional value.</param>
         /// <param name="defaultValue">The value to be returned if there is no value present.</param>
-        /// <returns>The value, if present, otherwise default</returns>
+        /// <returns>The value, if present, otherwise default.</returns>
         public static async Task<T> Or<T>(this Task<Optional<T>> task, T defaultValue)
             => (await task.ConfigureAwait(false)).Or(defaultValue);
 
         /// <summary>
-		/// If a value is present, apply the provided mapping function to it, and if the result is 
-		/// non-null, return an Optional describing the result. Otherwise returns <see cref="Optional{T}.Empty"/>.
-		/// </summary>
-        /// <typeparam name="I">The type of stored in the Optional container.</typeparam>
-		/// <typeparam name="O">The type of the result of the mapping function.</typeparam>
+        /// If a value is present, apply the provided mapping function to it, and if the result is
+        /// non-null, return an Optional describing the result. Otherwise returns <see cref="Optional{T}.Empty"/>.
+        /// </summary>
+        /// <typeparam name="TInput">The type of stored in the Optional container.</typeparam>
+        /// <typeparam name="TOutput">The type of the result of the mapping function.</typeparam>
         /// <param name="task">The task containing Optional value.</param>
-		/// <param name="converter">A mapping function to be applied to the value, if present.</param>
-		/// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="Optional{T}.Empty"/>.</returns>
-		public static async Task<Optional<O>> Convert<I, O>(this Task<Optional<I>> task, Converter<I, O> converter)
+        /// <param name="converter">A mapping function to be applied to the value, if present.</param>
+        /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="Optional{T}.Empty"/>.</returns>
+        public static async Task<Optional<TOutput>> Convert<TInput, TOutput>(this Task<Optional<TInput>> task, Converter<TInput, TOutput> converter)
             => (await task.ConfigureAwait(false)).Convert(converter);
 
         /// <summary>
@@ -51,22 +52,22 @@ namespace DotNext
         /// </summary>
         /// <param name="task">The task returning optional value.</param>
         /// <typeparam name="T">Type of the value.</typeparam>
-        /// <typeparam name="E">Type of exception to throw.</typeparam>
+        /// <typeparam name="TException">Type of exception to throw.</typeparam>
         /// <returns>The value, if present.</returns>
-        public static async Task<T> OrThrow<T, E>(this Task<Optional<T>> task)
-            where E : Exception, new()
-            => (await task.ConfigureAwait(false)).OrThrow<E>();
+        public static async Task<T> OrThrow<T, TException>(this Task<Optional<T>> task)
+            where TException : Exception, new()
+            => (await task.ConfigureAwait(false)).OrThrow<TException>();
 
         /// <summary>
         /// If a value is present, returns the value, otherwise throw exception.
         /// </summary>
         /// <typeparam name="T">Type of the value.</typeparam>
-        /// <typeparam name="E">Type of exception to throw.</typeparam>
+        /// <typeparam name="TException">Type of exception to throw.</typeparam>
         /// <param name="task">The task returning optional value.</param>
         /// <param name="exceptionFactory">Exception factory.</param>
         /// <returns>The value, if present.</returns>
-        public static async Task<T> OrThrow<T, E>(this Task<Optional<T>> task, Func<E> exceptionFactory)
-            where E : Exception
+        public static async Task<T> OrThrow<T, TException>(this Task<Optional<T>> task, Func<TException> exceptionFactory)
+            where TException : Exception
             => (await task.ConfigureAwait(false)).OrThrow(exceptionFactory);
 
         /// <summary>
@@ -84,24 +85,25 @@ namespace DotNext
         /// </summary>
         /// <typeparam name="T">Type of the value.</typeparam>
         /// <param name="task">The task returning optional value.</param>
-        /// <returns>The value, if present, otherwise default</returns>
+        /// <returns>The value, if present, otherwise default.</returns>
         public static async Task<T> OrDefault<T>(this Task<Optional<T>> task)
             => (await task.ConfigureAwait(false)).OrDefault();
 
         /// <summary>
-        /// If a value is present, and the value matches the given predicate, 
+        /// If a value is present, and the value matches the given predicate,
         /// return an Optional describing the value, otherwise return an empty Optional.
         /// </summary>
         /// <typeparam name="T">Type of the value.</typeparam>
         /// <param name="task">The task returning optional value.</param>
         /// <param name="condition">A predicate to apply to the value, if present.</param>
-        /// <returns>An Optional describing the value of this Optional if a value is present and the value matches the given predicate, otherwise an empty Optional</returns>
+        /// <returns>An Optional describing the value of this Optional if a value is present and the value matches the given predicate, otherwise an empty Optional.</returns>
         public static async Task<Optional<T>> If<T>(this Task<Optional<T>> task, Predicate<T> condition)
             => (await task.ConfigureAwait(false)).If(condition);
 
         /// <summary>
         /// Indicates that specified type is optional type.
         /// </summary>
+        /// <param name="optionalType">The type to check.</param>
         /// <returns><see langword="true"/>, if specified type is optional type; otherwise, <see langword="false"/>.</returns>
         public static bool IsOptional(this Type optionalType) => optionalType.IsGenericInstanceOf(typeof(Optional<>));
 
@@ -156,17 +158,17 @@ namespace DotNext
         private const byte ValueType = 1;
         private const byte NullableType = 2;
 
-        private static readonly byte type;
+        private static readonly byte Type;
 
         static Optional()
         {
             var targetType = typeof(T);
             if (targetType.IsOneOf(typeof(void), typeof(ValueTuple), typeof(DBNull)))
-                type = byte.MaxValue;
+                Type = byte.MaxValue;
             else if (targetType.IsValueType)
-                type = targetType.IsGenericInstanceOf(typeof(Nullable<>)) || targetType.IsOptional() ? NullableType : ValueType;
+                Type = targetType.IsGenericInstanceOf(typeof(Nullable<>)) || targetType.IsOptional() ? NullableType : ValueType;
             else
-                type = ReferenceType;
+                Type = ReferenceType;
         }
 
         [AllowNull]
@@ -179,7 +181,7 @@ namespace DotNext
         public Optional([AllowNull]T value)
         {
             this.value = value;
-            HasValue = type switch
+            HasValue = Type switch
             {
                 ReferenceType => value != null,
                 ValueType => true,
@@ -233,34 +235,34 @@ namespace DotNext
         /// <summary>
         /// If a value is present, returns the value, otherwise throw exception.
         /// </summary>
-        /// <typeparam name="E">Type of exception to throw.</typeparam>
+        /// <typeparam name="TException">Type of exception to throw.</typeparam>
         /// <returns>The value, if present.</returns>
         [return: NotNull]
-        public T OrThrow<E>()
-            where E : Exception, new()
-            => HasValue ? value! : throw new E();
+        public T OrThrow<TException>()
+            where TException : Exception, new()
+            => HasValue ? value! : throw new TException();
 
         /// <summary>
         /// If a value is present, returns the value, otherwise throw exception.
         /// </summary>
-        /// <typeparam name="E"></typeparam>
+        /// <typeparam name="TException">Type of exception to throw.</typeparam>
         /// <param name="exceptionFactory">Exception factory.</param>
         /// <returns>The value, if present.</returns>
         [return: NotNull]
-        public T OrThrow<E>(in ValueFunc<E> exceptionFactory)
-            where E : Exception
+        public T OrThrow<TException>(in ValueFunc<TException> exceptionFactory)
+            where TException : Exception
             => HasValue ? value! : throw exceptionFactory.Invoke();
 
         /// <summary>
         /// If a value is present, returns the value, otherwise throw exception.
         /// </summary>
-        /// <typeparam name="E"></typeparam>
+        /// <typeparam name="TException">Type of exception to throw.</typeparam>
         /// <param name="exceptionFactory">Exception factory.</param>
         /// <returns>The value, if present.</returns>
         [return: NotNull]
-        public T OrThrow<E>(Func<E> exceptionFactory)
-            where E : Exception
-            => OrThrow(new ValueFunc<E>(exceptionFactory, true));
+        public T OrThrow<TException>(Func<TException> exceptionFactory)
+            where TException : Exception
+            => OrThrow(new ValueFunc<TException>(exceptionFactory, true));
 
         /// <summary>
         /// Returns the value if present; otherwise invoke delegate.
@@ -279,7 +281,7 @@ namespace DotNext
         /// <summary>
         /// If a value is present, returns the value, otherwise return default value.
         /// </summary>
-        /// <returns>The value, if present, otherwise default</returns>
+        /// <returns>The value, if present, otherwise default.</returns>
         public T OrDefault() => value;
 
         /// <summary>
@@ -290,62 +292,62 @@ namespace DotNext
         public T Value => HasValue ? value : throw new InvalidOperationException(ExceptionMessages.OptionalNoValue);
 
         /// <summary>
-        /// If a value is present, apply the provided mapping function to it, and if the result is 
+        /// If a value is present, apply the provided mapping function to it, and if the result is
         /// non-null, return an Optional describing the result. Otherwise returns <see cref="Empty"/>.
         /// </summary>
-        /// <typeparam name="U">The type of the result of the mapping function.</typeparam>
+        /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
         /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
         /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="Empty"/>.</returns>
-        public Optional<U> Convert<U>(in ValueFunc<T, U> mapper) => HasValue ? mapper.Invoke(value) : Optional<U>.Empty;
+        public Optional<TResult> Convert<TResult>(in ValueFunc<T, TResult> mapper) => HasValue ? mapper.Invoke(value) : Optional<TResult>.Empty;
 
         /// <summary>
-        /// If a value is present, apply the provided mapping function to it, and if the result is 
+        /// If a value is present, apply the provided mapping function to it, and if the result is
         /// non-null, return an Optional describing the result. Otherwise returns <see cref="Empty"/>.
         /// </summary>
-        /// <typeparam name="U">The type of the result of the mapping function.</typeparam>
+        /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
         /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
         /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="Empty"/>.</returns>
-        public Optional<U> Convert<U>(Converter<T, U> mapper) => Convert(mapper.AsValueFunc(true));
+        public Optional<TResult> Convert<TResult>(Converter<T, TResult> mapper) => Convert(mapper.AsValueFunc(true));
 
         /// <summary>
-        /// If a value is present, apply the provided mapping function to it, and if the result is 
-		/// non-null, return an Optional describing the result. Otherwise returns <see cref="Empty"/>.
+        /// If a value is present, apply the provided mapping function to it, and if the result is
+        /// non-null, return an Optional describing the result. Otherwise returns <see cref="Empty"/>.
         /// </summary>
-        /// <typeparam name="U">The type of the result of the mapping function.</typeparam>
+        /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
         /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
         /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="Empty"/>.</returns>
-		public Optional<U> Convert<U>(in ValueFunc<T, Optional<U>> mapper) => HasValue ? mapper.Invoke(value) : Optional<U>.Empty;
+        public Optional<TResult> Convert<TResult>(in ValueFunc<T, Optional<TResult>> mapper) => HasValue ? mapper.Invoke(value) : Optional<TResult>.Empty;
 
         /// <summary>
-        /// If a value is present, apply the provided mapping function to it, and if the result is 
-		/// non-null, return an Optional describing the result. Otherwise returns <see cref="Empty"/>.
+        /// If a value is present, apply the provided mapping function to it, and if the result is
+        /// non-null, return an Optional describing the result. Otherwise returns <see cref="Empty"/>.
         /// </summary>
-        /// <typeparam name="U">The type of the result of the mapping function.</typeparam>
+        /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
         /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
         /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="Empty"/>.</returns>
-		public Optional<U> Convert<U>(Converter<T, Optional<U>> mapper) => Convert(mapper.AsValueFunc(true));
+        public Optional<TResult> Convert<TResult>(Converter<T, Optional<TResult>> mapper) => Convert(mapper.AsValueFunc(true));
 
         /// <summary>
-        /// If a value is present, and the value matches the given predicate, 
+        /// If a value is present, and the value matches the given predicate,
         /// return an Optional describing the value, otherwise return an empty Optional.
         /// </summary>
         /// <param name="condition">A predicate to apply to the value, if present.</param>
-        /// <returns>An Optional describing the value of this Optional if a value is present and the value matches the given predicate, otherwise an empty Optional</returns>
+        /// <returns>An Optional describing the value of this Optional if a value is present and the value matches the given predicate, otherwise an empty Optional.</returns>
         public Optional<T> If(in ValueFunc<T, bool> condition) => HasValue && condition.Invoke(value) ? this : Empty;
 
         /// <summary>
-        /// If a value is present, and the value matches the given predicate, 
+        /// If a value is present, and the value matches the given predicate,
         /// return an Optional describing the value, otherwise return an empty Optional.
         /// </summary>
         /// <param name="condition">A predicate to apply to the value, if present.</param>
-        /// <returns>An Optional describing the value of this Optional if a value is present and the value matches the given predicate, otherwise an empty Optional</returns>
+        /// <returns>An Optional describing the value of this Optional if a value is present and the value matches the given predicate, otherwise an empty Optional.</returns>
         public Optional<T> If(Predicate<T> condition) => If(condition.AsValueFunc(true));
 
         /// <summary>
         /// Returns textual representation of this object.
         /// </summary>
         /// <returns>The textual representation of this object.</returns>
-		public override string ToString() => HasValue ? value!.ToString() : "<EMPTY>";
+        public override string ToString() => HasValue ? value!.ToString() : "<EMPTY>";
 
         /// <summary>
         /// Computes hash code of the stored value.
@@ -355,7 +357,7 @@ namespace DotNext
         /// This method calls <see cref="object.GetHashCode()"/>
         /// for the object <see cref="Value"/>.
         /// </remarks>
-		public override int GetHashCode() => HasValue ? value!.GetHashCode() : 0;
+        public override int GetHashCode() => HasValue ? value!.GetHashCode() : 0;
 
         /// <summary>
         /// Determines whether this container stored the same
@@ -363,7 +365,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">Other value to compare.</param>
         /// <returns><see langword="true"/> if <see cref="Value"/> is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-		public bool Equals(T other) => HasValue && value!.Equals(other);
+        public bool Equals(T other) => HasValue && value!.Equals(other);
 
         /// <summary>
         /// Determines whether this container stores
@@ -399,16 +401,16 @@ namespace DotNext
         /// <param name="other">Other object to compare with <see cref="Value"/>.</param>
         /// <param name="comparer">The comparer implementing custom equality check.</param>
         /// <returns><see langword="true"/> if <paramref name="other"/> is equal to <see cref="Value"/> using custom check; otherwise, <see langword="false"/>.</returns>
-		public bool Equals(object? other, IEqualityComparer comparer)
+        public bool Equals(object? other, IEqualityComparer comparer)
             => other is T && HasValue && comparer.Equals(value, other);
 
         /// <summary>
-        /// Computes hash code for the stored value 
+        /// Computes hash code for the stored value
         /// using method <see cref="IEqualityComparer.GetHashCode(object)"/>.
         /// </summary>
         /// <param name="comparer">The comparer implementing hash code function.</param>
         /// <returns>The hash code of <see cref="Value"/>.</returns>
-		public int GetHashCode(IEqualityComparer comparer)
+        public int GetHashCode(IEqualityComparer comparer)
             => HasValue ? comparer.GetHashCode(value) : 0;
 
         /// <summary>
@@ -458,7 +460,7 @@ namespace DotNext
         /// <param name="second">The second container.</param>
         /// <returns>The first non-empty container.</returns>
         /// <seealso cref="Optional.Coalesce{T}"/>
-		public static Optional<T> operator |(in Optional<T> first, in Optional<T> second)
+        public static Optional<T> operator |(in Optional<T> first, in Optional<T> second)
             => first.HasValue ? first : second;
 
         /// <summary>
@@ -490,6 +492,7 @@ namespace DotNext
         /// <see cref="HasValue"/>
         public static bool operator false(in Optional<T> optional) => !optional.HasValue;
 
+        /// <inheritdoc/>
         void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue(IsPresentSerData, HasValue);

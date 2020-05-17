@@ -24,16 +24,17 @@ namespace DotNext
     /// <summary>
     /// Represents common interface for typed method pointers.
     /// </summary>
-    /// <typeparam name="D">The type of the delegate that is compatible with the pointer.</typeparam>
-    public interface ICallable<out D> : ICallable, IConvertible<D?>
-        where D : Delegate
+    /// <typeparam name="TDelegate">The type of the delegate that is compatible with the pointer.</typeparam>
+    public interface ICallable<out TDelegate> : ICallable, IConvertible<TDelegate?>
+        where TDelegate : Delegate
     {
         /// <summary>
         /// Converts method pointer into delegate.
         /// </summary>
         /// <returns>The delegate instance created from this pointer.</returns>
-        D? ToDelegate();
+        TDelegate? ToDelegate();
 
-        D? IConvertible<D?>.Convert() => ToDelegate();
+        /// <inheritdoc/>
+        TDelegate? IConvertible<TDelegate?>.Convert() => ToDelegate();
     }
 }

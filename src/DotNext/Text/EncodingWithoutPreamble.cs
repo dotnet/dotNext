@@ -7,7 +7,8 @@ namespace DotNext.Text
     {
         private readonly Encoding encoding;
 
-        private EncodingWithoutPreamble(Encoding enc) : base(enc.WindowsCodePage, enc.EncoderFallback, enc.DecoderFallback) => encoding = enc;
+        private EncodingWithoutPreamble(Encoding enc)
+            : base(enc.WindowsCodePage, enc.EncoderFallback, enc.DecoderFallback) => encoding = enc;
 
         internal static Encoding Create(Encoding enc) => new EncodingWithoutPreamble(enc);
 
@@ -121,7 +122,6 @@ namespace DotNext.Text
             => encoding.GetString(bytes, index, count);
 
         public override string ToString() => encoding.ToString();
-
 
         public override bool Equals(object? other)
             => other is EncodingWithoutPreamble wrapper ? encoding.Equals(wrapper.encoding) : encoding.Equals(other);

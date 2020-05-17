@@ -30,6 +30,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         new IPersistentState AuditTrail { get; set; }
 
+        /// <inheritdoc/>
         IAuditTrail<IRaftLogEntry> IReplicationCluster<IRaftLogEntry>.AuditTrail => AuditTrail;
     }
 }

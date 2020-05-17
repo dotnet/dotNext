@@ -5,14 +5,14 @@ using System.Threading;
 namespace DotNext.Threading
 {
     /// <summary>
-	/// Various atomic operations for <see cref="double"/> data type
-	/// accessible as extension methods.
-	/// </summary>
-	/// <remarks>
-	/// Methods exposed by this class provide volatile read/write
-	/// of the field even if it is not declared as volatile field.
-	/// </remarks>
-	/// <seealso cref="Interlocked"/>
+    /// Various atomic operations for <see cref="double"/> data type
+    /// accessible as extension methods.
+    /// </summary>
+    /// <remarks>
+    /// Methods exposed by this class provide volatile read/write
+    /// of the field even if it is not declared as volatile field.
+    /// </remarks>
+    /// <seealso cref="Interlocked"/>
     public static class AtomicDouble
     {
         private static readonly ValueFunc<double, double, double> Sum = new ValueFunc<double, double, double>(SumImpl);
@@ -31,7 +31,7 @@ namespace DotNext.Threading
         /// the computer, regardless of the number of processors or the state of processor
         /// cache.
         /// </returns>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double VolatileRead(ref this double value) => Volatile.Read(ref value);
 
         /// <summary>
@@ -45,33 +45,33 @@ namespace DotNext.Threading
         /// The value to write. The value is written immediately so that it is visible to
         /// all processors in the computer.
         /// </param>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void VolatileWrite(ref this double value, double newValue) => Volatile.Write(ref value, newValue);
 
         /// <summary>
-		/// Atomically increments by one referenced value.
-		/// </summary>
-		/// <param name="value">Reference to a value to be modified.</param>
-		/// <returns>Incremented value.</returns>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        /// Atomically increments by one referenced value.
+        /// </summary>
+        /// <param name="value">Reference to a value to be modified.</param>
+        /// <returns>Incremented value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double IncrementAndGet(ref this double value) => AccumulateAndGet(ref value, 1D, Sum);
 
         /// <summary>
-		/// Atomically decrements by one the current value.
-		/// </summary>
-		/// <param name="value">Reference to a value to be modified.</param>
-		/// <returns>Decremented value.</returns>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        /// Atomically decrements by one the current value.
+        /// </summary>
+        /// <param name="value">Reference to a value to be modified.</param>
+        /// <returns>Decremented value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double DecrementAndGet(ref this double value) => AccumulateAndGet(ref value, -1D, Sum);
 
         /// <summary>
-		/// Adds two 64-bit floating-point numbers and replaces referenced storage with the sum, 
-		/// as an atomic operation.
-		/// </summary>
-		/// <param name="value">Reference to a value to be modified.</param>
-		/// <param name="operand">The value to be added to the currently stored integer.</param>
-		/// <returns>Result of sum operation.</returns>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        /// Adds two 64-bit floating-point numbers and replaces referenced storage with the sum,
+        /// as an atomic operation.
+        /// </summary>
+        /// <param name="value">Reference to a value to be modified.</param>
+        /// <param name="operand">The value to be added to the currently stored integer.</param>
+        /// <returns>Result of sum operation.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double Add(ref this double value, double operand) => AccumulateAndGet(ref value, operand, Sum);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -90,12 +90,12 @@ namespace DotNext.Threading
             => Equals(Interlocked.CompareExchange(ref value, update, expected), expected);
 
         /// <summary>
-		/// Modifies referenced value atomically.
-		/// </summary>
-		/// <param name="value">Reference to a value to be modified.</param>
-		/// <param name="update">A new value to be stored into managed pointer.</param>
-		/// <returns>Original value before modification.</returns>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        /// Modifies referenced value atomically.
+        /// </summary>
+        /// <param name="value">Reference to a value to be modified.</param>
+        /// <param name="update">A new value to be stored into managed pointer.</param>
+        /// <returns>Original value before modification.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double GetAndSet(ref this double value, double update)
             => Interlocked.Exchange(ref value, update);
 
@@ -135,37 +135,37 @@ namespace DotNext.Threading
         }
 
         /// <summary>
-		/// Atomically updates the current value with the results of applying the given function 
-		/// to the current and given values, returning the updated value.
-		/// </summary>
-		/// <remarks>
-		/// The function is applied with the current value as its first argument, and the given update as the second argument.
-		/// </remarks>
-		/// <param name="value">Reference to a value to be modified.</param>
-		/// <param name="x">Accumulator operand.</param>
-		/// <param name="accumulator">A side-effect-free function of two arguments</param>
-		/// <returns>The updated value.</returns>
+        /// Atomically updates the current value with the results of applying the given function
+        /// to the current and given values, returning the updated value.
+        /// </summary>
+        /// <remarks>
+        /// The function is applied with the current value as its first argument, and the given update as the second argument.
+        /// </remarks>
+        /// <param name="value">Reference to a value to be modified.</param>
+        /// <param name="x">Accumulator operand.</param>
+        /// <param name="accumulator">A side-effect-free function of two arguments.</param>
+        /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double AccumulateAndGet(ref this double value, double x, Func<double, double, double> accumulator)
             => AccumulateAndGet(ref value, x, new ValueFunc<double, double, double>(accumulator, true));
 
         /// <summary>
-		/// Atomically updates the current value with the results of applying the given function 
-		/// to the current and given values, returning the updated value.
-		/// </summary>
-		/// <remarks>
-		/// The function is applied with the current value as its first argument, and the given update as the second argument.
-		/// </remarks>
-		/// <param name="value">Reference to a value to be modified.</param>
-		/// <param name="x">Accumulator operand.</param>
-		/// <param name="accumulator">A side-effect-free function of two arguments</param>
-		/// <returns>The updated value.</returns>
+        /// Atomically updates the current value with the results of applying the given function
+        /// to the current and given values, returning the updated value.
+        /// </summary>
+        /// <remarks>
+        /// The function is applied with the current value as its first argument, and the given update as the second argument.
+        /// </remarks>
+        /// <param name="value">Reference to a value to be modified.</param>
+        /// <param name="x">Accumulator operand.</param>
+        /// <param name="accumulator">A side-effect-free function of two arguments.</param>
+        /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double AccumulateAndGet(ref this double value, double x, in ValueFunc<double, double, double> accumulator)
             => Accumulate(ref value, x, accumulator).NewValue;
 
         /// <summary>
-        /// Atomically updates the current value with the results of applying the given function 
+        /// Atomically updates the current value with the results of applying the given function
         /// to the current and given values, returning the original value.
         /// </summary>
         /// <remarks>
@@ -173,14 +173,14 @@ namespace DotNext.Threading
         /// </remarks>
         /// <param name="value">Reference to a value to be modified.</param>
         /// <param name="x">Accumulator operand.</param>
-        /// <param name="accumulator">A side-effect-free function of two arguments</param>
+        /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double GetAndAccumulate(ref this double value, double x, Func<double, double, double> accumulator)
             => GetAndAccumulate(ref value, x, new ValueFunc<double, double, double>(accumulator, true));
 
         /// <summary>
-        /// Atomically updates the current value with the results of applying the given function 
+        /// Atomically updates the current value with the results of applying the given function
         /// to the current and given values, returning the original value.
         /// </summary>
         /// <remarks>
@@ -188,51 +188,51 @@ namespace DotNext.Threading
         /// </remarks>
         /// <param name="value">Reference to a value to be modified.</param>
         /// <param name="x">Accumulator operand.</param>
-        /// <param name="accumulator">A side-effect-free function of two arguments</param>
+        /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double GetAndAccumulate(ref this double value, double x, in ValueFunc<double, double, double> accumulator)
             => Accumulate(ref value, x, accumulator).OldValue;
 
         /// <summary>
-		/// Atomically updates the stored value with the results 
-		/// of applying the given function, returning the updated value.
-		/// </summary>
-		/// <param name="value">Reference to a value to be modified.</param>
-		/// <param name="updater">A side-effect-free function</param>
-		/// <returns>The updated value.</returns>
+        /// Atomically updates the stored value with the results
+        /// of applying the given function, returning the updated value.
+        /// </summary>
+        /// <param name="value">Reference to a value to be modified.</param>
+        /// <param name="updater">A side-effect-free function.</param>
+        /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double UpdateAndGet(ref this double value, Func<double, double> updater)
             => UpdateAndGet(ref value, new ValueFunc<double, double>(updater, true));
 
         /// <summary>
-		/// Atomically updates the stored value with the results 
-		/// of applying the given function, returning the updated value.
-		/// </summary>
-		/// <param name="value">Reference to a value to be modified.</param>
-		/// <param name="updater">A side-effect-free function</param>
-		/// <returns>The updated value.</returns>
+        /// Atomically updates the stored value with the results
+        /// of applying the given function, returning the updated value.
+        /// </summary>
+        /// <param name="value">Reference to a value to be modified.</param>
+        /// <param name="updater">A side-effect-free function.</param>
+        /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double UpdateAndGet(ref this double value, in ValueFunc<double, double> updater)
             => Update(ref value, updater).NewValue;
 
         /// <summary>
-        /// Atomically updates the stored value with the results 
+        /// Atomically updates the stored value with the results
         /// of applying the given function, returning the original value.
         /// </summary>
         /// <param name="value">Reference to a value to be modified.</param>
-        /// <param name="updater">A side-effect-free function</param>
+        /// <param name="updater">A side-effect-free function.</param>
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double GetAndUpdate(ref this double value, Func<double, double> updater)
             => GetAndUpdate(ref value, new ValueFunc<double, double>(updater, true));
 
         /// <summary>
-        /// Atomically updates the stored value with the results 
+        /// Atomically updates the stored value with the results
         /// of applying the given function, returning the original value.
         /// </summary>
         /// <param name="value">Reference to a value to be modified.</param>
-        /// <param name="updater">A side-effect-free function</param>
+        /// <param name="updater">A side-effect-free function.</param>
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double GetAndUpdate(ref this double value, in ValueFunc<double, double> updater)
@@ -244,7 +244,7 @@ namespace DotNext.Threading
         /// <param name="array">The array to read from.</param>
         /// <param name="index">The array element index.</param>
         /// <returns>The array element.</returns>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double VolatileRead(this double[] array, long index)
             => VolatileRead(ref array[index]);
 
@@ -259,80 +259,80 @@ namespace DotNext.Threading
             => VolatileWrite(ref array[index], value);
 
         /// <summary>
-		/// Atomically increments the array element by one.
-		/// </summary>
-		/// <param name="array">The array to write into.</param>
+        /// Atomically increments the array element by one.
+        /// </summary>
+        /// <param name="array">The array to write into.</param>
         /// <param name="index">The index of the element to increment atomically.</param>
-		/// <returns>Incremented array element.</returns>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        /// <returns>Incremented array element.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double IncrementAndGet(this double[] array, long index)
             => IncrementAndGet(ref array[index]);
 
         /// <summary>
-		/// Atomically decrements the array element by one.
-		/// </summary>
-		/// <param name="array">The array to write into.</param>
+        /// Atomically decrements the array element by one.
+        /// </summary>
+        /// <param name="array">The array to write into.</param>
         /// <param name="index">The index of the array element to decrement atomically.</param>
-		/// <returns>Decremented array element.</returns>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        /// <returns>Decremented array element.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double DecrementAndGet(this double[] array, long index)
             => DecrementAndGet(ref array[index]);
 
         /// <summary>
-		/// Atomically sets array element to the given updated value if the array element == the expected value.
-		/// </summary>
-		/// <param name="array">The array to be modified.</param>
+        /// Atomically sets array element to the given updated value if the array element == the expected value.
+        /// </summary>
+        /// <param name="array">The array to be modified.</param>
         /// <param name="index">The index of the array element to be modified.</param>
-		/// <param name="comparand">The expected value.</param>
-		/// <param name="update">The new value.</param>
-		/// <returns>The original value of the array element.</returns>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        /// <param name="update">The new value.</param>
+        /// <param name="comparand">The expected value.</param>
+        /// <returns>The original value of the array element.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double CompareExchange(this double[] array, long index, double update, double comparand)
             => Interlocked.CompareExchange(ref array[index], update, comparand);
 
         /// <summary>
-		/// Atomically sets array element to the given updated value if the array element == the expected value.
-		/// </summary>
-		/// <param name="array">The array to be modified.</param>
+        /// Atomically sets array element to the given updated value if the array element == the expected value.
+        /// </summary>
+        /// <param name="array">The array to be modified.</param>
         /// <param name="index">The index of the array element to be modified.</param>
-		/// <param name="expected">The expected value.</param>
-		/// <param name="update">The new value.</param>
-		/// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        /// <param name="expected">The expected value.</param>
+        /// <param name="update">The new value.</param>
+        /// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool CompareAndSet(this double[] array, long index, double expected, double update)
             => CompareAndSet(ref array[index], expected, update);
 
         /// <summary>
-		/// Adds two 64-bit integers and replaces array element with the sum, 
-		/// as an atomic operation.
-		/// </summary>
-		/// <param name="array">The array to be modified.</param>
+        /// Adds two 64-bit integers and replaces array element with the sum,
+        /// as an atomic operation.
+        /// </summary>
+        /// <param name="array">The array to be modified.</param>
         /// <param name="index">The index of the array element to be modified.</param>
-		/// <param name="operand">The value to be added to the currently stored integer.</param>
-		/// <returns>Result of sum operation.</returns>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        /// <param name="operand">The value to be added to the currently stored integer.</param>
+        /// <returns>Result of sum operation.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double Add(this double[] array, long index, double operand)
             => Add(ref array[index], operand);
 
         /// <summary>
-		/// Modifies the array element atomically.
-		/// </summary>
-		/// <param name="array">The array to be modified.</param>
+        /// Modifies the array element atomically.
+        /// </summary>
+        /// <param name="array">The array to be modified.</param>
         /// <param name="index">The index of array element to be modified.</param>
-		/// <param name="update">A new value to be stored as array element.</param>
-		/// <returns>Original array element before modification.</returns>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        /// <param name="update">A new value to be stored as array element.</param>
+        /// <returns>Original array element before modification.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double GetAndSet(this double[] array, long index, double update)
             => GetAndSet(ref array[index], update);
 
         /// <summary>
-		/// Modifies the array element atomically.
-		/// </summary>
-		/// <param name="array">The array to be modified.</param>
+        /// Modifies the array element atomically.
+        /// </summary>
+        /// <param name="array">The array to be modified.</param>
         /// <param name="index">The index of array element to be modified.</param>
-		/// <param name="update">A new value to be stored as array element.</param>
-		/// <returns>The array element after modification.</returns>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        /// <param name="update">A new value to be stored as array element.</param>
+        /// <returns>The array element after modification.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double SetAndGet(this double[] array, long index, double update)
         {
             VolatileWrite(array, index, update);
@@ -340,107 +340,107 @@ namespace DotNext.Threading
         }
 
         /// <summary>
-		/// Atomically updates the array element with the results of applying the given function 
-		/// to the array element and given values, returning the updated value.
-		/// </summary>
-		/// <remarks>
-		/// The function is applied with the array element as its first argument, and the given update as the second argument.
-		/// </remarks>
-		/// <param name="array">The array to be modified.</param>
+        /// Atomically updates the array element with the results of applying the given function
+        /// to the array element and given values, returning the updated value.
+        /// </summary>
+        /// <remarks>
+        /// The function is applied with the array element as its first argument, and the given update as the second argument.
+        /// </remarks>
+        /// <param name="array">The array to be modified.</param>
         /// <param name="index">The index of the array element to be modified.</param>
-		/// <param name="x">Accumulator operand.</param>
-		/// <param name="accumulator">A side-effect-free function of two arguments.</param>
-		/// <returns>The updated value.</returns>
-		public static double AccumulateAndGet(this double[] array, long index, double x, Func<double, double, double> accumulator)
+        /// <param name="x">Accumulator operand.</param>
+        /// <param name="accumulator">A side-effect-free function of two arguments.</param>
+        /// <returns>The updated value.</returns>
+        public static double AccumulateAndGet(this double[] array, long index, double x, Func<double, double, double> accumulator)
             => AccumulateAndGet(array, index, x, new ValueFunc<double, double, double>(accumulator, true));
 
         /// <summary>
-		/// Atomically updates the array element with the results of applying the given function 
-		/// to the array element and given values, returning the updated value.
-		/// </summary>
-		/// <remarks>
-		/// The function is applied with the array element as its first argument, and the given update as the second argument.
-		/// </remarks>
-		/// <param name="array">The array to be modified.</param>
+        /// Atomically updates the array element with the results of applying the given function
+        /// to the array element and given values, returning the updated value.
+        /// </summary>
+        /// <remarks>
+        /// The function is applied with the array element as its first argument, and the given update as the second argument.
+        /// </remarks>
+        /// <param name="array">The array to be modified.</param>
         /// <param name="index">The index of the array element to be modified.</param>
-		/// <param name="x">Accumulator operand.</param>
-		/// <param name="accumulator">A side-effect-free function of two arguments.</param>
-		/// <returns>The updated value.</returns>
-		public static double AccumulateAndGet(this double[] array, long index, double x, in ValueFunc<double, double, double> accumulator)
+        /// <param name="x">Accumulator operand.</param>
+        /// <param name="accumulator">A side-effect-free function of two arguments.</param>
+        /// <returns>The updated value.</returns>
+        public static double AccumulateAndGet(this double[] array, long index, double x, in ValueFunc<double, double, double> accumulator)
             => AccumulateAndGet(ref array[index], x, accumulator);
 
         /// <summary>
-		/// Atomically updates the array element with the results of applying the given function 
-		/// to the array element and given values, returning the original value.
-		/// </summary>
-		/// <remarks>
-		/// The function is applied with the array element as its first argument, and the given update as the second argument.
-		/// </remarks>
-		/// <param name="array">The array to be modified.</param>
+        /// Atomically updates the array element with the results of applying the given function
+        /// to the array element and given values, returning the original value.
+        /// </summary>
+        /// <remarks>
+        /// The function is applied with the array element as its first argument, and the given update as the second argument.
+        /// </remarks>
+        /// <param name="array">The array to be modified.</param>
         /// <param name="index">The index of the array element to be modified.</param>
-		/// <param name="x">Accumulator operand.</param>
-		/// <param name="accumulator">A side-effect-free function of two arguments.</param>
-		/// <returns>The original value of the array element.</returns>
-		public static double GetAndAccumulate(this double[] array, long index, double x, Func<double, double, double> accumulator)
+        /// <param name="x">Accumulator operand.</param>
+        /// <param name="accumulator">A side-effect-free function of two arguments.</param>
+        /// <returns>The original value of the array element.</returns>
+        public static double GetAndAccumulate(this double[] array, long index, double x, Func<double, double, double> accumulator)
             => GetAndAccumulate(array, index, x, new ValueFunc<double, double, double>(accumulator, true));
 
         /// <summary>
-		/// Atomically updates the array element with the results of applying the given function 
-		/// to the array element and given values, returning the original value.
-		/// </summary>
-		/// <remarks>
-		/// The function is applied with the array element as its first argument, and the given update as the second argument.
-		/// </remarks>
-		/// <param name="array">The array to be modified.</param>
+        /// Atomically updates the array element with the results of applying the given function
+        /// to the array element and given values, returning the original value.
+        /// </summary>
+        /// <remarks>
+        /// The function is applied with the array element as its first argument, and the given update as the second argument.
+        /// </remarks>
+        /// <param name="array">The array to be modified.</param>
         /// <param name="index">The index of the array element to be modified.</param>
-		/// <param name="x">Accumulator operand.</param>
-		/// <param name="accumulator">A side-effect-free function of two arguments.</param>
-		/// <returns>The original value of the array element.</returns>
-		public static double GetAndAccumulate(this double[] array, long index, double x, in ValueFunc<double, double, double> accumulator)
+        /// <param name="x">Accumulator operand.</param>
+        /// <param name="accumulator">A side-effect-free function of two arguments.</param>
+        /// <returns>The original value of the array element.</returns>
+        public static double GetAndAccumulate(this double[] array, long index, double x, in ValueFunc<double, double, double> accumulator)
             => GetAndAccumulate(ref array[index], x, accumulator);
 
         /// <summary>
-		/// Atomically updates the array element with the results 
-		/// of applying the given function, returning the updated value.
-		/// </summary>
-		/// <param name="array">The array to be modified.</param>
+        /// Atomically updates the array element with the results
+        /// of applying the given function, returning the updated value.
+        /// </summary>
+        /// <param name="array">The array to be modified.</param>
         /// <param name="index">The index of the array element to be modified.</param>
-		/// <param name="updater">A side-effect-free function</param>
-		/// <returns>The updated value.</returns>
-		public static double UpdateAndGet(this double[] array, long index, Func<double, double> updater)
+        /// <param name="updater">A side-effect-free function.</param>
+        /// <returns>The updated value.</returns>
+        public static double UpdateAndGet(this double[] array, long index, Func<double, double> updater)
             => UpdateAndGet(array, index, new ValueFunc<double, double>(updater, true));
 
         /// <summary>
-		/// Atomically updates the array element with the results 
-		/// of applying the given function, returning the updated value.
-		/// </summary>
-		/// <param name="array">The array to be modified.</param>
+        /// Atomically updates the array element with the results
+        /// of applying the given function, returning the updated value.
+        /// </summary>
+        /// <param name="array">The array to be modified.</param>
         /// <param name="index">The index of the array element to be modified.</param>
-		/// <param name="updater">A side-effect-free function</param>
-		/// <returns>The updated value.</returns>
-		public static double UpdateAndGet(this double[] array, long index, in ValueFunc<double, double> updater)
+        /// <param name="updater">A side-effect-free function.</param>
+        /// <returns>The updated value.</returns>
+        public static double UpdateAndGet(this double[] array, long index, in ValueFunc<double, double> updater)
             => UpdateAndGet(ref array[index], updater);
 
         /// <summary>
-		/// Atomically updates the array element with the results 
-		/// of applying the given function, returning the original value.
-		/// </summary>
-		/// <param name="array">The array to be modified.</param>
+        /// Atomically updates the array element with the results
+        /// of applying the given function, returning the original value.
+        /// </summary>
+        /// <param name="array">The array to be modified.</param>
         /// <param name="index">The index of the array element to be modified.</param>
-		/// <param name="updater">A side-effect-free function</param>
-		/// <returns>The original value of the array element.</returns>
-		public static double GetAndUpdate(this double[] array, long index, Func<double, double> updater)
+        /// <param name="updater">A side-effect-free function.</param>
+        /// <returns>The original value of the array element.</returns>
+        public static double GetAndUpdate(this double[] array, long index, Func<double, double> updater)
             => GetAndUpdate(array, index, new ValueFunc<double, double>(updater, true));
 
         /// <summary>
-		/// Atomically updates the array element with the results 
-		/// of applying the given function, returning the original value.
-		/// </summary>
-		/// <param name="array">The array to be modified.</param>
+        /// Atomically updates the array element with the results
+        /// of applying the given function, returning the original value.
+        /// </summary>
+        /// <param name="array">The array to be modified.</param>
         /// <param name="index">The index of the array element to be modified.</param>
-		/// <param name="updater">A side-effect-free function</param>
-		/// <returns>The original value of the array element.</returns>
-		public static double GetAndUpdate(this double[] array, long index, in ValueFunc<double, double> updater)
+        /// <param name="updater">A side-effect-free function.</param>
+        /// <returns>The original value of the array element.</returns>
+        public static double GetAndUpdate(this double[] array, long index, in ValueFunc<double, double> updater)
             => GetAndUpdate(ref array[index], updater);
     }
 }

@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Primitives;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
 using static System.Globalization.CultureInfo;
 using HeaderUtils = Microsoft.Net.Http.Headers.HeaderUtilities;
 
@@ -15,13 +15,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     {
         private protected static readonly ValueParser<DateTimeOffset> DateTimeParser = (string str, out DateTimeOffset value) => HeaderUtils.TryParseDate(str, out value);
 
-        //request - represents Term value according with Raft protocol
-        //response - represents Term value of the reply node
+        // request - represents Term value according with Raft protocol
+        // response - represents Term value of the reply node
         private const string TermHeader = "X-Raft-Term";
 
         internal readonly long ConsensusTerm;
 
-        private protected RaftHttpMessage(string messageType, IPEndPoint sender, long term) : base(messageType, sender) => ConsensusTerm = term;
+        private protected RaftHttpMessage(string messageType, IPEndPoint sender, long term)
+            : base(messageType, sender) => ConsensusTerm = term;
 
         private protected RaftHttpMessage(HeadersReader<StringValues> headers)
             : base(headers)

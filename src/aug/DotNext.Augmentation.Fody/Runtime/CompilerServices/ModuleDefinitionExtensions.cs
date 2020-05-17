@@ -1,6 +1,6 @@
-﻿using Mono.Cecil;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Linq;
+using Mono.Cecil;
 
 namespace DotNext.Runtime.CompilerServices
 {

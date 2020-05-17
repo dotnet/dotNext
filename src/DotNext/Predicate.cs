@@ -56,7 +56,7 @@ namespace DotNext
             => IsNullPredicate<T>.Value;
 
         /// <summary>
-        /// Returns predicate checking that input argument 
+        /// Returns predicate checking that input argument
         /// is not <see langword="null"/>.
         /// </summary>
         /// <typeparam name="T">The type of the predicate argument.</typeparam>
@@ -76,7 +76,7 @@ namespace DotNext
         /// <returns>The predicate instance.</returns>
         /// <remarks>
         /// This method returns the same instance of predicate on every call.
-        /// </remarks>        
+        /// </remarks>
         public static Predicate<T?> HasValue<T>()
             where T : struct
             => HasValuePredicate<T>.Value;
@@ -179,6 +179,7 @@ namespace DotNext
             {
                 result = new Result<bool>(e);
             }
+
             return result;
         }
 

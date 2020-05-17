@@ -114,6 +114,7 @@ namespace DotNext.Net.Cluster
         public static bool operator !=(in ClusterMemberId x, in ClusterMemberId y)
             => x.address != y.address || x.port != y.port || x.length != y.length || x.family != y.family;
 
+        /// <inheritdoc/>
         void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue(AddressSerData, address);

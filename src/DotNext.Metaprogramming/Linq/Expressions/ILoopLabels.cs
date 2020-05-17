@@ -5,6 +5,7 @@ namespace DotNext.Linq.Expressions
     internal interface ILoopLabels
     {
         LabelTarget ContinueLabel { get; }
+
         LabelTarget BreakLabel { get; }
     }
 }

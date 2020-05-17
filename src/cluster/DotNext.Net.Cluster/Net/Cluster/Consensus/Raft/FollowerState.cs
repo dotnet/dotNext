@@ -24,9 +24,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private static async Task Track(TimeSpan timeout, IAsyncEvent refreshEvent, Action candidateState, params CancellationToken[] tokens)
         {
             using var tokenSource = CancellationTokenSource.CreateLinkedTokenSource(tokens);
-            //spin loop to wait for the timeout
-            while (await refreshEvent.WaitAsync(timeout, tokenSource.Token).ConfigureAwait(false)) { }
-            //timeout happened, move to candidate state
+
+            // spin loop to wait for the timeout
+            while (await refreshEvent.WaitAsync(timeout, tokenSource.Token).ConfigureAwait(false))
+            {
+            }
+
+            // timeout happened, move to candidate state
             candidateState();
         }
 
@@ -38,7 +42,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 tracker = null;
             }
             else
+            {
                 tracker = Track(timeout, refreshEvent, stateMachine.MoveToCandidateState, trackerCancellation.Token, token);
+            }
+
             return this;
         }
 
@@ -63,6 +70,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 trackerCancellation.Dispose();
                 tracker = null;
             }
+
             base.Dispose(disposing);
         }
     }

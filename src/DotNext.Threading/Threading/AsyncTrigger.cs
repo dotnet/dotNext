@@ -54,11 +54,12 @@ namespace DotNext.Threading
                 => tail is null ? new ConditionalNode<TState>(condition) : new ConditionalNode<TState>(condition, tail);
         }
 
+        /// <inheritdoc/>
         bool IAsyncEvent.Reset() => false;
 
         private void ResumePendingCallers()
         {
-            //triggers only stateless nodes
+            // triggers only stateless nodes
             for (WaitNode? current = head, next; !(current is null); current = next)
             {
                 next = current.Next;
@@ -114,8 +115,8 @@ namespace DotNext.Threading
         /// </summary>
         /// <typeparam name="TState">The type of the state maintained externally.</typeparam>
         /// <typeparam name="TArgs">The type of the arguments of state mutator.</typeparam>
-        /// <param name="mutator">State mutation.</param>
         /// <param name="state">The state to be modified.</param>
+        /// <param name="mutator">State mutation.</param>
         /// <param name="args">The arguments to be passed to the mutator.</param>
         /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
@@ -131,8 +132,8 @@ namespace DotNext.Threading
         /// Signals to all suspended callers about the new state.
         /// </summary>
         /// <typeparam name="TState">The type of the state maintained externally.</typeparam>
-        /// <param name="mutator">State mutation.</param>
         /// <param name="state">The state to be modified.</param>
+        /// <param name="mutator">State mutation.</param>
         /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
         public void Signal<TState>(TState state, Action<TState> mutator)
             where TState : class
@@ -142,8 +143,10 @@ namespace DotNext.Threading
             ResumePendingCallers(state);
         }
 
+        /// <inheritdoc/>
         bool IAsyncEvent.IsSet => head is null;
 
+        /// <inheritdoc/>
         [MethodImpl(MethodImplOptions.Synchronized)]
         bool IAsyncEvent.Signal()
         {

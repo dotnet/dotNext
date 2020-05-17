@@ -5,8 +5,8 @@ using System.Reflection;
 namespace DotNext.Reflection
 {
     /// <summary>
-	/// Indicates that requested method doesn't exist.
-	/// </summary>
+    /// Indicates that requested method doesn't exist.
+    /// </summary>
     public sealed class MissingMethodException : ConstraintViolationException
     {
         /// <summary>
@@ -39,20 +39,20 @@ namespace DotNext.Reflection
         /// </summary>
         public IReadOnlyList<Type> Parameters { get; }
 
-        internal static MissingMethodException Create<T, D>(string methodName)
-            where D : Delegate
+        internal static MissingMethodException Create<T, TSignature>(string methodName)
+            where TSignature : Delegate
         {
-            var (parameters, returnType) = DelegateType.GetInvokeMethod<D>().Decompose(method => method.GetParameterTypes(), method => method.ReturnType);
+            var (parameters, returnType) = DelegateType.GetInvokeMethod<TSignature>().Decompose(method => method.GetParameterTypes(), method => method.ReturnType);
             return new MissingMethodException(typeof(T), methodName, returnType, parameters);
         }
 
-        internal static MissingMethodException Create<T, A, R>(string methodName)
-            where A : struct
+        internal static MissingMethodException Create<T, TArgs, TResult>(string methodName)
+            where TArgs : struct
         {
-            var type = typeof(R);
+            var type = typeof(TResult);
             if (type == typeof(Missing))
                 type = typeof(void);
-            return new MissingMethodException(typeof(T), methodName, type, Signature.Reflect(typeof(A)).Parameters);
+            return new MissingMethodException(typeof(T), methodName, type, Signature.Reflect(typeof(TArgs)).Parameters);
         }
     }
 }

@@ -1,9 +1,9 @@
-using Microsoft.Extensions.Logging;
 using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using static System.Buffers.Binary.BinaryPrimitives;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
@@ -27,10 +27,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
 
             private protected ValueTask WritePacket(PacketHeaders headers, Memory<byte> buffer, int count, CancellationToken token)
             {
-                //write headers
+                // write headers
                 headers.WriteTo(buffer);
                 WriteInt32LittleEndian(buffer.Span.Slice(PacketHeaders.NaturalSize), count);
-                //transmit packet to the remote endpoint
+
+                // transmit packet to the remote endpoint
                 return WriteAsync(AdjustPacket(buffer, count), token);
             }
 
@@ -42,7 +43,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
 
             private protected async ValueTask<(PacketHeaders Headers, ReadOnlyMemory<byte> Payload)> ReadPacket(Memory<byte> buffer, CancellationToken token)
             {
-                //read headers and number of bytes
+                // read headers and number of bytes
                 await this.ReadBytesAsync(buffer.Slice(0, PacketPrologueSize), token).ConfigureAwait(false);
                 ReadPrologue(buffer, out var headers, out var count);
                 buffer = buffer.Slice(0, count);

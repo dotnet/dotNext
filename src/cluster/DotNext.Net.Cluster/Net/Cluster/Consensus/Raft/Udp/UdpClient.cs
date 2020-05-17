@@ -1,10 +1,10 @@
-using Microsoft.Extensions.Logging;
 using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
+using Microsoft.Extensions.Logging;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 {
@@ -27,6 +27,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             }
 
             CancellationToken INetworkTransport.IChannel.Token => cancellation.Token;
+
             IExchange INetworkTransport.IChannel.Exchange => exchange;
 
             internal void Complete(Exception e) => exchange.OnException(e);
@@ -36,12 +37,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
         private readonly Action<object> cancellationHandler;
 
-        //I/O management
+        // I/O management
         private readonly long applicationId;
-        private long streamNumber;
         private readonly INetworkTransport.ChannelPool<Channel> channels;
         private readonly RefAction<Channel, CorrelationId> cancellationInvoker;
         private readonly IPEndPoint localEndPoint;
+        private long streamNumber;
 
         internal UdpClient(IPEndPoint localEndPoint, IPEndPoint remoteEndPoint, int backlog, MemoryAllocator<byte> allocator, Func<long> appIdGenerator, ILoggerFactory loggerFactory)
             : base(remoteEndPoint, backlog, allocator, loggerFactory)
@@ -63,7 +64,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         private protected override void EndReceive(SocketAsyncEventArgs args)
         {
             ReadOnlyMemory<byte> datagram = args.MemoryBuffer.Slice(0, args.BytesTransferred);
-            //dispatch datagram to appropriate exchange
+
+            // dispatch datagram to appropriate exchange
             var correlationId = new CorrelationId(ref datagram);
             if (channels.TryGetValue(correlationId, out var channel))
             {
@@ -74,7 +76,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                     ProcessDatagram(channels, channel, correlationId, headers, datagram, args);
             }
             else
+            {
                 logger.PacketDropped(correlationId, args.RemoteEndPoint);
+            }
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
@@ -82,8 +86,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         {
             bool result;
             if (IsBound)
+            {
                 result = true;
+            }
             else
+            {
                 try
                 {
                     Bind(localEndPoint);
@@ -95,6 +102,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                     exchange.OnException(e);
                     result = false;
                 }
+            }
+
             return result;
         }
 
@@ -107,6 +116,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             var id = new CorrelationId(applicationId, streamNumber.IncrementAndGet());
             var channel = new Channel(exchange, cancellationHandler, id, token);
             if (channels.TryAdd(id, channel))
+            {
                 try
                 {
                     if (token.IsCancellationRequested)
@@ -117,12 +127,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 catch (Exception e)
                 {
                     if (channels.TryRemove(id, out channel))
+                    {
                         using (channel)
                             channel.Complete(e);
+                    }
                 }
+            }
             else
+            {
                 using (channel)
                     channel.Complete(new InvalidOperationException(ExceptionMessages.DuplicateCorrelationId));
+            }
         }
 
         private void Cleanup(bool disposing)

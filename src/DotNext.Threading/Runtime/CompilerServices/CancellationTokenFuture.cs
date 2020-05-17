@@ -13,9 +13,9 @@ namespace DotNext.Runtime.CompilerServices
         internal static readonly CancellationTokenFuture Completed = new CancellationTokenFuture(false);
         internal static readonly CancellationTokenFuture Canceled = new CancellationTokenFuture(true);
 
-        private object? state;
         private readonly CancellationTokenRegistration registration;
         private readonly bool throwIfCanceled;
+        private object? state;
 
         internal CancellationTokenFuture(bool throwIfCanceled, ref CancellationToken token)
         {
@@ -51,6 +51,7 @@ namespace DotNext.Runtime.CompilerServices
         /// <returns>The object that is used to monitor the completion of an asynchronous operation.</returns>
         public IAwaiter GetAwaiter() => this;
 
+        /// <inheritdoc/>
         void IAwaiter.GetResult()
         {
             if (!throwIfCanceled)

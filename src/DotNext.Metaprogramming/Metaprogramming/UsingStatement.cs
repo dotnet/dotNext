@@ -7,7 +7,6 @@ namespace DotNext.Metaprogramming
 
     internal sealed class UsingStatement : Statement, ILexicalScope<UsingExpression, Action>, ILexicalScope<UsingExpression, Action<ParameterExpression>>
     {
-
         private readonly Expression resource;
 
         internal UsingStatement(Expression resource) => this.resource = resource;

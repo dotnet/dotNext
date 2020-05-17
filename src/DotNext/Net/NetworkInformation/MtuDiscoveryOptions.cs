@@ -14,7 +14,7 @@ namespace DotNext.Net.NetworkInformation
         private int minMtuSize, maxMtuSize;
 
         /// <summary>
-        /// Initializes 
+        /// Initializes a new discovery options.
         /// </summary>
         /// <param name="ttl">The number of times that ICMP packet can be forwarded by hosts in the route.</param>
         /// <param name="minMtuSize">The lowest possible size of MTU.</param>

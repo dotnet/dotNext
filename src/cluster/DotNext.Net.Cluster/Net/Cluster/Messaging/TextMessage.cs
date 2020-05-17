@@ -21,7 +21,6 @@ namespace DotNext.Net.Cluster.Messaging
         public TextMessage(string value, string name)
             : this(name, value, null)
         {
-
         }
 
         internal TextMessage(string name, string value, string? mediaType)
@@ -41,8 +40,10 @@ namespace DotNext.Net.Cluster.Messaging
         /// </summary>
         public int Length => Type.GetEncoding().GetByteCount(Content);
 
+        /// <inheritdoc/>
         bool IDataTransferObject.IsReusable => true;
 
+        /// <inheritdoc/>
         long? IDataTransferObject.Length => Length;
 
         /// <summary>
@@ -50,6 +51,7 @@ namespace DotNext.Net.Cluster.Messaging
         /// </summary>
         public string Content { get; }
 
+        /// <inheritdoc/>
         ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
             => writer.WriteAsync(Content.AsMemory(), Type.GetEncoding(), null, token);
 

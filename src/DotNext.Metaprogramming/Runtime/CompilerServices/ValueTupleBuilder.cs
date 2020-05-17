@@ -14,13 +14,13 @@ namespace DotNext.Runtime.CompilerServices
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/tuples">Tuples</seealso>
     public sealed class ValueTupleBuilder : Disposable, IEnumerable<Type>
     {
-        private readonly IList<Type> items = new List<Type>(7);//no more than 7 items because max number of generic arguments of tuple type
-        private ValueTupleBuilder? Rest;
+        private readonly IList<Type> items = new List<Type>(7); // no more than 7 items because max number of generic arguments of tuple type
+        private ValueTupleBuilder? rest;
 
         /// <summary>
         /// Number of elements in the tuple.
         /// </summary>
-        public int Count => items.Count + (Rest?.Count ?? 0);
+        public int Count => items.Count + (rest?.Count ?? 0);
 
         /// <summary>
         /// Constructs value tuple.
@@ -36,14 +36,14 @@ namespace DotNext.Runtime.CompilerServices
             5 => typeof(ValueTuple<,,,,>).MakeGenericType(items[0], items[1], items[2], items[3], items[4]),
             6 => typeof(ValueTuple<,,,,,>).MakeGenericType(items[0], items[1], items[2], items[3], items[4], items[5]),
             7 => typeof(ValueTuple<,,,,,,>).MakeGenericType(items[0], items[1], items[2], items[3], items[4], items[5], items[6]),
-            _ => typeof(ValueTuple<,,,,,,,>).MakeGenericType(items[0], items[1], items[2], items[3], items[4], items[5], items[6], Rest!.Build()),
+            _ => typeof(ValueTuple<,,,,,,,>).MakeGenericType(items[0], items[1], items[2], items[3], items[4], items[5], items[6], rest!.Build()),
         };
 
         private void Build(Expression instance, Span<MemberExpression> output)
         {
             for (var i = 0; i < items.Count; i++)
                 output[i] = Expression.Field(instance, "Item" + (i + 1));
-            if (!(Rest is null))
+            if (!(rest is null))
             {
                 instance = Expression.Field(instance, "Rest");
                 Build(instance, output.Slice(8));
@@ -53,12 +53,12 @@ namespace DotNext.Runtime.CompilerServices
         /// <summary>
         /// Constructs expression tree based on value tuple type.
         /// </summary>
-        /// <typeparam name="E">Type of expression tree.</typeparam>
+        /// <typeparam name="TException">Type of expression tree.</typeparam>
         /// <param name="expressionFactory">A function accepting value tuple type and returning expression tree.</param>
         /// <param name="expression">Constructed expression.</param>
         /// <returns>Sorted array of value tuple type components.</returns>
-        public MemberExpression[] Build<E>(Func<Type, E> expressionFactory, out E expression)
-            where E : Expression
+        public MemberExpression[] Build<TException>(Func<Type, TException> expressionFactory, out TException expression)
+            where TException : Expression
         {
             expression = expressionFactory(Build());
             var fieldAccessExpression = new MemberExpression[Count];
@@ -74,10 +74,10 @@ namespace DotNext.Runtime.CompilerServices
         {
             if (Count < 7)
                 items.Add(itemType);
-            else if (Rest is null)
-                Rest = new ValueTupleBuilder() { itemType };
+            else if (rest is null)
+                rest = new ValueTupleBuilder() { itemType };
             else
-                Rest.Add(itemType);
+                rest.Add(itemType);
         }
 
         /// <summary>
@@ -91,8 +91,9 @@ namespace DotNext.Runtime.CompilerServices
         /// </summary>
         /// <returns>An enumerator over all tuple components.</returns>
         public IEnumerator<Type> GetEnumerator()
-            => (Rest is null ? items : items.Concat(Rest)).GetEnumerator();
+            => (rest is null ? items : items.Concat(rest)).GetEnumerator();
 
+        /// <inheritdoc/>
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         /// <summary>
@@ -103,7 +104,7 @@ namespace DotNext.Runtime.CompilerServices
         {
             if (disposing)
                 items.Clear();
-            Rest?.Dispose(disposing);
+            rest?.Dispose(disposing);
             base.Dispose(disposing);
         }
     }

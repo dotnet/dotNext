@@ -4,7 +4,9 @@ namespace DotNext.Metaprogramming
 {
     internal sealed class TryStatement : Statement, ILexicalScope<TryBuilder, Action>
     {
-        internal TryStatement() { }
+        internal TryStatement()
+        {
+        }
 
         public TryBuilder Build(Action scope)
         {

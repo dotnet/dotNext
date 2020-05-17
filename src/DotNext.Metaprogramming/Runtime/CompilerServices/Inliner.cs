@@ -20,6 +20,7 @@ namespace DotNext.Runtime.CompilerServices
                 targetCopy = Expression.Label(node.Type, node.Name);
                 labelReplacement.Add(node, targetCopy);
             }
+
             return targetCopy;
         }
 

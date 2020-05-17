@@ -78,7 +78,8 @@ namespace DotNext.Threading
         /// <param name="timeout">The interval to wait for the lock.</param>
         /// <returns>The acquired lock holder.</returns>
         /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
-        public static Task<AsyncLock.Holder> AcquireLockAsync<T>(this T obj, TimeSpan timeout) where T : class => obj.GetExclusiveLock().AcquireAsync(timeout);
+        public static Task<AsyncLock.Holder> AcquireLockAsync<T>(this T obj, TimeSpan timeout)
+            where T : class => obj.GetExclusiveLock().AcquireAsync(timeout);
 
         /// <summary>
         /// Acquires exclusive lock associated with the given object.
@@ -87,7 +88,8 @@ namespace DotNext.Threading
         /// <param name="obj">The object to be locked.</param>
         /// <param name="token">The token that can be used to abort acquisition operation.</param>
         /// <returns>The acquired lock holder.</returns>
-        public static Task<AsyncLock.Holder> AcquireLockAsync<T>(this T obj, CancellationToken token) where T : class => obj.GetExclusiveLock().AcquireAsync(token);
+        public static Task<AsyncLock.Holder> AcquireLockAsync<T>(this T obj, CancellationToken token)
+            where T : class => obj.GetExclusiveLock().AcquireAsync(token);
 
         /// <summary>
         /// Acquires reader lock associated with the given object.
@@ -97,8 +99,8 @@ namespace DotNext.Threading
         /// <param name="timeout">The interval to wait for the lock.</param>
         /// <returns>The acquired lock holder.</returns>
         /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
-        public static Task<AsyncLock.Holder> AcquireReadLockAsync<T>(this T obj, TimeSpan timeout) where T : class =>
-            AsyncLock.ReadLock(obj.GetReaderWriterLock(), false).AcquireAsync(timeout);
+        public static Task<AsyncLock.Holder> AcquireReadLockAsync<T>(this T obj, TimeSpan timeout)
+            where T : class => AsyncLock.ReadLock(obj.GetReaderWriterLock(), false).AcquireAsync(timeout);
 
         /// <summary>
         /// Acquires reader lock associated with the given object.
@@ -118,8 +120,8 @@ namespace DotNext.Threading
         /// <param name="timeout">The interval to wait for the lock.</param>
         /// <returns>The acquired lock holder.</returns>
         /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
-        public static Task<AsyncLock.Holder> AcquireWriteLockAsync<T>(this T obj, TimeSpan timeout) where T : class =>
-            AsyncLock.WriteLock(obj.GetReaderWriterLock()).AcquireAsync(timeout);
+        public static Task<AsyncLock.Holder> AcquireWriteLockAsync<T>(this T obj, TimeSpan timeout)
+            where T : class => AsyncLock.WriteLock(obj.GetReaderWriterLock()).AcquireAsync(timeout);
 
         /// <summary>
         /// Acquires reader lock associated with the given object.

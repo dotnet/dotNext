@@ -31,7 +31,7 @@ namespace DotNext.Threading
             WriteLock,
             Semaphore,
             Weak,
-            Strong
+            Strong,
         }
 
         /// <summary>
@@ -51,6 +51,11 @@ namespace DotNext.Threading
                 this.lockedObject = lockedObject;
                 this.type = type;
             }
+
+            /// <summary>
+            /// Gets a value indicating that this object doesn't hold the lock.
+            /// </summary>
+            public bool IsEmpty => lockedObject is null;
 
             /// <summary>
             /// Releases the acquired lock.
@@ -82,6 +87,7 @@ namespace DotNext.Threading
                         As<AsyncSharedLock>(lockedObject).Release();
                         break;
                 }
+
                 this = default;
             }
 
@@ -215,6 +221,7 @@ namespace DotNext.Threading
                     task = As<AsyncSharedLock>(lockedObject).AcquireAsync(false, timeout, token);
                     break;
             }
+
             await task.ConfigureAwait(false);
             return new Holder(lockedObject, type);
         }
@@ -223,39 +230,22 @@ namespace DotNext.Threading
         /// Tries to acquire the lock asynchronously.
         /// </summary>
         /// <param name="timeout">The interval to wait for the lock.</param>
-        /// <param name="token">The token that can be used to abort acquisition operation.</param>
         /// <param name="suppressCancellation"><see langword="true"/> to return empty lock holder instead of throwing <see cref="OperationCanceledException"/>.</param>
+        /// <param name="token">The token that can be used to abort acquisition operation.</param>
         /// <returns>The task returning the acquired lock holder; or empty lock holder if lock has not been acquired.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled and <paramref name="suppressCancellation"/> is <see langword="false"/>.</exception>
         public readonly async Task<Holder> TryAcquireAsync(TimeSpan timeout, bool suppressCancellation, CancellationToken token)
         {
-            Task<bool> task;
-            switch (type)
+            Task<bool> task = type switch
             {
-                default:
-                    task = CompletedTask<bool, BooleanConst.False>.Task;
-                    break;
-                case Type.Exclusive:
-                    task = As<AsyncExclusiveLock>(lockedObject).TryAcquireAsync(timeout, token);
-                    break;
-                case Type.ReadLock:
-                    task = As<AsyncReaderWriterLock>(lockedObject).TryEnterReadLockAsync(timeout, token);
-                    break;
-                case Type.UpgradeableReadLock:
-                    task = As<AsyncReaderWriterLock>(lockedObject).TryEnterUpgradeableReadLockAsync(timeout, token);
-                    break;
-                case Type.WriteLock:
-                    task = As<AsyncReaderWriterLock>(lockedObject).TryEnterWriteLockAsync(timeout, token);
-                    break;
-                case Type.Semaphore:
-                    task = As<SemaphoreSlim>(lockedObject).WaitAsync(timeout, token);
-                    break;
-                case Type.Strong:
-                    task = As<AsyncSharedLock>(lockedObject).TryAcquireAsync(true, timeout, token);
-                    break;
-                case Type.Weak:
-                    task = As<AsyncSharedLock>(lockedObject).TryAcquireAsync(false, timeout, token);
-                    break;
+                Type.Exclusive => As<AsyncExclusiveLock>(lockedObject).TryAcquireAsync(timeout, token),
+                Type.ReadLock => As<AsyncReaderWriterLock>(lockedObject).TryEnterReadLockAsync(timeout, token),
+                Type.UpgradeableReadLock => As<AsyncReaderWriterLock>(lockedObject).TryEnterUpgradeableReadLockAsync(timeout, token),
+                Type.WriteLock => As<AsyncReaderWriterLock>(lockedObject).TryEnterWriteLockAsync(timeout, token),
+                Type.Semaphore => As<SemaphoreSlim>(lockedObject).WaitAsync(timeout, token),
+                Type.Strong => As<AsyncSharedLock>(lockedObject).TryAcquireAsync(true, timeout, token),
+                Type.Weak => As<AsyncSharedLock>(lockedObject).TryAcquireAsync(false, timeout, token),
+                _ => CompletedTask<bool, BooleanConst.False>.Task,
             };
             if (suppressCancellation && token.CanBeCanceled)
                 task = task.OnCanceled<bool, BooleanConst.False>();
@@ -273,7 +263,7 @@ namespace DotNext.Threading
             => TryAcquireAsync(timeout, false, token);
 
         /// <summary>
-        /// Tries to acquire lock asynchronously
+        /// Tries to acquire lock asynchronously.
         /// </summary>
         /// <param name="token">The token that can be used to abort acquisition operation.</param>
         /// <returns>The task returning the acquired lock holder; or empty lock holder if operation was canceled.</returns>

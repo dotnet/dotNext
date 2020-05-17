@@ -8,9 +8,9 @@ namespace DotNext.Linq.Expressions
     /// </summary>
     public sealed class NullSafetyExpression : Expression
     {
-        private Expression? body;
         private readonly BinaryExpression? assignment;
         private readonly bool alwaysNotNull;
+        private Expression? body;
 
         internal NullSafetyExpression(Expression target)
         {
@@ -23,7 +23,9 @@ namespace DotNext.Linq.Expressions
                 Target = variable;
             }
             else
+            {
                 assignment = Assign(Target = Variable(target.Type, "tmp"), Target);
+            }
         }
 
         /// <summary>
@@ -96,7 +98,7 @@ namespace DotNext.Linq.Expressions
         /// <returns>Translated expression.</returns>
         public override Expression Reduce()
         {
-            //fast path, Target is value type that cannot be null
+            // fast path, Target is value type that cannot be null
             if (alwaysNotNull)
                 return Body;
             var body = Body.Type.IsValueType ? Convert(Body, Type) : Body;

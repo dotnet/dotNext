@@ -6,9 +6,9 @@ namespace DotNext.Reflection
     /// <summary>
     /// Represents typed access to type constructor.
     /// </summary>
-    /// <typeparam name="D">Type of delegate representing constructor signature.</typeparam>
-    public interface IConstructor<out D> : IMethod<ConstructorInfo, D>
-        where D : Delegate
+    /// <typeparam name="TSignature">Type of delegate representing constructor signature.</typeparam>
+    public interface IConstructor<out TSignature> : IMethod<ConstructorInfo, TSignature>
+        where TSignature : Delegate
     {
     }
 }

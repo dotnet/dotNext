@@ -23,7 +23,7 @@ namespace DotNext.Runtime.CompilerServices
         private readonly RegisteredWaitHandle? handle;
         private int state;
 
-        //constructor should be synchronized because OnTimeout can be called before than handle field will be set
+        // constructor should be synchronized because OnTimeout can be called before than handle field will be set
         [MethodImpl(MethodImplOptions.Synchronized)]
         internal WaitHandleFuture(WaitHandle wh, TimeSpan timeout)
             => handle = ThreadPool.RegisterWaitForSingleObject(wh, Complete, null, timeout, true);
@@ -49,6 +49,7 @@ namespace DotNext.Runtime.CompilerServices
         /// <returns>The object that is used to monitor the completion of an asynchronous operation.</returns>
         public IAwaiter<bool> GetAwaiter() => this;
 
+        /// <inheritdoc/>
         bool IAwaiter<bool>.GetResult() => state switch
         {
             SuccessfulState => true,

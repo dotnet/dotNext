@@ -19,8 +19,7 @@ namespace DotNext.Threading
         /// <param name="completeAsCanceled"><see langword="true"/> to complete task in <see cref="TaskStatus.Canceled"/> state; <see langword="false"/> to complete task in <see cref="TaskStatus.RanToCompletion"/> state.</param>
         /// <returns>A task representing token state.</returns>
         /// <exception cref="ArgumentException"><paramref name="token"/> doesn't support cancellation.</exception>
-        public static CancellationTokenFuture WaitAsync(this CancellationToken token,
-            bool completeAsCanceled = false)
+        public static CancellationTokenFuture WaitAsync(this CancellationToken token, bool completeAsCanceled = false)
         {
             if (token.IsCancellationRequested)
                 return completeAsCanceled ? CancellationTokenFuture.Canceled : CancellationTokenFuture.Completed;

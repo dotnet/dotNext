@@ -19,7 +19,6 @@ namespace DotNext.Reflection
 
         private ExtensionRegistry()
         {
-
         }
 
         private static ExtensionRegistry Create() => new ExtensionRegistry();
@@ -27,8 +26,10 @@ namespace DotNext.Reflection
         private static IEnumerable<MethodInfo> GetMethods(IEnumerable<Type> types, UserDataSlot<ExtensionRegistry> registrySlot)
         {
             foreach (var type in types)
+            {
                 foreach (var method in type.GetUserData().Get(registrySlot) ?? Enumerable.Empty<MethodInfo>())
                     yield return method;
+            }
         }
 
         private static IEnumerable<MethodInfo> GetStaticMethods(Type target)
@@ -77,10 +78,10 @@ namespace DotNext.Reflection
         /// it will be available using <see cref="Type{T}.Method.Get{D}(string, MethodLookup, bool)"/> and related methods.
         /// </summary>
         /// <typeparam name="T">The type to be extended with static method.</typeparam>
-        /// <typeparam name="D">The type of the delegate.</typeparam>
+        /// <typeparam name="TExtension">The type of the delegate.</typeparam>
         /// <param name="delegate">The delegate instance representing extension method.</param>
-        public static void RegisterStatic<T, D>(D @delegate)
-            where D : Delegate
+        public static void RegisterStatic<T, TExtension>(TExtension @delegate)
+            where TExtension : Delegate
             => RegisterStatic<T>(@delegate.Method);
 
         /// <summary>
@@ -101,10 +102,10 @@ namespace DotNext.Reflection
         /// reflection lookup performed by <see cref="Reflector.Unreflect{D}(MethodInfo)"/>
         /// or <see cref="Type{T}.Method.Get{D}(string, MethodLookup, bool)"/> methods.
         /// </summary>
-        /// <typeparam name="D">The type of the delegate.</typeparam>
+        /// <typeparam name="TExtension">The type of the delegate.</typeparam>
         /// <param name="delegate">The delegate instance representing extension method.</param>
-        public static void RegisterInstance<D>(D @delegate)
-            where D : Delegate
+        public static void RegisterInstance<TExtension>(TExtension @delegate)
+            where TExtension : Delegate
             => RegisterInstance(@delegate.Method);
     }
 }

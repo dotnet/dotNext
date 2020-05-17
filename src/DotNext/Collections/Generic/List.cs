@@ -1,30 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace DotNext.Collections.Generic
 {
+    using UnreachableCodeExecutionException = Diagnostics.UnreachableCodeExecutionException;
+
     /// <summary>
     /// Provides various extensions for <see cref="IList{T}"/> interface.
     /// </summary>
     public static class List
     {
-        private static class Indexer<C, T>
-            where C : class, IEnumerable<T>
+        private static class Indexer<TCollection, T>
+            where TCollection : class, IEnumerable<T>
         {
-            internal static readonly Func<C, int, T> Getter;
-            internal static readonly Action<C, int, T>? Setter;
+            internal static readonly Func<TCollection, int, T> Getter;
+            internal static readonly Action<TCollection, int, T>? Setter;
 
+            [SuppressMessage("Design", "CA1065", Justification = "Exception will never throw")]
             static Indexer()
             {
-                foreach (var member in typeof(C).GetDefaultMembers())
+                foreach (var member in typeof(TCollection).GetDefaultMembers())
+                {
                     if (member is PropertyInfo indexer)
                     {
-                        Getter = indexer.GetMethod.CreateDelegate<Func<C, int, T>>();
-                        Setter = indexer.SetMethod?.CreateDelegate<Action<C, int, T>>();
+                        Getter = indexer.GetMethod.CreateDelegate<Func<TCollection, int, T>>();
+                        Setter = indexer.SetMethod?.CreateDelegate<Action<TCollection, int, T>>();
                         return;
                     }
-                throw new InvalidProgramException(ExceptionMessages.UnreachableCodeDetected);
+                }
+
+                throw new UnreachableCodeExecutionException();
             }
         }
 
@@ -57,16 +64,16 @@ namespace DotNext.Collections.Generic
         /// <typeparam name="T">Type of list items.</typeparam>
         /// <param name="list">Read-only list instance.</param>
         /// <returns>A delegate representing indexer.</returns>
-		public static Func<int, T> IndexerGetter<T>(this IReadOnlyList<T> list) => Indexer<T>.ReadOnly.Bind(list);
+        public static Func<int, T> IndexerGetter<T>(this IReadOnlyList<T> list) => Indexer<T>.ReadOnly.Bind(list);
 
         /// <summary>
         /// Returns <see cref="IList{T}.get_Item"/> as delegate
-        /// attached to the list instance. 
+        /// attached to the list instance.
         /// </summary>
         /// <typeparam name="T">Type of list items.</typeparam>
         /// <param name="list">Mutable list instance.</param>
         /// <returns>A delegate representing indexer.</returns>
-		public static Func<int, T> IndexerGetter<T>(this IList<T> list) => Indexer<T>.Getter.Bind(list);
+        public static Func<int, T> IndexerGetter<T>(this IList<T> list) => Indexer<T>.Getter.Bind(list);
 
         /// <summary>
         /// Returns <see cref="IList{T}.set_Item"/> as delegate
@@ -75,20 +82,20 @@ namespace DotNext.Collections.Generic
         /// <typeparam name="T">Type of list items.</typeparam>
         /// <param name="list">Mutable list instance.</param>
         /// <returns>A delegate representing indexer.</returns>
-		public static Action<int, T> IndexerSetter<T>(this IList<T> list) => Indexer<T>.Setter.Bind(list);
+        public static Action<int, T> IndexerSetter<T>(this IList<T> list) => Indexer<T>.Setter.Bind(list);
 
         /// <summary>
         /// Converts list into array and perform mapping for each
         /// element.
         /// </summary>
-        /// <typeparam name="I">Type of elements in the list.</typeparam>
-        /// <typeparam name="O">Type of elements in the output array.</typeparam>
+        /// <typeparam name="TInput">Type of elements in the list.</typeparam>
+        /// <typeparam name="TOutput">Type of elements in the output array.</typeparam>
         /// <param name="input">A list to convert. Cannot be <see langword="null"/>.</param>
         /// <param name="mapper">Element mapping function.</param>
         /// <returns>An array of list items.</returns>
-        public static O[] ToArray<I, O>(this IList<I> input, in ValueFunc<I, O> mapper)
+        public static TOutput[] ToArray<TInput, TOutput>(this IList<TInput> input, in ValueFunc<TInput, TOutput> mapper)
         {
-            var output = OneDimensionalArray.New<O>(input.Count);
+            var output = OneDimensionalArray.New<TOutput>(input.Count);
             for (var i = 0; i < input.Count; i++)
                 output[i] = mapper.Invoke(input[i]);
             return output;
@@ -98,25 +105,25 @@ namespace DotNext.Collections.Generic
         /// Converts list into array and perform mapping for each
         /// element.
         /// </summary>
-        /// <typeparam name="I">Type of elements in the list.</typeparam>
-        /// <typeparam name="O">Type of elements in the output array.</typeparam>
+        /// <typeparam name="TInput">Type of elements in the list.</typeparam>
+        /// <typeparam name="TOutput">Type of elements in the output array.</typeparam>
         /// <param name="input">A list to convert. Cannot be <see langword="null"/>.</param>
         /// <param name="mapper">Element mapping function.</param>
         /// <returns>An array of list items.</returns>
-        public static O[] ToArray<I, O>(this IList<I> input, Converter<I, O> mapper) => ToArray(input, mapper.AsValueFunc(true));
+        public static TOutput[] ToArray<TInput, TOutput>(this IList<TInput> input, Converter<TInput, TOutput> mapper) => ToArray(input, mapper.AsValueFunc(true));
 
         /// <summary>
         /// Converts list into array and perform mapping for each
         /// element.
         /// </summary>
-        /// <typeparam name="I">Type of elements in the list.</typeparam>
-        /// <typeparam name="O">Type of elements in the output array.</typeparam>
+        /// <typeparam name="TInput">Type of elements in the list.</typeparam>
+        /// <typeparam name="TOutput">Type of elements in the output array.</typeparam>
         /// <param name="input">A list to convert. Cannot be <see langword="null"/>.</param>
         /// <param name="mapper">Index-aware element mapping function.</param>
         /// <returns>An array of list items.</returns>
-        public static O[] ToArray<I, O>(this IList<I> input, in ValueFunc<int, I, O> mapper)
+        public static TOutput[] ToArray<TInput, TOutput>(this IList<TInput> input, in ValueFunc<int, TInput, TOutput> mapper)
         {
-            var output = OneDimensionalArray.New<O>(input.Count);
+            var output = OneDimensionalArray.New<TOutput>(input.Count);
             for (var i = 0; i < input.Count; i++)
                 output[i] = mapper.Invoke(i, input[i]);
             return output;
@@ -126,33 +133,33 @@ namespace DotNext.Collections.Generic
         /// Converts list into array and perform mapping for each
         /// element.
         /// </summary>
-        /// <typeparam name="I">Type of elements in the list.</typeparam>
-        /// <typeparam name="O">Type of elements in the output array.</typeparam>
+        /// <typeparam name="TInput">Type of elements in the list.</typeparam>
+        /// <typeparam name="TOutput">Type of elements in the output array.</typeparam>
         /// <param name="input">A list to convert. Cannot be <see langword="null"/>.</param>
         /// <param name="mapper">Index-aware element mapping function.</param>
         /// <returns>An array of list items.</returns>
-        public static O[] ToArray<I, O>(this IList<I> input, Func<int, I, O> mapper)
-            => ToArray(input, new ValueFunc<int, I, O>(mapper, true));
+        public static TOutput[] ToArray<TInput, TOutput>(this IList<TInput> input, Func<int, TInput, TOutput> mapper)
+            => ToArray(input, new ValueFunc<int, TInput, TOutput>(mapper, true));
 
         /// <summary>
         /// Returns lazily converted read-only list.
         /// </summary>
         /// <param name="list">Read-only list to convert.</param>
         /// <param name="converter">A list item conversion function.</param>
-        /// <typeparam name="I">Type of items in the source list.</typeparam>
-        /// <typeparam name="O">Type of items in the target list.</typeparam>
+        /// <typeparam name="TInput">Type of items in the source list.</typeparam>
+        /// <typeparam name="TOutput">Type of items in the target list.</typeparam>
         /// <returns>Lazily converted read-only list.</returns>
-        public static ReadOnlyListView<I, O> Convert<I, O>(this IReadOnlyList<I> list, in ValueFunc<I, O> converter) => new ReadOnlyListView<I, O>(list, converter);
+        public static ReadOnlyListView<TInput, TOutput> Convert<TInput, TOutput>(this IReadOnlyList<TInput> list, in ValueFunc<TInput, TOutput> converter) => new ReadOnlyListView<TInput, TOutput>(list, converter);
 
         /// <summary>
         /// Returns lazily converted read-only list.
         /// </summary>
         /// <param name="list">Read-only list to convert.</param>
         /// <param name="converter">A list item conversion function.</param>
-        /// <typeparam name="I">Type of items in the source list.</typeparam>
-        /// <typeparam name="O">Type of items in the target list.</typeparam>
+        /// <typeparam name="TInput">Type of items in the source list.</typeparam>
+        /// <typeparam name="TOutput">Type of items in the target list.</typeparam>
         /// <returns>Lazily converted read-only list.</returns>
-        public static ReadOnlyListView<I, O> Convert<I, O>(this IReadOnlyList<I> list, Converter<I, O> converter)
+        public static ReadOnlyListView<TInput, TOutput> Convert<TInput, TOutput>(this IReadOnlyList<TInput> list, Converter<TInput, TOutput> converter)
             => Convert(list, converter.AsValueFunc(true));
 
         /// <summary>
@@ -186,6 +193,7 @@ namespace DotNext.Collections.Generic
                 else
                     low = mid + 1;
             }
+
             list.Insert(low, item);
             return low;
         }

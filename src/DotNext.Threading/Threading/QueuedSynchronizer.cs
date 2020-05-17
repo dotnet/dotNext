@@ -23,7 +23,9 @@ namespace DotNext.Threading
             private WaitNode? previous;
             private WaitNode? next;
 
-            internal WaitNode() { }
+            internal WaitNode()
+            {
+            }
 
             internal WaitNode(WaitNode previous)
             {
@@ -54,12 +56,12 @@ namespace DotNext.Threading
             internal bool IsRoot => previous is null && next is null;
         }
 
-        private protected interface ILockManager<N>
-            where N : WaitNode
+        private protected interface ILockManager<TNode>
+            where TNode : WaitNode
         {
-            bool TryAcquire();  //if true then Wait method can be completed synchronously; otherwise, false.
+            bool TryAcquire();  // if true then Wait method can be completed synchronously; otherwise, false.
 
-            N CreateNode(WaitNode? tail);
+            TNode CreateNode(WaitNode? tail);
         }
 
         private protected WaitNode? head, tail;
@@ -68,6 +70,7 @@ namespace DotNext.Threading
         {
         }
 
+        /// <inheritdoc/>
         bool ISynchronizer.HasWaiters => !(head is null);
 
         [MethodImpl(MethodImplOptions.Synchronized)]
@@ -84,18 +87,22 @@ namespace DotNext.Threading
 
         private async Task<bool> WaitAsync(WaitNode node, TimeSpan timeout, CancellationToken token)
         {
-            //cannot use Task.WaitAsync here because this method contains side effect in the form of RemoveNode method
+            // cannot use Task.WaitAsync here because this method contains side effect in the form of RemoveNode method
             using (var tokenSource = token.CanBeCanceled ? CancellationTokenSource.CreateLinkedTokenSource(token) : new CancellationTokenSource())
+            {
                 if (ReferenceEquals(node.Task, await Task.WhenAny(node.Task, Task.Delay(timeout, tokenSource.Token)).ConfigureAwait(false)))
                 {
-                    tokenSource.Cancel();   //ensure that Delay task is cancelled
+                    tokenSource.Cancel();   // ensure that Delay task is cancelled
                     return true;
                 }
+            }
+
             if (RemoveNode(node))
             {
                 token.ThrowIfCancellationRequested();
                 return false;
             }
+
             return await node.Task.ConfigureAwait(false);
         }
 
@@ -125,7 +132,7 @@ namespace DotNext.Threading
             if (manager.TryAcquire())
                 return CompletedTask<bool, BooleanConst.True>.Task;
             if (timeout == TimeSpan.Zero)
-                return CompletedTask<bool, BooleanConst.False>.Task;    //if timeout is zero fail fast
+                return CompletedTask<bool, BooleanConst.False>.Task;    // if timeout is zero fail fast
             if (tail is null)
                 head = tail = manager.CreateNode(null);
             else
@@ -156,6 +163,7 @@ namespace DotNext.Threading
                 next = current.CleanupAndGotoNext();
                 current.TrySetCanceled(token);
             }
+
             head = tail = null;
         }
 
@@ -174,6 +182,7 @@ namespace DotNext.Threading
                     current.TrySetCanceled();
                 head = tail = null;
             }
+
             base.Dispose(disposing);
         }
     }

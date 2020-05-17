@@ -1,4 +1,3 @@
-using DotNext.Net.Mime;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -6,6 +5,7 @@ using System.Threading.Tasks;
 namespace DotNext.Net.Cluster.Messaging
 {
     using IO;
+    using Net.Mime;
 
     /// <summary>
     /// Represents helper methods allow to communicate with remove cluster members
@@ -24,8 +24,11 @@ namespace DotNext.Net.Cluster.Messaging
         {
             ICollection<Task> tasks = new LinkedList<Task>();
             foreach (var member in cluster.Members)
+            {
                 if (member.IsRemote)
                     tasks.Add(member.SendSignalAsync(message, requiresConfirmation));
+            }
+
             return Task.WhenAll(tasks);
         }
 
@@ -49,8 +52,8 @@ namespace DotNext.Net.Cluster.Messaging
         /// <param name="messenger">The receiver of the message.</param>
         /// <param name="messageName">The name of the message.</param>
         /// <param name="text">The content of the message.</param>
-        /// <param name="mediaType">The media type of the message content.</param>
         /// <param name="requiresConfirmation"><see langword="true"/> to wait for confirmation of delivery from receiver; otherwise, <see langword="false"/>.</param>
+        /// <param name="mediaType">The media type of the message content.</param>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns>The task representing asynchronous execution of the method.</returns>
         public static Task SendTextSignalAsync(this ISubscriber messenger, string messageName, string text, bool requiresConfirmation = true, string? mediaType = null, CancellationToken token = default)

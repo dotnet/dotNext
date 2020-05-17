@@ -33,6 +33,7 @@ namespace DotNext.Threading
                     result = continuation;
                     break;
             }
+
             return result;
         }
     }

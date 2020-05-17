@@ -37,7 +37,7 @@ namespace DotNext
         /// Releases managed and unmanaged resources associated with this object.
         /// </summary>
         /// <param name="disposing"><see langword="true"/> if called from <see cref="Dispose()"/>; <see langword="false"/> if called from finalizer <see cref="Finalize()"/>.</param>
-		protected virtual void Dispose(bool disposing) => disposed = true;
+        protected virtual void Dispose(bool disposing) => disposed = true;
 
         /// <summary>
         /// Releases all resources associated with this object.
@@ -69,10 +69,14 @@ namespace DotNext
         /// Disposes many objects.
         /// </summary>
         /// <param name="objects">An array of objects to dispose.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
         public static async ValueTask DisposeAsync(IEnumerable<IAsyncDisposable?> objects)
         {
             foreach (var obj in objects)
-                await (obj?.DisposeAsync()).GetValueOrDefault();
+            {
+                if (!(obj is null))
+                    await obj.DisposeAsync().ConfigureAwait(false);
+            }
         }
 
         /// <summary>
@@ -86,6 +90,7 @@ namespace DotNext
         /// Disposes many objects in safe manner.
         /// </summary>
         /// <param name="objects">An array of objects to dispose.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
         public static ValueTask DisposeAsync(params IAsyncDisposable?[] objects)
             => DisposeAsync((IEnumerable<IAsyncDisposable?>)objects);
 

@@ -30,7 +30,8 @@ namespace DotNext.IO
         /// <returns>The decoded value.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-        ValueTask<T> ReadAsync<T>(CancellationToken token = default) where T : unmanaged;
+        ValueTask<T> ReadAsync<T>(CancellationToken token = default)
+            where T : unmanaged;
 
         /// <summary>
         /// Decodes 64-bit signed integer using the specified endianness.
@@ -54,7 +55,7 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The decoded value.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>        
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
         async ValueTask<int> ReadInt32Async(bool littleEndian, CancellationToken token = default)
         {
             var result = await ReadAsync<int>(token).ConfigureAwait(false);
@@ -113,8 +114,8 @@ namespace DotNext.IO
         /// <summary>
         /// Copies the content to the specified stream.
         /// </summary>
-        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <param name="output">The output stream receiving object content.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         Task CopyToAsync(Stream output, CancellationToken token = default);
 
@@ -148,7 +149,7 @@ namespace DotNext.IO
         public static SequenceBinaryReader Create(ReadOnlySequence<byte> sequence) => new SequenceBinaryReader(sequence);
 
         /// <summary>
-        /// Creates default implementation of binary reader over contiguous memory block. 
+        /// Creates default implementation of binary reader over contiguous memory block.
         /// </summary>
         /// <param name="memory">The block of memory.</param>
         /// <returns>The binary reader for the memory block.</returns>

@@ -51,6 +51,7 @@ namespace DotNext.Linq.Expressions
                 default:
                     throw new ArgumentException(ExceptionMessages.TypeExpected<int>(), nameof(value));
             }
+
             IsFromEnd = fromEnd;
             Value = value;
         }

@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
@@ -6,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 {
@@ -33,7 +33,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             internal ValueTask GetTask(bool pending)
             {
                 if (pending)
+                {
                     return Task;
+                }
                 else
                 {
                     var error = SocketError;
@@ -66,7 +68,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         private protected readonly MemoryAllocator<byte> allocator;
         internal readonly IPEndPoint Address;
         private protected readonly ILogger logger;
-        //I/O management
+
+        // I/O management
         private readonly SocketAsyncEventArgs?[] receiverPool;
         private readonly SendTaskPool senderPool;
         private readonly Action<SocketAsyncEventArgs> dispatcher;
@@ -150,7 +153,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 args.SocketError = SocketError.Shutdown;
                 result = false;
             }
-            if (!result) //completed synchronously
+
+            if (!result) // completed synchronously
                 EndReceive(this, args);
         }
 
@@ -165,6 +169,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 receiverPool[i] = args;
                 BeginReceive(args);
             }
+
             senderPool.Populate(receiverPool.Length);
         }
 
@@ -174,7 +179,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             bool stateFlag;
             var error = default(Exception);
             var ep = args.RemoteEndPoint;
-            //handle received packet
+
+            // handle received packet
             try
             {
                 stateFlag = await channel.Exchange.ProcessInboundMessageAsync(headers, datagram, ep, channel.Token).ConfigureAwait(false);
@@ -186,11 +192,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             }
             finally
             {
-                //datagram buffer is no longer needed so we can return control to the event loop
+                // datagram buffer is no longer needed so we can return control to the event loop
                 ThreadPool.QueueUserWorkItem(dispatcher, args, true);
             }
-            //send one more datagram if exchange requires this
+
+            // send one more datagram if exchange requires this
             if (stateFlag)
+            {
                 try
                 {
                     stateFlag = await SendAsync(correlationId, channel, ep).ConfigureAwait(false);
@@ -200,24 +208,30 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                     stateFlag = false;
                     error = e;
                 }
-            //remove exchange if it is in final state
+            }
+
+            // remove exchange if it is in final state
             if (!stateFlag && channels.TryRemove(correlationId, out channel))
+            {
                 using (channel)
+                {
                     if (!(error is null))
                         channel.Exchange.OnException(error);
+                }
+            }
         }
 
         [SuppressMessage("Reliability", "CA2000", Justification = "Task is from pool and its lifetime controlled by entire socket instance")]
         private ValueTask SendToAsync(Memory<byte> datagram, EndPoint endPoint)
         {
-            //obtain sender task from the pool
+            // obtain sender task from the pool
             if (senderPool.TryTake(out var task))
             {
                 task.Initialize(datagram, endPoint);
                 return task.GetTask(SendToAsync(task));
             }
-            else
-                return new ValueTask(Task.FromException(new InvalidOperationException(ExceptionMessages.NotEnoughSenders)));
+
+            return new ValueTask(Task.FromException(new InvalidOperationException(ExceptionMessages.NotEnoughSenders)));
         }
 
         private protected async Task<bool> SendAsync<TChannel>(CorrelationId id, TChannel channel, EndPoint endpoint)
@@ -229,17 +243,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             {
                 PacketHeaders headers;
                 int bytesWritten;
-                //write payload
+
+                // write payload
                 (headers, bytesWritten, waitForInput) = await channel.Exchange.CreateOutboundMessageAsync(AdjustToPayload(bufferHolder.Memory), channel.Token).ConfigureAwait(false);
-                //write correlation ID and headers
+
+                // write correlation ID and headers
                 id.WriteTo(bufferHolder.Memory);
                 headers.WriteTo(bufferHolder.Memory.Slice(CorrelationId.NaturalSize));
-                await SendToAsync(AdjustPacket(bufferHolder.Memory, bytesWritten), endpoint);
+                await SendToAsync(AdjustPacket(bufferHolder.Memory, bytesWritten), endpoint).ConfigureAwait(false);
             }
             finally
             {
                 bufferHolder.Dispose();
             }
+
             return waitForInput;
         }
 
@@ -255,6 +272,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                     args?.Dispose();
                     args = null;
                 }
+
                 foreach (var task in senderPool)
                     task.Dispose();
                 senderPool.Clear();

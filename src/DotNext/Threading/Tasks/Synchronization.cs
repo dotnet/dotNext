@@ -20,20 +20,21 @@ namespace DotNext.Threading.Tasks
         /// </summary>
         /// <param name="task">The task to synchronize.</param>
         /// <param name="timeout">Synchronization timeout.</param>
-        /// <typeparam name="R">Type of task result.</typeparam>
+        /// <typeparam name="TResult">Type of task result.</typeparam>
         /// <returns>Task result.</returns>
         /// <exception cref="TimeoutException">Task is not completed.</exception>
-        public static Result<R> GetResult<R>(this Task<R> task, TimeSpan timeout)
+        public static Result<TResult> GetResult<TResult>(this Task<TResult> task, TimeSpan timeout)
         {
-            Result<R> result;
+            Result<TResult> result;
             try
             {
-                result = task.Wait(timeout) ? task.Result : new Result<R>(new TimeoutException());
+                result = task.Wait(timeout) ? task.Result : new Result<TResult>(new TimeoutException());
             }
             catch (Exception e)
             {
-                result = new Result<R>(e);
+                result = new Result<TResult>(e);
             }
+
             return result;
         }
 
@@ -42,9 +43,9 @@ namespace DotNext.Threading.Tasks
         /// </summary>
         /// <param name="task">The task to synchronize.</param>
         /// <param name="token">Cancellation token.</param>
-        /// <typeparam name="R">Type of task result.</typeparam>
+        /// <typeparam name="TResult">Type of task result.</typeparam>
         /// <returns>Task result.</returns>
-        public static Result<R> GetResult<R>(this Task<R> task, CancellationToken token)
+        public static Result<TResult> GetResult<TResult>(this Task<TResult> task, CancellationToken token)
         {
             try
             {
@@ -53,7 +54,7 @@ namespace DotNext.Threading.Tasks
             }
             catch (Exception e)
             {
-                return new Result<R>(e);
+                return new Result<TResult>(e);
             }
         }
 
@@ -76,6 +77,7 @@ namespace DotNext.Threading.Tasks
             {
                 result = new Result<object>(e);
             }
+
             return result;
         }
 
@@ -97,12 +99,15 @@ namespace DotNext.Threading.Tasks
                     result = new Result<object>(Unsafe.As<dynamic, object>(ref value));
                 }
                 else
+                {
                     result = new Result<object>(new TimeoutException());
+                }
             }
             catch (Exception e)
             {
                 result = new Result<object>(e);
             }
+
             return result;
         }
 
@@ -161,11 +166,14 @@ namespace DotNext.Threading.Tasks
         private static async Task<bool> WaitAsyncImpl(Task task, TimeSpan timeout, CancellationToken token)
         {
             using (var tokenSource = token.CanBeCanceled ? CancellationTokenSource.CreateLinkedTokenSource(token) : new CancellationTokenSource())
+            {
                 if (ReferenceEquals(task, await Task.WhenAny(task, Task.Delay(timeout, tokenSource.Token)).ConfigureAwait(false)))
                 {
-                    tokenSource.Cancel();   //ensure that Delay task is cancelled
+                    tokenSource.Cancel();   // ensure that Delay task is cancelled
                     return true;
                 }
+            }
+
             token.ThrowIfCancellationRequested();
             return false;
         }
@@ -188,7 +196,7 @@ namespace DotNext.Threading.Tasks
             if (task.IsCompleted)
                 return CompletedTask<bool, BooleanConst.True>.Task;
             if (timeout == TimeSpan.Zero)
-                return CompletedTask<bool, BooleanConst.False>.Task;    //if timeout is zero fail fast
+                return CompletedTask<bool, BooleanConst.False>.Task;    // if timeout is zero fail fast
             if (timeout > InfiniteTimeSpan)
                 return WaitAsyncImpl(task, timeout, token);
             return !token.CanBeCanceled && task is Task<bool> boolTask ? boolTask : task.ContinueWith(TrueContinuation, token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);

@@ -21,12 +21,13 @@ namespace DotNext.Threading
                     IsSignaled = false;
                     return true;
                 }
-                else
-                    return false;
+
+                return false;
             }
 
             WaitNode ILockManager<WaitNode>.CreateNode(WaitNode? tail) => tail is null ? new WaitNode() : new WaitNode(tail);
         }
+
         private LockManager manager;
 
         /// <summary>
@@ -63,23 +64,24 @@ namespace DotNext.Threading
             ThrowIfDisposed();
             if (manager.IsSignaled)
                 return false;
-            else if (head is null)
+
+            if (head is null)
                 return manager.IsSignaled = true;
-            else
-            {
-                head.Complete();
-                RemoveNode(head);
-                manager.IsSignaled = false;
-                return true;
-            }
+
+            head.Complete();
+            RemoveNode(head);
+            manager.IsSignaled = false;
+            return true;
         }
 
+        /// <inheritdoc/>
         bool IAsyncEvent.Signal() => Set();
 
+        /// <inheritdoc/>
         EventResetMode IAsyncResetEvent.ResetMode => EventResetMode.AutoReset;
 
         /// <summary>
-        /// Turns caller into idle state until the current event is set. 
+        /// Turns caller into idle state until the current event is set.
         /// </summary>
         /// <param name="timeout">The interval to wait for the signaled state.</param>
         /// <param name="token">The token that can be used to abort wait process.</param>

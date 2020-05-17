@@ -47,7 +47,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                         break;
                     }
                     else
+                    {
                         goto default;
+                    }
+
                 default:
                     taskSource.SetException(new SocketException((int)e.SocketError));
                     break;

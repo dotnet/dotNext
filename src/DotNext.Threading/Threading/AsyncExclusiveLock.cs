@@ -19,11 +19,8 @@ namespace DotNext.Threading
             {
                 if (IsAcquired)
                     return false;
-                else
-                {
-                    IsAcquired = true;
-                    return true;
-                }
+                IsAcquired = true;
+                return true;
             }
 
             WaitNode ILockManager<WaitNode>.CreateNode(WaitNode? tail) => tail is null ? new WaitNode() : new WaitNode(tail);
@@ -94,8 +91,11 @@ namespace DotNext.Threading
             ThrowIfDisposed();
             if (!manager.IsAcquired)
                 throw new SynchronizationLockException(ExceptionMessages.NotInWriteLock);
-            else if (head is null)
+
+            if (head is null)
+            {
                 manager.IsAcquired = false;
+            }
             else
             {
                 head.Complete();

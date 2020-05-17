@@ -13,10 +13,20 @@ namespace DotNext.Runtime.CompilerServices
     /// </summary>
     public abstract class AsyncDelegateFuture : Threading.Tasks.Future<Task>, Threading.Tasks.Future.IAwaiter
     {
+        /// <summary>
+        /// Represents cancellation token associated with this future.
+        /// </summary>
         private protected readonly CancellationToken token;
 
+        /// <summary>
+        /// Initializes a new future representing asynchronous execution of synchronous delegate.
+        /// </summary>
+        /// <param name="token">The token that can be used to cancel the execution.</param>
         private protected AsyncDelegateFuture(CancellationToken token) => this.token = token;
 
+        /// <summary>
+        /// Throws exception if this future was completed in failed state.
+        /// </summary>
         private protected abstract void ThrowIfNeeded();
 
         /// <summary>
@@ -25,6 +35,7 @@ namespace DotNext.Runtime.CompilerServices
         /// <returns>The object that is used to monitor the completion of an asynchronous operation.</returns>
         public IAwaiter GetAwaiter() => this;
 
+        /// <inheritdoc/>
         void IAwaiter.GetResult()
         {
             if (IsCompleted)
@@ -42,8 +53,14 @@ namespace DotNext.Runtime.CompilerServices
         public sealed override Task AsTask() => token.IsCancellationRequested ? Task.FromCanceled(token) : ExecuteAsTask();
     }
 
+    /// <summary>
+    /// Represents canceled task.
+    /// </summary>
     internal sealed class CanceledAsyncDelegateFuture : AsyncDelegateFuture
     {
+        /// <summary>
+        /// Provides access to singleton.
+        /// </summary>
         internal static readonly AsyncDelegateFuture Instance = new CanceledAsyncDelegateFuture();
 
         private CanceledAsyncDelegateFuture()
@@ -51,35 +68,51 @@ namespace DotNext.Runtime.CompilerServices
         {
         }
 
+        /// <inheritdoc/>
         public sealed override bool IsCompleted => true;
 
+        /// <inheritdoc/>
         private protected override void ThrowIfNeeded() => throw new OperationCanceledException(token);
     }
 
-    internal abstract class AsyncDelegateFuture<D> : AsyncDelegateFuture
-        where D : MulticastDelegate
+    /// <summary>
+    /// Represents asynchronous execution of synchronous delegate.
+    /// </summary>
+    /// <typeparam name="TDelegate">The type of the delegate.</typeparam>
+    internal abstract class AsyncDelegateFuture<TDelegate> : AsyncDelegateFuture
+        where TDelegate : MulticastDelegate
     {
         private const long CompletedState = -1L;
         private long index, totalCount;
         private volatile bool hasErrors;
-        private volatile object? exceptions; //has type Exception[] or AggregateException
+        private volatile object? exceptions; // has type Exception[] or AggregateException
 
+        /// <summary>
+        /// Initializes a new future representing asynchronous execution of synchronous delegate.
+        /// </summary>
+        /// <param name="token">The token that can be used to cancel the execution.</param>
         private protected AsyncDelegateFuture(CancellationToken token)
             : base(token)
         {
         }
 
+        /// <inheritdoc/>
         public sealed override bool IsCompleted => totalCount.VolatileRead() == CompletedState;
 
+        /// <inheritdoc/>
         private protected sealed override void ThrowIfNeeded()
         {
             if (exceptions is AggregateException error)
                 throw error;
         }
 
-        private protected abstract void InvokeOne(D d);
+        /// <summary>
+        /// Invokes the single delegate in the chain.
+        /// </summary>
+        /// <param name="d">The delegate representing single method.</param>
+        private protected abstract void InvokeOne(TDelegate d);
 
-        private void InvokeOneImpl(D d)
+        private void InvokeOneImpl(TDelegate d)
         {
             var errors = (Exception[])exceptions!;
             var currentIndex = index.IncrementAndGet();
@@ -91,7 +124,9 @@ namespace DotNext.Runtime.CompilerServices
                     hasErrors = true;
                 }
                 else
+                {
                     InvokeOne(d);
+                }
             }
             catch (Exception e)
             {
@@ -114,32 +149,41 @@ namespace DotNext.Runtime.CompilerServices
             Complete();
         }
 
-        internal AsyncDelegateFuture<D> Invoke(D invocationList)
+        /// <summary>
+        /// Invokes a chain of the methods associated with the delegate.
+        /// </summary>
+        /// <param name="invocationList">The chain of methods to be invoked.</param>
+        /// <returns>This object.</returns>
+        internal AsyncDelegateFuture<TDelegate> Invoke(TDelegate invocationList)
         {
             if (token.IsCancellationRequested)
+            {
                 Complete(new[] { new OperationCanceledException(token) });
+            }
             else
             {
                 var list = invocationList.GetInvocationList();
                 index = -1L;
                 totalCount = list.LongLength;
                 exceptions = new Exception[list.LongLength];
-                Action<D> invoker = InvokeOneImpl;
-                foreach (D instance in list)
+                Action<TDelegate> invoker = InvokeOneImpl;
+                foreach (TDelegate instance in list)
                     ThreadPool.QueueUserWorkItem(invoker, instance, false);
             }
+
             return this;
         }
     }
 
-    internal sealed class CustomDelegateFuture<D> : AsyncDelegateFuture<D>
-        where D : MulticastDelegate
+    internal sealed class CustomDelegateFuture<TDelegate> : AsyncDelegateFuture<TDelegate>
+        where TDelegate : MulticastDelegate
     {
-        private readonly Action<D> invoker;
+        private readonly Action<TDelegate> invoker;
 
-        internal CustomDelegateFuture(Action<D> invoker, CancellationToken token) : base(token) => this.invoker = invoker;
+        internal CustomDelegateFuture(Action<TDelegate> invoker, CancellationToken token)
+            : base(token) => this.invoker = invoker;
 
-        private protected override void InvokeOne(D d) => invoker(d);
+        private protected override void InvokeOne(TDelegate d) => invoker(d);
     }
 
     internal sealed class EventHandlerFuture : AsyncDelegateFuture<EventHandler>
@@ -186,7 +230,8 @@ namespace DotNext.Runtime.CompilerServices
     {
         private readonly T arg;
 
-        internal ActionFuture(T arg, CancellationToken token) : base(token) => this.arg = arg;
+        internal ActionFuture(T arg, CancellationToken token)
+            : base(token) => this.arg = arg;
 
         private protected override void InvokeOne(Action<T> handler) => handler(arg);
     }

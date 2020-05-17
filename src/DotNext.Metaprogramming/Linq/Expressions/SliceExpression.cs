@@ -14,8 +14,8 @@ namespace DotNext.Linq.Expressions
     /// </summary>
     public sealed class SliceExpression : Expression
     {
-        private readonly MethodInfo? slice; //if null then array
-        private readonly PropertyInfo? count;   //if null then object supports Slice method with Range parameter
+        private readonly MethodInfo? slice; // if null then array
+        private readonly PropertyInfo? count;   // if null then object supports Slice method with Range parameter
 
         /// <summary>
         /// Initializes a new slice of collection or array.
@@ -45,6 +45,7 @@ namespace DotNext.Linq.Expressions
                 resolved = true;
             }
             else
+            {
                 foreach (var slice in GetSliceMethods(collection.Type))
                 {
                     var parameters = slice.GetParameters();
@@ -55,6 +56,7 @@ namespace DotNext.Linq.Expressions
                         resolved = true;
                         break;
                     }
+
                     var intType = typeof(int);
                     if (parameters.LongLength == 2L && parameters[0].ParameterType == intType && parameters[1].ParameterType == intType)
                     {
@@ -64,6 +66,8 @@ namespace DotNext.Linq.Expressions
                         break;
                     }
                 }
+            }
+
             Range = resolved ? range : throw new ArgumentException(ExceptionMessages.CollectionExpected(collection.Type), nameof(collection));
             Collection = collection;
         }
@@ -71,9 +75,13 @@ namespace DotNext.Linq.Expressions
         private static IEnumerable<MethodInfo> GetSliceMethods(Type collection)
         {
             foreach (var lookup in collection.GetBaseTypes(includeTopLevel: true, includeInterfaces: collection.IsInterface))
+            {
                 foreach (var member in lookup.FindMembers(MemberTypes.Method, BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly, Type.FilterName, "Slice"))
+                {
                     if (member is MethodInfo method)
                         yield return method;
+                }
+            }
         }
 
         /// <summary>

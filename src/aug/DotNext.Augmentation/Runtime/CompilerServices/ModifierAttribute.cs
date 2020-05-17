@@ -6,6 +6,7 @@ namespace DotNext.Runtime.CompilerServices
     /// Represents modifier that can be attached to the parameter, field or return type.
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.ReturnValue | AttributeTargets.Field, AllowMultiple = true, Inherited = false)]
+    [CLSCompliant(false)]
     public abstract class ModifierAttribute : Attribute
     {
         private protected ModifierAttribute(Type modifier)

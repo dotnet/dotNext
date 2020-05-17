@@ -20,27 +20,32 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 await Writer.CompleteAsync().ConfigureAwait(false);
                 state = State.ReceivingSnapshotFinished;
             }
+
             return true;
         }
 
         private async ValueTask<bool> ReceivingSnapshot(ReadOnlyMemory<byte> content, bool completed, CancellationToken token)
         {
             if (content.IsEmpty)
+            {
                 completed = true;
+            }
             else
             {
                 var result = await Writer.WriteAsync(content, token).ConfigureAwait(false);
                 completed |= result.IsCompleted;
             }
+
             if (completed)
             {
                 await Writer.CompleteAsync().ConfigureAwait(false);
                 state = State.ReceivingSnapshotFinished;
             }
+
             return true;
         }
 
-        private ValueTask<(PacketHeaders, int, bool)> RequestSnapshotChunk()
+        private static ValueTask<(PacketHeaders, int, bool)> RequestSnapshotChunk()
             => new ValueTask<(PacketHeaders, int, bool)>((new PacketHeaders(MessageType.Continue, FlowControl.Ack), 0, true));
 
         private async ValueTask<(PacketHeaders, int, bool)> EndReceiveSnapshot(Memory<byte> output)

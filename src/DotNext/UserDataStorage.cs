@@ -12,10 +12,10 @@ namespace DotNext
     /// <summary>
     /// Provides access to user data associated with the object.
     /// </summary>
-	/// <remarks>
+    /// <remarks>
     /// This is by-ref struct because user data should have
     /// the same lifetime as its owner.
-	/// </remarks>
+    /// </remarks>
     [SuppressMessage("Design", "CA1066", Justification = "By-ref value type cannot implement interfaces")]
     public readonly ref struct UserDataStorage
     {
@@ -52,47 +52,45 @@ namespace DotNext
         }
 
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct Supplier<T, V> : ISupplier<V>
+        private readonly struct Supplier<T, TResult> : ISupplier<TResult>
         {
             private readonly T arg;
-            private readonly ValueFunc<T, V> factory;
+            private readonly ValueFunc<T, TResult> factory;
 
-            internal Supplier(T arg, in ValueFunc<T, V> factory)
+            internal Supplier(T arg, in ValueFunc<T, TResult> factory)
             {
                 this.arg = arg;
                 this.factory = factory;
             }
 
-            V ISupplier<V>.Invoke() => factory.Invoke(arg);
+            TResult ISupplier<TResult>.Invoke() => factory.Invoke(arg);
         }
 
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct Supplier<T1, T2, V> : ISupplier<V>
+        private readonly struct Supplier<T1, T2, TResult> : ISupplier<TResult>
         {
             private readonly T1 arg1;
             private readonly T2 arg2;
-            private readonly ValueFunc<T1, T2, V> factory;
+            private readonly ValueFunc<T1, T2, TResult> factory;
 
-            internal Supplier(T1 arg1, T2 arg2, in ValueFunc<T1, T2, V> factory)
+            internal Supplier(T1 arg1, T2 arg2, in ValueFunc<T1, T2, TResult> factory)
             {
                 this.arg1 = arg1;
                 this.arg2 = arg2;
                 this.factory = factory;
             }
 
-            V ISupplier<V>.Invoke() => factory.Invoke(arg1, arg2);
+            TResult ISupplier<TResult>.Invoke() => factory.Invoke(arg1, arg2);
         }
 
         private sealed class BackingStorage : Dictionary<long, object?>
         {
-
-            //ReaderWriterLockSlim is not used because it is heavyweight
-            //spin-based lock is used instead because it is very low probability of concurrent
-            //updates of the same backing storage.
-
+            // ReaderWriterLockSlim is not used because it is heavyweight
+            // spin-based lock is used instead because it is very low probability of concurrent
+            // updates of the same backing storage.
             private ReaderWriterSpinLock lockState;
 
-            //should be public because called through Activator by ConditionalWeakTable
+            // should be public because called through Activator by ConditionalWeakTable
             public BackingStorage()
                 : base(3)
             {
@@ -124,7 +122,7 @@ namespace DotNext
 
             [return: NotNullIfNotNull("defaultValue")]
             [return: MaybeNull]
-            internal V Get<V>(UserDataSlot<V> slot, [AllowNull]V defaultValue)
+            internal TValue Get<TValue>(UserDataSlot<TValue> slot, [AllowNull]TValue defaultValue)
             {
                 lockState.EnterReadLock();
                 var result = slot.GetUserData(this, defaultValue);
@@ -132,20 +130,24 @@ namespace DotNext
                 return result;
             }
 
-            internal V GetOrSet<V, S>(UserDataSlot<V> slot, ref S valueFactory)
-                where S : struct, ISupplier<V>
+            internal TValue GetOrSet<TValue, TSupplier>(UserDataSlot<TValue> slot, ref TSupplier valueFactory)
+                where TSupplier : struct, ISupplier<TValue>
             {
-                //fast path - read lock is required
+                // fast path - read lock is required
                 lockState.EnterReadLock();
                 var exists = slot.GetUserData(this, out var userData);
                 lockState.ExitReadLock();
                 if (exists)
                     goto exit;
-                //non-fast path: factory should be called
+
+                // non-fast path: factory should be called
                 lockState.EnterWriteLock();
                 if (slot.GetUserData(this, out userData))
+                {
                     lockState.ExitWriteLock();
+                }
                 else
+                {
                     try
                     {
                         userData = valueFactory.Invoke();
@@ -156,11 +158,13 @@ namespace DotNext
                     {
                         lockState.ExitWriteLock();
                     }
+                }
+
                 exit:
                 return userData;
             }
 
-            internal bool Get<V>(UserDataSlot<V> slot, out V userData)
+            internal bool Get<TValue>(UserDataSlot<TValue> slot, out TValue userData)
             {
                 lockState.EnterReadLock();
                 var result = slot.GetUserData(this, out userData);
@@ -168,7 +172,7 @@ namespace DotNext
                 return result;
             }
 
-            internal void Set<V>(UserDataSlot<V> slot, V userData)
+            internal void Set<TValue>(UserDataSlot<TValue> slot, TValue userData)
             {
                 lockState.EnterWriteLock();
                 try
@@ -181,7 +185,7 @@ namespace DotNext
                 }
             }
 
-            internal bool Remove<V>(UserDataSlot<V> slot)
+            internal bool Remove<TValue>(UserDataSlot<TValue> slot)
             {
                 lockState.EnterWriteLock();
                 var result = slot.RemoveUserData(this);
@@ -189,7 +193,7 @@ namespace DotNext
                 return result;
             }
 
-            internal bool Remove<V>(UserDataSlot<V> slot, out V userData)
+            internal bool Remove<TValue>(UserDataSlot<TValue> slot, out TValue userData)
             {
                 lockState.EnterWriteLock();
                 var result = slot.GetUserData(this, out userData) && slot.RemoveUserData(this);
@@ -220,28 +224,28 @@ namespace DotNext
             => source is BackingStorage storage ? storage : UserData.GetOrCreateValue(source);
 
         /// <summary>
-		/// Gets user data.
-		/// </summary>
-		/// <typeparam name="V">Type of data.</typeparam>
-		/// <param name="slot">The slot identifying user data.</param>
-		/// <param name="defaultValue">Default value to be returned if no user data contained in this collection.</param>
-		/// <returns>User data.</returns>
+        /// Gets user data.
+        /// </summary>
+        /// <typeparam name="TValue">Type of data.</typeparam>
+        /// <param name="slot">The slot identifying user data.</param>
+        /// <param name="defaultValue">Default value to be returned if no user data contained in this collection.</param>
+        /// <returns>User data.</returns>
         [return: NotNullIfNotNull("defaultValue")]
         [return: MaybeNull]
-        public V Get<V>(UserDataSlot<V> slot, [AllowNull]V defaultValue)
+        public TValue Get<TValue>(UserDataSlot<TValue> slot, [AllowNull]TValue defaultValue)
         {
             var storage = GetStorage();
             return storage is null ? defaultValue : storage.Get(slot, defaultValue);
         }
 
         /// <summary>
-		/// Gets user data.
-		/// </summary>
-		/// <typeparam name="V">Type of data.</typeparam>
-		/// <param name="slot">The slot identifying user data.</param>
-		/// <returns>User data; or <c>default(V)</c> if there is no user data associated with <paramref name="slot"/>.</returns>
+        /// Gets user data.
+        /// </summary>
+        /// <typeparam name="TValue">Type of data.</typeparam>
+        /// <param name="slot">The slot identifying user data.</param>
+        /// <returns>User data; or <c>default(V)</c> if there is no user data associated with <paramref name="slot"/>.</returns>
         [return: MaybeNull]
-        public V Get<V>(UserDataSlot<V> slot)
+        public TValue Get<TValue>(UserDataSlot<TValue> slot)
         {
             var storage = GetStorage();
             return storage is null ? default : storage.Get(slot, default);
@@ -250,87 +254,87 @@ namespace DotNext
         /// <summary>
         /// Gets existing user data or creates a new data and return it.
         /// </summary>
-        /// <typeparam name="V">The type of user data associated with arbitrary object.</typeparam>
+        /// <typeparam name="TValue">The type of user data associated with arbitrary object.</typeparam>
         /// <param name="slot">The slot identifying user data.</param>
         /// <returns>The data associated with the slot.</returns>
-        public V GetOrSet<V>(UserDataSlot<V> slot)
-            where V : notnull, new()
+        public TValue GetOrSet<TValue>(UserDataSlot<TValue> slot)
+            where TValue : notnull, new()
         {
-            var activator = ValueFunc<V>.Activator;
+            var activator = ValueFunc<TValue>.Activator;
             return GetOrCreateStorage().GetOrSet(slot, ref activator);
         }
 
         /// <summary>
         /// Gets existing user data or creates a new data and return it.
         /// </summary>
-        /// <typeparam name="B">The type of user data associated with arbitrary object.</typeparam>
-        /// <typeparam name="D">The derived type with public parameterless constructor.</typeparam>
+        /// <typeparam name="TBase">The type of user data associated with arbitrary object.</typeparam>
+        /// <typeparam name="T">The derived type with public parameterless constructor.</typeparam>
         /// <param name="slot">The slot identifying user data.</param>
         /// <returns>The data associated with the slot.</returns>
-        public B GetOrSet<B, D>(UserDataSlot<B> slot)
-            where D : class, B, new()
+        public TBase GetOrSet<TBase, T>(UserDataSlot<TBase> slot)
+            where T : class, TBase, new()
         {
-            var activator = ValueFunc<D>.Activator;
+            var activator = ValueFunc<T>.Activator;
             return GetOrCreateStorage().GetOrSet(slot, ref activator);
         }
 
         /// <summary>
         /// Gets existing user data or creates a new data and return it.
         /// </summary>
-        /// <typeparam name="V">The type of user data associated with arbitrary object.</typeparam>
+        /// <typeparam name="TValue">The type of user data associated with arbitrary object.</typeparam>
         /// <param name="slot">The slot identifying user data.</param>
         /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
         /// <returns>The data associated with the slot.</returns>
-        public V GetOrSet<V>(UserDataSlot<V> slot, Func<V> valueFactory) => GetOrSet(slot, new ValueFunc<V>(valueFactory, true));
+        public TValue GetOrSet<TValue>(UserDataSlot<TValue> slot, Func<TValue> valueFactory) => GetOrSet(slot, new ValueFunc<TValue>(valueFactory, true));
 
         /// <summary>
         /// Gets existing user data or creates a new data and return it.
         /// </summary>
         /// <typeparam name="T">The type of the argument to be passed into factory.</typeparam>
-        /// <typeparam name="V">The type of user data associated with arbitrary object.</typeparam>
+        /// <typeparam name="TValue">The type of user data associated with arbitrary object.</typeparam>
         /// <param name="slot">The slot identifying user data.</param>
         /// <param name="arg">The argument to be passed into factory.</param>
         /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
         /// <returns>The data associated with the slot.</returns>
-        public V GetOrSet<T, V>(UserDataSlot<V> slot, T arg, Func<T, V> valueFactory)
-            => GetOrSet(slot, arg, new ValueFunc<T, V>(valueFactory, true));
+        public TValue GetOrSet<T, TValue>(UserDataSlot<TValue> slot, T arg, Func<T, TValue> valueFactory)
+            => GetOrSet(slot, arg, new ValueFunc<T, TValue>(valueFactory, true));
 
         /// <summary>
         /// Gets existing user data or creates a new data and return it.
         /// </summary>
         /// <typeparam name="T1">The type of the first argument to be passed into factory.</typeparam>
-        /// <typeparam name="T2">The type of the first argument to be passed into factory.</typeparam>
-        /// <typeparam name="V">The type of user data associated with arbitrary object.</typeparam>
+        /// <typeparam name="T2">The type of the second argument to be passed into factory.</typeparam>
+        /// <typeparam name="TValue">The type of user data associated with arbitrary object.</typeparam>
         /// <param name="slot">The slot identifying user data.</param>
         /// <param name="arg1">The first argument to be passed into factory.</param>
         /// <param name="arg2">The second argument to be passed into factory.</param>
         /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
         /// <returns>The data associated with the slot.</returns>
-        public V GetOrSet<T1, T2, V>(UserDataSlot<V> slot, T1 arg1, T2 arg2, Func<T1, T2, V> valueFactory)
-            => GetOrSet(slot, arg1, arg2, new ValueFunc<T1, T2, V>(valueFactory, true));
+        public TValue GetOrSet<T1, T2, TValue>(UserDataSlot<TValue> slot, T1 arg1, T2 arg2, Func<T1, T2, TValue> valueFactory)
+            => GetOrSet(slot, arg1, arg2, new ValueFunc<T1, T2, TValue>(valueFactory, true));
 
         /// <summary>
         /// Gets existing user data or creates a new data and return it.
         /// </summary>
-        /// <typeparam name="V">The type of user data associated with arbitrary object.</typeparam>
+        /// <typeparam name="TValue">The type of user data associated with arbitrary object.</typeparam>
         /// <param name="slot">The slot identifying user data.</param>
         /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
         /// <returns>The data associated with the slot.</returns>
-        public V GetOrSet<V>(UserDataSlot<V> slot, in ValueFunc<V> valueFactory)
+        public TValue GetOrSet<TValue>(UserDataSlot<TValue> slot, in ValueFunc<TValue> valueFactory)
             => GetOrCreateStorage().GetOrSet(slot, ref Unsafe.AsRef(valueFactory));
 
         /// <summary>
         /// Gets existing user data or creates a new data and return it.
         /// </summary>
         /// <typeparam name="T">The type of the argument to be passed into factory.</typeparam>
-        /// <typeparam name="V">The type of user data associated with arbitrary object.</typeparam>
+        /// <typeparam name="TValue">The type of user data associated with arbitrary object.</typeparam>
         /// <param name="slot">The slot identifying user data.</param>
         /// <param name="arg">The argument to be passed into factory.</param>
         /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
         /// <returns>The data associated with the slot.</returns>
-        public V GetOrSet<T, V>(UserDataSlot<V> slot, T arg, in ValueFunc<T, V> valueFactory)
+        public TValue GetOrSet<T, TValue>(UserDataSlot<TValue> slot, T arg, in ValueFunc<T, TValue> valueFactory)
         {
-            var supplier = new Supplier<T, V>(arg, valueFactory);
+            var supplier = new Supplier<T, TValue>(arg, valueFactory);
             return GetOrCreateStorage().GetOrSet(slot, ref supplier);
         }
 
@@ -338,27 +342,27 @@ namespace DotNext
         /// Gets existing user data or creates a new data and return it.
         /// </summary>
         /// <typeparam name="T1">The type of the first argument to be passed into factory.</typeparam>
-        /// <typeparam name="T2">The type of the first argument to be passed into factory.</typeparam>
-        /// <typeparam name="V">The type of user data associated with arbitrary object.</typeparam>
+        /// <typeparam name="T2">The type of the second argument to be passed into factory.</typeparam>
+        /// <typeparam name="TValue">The type of user data associated with arbitrary object.</typeparam>
         /// <param name="slot">The slot identifying user data.</param>
         /// <param name="arg1">The first argument to be passed into factory.</param>
         /// <param name="arg2">The second argument to be passed into factory.</param>
         /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
         /// <returns>The data associated with the slot.</returns>
-        public V GetOrSet<T1, T2, V>(UserDataSlot<V> slot, T1 arg1, T2 arg2, in ValueFunc<T1, T2, V> valueFactory)
+        public TValue GetOrSet<T1, T2, TValue>(UserDataSlot<TValue> slot, T1 arg1, T2 arg2, in ValueFunc<T1, T2, TValue> valueFactory)
         {
-            var supplier = new Supplier<T1, T2, V>(arg1, arg2, valueFactory);
+            var supplier = new Supplier<T1, T2, TValue>(arg1, arg2, valueFactory);
             return GetOrCreateStorage().GetOrSet(slot, ref supplier);
         }
 
         /// <summary>
         /// Tries to get user data.
         /// </summary>
-        /// <typeparam name="V">Type of data.</typeparam>
+        /// <typeparam name="TValue">Type of data.</typeparam>
         /// <param name="slot">The slot identifying user data.</param>
         /// <param name="userData">User data.</param>
         /// <returns><see langword="true"/>, if user data slot exists in this collection.</returns>
-        public bool TryGet<V>(UserDataSlot<V> slot, [MaybeNullWhen(false)]out V userData)
+        public bool TryGet<TValue>(UserDataSlot<TValue> slot, [MaybeNullWhen(false)]out TValue userData)
         {
             var storage = GetStorage();
             if (storage is null)
@@ -366,26 +370,26 @@ namespace DotNext
                 userData = default!;
                 return false;
             }
-            else
-                return storage.Get(slot, out userData);
+
+            return storage.Get(slot, out userData);
         }
 
         /// <summary>
         /// Sets user data.
         /// </summary>
-        /// <typeparam name="V">Type of data.</typeparam>
+        /// <typeparam name="TValue">Type of data.</typeparam>
         /// <param name="slot">The slot identifying user data.</param>
         /// <param name="userData">User data to be saved in this collection.</param>
-        public void Set<V>(UserDataSlot<V> slot, [DisallowNull]V userData)
+        public void Set<TValue>(UserDataSlot<TValue> slot, [DisallowNull]TValue userData)
             => GetOrCreateStorage().Set(slot, userData);
 
         /// <summary>
         /// Removes user data slot.
         /// </summary>
-        /// <typeparam name="V">The type of user data.</typeparam>
+        /// <typeparam name="TValue">The type of user data.</typeparam>
         /// <param name="slot">The slot identifying user data.</param>
         /// <returns><see langword="true"/>, if data is removed from this collection.</returns>
-        public bool Remove<V>(UserDataSlot<V> slot)
+        public bool Remove<TValue>(UserDataSlot<TValue> slot)
         {
             var storage = GetStorage();
             return storage?.Remove(slot) ?? false;
@@ -394,11 +398,11 @@ namespace DotNext
         /// <summary>
         /// Removes user data slot.
         /// </summary>
-        /// <typeparam name="V">The type of user data.</typeparam>
+        /// <typeparam name="TValue">The type of user data.</typeparam>
         /// <param name="slot">The slot identifying user data.</param>
         /// <param name="userData">Remove user data.</param>
         /// <returns><see langword="true"/>, if data is removed from this collection.</returns>
-        public bool Remove<V>(UserDataSlot<V> slot, [MaybeNullWhen(false)]out V userData)
+        public bool Remove<TValue>(UserDataSlot<TValue> slot, [MaybeNullWhen(false)]out TValue userData)
         {
             var storage = GetStorage();
             if (storage is null)
@@ -406,8 +410,8 @@ namespace DotNext
                 userData = default!;
                 return false;
             }
-            else
-                return storage.Remove(slot, out userData);
+
+            return storage.Remove(slot, out userData);
         }
 
         /// <summary>
@@ -420,10 +424,12 @@ namespace DotNext
                 obj = support.Source;
             var source = GetStorage();
             if (source != null)
+            {
                 if (obj is BackingStorage destination)
                     source.CopyTo(destination);
                 else
                     UserData.Add(obj, source.Copy());
+            }
         }
 
         /// <summary>

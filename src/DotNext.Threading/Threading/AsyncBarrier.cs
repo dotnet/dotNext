@@ -20,12 +20,14 @@ namespace DotNext.Threading
     /// </remarks>
     public class AsyncBarrier : Disposable, IAsyncEvent
     {
+        private readonly AsyncCountdownEvent countdown;
         private long participants;
         private long currentPhase;
-        private readonly AsyncCountdownEvent countdown;
 
+        /// <inheritdoc/>
         bool IAsyncEvent.IsSet => countdown.IsSet;
 
+        /// <inheritdoc/>
         bool ISynchronizer.HasWaiters => !countdown.IsSet;
 
         /// <summary>
@@ -73,7 +75,7 @@ namespace DotNext.Threading
         public long AddParticipants(long participantCount)
         {
             ThrowIfDisposed();
-            countdown.TryAddCount(participantCount, true);  //always returns true if autoReset==true
+            countdown.TryAddCount(participantCount, true);  // always returns true if autoReset==true
             participants.Add(participantCount);
             return currentPhase;
         }
@@ -114,7 +116,7 @@ namespace DotNext.Threading
         public void RemoveParticipant() => RemoveParticipants(1L);
 
         /// <summary>
-        /// Signals that a participant has reached the barrier and waits 
+        /// Signals that a participant has reached the barrier and waits
         /// for all other participants to reach the barrier as well.
         /// </summary>
         /// <param name="timeout">The time to wait for phase completion.</param>
@@ -125,17 +127,18 @@ namespace DotNext.Threading
         {
             if (ParticipantCount == 0L)
                 throw new InvalidOperationException();
-            else if (countdown.Signal(1L, true))
+
+            if (countdown.Signal(1L, true))
             {
                 await PostPhase(currentPhase.Add(1L)).ConfigureAwait(false);
                 return true;
             }
-            else
-                return await WaitAsync(timeout, token).ConfigureAwait(false);
+
+            return await WaitAsync(timeout, token).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Signals that a participant has reached the barrier and waits 
+        /// Signals that a participant has reached the barrier and waits
         /// for all other participants to reach the barrier as well.
         /// </summary>
         /// <param name="token">The token that can be used to cancel the waiting operation.</param>
@@ -144,15 +147,17 @@ namespace DotNext.Threading
         public Task SignalAndWaitAsync(CancellationToken token) => SignalAndWaitAsync(InfiniteTimeSpan, token);
 
         /// <summary>
-        /// Signals that a participant has reached the barrier and waits 
+        /// Signals that a participant has reached the barrier and waits
         /// for all other participants to reach the barrier as well.
         /// </summary>
         /// <returns>The task representing waiting operation.</returns>
         /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
         public Task SignalAndWaitAsync() => SignalAndWaitAsync(CancellationToken.None);
 
+        /// <inheritdoc/>
         bool IAsyncEvent.Reset() => countdown.Reset();
 
+        /// <inheritdoc/>
         bool IAsyncEvent.Signal() => countdown.Signal();
 
         /// <summary>

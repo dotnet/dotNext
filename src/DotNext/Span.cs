@@ -35,7 +35,9 @@ namespace DotNext
         /// <param name="span">The span whose content to be hashed.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>32-bit hash code of the span content.</returns>
-        public static int BitwiseHashCode<T>(this Span<T> span, bool salted = true) where T : unmanaged => BitwiseHashCode((ReadOnlySpan<T>)span, salted);
+        public static int BitwiseHashCode<T>(this Span<T> span, bool salted = true)
+            where T : unmanaged
+            => BitwiseHashCode((ReadOnlySpan<T>)span, salted);
 
         /// <summary>
         /// Computes bitwise hash code for the memory identified by the given span.
@@ -171,7 +173,9 @@ namespace DotNext
         /// <param name="span">The span whose content to be hashed.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>64-bit hash code of the span content.</returns>
-        public static long BitwiseHashCode64<T>(this Span<T> span, bool salted = true) where T : unmanaged => BitwiseHashCode64((ReadOnlySpan<T>)span, salted);
+        public static long BitwiseHashCode64<T>(this Span<T> span, bool salted = true)
+            where T : unmanaged
+            => BitwiseHashCode64((ReadOnlySpan<T>)span, salted);
 
         /// <summary>
         /// Computes bitwise hash code for the memory identified by the given span.
@@ -189,16 +193,16 @@ namespace DotNext
         }
 
         /// <summary>
-		/// Determines whether two memory blocks identified by the given spans contain the same set of elements.
-		/// </summary>
-		/// <remarks>
-		/// This method performs bitwise equality between each pair of elements.
-		/// </remarks>
-		/// <typeparam name="T">The type of elements in the span.</typeparam>
-		/// <param name="first">The first memory span to compare.</param>
-		/// <param name="second">The second memory span to compare.</param>
-		/// <returns><see langword="true"/>, if both memory blocks are equal; otherwise, <see langword="false"/>.</returns>
-		public static bool BitwiseEquals<T>(this Span<T> first, Span<T> second)
+        /// Determines whether two memory blocks identified by the given spans contain the same set of elements.
+        /// </summary>
+        /// <remarks>
+        /// This method performs bitwise equality between each pair of elements.
+        /// </remarks>
+        /// <typeparam name="T">The type of elements in the span.</typeparam>
+        /// <param name="first">The first memory span to compare.</param>
+        /// <param name="second">The second memory span to compare.</param>
+        /// <returns><see langword="true"/>, if both memory blocks are equal; otherwise, <see langword="false"/>.</returns>
+        public static bool BitwiseEquals<T>(this Span<T> first, Span<T> second)
             where T : unmanaged
             => MemoryMarshal.AsBytes(first).SequenceEqual(MemoryMarshal.AsBytes(second));
 
@@ -238,15 +242,16 @@ namespace DotNext
             where T : unmanaged
             => MemoryMarshal.AsBytes(first).SequenceCompareTo(MemoryMarshal.AsBytes(second));
 
-        private static int Partition<T, C>(Span<T> span, int startIndex, int endIndex, ref C comparison)
-            where C : struct, ISupplier<T, T, int>
+        private static int Partition<T, TComparer>(Span<T> span, int startIndex, int endIndex, ref TComparer comparison)
+            where TComparer : struct, ISupplier<T, T, int>
         {
             var pivot = span[endIndex];
             var i = startIndex - 1;
             for (var j = startIndex; j < endIndex; j++)
             {
                 ref var jptr = ref span[j];
-                if (comparison.Invoke(jptr, pivot) > 0) continue;
+                if (comparison.Invoke(jptr, pivot) > 0)
+                    continue;
                 i += 1;
                 Intrinsics.Swap(ref span[i], ref jptr);
             }
@@ -256,8 +261,8 @@ namespace DotNext
             return i;
         }
 
-        private static void QuickSort<T, C>(Span<T> span, int startIndex, int endIndex, ref C comparison)
-            where C : struct, ISupplier<T, T, int>
+        private static void QuickSort<T, TComparer>(Span<T> span, int startIndex, int endIndex, ref TComparer comparison)
+            where TComparer : struct, ISupplier<T, T, int>
         {
             while (startIndex < endIndex)
             {
@@ -301,6 +306,7 @@ namespace DotNext
         /// Trims the span to specified length if it exceeds it.
         /// If length is less that <paramref name="maxLength" /> then the original span returned.
         /// </summary>
+        /// <typeparam name="T">The type of items in the span.</typeparam>
         /// <param name="span">A contiguous region of arbitrary memory.</param>
         /// <param name="maxLength">Maximum length.</param>
         /// <returns>Trimmed span.</returns>
@@ -311,6 +317,7 @@ namespace DotNext
         /// Trims the span to specified length if it exceeds it.
         /// If length is less that <paramref name="maxLength" /> then the original span returned.
         /// </summary>
+        /// <typeparam name="T">The type of items in the span.</typeparam>
         /// <param name="span">A contiguous region of arbitrary memory.</param>
         /// <param name="maxLength">Maximum length.</param>
         /// <returns>Trimmed span.</returns>
@@ -318,11 +325,11 @@ namespace DotNext
             => span.Length <= maxLength ? span : span.Slice(0, maxLength);
 
         /// <summary>
-        /// Returns the zero-based index of the first occurrence of the specified value in the <see cref="Span{T}"/>. The search starts at a specified position. 
+        /// Returns the zero-based index of the first occurrence of the specified value in the <see cref="Span{T}"/>. The search starts at a specified position.
         /// </summary>
         /// <typeparam name="T">The of the elements in the span.</typeparam>
-        /// <param name="span"></param>
-        /// <param name="value"></param>
+        /// <param name="span">The span to search.</param>
+        /// <param name="value">The value to search for.</param>
         /// <param name="startIndex">The search starting position.</param>
         /// <param name="comparer">The comparer used to compare the expected value and the actual value from the span.</param>
         /// <returns>The zero-based index position of <paramref name="value"/> from the start of the given span if that value is found, or -1 if it is not.</returns>
@@ -332,19 +339,22 @@ namespace DotNext
                 return -1;
             ref var reference = ref AsRef(in span[0]);
             for (var i = startIndex; i < span.Length; i++)
+            {
                 if (comparer.Invoke(reference, value))
                     return i;
                 else
                     reference = ref Add(ref reference, 1);
+            }
+
             return -1;
         }
 
         /// <summary>
-        /// Returns the zero-based index of the first occurrence of the specified value in the <see cref="Span{T}"/>. The search starts at a specified position. 
+        /// Returns the zero-based index of the first occurrence of the specified value in the <see cref="Span{T}"/>. The search starts at a specified position.
         /// </summary>
         /// <typeparam name="T">The of the elements in the span.</typeparam>
-        /// <param name="span"></param>
-        /// <param name="value"></param>
+        /// <param name="span">The span to search.</param>
+        /// <param name="value">The value to search for.</param>
         /// <param name="startIndex">The search starting position.</param>
         /// <param name="comparer">The comparer used to compare the expected value and the actual value from the span.</param>
         /// <returns>The zero-based index position of <paramref name="value"/> from the start of the given span if that value is found, or -1 if it is not.</returns>
@@ -395,6 +405,7 @@ namespace DotNext
                 charPtr = ref Add(ref charPtr, 1);
                 charPtr = Add(ref hexTable, value & 0B1111);
             }
+
             return bytesCount * 2;
         }
 
@@ -470,8 +481,8 @@ namespace DotNext
         /// <summary>
         /// Copies the value of blittable type to the specified block of memory.
         /// </summary>
-        /// <param name="output">The block of memory.</param>
         /// <param name="value">The value to copy to the destination memory block.</param>
+        /// <param name="output">The block of memory.</param>
         /// <typeparam name="T">The blittable type.</typeparam>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="output"/> is smaller than <typeparamref name="T"/>.</exception>
         public static unsafe void Write<T>(in T value, ref Span<byte> output)
@@ -489,7 +500,9 @@ namespace DotNext
         /// <typeparam name="T">The type of the pointer.</typeparam>
         /// <returns>The span of contiguous memory.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Span<byte> AsBytes<T>(ref T value) where T : unmanaged => MemoryMarshal.AsBytes(MemoryMarshal.CreateSpan(ref value, 1));
+        public static Span<byte> AsBytes<T>(ref T value)
+            where T : unmanaged
+            => MemoryMarshal.AsBytes(MemoryMarshal.CreateSpan(ref value, 1));
 
         /// <summary>
         /// Converts contiguous memory identified by the specified pointer
@@ -499,7 +512,9 @@ namespace DotNext
         /// <typeparam name="T">The type of the pointer.</typeparam>
         /// <returns>The span of contiguous memory.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ReadOnlySpan<byte> AsReadOnlyBytes<T>(in T value) where T : unmanaged => AsBytes(ref AsRef(in value));
+        public static ReadOnlySpan<byte> AsReadOnlyBytes<T>(in T value)
+            where T : unmanaged
+            => AsBytes(ref AsRef(in value));
 
         /// <summary>
         /// Converts contiguous memory identified by the specified pointer
@@ -509,6 +524,8 @@ namespace DotNext
         /// <typeparam name="T">The type of the pointer.</typeparam>
         /// <returns>The span of contiguous memory.</returns>
         [CLSCompliant(false)]
-        public static unsafe Span<byte> AsBytes<T>(T* pointer) where T : unmanaged => AsBytes(ref pointer[0]);
+        public static unsafe Span<byte> AsBytes<T>(T* pointer)
+            where T : unmanaged
+            => AsBytes(ref pointer[0]);
     }
 }

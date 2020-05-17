@@ -6,7 +6,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     {
         /// <summary>
         /// Gets or sets memory limit (in MB) for the journal of input requests
-        /// used to detect duplicate requests
+        /// used to detect duplicate requests.
         /// </summary>
         public long MemoryLimit { get; set; } = 10L;
 

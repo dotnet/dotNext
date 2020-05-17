@@ -7,7 +7,7 @@ namespace DotNext.Linq.Expressions
     /// <summary>
     /// Represents synchronized block of code.
     /// </summary>
-    /// <see href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/lock-statement">lock Statement</see>
+    /// <see href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/lock-statement">lock Statement.</see>
     public sealed class LockExpression : Expression
     {
         /// <summary>
@@ -23,7 +23,9 @@ namespace DotNext.Linq.Expressions
         internal LockExpression(Expression syncRoot)
         {
             if (syncRoot is ParameterExpression syncVar)
+            {
                 SyncRoot = syncVar;
+            }
             else
             {
                 SyncRoot = Variable(typeof(object), "syncRoot");

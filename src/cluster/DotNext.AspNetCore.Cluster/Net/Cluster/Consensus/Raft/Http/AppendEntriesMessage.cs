@@ -1,7 +1,3 @@
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Extensions;
-using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,6 +8,10 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Primitives;
 using static System.Globalization.CultureInfo;
 using HeaderNames = Microsoft.Net.Http.Headers.HeaderNames;
 using HeaderUtils = Microsoft.Net.Http.Headers.HeaderUtilities;
@@ -56,7 +56,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             private long count;
             private ReceivedLogEntry? current;
 
-            internal ReceivedLogEntryReader(string boundary, Stream body, long count) : base(boundary, body) => this.count = count;
+            internal ReceivedLogEntryReader(string boundary, Stream body, long count)
+                : base(boundary, body) => this.count = count;
 
             long ILogEntryProducer<ReceivedLogEntry>.RemainingCount => count;
 
@@ -64,7 +65,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             async ValueTask<bool> IAsyncEnumerator<ReceivedLogEntry>.MoveNextAsync()
             {
-                await (current?.DisposeAsync() ?? new ValueTask()).ConfigureAwait(false);
+                if (!(current is null))
+                    await current.DisposeAsync().ConfigureAwait(false);
                 var section = await ReadNextSectionAsync().ConfigureAwait(false);
                 if (section is null)
                     return false;
@@ -175,9 +177,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 builder.Clear();
                 if (writeDivider)
                     builder.Append(CrLf + DoubleDash).Append(boundary).Append(CrLf);
-                //write headers
+
+                // write headers
                 WriteHeader(builder, RequestVoteMessage.RecordTermHeader, entry.Term.ToString(InvariantCulture));
                 WriteHeader(builder, HeaderNames.LastModified, HeaderUtils.FormatDate(entry.Timestamp));
+
                 // Extra CRLF to end headers (even if there are no headers)
                 builder.Append(CrLf);
                 return output.WriteStringAsync(builder.ToString().AsMemory(), context, buffer);
@@ -185,15 +189,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             protected override async Task SerializeToStreamAsync(Stream stream, TransportContext context)
             {
-                const int maxChars = 128;   //it is empiric value measured using Console.WriteLine(builder.Length)
+                const int maxChars = 128;   // it is empiric value measured using Console.WriteLine(builder.Length)
                 EncodingContext encodingContext = DefaultHttpEncoding;
                 using (var encodingBuffer = new ArrayRental<byte>(DefaultHttpEncoding.GetMaxByteCount(maxChars)))
                 {
-                    //write start boundary
+                    // write start boundary
                     await stream.WriteStringAsync((DoubleDash + boundary + CrLf).AsMemory(), encodingContext, encodingBuffer.Memory).ConfigureAwait(false);
                     encodingContext.Reset();
                     var builder = new StringBuilder(maxChars);
-                    //write each nested content
+
+                    // write each nested content
                     var writeDivider = false;
                     foreach (var entry in entries)
                     {
@@ -203,9 +208,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                         writeDivider = true;
                         await entry.WriteToAsync(stream).ConfigureAwait(false);
                     }
-                    //write footer
+
+                    // write footer
                     await stream.WriteStringAsync((CrLf + DoubleDash + boundary + DoubleDash + CrLf).AsMemory(), encodingContext, encodingBuffer.Memory).ConfigureAwait(false);
                 }
+
                 encodingContext.Reset();
             }
 
@@ -216,7 +223,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
         }
 
-        private TList entries;  //not readonly to avoid hidden copies
+        private TList entries;  // not readonly to avoid hidden copies
 
         internal AppendEntriesMessage(IPEndPoint sender, long term, long prevLogIndex, long prevLogTerm, long commitIndex, TList entries)
             : base(sender, term, prevLogIndex, prevLogTerm, commitIndex)

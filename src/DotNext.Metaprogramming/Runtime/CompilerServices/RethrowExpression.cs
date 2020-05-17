@@ -14,7 +14,8 @@ namespace DotNext.Runtime.CompilerServices
 
         internal static Expression Dispatch(ParameterExpression exceptionHolder)
         {
-            var capture = Call(null,
+            var capture = Call(
+                null,
                 typeof(ExceptionDispatchInfo).GetMethod(nameof(ExceptionDispatchInfo.Capture), new[] { typeof(Exception) }),
                 exceptionHolder);
             return capture.Call(nameof(ExceptionDispatchInfo.Throw));

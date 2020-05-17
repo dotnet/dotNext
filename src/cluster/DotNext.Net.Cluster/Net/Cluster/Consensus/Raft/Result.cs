@@ -6,6 +6,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// <summary>
     /// Represents RPC response.
     /// </summary>
+    /// <typeparam name="T">The type of RPC response.</typeparam>
     [SuppressMessage("Design", "CA1051", Justification = "Structure represeting DTO-like object")]
     [StructLayout(LayoutKind.Auto)]
     public readonly struct Result<T>
@@ -31,6 +32,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Value = value;
         }
 
-        internal Result<G> SetValue<G>(G value) => new Result<G>(Term, value);
+        internal Result<TOther> SetValue<TOther>(TOther value) => new Result<TOther>(Term, value);
     }
 }

@@ -38,10 +38,11 @@ namespace DotNext
             public bool MoveNext() => count-- > 0 && enumerator.MoveNext();
 
             /// <summary>
-            /// Gets the element in the collection at the current position of the enumerator,
+            /// Gets the element in the collection at the current position of the enumerator.
             /// </summary>
             public readonly T Current => enumerator.Current;
 
+            /// <inheritdoc/>
             readonly object? IEnumerator.Current => Current;
 
             /// <summary>
@@ -86,6 +87,7 @@ namespace DotNext
                             return true;
                         }
                     }
+
                     return false;
                 }
 
@@ -110,18 +112,18 @@ namespace DotNext
 
         private const int HashSalt = -1521134295;
 
-        private static int GetHashCode(int hash, object? obj) => hash * HashSalt + obj?.GetHashCode() ?? 0;
+        private static int GetHashCode(int hash, object? obj) => (hash * HashSalt) + obj?.GetHashCode() ?? 0;
 
         /// <summary>
         /// Computes hash code for the sequence of objects.
         /// </summary>
         /// <param name="sequence">The sequence of elements.</param>
-		/// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>The hash code computed from each element in the sequence.</returns>
         public static int SequenceHashCode(this IEnumerable<object?> sequence, bool salted = true)
         {
             var hashCode = sequence.Aggregate(-910176598, GetHashCode);
-            return salted ? hashCode * HashSalt + RandomExtensions.BitwiseHashSalt : hashCode;
+            return salted ? (hashCode * HashSalt) + RandomExtensions.BitwiseHashSalt : hashCode;
         }
 
         internal static bool SequenceEqual(IEnumerable<object>? first, IEnumerable<object>? second)
@@ -184,8 +186,11 @@ namespace DotNext
         public static Optional<T> FirstOrEmpty<T>(this IEnumerable<T> seq, in ValueFunc<T, bool> filter)
         {
             foreach (var item in seq)
+            {
                 if (filter.Invoke(item))
                     return item;
+            }
+
             return Optional<T>.Empty;
         }
 
@@ -209,10 +214,13 @@ namespace DotNext
         public static bool Skip<T>(this IEnumerator<T> enumerator, int count)
         {
             while (count > 0)
+            {
                 if (enumerator.MoveNext())
                     count--;
                 else
                     return false;
+            }
+
             return true;
         }
 
@@ -228,10 +236,13 @@ namespace DotNext
             where TEnumerator : struct, IEnumerator<T>
         {
             while (count > 0)
+            {
                 if (enumerator.MoveNext())
                     count--;
                 else
                     return false;
+            }
+
             return true;
         }
 

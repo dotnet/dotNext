@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,6 +5,8 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
 using static System.Globalization.CultureInfo;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
@@ -15,7 +15,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
     internal abstract class HttpMessage
     {
-        private static readonly ValueParser<string> StringParser = delegate (string str, out string value)
+        private const string RequestIdAllowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*-+=~";
+        private const int RequestIdLength = 32;
+
+        // request - represents IP of sender node
+        private const string NodeIpHeader = "X-Raft-Node-IP";
+
+        // request - represents hosting port of sender node
+        private const string NodePortHeader = "X-Raft-Node-Port";
+
+        // request - represents request message type
+        private const string MessageTypeHeader = "X-Raft-Message-Type";
+
+        // request - represents unique request identifier
+        private const string RequestIdHeader = "X-Request-ID";
+
+        private static readonly ValueParser<string> StringParser = (string str, out string value) =>
         {
             value = str;
             return true;
@@ -26,20 +41,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private static readonly ValueParser<IPAddress> IpAddressParser = IPAddress.TryParse;
         private protected static readonly ValueParser<bool> BooleanParser = bool.TryParse;
         private static readonly Random RequestIdGenerator = new Random();
-        private const string RequestIdAllowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*-+=~";
-        private const int RequestIdLength = 32;
-
-        //request - represents IP of sender node
-        private const string NodeIpHeader = "X-Raft-Node-IP";
-
-        //request - represents hosting port of sender node
-        private const string NodePortHeader = "X-Raft-Node-Port";
-
-        //request - represents request message type
-        private const string MessageTypeHeader = "X-Raft-Message-Type";
-
-        //request - represents unique request identifier
-        private const string RequestIdHeader = "X-Request-ID";
 
         private protected class OutboundTransferObject : HttpContent
         {
@@ -98,14 +99,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             return response.WriteAsync(result.ToString(InvariantCulture), token);
         }
 
-        private protected static T ParseHeader<THeaders, T>(string headerName, HeadersReader<THeaders> reader,
-            ValueParser<T> parser)
+        private protected static T ParseHeader<THeaders, T>(string headerName, HeadersReader<THeaders> reader, ValueParser<T> parser)
             where THeaders : IEnumerable<string>
         {
             if (reader(headerName, out var headers))
+            {
                 foreach (var header in headers)
+                {
                     if (parser(header, out var result))
                         return result;
+                }
+            }
 
             throw new RaftProtocolException(ExceptionMessages.MissingHeader(headerName));
         }

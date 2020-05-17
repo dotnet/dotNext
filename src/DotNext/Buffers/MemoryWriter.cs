@@ -9,21 +9,30 @@ namespace DotNext.Buffers
     /// <typeparam name="T">The data type that can be written.</typeparam>
     public abstract class MemoryWriter<T> : Disposable, IBufferWriter<T>, IConvertible<ReadOnlyMemory<T>>
     {
+        /// <summary>
+        /// Represents default initial buffer size.
+        /// </summary>
         private protected const int DefaultInitialBufferSize = 256;
 
+        /// <summary>
+        /// Represents position of write cursor.
+        /// </summary>
         private protected int position;
 
+        /// <summary>
+        /// Initializes a new memory writer.
+        /// </summary>
         private protected MemoryWriter()
         {
-
         }
 
         /// <summary>
-        /// Gets the data written to the underlying buffer so far
+        /// Gets the data written to the underlying buffer so far.
         /// </summary>
         /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
         public abstract ReadOnlyMemory<T> WrittenMemory { get; }
 
+        /// <inheritdoc/>
         ReadOnlyMemory<T> IConvertible<ReadOnlyMemory<T>>.Convert() => WrittenMemory;
 
         /// <summary>
@@ -73,9 +82,9 @@ namespace DotNext.Buffers
         /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
         public void Advance(int count)
         {
-            if(count < 0)
+            if (count < 0)
                 throw new ArgumentOutOfRangeException(nameof(count));
-            if(position > Capacity - count)
+            if (position > Capacity - count)
                 throw new InvalidOperationException();
             position += count;
         }
@@ -98,26 +107,35 @@ namespace DotNext.Buffers
         /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
         public abstract Span<T> GetSpan(int sizeHint = 0);
 
+        /// <summary>
+        /// Reallocates internal buffer.
+        /// </summary>
+        /// <param name="newSize">A new size of internal buffer.</param>
         private protected abstract void Resize(int newSize);
 
+        /// <summary>
+        /// Ensures capacity of internal buffer.
+        /// </summary>
+        /// <param name="sizeHint">The requested size of the buffer.</param>
         private protected void CheckAndResizeBuffer(int sizeHint)
         {
-            if(sizeHint < 0)
+            if (sizeHint < 0)
                 throw new ArgumentOutOfRangeException(nameof(sizeHint));
-            if(sizeHint == 0)
+            if (sizeHint == 0)
                 sizeHint = 1;
-            if(sizeHint > FreeCapacity)
+            if (sizeHint > FreeCapacity)
             {
                 int currentLength = Capacity, growBy = Math.Max(currentLength, sizeHint);
-                if(currentLength == 0)
+                if (currentLength == 0)
                     growBy = Math.Max(growBy, DefaultInitialBufferSize);
                 var newSize = currentLength + growBy;
-                if((uint)newSize > int.MaxValue)
+                if ((uint)newSize > int.MaxValue)
                 {
                     newSize = currentLength + sizeHint;
-                    if((uint)newSize > int.MaxValue)
+                    if ((uint)newSize > int.MaxValue)
                         throw new OutOfMemoryException();
                 }
+
                 Resize(newSize);
             }
         }

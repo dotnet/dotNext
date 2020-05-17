@@ -45,7 +45,7 @@ namespace DotNext.Runtime.InteropServices
         long WriteTo(T[] destination) => Pointer.WriteTo(destination, 0, Math.Min(destination.LongLength, Length));
 
         /// <summary>
-        /// Copies elements from the unmanaged array into managed heap. 
+        /// Copies elements from the unmanaged array into managed heap.
         /// </summary>
         /// <returns>The array allocated in managed heap containing copied elements from unmanaged memory.</returns>
         /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
@@ -56,6 +56,7 @@ namespace DotNext.Runtime.InteropServices
             return result;
         }
 
+        /// <inheritdoc/>
         T[] IConvertible<T[]>.Convert() => ToArray();
 
         /// <summary>

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using static System.Linq.Expressions.Expression;
 
@@ -21,21 +22,28 @@ namespace DotNext
     {
         private delegate void DisposeMethod(in T instance);
 
-        private static readonly DisposeMethod disposeMethod;
+        private static readonly DisposeMethod DisposeMethodImpl;
 
+        [SuppressMessage("Design", "CA1065", Justification = "It's a concept type")]
         static Disposable()
         {
             var disposeMethod = typeof(T).GetDisposeMethod();
             if (!(disposeMethod?.DeclaringType is null) && disposeMethod.ReturnType == typeof(void))
+            {
                 if (disposeMethod.DeclaringType.IsValueType)
-                    Disposable<T>.disposeMethod = disposeMethod.CreateDelegate<DisposeMethod>();
+                {
+                    Disposable<T>.DisposeMethodImpl = disposeMethod.CreateDelegate<DisposeMethod>();
+                }
                 else
                 {
                     var instance = Parameter(typeof(T).MakeByRefType(), "this");
-                    Disposable<T>.disposeMethod = Lambda<DisposeMethod>(Call(instance, disposeMethod), instance).Compile();
+                    Disposable<T>.DisposeMethodImpl = Lambda<DisposeMethod>(Call(instance, disposeMethod), instance).Compile();
                 }
+            }
             else
+            {
                 throw new MissingMethodException(typeof(T), nameof(IDisposable.Dispose), typeof(void), Array.Empty<Type>());
+            }
         }
 
         /// <summary>
@@ -43,6 +51,6 @@ namespace DotNext
         /// </summary>
         /// <param name="obj">An object to dispose passed by reference.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Dispose(in T obj) => disposeMethod(in obj);
+        public static void Dispose(in T obj) => DisposeMethodImpl(in obj);
     }
 }

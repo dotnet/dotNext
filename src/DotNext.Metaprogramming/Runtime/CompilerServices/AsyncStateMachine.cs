@@ -20,22 +20,22 @@ namespace DotNext.Runtime.CompilerServices
     internal struct AsyncStateMachine<TState> : IAsyncStateMachine<TState>
         where TState : struct
     {
+        private readonly Transition<TState, AsyncStateMachine<TState>> transition;
+
         /// <summary>
         /// Runtime state associated with this state machine.
         /// </summary>
         public TState State;
-
         private AsyncValueTaskMethodBuilder builder;
-        private readonly Transition<TState, AsyncStateMachine<TState>> transition;
         private ExceptionDispatchInfo? exception;
-        private uint guardedRegionsCounter;    //number of entries into try-clause
+        private uint guardedRegionsCounter;    // number of entries into try-clause
 
         private AsyncStateMachine(Transition<TState, AsyncStateMachine<TState>> transition, TState state)
         {
             builder = AsyncValueTaskMethodBuilder.Create();
             this.transition = transition;
             State = state;
-            StateId = IAsyncStateMachine<TState>.FINAL_STATE;
+            StateId = IAsyncStateMachine<TState>.FinalState;
             exception = null;
             guardedRegionsCounter = 0;
         }
@@ -75,23 +75,22 @@ namespace DotNext.Runtime.CompilerServices
         {
             StateId = previousState;
             guardedRegionsCounter -= 1;
-
         }
 
         /// <summary>
         /// Attempts to recover from the exception and indicating prologue of <c>try</c> statement
         /// inside of async lambda function.
         /// </summary>
-        /// <typeparam name="E">Type of expression to be caught.</typeparam>
+        /// <typeparam name="TException">Type of expression to be caught.</typeparam>
         /// <param name="restoredException">Reference to the captured exception.</param>
-        /// <returns><see langword="true"/>, if caught exception is of type <typeparamref name="E"/>; otherwise, <see langword="false"/>.</returns>
+        /// <returns><see langword="true"/>, if caught exception is of type <typeparamref name="TException"/>; otherwise, <see langword="false"/>.</returns>
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
-        public bool TryRecover<E>([NotNullWhen(true)] out E? restoredException)
-            where E : Exception
+        public bool TryRecover<TException>([NotNullWhen(true)] out TException? restoredException)
+            where TException : Exception
         {
             switch (exception?.SourceException)
             {
-                case E typed:
+                case TException typed:
                     exception = null;
                     restoredException = typed;
                     return true;
@@ -127,18 +126,21 @@ namespace DotNext.Runtime.CompilerServices
             catch (Exception e)
             {
                 exception = ExceptionDispatchInfo.Capture(e);
-                //try to recover from exception and re-enter into state machine
+
+                // try to recover from exception and re-enter into state machine
                 if (guardedRegionsCounter > 0)
                     goto begin;
             }
-            //finalize state machine
-            if (StateId == IAsyncStateMachine<TState>.FINAL_STATE)
+
+            // finalize state machine
+            if (StateId == IAsyncStateMachine<TState>.FinalState)
             {
                 if (exception is null)
                     builder.SetResult();
                 else
                     builder.SetException(exception.SourceException);
-                //perform cleanup after resuming of all suspended tasks
+
+                // perform cleanup after resuming of all suspended tasks
                 guardedRegionsCounter = 0;
                 exception = null;
                 State = default;
@@ -156,7 +158,8 @@ namespace DotNext.Runtime.CompilerServices
             where TAwaiter : INotifyCompletion
         {
             StateId = stateId;
-            //avoid boxing of this state machine through continuation action if awaiter is completed already
+
+            // avoid boxing of this state machine through continuation action if awaiter is completed already
             if (Awaiter<TAwaiter>.IsCompleted(ref awaiter))
                 return true;
             builder.AwaitOnCompleted(ref awaiter, ref this);
@@ -168,7 +171,7 @@ namespace DotNext.Runtime.CompilerServices
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
-        public void Complete() => StateId = IAsyncStateMachine<TState>.FINAL_STATE;
+        public void Complete() => StateId = IAsyncStateMachine<TState>.FinalState;
 
         private ValueTask Start()
         {
@@ -201,21 +204,22 @@ namespace DotNext.Runtime.CompilerServices
     internal struct AsyncStateMachine<TState, TResult> : IAsyncStateMachine<TState>
         where TState : struct
     {
+        private readonly Transition<TState, AsyncStateMachine<TState, TResult>> transition;
+
         /// <summary>
         /// Represents internal state.
         /// </summary>
         public TState State;
         private AsyncValueTaskMethodBuilder<TResult> builder;
-        private readonly Transition<TState, AsyncStateMachine<TState, TResult>> transition;
         private ExceptionDispatchInfo? exception;
-        private uint guardedRegionsCounter;    //number of entries into try-clause
+        private uint guardedRegionsCounter;    // number of entries into try-clause
         [AllowNull]
         private TResult result;
 
         private AsyncStateMachine(Transition<TState, AsyncStateMachine<TState, TResult>> transition, TState state)
         {
             builder = AsyncValueTaskMethodBuilder<TResult>.Create();
-            StateId = IAsyncStateMachine<TState>.FINAL_STATE;
+            StateId = IAsyncStateMachine<TState>.FinalState;
             State = state;
             this.transition = transition;
             guardedRegionsCounter = 0;
@@ -264,16 +268,16 @@ namespace DotNext.Runtime.CompilerServices
         /// Attempts to recover from the exception and indicating prologue of <c>try</c> statement
         /// inside of async lambda function.
         /// </summary>
-        /// <typeparam name="E">Type of expression to be caught.</typeparam>
+        /// <typeparam name="TException">Type of expression to be caught.</typeparam>
         /// <param name="restoredException">Reference to the captured exception.</param>
-        /// <returns><see langword="true"/>, if caught exception is of type <typeparamref name="E"/>; otherwise, <see langword="false"/>.</returns>
+        /// <returns><see langword="true"/>, if caught exception is of type <typeparamref name="TException"/>; otherwise, <see langword="false"/>.</returns>
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
-        public bool TryRecover<E>([NotNullWhen(true)]out E? restoredException)
-            where E : Exception
+        public bool TryRecover<TException>([NotNullWhen(true)]out TException? restoredException)
+            where TException : Exception
         {
             switch (exception?.SourceException)
             {
-                case E typed:
+                case TException typed:
                     exception = null;
                     restoredException = typed;
                     return true;
@@ -323,7 +327,7 @@ namespace DotNext.Runtime.CompilerServices
             [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
             set
             {
-                StateId = IAsyncStateMachine<TState>.FINAL_STATE;
+                StateId = IAsyncStateMachine<TState>.FinalState;
                 exception = null;
                 result = value;
             }
@@ -340,9 +344,12 @@ namespace DotNext.Runtime.CompilerServices
             where TAwaiter : INotifyCompletion
         {
             StateId = stateId;
-            //avoid boxing of this state machine through continuation action if awaiter is completed already
+
+            // avoid boxing of this state machine through continuation action if awaiter is completed already
             if (Awaiter<TAwaiter>.IsCompleted(ref awaiter))
+            {
                 return true;
+            }
             else
             {
                 builder.AwaitOnCompleted(ref awaiter, ref this);
@@ -360,18 +367,21 @@ namespace DotNext.Runtime.CompilerServices
             catch (Exception e)
             {
                 exception = ExceptionDispatchInfo.Capture(e);
-                //try to recover from exception and re-enter into state machine
+
+                // try to recover from exception and re-enter into state machine
                 if (guardedRegionsCounter > 0)
                     goto begin;
             }
-            //finalize state machine
-            if (StateId == IAsyncStateMachine<TState>.FINAL_STATE)
+
+            // finalize state machine
+            if (StateId == IAsyncStateMachine<TState>.FinalState)
             {
                 if (exception is null)
                     builder.SetResult(result);
                 else
                     builder.SetException(exception.SourceException);
-                //perform cleanup after resuming of all suspended tasks
+
+                // perform cleanup after resuming of all suspended tasks
                 guardedRegionsCounter = 0;
                 exception = null;
                 result = default;

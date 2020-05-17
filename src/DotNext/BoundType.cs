@@ -30,6 +30,6 @@ namespace DotNext
         /// <summary>
         /// Both endpoints are considered part of the set.
         /// </summary>
-        Closed = LeftClosed | RightClosed
+        Closed = LeftClosed | RightClosed,
     }
 }
