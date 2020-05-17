@@ -830,7 +830,6 @@ protected virtual ILogger Logger { get; }</code></pre>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use ReceiveEntriesAsync method instead&quot;)]
 protected Task&lt;Result&lt;bool&gt;&gt; ReceiveEntries&lt;TEntry&gt;(TMember sender, long senderTerm, ILogEntryProducer&lt;TEntry&gt; entries, long prevLogIndex, long prevLogTerm, long commitIndex)
-
     where TEntry : IRaftLogEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -928,7 +927,6 @@ protected Task&lt;Result&lt;bool&gt;&gt; ReceiveEntries&lt;TEntry&gt;(TMember se
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">protected Task&lt;Result&lt;bool&gt;&gt; ReceiveEntriesAsync&lt;TEntry&gt;(TMember sender, long senderTerm, ILogEntryProducer&lt;TEntry&gt; entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
-
     where TEntry : IRaftLogEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1184,7 +1182,6 @@ protected Task&lt;Result&lt;bool&gt;&gt; ReceiveSnapshot(TMember sender, long se
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">protected Task&lt;Result&lt;bool&gt;&gt; ReceiveSnapshotAsync&lt;TSnapshot&gt;(TMember sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
-
     where TSnapshot : IRaftLogEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1547,7 +1544,8 @@ protected Task&lt;Result&lt;bool&gt;&gt; ReceiveVote(TMember sender, long sender
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_ElectionTimeout_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.DotNext#Net#Cluster#Consensus#Raft#IRaftCluster#ElectionTimeout*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_ElectionTimeout" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.DotNext#Net#Cluster#Consensus#Raft#IRaftCluster#ElectionTimeout">IRaftCluster.ElectionTimeout</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Gets election timeout used by local cluster member.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -1577,7 +1575,8 @@ protected Task&lt;Result&lt;bool&gt;&gt; ReceiveVote(TMember sender, long sender
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_DotNext_Net_Cluster_ICluster_Leader_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.DotNext#Net#Cluster#ICluster#Leader*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_DotNext_Net_Cluster_ICluster_Leader" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.DotNext#Net#Cluster#ICluster#Leader">ICluster.Leader</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Gets the leader node.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -1607,7 +1606,8 @@ protected Task&lt;Result&lt;bool&gt;&gt; ReceiveVote(TMember sender, long sender
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_DotNext_Net_Cluster_ICluster_Members_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.DotNext#Net#Cluster#ICluster#Members*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_DotNext_Net_Cluster_ICluster_Members" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.DotNext#Net#Cluster#ICluster#Members">ICluster.Members</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Gets collection of cluster members.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -1637,7 +1637,8 @@ protected Task&lt;Result&lt;bool&gt;&gt; ReceiveVote(TMember sender, long sender
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_DotNext_Net_Cluster_ICluster_ResignAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.DotNext#Net#Cluster#ICluster#ResignAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_DotNext_Net_Cluster_ICluster_ResignAsync_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.DotNext#Net#Cluster#ICluster#ResignAsync(System.Threading.CancellationToken)">ICluster.ResignAsync(CancellationToken)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Revokes leadership and starts new election process.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -1671,7 +1672,8 @@ protected Task&lt;Result&lt;bool&gt;&gt; ReceiveVote(TMember sender, long sender
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;</td>
-        <td></td>
+        <td><p><span class="xref">true</span> if leadership is revoked successfully; otherwise, <span class="xref">false</span>.</p>
+</td>
       </tr>
     </tbody>
   </table>

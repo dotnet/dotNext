@@ -7726,6 +7726,22 @@ references:
   fullName.vb: DotNext.IO.Pipelines.PipeExtensions.ReadAsync(Of T)(System.IO.Pipelines.PipeReader, System.Threading.CancellationToken)
   nameWithType: PipeExtensions.ReadAsync<T>(PipeReader, CancellationToken)
   nameWithType.vb: PipeExtensions.ReadAsync(Of T)(PipeReader, CancellationToken)
+- uid: DotNext.IO.Pipelines.PipeExtensions.ReadBlockAsync(System.IO.Pipelines.PipeReader,System.Memory{System.Byte},System.Threading.CancellationToken)
+  name: ReadBlockAsync(PipeReader, Memory<Byte>, CancellationToken)
+  href: api/DotNext.IO.Pipelines.PipeExtensions.html#DotNext_IO_Pipelines_PipeExtensions_ReadBlockAsync_System_IO_Pipelines_PipeReader_System_Memory_System_Byte__System_Threading_CancellationToken_
+  commentId: M:DotNext.IO.Pipelines.PipeExtensions.ReadBlockAsync(System.IO.Pipelines.PipeReader,System.Memory{System.Byte},System.Threading.CancellationToken)
+  name.vb: ReadBlockAsync(PipeReader, Memory(Of Byte), CancellationToken)
+  fullName: DotNext.IO.Pipelines.PipeExtensions.ReadBlockAsync(System.IO.Pipelines.PipeReader, System.Memory<System.Byte>, System.Threading.CancellationToken)
+  fullName.vb: DotNext.IO.Pipelines.PipeExtensions.ReadBlockAsync(System.IO.Pipelines.PipeReader, System.Memory(Of System.Byte), System.Threading.CancellationToken)
+  nameWithType: PipeExtensions.ReadBlockAsync(PipeReader, Memory<Byte>, CancellationToken)
+  nameWithType.vb: PipeExtensions.ReadBlockAsync(PipeReader, Memory(Of Byte), CancellationToken)
+- uid: DotNext.IO.Pipelines.PipeExtensions.ReadBlockAsync*
+  name: ReadBlockAsync
+  href: api/DotNext.IO.Pipelines.PipeExtensions.html#DotNext_IO_Pipelines_PipeExtensions_ReadBlockAsync_
+  commentId: Overload:DotNext.IO.Pipelines.PipeExtensions.ReadBlockAsync
+  isSpec: "True"
+  fullName: DotNext.IO.Pipelines.PipeExtensions.ReadBlockAsync
+  nameWithType: PipeExtensions.ReadBlockAsync
 - uid: DotNext.IO.Pipelines.PipeExtensions.ReadInt16Async(System.IO.Pipelines.PipeReader,System.Boolean,System.Threading.CancellationToken)
   name: ReadInt16Async(PipeReader, Boolean, CancellationToken)
   href: api/DotNext.IO.Pipelines.PipeExtensions.html#DotNext_IO_Pipelines_PipeExtensions_ReadInt16Async_System_IO_Pipelines_PipeReader_System_Boolean_System_Threading_CancellationToken_
@@ -8152,6 +8168,38 @@ references:
   fullName.vb: DotNext.IO.StreamExtensions.ReadAsync(Of T)(System.IO.Stream, System.Threading.CancellationToken)
   nameWithType: StreamExtensions.ReadAsync<T>(Stream, CancellationToken)
   nameWithType.vb: StreamExtensions.ReadAsync(Of T)(Stream, CancellationToken)
+- uid: DotNext.IO.StreamExtensions.ReadBlock(System.IO.Stream,System.Span{System.Byte})
+  name: ReadBlock(Stream, Span<Byte>)
+  href: api/DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadBlock_System_IO_Stream_System_Span_System_Byte__
+  commentId: M:DotNext.IO.StreamExtensions.ReadBlock(System.IO.Stream,System.Span{System.Byte})
+  name.vb: ReadBlock(Stream, Span(Of Byte))
+  fullName: DotNext.IO.StreamExtensions.ReadBlock(System.IO.Stream, System.Span<System.Byte>)
+  fullName.vb: DotNext.IO.StreamExtensions.ReadBlock(System.IO.Stream, System.Span(Of System.Byte))
+  nameWithType: StreamExtensions.ReadBlock(Stream, Span<Byte>)
+  nameWithType.vb: StreamExtensions.ReadBlock(Stream, Span(Of Byte))
+- uid: DotNext.IO.StreamExtensions.ReadBlock*
+  name: ReadBlock
+  href: api/DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadBlock_
+  commentId: Overload:DotNext.IO.StreamExtensions.ReadBlock
+  isSpec: "True"
+  fullName: DotNext.IO.StreamExtensions.ReadBlock
+  nameWithType: StreamExtensions.ReadBlock
+- uid: DotNext.IO.StreamExtensions.ReadBlockAsync(System.IO.Stream,System.Memory{System.Byte},System.Threading.CancellationToken)
+  name: ReadBlockAsync(Stream, Memory<Byte>, CancellationToken)
+  href: api/DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadBlockAsync_System_IO_Stream_System_Memory_System_Byte__System_Threading_CancellationToken_
+  commentId: M:DotNext.IO.StreamExtensions.ReadBlockAsync(System.IO.Stream,System.Memory{System.Byte},System.Threading.CancellationToken)
+  name.vb: ReadBlockAsync(Stream, Memory(Of Byte), CancellationToken)
+  fullName: DotNext.IO.StreamExtensions.ReadBlockAsync(System.IO.Stream, System.Memory<System.Byte>, System.Threading.CancellationToken)
+  fullName.vb: DotNext.IO.StreamExtensions.ReadBlockAsync(System.IO.Stream, System.Memory(Of System.Byte), System.Threading.CancellationToken)
+  nameWithType: StreamExtensions.ReadBlockAsync(Stream, Memory<Byte>, CancellationToken)
+  nameWithType.vb: StreamExtensions.ReadBlockAsync(Stream, Memory(Of Byte), CancellationToken)
+- uid: DotNext.IO.StreamExtensions.ReadBlockAsync*
+  name: ReadBlockAsync
+  href: api/DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadBlockAsync_
+  commentId: Overload:DotNext.IO.StreamExtensions.ReadBlockAsync
+  isSpec: "True"
+  fullName: DotNext.IO.StreamExtensions.ReadBlockAsync
+  nameWithType: StreamExtensions.ReadBlockAsync
 - uid: DotNext.IO.StreamExtensions.ReadBytes(System.IO.Stream,System.Span{System.Byte})
   name: ReadBytes(Stream, Span<Byte>)
   href: api/DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadBytes_System_IO_Stream_System_Span_System_Byte__

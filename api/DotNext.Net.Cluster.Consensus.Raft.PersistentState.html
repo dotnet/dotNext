@@ -505,7 +505,6 @@ method.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public ValueTask AppendAsync&lt;TEntry&gt;(TEntry entry, long startIndex)
-
     where TEntry : IRaftLogEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -601,7 +600,6 @@ If it is not, the method behaves in the same way as <see cref="!:IAuditTrail&lt;
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public ValueTask&lt;long&gt; AppendAsync&lt;TEntry&gt;(TEntry entry, CancellationToken token = default(CancellationToken))
-
     where TEntry : IRaftLogEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -694,7 +692,6 @@ If it is not, the method behaves in the same way as <see cref="!:IAuditTrail&lt;
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public ValueTask AppendAsync&lt;TEntry&gt;(in PersistentState.WriteLockToken writeLock, TEntry entry, long startIndex)
-
     where TEntry : IRaftLogEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -795,7 +792,6 @@ If it is not, the method behaves in the same way as <see cref="!:IAuditTrail&lt;
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public ValueTask&lt;long&gt; AppendAsync&lt;TEntry&gt;(in PersistentState.WriteLockToken writeLock, TEntry entry, CancellationToken token)
-
     where TEntry : IRaftLogEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -899,7 +895,6 @@ If it is not, the method behaves in the same way as <see cref="!:IAuditTrail&lt;
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public ValueTask&lt;long&gt; AppendAsync&lt;TEntry&gt;(ILogEntryProducer&lt;TEntry&gt; entries, CancellationToken token = default(CancellationToken))
-
     where TEntry : IRaftLogEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1719,7 +1714,6 @@ will be committed.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public ValueTask&lt;TResult&gt; ReadAsync&lt;TReader, TResult&gt;(TReader reader, long startIndex, long endIndex, CancellationToken token)
-
     where TReader : ILogEntryConsumer&lt;IRaftLogEntry, TResult&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1836,7 +1830,6 @@ with the audit trail segment with entries.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public ValueTask&lt;TResult&gt; ReadAsync&lt;TReader, TResult&gt;(TReader reader, long startIndex, CancellationToken token)
-
     where TReader : ILogEntryConsumer&lt;IRaftLogEntry, TResult&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2216,7 +2209,8 @@ permanently.</p>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_IncrementTermAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.DotNext#Net#Cluster#Consensus#Raft#IPersistentState#IncrementTermAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_IncrementTermAsync" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.DotNext#Net#Cluster#Consensus#Raft#IPersistentState#IncrementTermAsync">IPersistentState.IncrementTermAsync()</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Increments Term value.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -2233,7 +2227,8 @@ permanently.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
-        <td></td>
+        <td><p>The updated Term value.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -2246,7 +2241,8 @@ permanently.</p>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_IsVotedFor_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.DotNext#Net#Cluster#Consensus#Raft#IPersistentState#IsVotedFor*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_IsVotedFor_DotNext_Net_Cluster_Consensus_Raft_IRaftClusterMember_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.DotNext#Net#Cluster#Consensus#Raft#IPersistentState#IsVotedFor(DotNext.Net.Cluster.Consensus.Raft.IRaftClusterMember)">IPersistentState.IsVotedFor(IRaftClusterMember)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Determines whether the local member granted its vote for the specified remote member.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -2265,7 +2261,8 @@ permanently.</p>
       <tr>
         <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftClusterMember.html">IRaftClusterMember</a></td>
         <td><span class="parametername">member</span></td>
-        <td></td>
+        <td><p>The cluster member to check.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -2280,7 +2277,8 @@ permanently.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td></td>
+        <td><p><span class="xref">true</span> if the local member granted its vote for the specified remote member; otherwise, <span class="xref">false</span>.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -2293,7 +2291,8 @@ permanently.</p>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_UpdateTermAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.DotNext#Net#Cluster#Consensus#Raft#IPersistentState#UpdateTermAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_UpdateTermAsync_System_Int64_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.DotNext#Net#Cluster#Consensus#Raft#IPersistentState#UpdateTermAsync(System.Int64)">IPersistentState.UpdateTermAsync(Int64)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Persists the last actual Term.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -2312,7 +2311,8 @@ permanently.</p>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">term</span></td>
-        <td></td>
+        <td><p>The term value to be persisted.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -2327,7 +2327,8 @@ permanently.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
-        <td></td>
+        <td><p>The task representing asynchronous execution of the operation.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -2340,7 +2341,8 @@ permanently.</p>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_UpdateVotedForAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.DotNext#Net#Cluster#Consensus#Raft#IPersistentState#UpdateVotedForAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_UpdateVotedForAsync_DotNext_Net_Cluster_Consensus_Raft_IRaftClusterMember_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.DotNext#Net#Cluster#Consensus#Raft#IPersistentState#UpdateVotedForAsync(DotNext.Net.Cluster.Consensus.Raft.IRaftClusterMember)">IPersistentState.UpdateVotedForAsync(IRaftClusterMember)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Persists the item that was voted for on in the last vote.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -2359,7 +2361,8 @@ permanently.</p>
       <tr>
         <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftClusterMember.html">IRaftClusterMember</a></td>
         <td><span class="parametername">member</span></td>
-        <td></td>
+        <td><p>The member which identifier should be stored inside of persistence storage. May be <span class="xref">null</span>.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -2374,7 +2377,8 @@ permanently.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
-        <td></td>
+        <td><p>The task representing state of the asynchronous execution.</p>
+</td>
       </tr>
     </tbody>
   </table>
