@@ -29,7 +29,7 @@ namespace DotNext.IO
             => StreamExtensions.ReadAsync<T>(input, buffer, token);
 
         public ValueTask ReadAsync(Memory<byte> output, CancellationToken token = default)
-            => StreamExtensions.ReadBytesAsync(input, output, token);
+            => StreamExtensions.ReadBlockAsync(input, output, token);
 
         public ValueTask<string> ReadStringAsync(int length, DecodingContext context, CancellationToken token = default)
             => StreamExtensions.ReadStringAsync(input, length, context, buffer, token);
