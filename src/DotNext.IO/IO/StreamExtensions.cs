@@ -543,7 +543,7 @@ namespace DotNext.IO
         /// <param name="stream">The stream to read from.</param>
         /// <param name="output">A region of memory. When this method returns, the contents of this region are replaced by the bytes read from the current source.</param>
         /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
-        public static void ReadBytes(this Stream stream, Span<byte> output)
+        public static void ReadBlock(this Stream stream, Span<byte> output)
         {
             for (int size = output.Length, bytesRead, offset = 0; size > 0; size -= bytesRead, offset += bytesRead)
             {
@@ -552,6 +552,16 @@ namespace DotNext.IO
                     throw new EndOfStreamException();
             }
         }
+
+        /// <summary>
+        /// Reads exact number of bytes.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="output">A region of memory. When this method returns, the contents of this region are replaced by the bytes read from the current source.</param>
+        /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
+        [Obsolete("Use ReadBlock extension method instead")]
+        public static void ReadBytes(this Stream stream, Span<byte> output)
+            => ReadBlock(stream, output);
 
         /// <summary>
         /// Deserializes the value type from the stream.
@@ -564,7 +574,7 @@ namespace DotNext.IO
             where T : unmanaged
         {
             var result = default(T);
-            stream.ReadBytes(Span.AsBytes(ref result));
+            stream.ReadBlock(Span.AsBytes(ref result));
             return result;
         }
 
@@ -577,7 +587,7 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static async ValueTask ReadBytesAsync(this Stream stream, Memory<byte> output, CancellationToken token = default)
+        public static async ValueTask ReadBlockAsync(this Stream stream, Memory<byte> output, CancellationToken token = default)
         {
             for (int size = output.Length, bytesRead, offset = 0; size > 0; size -= bytesRead, offset += bytesRead)
             {
@@ -586,6 +596,19 @@ namespace DotNext.IO
                     throw new EndOfStreamException();
             }
         }
+
+        /// <summary>
+        /// Reads exact number of bytes asynchronously.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="output">A region of memory. When this method returns, the contents of this region are replaced by the bytes read from the current source.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        [Obsolete("Use ReadBlockAsync extension method instead")]
+        public static ValueTask ReadBytesAsync(this Stream stream, Memory<byte> output, CancellationToken token = default)
+            => ReadBlockAsync(stream, output, token);
 
         /// <summary>
         /// Asynchronously deserializes the value type from the stream.
@@ -600,7 +623,7 @@ namespace DotNext.IO
         public static async ValueTask<T> ReadAsync<T>(this Stream stream, Memory<byte> buffer, CancellationToken token = default)
             where T : unmanaged
         {
-            await stream.ReadBytesAsync(buffer.Slice(0, Unsafe.SizeOf<T>()), token).ConfigureAwait(false);
+            await stream.ReadBlockAsync(buffer.Slice(0, Unsafe.SizeOf<T>()), token).ConfigureAwait(false);
             return MemoryMarshal.Read<T>(buffer.Span);
         }
 
@@ -617,7 +640,7 @@ namespace DotNext.IO
             where T : unmanaged
         {
             using var buffer = new ArrayRental<byte>(Unsafe.SizeOf<T>());
-            await stream.ReadBytesAsync(buffer.Memory, token).ConfigureAwait(false);
+            await stream.ReadBlockAsync(buffer.Memory, token).ConfigureAwait(false);
             return MemoryMarshal.Read<T>(buffer.Span);
         }
 

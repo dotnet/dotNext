@@ -21,7 +21,7 @@ namespace DotNext.IO.Pipelines
             => input.ReadAsync<T>(token);
 
         public ValueTask ReadAsync(Memory<byte> output, CancellationToken token)
-            => input.ReadAsync(output, token);
+            => input.ReadBlockAsync(output, token);
 
         public ValueTask<string> ReadStringAsync(int length, DecodingContext context, CancellationToken token)
             => input.ReadStringAsync(length, context, token);

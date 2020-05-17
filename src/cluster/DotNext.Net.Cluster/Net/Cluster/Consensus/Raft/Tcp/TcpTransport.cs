@@ -44,10 +44,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             private protected async ValueTask<(PacketHeaders Headers, ReadOnlyMemory<byte> Payload)> ReadPacket(Memory<byte> buffer, CancellationToken token)
             {
                 // read headers and number of bytes
-                await this.ReadBytesAsync(buffer.Slice(0, PacketPrologueSize), token).ConfigureAwait(false);
+                await this.ReadBlockAsync(buffer.Slice(0, PacketPrologueSize), token).ConfigureAwait(false);
                 ReadPrologue(buffer, out var headers, out var count);
                 buffer = buffer.Slice(0, count);
-                await this.ReadBytesAsync(buffer, token).ConfigureAwait(false);
+                await this.ReadBlockAsync(buffer, token).ConfigureAwait(false);
                 return (headers, buffer);
             }
         }
