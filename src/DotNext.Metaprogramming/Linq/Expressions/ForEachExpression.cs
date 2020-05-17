@@ -19,7 +19,7 @@ namespace DotNext.Linq.Expressions
         /// <param name="current">An expression representing current collection item in the iteration.</param>
         /// <param name="continueLabel">A label that can be used to produce <see cref="Expression.Continue(LabelTarget)"/> expression.</param>
         /// <param name="breakLabel">A label that can be used to produce <see cref="Expression.Break(LabelTarget)"/> expression.</param>
-        /// <returns></returns>
+        /// <returns>The constructed loop body.</returns>
         public delegate Expression Statement(MemberExpression current, LabelTarget continueLabel, LabelTarget breakLabel);
 
         private readonly ParameterExpression enumeratorVar;
@@ -44,10 +44,12 @@ namespace DotNext.Linq.Expressions
             {
                 getEnumerator = collection.Call(enumerable, GetEnumeratorMethod);
                 enumeratorVar = Variable(getEnumerator.Method.ReturnType, EnumeratorVarName);
-                //enumerator.MoveNext()
+
+                // enumerator.MoveNext()
                 moveNextCall = enumeratorVar.Call(typeof(IEnumerator), nameof(IEnumerator.MoveNext));
             }
-            //enumerator = enumerable.GetEnumerator();
+
+            // enumerator = enumerable.GetEnumerator();
             enumeratorAssignment = Assign(enumeratorVar, getEnumerator);
             Element = Property(enumeratorVar, nameof(IEnumerator.Current));
             BreakLabel = breakLabel ?? Label(typeof(void), "break");

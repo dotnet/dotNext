@@ -1,9 +1,9 @@
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Pipelines;
 using System.Net;
+using Microsoft.Extensions.Logging;
 using LingerOption = System.Net.Sockets.LingerOption;
 using NullLoggerFactory = Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory;
 
@@ -76,7 +76,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// </summary>
             /// <remarks>
             /// <see langword="false"/> value allows to build CA distributed cluster
-            /// while <see langword="true"/> value allows to build CP/AP distributed cluster. 
+            /// while <see langword="true"/> value allows to build CP/AP distributed cluster.
             /// </remarks>
             public bool Partitioning { get; set; }
 
@@ -85,7 +85,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// </summary>
             /// <remarks>
             /// The threshold should be in range (0, 1). The heartbeat timeout is computed as
-            /// node election timeout X threshold. The default is 0.5
+            /// node election timeout X threshold. The default is 0.5.
             /// </remarks>
             /// <exception cref="ArgumentOutOfRangeException">Attempts to set invalid value.</exception>
             public double HeartbeatThreshold
@@ -168,6 +168,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 set => loggerFactory = value;
             }
 
+            /// <inheritdoc/>
             ElectionTimeout IClusterMemberConfiguration.ElectionTimeout => electionTimeout;
 
             /// <summary>
@@ -190,6 +191,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         result.Add(new ServerExchange(localMember, PipeConfig));
                     return result;
                 }
+
                 return CreateExchangePool;
             }
 
@@ -264,7 +266,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// This endpoint is not used for initialization of server, only for clients.
             /// UDP is connectionless protocol and underlying implementation must know
             /// which interface should be used for receiving responses from server through UDP
-            /// transport. By default, this property listens on all network interfaces and using 
+            /// transport. By default, this property listens on all network interfaces and using
             /// randomly selected port. For most situations, it's redundant and unsafe.
             /// </remarks>
             public IPEndPoint LocalEndPoint { get; set; }
@@ -274,7 +276,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     DatagramSize = datagramSize,
                     DontFragment = DontFragment,
-                    Ttl = TimeToLive
+                    Ttl = TimeToLive,
                 };
 
             internal override RaftClusterMember CreateMemberClient(ILocalMember localMember, IPEndPoint endPoint, IClientMetricsCollector? metrics)
@@ -286,7 +288,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     DatagramSize = datagramSize,
                     DontFragment = DontFragment,
                     ReceiveTimeout = Timeout,
-                    Ttl = TimeToLive
+                    Ttl = TimeToLive,
                 };
         }
 
@@ -311,7 +313,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             /// <summary>
             /// Gets configuration that specifies whether a TCP socket will
-            /// delay its closing in an attempt to send all pending data. 
+            /// delay its closing in an attempt to send all pending data.
             /// </summary>
             public LingerOption LingerOption
             {
@@ -338,7 +340,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <see cref="IClusterMember.GetMetadataAsync"/> methods. Ideally, the value
             /// must be equal to average size of single log entry.
             /// </remarks>
-            /// <value></value>
             public int TransmissionBlockSize
             {
                 get => transmissionBlockSize;
@@ -349,7 +350,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 TransmissionBlockSize = TransmissionBlockSize,
                 LingerOption = LingerOption,
-                Ttl = TimeToLive
+                Ttl = TimeToLive,
             };
 
             internal override RaftClusterMember CreateMemberClient(ILocalMember localMember, IPEndPoint endPoint, IClientMetricsCollector? metrics)
@@ -364,7 +365,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     LingerOption = LingerOption,
                     ReceiveTimeout = Timeout,
                     GracefulShutdownTimeout = (int)GracefulShutdownTimeout.TotalMilliseconds,
-                    Ttl = TimeToLive
+                    Ttl = TimeToLive,
                 };
             }
         }

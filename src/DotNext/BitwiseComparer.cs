@@ -34,58 +34,58 @@ namespace DotNext
         /// This method doesn't use <see cref="object.Equals(object)"/>
         /// even if it is overridden by value type.
         /// </remarks>
-        /// <typeparam name="G">Type of second value.</typeparam>
+        /// <typeparam name="TOther">Type of second value.</typeparam>
         /// <param name="first">The first value to check.</param>
         /// <param name="second">The second value to check.</param>
         /// <returns><see langword="true"/>, if both values are equal; otherwise, <see langword="false"/>.</returns>
-        public static bool Equals<G>(in T first, in G second)
-            where G : struct
+        public static bool Equals<TOther>(in T first, in TOther second)
+            where TOther : struct
         {
-            if (SizeOf<T>() != SizeOf<G>())
+            if (SizeOf<T>() != SizeOf<TOther>())
                 return false;
             switch (SizeOf<T>())
             {
                 default:
-                    return EqualsAligned(ref InToRef<T, byte>(first), ref InToRef<G, byte>(second), SizeOf<T>());
+                    return EqualsAligned(ref InToRef<T, byte>(first), ref InToRef<TOther, byte>(second), SizeOf<T>());
                 case 0:
                     return true;
                 case sizeof(byte):
-                    return InToRef<T, byte>(first) == InToRef<G, byte>(second);
+                    return InToRef<T, byte>(first) == InToRef<TOther, byte>(second);
                 case sizeof(ushort):
-                    return InToRef<T, ushort>(first) == InToRef<G, ushort>(second);
+                    return InToRef<T, ushort>(first) == InToRef<TOther, ushort>(second);
                 case sizeof(uint):
-                    return InToRef<T, uint>(first) == InToRef<G, uint>(second);
+                    return InToRef<T, uint>(first) == InToRef<TOther, uint>(second);
                 case sizeof(ulong):
-                    return InToRef<T, ulong>(first) == InToRef<G, ulong>(second);
+                    return InToRef<T, ulong>(first) == InToRef<TOther, ulong>(second);
             }
         }
 
         /// <summary>
         /// Compares bits of two values of the different type.
         /// </summary>
-        /// <typeparam name="G">Type of the second value.</typeparam>
+        /// <typeparam name="TOther">Type of the second value.</typeparam>
         /// <param name="first">The first value to compare.</param>
         /// <param name="second">The second value to compare.</param>
         /// <returns>A value that indicates the relative order of the objects being compared.</returns>
-        public static int Compare<G>(in T first, in G second)
-            where G : struct
+        public static int Compare<TOther>(in T first, in TOther second)
+            where TOther : struct
         {
-            if (SizeOf<T>() != SizeOf<G>())
-                return SizeOf<T>() - SizeOf<G>();
-            switch (SizeOf<G>())
+            if (SizeOf<T>() != SizeOf<TOther>())
+                return SizeOf<T>() - SizeOf<TOther>();
+            switch (SizeOf<TOther>())
             {
                 default:
-                    return Runtime.Intrinsics.Compare(ref InToRef<T, byte>(first), ref InToRef<G, byte>(second), SizeOf<T>());
+                    return Runtime.Intrinsics.Compare(ref InToRef<T, byte>(first), ref InToRef<TOther, byte>(second), SizeOf<T>());
                 case 0:
                     return 0;
                 case sizeof(byte):
-                    return InToRef<T, byte>(first).CompareTo(InToRef<G, byte>(second));
+                    return InToRef<T, byte>(first).CompareTo(InToRef<TOther, byte>(second));
                 case sizeof(ushort):
-                    return InToRef<T, ushort>(first).CompareTo(InToRef<G, ushort>(second));
+                    return InToRef<T, ushort>(first).CompareTo(InToRef<TOther, ushort>(second));
                 case sizeof(uint):
-                    return InToRef<T, uint>(first).CompareTo(InToRef<G, uint>(second));
+                    return InToRef<T, uint>(first).CompareTo(InToRef<TOther, uint>(second));
                 case sizeof(ulong):
-                    return InToRef<T, ulong>(first).CompareTo(InToRef<G, ulong>(second));
+                    return InToRef<T, ulong>(first).CompareTo(InToRef<TOther, ulong>(second));
             }
         }
 
@@ -118,6 +118,7 @@ namespace DotNext
                     hash = InToRef<T, ulong>(value).GetHashCode();
                     break;
             }
+
             if (salted)
                 hash ^= RandomExtensions.BitwiseHashSalt;
             return hash;
@@ -153,11 +154,13 @@ namespace DotNext
         public static int GetHashCode(in T value, int hash, Func<int, int, int> hashFunction, bool salted = true)
             => GetHashCode(in value, hash, new ValueFunc<int, int, int>(hashFunction, true), salted);
 
-
+        /// <inheritdoc/>
         bool IEqualityComparer<T>.Equals(T x, T y) => Equals(in x, in y);
 
+        /// <inheritdoc/>
         int IEqualityComparer<T>.GetHashCode(T obj) => GetHashCode(in obj, true);
 
+        /// <inheritdoc/>
         int IComparer<T>.Compare(T x, T y) => Compare(in x, in y);
     }
 }

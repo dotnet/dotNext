@@ -37,6 +37,7 @@ namespace DotNext.Text
         /// <returns>The independent copy of this context.</returns>
         public DecodingContext Copy() => new DecodingContext(encoding, decoder != null);
 
+        /// <inheritdoc/>
         object ICloneable.Clone() => Copy();
 
         /// <summary>
@@ -52,7 +53,7 @@ namespace DotNext.Text
         internal Decoder GetDecoder() => decoder ?? Encoding.GetDecoder();
 
         /// <summary>
-        /// Creates decoding context 
+        /// Creates decoding context.
         /// </summary>
         /// <param name="encoding">The text encoding.</param>
         public static implicit operator DecodingContext(Encoding encoding) => new DecodingContext(encoding);

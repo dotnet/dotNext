@@ -14,7 +14,7 @@ namespace DotNext.Buffers
     public readonly struct MemoryOwner<T> : IMemoryOwner<T>, IConvertible<Memory<T>>
     {
         private readonly object? owner;
-        private readonly T[]? array;  //not null only if owner is ArrayPool
+        private readonly T[]? array;  // not null only if owner is ArrayPool
 
         internal MemoryOwner(ArrayPool<T>? pool, T[] array, int length)
         {
@@ -60,7 +60,7 @@ namespace DotNext.Buffers
                 throw new ArgumentOutOfRangeException(nameof(length));
             this.array = array;
             Length = length;
-            this.owner = null;
+            owner = null;
         }
 
         /// <summary>
@@ -101,11 +101,13 @@ namespace DotNext.Buffers
             }
         }
 
+        /// <inheritdoc/>
         Memory<T> IConvertible<Memory<T>>.Convert() => Memory;
 
         /// <summary>
         /// Gets managed pointer to the item in the rented memory.
         /// </summary>
+        /// <param name="index">The index of the element in memory.</param>
         /// <value>The managed pointer to the item.</value>
         public ref T this[int index]
         {

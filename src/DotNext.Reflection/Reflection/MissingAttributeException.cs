@@ -12,7 +12,7 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="target">The inspected type.</param>
         /// <param name="attributeType">The type of missing attribute.</param>
-		public MissingAttributeException(Type target, Type attributeType)
+        public MissingAttributeException(Type target, Type attributeType)
             : base(target, ExceptionMessages.MissingAttribute(attributeType, target))
         {
             AttributeType = attributeType;
@@ -21,10 +21,10 @@ namespace DotNext.Reflection
         /// <summary>
         /// Gets type of missing attribute.
         /// </summary>
-		public Type AttributeType { get; }
+        public Type AttributeType { get; }
 
-        internal static MissingAttributeException Create<T, A>()
-            where A : Attribute
-            => new MissingAttributeException(typeof(T), typeof(A));
+        internal static MissingAttributeException Create<T, TArgs>()
+            where TArgs : Attribute
+            => new MissingAttributeException(typeof(T), typeof(TArgs));
     }
 }

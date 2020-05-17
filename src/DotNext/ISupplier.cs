@@ -1,8 +1,8 @@
 namespace DotNext
 {
-    internal interface ISupplier<out V>
+    internal interface ISupplier<out TResult>
     {
-        V Invoke();
+        TResult Invoke();
     }
 
     internal interface IConsumer<in T>
@@ -10,8 +10,8 @@ namespace DotNext
         void Invoke(T value);
     }
 
-    internal interface ISupplier<in T1, in T2, out V>
+    internal interface ISupplier<in T1, in T2, out TResult>
     {
-        V Invoke(T1 arg1, T2 arg2);
+        TResult Invoke(T1 arg1, T2 arg2);
     }
 }

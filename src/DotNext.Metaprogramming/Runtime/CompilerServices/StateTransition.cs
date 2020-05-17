@@ -44,6 +44,7 @@ namespace DotNext.Runtime.CompilerServices
         public override int GetHashCode() => HashCode.Combine(Successful, Failure);
 
         public static bool operator ==(in StateTransition first, in StateTransition second) => first.Equals(second);
+
         public static bool operator !=(in StateTransition first, in StateTransition second) => !first.Equals(second);
     }
 }

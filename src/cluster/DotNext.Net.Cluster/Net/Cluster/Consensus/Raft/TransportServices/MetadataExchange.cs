@@ -17,51 +17,57 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
     {
         private const StringLengthEncoding LengthEncoding = StringLengthEncoding.Compressed;
 
-        private bool state;
         private readonly CancellationToken readToken;
+        private bool state;
 
         internal MetadataExchange(CancellationToken token, PipeOptions? options = null)
             : base(options) => readToken = token;
 
         private static Encoding Encoding => Encoding.UTF8;
 
-        ushort IClientExchange.MyPort   //port announcement is not used for this request
+        // port announcement is not used for this request
+        ushort IClientExchange.MyPort
         {
             set { }
         }
 
         internal static async Task WriteAsync(PipeWriter writer, IReadOnlyDictionary<string, string> input, CancellationToken token)
         {
-            //write length
+            // write length
             var flushResult = await writer.WriteInt32Async(input.Count, true, token).ConfigureAwait(false);
             if (flushResult.IsCompleted)
                 return;
             flushResult.ThrowIfCancellationRequested(token);
-            //write pairs
+
+            // write pairs
             var context = new EncodingContext(Encoding, true);
             foreach (var (key, value) in input)
             {
                 await writer.WriteStringAsync(key.AsMemory(), context, lengthFormat: LengthEncoding, token: token).ConfigureAwait(false);
                 await writer.WriteStringAsync(value.AsMemory(), context, lengthFormat: LengthEncoding, token: token).ConfigureAwait(false);
             }
-            await writer.CompleteAsync();
+
+            await writer.CompleteAsync().ConfigureAwait(false);
         }
 
         private static async Task<IReadOnlyDictionary<string, string>> ReadAsync(PipeReader reader, CancellationToken token)
         {
-            //read length
+            // read length
             var length = await reader.ReadInt32Async(true, token).ConfigureAwait(false);
             var output = new Dictionary<string, string>(length, StringComparer.Ordinal);
             var context = new DecodingContext(Encoding, true);
             while (--length >= 0)
             {
-                //read key
+                // read key
                 var key = await reader.ReadStringAsync(LengthEncoding, context, token).ConfigureAwait(false);
-                //read value
+
+                // read value
                 var value = await reader.ReadStringAsync(LengthEncoding, context, token).ConfigureAwait(false);
-                //write pair to the dictionary
+
+                // write pair to the dictionary
                 output.Add(key, value);
             }
+
             return output;
         }
 
@@ -77,12 +83,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             FlowControl control;
             if (state)
+            {
                 control = FlowControl.Ack;
+            }
             else
             {
                 state = true;
                 control = FlowControl.None;
             }
+
             return new ValueTask<(PacketHeaders, int, bool)>((new PacketHeaders(MessageType.Metadata, control), 0, true));
         }
     }

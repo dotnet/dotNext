@@ -50,7 +50,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Index of next log entry to send to this node.
         /// </summary>
-        /// <value></value>
         ref long NextIndex { get; }
 
         /// <summary>

@@ -9,6 +9,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
     internal interface IClientExchange : IExchange
     {
         Task Task { get; }
+
         ushort MyPort { set; }
     }
 
@@ -37,7 +38,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         public abstract ValueTask<(PacketHeaders Headers, int BytesWritten, bool)> CreateOutboundMessageAsync(Memory<byte> payload, CancellationToken token);
 
-        private protected virtual void OnException(Exception e) { }
+        private protected virtual void OnException(Exception e)
+        {
+        }
 
         void IExchange.OnException(Exception e)
         {
@@ -45,7 +48,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 OnException(e);
         }
 
-        private protected virtual void OnCanceled(CancellationToken token) { }
+        private protected virtual void OnCanceled(CancellationToken token)
+        {
+        }
 
         void IExchange.OnCanceled(CancellationToken token)
         {

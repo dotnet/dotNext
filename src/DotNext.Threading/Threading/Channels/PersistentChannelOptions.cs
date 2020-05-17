@@ -53,7 +53,7 @@ namespace DotNext.Threading.Channels
         }
 
         /// <summary>
-        /// Gets or sets initial size of partition file, in bytes. 
+        /// Gets or sets initial size of partition file, in bytes.
         /// </summary>
         /// <remarks>
         /// This property may help to avoid fragmentation of partition

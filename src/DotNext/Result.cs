@@ -35,6 +35,7 @@ namespace DotNext
         /// <summary>
         /// Indicates that specified type is result type.
         /// </summary>
+        /// <param name="resultType">The type of <see cref="Result{T}"/>.</param>
         /// <returns><see langword="true"/>, if specified type is result type; otherwise, <see langword="false"/>.</returns>
         public static bool IsResult(this Type resultType) => resultType.IsGenericInstanceOf(typeof(Result<>));
 
@@ -49,6 +50,7 @@ namespace DotNext
     /// <summary>
     /// Represents a result of operation which can be actual result or exception.
     /// </summary>
+    /// <typeparam name="T">The type of the value stored in the Result monad.</typeparam>
     [Serializable]
     [StructLayout(LayoutKind.Auto)]
     public readonly struct Result<T> : ISerializable
@@ -127,22 +129,27 @@ namespace DotNext
         /// caused by the converter.
         /// </summary>
         /// <param name="converter">A mapping function to be applied to the value, if present.</param>
-        /// <typeparam name="U">The type of the result of the mapping function.</typeparam>
+        /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
         /// <returns>The conversion result.</returns>
-        public Result<U> Convert<U>(in ValueFunc<T, U> converter)
+        public Result<TResult> Convert<TResult>(in ValueFunc<T, TResult> converter)
         {
-            Result<U> result;
+            Result<TResult> result;
             if (exception is null)
+            {
                 try
                 {
                     result = converter.Invoke(value);
                 }
                 catch (Exception e)
                 {
-                    result = new Result<U>(e);
+                    result = new Result<TResult>(e);
                 }
+            }
             else
-                result = new Result<U>(exception);
+            {
+                result = new Result<TResult>(exception);
+            }
+
             return result;
         }
 
@@ -151,9 +158,9 @@ namespace DotNext
         /// caused by the converter.
         /// </summary>
         /// <param name="converter">A mapping function to be applied to the value, if present.</param>
-        /// <typeparam name="U">The type of the result of the mapping function.</typeparam>
+        /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
         /// <returns>The conversion result.</returns>
-        public Result<U> Convert<U>(Converter<T, U> converter) => Convert(converter.AsValueFunc(true));
+        public Result<TResult> Convert<TResult>(Converter<T, TResult> converter) => Convert(converter.AsValueFunc(true));
 
         /// <summary>
         /// Attempts to extract value from container if it is present.
@@ -228,8 +235,14 @@ namespace DotNext
         /// <summary>
         /// Converts the result into <see cref="Optional{T}"/>.
         /// </summary>
+        /// <returns>Option monad representing value in this monad.</returns>
+        public Optional<T> TryGet() => exception is null ? new Optional<T>(value) : Optional<T>.Empty;
+
+        /// <summary>
+        /// Converts the result into <see cref="Optional{T}"/>.
+        /// </summary>
         /// <param name="result">The result to be converted.</param>
-        public static implicit operator Optional<T>(in Result<T> result) => result.exception is null ? new Optional<T>(result.value) : Optional<T>.Empty;
+        public static implicit operator Optional<T>(in Result<T> result) => result.TryGet();
 
         /// <summary>
         /// Converts value into the result.
@@ -259,6 +272,7 @@ namespace DotNext
         /// <returns><see langword="false"/> if this result is successful; <see langword="true"/> if this result represents exception.</returns>
         public static bool operator false(in Result<T> result) => !(result.exception is null);
 
+        /// <inheritdoc/>
         void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
         {
             var exception = this.exception?.SourceException;

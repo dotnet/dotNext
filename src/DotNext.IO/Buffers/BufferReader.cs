@@ -12,34 +12,38 @@ namespace DotNext.Buffers
         {
             consumed = input.Start;
             if (input.Length > 0)
+            {
                 for (int bytesToConsume; parser.RemainingBytes > 0 && input.TryGet(ref consumed, out var block, false) && block.Length > 0; consumed = input.GetPosition(bytesToConsume, consumed))
                 {
                     bytesToConsume = Math.Min(block.Length, parser.RemainingBytes);
                     block = block.Slice(0, bytesToConsume);
                     parser.Append(block.Span, ref bytesToConsume);
                 }
+            }
             else
+            {
                 parser.EndOfStream();
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void ReverseIfNeeded(this ref int value, bool littleEndian)
         {
-            if (BitConverter.IsLittleEndian != littleEndian)
+            if (littleEndian != BitConverter.IsLittleEndian)
                 value = BinaryPrimitives.ReverseEndianness(value);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void ReverseIfNeeded(this ref long value, bool littleEndian)
         {
-            if (BitConverter.IsLittleEndian != littleEndian)
+            if (littleEndian != BitConverter.IsLittleEndian)
                 value = BinaryPrimitives.ReverseEndianness(value);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void ReverseIfNeeded(this ref short value, bool littleEndian)
         {
-            if (BitConverter.IsLittleEndian != littleEndian)
+            if (littleEndian != BitConverter.IsLittleEndian)
                 value = BinaryPrimitives.ReverseEndianness(value);
         }
     }

@@ -16,11 +16,11 @@ namespace DotNext
     public static class StringExtensions
     {
         /// <summary>
-        /// Returns alternative string if first string argument 
+        /// Returns alternative string if first string argument
         /// is <see langword="null"/> or empty.
         /// </summary>
         /// <example>
-        /// This method is equivalent to
+        /// This method is equivalent to the following code:
         /// <code>
         /// var result = string.IsNullOrEmpty(str) ? alt : str;
         /// </code>

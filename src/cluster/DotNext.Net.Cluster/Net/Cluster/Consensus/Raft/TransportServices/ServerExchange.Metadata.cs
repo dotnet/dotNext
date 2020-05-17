@@ -18,7 +18,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             bool continueSending;
             FlowControl control;
             var bytesWritten = await Reader.CopyToAsync(output, token).ConfigureAwait(false);
-            if (bytesWritten == output.Length)    //final packet detected
+
+            // final packet detected
+            if (bytesWritten == output.Length)
             {
                 control = startStream ? FlowControl.StreamStart : FlowControl.Fragment;
                 continueSending = true;
@@ -28,6 +30,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 control = FlowControl.StreamEnd;
                 continueSending = false;
             }
+
             return (new PacketHeaders(MessageType.Metadata, control), bytesWritten, continueSending);
         }
     }

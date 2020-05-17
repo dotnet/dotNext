@@ -1,8 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
@@ -10,6 +6,10 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
@@ -20,13 +20,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     {
         private readonly IClusterMemberLifetime? configurator;
         private readonly IDisposable configurationTracker;
-
-        private IPEndPoint? localMember;
         private readonly IHttpMessageHandlerFactory? httpHandlerFactory;
         private readonly TimeSpan requestTimeout;
         private readonly bool openConnectionForEachRequest;
         private readonly string clientHandlerName;
         private readonly HttpVersion protocolVersion;
+        private IPEndPoint? localMember;
 
         [SuppressMessage("Reliability", "CA2000", Justification = "The member will be disposed in RaftCluster.Dispose method")]
         private RaftHttpCluster(RaftClusterMemberConfiguration config, IServiceProvider dependencies, out MemberCollectionBuilder members, Func<Action<RaftClusterMemberConfiguration, string>, IDisposable> configTracker)
@@ -39,14 +38,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             duplicationDetector = new DuplicateRequestDetector(config.RequestJournal);
             clientHandlerName = config.ClientHandlerName;
             protocolVersion = config.ProtocolVersion;
-            //dependencies
+
+            // dependencies
             configurator = dependencies.GetService<IClusterMemberLifetime>();
             messageHandlers = ImmutableList.CreateRange(dependencies.GetServices<IInputChannel>());
             AuditTrail = dependencies.GetService<IPersistentState>() ?? new ConsensusOnlyState();
             httpHandlerFactory = dependencies.GetService<IHttpMessageHandlerFactory>();
             Logger = dependencies.GetRequiredService<ILoggerFactory>().CreateLogger(GetType());
             Metrics = dependencies.GetService<MetricsCollector>();
-            //track changes in configuration
+
+            // track changes in configuration
             configurationTracker = configTracker(ConfigurationChanged);
         }
 
@@ -85,25 +86,32 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             await ChangeMembersAsync(members =>
             {
                 var existingMembers = new HashSet<Uri>();
-                //remove members
+
+                // remove members
                 foreach (var holder in members)
+                {
                     if (configuration.Members.Contains(holder.Member.BaseAddress))
+                    {
                         existingMembers.Add(holder.Member.BaseAddress);
+                    }
                     else
                     {
                         var member = holder.Remove();
                         MemberRemoved?.Invoke(this, member);
                         member.CancelPendingRequests();
                     }
+                }
 
-                //add new members
+                // add new members
                 foreach (var memberUri in configuration.Members)
+                {
                     if (!existingMembers.Contains(memberUri))
                     {
                         var member = CreateMember(memberUri);
                         members.Add(member);
                         MemberAdded?.Invoke(this, member);
                     }
+                }
 
                 existingMembers.Clear();
             }).ConfigureAwait(false);
@@ -119,13 +127,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             => httpHandlerFactory?.CreateHandler(clientHandlerName) ?? new HttpClientHandler();
 
         public event ClusterChangedEventHandler? MemberAdded;
+
         public event ClusterChangedEventHandler? MemberRemoved;
 
         private protected abstract Predicate<RaftClusterMember> LocalMemberFinder { get; }
 
         public override Task StartAsync(CancellationToken token)
         {
-            //detect local member
+            // detect local member
             var localMember = FindMember(LocalMemberFinder) ?? throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
             this.localMember = localMember.Endpoint;
             configurator?.Initialize(this, metadata);

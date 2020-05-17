@@ -31,7 +31,8 @@ namespace DotNext.Linq.Expressions
                 if (!(configureMethod is null))
                     expression = expression.Call(configureMethod, false.Const());
             }
-            //expression type must have type with GetAwaiter() method
+
+            // expression type must have type with GetAwaiter() method
             MethodInfo? getAwaiter = expression.Type.GetMethod(nameof(Task.GetAwaiter), PublicInstanceMethod, Type.DefaultBinder, Array.Empty<Type>(), Array.Empty<ParameterModifier>());
             GetAwaiter = expression.Call(getAwaiter ?? throw new ArgumentException(ExceptionMessages.MissingGetAwaiterMethod(expression.Type)));
             GetResultMethod = GetAwaiter.Type.GetMethod(nameof(TaskAwaiter.GetResult), PublicInstanceMethod, Type.DefaultBinder, Array.Empty<Type>(), Array.Empty<ParameterModifier>());

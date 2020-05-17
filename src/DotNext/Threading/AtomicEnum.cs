@@ -22,6 +22,7 @@ namespace DotNext.Threading
         /// as follows: If a read or write appears after this method in the code, the processor
         /// cannot move it before this method.
         /// </summary>
+        /// <typeparam name="TEnum">The enum type.</typeparam>
         /// <param name="value">The field to read.</param>
         /// <returns>
         /// The value that was read. This value is the latest written by any processor in
@@ -29,27 +30,29 @@ namespace DotNext.Threading
         /// cache.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static E VolatileRead<E>(this ref E value)
-            where E : struct, Enum
+        public static TEnum VolatileRead<TEnum>(this ref TEnum value)
+            where TEnum : struct, Enum
         {
             const string resultVar = "result";
             const string nonFastPath = "nonFastPath";
             DeclareLocals(false, new Var(resultVar, typeof(long)));
             Push(ref value);
-            Emit.Sizeof<E>();
+            Emit.Sizeof<TEnum>();
             Emit.Ldc_I4_8();
             Emit.Beq(nonFastPath);
-            //fast path - use volatile read instruction
+
+            // fast path - use volatile read instruction
             Emit.Volatile();
-            Emit.Ldobj<E>();
+            Emit.Ldobj<TEnum>();
             Emit.Ret();
-            //non-fast path - use Volatile class
+
+            // non-fast path - use Volatile class
             MarkLabel(nonFastPath);
             Emit.Call(Method(typeof(Volatile), nameof(Volatile.Read), Type<long>().MakeByRefType()));
             Emit.Stloc(resultVar);
             Emit.Ldloca(resultVar);
-            Emit.Ldobj<E>();
-            return Return<E>();
+            Emit.Ldobj<TEnum>();
+            return Return<TEnum>();
         }
 
         /// <summary>
@@ -58,26 +61,29 @@ namespace DotNext.Threading
         /// as follows: If a read or write appears before this method in the code, the processor
         /// cannot move it after this method.
         /// </summary>
+        /// <typeparam name="TEnum">The enum type.</typeparam>
         /// <param name="value">The field where the value is written.</param>
         /// <param name="newValue">
         /// The value to write. The value is written immediately so that it is visible to
         /// all processors in the computer.
         /// </param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void VolatileWrite<E>(this ref E value, E newValue)
-            where E : struct, Enum
+        public static void VolatileWrite<TEnum>(this ref TEnum value, TEnum newValue)
+            where TEnum : struct, Enum
         {
             const string nonFastPath = "nonFastPath";
             Push(ref value);
-            Emit.Sizeof<E>();
+            Emit.Sizeof<TEnum>();
             Emit.Ldc_I4_8();
             Emit.Beq(nonFastPath);
-            //fast path - use volatile write instruction
+
+            // fast path - use volatile write instruction
             Push(newValue);
             Emit.Volatile();
-            Emit.Stobj<E>();
+            Emit.Stobj<TEnum>();
             Emit.Ret();
-            //non-fast path - use Volatile class
+
+            // non-fast path - use Volatile class
             MarkLabel(nonFastPath);
             Push(ref newValue);
             Emit.Ldind_I8();
@@ -89,11 +95,12 @@ namespace DotNext.Threading
     /// <summary>
     /// Represents atomic enum value.
     /// </summary>
+    /// <typeparam name="TEnum">The enum type.</typeparam>
     [Serializable]
     [SuppressMessage("Design", "CA1066")]
     [SuppressMessage("Usage", "CA2231")]
-    public struct AtomicEnum<E> : IEquatable<E>, ISerializable
-        where E : struct, Enum
+    public struct AtomicEnum<TEnum> : IEquatable<TEnum>, ISerializable
+        where TEnum : struct, Enum
     {
         private const string ValueSerData = "value";
 
@@ -103,7 +110,7 @@ namespace DotNext.Threading
         /// Initializes a new atomic boolean container with initial value.
         /// </summary>
         /// <param name="value">Initial value of the atomic boolean.</param>
-        public AtomicEnum(E value) => this.value = value.ToInt64();
+        public AtomicEnum(TEnum value) => this.value = value.ToInt64();
 
         [SuppressMessage("Usage", "CA1801", Justification = "context is required by .NET serialization framework")]
         private AtomicEnum(SerializationInfo info, StreamingContext context)
@@ -114,23 +121,23 @@ namespace DotNext.Threading
         /// <summary>
         /// Gets or sets enum value in volatile manner.
         /// </summary>
-        public E Value
+        public TEnum Value
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            readonly get => Unsafe.AsRef(in value).VolatileRead().ToEnum<E>();
+            readonly get => Unsafe.AsRef(in value).VolatileRead().ToEnum<TEnum>();
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             set => this.value.VolatileWrite(value.ToInt64());
         }
 
         /// <summary>
-		/// Atomically sets referenced value to the given updated value if the current value == the expected value.
-		/// </summary>
-		/// <param name="expected">The expected value.</param>
-		/// <param name="update">The new value.</param>
-		/// <returns>The original value.</returns>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public E CompareExchange(E update, E expected)
-            => Interlocked.CompareExchange(ref value, update.ToInt64(), expected.ToInt64()).ToEnum<E>();
+        /// Atomically sets referenced value to the given updated value if the current value == the expected value.
+        /// </summary>
+        /// <param name="update">The new value.</param>
+        /// <param name="expected">The expected value.</param>
+        /// <returns>The original value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public TEnum CompareExchange(TEnum update, TEnum expected)
+            => Interlocked.CompareExchange(ref value, update.ToInt64(), expected.ToInt64()).ToEnum<TEnum>();
 
         /// <summary>
         /// Atomically sets referenced value to the given updated value if the current value == the expected value.
@@ -139,136 +146,136 @@ namespace DotNext.Threading
         /// <param name="update">The new value.</param>
         /// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool CompareAndSet(E expected, E update) => EqualityComparer<E>.Default.Equals(CompareExchange(update, expected), expected);
+        public bool CompareAndSet(TEnum expected, TEnum update) => EqualityComparer<TEnum>.Default.Equals(CompareExchange(update, expected), expected);
 
         /// <summary>
-		/// Modifies the current value atomically.
-		/// </summary>
-		/// <param name="update">A new value to be stored into this container.</param>
-		/// <returns>Original value before modification.</returns>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public E GetAndSet(E update) => value.GetAndSet(update.ToInt64()).ToEnum<E>();
+        /// Modifies the current value atomically.
+        /// </summary>
+        /// <param name="update">A new value to be stored into this container.</param>
+        /// <returns>Original value before modification.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public TEnum GetAndSet(TEnum update) => value.GetAndSet(update.ToInt64()).ToEnum<TEnum>();
 
         /// <summary>
-		/// Modifies the current value atomically.
-		/// </summary>
-		/// <param name="update">A new value to be stored into this container.</param>
-		/// <returns>A new value passed as argument.</returns>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public E SetAndGet(E update)
+        /// Modifies the current value atomically.
+        /// </summary>
+        /// <param name="update">A new value to be stored into this container.</param>
+        /// <returns>A new value passed as argument.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public TEnum SetAndGet(TEnum update)
         {
             Value = update;
             return update;
         }
 
-        private (E OldValue, E NewValue) Update(in ValueFunc<E, E> updater)
+        private (TEnum OldValue, TEnum NewValue) Update(in ValueFunc<TEnum, TEnum> updater)
         {
-            E oldValue, newValue;
+            TEnum oldValue, newValue;
             do
             {
-                newValue = updater.Invoke(oldValue = Volatile.Read(ref value).ToEnum<E>());
+                newValue = updater.Invoke(oldValue = Volatile.Read(ref value).ToEnum<TEnum>());
             }
             while (!CompareAndSet(oldValue, newValue));
             return (oldValue, newValue);
         }
 
-        private (E OldValue, E NewValue) Accumulate(E x, in ValueFunc<E, E, E> accumulator)
+        private (TEnum OldValue, TEnum NewValue) Accumulate(TEnum x, in ValueFunc<TEnum, TEnum, TEnum> accumulator)
         {
-            E oldValue, newValue;
+            TEnum oldValue, newValue;
             do
             {
-                newValue = accumulator.Invoke(oldValue = Volatile.Read(ref value).ToEnum<E>(), x);
+                newValue = accumulator.Invoke(oldValue = Volatile.Read(ref value).ToEnum<TEnum>(), x);
             }
             while (!CompareAndSet(oldValue, newValue));
             return (oldValue, newValue);
         }
 
         /// <summary>
-		/// Atomically updates the current value with the results of applying the given function 
-		/// to the current and given values, returning the updated value.
-		/// </summary>
-		/// <remarks>
-		/// The function is applied with the current value as its first argument, and the given update as the second argument.
-		/// </remarks>
-		/// <param name="x">Accumulator operand.</param>
-		/// <param name="accumulator">A side-effect-free function of two arguments</param>
-		/// <returns>The updated value.</returns>
-		public E AccumulateAndGet(E x, Func<E, E, E> accumulator)
-            => AccumulateAndGet(x, new ValueFunc<E, E, E>(accumulator, true));
+        /// Atomically updates the current value with the results of applying the given function
+        /// to the current and given values, returning the updated value.
+        /// </summary>
+        /// <remarks>
+        /// The function is applied with the current value as its first argument, and the given update as the second argument.
+        /// </remarks>
+        /// <param name="x">Accumulator operand.</param>
+        /// <param name="accumulator">A side-effect-free function of two arguments.</param>
+        /// <returns>The updated value.</returns>
+        public TEnum AccumulateAndGet(TEnum x, Func<TEnum, TEnum, TEnum> accumulator)
+            => AccumulateAndGet(x, new ValueFunc<TEnum, TEnum, TEnum>(accumulator, true));
 
         /// <summary>
-		/// Atomically updates the current value with the results of applying the given function 
-		/// to the current and given values, returning the updated value.
-		/// </summary>
-		/// <remarks>
-		/// The function is applied with the current value as its first argument, and the given update as the second argument.
-		/// </remarks>
-		/// <param name="x">Accumulator operand.</param>
-		/// <param name="accumulator">A side-effect-free function of two arguments</param>
-		/// <returns>The updated value.</returns>
-		public E AccumulateAndGet(E x, in ValueFunc<E, E, E> accumulator)
+        /// Atomically updates the current value with the results of applying the given function
+        /// to the current and given values, returning the updated value.
+        /// </summary>
+        /// <remarks>
+        /// The function is applied with the current value as its first argument, and the given update as the second argument.
+        /// </remarks>
+        /// <param name="x">Accumulator operand.</param>
+        /// <param name="accumulator">A side-effect-free function of two arguments.</param>
+        /// <returns>The updated value.</returns>
+        public TEnum AccumulateAndGet(TEnum x, in ValueFunc<TEnum, TEnum, TEnum> accumulator)
             => Accumulate(x, accumulator).NewValue;
 
         /// <summary>
-		/// Atomically updates the current value with the results of applying the given function 
-		/// to the current and given values, returning the original value.
-		/// </summary>
-		/// <remarks>
-		/// The function is applied with the current value as its first argument, and the given update as the second argument.
-		/// </remarks>
-		/// <param name="x">Accumulator operand.</param>
-		/// <param name="accumulator">A side-effect-free function of two arguments</param>
-		/// <returns>The original value.</returns>
-		public E GetAndAccumulate(E x, Func<E, E, E> accumulator)
-            => GetAndAccumulate(x, new ValueFunc<E, E, E>(accumulator, true));
+        /// Atomically updates the current value with the results of applying the given function
+        /// to the current and given values, returning the original value.
+        /// </summary>
+        /// <remarks>
+        /// The function is applied with the current value as its first argument, and the given update as the second argument.
+        /// </remarks>
+        /// <param name="x">Accumulator operand.</param>
+        /// <param name="accumulator">A side-effect-free function of two arguments.</param>
+        /// <returns>The original value.</returns>
+        public TEnum GetAndAccumulate(TEnum x, Func<TEnum, TEnum, TEnum> accumulator)
+            => GetAndAccumulate(x, new ValueFunc<TEnum, TEnum, TEnum>(accumulator, true));
 
         /// <summary>
-		/// Atomically updates the current value with the results of applying the given function 
-		/// to the current and given values, returning the original value.
-		/// </summary>
-		/// <remarks>
-		/// The function is applied with the current value as its first argument, and the given update as the second argument.
-		/// </remarks>
-		/// <param name="x">Accumulator operand.</param>
-		/// <param name="accumulator">A side-effect-free function of two arguments</param>
-		/// <returns>The original value.</returns>
-		public E GetAndAccumulate(E x, in ValueFunc<E, E, E> accumulator)
+        /// Atomically updates the current value with the results of applying the given function
+        /// to the current and given values, returning the original value.
+        /// </summary>
+        /// <remarks>
+        /// The function is applied with the current value as its first argument, and the given update as the second argument.
+        /// </remarks>
+        /// <param name="x">Accumulator operand.</param>
+        /// <param name="accumulator">A side-effect-free function of two arguments.</param>
+        /// <returns>The original value.</returns>
+        public TEnum GetAndAccumulate(TEnum x, in ValueFunc<TEnum, TEnum, TEnum> accumulator)
             => Accumulate(x, accumulator).OldValue;
 
         /// <summary>
-        /// Atomically updates the stored value with the results 
+        /// Atomically updates the stored value with the results
         /// of applying the given function, returning the updated value.
         /// </summary>
-        /// <param name="updater">A side-effect-free function</param>
+        /// <param name="updater">A side-effect-free function.</param>
         /// <returns>The updated value.</returns>
-        public E UpdateAndGet(Func<E, E> updater)
-            => UpdateAndGet(new ValueFunc<E, E>(updater, true));
+        public TEnum UpdateAndGet(Func<TEnum, TEnum> updater)
+            => UpdateAndGet(new ValueFunc<TEnum, TEnum>(updater, true));
 
         /// <summary>
-        /// Atomically updates the stored value with the results 
+        /// Atomically updates the stored value with the results
         /// of applying the given function, returning the updated value.
         /// </summary>
-        /// <param name="updater">A side-effect-free function</param>
+        /// <param name="updater">A side-effect-free function.</param>
         /// <returns>The updated value.</returns>
-        public E UpdateAndGet(in ValueFunc<E, E> updater)
+        public TEnum UpdateAndGet(in ValueFunc<TEnum, TEnum> updater)
             => Update(updater).NewValue;
 
         /// <summary>
-        /// Atomically updates the stored value with the results 
+        /// Atomically updates the stored value with the results
         /// of applying the given function, returning the original value.
         /// </summary>
-        /// <param name="updater">A side-effect-free function</param>
+        /// <param name="updater">A side-effect-free function.</param>
         /// <returns>The original value.</returns>
-        public E GetAndUpdate(Func<E, E> updater)
-            => GetAndUpdate(new ValueFunc<E, E>(updater, true));
+        public TEnum GetAndUpdate(Func<TEnum, TEnum> updater)
+            => GetAndUpdate(new ValueFunc<TEnum, TEnum>(updater, true));
 
         /// <summary>
-        /// Atomically updates the stored value with the results 
+        /// Atomically updates the stored value with the results
         /// of applying the given function, returning the original value.
         /// </summary>
-        /// <param name="updater">A side-effect-free function</param>
+        /// <param name="updater">A side-effect-free function.</param>
         /// <returns>The original value.</returns>
-        public E GetAndUpdate(in ValueFunc<E, E> updater)
+        public TEnum GetAndUpdate(in ValueFunc<TEnum, TEnum> updater)
             => Update(updater).OldValue;
 
         /// <summary>
@@ -277,7 +284,7 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="other">Other value to compare.</param>
         /// <returns><see langword="true"/>, if stored value is equal to other value; otherwise, <see langword="false"/>.</returns>
-        public readonly bool Equals(E other) => Unsafe.AsRef(in value).VolatileRead() == other.ToInt64();
+        public readonly bool Equals(TEnum other) => Unsafe.AsRef(in value).VolatileRead() == other.ToInt64();
 
         /// <summary>
         /// Determines whether stored value is equal to
@@ -287,8 +294,8 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/>, if stored value is equal to other value; otherwise, <see langword="false"/>.</returns>
         public override readonly bool Equals(object? other) => other switch
         {
-            E b => Equals(b),
-            AtomicEnum<E> b => b.value.VolatileRead() == Unsafe.AsRef(in value).VolatileRead(),
+            TEnum b => Equals(b),
+            AtomicEnum<TEnum> b => b.value.VolatileRead() == Unsafe.AsRef(in value).VolatileRead(),
             _ => false,
         };
 
@@ -304,6 +311,7 @@ namespace DotNext.Threading
         /// <returns>The value in this container converted to string.</returns>
         public override readonly string ToString() => Value.ToString();
 
+        /// <inheritdoc/>
         readonly void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
             => info.AddValue(ValueSerData, value);
     }

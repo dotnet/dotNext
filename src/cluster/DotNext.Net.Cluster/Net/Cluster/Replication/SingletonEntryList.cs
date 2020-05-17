@@ -30,6 +30,7 @@ namespace DotNext.Net.Cluster.Replication
         {
             yield return entry;
         }
+
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

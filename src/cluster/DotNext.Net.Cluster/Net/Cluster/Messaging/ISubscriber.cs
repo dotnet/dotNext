@@ -19,6 +19,7 @@ namespace DotNext.Net.Cluster.Messaging
         /// <exception cref="InvalidOperationException">Attempts to send message to local or unavailable member.</exception>
         Task SendSignalAsync(IMessage message, bool requiresConfirmation = true, CancellationToken token = default);
 
+        /// <inheritdoc/>
         Task IOutputChannel.SendSignalAsync(IMessage message, CancellationToken token)
             => SendSignalAsync(message, true, token);
     }

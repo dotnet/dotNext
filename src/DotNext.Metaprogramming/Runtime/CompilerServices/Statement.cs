@@ -19,6 +19,7 @@ namespace DotNext.Runtime.CompilerServices
             private Variant<LinkedList<Expression>, LinkedListNode<Expression>> nodeOrList;
 
             internal CodeInsertionPoint(LinkedList<Expression> list) => nodeOrList = list;
+
             internal CodeInsertionPoint(LinkedListNode<Expression> node) => nodeOrList = node;
 
             internal void Insert(Expression expr)
@@ -57,7 +58,9 @@ namespace DotNext.Runtime.CompilerServices
         private static void InsertIntoHead(IEnumerable<Expression> source, LinkedList<Expression> destination)
         {
             if (destination.First is null)
+            {
                 destination.AddAll(source);
+            }
             else
             {
                 var first = destination.First;
@@ -105,7 +108,9 @@ namespace DotNext.Runtime.CompilerServices
         internal DotNext.CodeInsertionPoint EpilogueCodeInserter() => CaptureRewritePoint(epilogue).Insert;
 
         public sealed override Type Type => Content.Type;
+
         public sealed override ExpressionType NodeType => ExpressionType.Extension;
+
         public sealed override Expression Reduce() =>
             Content.AddPrologue(false, prologue).AddEpilogue(false, epilogue);
 

@@ -9,7 +9,10 @@ namespace DotNext.Threading
     {
         internal class WaitNode : TaskCompletionSource<bool>
         {
-            internal WaitNode() : base(TaskCreationOptions.RunContinuationsAsynchronously) { }
+            internal WaitNode()
+                : base(TaskCreationOptions.RunContinuationsAsynchronously)
+            {
+            }
 
             internal void Complete() => SetResult(true);
         }

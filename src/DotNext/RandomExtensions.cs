@@ -13,6 +13,9 @@ namespace DotNext
     /// </summary>
     public static class RandomExtensions
     {
+        /// <summary>
+        /// Represents randomly chosen salt for hash code algorithms.
+        /// </summary>
         internal static readonly int BitwiseHashSalt = new Random().Next();
 
         private interface IRandomStringGenerator
@@ -65,7 +68,8 @@ namespace DotNext
                 throw new ArgumentOutOfRangeException(nameof(length));
             if (length == 0 || allowedChars.IsEmpty)
                 return string.Empty;
-            //use stack allocation for small strings, which is 99% of all use cases
+
+            // use stack allocation for small strings, which is 99% of all use cases
             using CharBuffer result = length <= CharBuffer.StackallocThreshold ? stackalloc char[length] : new CharBuffer(length);
             generator.NextString(result.Span, allowedChars);
             return new string(result.Span);
@@ -90,7 +94,7 @@ namespace DotNext
         /// <param name="length">The length of the random string.</param>
         /// <returns>Randomly generated string.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
-		public static string NextString(this Random random, char[] allowedChars, int length)
+        public static string NextString(this Random random, char[] allowedChars, int length)
             => NextString(random, new ReadOnlySpan<char>(allowedChars), length);
 
         /// <summary>
@@ -123,7 +127,7 @@ namespace DotNext
         /// <param name="length">The length of the random string.</param>
         /// <returns>Randomly generated string.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
-		public static string NextString(this RandomNumberGenerator random, char[] allowedChars, int length)
+        public static string NextString(this RandomNumberGenerator random, char[] allowedChars, int length)
             => NextString(random, new ReadOnlySpan<char>(allowedChars), length);
 
         /// <summary>
@@ -155,7 +159,7 @@ namespace DotNext
         /// <param name="random">The source of random numbers.</param>
         /// <returns>A 32-bit signed integer that is in range [0, <see cref="int.MaxValue"/>].</returns>
         public static unsafe int Next(this RandomNumberGenerator random)
-            => random.Next<int>() & int.MaxValue; //remove sign bit. Abs function may cause OverflowException
+            => random.Next<int>() & int.MaxValue; // remove sign bit. Abs function may cause OverflowException
 
         /// <summary>
         /// Generates random boolean value.
@@ -177,7 +181,8 @@ namespace DotNext
         public static unsafe double NextDouble(this RandomNumberGenerator random)
         {
             double result = random.Next();
-            //normalize to range [0, 1)
+
+            // normalize to range [0, 1)
             return result / (result + 1D);
         }
 

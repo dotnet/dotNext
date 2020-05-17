@@ -4,15 +4,15 @@ using System.IO;
 namespace DotNext.IO
 {
     /// <summary>
-    /// Represents non-resizable memory stream 
+    /// Represents non-resizable memory stream
     /// which is backed by rented array of bytes.
     /// </summary>
     public sealed class RentedMemoryStream : MemoryStream
     {
-        private ArrayPool<byte>? pool;  //if null then disposed
+        private ArrayPool<byte>? pool;  // if null then disposed
 
         /// <summary>
-        /// Initializes a new non-resizable memory stream of rented memory from shared array pool. 
+        /// Initializes a new non-resizable memory stream of rented memory from shared array pool.
         /// </summary>
         /// <param name="capacity">The recommended capacity of the memory stream.</param>
         /// <param name="pool">The array pool used to rent the underlying buffer.</param>
@@ -24,7 +24,7 @@ namespace DotNext.IO
         }
 
         /// <summary>
-        /// Initializes a new non-resizable memory stream of rented memory from shared array pool. 
+        /// Initializes a new non-resizable memory stream of rented memory from shared array pool.
         /// </summary>
         /// <param name="capacity">The recommended capacity of the memory stream.</param>
         public RentedMemoryStream(int capacity)
@@ -33,7 +33,7 @@ namespace DotNext.IO
         }
 
         /// <summary>
-        /// Releases all resources used by this stream. 
+        /// Releases all resources used by this stream.
         /// </summary>
         /// <param name="disposing"><see langword="true"/> to release both managed and unmanaged resources; <see langword="false"/> to release only unmanaged resources.</param>
         protected override void Dispose(bool disposing)
@@ -43,6 +43,7 @@ namespace DotNext.IO
                 pool?.Return(GetBuffer());
                 pool = null;
             }
+
             base.Dispose(disposing);
         }
     }

@@ -51,9 +51,9 @@ namespace DotNext.Threading
             public void Dispose() => cancellation.Dispose();
         }
 
+        private readonly ValueFunc<CancellationToken, Task<bool>> callback;
         [SuppressMessage("Usage", "CA2213", Justification = "It is disposed in Dispose method")]
         private volatile TimerCompletionSource? timerTask;
-        private readonly ValueFunc<CancellationToken, Task<bool>> callback;
 
         /// <summary>
         /// Initializes a new timer.
@@ -108,6 +108,7 @@ namespace DotNext.Threading
                 timerTask = source;
                 return true;
             }
+
             return false;
         }
 
@@ -144,6 +145,7 @@ namespace DotNext.Threading
             {
                 Interlocked.Exchange(ref timerTask, null)?.Dispose();
             }
+
             base.Dispose(disposing);
         }
     }

@@ -16,7 +16,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal readonly int SessionId;
             private readonly MemoryOwner<byte> owner;
 
-            //read session ctor
+            // read session ctor
             internal DataAccessSession(int sessionId, MemoryAllocator<byte> bufferPool, int bufferSize)
             {
                 SessionId = sessionId;
@@ -55,7 +55,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     return WriteSession;
                 if (tokens.TryTake(out var sessionId))
                     return new DataAccessSession(sessionId, bufferPool, bufferSize);
-                //never happens
+
+                // never happens
                 throw new InternalBufferOverflowException(ExceptionMessages.NoAvailableReadSessions);
             }
 
@@ -70,7 +71,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public void Dispose() => WriteSession.Dispose();
         }
 
-        //concurrent read sessions management
+        // concurrent read sessions management
         private readonly DataAccessSessionManager sessionManager;
     }
 }

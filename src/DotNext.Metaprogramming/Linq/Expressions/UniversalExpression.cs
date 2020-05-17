@@ -464,6 +464,7 @@ namespace DotNext.Linq.Expressions
         [SpecialName]
         [SuppressMessage("Style", "IDE1006")]
         [SuppressMessage("Style", "CA1707", Justification = "This is special name of the operation method")]
+        [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1300", Justification = "It's special name of operator")]
         public static UniversalExpression op_Exponent(UniversalExpression left, UniversalExpression right)
             => left.Transform(ExpressionBuilder.Power, right.expression ?? Expression.Empty());
 
@@ -476,6 +477,7 @@ namespace DotNext.Linq.Expressions
         [SpecialName]
         [SuppressMessage("Style", "IDE1006")]
         [SuppressMessage("Style", "CA1707", Justification = "This is special name of the operation method")]
+        [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1300", Justification = "It's special name of operator")]
         public static UniversalExpression op_Exponent(UniversalExpression left, Expression right)
             => left.Transform(ExpressionBuilder.Power, right);
 
@@ -488,6 +490,7 @@ namespace DotNext.Linq.Expressions
         [SpecialName]
         [SuppressMessage("Style", "IDE1006")]
         [SuppressMessage("Style", "CA1707", Justification = "This is special name of the operation method")]
+        [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1300", Justification = "It's special name of operator")]
         public static UniversalExpression op_LeftShift(UniversalExpression left, UniversalExpression right)
             => left.Transform(ExpressionBuilder.LeftShift, right.expression ?? Expression.Empty());
 
@@ -500,6 +503,7 @@ namespace DotNext.Linq.Expressions
         [SpecialName]
         [SuppressMessage("Style", "IDE1006")]
         [SuppressMessage("Style", "CA1707", Justification = "This is special name of the operation method")]
+        [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1300", Justification = "It's special name of operator")]
         public static UniversalExpression op_LeftShift(UniversalExpression left, Expression right)
             => left.Transform(ExpressionBuilder.LeftShift, right);
 
@@ -512,6 +516,7 @@ namespace DotNext.Linq.Expressions
         [SpecialName]
         [SuppressMessage("Style", "IDE1006")]
         [SuppressMessage("Style", "CA1707", Justification = "This is special name of the operation method")]
+        [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1300", Justification = "It's special name of operator")]
         public static UniversalExpression op_RightShift(UniversalExpression left, UniversalExpression right)
             => left.Transform(ExpressionBuilder.RightShift, right.expression ?? Expression.Empty());
 
@@ -524,6 +529,7 @@ namespace DotNext.Linq.Expressions
         [SpecialName]
         [SuppressMessage("Style", "IDE1006")]
         [SuppressMessage("Style", "CA1707", Justification = "This is special name of the operation method")]
+        [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1300", Justification = "It's special name of operator")]
         public static UniversalExpression op_RightShift(UniversalExpression left, Expression right)
             => left.Transform(ExpressionBuilder.RightShift, right);
 
@@ -623,7 +629,8 @@ namespace DotNext.Linq.Expressions
         /// </summary>
         /// <typeparam name="T">The target value type.</typeparam>
         /// <returns>Unboxing expression.</returns>
-        public UniversalExpression Unbox<T>() where T : struct => Transform(ExpressionBuilder.Unbox<T>);
+        public UniversalExpression Unbox<T>()
+            where T : struct => Transform(ExpressionBuilder.Unbox<T>);
 
         /// <summary>
         /// Constructs delegate invocation expression.
@@ -681,7 +688,7 @@ namespace DotNext.Linq.Expressions
             => Transform(ExpressionBuilder.Property, property, indicies);
 
         /// <summary>
-        /// Constructs instance property or indexer access expression declared in the given interface or base type. 
+        /// Constructs instance property or indexer access expression declared in the given interface or base type.
         /// </summary>
         /// <param name="interfaceType">The interface or base class declaring property.</param>
         /// <param name="propertyName">The name of the instance property or indexer.</param>
@@ -754,12 +761,12 @@ namespace DotNext.Linq.Expressions
         /// <summary>
         /// Constructs conditional expression.
         /// </summary>
-        /// <typeparam name="R">The type of conditional expression.</typeparam>
+        /// <typeparam name="TResult">The type of conditional expression.</typeparam>
         /// <param name="ifTrue">Positive branch.</param>
         /// <param name="ifFalse">Negative branch.</param>
         /// <returns>Conditional expression.</returns>
-        public UniversalExpression Condition<R>(Expression ifTrue, Expression ifFalse)
-            => new UniversalExpression((expression ?? Expression.Empty()).Condition<R>(ifTrue, ifFalse));
+        public UniversalExpression Condition<TResult>(Expression ifTrue, Expression ifFalse)
+            => new UniversalExpression((expression ?? Expression.Empty()).Condition<TResult>(ifTrue, ifFalse));
 
         /// <summary>
         /// Constructs <c>throw</c> statement.
@@ -816,8 +823,10 @@ namespace DotNext.Linq.Expressions
         /// <returns>The textual representation of this expression.</returns>
         public override string ToString() => (expression ?? Expression.Empty()).ToString();
 
+        /// <inheritdoc/>
         Expression IExpressionBuilder<Expression>.Build() => expression ?? Expression.Empty();
 
+        /// <inheritdoc/>
         DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter) => new MetaExpression(parameter, this);
     }
 }

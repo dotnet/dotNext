@@ -1,5 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
@@ -15,7 +15,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <typeparam name="TConfig">The type implementing <see cref="IClusterMemberLifetime"/>.</typeparam>
         /// <param name="services">A collection of services provided by DI container.</param>
-        /// <returns>A collection of services provided by DI container.</returns>
+        /// <returns>A modified collection of services.</returns>
         public static IServiceCollection ConfigureCluster<TConfig>(this IServiceCollection services)
             where TConfig : class, IClusterMemberLifetime
             => services.AddSingleton<IClusterMemberLifetime, TConfig>();

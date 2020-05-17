@@ -18,12 +18,13 @@ namespace DotNext.Threading
     /// </remarks>
     public abstract class Synchronizer : Disposable, ISynchronizer
     {
-        private protected volatile ISynchronizer.WaitNode? node;//null means signaled state
+        private protected volatile ISynchronizer.WaitNode? node; // null means signaled state
 
         private protected Synchronizer()
         {
         }
 
+        /// <inheritdoc/>
         bool ISynchronizer.HasWaiters => !(node is null);
 
         /// <summary>
@@ -53,6 +54,7 @@ namespace DotNext.Threading
         /// <remarks>
         /// If given predicate returns true then caller will not be suspended.
         /// </remarks>
+        /// <typeparam name="T">The type of predicate parameter.</typeparam>
         /// <param name="condition">Additional condition that must be checked before suspension.</param>
         /// <param name="arg">The argument to be passed to the predicate.</param>
         /// <param name="timeout">The number of time to wait before this event is set.</param>
@@ -74,6 +76,7 @@ namespace DotNext.Threading
         /// <remarks>
         /// If given predicate returns true then caller will not be suspended.
         /// </remarks>
+        /// <typeparam name="T">The type of predicate parameter.</typeparam>
         /// <param name="condition">Additional condition that must be checked before suspension.</param>
         /// <param name="arg">The argument to be passed to the predicate.</param>
         /// <param name="token">The token that can be used to cancel waiting operation.</param>
@@ -89,6 +92,8 @@ namespace DotNext.Threading
         /// <remarks>
         /// If given predicate returns true then caller will not be suspended.
         /// </remarks>
+        /// <typeparam name="T1">The type of the first predicate parameter.</typeparam>
+        /// <typeparam name="T2">The type of the second predicate parameter.</typeparam>
         /// <param name="condition">Additional condition that must be checked before suspension.</param>
         /// <param name="arg1">The first argument to be passed to the predicate.</param>
         /// <param name="arg2">The second argument to be passed to the predicate.</param>
@@ -111,6 +116,8 @@ namespace DotNext.Threading
         /// <remarks>
         /// If given predicate returns true then caller will not be suspended.
         /// </remarks>
+        /// <typeparam name="T1">The type of the first predicate parameter.</typeparam>
+        /// <typeparam name="T2">The type of the second predicate parameter.</typeparam>
         /// <param name="condition">Additional condition that must be checked before suspension.</param>
         /// <param name="arg1">The first argument to be passed to the predicate.</param>
         /// <param name="arg2">The second argument to be passed to the predicate.</param>
@@ -134,6 +141,7 @@ namespace DotNext.Threading
             {
                 Interlocked.Exchange(ref node, null)?.TrySetCanceled();
             }
+
             base.Dispose(disposing);
         }
     }

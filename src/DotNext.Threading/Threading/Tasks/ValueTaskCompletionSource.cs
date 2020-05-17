@@ -3,24 +3,24 @@ using System.Threading.Tasks;
 
 namespace DotNext.Threading.Tasks
 {
-    internal abstract class ValueTaskCompletionSource<R>
+    internal abstract class ValueTaskCompletionSource<TResult>
     {
-        private AsyncValueTaskMethodBuilder<ValueTask<R>> builder;
+        private AsyncValueTaskMethodBuilder<ValueTask<TResult>> builder;
         private AtomicBoolean completed;
 
         private protected ValueTaskCompletionSource()
         {
-            builder = AsyncValueTaskMethodBuilder<ValueTask<R>>.Create();
+            builder = AsyncValueTaskMethodBuilder<ValueTask<TResult>>.Create();
             completed = new AtomicBoolean(false);
         }
 
-        private protected void Complete(ValueTask<R> task)
+        private protected void Complete(ValueTask<TResult> task)
         {
             if (completed.FalseToTrue())
                 builder.SetResult(task);
         }
 
-        internal ValueTask<ValueTask<R>> Task => builder.Task;
+        internal ValueTask<ValueTask<TResult>> Task => builder.Task;
     }
 
     internal abstract class ValueTaskCompletionSource
@@ -43,11 +43,11 @@ namespace DotNext.Threading.Tasks
         internal ValueTask<ValueTask> Task => builder.Task;
     }
 
-    internal class ValueTaskCompletionSource2<R> : ValueTaskCompletionSource<R>
+    internal class ValueTaskCompletionSource2<TResult> : ValueTaskCompletionSource<TResult>
     {
-        private readonly ValueTask<R> first, second;
+        private readonly ValueTask<TResult> first, second;
 
-        internal ValueTaskCompletionSource2(ValueTask<R> first, ValueTask<R> second)
+        internal ValueTaskCompletionSource2(ValueTask<TResult> first, ValueTask<TResult> second)
         {
             this.first = first;
             this.second = second;
@@ -86,11 +86,11 @@ namespace DotNext.Threading.Tasks
         internal void CompleteThird() => Complete(third);
     }
 
-    internal class ValueTaskCompletionSource3<R> : ValueTaskCompletionSource2<R>
+    internal class ValueTaskCompletionSource3<TResult> : ValueTaskCompletionSource2<TResult>
     {
-        private readonly ValueTask<R> third;
+        private readonly ValueTask<TResult> third;
 
-        internal ValueTaskCompletionSource3(ValueTask<R> first, ValueTask<R> second, ValueTask<R> third)
+        internal ValueTaskCompletionSource3(ValueTask<TResult> first, ValueTask<TResult> second, ValueTask<TResult> third)
             : base(first, second)
         {
             this.third = third;
@@ -112,11 +112,11 @@ namespace DotNext.Threading.Tasks
         internal void CompleteFourth() => Complete(fourth);
     }
 
-    internal class ValueTaskCompletionSource4<R> : ValueTaskCompletionSource3<R>
+    internal class ValueTaskCompletionSource4<TResult> : ValueTaskCompletionSource3<TResult>
     {
-        private readonly ValueTask<R> fourth;
+        private readonly ValueTask<TResult> fourth;
 
-        internal ValueTaskCompletionSource4(ValueTask<R> first, ValueTask<R> second, ValueTask<R> third, ValueTask<R> fourth)
+        internal ValueTaskCompletionSource4(ValueTask<TResult> first, ValueTask<TResult> second, ValueTask<TResult> third, ValueTask<TResult> fourth)
             : base(first, second, third)
         {
             this.fourth = fourth;
@@ -138,11 +138,11 @@ namespace DotNext.Threading.Tasks
         internal void CompleteFifth() => Complete(fifth);
     }
 
-    internal class ValueTaskCompletionSource5<R> : ValueTaskCompletionSource4<R>
+    internal class ValueTaskCompletionSource5<TResult> : ValueTaskCompletionSource4<TResult>
     {
-        private readonly ValueTask<R> fifth;
+        private readonly ValueTask<TResult> fifth;
 
-        internal ValueTaskCompletionSource5(ValueTask<R> first, ValueTask<R> second, ValueTask<R> third, ValueTask<R> fourth, ValueTask<R> fifth)
+        internal ValueTaskCompletionSource5(ValueTask<TResult> first, ValueTask<TResult> second, ValueTask<TResult> third, ValueTask<TResult> fourth, ValueTask<TResult> fifth)
             : base(first, second, third, fourth)
         {
             this.fifth = fifth;

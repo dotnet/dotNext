@@ -6,15 +6,15 @@ using System.Threading;
 namespace DotNext.Buffers
 {
     /// <summary>
-    /// Represents pool of unmanaged memory,
+    /// Represents pool of unmanaged memory.
     /// </summary>
     /// <typeparam name="T">The type of the items in the memory pool.</typeparam>
     public sealed class UnmanagedMemoryPool<T> : MemoryPool<T>
         where T : unmanaged
     {
         private readonly Action<IUnmanagedMemoryOwner<T>>? removeMemory;
-        private volatile Action? ownerDisposal;
         private readonly int defaultBufferSize;
+        private volatile Action? ownerDisposal;
 
         /// <summary>
         /// Initializes a new pool of unmanaged memory.

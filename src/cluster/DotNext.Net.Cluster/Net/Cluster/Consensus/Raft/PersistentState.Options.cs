@@ -44,11 +44,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public bool UseCaching { get; set; } = true;
 
             /// <summary>
-            /// Gets memory pool that is used by Write Ahead Log for its I/O operations.
+            /// Gets memory pool that is used by Write-Ahead Log for its I/O operations.
             /// </summary>
+            /// <typeparam name="T">The type of the items in the memory pool.</typeparam>
             /// <returns>The instance of memory pool.</returns>
             [Obsolete("Use GetMemoryAllocator instead")]
-            public virtual MemoryPool<T> CreateMemoryPool<T>() where T : struct => MemoryPool<T>.Shared;
+            public virtual MemoryPool<T> CreateMemoryPool<T>()
+                where T : struct => MemoryPool<T>.Shared;
 
             /// <summary>
             /// Gets memory allocator for internal purposes.
@@ -58,7 +60,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public virtual MemoryAllocator<T> GetMemoryAllocator<T>()
                 where T : struct
             {
-                //TODO: This code needed for backward compatibility
+                // TODO: This code needed for backward compatibility
                 Func<MemoryPool<T>> factory = CreateMemoryPool<T>;
                 return factory.Method.DeclaringType == typeof(Options) ? ArrayPool<T>.Shared.ToAllocator() : factory().ToAllocator();
             }

@@ -11,9 +11,9 @@ namespace DotNext.Threading
     public class AsyncLazy<T>
     {
         private const string NotAvailable = "<NotAvailable>";
+        private readonly bool resettable;
         private volatile Task<T>? task;
         private ValueFunc<Task<T>> factory;
-        private readonly bool resettable;
 
         /// <summary>
         /// Initializes a new instance of lazy value which is already computed.
@@ -62,7 +62,7 @@ namespace DotNext.Threading
             get
             {
                 var t = task;
-                return (t?.Status) switch
+                return t?.Status switch
                 {
                     TaskStatus.RanToCompletion => new Result<T>(t.Result),
                     TaskStatus.Faulted => new Result<T>(t.Exception),
@@ -73,7 +73,7 @@ namespace DotNext.Threading
 
         private T RemoveFactory(Task<T> task)
         {
-            factory = default; //cleanup factory because it may have captured variables and other objects
+            factory = default; // cleanup factory because it may have captured variables and other objects
             return task.Result;
         }
 
@@ -92,6 +92,7 @@ namespace DotNext.Threading
                         t = t.ContinueWith(RemoveFactory, default, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
                     task = t;
                 }
+
                 return task;
             }
         }
@@ -108,6 +109,7 @@ namespace DotNext.Threading
                 task = null;
                 return true;
             }
+
             return false;
         }
 

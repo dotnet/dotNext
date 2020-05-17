@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -16,6 +17,7 @@ namespace DotNext.Runtime.InteropServices
     /// <summary>
     /// CLS-compliant typed pointer for .NET languages without direct support of pointer data type.
     /// </summary>
+    /// <typeparam name="T">The type of pointer.</typeparam>
     /// <remarks>
     /// Many methods associated with the pointer are unsafe and can destabilize runtime.
     /// Moreover, pointer type doesn't provide automatic memory management.
@@ -31,10 +33,11 @@ namespace DotNext.Runtime.InteropServices
         public unsafe struct Enumerator : IEnumerator<T>
         {
             private const long InitialPosition = -1L;
+            private readonly T* ptr;
             private readonly long count;
             private long index;
-            private readonly T* ptr;
 
+            /// <inheritdoc/>
             object IEnumerator.Current => Current;
 
             internal Enumerator(T* ptr, long count)
@@ -66,7 +69,7 @@ namespace DotNext.Runtime.InteropServices
             /// Adjust pointer.
             /// </summary>
             /// <returns><see langword="true"/>, if next element is available; <see langword="false"/>, if end of sequence reached.</returns>
-            public bool MoveNext() => ptr != default && ++index < count;
+            public bool MoveNext() => ptr != null && ++index < count;
 
             /// <summary>
             /// Sets the enumerator to its initial position.
@@ -158,14 +161,15 @@ namespace DotNext.Runtime.InteropServices
         public unsafe Span<byte> Bytes => IsNull ? default : Span.AsBytes(value);
 
         /// <summary>
-		/// Gets or sets pointer value at the specified position in the memory.
-		/// </summary>
+        /// Gets or sets pointer value at the specified position in the memory.
+        /// </summary>
         /// <remarks>
-        /// This property doesn't check bounds of the array.      
-        /// </remarks>              
-		/// <param name="index">Element index.</param>
-		/// <returns>Array element.</returns>
-		/// <exception cref="NullPointerException">This array is not allocated.</exception>
+        /// This property doesn't check bounds of the array.
+        /// </remarks>
+        /// <param name="index">Element index.</param>
+        /// <returns>Array element.</returns>
+        /// <exception cref="NullPointerException">This array is not allocated.</exception>
+        [SuppressMessage("Design", "CA1065", Justification = "Not possible to access null pointer")]
         public unsafe ref T this[long index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -173,8 +177,7 @@ namespace DotNext.Runtime.InteropServices
             {
                 if (IsNull)
                     throw new NullPointerException();
-                else
-                    return ref value[index];
+                return ref value[index];
             }
         }
 
@@ -193,6 +196,7 @@ namespace DotNext.Runtime.InteropServices
             Intrinsics.Swap(value, other.value);
         }
 
+        /// <inheritdoc/>
         unsafe object IStrongBox.Value
         {
             get => *value;
@@ -358,6 +362,7 @@ namespace DotNext.Runtime.InteropServices
                 total += bytesRead;
                 length -= bytesRead;
             }
+
             return total;
         }
 
@@ -396,6 +401,7 @@ namespace DotNext.Runtime.InteropServices
                 destination += bytesRead;
                 total += bytesRead;
             }
+
             return total;
         }
 
@@ -405,11 +411,12 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="source">The source stream.</param>
         /// <param name="count">The number of elements of type <typeparamref name="T"/> to be copied.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The actual number of copied elements.</returns>
         /// <exception cref="NullPointerException">This pointer is zero.</exception>
         /// <exception cref="ArgumentException">The stream is not readable.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-		public unsafe ValueTask<long> ReadFromAsync(Stream source, long count, CancellationToken token = default)
+        public unsafe ValueTask<long> ReadFromAsync(Stream source, long count, CancellationToken token = default)
         {
             if (IsNull)
                 throw new NullPointerException();
@@ -470,26 +477,27 @@ namespace DotNext.Runtime.InteropServices
         public unsafe bool IsNull
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => value == default;
+            get => value == null;
         }
 
         /// <summary>
         /// Reinterprets pointer type.
         /// </summary>
-        /// <typeparam name="U">A new pointer type.</typeparam>
+        /// <typeparam name="TOther">A new pointer type.</typeparam>
         /// <returns>Reinterpreted pointer type.</returns>
-        /// <exception cref="GenericArgumentException{U}">Type <typeparamref name="U"/> should be the same size or less than type <typeparamref name="T"/>.</exception>
+        /// <exception cref="GenericArgumentException{U}">Type <typeparamref name="TOther"/> should be the same size or less than type <typeparamref name="T"/>.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [SuppressMessage("Usage", "CA2208", Justification = "The name of the generic parameter is correct")]
-        public unsafe Pointer<U> As<U>()
-            where U : unmanaged
-            => sizeof(T) >= sizeof(U) ? new Pointer<U>(Address) : throw new GenericArgumentException<U>(ExceptionMessages.WrongTargetTypeSize, nameof(U));
+        public unsafe Pointer<TOther> As<TOther>()
+            where TOther : unmanaged
+            => sizeof(T) >= sizeof(TOther) ? new Pointer<TOther>(Address) : throw new GenericArgumentException<TOther>(ExceptionMessages.WrongTargetTypeSize, nameof(TOther));
 
         /// <summary>
         /// Gets the value stored in the memory identified by this pointer.
         /// </summary>
         /// <value>The reference to the memory location.</value>
         /// <exception cref="NullPointerException">The pointer is 0.</exception>
+        [SuppressMessage("Design", "CA1065", Justification = "Not possible to access null pointer")]
         public unsafe ref T Value
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -497,8 +505,7 @@ namespace DotNext.Runtime.InteropServices
             {
                 if (IsNull)
                     throw new NullPointerException();
-                else
-                    return ref value[0];
+                return ref value[0];
             }
         }
 
@@ -778,7 +785,7 @@ namespace DotNext.Runtime.InteropServices
             => !first.Equals(second);
 
         /// <summary>
-        /// Converts non CLS-compliant pointer into its CLS-compliant representation. 
+        /// Converts non CLS-compliant pointer into its CLS-compliant representation.
         /// </summary>
         /// <param name="value">The pointer value.</param>
         [CLSCompliant(false)]
@@ -786,7 +793,7 @@ namespace DotNext.Runtime.InteropServices
         public static unsafe implicit operator Pointer<T>(T* value) => new Pointer<T>(value);
 
         /// <summary>
-        /// Converts CLS-compliant pointer into its non CLS-compliant representation. 
+        /// Converts CLS-compliant pointer into its non CLS-compliant representation.
         /// </summary>
         /// <param name="ptr">The pointer value.</param>
         [CLSCompliant(false)]
@@ -800,6 +807,7 @@ namespace DotNext.Runtime.InteropServices
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator IntPtr(Pointer<T> ptr) => ptr.Address;
 
+        /// <inheritdoc/>
         IntPtr IConvertible<IntPtr>.Convert() => Address;
 
         /// <summary>
@@ -810,7 +818,16 @@ namespace DotNext.Runtime.InteropServices
         [CLSCompliant(false)]
         public static unsafe implicit operator UIntPtr(Pointer<T> ptr) => new UIntPtr(ptr.value);
 
+        /// <inheritdoc/>
         unsafe UIntPtr IConvertible<UIntPtr>.Convert() => new UIntPtr(value);
+
+        /// <summary>
+        /// Converts this pointer the memory owner.
+        /// </summary>
+        /// <param name="length">The number of elements in the memory.</param>
+        /// <returns>The instance of memory owner.</returns>
+        public unsafe IMemoryOwner<T> ToMemoryOwner(int length)
+            => value == null ? new Buffers.UnmanagedMemory<T>(IntPtr.Zero, 0) : new Buffers.UnmanagedMemory<T>(new IntPtr(value), length);
 
         /// <summary>
         /// Obtains pointer to the memory represented by given memory handle.
@@ -835,16 +852,18 @@ namespace DotNext.Runtime.InteropServices
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator false(Pointer<T> ptr) => ptr.IsNull;
 
+        /// <inheritdoc/>
         bool IEquatable<Pointer<T>>.Equals(Pointer<T> other) => Equals(other);
 
         /// <summary>
         /// Indicates that this pointer represents the same memory location as other pointer.
         /// </summary>
-        /// <typeparam name="U">The type of the another pointer.</typeparam>
+        /// <typeparam name="TOther">The type of the another pointer.</typeparam>
         /// <param name="other">The pointer to be compared.</param>
         /// <returns><see langword="true"/>, if this pointer represents the same memory location as other pointer; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe bool Equals<U>(Pointer<U> other) where U : unmanaged => value == other.value;
+        public unsafe bool Equals<TOther>(Pointer<TOther> other)
+            where TOther : unmanaged => value == other.value;
 
         /// <summary>
         /// Determines whether the value stored in the memory identified by this pointer is equal to the given value.

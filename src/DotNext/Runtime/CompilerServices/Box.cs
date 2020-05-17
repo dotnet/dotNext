@@ -7,6 +7,7 @@ namespace DotNext.Runtime.CompilerServices
     /// <summary>
     /// Typed representation of the boxed value type.
     /// </summary>
+    /// <typeparam name="T">The value type to be boxed.</typeparam>
     [StructLayout(LayoutKind.Auto)]
     public readonly struct Box<T> : IEquatable<Box<T>>
         where T : struct
@@ -54,7 +55,6 @@ namespace DotNext.Runtime.CompilerServices
         /// </summary>
         /// <param name="other">The other container to compare.</param>
         /// <returns><see langword="true"/> his container holds the same reference as the specified container; otherwise, <see langword="false"/>.</returns>
-
         public bool Equals(Box<T> other) => ReferenceEquals(value, other.value);
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace DotNext.Runtime.CompilerServices
         public override int GetHashCode() => RuntimeHelpers.GetHashCode(value);
 
         /// <summary>
-        /// Converts stored reference to the string. 
+        /// Converts stored reference to the string.
         /// </summary>
         /// <returns>The textual representation of the stored reference.</returns>
         public override string ToString() => value?.ToString() ?? string.Empty;

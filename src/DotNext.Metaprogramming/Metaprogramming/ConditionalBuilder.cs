@@ -10,7 +10,8 @@ namespace DotNext.Metaprogramming
         private readonly Expression test;
         private Expression? ifTrue, ifFalse;
 
-        internal ConditionalBuilder(Expression test, ILexicalScope currentScope) : base(currentScope) => this.test = test;
+        internal ConditionalBuilder(Expression test, ILexicalScope currentScope)
+            : base(currentScope) => this.test = test;
 
         /// <summary>
         /// Constructs positive branch of the conditional expression.

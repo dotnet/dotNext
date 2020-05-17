@@ -9,34 +9,34 @@ namespace DotNext.Reflection
         /// Reflects constructor as function.
         /// </summary>
         /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
-        /// <typeparam name="A">A structure describing constructor signature.</typeparam>
+        /// <typeparam name="TArgs">A structure describing constructor signature.</typeparam>
         /// <returns>Constructor for type <typeparamref name="T"/>; or null, if it doesn't exist.</returns>
-        public static Reflection.Constructor<Function<A, T>>? GetConstructor<A>(bool nonPublic = false)
-            where A : struct
-            => Constructor.Get<Function<A, T>>(nonPublic);
+        public static Reflection.Constructor<Function<TArgs, T>>? GetConstructor<TArgs>(bool nonPublic = false)
+            where TArgs : struct
+            => Constructor.Get<Function<TArgs, T>>(nonPublic);
 
         /// <summary>
         /// Reflects constructor as function.
         /// </summary>
         /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
-        /// <typeparam name="A">A structure describing constructor signature.</typeparam>
+        /// <typeparam name="TArgs">A structure describing constructor signature.</typeparam>
         /// <returns>Constructor for type <typeparamref name="T"/>.</returns>
         /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-        public static Reflection.Constructor<Function<A, T>> RequireConstructor<A>(bool nonPublic = false)
-            where A : struct
-            => GetConstructor<A>(nonPublic) ?? throw MissingConstructorException.Create<T, A>();
+        public static Reflection.Constructor<Function<TArgs, T>> RequireConstructor<TArgs>(bool nonPublic = false)
+            where TArgs : struct
+            => GetConstructor<TArgs>(nonPublic) ?? throw MissingConstructorException.Create<T, TArgs>();
 
         /// <summary>
         /// Creates a new instance of type <typeparamref name="T"/>.
         /// </summary>
         /// <param name="args">The structure containing arguments to be passed into constructor.</param>
         /// <param name="nonPublic">True to reflect non-public constructor.</param>
-        /// <typeparam name="A">A structure describing constructor signature.</typeparam>
+        /// <typeparam name="TArgs">A structure describing constructor signature.</typeparam>
         /// <returns>A new instance of type <typeparamref name="T"/>.</returns>
         /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-        public static T NewInstance<A>(in A args, bool nonPublic = false)
-            where A : struct
-             => RequireConstructor<A>(nonPublic).Invoke(args)!;
+        public static T NewInstance<TArgs>(in TArgs args, bool nonPublic = false)
+            where TArgs : struct
+             => RequireConstructor<TArgs>(nonPublic).Invoke(args)!;
 
         /// <summary>
         /// Provides access to constructor of type <typeparamref name="T"/> without parameters.
@@ -49,23 +49,23 @@ namespace DotNext.Reflection
             /// is specified by delegate type.
             /// </summary>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
-            /// <typeparam name="D">Type of delegate describing constructor signature.</typeparam>
+            /// <typeparam name="TSignature">Type of delegate describing constructor signature.</typeparam>
             /// <returns>Reflected constructor; or <see langword="null"/>, if constructor doesn't exist.</returns>
-            public static Reflection.Constructor<D>? Get<D>(bool nonPublic = false)
-                where D : MulticastDelegate
-                => Reflection.Constructor<D>.GetOrCreate<T>(nonPublic);
+            public static Reflection.Constructor<TSignature>? Get<TSignature>(bool nonPublic = false)
+                where TSignature : MulticastDelegate
+                => Reflection.Constructor<TSignature>.GetOrCreate<T>(nonPublic);
 
             /// <summary>
             /// Reflects constructor of type <typeparamref name="T"/> which signature
             /// is specified by delegate type.
             /// </summary>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
-            /// <typeparam name="D">Type of delegate describing constructor signature.</typeparam>
+            /// <typeparam name="TSignature">Type of delegate describing constructor signature.</typeparam>
             /// <returns>Reflected constructor.</returns>
             /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-            public static Reflection.Constructor<D> Require<D>(bool nonPublic = false)
-                where D : MulticastDelegate
-                => Get<D>(nonPublic) ?? throw MissingConstructorException.Create<D>();
+            public static Reflection.Constructor<TSignature> Require<TSignature>(bool nonPublic = false)
+                where TSignature : MulticastDelegate
+                => Get<TSignature>(nonPublic) ?? throw MissingConstructorException.Create<TSignature>();
 
             /// <summary>
             /// Returns public constructor of type <typeparamref name="T"/> without parameters.
@@ -105,28 +105,28 @@ namespace DotNext.Reflection
         }
 
         /// <summary>
-		/// Provides access to constructor of type <typeparamref name="T"/> with single parameter.
-		/// </summary>
-        /// <typeparam name="P">Type of constructor parameter.</typeparam>
+        /// Provides access to constructor of type <typeparamref name="T"/> with single parameter.
+        /// </summary>
+        /// <typeparam name="TParam">Type of constructor parameter.</typeparam>
         [DefaultMember("Invoke")]
-        public static class Constructor<P>
+        public static class Constructor<TParam>
         {
             /// <summary>
-			/// Returns constructor <typeparamref name="T"/> with single parameter of type <typeparamref name="P"/>.
-			/// </summary>
-			/// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
-			/// <returns>Reflected constructor with single parameter; or <see langword="null"/>, if it doesn't exist.</returns>
-			public static Reflection.Constructor<Func<P, T>>? Get(bool nonPublic = false)
-                => Constructor.Get<Func<P, T>>(nonPublic);
+            /// Returns constructor <typeparamref name="T"/> with single parameter of type <typeparamref name="TParam"/>.
+            /// </summary>
+            /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
+            /// <returns>Reflected constructor with single parameter; or <see langword="null"/>, if it doesn't exist.</returns>
+            public static Reflection.Constructor<Func<TParam, T>>? Get(bool nonPublic = false)
+                => Constructor.Get<Func<TParam, T>>(nonPublic);
 
             /// <summary>
-            /// Returns constructor <typeparamref name="T"/> with single parameter of type <typeparamref name="P"/>.
+            /// Returns constructor <typeparamref name="T"/> with single parameter of type <typeparamref name="TParam"/>.
             /// </summary>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
             /// <returns>Reflected constructor with single parameter.</returns>
             /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-            public static Reflection.Constructor<Func<P, T>> Require(bool nonPublic = false)
-                => Get(nonPublic) ?? throw MissingConstructorException.Create<Func<T, P>>();
+            public static Reflection.Constructor<Func<TParam, T>> Require(bool nonPublic = false)
+                => Get(nonPublic) ?? throw MissingConstructorException.Create<Func<T, TParam>>();
 
             /// <summary>
             /// Invokes constructor.
@@ -134,9 +134,9 @@ namespace DotNext.Reflection
             /// <param name="arg">Constructor argument.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
             /// <returns>Instance of <typeparamref name="T"/> if constructor exists.</returns>
-            public static Optional<T> TryInvoke(P arg, bool nonPublic = false)
+            public static Optional<T> TryInvoke(TParam arg, bool nonPublic = false)
             {
-                Func<P, T>? ctor = Get(nonPublic);
+                Func<TParam, T>? ctor = Get(nonPublic);
                 return ctor is null ? Optional<T>.Empty : ctor(arg);
             }
 
@@ -147,35 +147,35 @@ namespace DotNext.Reflection
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
             /// <returns>Instance of <typeparamref name="T"/>.</returns>
             /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-            public static T Invoke(P arg, bool nonPublic = false) => Require(nonPublic).Invoke(arg);
+            public static T Invoke(TParam arg, bool nonPublic = false) => Require(nonPublic).Invoke(arg);
         }
 
         /// <summary>
         /// Provides access to constructor of type <typeparamref name="T"/> with two parameters.
         /// </summary>
-        /// <typeparam name="P1">Type of first constructor parameter.</typeparam>
-		/// <typeparam name="P2">Type of second constructor parameter.</typeparam>
+        /// <typeparam name="T1">Type of first constructor parameter.</typeparam>
+        /// <typeparam name="T2">Type of second constructor parameter.</typeparam>
         [DefaultMember("Invoke")]
-        public static class Constructor<P1, P2>
+        public static class Constructor<T1, T2>
         {
             /// <summary>
-			/// Returns constructor <typeparamref name="T"/> with two 
-			/// parameters of type <typeparamref name="P1"/> and <typeparamref name="P2"/>.
-			/// </summary>
-			/// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
-			/// <returns>Reflected constructor with two parameters; or <see langword="null"/>, if it doesn't exist.</returns>
-			public static Reflection.Constructor<Func<P1, P2, T>>? Get(bool nonPublic = false)
-                => Constructor.Get<Func<P1, P2, T>>(nonPublic);
+            /// Returns constructor <typeparamref name="T"/> with two
+            /// parameters of type <typeparamref name="T1"/> and <typeparamref name="T2"/>.
+            /// </summary>
+            /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
+            /// <returns>Reflected constructor with two parameters; or <see langword="null"/>, if it doesn't exist.</returns>
+            public static Reflection.Constructor<Func<T1, T2, T>>? Get(bool nonPublic = false)
+                => Constructor.Get<Func<T1, T2, T>>(nonPublic);
 
             /// <summary>
-            /// Returns constructor <typeparamref name="T"/> with two 
-            /// parameters of type <typeparamref name="P1"/> and <typeparamref name="P2"/>.
+            /// Returns constructor <typeparamref name="T"/> with two
+            /// parameters of type <typeparamref name="T1"/> and <typeparamref name="T2"/>.
             /// </summary>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
             /// <returns>Reflected constructor with two parameters.</returns>
             /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-            public static Reflection.Constructor<Func<P1, P2, T>> Require(bool nonPublic = false)
-                => Get(nonPublic) ?? throw MissingConstructorException.Create<Func<T, P1, P2>>();
+            public static Reflection.Constructor<Func<T1, T2, T>> Require(bool nonPublic = false)
+                => Get(nonPublic) ?? throw MissingConstructorException.Create<Func<T, T1, T2>>();
 
             /// <summary>
             /// Invokes constructor.
@@ -184,9 +184,9 @@ namespace DotNext.Reflection
             /// <param name="arg2">Second constructor argument.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
             /// <returns>Instance of <typeparamref name="T"/> if constructor exists.</returns>
-            public static Optional<T> TryInvoke(P1 arg1, P2 arg2, bool nonPublic = false)
+            public static Optional<T> TryInvoke(T1 arg1, T2 arg2, bool nonPublic = false)
             {
-                Func<P1, P2, T>? ctor = Get(nonPublic);
+                Func<T1, T2, T>? ctor = Get(nonPublic);
                 return ctor is null ? Optional<T>.Empty : ctor(arg1, arg2);
             }
 
@@ -198,36 +198,36 @@ namespace DotNext.Reflection
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
             /// <returns>Instance of <typeparamref name="T"/>.</returns>
             /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-            public static T Invoke(P1 arg1, P2 arg2, bool nonPublic = false) => Require(nonPublic).Invoke(arg1, arg2);
+            public static T Invoke(T1 arg1, T2 arg2, bool nonPublic = false) => Require(nonPublic).Invoke(arg1, arg2);
         }
 
         /// <summary>
         /// Provides access to constructor of type <typeparamref name="T"/> with three parameters.
         /// </summary>
-        /// <typeparam name="P1">Type of first constructor parameter.</typeparam>
-		/// <typeparam name="P2">Type of second constructor parameter.</typeparam>
-		/// <typeparam name="P3">Type of third constructor parameter.</typeparam>
+        /// <typeparam name="T1">Type of first constructor parameter.</typeparam>
+        /// <typeparam name="T2">Type of second constructor parameter.</typeparam>
+        /// <typeparam name="T3">Type of third constructor parameter.</typeparam>
         [DefaultMember("Invoke")]
-        public static class Constructor<P1, P2, P3>
+        public static class Constructor<T1, T2, T3>
         {
             /// <summary>
-			/// Returns constructor <typeparamref name="T"/> with three 
-			/// parameters of type <typeparamref name="P1"/>, <typeparamref name="P2"/> and <typeparamref name="P3"/>.
-			/// </summary>
-			/// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
-			/// <returns>Reflected constructor with three parameters; or <see langword="null"/>, if it doesn't exist.</returns>
-			public static Reflection.Constructor<Func<P1, P2, P3, T>>? Get(bool nonPublic = false)
-                => Constructor.Get<Func<P1, P2, P3, T>>(nonPublic);
+            /// Returns constructor <typeparamref name="T"/> with three
+            /// parameters of type <typeparamref name="T1"/>, <typeparamref name="T2"/> and <typeparamref name="T3"/>.
+            /// </summary>
+            /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
+            /// <returns>Reflected constructor with three parameters; or <see langword="null"/>, if it doesn't exist.</returns>
+            public static Reflection.Constructor<Func<T1, T2, T3, T>>? Get(bool nonPublic = false)
+                => Constructor.Get<Func<T1, T2, T3, T>>(nonPublic);
 
             /// <summary>
-            /// Returns constructor <typeparamref name="T"/> with three 
-            /// parameters of type <typeparamref name="P1"/>, <typeparamref name="P2"/> and <typeparamref name="P3"/>.
+            /// Returns constructor <typeparamref name="T"/> with three
+            /// parameters of type <typeparamref name="T1"/>, <typeparamref name="T2"/> and <typeparamref name="T3"/>.
             /// </summary>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
             /// <returns>Reflected constructor with three parameters.</returns>
             /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-            public static Reflection.Constructor<Func<P1, P2, P3, T>> Require(bool nonPublic = false)
-                => Get(nonPublic) ?? throw MissingConstructorException.Create<Func<T, P1, P2, P3>>();
+            public static Reflection.Constructor<Func<T1, T2, T3, T>> Require(bool nonPublic = false)
+                => Get(nonPublic) ?? throw MissingConstructorException.Create<Func<T, T1, T2, T3>>();
 
             /// <summary>
             /// Invokes constructor.
@@ -237,9 +237,9 @@ namespace DotNext.Reflection
             /// <param name="arg3">Third constructor argument.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
             /// <returns>Instance of <typeparamref name="T"/> if constructor exists.</returns>
-            public static Optional<T> TryInvoke(P1 arg1, P2 arg2, P3 arg3, bool nonPublic = false)
+            public static Optional<T> TryInvoke(T1 arg1, T2 arg2, T3 arg3, bool nonPublic = false)
             {
-                Func<P1, P2, P3, T>? ctor = Get(nonPublic);
+                Func<T1, T2, T3, T>? ctor = Get(nonPublic);
                 return ctor is null ? Optional<T>.Empty : ctor(arg1, arg2, arg3);
             }
 
@@ -252,37 +252,37 @@ namespace DotNext.Reflection
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
             /// <returns>Instance of <typeparamref name="T"/>.</returns>
             /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-            public static T Invoke(P1 arg1, P2 arg2, P3 arg3, bool nonPublic = false) => Require(nonPublic).Invoke(arg1, arg2, arg3);
+            public static T Invoke(T1 arg1, T2 arg2, T3 arg3, bool nonPublic = false) => Require(nonPublic).Invoke(arg1, arg2, arg3);
         }
 
         /// <summary>
         /// Provides access to constructor of type <typeparamref name="T"/> with four parameters.
         /// </summary>
-        /// <typeparam name="P1">Type of first constructor parameter.</typeparam>
-		/// <typeparam name="P2">Type of second constructor parameter.</typeparam>
-		/// <typeparam name="P3">Type of third constructor parameter.</typeparam>
-        /// <typeparam name="P4">Type of fourth constructor parameter.</typeparam>      
+        /// <typeparam name="T1">Type of first constructor parameter.</typeparam>
+        /// <typeparam name="T2">Type of second constructor parameter.</typeparam>
+        /// <typeparam name="T3">Type of third constructor parameter.</typeparam>
+        /// <typeparam name="T4">Type of fourth constructor parameter.</typeparam>
         [DefaultMember("Invoke")]
-        public static class Constructor<P1, P2, P3, P4>
+        public static class Constructor<T1, T2, T3, T4>
         {
             /// <summary>
-			/// Returns constructor <typeparamref name="T"/> with four 
-			/// parameters of type <typeparamref name="P1"/>, <typeparamref name="P2"/>, <typeparamref name="P3"/> and <typeparamref name="P4"/>.
-			/// </summary>
-			/// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
-			/// <returns>Reflected constructor with four parameters; or <see langword="null"/>, if it doesn't exist.</returns>
-			public static Reflection.Constructor<Func<P1, P2, P3, P4, T>>? Get(bool nonPublic = false)
-                => Constructor.Get<Func<P1, P2, P3, P4, T>>(nonPublic);
+            /// Returns constructor <typeparamref name="T"/> with four
+            /// parameters of type <typeparamref name="T1"/>, <typeparamref name="T2"/>, <typeparamref name="T3"/> and <typeparamref name="T4"/>.
+            /// </summary>
+            /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
+            /// <returns>Reflected constructor with four parameters; or <see langword="null"/>, if it doesn't exist.</returns>
+            public static Reflection.Constructor<Func<T1, T2, T3, T4, T>>? Get(bool nonPublic = false)
+                => Constructor.Get<Func<T1, T2, T3, T4, T>>(nonPublic);
 
             /// <summary>
-            /// Returns constructor <typeparamref name="T"/> with four 
-            /// parameters of type <typeparamref name="P1"/>, <typeparamref name="P2"/>, <typeparamref name="P3"/> and <typeparamref name="P4"/>.
+            /// Returns constructor <typeparamref name="T"/> with four
+            /// parameters of type <typeparamref name="T1"/>, <typeparamref name="T2"/>, <typeparamref name="T3"/> and <typeparamref name="T4"/>.
             /// </summary>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
             /// <returns>Reflected constructor with four parameters.</returns>
             /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-            public static Reflection.Constructor<Func<P1, P2, P3, P4, T>> Require(bool nonPublic = false)
-                => Get(nonPublic) ?? throw MissingConstructorException.Create<Func<T, P1, P2, P3, P4>>();
+            public static Reflection.Constructor<Func<T1, T2, T3, T4, T>> Require(bool nonPublic = false)
+                => Get(nonPublic) ?? throw MissingConstructorException.Create<Func<T, T1, T2, T3, T4>>();
 
             /// <summary>
             /// Invokes constructor.
@@ -293,9 +293,9 @@ namespace DotNext.Reflection
             /// <param name="arg4">Fourth constructor argument.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
             /// <returns>Instance of <typeparamref name="T"/> if constructor exists.</returns>
-            public static Optional<T> TryInvoke(P1 arg1, P2 arg2, P3 arg3, P4 arg4, bool nonPublic = false)
+            public static Optional<T> TryInvoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, bool nonPublic = false)
             {
-                Func<P1, P2, P3, P4, T>? ctor = Get(nonPublic);
+                Func<T1, T2, T3, T4, T>? ctor = Get(nonPublic);
                 return ctor is null ? Optional<T>.Empty : ctor(arg1, arg2, arg3, arg4);
             }
 
@@ -309,40 +309,40 @@ namespace DotNext.Reflection
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
             /// <returns>Instance of <typeparamref name="T"/>.</returns>
             /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-            public static T Invoke(P1 arg1, P2 arg2, P3 arg3, P4 arg4, bool nonPublic = false) => Require(nonPublic).Invoke(arg1, arg2, arg3, arg4);
+            public static T Invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, bool nonPublic = false) => Require(nonPublic).Invoke(arg1, arg2, arg3, arg4);
         }
 
         /// <summary>
         /// Provides access to constructor of type <typeparamref name="T"/> with five parameters.
         /// </summary>
-        /// <typeparam name="P1">Type of first constructor parameter.</typeparam>
-		/// <typeparam name="P2">Type of second constructor parameter.</typeparam>
-		/// <typeparam name="P3">Type of third constructor parameter.</typeparam>
-        /// <typeparam name="P4">Type of fourth constructor parameter.</typeparam>
-        /// <typeparam name="P5">Type of fifth constructor parameter.</typeparam>             
+        /// <typeparam name="T1">Type of first constructor parameter.</typeparam>
+        /// <typeparam name="T2">Type of second constructor parameter.</typeparam>
+        /// <typeparam name="T3">Type of third constructor parameter.</typeparam>
+        /// <typeparam name="T4">Type of fourth constructor parameter.</typeparam>
+        /// <typeparam name="T5">Type of fifth constructor parameter.</typeparam>
         [DefaultMember("Invoke")]
-        public static class Constructor<P1, P2, P3, P4, P5>
+        public static class Constructor<T1, T2, T3, T4, T5>
         {
             /// <summary>
-			/// Returns constructor <typeparamref name="T"/> with five 
-			/// parameters of type <typeparamref name="P1"/>, <typeparamref name="P2"/>, 
-			/// <typeparamref name="P3"/>, <typeparamref name="P4"/> and <typeparamref name="P5"/>.
-			/// </summary>
-			/// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
-			/// <returns>Reflected constructor with five parameters; or null, if it doesn't exist.</returns>
-			public static Reflection.Constructor<Func<P1, P2, P3, P4, P5, T>>? Get(bool nonPublic = false)
-                => Constructor.Get<Func<P1, P2, P3, P4, P5, T>>(nonPublic);
+            /// Returns constructor <typeparamref name="T"/> with five
+            /// parameters of type <typeparamref name="T1"/>, <typeparamref name="T2"/>,
+            /// <typeparamref name="T3"/>, <typeparamref name="T4"/> and <typeparamref name="T5"/>.
+            /// </summary>
+            /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
+            /// <returns>Reflected constructor with five parameters; or null, if it doesn't exist.</returns>
+            public static Reflection.Constructor<Func<T1, T2, T3, T4, T5, T>>? Get(bool nonPublic = false)
+                => Constructor.Get<Func<T1, T2, T3, T4, T5, T>>(nonPublic);
 
             /// <summary>
-            /// Returns constructor <typeparamref name="T"/> with five 
-            /// parameters of type <typeparamref name="P1"/>, <typeparamref name="P2"/>, 
-            /// <typeparamref name="P3"/>, <typeparamref name="P4"/> and <typeparamref name="P5"/>.
+            /// Returns constructor <typeparamref name="T"/> with five
+            /// parameters of type <typeparamref name="T1"/>, <typeparamref name="T2"/>,
+            /// <typeparamref name="T3"/>, <typeparamref name="T4"/> and <typeparamref name="T5"/>.
             /// </summary>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
             /// <returns>Reflected constructor with five parameters.</returns>
             /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-            public static Reflection.Constructor<Func<P1, P2, P3, P4, P5, T>> Require(bool nonPublic = false)
-                => Get(nonPublic) ?? throw MissingConstructorException.Create<Func<T, P1, P2, P3, P4, P5>>();
+            public static Reflection.Constructor<Func<T1, T2, T3, T4, T5, T>> Require(bool nonPublic = false)
+                => Get(nonPublic) ?? throw MissingConstructorException.Create<Func<T, T1, T2, T3, T4, T5>>();
 
             /// <summary>
             /// Invokes constructor.
@@ -354,9 +354,9 @@ namespace DotNext.Reflection
             /// <param name="arg5">Fifth constructor argument.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
             /// <returns>Instance of <typeparamref name="T"/> if constructor exists.</returns>
-            public static Optional<T> TryInvoke(P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, bool nonPublic = false)
+            public static Optional<T> TryInvoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, bool nonPublic = false)
             {
-                Func<P1, P2, P3, P4, P5, T>? ctor = Get(nonPublic);
+                Func<T1, T2, T3, T4, T5, T>? ctor = Get(nonPublic);
                 return ctor is null ? Optional<T>.Empty : ctor(arg1, arg2, arg3, arg4, arg5);
             }
 
@@ -371,29 +371,29 @@ namespace DotNext.Reflection
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
             /// <returns>Instance of <typeparamref name="T"/>.</returns>
             /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-            public static T Invoke(P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, bool nonPublic = false)
+            public static T Invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, bool nonPublic = false)
                 => Require(nonPublic).Invoke(arg1, arg2, arg3, arg4, arg5);
         }
 
         /// <summary>
         /// Provides access to constructor of type <typeparamref name="T"/> with six parameters.
         /// </summary>
-        /// <typeparam name="P1">Type of first constructor parameter.</typeparam>
-		/// <typeparam name="P2">Type of second constructor parameter.</typeparam>
-		/// <typeparam name="P3">Type of third constructor parameter.</typeparam>
-        /// <typeparam name="P4">Type of fourth constructor parameter.</typeparam>
-        /// <typeparam name="P5">Type of fifth constructor parameter.</typeparam> 
-        /// <typeparam name="P6">Type of sixth constructor parameter.</typeparam>              
+        /// <typeparam name="T1">Type of first constructor parameter.</typeparam>
+        /// <typeparam name="T2">Type of second constructor parameter.</typeparam>
+        /// <typeparam name="T3">Type of third constructor parameter.</typeparam>
+        /// <typeparam name="T4">Type of fourth constructor parameter.</typeparam>
+        /// <typeparam name="T5">Type of fifth constructor parameter.</typeparam>
+        /// <typeparam name="T6">Type of sixth constructor parameter.</typeparam>
         [DefaultMember("Invoke")]
-        public static class Constructor<P1, P2, P3, P4, P5, P6>
+        public static class Constructor<T1, T2, T3, T4, T5, T6>
         {
             /// <summary>
-			/// Returns constructor <typeparamref name="T"/> with six parameters.
-			/// </summary>
-			/// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
-			/// <returns>Reflected constructor with six parameters; or <see langword="null"/>, if it doesn't exist.</returns>
-			public static Reflection.Constructor<Func<P1, P2, P3, P4, P5, P6, T>>? Get(bool nonPublic = false)
-                => Constructor.Get<Func<P1, P2, P3, P4, P5, P6, T>>(nonPublic);
+            /// Returns constructor <typeparamref name="T"/> with six parameters.
+            /// </summary>
+            /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
+            /// <returns>Reflected constructor with six parameters; or <see langword="null"/>, if it doesn't exist.</returns>
+            public static Reflection.Constructor<Func<T1, T2, T3, T4, T5, T6, T>>? Get(bool nonPublic = false)
+                => Constructor.Get<Func<T1, T2, T3, T4, T5, T6, T>>(nonPublic);
 
             /// <summary>
             /// Returns constructor <typeparamref name="T"/> with six parameters.
@@ -401,8 +401,8 @@ namespace DotNext.Reflection
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
             /// <returns>Reflected constructor with six parameters.</returns>
             /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-            public static Reflection.Constructor<Func<P1, P2, P3, P4, P5, P6, T>> Require(bool nonPublic = false)
-                => Get(nonPublic) ?? throw MissingConstructorException.Create<Func<T, P1, P2, P3, P4, P5, P6>>();
+            public static Reflection.Constructor<Func<T1, T2, T3, T4, T5, T6, T>> Require(bool nonPublic = false)
+                => Get(nonPublic) ?? throw MissingConstructorException.Create<Func<T, T1, T2, T3, T4, T5, T6>>();
 
             /// <summary>
             /// Invokes constructor.
@@ -415,9 +415,9 @@ namespace DotNext.Reflection
             /// <param name="arg6">Sixth constructor argument.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
             /// <returns>Instance of <typeparamref name="T"/> if constructor exists.</returns>
-            public static Optional<T> TryInvoke(P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, bool nonPublic = false)
+            public static Optional<T> TryInvoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, bool nonPublic = false)
             {
-                Func<P1, P2, P3, P4, P5, P6, T>? ctor = Get(nonPublic);
+                Func<T1, T2, T3, T4, T5, T6, T>? ctor = Get(nonPublic);
                 return ctor is null ? Optional<T>.Empty : ctor(arg1, arg2, arg3, arg4, arg5, arg6);
             }
 
@@ -433,30 +433,30 @@ namespace DotNext.Reflection
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
             /// <returns>Instance of <typeparamref name="T"/>.</returns>
             /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-            public static T Invoke(P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, bool nonPublic = false)
+            public static T Invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, bool nonPublic = false)
                 => Require(nonPublic).Invoke(arg1, arg2, arg3, arg4, arg5, arg6);
         }
 
         /// <summary>
         /// Provides access to constructor of type <typeparamref name="T"/> with seven parameters.
         /// </summary>
-        /// <typeparam name="P1">Type of first constructor parameter.</typeparam>
-		/// <typeparam name="P2">Type of second constructor parameter.</typeparam>
-		/// <typeparam name="P3">Type of third constructor parameter.</typeparam>
-        /// <typeparam name="P4">Type of fourth constructor parameter.</typeparam>
-        /// <typeparam name="P5">Type of fifth constructor parameter.</typeparam> 
-        /// <typeparam name="P6">Type of sixth constructor parameter.</typeparam>      
-        /// <typeparam name="P7">Type of sixth constructor parameter.</typeparam>         
+        /// <typeparam name="T1">Type of first constructor parameter.</typeparam>
+        /// <typeparam name="T2">Type of second constructor parameter.</typeparam>
+        /// <typeparam name="T3">Type of third constructor parameter.</typeparam>
+        /// <typeparam name="T4">Type of fourth constructor parameter.</typeparam>
+        /// <typeparam name="T5">Type of fifth constructor parameter.</typeparam>
+        /// <typeparam name="T6">Type of sixth constructor parameter.</typeparam>
+        /// <typeparam name="T7">Type of seventh constructor parameter.</typeparam>
         [DefaultMember("Invoke")]
-        public static class Constructor<P1, P2, P3, P4, P5, P6, P7>
+        public static class Constructor<T1, T2, T3, T4, T5, T6, T7>
         {
             /// <summary>
-			/// Returns constructor <typeparamref name="T"/> with seven parameters.
-			/// </summary>
-			/// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
-			/// <returns>Reflected constructor with seven parameters; or <see langword="null"/>, if it doesn't exist.</returns>
-			public static Reflection.Constructor<Func<P1, P2, P3, P4, P5, P6, P7, T>>? Get(bool nonPublic = false)
-                => Constructor.Get<Func<P1, P2, P3, P4, P5, P6, P7, T>>(nonPublic);
+            /// Returns constructor <typeparamref name="T"/> with seven parameters.
+            /// </summary>
+            /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
+            /// <returns>Reflected constructor with seven parameters; or <see langword="null"/>, if it doesn't exist.</returns>
+            public static Reflection.Constructor<Func<T1, T2, T3, T4, T5, T6, T7, T>>? Get(bool nonPublic = false)
+                => Constructor.Get<Func<T1, T2, T3, T4, T5, T6, T7, T>>(nonPublic);
 
             /// <summary>
             /// Returns constructor <typeparamref name="T"/> with seven parameters.
@@ -464,8 +464,8 @@ namespace DotNext.Reflection
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
             /// <returns>Reflected constructor with seven parameters.</returns>
             /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-            public static Reflection.Constructor<Func<P1, P2, P3, P4, P5, P6, P7, T>> Require(bool nonPublic = false)
-                => Get(nonPublic) ?? throw MissingConstructorException.Create<Func<T, P1, P2, P3, P4, P5, P6, P7>>();
+            public static Reflection.Constructor<Func<T1, T2, T3, T4, T5, T6, T7, T>> Require(bool nonPublic = false)
+                => Get(nonPublic) ?? throw MissingConstructorException.Create<Func<T, T1, T2, T3, T4, T5, T6, T7>>();
 
             /// <summary>
             /// Invokes constructor.
@@ -479,9 +479,9 @@ namespace DotNext.Reflection
             /// <param name="arg7">Seventh constructor argument.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
             /// <returns>Instance of <typeparamref name="T"/> if constructor exists.</returns>
-            public static Optional<T> TryInvoke(P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, bool nonPublic = false)
+            public static Optional<T> TryInvoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, bool nonPublic = false)
             {
-                Func<P1, P2, P3, P4, P5, P6, P7, T>? ctor = Get(nonPublic);
+                Func<T1, T2, T3, T4, T5, T6, T7, T>? ctor = Get(nonPublic);
                 return ctor is null ? Optional<T>.Empty : ctor(arg1, arg2, arg3, arg4, arg5, arg6, arg7);
             }
 
@@ -498,31 +498,31 @@ namespace DotNext.Reflection
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
             /// <returns>Instance of <typeparamref name="T"/>.</returns>
             /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-            public static T Invoke(P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, bool nonPublic = false)
+            public static T Invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, bool nonPublic = false)
                 => Require(nonPublic).Invoke(arg1, arg2, arg3, arg4, arg5, arg6, arg7);
         }
 
         /// <summary>
         /// Provides access to constructor of type <typeparamref name="T"/> with eight parameters.
         /// </summary>
-        /// <typeparam name="P1">Type of first constructor parameter.</typeparam>
-		/// <typeparam name="P2">Type of second constructor parameter.</typeparam>
-		/// <typeparam name="P3">Type of third constructor parameter.</typeparam>
-        /// <typeparam name="P4">Type of fourth constructor parameter.</typeparam>
-        /// <typeparam name="P5">Type of fifth constructor parameter.</typeparam> 
-        /// <typeparam name="P6">Type of sixth constructor parameter.</typeparam>      
-        /// <typeparam name="P7">Type of sixth constructor parameter.</typeparam>  
-        /// <typeparam name="P8">Type of eighth constructor parameter.</typeparam>        
+        /// <typeparam name="T1">Type of first constructor parameter.</typeparam>
+        /// <typeparam name="T2">Type of second constructor parameter.</typeparam>
+        /// <typeparam name="T3">Type of third constructor parameter.</typeparam>
+        /// <typeparam name="T4">Type of fourth constructor parameter.</typeparam>
+        /// <typeparam name="T5">Type of fifth constructor parameter.</typeparam>
+        /// <typeparam name="T6">Type of sixth constructor parameter.</typeparam>
+        /// <typeparam name="T7">Type of seventh constructor parameter.</typeparam>
+        /// <typeparam name="T8">Type of eighth constructor parameter.</typeparam>
         [DefaultMember("Invoke")]
-        public static class Constructor<P1, P2, P3, P4, P5, P6, P7, P8>
+        public static class Constructor<T1, T2, T3, T4, T5, T6, T7, T8>
         {
             /// <summary>
-			/// Returns constructor <typeparamref name="T"/> with eight parameters.
-			/// </summary>
-			/// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
-			/// <returns>Reflected constructor with eight parameters; or <see langword="null"/>, if it doesn't exist.</returns>
-			public static Reflection.Constructor<Func<P1, P2, P3, P4, P5, P6, P7, P8, T>>? Get(bool nonPublic = false)
-                => Constructor.Get<Func<P1, P2, P3, P4, P5, P6, P7, P8, T>>(nonPublic);
+            /// Returns constructor <typeparamref name="T"/> with eight parameters.
+            /// </summary>
+            /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
+            /// <returns>Reflected constructor with eight parameters; or <see langword="null"/>, if it doesn't exist.</returns>
+            public static Reflection.Constructor<Func<T1, T2, T3, T4, T5, T6, T7, T8, T>>? Get(bool nonPublic = false)
+                => Constructor.Get<Func<T1, T2, T3, T4, T5, T6, T7, T8, T>>(nonPublic);
 
             /// <summary>
             /// Returns constructor <typeparamref name="T"/> with eight parameters.
@@ -530,8 +530,8 @@ namespace DotNext.Reflection
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
             /// <returns>Reflected constructor with eight parameters.</returns>
             /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-            public static Reflection.Constructor<Func<P1, P2, P3, P4, P5, P6, P7, P8, T>> Require(bool nonPublic = false)
-                => Get(nonPublic) ?? throw MissingConstructorException.Create<Func<T, P1, P2, P3, P4, P5, P6, P7, P8>>();
+            public static Reflection.Constructor<Func<T1, T2, T3, T4, T5, T6, T7, T8, T>> Require(bool nonPublic = false)
+                => Get(nonPublic) ?? throw MissingConstructorException.Create<Func<T, T1, T2, T3, T4, T5, T6, T7, T8>>();
 
             /// <summary>
             /// Invokes constructor.
@@ -546,9 +546,9 @@ namespace DotNext.Reflection
             /// <param name="arg8">Eighth constructor argument.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
             /// <returns>Instance of <typeparamref name="T"/> if constructor exists.</returns>
-            public static Optional<T> TryInvoke(P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8, bool nonPublic = false)
+            public static Optional<T> TryInvoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, bool nonPublic = false)
             {
-                Func<P1, P2, P3, P4, P5, P6, P7, P8, T>? ctor = Get(nonPublic);
+                Func<T1, T2, T3, T4, T5, T6, T7, T8, T>? ctor = Get(nonPublic);
                 return ctor is null ? Optional<T>.Empty : ctor(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
             }
 
@@ -566,32 +566,32 @@ namespace DotNext.Reflection
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
             /// <returns>Instance of <typeparamref name="T"/>.</returns>
             /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-            public static T Invoke(P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8, bool nonPublic = false)
+            public static T Invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, bool nonPublic = false)
                 => Require(nonPublic).Invoke(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
         }
 
         /// <summary>
         /// Provides access to constructor of type <typeparamref name="T"/> with nine parameters.
         /// </summary>
-        /// <typeparam name="P1">Type of first constructor parameter.</typeparam>
-		/// <typeparam name="P2">Type of second constructor parameter.</typeparam>
-		/// <typeparam name="P3">Type of third constructor parameter.</typeparam>
-        /// <typeparam name="P4">Type of fourth constructor parameter.</typeparam>
-        /// <typeparam name="P5">Type of fifth constructor parameter.</typeparam> 
-        /// <typeparam name="P6">Type of sixth constructor parameter.</typeparam>      
-        /// <typeparam name="P7">Type of sixth constructor parameter.</typeparam>  
-        /// <typeparam name="P8">Type of eighth constructor parameter.</typeparam>  
-        /// <typeparam name="P9">Type of ninth constructor parameter.</typeparam>       
+        /// <typeparam name="T1">Type of first constructor parameter.</typeparam>
+        /// <typeparam name="T2">Type of second constructor parameter.</typeparam>
+        /// <typeparam name="T3">Type of third constructor parameter.</typeparam>
+        /// <typeparam name="T4">Type of fourth constructor parameter.</typeparam>
+        /// <typeparam name="T5">Type of fifth constructor parameter.</typeparam>
+        /// <typeparam name="T6">Type of sixth constructor parameter.</typeparam>
+        /// <typeparam name="T7">Type of seventh constructor parameter.</typeparam>
+        /// <typeparam name="T8">Type of eighth constructor parameter.</typeparam>
+        /// <typeparam name="T9">Type of ninth constructor parameter.</typeparam>
         [DefaultMember("Invoke")]
-        public static class Constructor<P1, P2, P3, P4, P5, P6, P7, P8, P9>
+        public static class Constructor<T1, T2, T3, T4, T5, T6, T7, T8, T9>
         {
             /// <summary>
-			/// Returns constructor <typeparamref name="T"/> with nine parameters.
-			/// </summary>
-			/// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
-			/// <returns>Reflected constructor with nine parameters; or <see langword="true"/>, if it doesn't exist.</returns>
-			public static Reflection.Constructor<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, T>>? Get(bool nonPublic = false)
-                => Constructor.Get<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, T>>(nonPublic);
+            /// Returns constructor <typeparamref name="T"/> with nine parameters.
+            /// </summary>
+            /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
+            /// <returns>Reflected constructor with nine parameters; or <see langword="true"/>, if it doesn't exist.</returns>
+            public static Reflection.Constructor<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T>>? Get(bool nonPublic = false)
+                => Constructor.Get<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T>>(nonPublic);
 
             /// <summary>
             /// Returns constructor <typeparamref name="T"/> with nine parameters.
@@ -599,8 +599,8 @@ namespace DotNext.Reflection
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
             /// <returns>Reflected constructor with nine parameters.</returns>
             /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-            public static Reflection.Constructor<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, T>> Require(bool nonPublic = false)
-                => Get(nonPublic) ?? throw MissingConstructorException.Create<Func<T, P1, P2, P3, P4, P5, P6, P7, P8, P9>>();
+            public static Reflection.Constructor<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T>> Require(bool nonPublic = false)
+                => Get(nonPublic) ?? throw MissingConstructorException.Create<Func<T, T1, T2, T3, T4, T5, T6, T7, T8, T9>>();
 
             /// <summary>
             /// Invokes constructor.
@@ -616,9 +616,9 @@ namespace DotNext.Reflection
             /// <param name="arg9">Ninth constructor argument.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
             /// <returns>Instance of <typeparamref name="T"/> if constructor exists.</returns>
-            public static Optional<T> TryInvoke(P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8, P9 arg9, bool nonPublic = false)
+            public static Optional<T> TryInvoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, bool nonPublic = false)
             {
-                Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, T>? ctor = Get(nonPublic);
+                Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T>? ctor = Get(nonPublic);
                 return ctor is null ? Optional<T>.Empty : ctor(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
             }
 
@@ -637,33 +637,33 @@ namespace DotNext.Reflection
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
             /// <returns>Instance of <typeparamref name="T"/>.</returns>
             /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-            public static T Invoke(P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8, P9 arg9, bool nonPublic = false)
+            public static T Invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, bool nonPublic = false)
                 => Require(nonPublic).Invoke(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
         }
 
         /// <summary>
         /// Provides access to constructor of type <typeparamref name="T"/> with nine parameters.
         /// </summary>
-        /// <typeparam name="P1">Type of first constructor parameter.</typeparam>
-		/// <typeparam name="P2">Type of second constructor parameter.</typeparam>
-		/// <typeparam name="P3">Type of third constructor parameter.</typeparam>
-        /// <typeparam name="P4">Type of fourth constructor parameter.</typeparam>
-        /// <typeparam name="P5">Type of fifth constructor parameter.</typeparam> 
-        /// <typeparam name="P6">Type of sixth constructor parameter.</typeparam>      
-        /// <typeparam name="P7">Type of sixth constructor parameter.</typeparam>  
-        /// <typeparam name="P8">Type of eighth constructor parameter.</typeparam>  
-        /// <typeparam name="P9">Type of ninth constructor parameter.</typeparam>  
-        /// <typeparam name="P10">Type of tenth constructor parameter.</typeparam>      
+        /// <typeparam name="T1">Type of first constructor parameter.</typeparam>
+        /// <typeparam name="T2">Type of second constructor parameter.</typeparam>
+        /// <typeparam name="T3">Type of third constructor parameter.</typeparam>
+        /// <typeparam name="T4">Type of fourth constructor parameter.</typeparam>
+        /// <typeparam name="T5">Type of fifth constructor parameter.</typeparam>
+        /// <typeparam name="T6">Type of sixth constructor parameter.</typeparam>
+        /// <typeparam name="T7">Type of seventh constructor parameter.</typeparam>
+        /// <typeparam name="T8">Type of eighth constructor parameter.</typeparam>
+        /// <typeparam name="T9">Type of ninth constructor parameter.</typeparam>
+        /// <typeparam name="T10">Type of tenth constructor parameter.</typeparam>
         [DefaultMember("Invoke")]
-        public static class Constructor<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>
+        public static class Constructor<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>
         {
             /// <summary>
-			/// Returns constructor <typeparamref name="T"/> with ten parameters.
-			/// </summary>
-			/// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
-			/// <returns>Reflected constructor with ten parameters; or <see langword="null"/>, if it doesn't exist.</returns>
-			public static Reflection.Constructor<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, T>>? Get(bool nonPublic = false)
-                => Constructor.Get<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, T>>(nonPublic);
+            /// Returns constructor <typeparamref name="T"/> with ten parameters.
+            /// </summary>
+            /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
+            /// <returns>Reflected constructor with ten parameters; or <see langword="null"/>, if it doesn't exist.</returns>
+            public static Reflection.Constructor<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T>>? Get(bool nonPublic = false)
+                => Constructor.Get<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T>>(nonPublic);
 
             /// <summary>
             /// Returns constructor <typeparamref name="T"/> with ten parameters.
@@ -671,8 +671,8 @@ namespace DotNext.Reflection
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
             /// <returns>Reflected constructor with ten parameters.</returns>
             /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-            public static Reflection.Constructor<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, T>> Require(bool nonPublic = false)
-                => Get(nonPublic) ?? throw MissingConstructorException.Create<Func<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>>();
+            public static Reflection.Constructor<Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T>> Require(bool nonPublic = false)
+                => Get(nonPublic) ?? throw MissingConstructorException.Create<Func<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>>();
 
             /// <summary>
             /// Invokes constructor.
@@ -689,9 +689,9 @@ namespace DotNext.Reflection
             /// <param name="arg10">Tenth constructor argument.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
             /// <returns>Instance of <typeparamref name="T"/> if constructor exists.</returns>
-            public static Optional<T> TryInvoke(P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8, P9 arg9, P10 arg10, bool nonPublic = false)
+            public static Optional<T> TryInvoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, bool nonPublic = false)
             {
-                Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, T>? ctor = Get(nonPublic);
+                Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T>? ctor = Get(nonPublic);
                 return ctor is null ? Optional<T>.Empty : ctor(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
             }
 
@@ -711,7 +711,7 @@ namespace DotNext.Reflection
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
             /// <returns>Instance of <typeparamref name="T"/>.</returns>
             /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-            public static T Invoke(P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8, P9 arg9, P10 arg10, bool nonPublic = false)
+            public static T Invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, bool nonPublic = false)
                 => Require(nonPublic).Invoke(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
         }
     }

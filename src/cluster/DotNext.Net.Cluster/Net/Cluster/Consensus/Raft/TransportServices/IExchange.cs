@@ -21,7 +21,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         /// <returns><see langword="true"/> to call <see cref="CreateOutboundMessageAsync"/> afterwards and continues communication with remote peer; <see langword="false"/> to finalize communication.</returns>
         ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint endPoint, CancellationToken token);
 
-
         /// <summary>
         /// Creates a packet to send to the remote peer.
         /// </summary>

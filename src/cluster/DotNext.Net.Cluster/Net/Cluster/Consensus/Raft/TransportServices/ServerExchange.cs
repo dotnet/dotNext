@@ -18,14 +18,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             HeartbeatRequestReceived,
             AppendEntriesReceived,
 
-            ReadyToReceiveEntry,    //ready to receive next entry
-            ReceivingEntry,   //log entry header is obtained, content is available
-            EntryReceived,  ///similar to ReceivingEntry but its content completely received
+            ReadyToReceiveEntry,    // ready to receive next entry
+            ReceivingEntry,   // log entry header is obtained, content is available
+            EntryReceived,  // similar to ReceivingEntry but its content completely received
             ReceivingEntriesFinished,
             SnapshotReceived,
-            ReceivingSnapshotFinished
+            ReceivingSnapshotFinished,
         }
-
 
         private readonly ILocalMember server;
         private Task? task;
@@ -66,7 +65,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                         BeginSendMetadata(token);
                     }
                     else
+                    {
                         state = State.SendingMetadata;
+                    }
+
                     break;
                 case MessageType.Resign:
                     state = State.ResignRequestReceived;
@@ -92,6 +94,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                             result = default;
                             break;
                     }
+
                     break;
                 case MessageType.InstallSnapshot:
                     switch (state)
@@ -110,6 +113,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
                     break;
             }
+
             return result;
         }
 

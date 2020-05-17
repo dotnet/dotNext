@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Net;
@@ -7,6 +6,7 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Resources;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using static System.Globalization.CultureInfo;
 
 namespace DotNext.Net.Cluster.Consensus.Raft

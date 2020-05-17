@@ -36,7 +36,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         public virtual void MovedToCandidateState()
         {
-
         }
 
         /// <summary>
@@ -44,7 +43,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         public virtual void MovedToFollowerState()
         {
-
         }
 
         /// <summary>
@@ -52,7 +50,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         public virtual void MovedToLeaderState()
         {
-
         }
 
         /// <summary>
@@ -60,7 +57,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         public virtual void ReportHeartbeat()
         {
-
         }
     }
 }

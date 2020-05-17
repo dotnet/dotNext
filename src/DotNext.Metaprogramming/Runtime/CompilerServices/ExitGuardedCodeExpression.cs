@@ -18,7 +18,9 @@ namespace DotNext.Runtime.CompilerServices
         }
 
         public override Type Type => typeof(void);
+
         public override Expression Reduce() => Empty();
+
         internal override Expression Reduce(ParameterExpression stateMachine)
             => stateMachine.Call(nameof(AsyncStateMachine<ValueTuple>.ExitGuardedCode), StateId);
     }

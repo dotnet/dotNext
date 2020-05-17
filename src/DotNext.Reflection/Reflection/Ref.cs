@@ -8,6 +8,7 @@ using System.Security;
 namespace DotNext.Reflection
 {
     using static Runtime.Intrinsics;
+
     internal static class Ref
     {
         private static bool Is(Type type) => type.IsGenericInstanceOf(typeof(Ref<>));
@@ -54,6 +55,7 @@ namespace DotNext.Reflection
         [AllowNull]
         public T Value;
 
+        /// <inheritdoc/>
         object? IStrongBox.Value
         {
             get => Value;
@@ -63,7 +65,7 @@ namespace DotNext.Reflection
         /// <summary>
         /// Extracts actual value from the reference.
         /// </summary>
-        /// <param name="reference">Typed reference</param>
+        /// <param name="reference">Typed reference.</param>
         /// <returns>Dereferenced value.</returns>
         public static implicit operator T(in Ref<T> reference) => reference.Value;
 
@@ -109,6 +111,7 @@ namespace DotNext.Reflection
         /// <returns>Always <see langword="false"/>.</returns>
         public override bool Equals(object? other) => false;
 
+        /// <inheritdoc/>
         bool IEquatable<Ref<T>>.Equals(Ref<T> other) => false;
     }
 }

@@ -36,7 +36,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <remarks>
         /// Example of IPv6 network: 2001:0db8::/32
-        /// Example of IPv4 network: 192.168.0.0/24
+        /// Example of IPv4 network: 192.168.0.0/24.
         /// </remarks>
         [CLSCompliant(false)]
         public HashSet<IPNetwork> AllowedNetworks { get; }
@@ -64,6 +64,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         public double HeartbeatThreshold { get; set; }
 
+        /// <inheritdoc/>
         ElectionTimeout IClusterMemberConfiguration.ElectionTimeout => electionTimeout;
 
         /// <summary>
@@ -71,7 +72,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <remarks>
         /// <see langword="false"/> value allows to build CA distributed cluster
-        /// while <see langword="true"/> value allows to build CP/AP distributed cluster. 
+        /// while <see langword="true"/> value allows to build CP/AP distributed cluster.
         /// </remarks>
         public bool Partitioning { get; set; }
 

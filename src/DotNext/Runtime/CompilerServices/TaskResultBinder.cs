@@ -24,7 +24,8 @@ namespace DotNext.Runtime.CompilerServices
         private static Expression BindProperty(PropertyInfo resultProperty, Expression target, out Expression restrictions)
         {
             restrictions = Expression.TypeIs(target, resultProperty.DeclaringType);
-            //reinterpret reference type without casting because it is protected by restriction
+
+            // reinterpret reference type without casting because it is protected by restriction
             target = Expression.Call(typeof(Unsafe), nameof(Unsafe.As), new[] { resultProperty.DeclaringType }, target);
             target = Expression.Property(target, resultProperty);
             return target.Type.IsValueType ? Expression.Convert(target, typeof(object)) : target;

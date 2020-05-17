@@ -37,6 +37,7 @@ namespace DotNext.Text
         /// <returns>The independent copy of this context.</returns>
         public EncodingContext Copy() => new EncodingContext(encoding, encoder != null);
 
+        /// <inheritdoc/>
         object ICloneable.Clone() => Copy();
 
         /// <summary>
@@ -52,7 +53,7 @@ namespace DotNext.Text
         internal Encoder GetEncoder() => encoder ?? Encoding.GetEncoder();
 
         /// <summary>
-        /// Creates encoding context 
+        /// Creates encoding context.
         /// </summary>
         /// <param name="encoding">The text encoding.</param>
         public static implicit operator EncodingContext(Encoding encoding) => new EncodingContext(encoding);

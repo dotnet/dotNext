@@ -78,7 +78,7 @@ namespace DotNext.Threading
         private const int NoLockState = default;
 
         private volatile int state;
-        private int version;    //volatile
+        private int version;    // volatile
 
         /// <summary>
         /// Returns a stamp that can be validated later.
@@ -153,10 +153,13 @@ namespace DotNext.Threading
         {
             var spinner = new SpinWait();
             for (int currentState; !timeout.IsExpired; token.ThrowIfCancellationRequested())
+            {
                 if ((currentState = state) == WriteLockState)
                     spinner.SpinOnce();
                 else if (Interlocked.CompareExchange(ref state, checked(currentState + 1), currentState) == currentState)
                     return true;
+            }
+
             return false;
         }
 
@@ -175,7 +178,10 @@ namespace DotNext.Threading
         /// </summary>
         public void EnterWriteLock()
         {
-            for (var spinner = new SpinWait(); Interlocked.CompareExchange(ref state, WriteLockState, NoLockState) != NoLockState; spinner.SpinOnce()) { }
+            for (var spinner = new SpinWait(); Interlocked.CompareExchange(ref state, WriteLockState, NoLockState) != NoLockState; spinner.SpinOnce())
+            {
+            }
+
             Interlocked.Increment(ref version);
         }
 
@@ -194,8 +200,11 @@ namespace DotNext.Threading
         private bool TryEnterWriteLock(Timeout timeout, CancellationToken token)
         {
             for (var spinner = new SpinWait(); Interlocked.CompareExchange(ref state, WriteLockState, NoLockState) != NoLockState; spinner.SpinOnce(), token.ThrowIfCancellationRequested())
+            {
                 if (timeout.IsExpired)
                     return false;
+            }
+
             Interlocked.Increment(ref version);
             return true;
         }

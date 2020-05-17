@@ -7,7 +7,7 @@ namespace DotNext.Threading.Tasks
     /// </summary>
     /// <remarks>
     /// Methods in this class exist for architectural symmetry with <c>WhenAll</c> and <c>WhenAny</c> methods
-    /// from <see cref="Task"/> class when you have to work with tasks implemented as value types. 
+    /// from <see cref="Task"/> class when you have to work with tasks implemented as value types.
     /// Don't use these methods just to avoid allocation of memory inside of managed heap.
     /// </remarks>
     public static class ValueTaskSynchronization
@@ -117,7 +117,7 @@ namespace DotNext.Threading.Tasks
         /// <param name="task1">The first task to await.</param>
         /// <param name="task2">The second task to await.</param>
         /// <param name="task3">The third task to await.</param>
-        /// <param name="task4">The third task to await.</param>
+        /// <param name="task4">The fourth task to await.</param>
         /// <param name="task5">The fifth task to await.</param>
         /// <returns>A task that represents the completion of all of the supplied tasks.</returns>
         public static async ValueTask WhenAll(ValueTask task1, ValueTask task2, ValueTask task3, ValueTask task4, ValueTask task5)
@@ -177,15 +177,15 @@ namespace DotNext.Threading.Tasks
         /// </remarks>
         /// <param name="task1">The first task to wait on for completion.</param>
         /// <param name="task2">The second task to wait on for completion.</param>
-        /// <typeparam name="R">The type of the result produced by the tasks.</typeparam>
+        /// <typeparam name="TResult">The type of the result produced by the tasks.</typeparam>
         /// <returns>A task that represents the completion of one of the supplied tasks. The return task's <see cref="ValueTask{TResult}.Result"/> is the task that completed.</returns>
-        public static ValueTask<ValueTask<R>> WhenAny<R>(ValueTask<R> task1, ValueTask<R> task2)
+        public static ValueTask<ValueTask<TResult>> WhenAny<TResult>(ValueTask<TResult> task1, ValueTask<TResult> task2)
         {
             if (task1.IsCompleted)
-                return new ValueTask<ValueTask<R>>(task1);
+                return new ValueTask<ValueTask<TResult>>(task1);
             else if (task2.IsCompleted)
-                return new ValueTask<ValueTask<R>>(task2);
-            var whenAny = new ValueTaskCompletionSource2<R>(task1, task2);
+                return new ValueTask<ValueTask<TResult>>(task2);
+            var whenAny = new ValueTaskCompletionSource2<TResult>(task1, task2);
             task1.ConfigureAwait(false).GetAwaiter().OnCompleted(whenAny.CompleteFirst);
             task2.ConfigureAwait(false).GetAwaiter().OnCompleted(whenAny.CompleteSecond);
             return whenAny.Task;
@@ -225,17 +225,17 @@ namespace DotNext.Threading.Tasks
         /// <param name="task1">The first task to wait on for completion.</param>
         /// <param name="task2">The second task to wait on for completion.</param>
         /// <param name="task3">The third task to wait on for completion.</param>
-        /// <typeparam name="R">The type of the result produced by the tasks.</typeparam>
+        /// <typeparam name="TResult">The type of the result produced by the tasks.</typeparam>
         /// <returns>A task that represents the completion of one of the supplied tasks. The return task's <see cref="ValueTask{TResult}.Result"/> is the task that completed.</returns>
-        public static ValueTask<ValueTask<R>> WhenAny<R>(ValueTask<R> task1, ValueTask<R> task2, ValueTask<R> task3)
+        public static ValueTask<ValueTask<TResult>> WhenAny<TResult>(ValueTask<TResult> task1, ValueTask<TResult> task2, ValueTask<TResult> task3)
         {
             if (task1.IsCompleted)
-                return new ValueTask<ValueTask<R>>(task1);
+                return new ValueTask<ValueTask<TResult>>(task1);
             else if (task2.IsCompleted)
-                return new ValueTask<ValueTask<R>>(task2);
+                return new ValueTask<ValueTask<TResult>>(task2);
             else if (task3.IsCompleted)
-                return new ValueTask<ValueTask<R>>(task3);
-            var whenAny = new ValueTaskCompletionSource3<R>(task1, task2, task3);
+                return new ValueTask<ValueTask<TResult>>(task3);
+            var whenAny = new ValueTaskCompletionSource3<TResult>(task1, task2, task3);
             task1.ConfigureAwait(false).GetAwaiter().OnCompleted(whenAny.CompleteFirst);
             task2.ConfigureAwait(false).GetAwaiter().OnCompleted(whenAny.CompleteSecond);
             task3.ConfigureAwait(false).GetAwaiter().OnCompleted(whenAny.CompleteThird);
@@ -281,19 +281,19 @@ namespace DotNext.Threading.Tasks
         /// <param name="task2">The second task to wait on for completion.</param>
         /// <param name="task3">The third task to wait on for completion.</param>
         /// <param name="task4">The fourth task to wait on for completion.</param>
-        /// <typeparam name="R">The type of the result produced by the tasks.</typeparam>
+        /// <typeparam name="TResult">The type of the result produced by the tasks.</typeparam>
         /// <returns>A task that represents the completion of one of the supplied tasks. The return task's <see cref="ValueTask{TResult}.Result"/> is the task that completed.</returns>
-        public static ValueTask<ValueTask<R>> WhenAny<R>(ValueTask<R> task1, ValueTask<R> task2, ValueTask<R> task3, ValueTask<R> task4)
+        public static ValueTask<ValueTask<TResult>> WhenAny<TResult>(ValueTask<TResult> task1, ValueTask<TResult> task2, ValueTask<TResult> task3, ValueTask<TResult> task4)
         {
             if (task1.IsCompleted)
-                return new ValueTask<ValueTask<R>>(task1);
+                return new ValueTask<ValueTask<TResult>>(task1);
             else if (task2.IsCompleted)
-                return new ValueTask<ValueTask<R>>(task2);
+                return new ValueTask<ValueTask<TResult>>(task2);
             else if (task3.IsCompleted)
-                return new ValueTask<ValueTask<R>>(task3);
+                return new ValueTask<ValueTask<TResult>>(task3);
             else if (task4.IsCompleted)
-                return new ValueTask<ValueTask<R>>(task4);
-            var whenAny = new ValueTaskCompletionSource4<R>(task1, task2, task3, task4);
+                return new ValueTask<ValueTask<TResult>>(task4);
+            var whenAny = new ValueTaskCompletionSource4<TResult>(task1, task2, task3, task4);
             task1.ConfigureAwait(false).GetAwaiter().OnCompleted(whenAny.CompleteFirst);
             task2.ConfigureAwait(false).GetAwaiter().OnCompleted(whenAny.CompleteSecond);
             task3.ConfigureAwait(false).GetAwaiter().OnCompleted(whenAny.CompleteThird);
@@ -344,22 +344,22 @@ namespace DotNext.Threading.Tasks
         /// <param name="task2">The second task to wait on for completion.</param>
         /// <param name="task3">The third task to wait on for completion.</param>
         /// <param name="task4">The fourth task to wait on for completion.</param>
-        /// <param name="task5">The fourth task to wait on for completion.</param>
-        /// <typeparam name="R">The type of the result produced by the tasks.</typeparam>
+        /// <param name="task5">The fifth task to wait on for completion.</param>
+        /// <typeparam name="TResult">The type of the result produced by the tasks.</typeparam>
         /// <returns>A task that represents the completion of one of the supplied tasks. The return task's <see cref="ValueTask{TResult}.Result"/> is the task that completed.</returns>
-        public static ValueTask<ValueTask<R>> WhenAny<R>(ValueTask<R> task1, ValueTask<R> task2, ValueTask<R> task3, ValueTask<R> task4, ValueTask<R> task5)
+        public static ValueTask<ValueTask<TResult>> WhenAny<TResult>(ValueTask<TResult> task1, ValueTask<TResult> task2, ValueTask<TResult> task3, ValueTask<TResult> task4, ValueTask<TResult> task5)
         {
             if (task1.IsCompleted)
-                return new ValueTask<ValueTask<R>>(task1);
+                return new ValueTask<ValueTask<TResult>>(task1);
             else if (task2.IsCompleted)
-                return new ValueTask<ValueTask<R>>(task2);
+                return new ValueTask<ValueTask<TResult>>(task2);
             else if (task3.IsCompleted)
-                return new ValueTask<ValueTask<R>>(task3);
+                return new ValueTask<ValueTask<TResult>>(task3);
             else if (task4.IsCompleted)
-                return new ValueTask<ValueTask<R>>(task4);
+                return new ValueTask<ValueTask<TResult>>(task4);
             else if (task5.IsCompleted)
-                return new ValueTask<ValueTask<R>>(task5);
-            var whenAny = new ValueTaskCompletionSource5<R>(task1, task2, task3, task4, task5);
+                return new ValueTask<ValueTask<TResult>>(task5);
+            var whenAny = new ValueTaskCompletionSource5<TResult>(task1, task2, task3, task4, task5);
             task1.ConfigureAwait(false).GetAwaiter().OnCompleted(whenAny.CompleteFirst);
             task2.ConfigureAwait(false).GetAwaiter().OnCompleted(whenAny.CompleteSecond);
             task3.ConfigureAwait(false).GetAwaiter().OnCompleted(whenAny.CompleteThird);

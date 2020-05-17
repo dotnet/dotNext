@@ -116,8 +116,10 @@ namespace DotNext
         private static IEnumerable<FieldInfo> GetAllFields(Type type)
         {
             foreach (var t in type.GetBaseTypes(includeTopLevel: true))
+            {
                 foreach (var field in t.GetFields(BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic))
                     yield return field;
+            }
         }
 
         private Func<T, T, bool> BuildEquals()
@@ -126,15 +128,21 @@ namespace DotNext
                 throw new PlatformNotSupportedException();
             var x = Expression.Parameter(typeof(T));
             if (x.Type.IsPrimitive)
+            {
                 return EqualityComparer<T>.Default.Equals;
+            }
             else if (x.Type.IsSZArray)
+            {
                 return EqualsMethodForArrayElementType(x.Type.GetElementType()).CreateDelegate<Func<T, T, bool>>();
+            }
             else
             {
                 var y = Expression.Parameter(x.Type);
-                //collect all fields in the hierarchy
+
+                // collect all fields in the hierarchy
                 Expression? expr = x.Type.IsClass ? Expression.ReferenceNotEqual(y, Expression.Constant(null, y.Type)) : null;
                 foreach (var field in GetAllFields(x.Type))
+                {
                     if (IsIncluded(field))
                     {
                         var fieldX = Expression.Field(x, field);
@@ -150,6 +158,8 @@ namespace DotNext
                             condition = Expression.Call(new Func<object, object, bool>(Equals).Method, fieldX, fieldY);
                         expr = expr is null ? condition : Expression.AndAlso(expr, condition);
                     }
+                }
+
                 if (x.Type.IsClass)
                     expr = Expression.OrElse(Expression.ReferenceEqual(x, y), expr);
                 return Expression.Lambda<Func<T, T, bool>>(expr, false, x, y).Compile();
@@ -163,7 +173,9 @@ namespace DotNext
             Expression expr;
             var inputParam = Expression.Parameter(typeof(T));
             if (inputParam.Type.IsPrimitive)
+            {
                 return EqualityComparer<T>.Default.GetHashCode;
+            }
             else if (inputParam.Type.IsSZArray)
             {
                 expr = HashCodeMethodForArrayElementType(inputParam, Expression.Constant(salted));
@@ -173,19 +185,29 @@ namespace DotNext
             {
                 var hashCodeTemp = Expression.Parameter(typeof(int));
                 ICollection<Expression> expressions = new LinkedList<Expression>();
-                //collect all fields in the hierarchy
+
+                // collect all fields in the hierarchy
                 foreach (var field in GetAllFields(inputParam.Type))
+                {
                     if (IsIncluded(field))
                     {
                         expr = Expression.Field(inputParam, field);
                         if (field.FieldType.IsPointer)
+                        {
                             expr = Expression.Call(typeof(Intrinsics).GetMethod(nameof(Intrinsics.PointerHashCode), BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.NonPublic), expr);
+                        }
                         else if (field.FieldType.IsPrimitive)
+                        {
                             expr = Expression.Call(expr, nameof(GetHashCode), Array.Empty<Type>());
+                        }
                         else if (field.FieldType.IsValueType)
+                        {
                             expr = HashCodeMethodForValueType(expr, Expression.Constant(salted));
+                        }
                         else if (field.FieldType.IsSZArray)
+                        {
                             expr = HashCodeMethodForArrayElementType(expr, Expression.Constant(salted));
+                        }
                         else
                         {
                             expr = Expression.Condition(
@@ -193,9 +215,12 @@ namespace DotNext
                                 Expression.Constant(0, typeof(int)),
                                 Expression.Call(expr, nameof(GetHashCode), Array.Empty<Type>()));
                         }
+
                         expr = Expression.Assign(hashCodeTemp, Expression.Add(Expression.Multiply(hashCodeTemp, Expression.Constant(-1521134295)), expr));
                         expressions.Add(expr);
                     }
+                }
+
                 expressions.Add(hashCodeTemp);
                 expr = Expression.Block(typeof(int), Sequence.Singleton(hashCodeTemp), expressions);
                 return Expression.Lambda<Func<T, int>>(expr, false, inputParam).Compile();

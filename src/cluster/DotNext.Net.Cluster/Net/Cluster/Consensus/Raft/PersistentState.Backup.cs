@@ -27,13 +27,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 archive = new ZipArchive(output, ZipArchiveMode.Create, true);
                 foreach (var file in location.EnumerateFiles())
-                    await using (var source = new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, Buffer.Length, true))
-                    {
-                        var entry = archive.CreateEntry(file.Name, backupCompression);
-                        entry.LastWriteTime = file.LastWriteTime;
-                        await using var destination = entry.Open();
-                        await source.CopyToAsync(destination, token).ConfigureAwait(false);
-                    }
+                {
+                    await using var source = new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, Buffer.Length, true);
+                    var entry = archive.CreateEntry(file.Name, backupCompression);
+                    entry.LastWriteTime = file.LastWriteTime;
+                    await using var destination = entry.Open();
+                    await source.CopyToAsync(destination, token).ConfigureAwait(false);
+                }
+
                 await output.FlushAsync(token).ConfigureAwait(false);
             }
             finally
@@ -58,17 +59,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         [SuppressMessage("Reliability", "CA2000", Justification = "DisposeAsync used instead of Dispose")]
         public static async Task RestoreFromBackupAsync(Stream backup, DirectoryInfo destination, CancellationToken token = default)
         {
-            //cleanup directory
+            // cleanup directory
             foreach (var file in destination.EnumerateFiles())
                 file.Delete();
-            //extract files from archive
+
+            // extract files from archive
             using var archive = new ZipArchive(backup, ZipArchiveMode.Read, true);
             foreach (var entry in archive.Entries)
-                await using (var fs = new FileStream(Path.Combine(destination.FullName, entry.Name), FileMode.Create, FileAccess.Write, FileShare.None, 1024, true))
-                {
-                    await using var entryStream = entry.Open();
-                    await entryStream.CopyToAsync(fs, token).ConfigureAwait(false);
-                }
+            {
+                await using var fs = new FileStream(Path.Combine(destination.FullName, entry.Name), FileMode.Create, FileAccess.Write, FileShare.None, 1024, true);
+                await using var entryStream = entry.Open();
+                await entryStream.CopyToAsync(fs, token).ConfigureAwait(false);
+            }
         }
     }
 }

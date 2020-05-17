@@ -11,22 +11,22 @@ namespace DotNext.Collections.Generic
     /// <summary>
     /// Represents lazily converted read-only dictionary.
     /// </summary>
-    /// <typeparam name="K">Type of dictionary keys.</typeparam>
-    /// <typeparam name="I">Type of values in the source dictionary.</typeparam>
-    /// <typeparam name="O">Type of values in the converted dictionary.</typeparam>
+    /// <typeparam name="TKey">Type of dictionary keys.</typeparam>
+    /// <typeparam name="TInput">Type of values in the source dictionary.</typeparam>
+    /// <typeparam name="TOutput">Type of values in the converted dictionary.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct ReadOnlyDictionaryView<K, I, O> : IReadOnlyDictionary<K, O>, IEquatable<ReadOnlyDictionaryView<K, I, O>>
-        where K : notnull
+    public readonly struct ReadOnlyDictionaryView<TKey, TInput, TOutput> : IReadOnlyDictionary<TKey, TOutput>, IEquatable<ReadOnlyDictionaryView<TKey, TInput, TOutput>>
+        where TKey : notnull
     {
-        private readonly IReadOnlyDictionary<K, I> source;
-        private readonly ValueFunc<I, O> mapper;
+        private readonly IReadOnlyDictionary<TKey, TInput> source;
+        private readonly ValueFunc<TInput, TOutput> mapper;
 
         /// <summary>
         /// Initializes a new lazily converted view.
         /// </summary>
         /// <param name="dictionary">Read-only dictionary to convert.</param>
         /// <param name="mapper">Value converter.</param>
-        public ReadOnlyDictionaryView(IReadOnlyDictionary<K, I> dictionary, in ValueFunc<I, O> mapper)
+        public ReadOnlyDictionaryView(IReadOnlyDictionary<TKey, TInput> dictionary, in ValueFunc<TInput, TOutput> mapper)
         {
             source = dictionary ?? throw new ArgumentNullException(nameof(dictionary));
             this.mapper = mapper;
@@ -37,22 +37,22 @@ namespace DotNext.Collections.Generic
         /// </summary>
         /// <param name="key">The key of the element to get.</param>
         /// <returns>The converted value associated with the key.</returns>
-		public O this[K key] => mapper.Invoke(source[key]);
+        public TOutput this[TKey key] => mapper.Invoke(source[key]);
 
         /// <summary>
         /// All dictionary keys.
         /// </summary>
-		public IEnumerable<K> Keys => source.Keys;
+        public IEnumerable<TKey> Keys => source.Keys;
 
         /// <summary>
         /// All converted dictionary values.
         /// </summary>
-        public IEnumerable<O> Values => source.Values.Select(mapper.ToDelegate());
+        public IEnumerable<TOutput> Values => source.Values.Select(mapper.ToDelegate());
 
         /// <summary>
         /// Count of key/value pairs.
         /// </summary>
-		public int Count => source.Count;
+        public int Count => source.Count;
 
         /// <summary>
         /// Determines whether the wrapped dictionary contains an element
@@ -60,17 +60,17 @@ namespace DotNext.Collections.Generic
         /// </summary>
         /// <param name="key">The key to locate in the dictionary.</param>
         /// <returns><see langword="true"/> if the key exists in the wrapped dictionary; otherwise, <see langword="false"/>.</returns>
-        public bool ContainsKey(K key) => source.ContainsKey(key);
+        public bool ContainsKey(TKey key) => source.ContainsKey(key);
 
         /// <summary>
         /// Returns enumerator over key/value pairs in the wrapped dictionary
         /// and performs conversion for each value in the pair.
         /// </summary>
         /// <returns>The enumerator over key/value pairs.</returns>
-		public IEnumerator<KeyValuePair<K, O>> GetEnumerator()
+        public IEnumerator<KeyValuePair<TKey, TOutput>> GetEnumerator()
         {
             foreach (var (key, value) in source)
-                yield return new KeyValuePair<K, O>(key, mapper.Invoke(value));
+                yield return new KeyValuePair<TKey, TOutput>(key, mapper.Invoke(value));
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace DotNext.Collections.Generic
         /// This parameter is passed uninitialized.
         /// </param>
         /// <returns><see langword="true"/>, if the dictionary contains the specified key; otherwise, <see langword="false"/>.</returns>
-        public bool TryGetValue(K key, [MaybeNullWhen(false)]out O value)
+        public bool TryGetValue(TKey key, [MaybeNullWhen(false)]out TOutput value)
         {
             if (source.TryGetValue(key, out var sourceVal))
             {
@@ -96,6 +96,7 @@ namespace DotNext.Collections.Generic
             }
         }
 
+        /// <inheritdoc/>
         IEnumerator IEnumerable.GetEnumerator()
             => GetEnumerator();
 
@@ -104,7 +105,7 @@ namespace DotNext.Collections.Generic
         /// </summary>
         /// <param name="other">Other dictionary to compare.</param>
         /// <returns><see langword="true"/> if this view wraps the same source dictionary and contains the same converter as other view; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(ReadOnlyDictionaryView<K, I, O> other)
+        public bool Equals(ReadOnlyDictionaryView<TKey, TInput, TOutput> other)
             => ReferenceEquals(source, other.source) && mapper == other.mapper;
 
         /// <summary>
@@ -119,7 +120,7 @@ namespace DotNext.Collections.Generic
         /// <param name="other">Other dictionary to compare.</param>
         /// <returns><see langword="true"/> if this view wraps the same source dictionary and contains the same converter as other view; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object? other)
-            => other is ReadOnlyDictionaryView<K, I, O> view ? Equals(view) : Equals(source, other);
+            => other is ReadOnlyDictionaryView<TKey, TInput, TOutput> view ? Equals(view) : Equals(source, other);
 
         /// <summary>
         /// Determines whether two views are same.
@@ -127,7 +128,7 @@ namespace DotNext.Collections.Generic
         /// <param name="first">The first dictionary to compare.</param>
         /// <param name="second">The second dictionary to compare.</param>
         /// <returns><see langword="true"/> if the first view wraps the same source dictionary and contains the same converter as the second view; otherwise, <see langword="false"/>.</returns>
-		public static bool operator ==(ReadOnlyDictionaryView<K, I, O> first, ReadOnlyDictionaryView<K, I, O> second)
+        public static bool operator ==(ReadOnlyDictionaryView<TKey, TInput, TOutput> first, ReadOnlyDictionaryView<TKey, TInput, TOutput> second)
             => first.Equals(second);
 
         /// <summary>
@@ -136,7 +137,7 @@ namespace DotNext.Collections.Generic
         /// <param name="first">The first dictionary to compare.</param>
         /// <param name="second">The second collection to compare.</param>
         /// <returns><see langword="true"/> if the first view wraps the different source dictionary and contains the different converter as the second view; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(ReadOnlyDictionaryView<K, I, O> first, ReadOnlyDictionaryView<K, I, O> second)
+        public static bool operator !=(ReadOnlyDictionaryView<TKey, TInput, TOutput> first, ReadOnlyDictionaryView<TKey, TInput, TOutput> second)
             => !first.Equals(second);
     }
 }

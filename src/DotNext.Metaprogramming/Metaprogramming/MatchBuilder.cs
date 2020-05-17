@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -20,16 +21,16 @@ namespace DotNext.Metaprogramming
             Expression Build(ParameterExpression value);
         }
 
-        internal abstract class MatchStatement<D> : Statement, ILexicalScope<MatchBuilder, D>
-            where D : MulticastDelegate
+        internal abstract class MatchStatement<TDelegate> : Statement, ILexicalScope<MatchBuilder, TDelegate>
+            where TDelegate : MulticastDelegate
         {
             [StructLayout(LayoutKind.Auto)]
             private protected readonly struct CaseStatementBuilder : ICaseStatementBuilder
             {
                 private readonly Action<ParameterExpression> scope;
-                private readonly MatchStatement<D> statement;
+                private readonly MatchStatement<TDelegate> statement;
 
-                internal CaseStatementBuilder(MatchStatement<D> statement, Action<ParameterExpression> scope)
+                internal CaseStatementBuilder(MatchStatement<TDelegate> statement, Action<ParameterExpression> scope)
                 {
                     this.scope = scope;
                     this.statement = statement;
@@ -46,9 +47,9 @@ namespace DotNext.Metaprogramming
 
             private protected MatchStatement(MatchBuilder builder) => this.builder = builder;
 
-            private protected abstract MatchBuilder Build(MatchBuilder builder, D scope);
+            private protected abstract MatchBuilder Build(MatchBuilder builder, TDelegate scope);
 
-            public MatchBuilder Build(D scope) => Build(builder, scope);
+            public MatchBuilder Build(TDelegate scope) => Build(builder, scope);
         }
 
         private sealed class DefaultStatement : MatchStatement<Action<ParameterExpression>>
@@ -198,7 +199,8 @@ namespace DotNext.Metaprogramming
         {
             private readonly Pattern pattern;
 
-            internal MatchByConditionStatement(MatchBuilder builder, Pattern pattern) : base(builder) => this.pattern = pattern;
+            internal MatchByConditionStatement(MatchBuilder builder, Pattern pattern)
+                : base(builder) => this.pattern = pattern;
 
             private protected override MatchBuilder Build(MatchBuilder builder, Action<ParameterExpression> scope)
                 => builder.MatchByCondition(pattern, new CaseStatementBuilder(this, scope));
@@ -208,7 +210,8 @@ namespace DotNext.Metaprogramming
         {
             private protected readonly Type expectedType;
 
-            internal MatchByTypeStatement(MatchBuilder builder, Type expectedType) : base(builder) => this.expectedType = expectedType;
+            internal MatchByTypeStatement(MatchBuilder builder, Type expectedType)
+                : base(builder) => this.expectedType = expectedType;
 
             private protected override MatchBuilder Build(MatchBuilder builder, Action<ParameterExpression> scope)
                 => builder.MatchByType(expectedType, new CaseStatementBuilder(this, scope));
@@ -218,7 +221,8 @@ namespace DotNext.Metaprogramming
         {
             private readonly Pattern condition;
 
-            internal MatchByTypeWithConditionStatement(MatchBuilder builder, Type expectedType, Pattern condition) : base(builder, expectedType) => this.condition = condition;
+            internal MatchByTypeWithConditionStatement(MatchBuilder builder, Type expectedType, Pattern condition)
+                : base(builder, expectedType) => this.condition = condition;
 
             private protected override MatchBuilder Build(MatchBuilder builder, Action<ParameterExpression> scope)
                 => builder.MatchByType(expectedType, condition, new CaseStatementBuilder(this, scope));
@@ -248,6 +252,7 @@ namespace DotNext.Metaprogramming
 
             Expression ICaseStatementBuilder.Build(ParameterExpression value) => statement(value);
 
+            [SuppressMessage("Usage", "CA1801", Justification = "Required by delegate signature")]
             internal static Expression Build(Expression result, ParameterExpression value) => result;
 
             public static implicit operator CaseStatementBuilder(CaseStatement statement) => new CaseStatementBuilder(statement);
@@ -264,7 +269,9 @@ namespace DotNext.Metaprogramming
         {
             patterns = new LinkedList<PatternMatch>();
             if (value is ParameterExpression param)
+            {
                 this.value = param;
+            }
             else
             {
                 this.value = Expression.Variable(value.Type);
@@ -275,23 +282,23 @@ namespace DotNext.Metaprogramming
         private static CaseStatement MakeCaseStatement(Expression value)
             => PlainCaseStatementBuilder.CreateDelegate<CaseStatement>(value);
 
-        private static PatternMatch MatchByCondition<B>(ParameterExpression value, Pattern condition, B builder)
-            where B : struct, ICaseStatementBuilder
+        private static PatternMatch MatchByCondition<TBuilder>(ParameterExpression value, Pattern condition, TBuilder builder)
+            where TBuilder : struct, ICaseStatementBuilder
         {
             var test = condition(value);
             var body = builder.Build(value);
             return endOfMatch => Expression.IfThen(test, endOfMatch.Goto(body));
         }
 
-        private MatchBuilder MatchByCondition<B>(Pattern condition, B builder)
-            where B : struct, ICaseStatementBuilder
+        private MatchBuilder MatchByCondition<TBuilder>(Pattern condition, TBuilder builder)
+            where TBuilder : struct, ICaseStatementBuilder
         {
             patterns.Add(MatchByCondition(value, condition, builder));
             return this;
         }
 
-        private static PatternMatch MatchByType<B>(ParameterExpression value, Type expectedType, B builder)
-            where B : struct, ICaseStatementBuilder
+        private static PatternMatch MatchByType<TBuilder>(ParameterExpression value, Type expectedType, TBuilder builder)
+            where TBuilder : struct, ICaseStatementBuilder
         {
             var test = value.InstanceOf(expectedType);
             var typedValue = Expression.Variable(expectedType);
@@ -299,15 +306,15 @@ namespace DotNext.Metaprogramming
             return endOfMatch => Expression.IfThen(test, Expression.Block(Sequence.Singleton(typedValue), typedValue.Assign(value.Convert(expectedType)), endOfMatch.Goto(body)));
         }
 
-        private MatchBuilder MatchByType<B>(Type expectedType, B builder)
-            where B : struct, ICaseStatementBuilder
+        private MatchBuilder MatchByType<TBuilder>(Type expectedType, TBuilder builder)
+            where TBuilder : struct, ICaseStatementBuilder
         {
             patterns.Add(MatchByType(value, expectedType, builder));
             return this;
         }
 
-        private static PatternMatch MatchByType<B>(ParameterExpression value, Type expectedType, Pattern condition, B builder)
-            where B : struct, ICaseStatementBuilder
+        private static PatternMatch MatchByType<TBuilder>(ParameterExpression value, Type expectedType, Pattern condition, TBuilder builder)
+            where TBuilder : struct, ICaseStatementBuilder
         {
             var test = value.InstanceOf(expectedType);
             var typedVar = Expression.Variable(expectedType);
@@ -317,8 +324,8 @@ namespace DotNext.Metaprogramming
             return endOfMatch => Expression.IfThen(test, Expression.Block(Sequence.Singleton(typedVar), typedVarInit, Expression.IfThen(test2, endOfMatch.Goto(body))));
         }
 
-        private MatchBuilder MatchByType<B>(Type expectedType, Pattern condition, B builder)
-            where B : struct, ICaseStatementBuilder
+        private MatchBuilder MatchByType<TBuilder>(Type expectedType, Pattern condition, TBuilder builder)
+            where TBuilder : struct, ICaseStatementBuilder
         {
             patterns.Add(MatchByType(value, expectedType, condition, builder));
             return this;
@@ -358,7 +365,7 @@ namespace DotNext.Metaprogramming
         /// Defines pattern matching based on the expected type of value.
         /// </summary>
         /// <remarks>
-        /// This method equivalent to <c>case T value where condition(value): body();</c>
+        /// This method equivalent to <c>case T value where condition(value): body();</c>.
         /// </remarks>
         /// <param name="expectedType">The expected type of the value.</param>
         /// <param name="pattern">Additional condition associated with the value.</param>
@@ -373,7 +380,7 @@ namespace DotNext.Metaprogramming
         /// Defines pattern matching based on the expected type of value.
         /// </summary>
         /// <remarks>
-        /// This method equivalent to <c>case T value: body();</c>
+        /// This method equivalent to <c>case T value: body();</c>.
         /// </remarks>
         /// <param name="expectedType">The expected type of the value.</param>
         /// <param name="body">The action to be executed if object matches to the pattern.</param>
@@ -393,7 +400,7 @@ namespace DotNext.Metaprogramming
             => Case(typeof(T), body);
 
         private static Pattern StructuralPattern(IEnumerable<(string, Expression)> structPattern)
-            => delegate (ParameterExpression obj)
+            => obj =>
             {
                 var result = default(Expression);
                 foreach (var (name, value) in structPattern)
@@ -401,6 +408,7 @@ namespace DotNext.Metaprogramming
                     var element = Expression.PropertyOrField(obj, name).Equal(value);
                     result = result is null ? element : result.AndAlso(element);
                 }
+
                 return result ?? Expression.Constant(false);
             };
 
@@ -416,8 +424,6 @@ namespace DotNext.Metaprogramming
         /// <returns><c>this</c> builder.</returns>
         public MatchBuilder Case(string memberName, Expression memberValue, Func<MemberExpression, Expression> body)
             => Case(StructuralPattern(Sequence.Singleton((memberName, memberValue))), value => body(Expression.PropertyOrField(value, memberName)));
-
-
 
         /// <summary>
         /// Defines pattern matching based on structural matching.
@@ -506,16 +512,19 @@ namespace DotNext.Metaprogramming
         private protected override BlockExpression Build()
         {
             var endOfMatch = Expression.Label(Type, "end");
-            //handle patterns
+
+            // handle patterns
             ICollection<Expression> instructions = new LinkedList<Expression>();
             if (!(assignment is null))
                 instructions.Add(assignment);
             foreach (var pattern in patterns)
                 instructions.Add(pattern(endOfMatch));
-            //handle default
+
+            // handle default
             if (!(defaultCase is null))
                 instructions.Add(Expression.Goto(endOfMatch, defaultCase(value)));
-            //setup label as last instruction
+
+            // setup label as last instruction
             instructions.Add(Expression.Label(endOfMatch, Expression.Default(endOfMatch.Type)));
             return assignment is null ? Expression.Block(instructions) : Expression.Block(Sequence.Singleton(value), instructions);
         }

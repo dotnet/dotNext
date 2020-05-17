@@ -1,9 +1,9 @@
-using Microsoft.Extensions.Logging;
 using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using EndOfStreamException = System.IO.EndOfStreamException;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
@@ -18,7 +18,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             internal AcceptEventArgs()
                 : base(true)
             {
-
             }
 
             internal override void Reset()
@@ -33,7 +32,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             Success = 0,
             SocketError,
             TimeOut,
-            Stopped
+            Stopped,
         }
 
         private sealed class ServerNetworkStream : TcpStream
@@ -57,12 +56,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                     {
                         bool waitForInput;
                         int count;
-                        (headers, count, waitForInput) = await exchange.CreateOutboundMessageAsync(AdjustToPayload(buffer), token);
-                        //transmit packet to the remote endpoint
+                        (headers, count, waitForInput) = await exchange.CreateOutboundMessageAsync(AdjustToPayload(buffer), token).ConfigureAwait(false);
+
+                        // transmit packet to the remote endpoint
                         await WritePacket(headers, buffer, count, token).ConfigureAwait(false);
                         if (!waitForInput)
                             break;
-                        //read response
+
+                        // read response
                         (headers, request) = await ReadPacket(buffer, token).ConfigureAwait(false);
                     }
                 }
@@ -87,15 +88,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                     combinedSource?.Dispose();
                     timeoutTracker?.Dispose();
                 }
+
                 return result;
             }
         }
 
         private readonly Socket socket;
-        private TimeSpan receiveTimeout;
         private readonly int backlog;
         private readonly Func<IReusableExchange> exchangeFactory;
         private readonly CancellationTokenSource transmissionState;
+        private TimeSpan receiveTimeout;
         private volatile int connections;
         internal int GracefulShutdownTimeout;
 
@@ -127,6 +129,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             try
             {
                 while (stream.Connected && !IsDisposed)
+                {
                     switch (await stream.Exchange(exchange, buffer.Memory, receiveTimeout, token).ConfigureAwait(false))
                     {
                         default:
@@ -139,6 +142,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                             logger.RequestTimedOut();
                             goto default;
                     }
+                }
             }
             finally
             {
@@ -155,8 +159,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         private async void Listen()
         {
             using var args = new AcceptEventArgs();
-            var token = transmissionState.Token;    //cache token here to avoid ObjectDisposedException in HandleConnection
+            var token = transmissionState.Token; // cache token here to avoid ObjectDisposedException in HandleConnection
             for (var pending = true; pending && !IsDisposed;)
+            {
                 try
                 {
                     if (socket.AcceptAsync(args))
@@ -183,6 +188,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                             logger.SockerErrorOccurred(e.SocketErrorCode);
                             break;
                     }
+
                     pending = false;
                 }
                 catch (Exception e)
@@ -190,6 +196,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                     logger.SocketAcceptLoopTerminated(e);
                     pending = false;
                 }
+            }
         }
 
         public void Start()
@@ -216,6 +223,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                     socket.Close(GracefulShutdownTimeout);
                     socket.Dispose();
                 }
+
                 if (!SpinWait.SpinUntil(NoMoreConnections, GracefulShutdownTimeout))
                     logger.TcpGracefulShutdownFailed(GracefulShutdownTimeout);
             }

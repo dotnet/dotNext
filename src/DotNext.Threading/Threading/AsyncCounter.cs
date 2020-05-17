@@ -56,6 +56,7 @@ namespace DotNext.Threading
             manager = new LockManager(initialValue);
         }
 
+        /// <inheritdoc/>
         bool IAsyncEvent.IsSet => Value > 0;
 
         /// <summary>
@@ -68,6 +69,7 @@ namespace DotNext.Threading
         /// </remarks>
         public long Value => manager.Count;
 
+        /// <inheritdoc/>
         [MethodImpl(MethodImplOptions.Synchronized)]
         bool IAsyncEvent.Reset() => manager.Reset();
 
@@ -88,6 +90,7 @@ namespace DotNext.Threading
             }
         }
 
+        /// <inheritdoc/>
         bool IAsyncEvent.Signal()
         {
             Increment();

@@ -27,8 +27,8 @@ namespace DotNext
 
         internal static string ThisParamExpected => Resources.GetString("ThisParamExpected");
 
-        internal static string MissingOperator<E>(E op)
-            where E : struct, Enum
+        internal static string MissingOperator<TEnum>(TEnum op)
+            where TEnum : struct, Enum
             => string.Format(Resources.GetString("MissingOperator"), op);
 
         internal static string MissingAttribute(Type attribute, Type target) => string.Format(Resources.GetString("MissingAttribute"), attribute.FullName, target.FullName);
@@ -45,7 +45,8 @@ namespace DotNext
 
         internal static string ExtensionMethodExpected(MethodBase method) => string.Format(Resources.GetString("ExtensionMethodExpected"), method.Name);
 
-        internal static string ConceptTypeInvalidAttribution<A>(Type conceptType) where A : Attribute => string.Format(Resources.GetString("ConceptTypeInvalidAttribution"), conceptType.FullName, typeof(A).FullName);
+        internal static string ConceptTypeInvalidAttribution<TAttribute>(Type conceptType)
+            where TAttribute : Attribute => string.Format(Resources.GetString("ConceptTypeInvalidAttribution"), conceptType.FullName, typeof(TAttribute).FullName);
 
         internal static string StaticCtorDetected => Resources.GetString("StaticCtorDetected");
 

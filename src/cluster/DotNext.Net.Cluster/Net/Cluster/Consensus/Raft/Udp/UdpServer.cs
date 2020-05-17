@@ -1,9 +1,9 @@
-using Microsoft.Extensions.Logging;
 using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Threading;
+using Microsoft.Extensions.Logging;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 {
@@ -32,8 +32,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
             public CancellationToken Token => timeoutTokenSource.Token;
 
-            internal bool Represents(in Channel other) => ReferenceEquals(exchange, other.exchange);
-
             internal static void Cancel(ref Channel channel, bool throwOnFirstException)
                 => channel.timeoutTokenSource.Cancel(throwOnFirstException);
 
@@ -45,11 +43,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             }
         }
 
+        private readonly RefAction<Channel, bool> cancellationInvoker;
+        private readonly IExchangePool exchanges;
         private readonly INetworkTransport.ChannelPool<Channel> channels;
         private readonly Action<object> cancellationHandler;
         private TimeSpan receiveTimeout;
-        private readonly RefAction<Channel, bool> cancellationInvoker;
-        private readonly IExchangePool exchanges;
 
         internal UdpServer(IPEndPoint address, int backlog, MemoryAllocator<byte> allocator, Func<int, IExchangePool> exchangePoolFactory, ILoggerFactory loggerFactory)
             : base(address, backlog, allocator, loggerFactory)
@@ -65,12 +63,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         private protected override void EndReceive(SocketAsyncEventArgs args)
         {
             ReadOnlyMemory<byte> datagram = args.MemoryBuffer.Slice(0, args.BytesTransferred);
-            //dispatch datagram to appropriate exchange
+
+            // dispatch datagram to appropriate exchange
             var correlationId = new CorrelationId(ref datagram);
             var headers = new PacketHeaders(ref datagram);
             request_channel:
             if (!channels.TryGetValue(correlationId, out var channel))
-                if (exchanges.TryRent(out var exchange)) //channel doesn't exist in the list of active channel but rented successfully
+            {
+                // channel doesn't exist in the list of active channel but rented successfully
+                if (exchanges.TryRent(out var exchange))
                 {
                     channel = new Channel(exchange, exchanges, receiveTimeout, cancellationHandler, correlationId);
                     if (!channels.TryAdd(correlationId, channel))
@@ -84,8 +85,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                     logger.NotEnoughRequestHandlers();
                     return;
                 }
+            }
+
             if (headers.Control == FlowControl.Cancel)
-                ProcessCancellation(cancellationInvoker, ref channel, false, args);   //channel will be removed from the dictionary automatically
+                ProcessCancellation(cancellationInvoker, ref channel, false, args);   // channel will be removed from the dictionary automatically
             else
                 ProcessDatagram(channels, channel, correlationId, headers, datagram, args);
         }

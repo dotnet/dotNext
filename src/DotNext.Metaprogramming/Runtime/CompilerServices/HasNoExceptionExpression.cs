@@ -11,7 +11,9 @@ namespace DotNext.Runtime.CompilerServices
     internal sealed class HasNoExceptionExpression : StateMachineExpression
     {
         public override Type Type => typeof(bool);
+
         public override Expression Reduce() => Default(typeof(bool));
+
         internal override Expression Reduce(ParameterExpression stateMachine)
             => stateMachine.Property(nameof(AsyncStateMachine<ValueTuple>.HasNoException));
     }

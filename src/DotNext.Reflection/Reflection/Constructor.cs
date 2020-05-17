@@ -11,18 +11,18 @@ namespace DotNext.Reflection
     /// <summary>
     /// Provides constructor definition based on delegate signature.
     /// </summary>
-    /// <typeparam name="D">Type of delegate representing constructor of type <typeparamref name="D"/>.</typeparam>
-    public sealed class Constructor<D> : ConstructorInfo, IConstructor<D>, IEquatable<ConstructorInfo?>
-        where D : MulticastDelegate
+    /// <typeparam name="TSignature">Type of delegate representing constructor of type <typeparamref name="TSignature"/>.</typeparam>
+    public sealed class Constructor<TSignature> : ConstructorInfo, IConstructor<TSignature>, IEquatable<ConstructorInfo?>
+        where TSignature : MulticastDelegate
     {
-        private static readonly UserDataSlot<Constructor<D>?> CacheSlot = UserDataSlot<Constructor<D>?>.Allocate();
         private const BindingFlags PublicFlags = BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public;
         private const BindingFlags NonPublicFlags = BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.NonPublic;
+        private static readonly UserDataSlot<Constructor<TSignature>?> CacheSlot = UserDataSlot<Constructor<TSignature>?>.Allocate();
 
-        private readonly D invoker;
+        private readonly TSignature invoker;
         private readonly object ctorInfo;
 
-        private Constructor(ConstructorInfo ctor, Expression<D> invoker)
+        private Constructor(ConstructorInfo ctor, Expression<TSignature> invoker)
         {
             if (ctor.IsStatic || ctor.DeclaringType is null)
                 throw new ArgumentException(ExceptionMessages.StaticCtorDetected, nameof(ctor));
@@ -31,7 +31,7 @@ namespace DotNext.Reflection
         }
 
         private Constructor(ConstructorInfo ctor, IEnumerable<Expression> args, IEnumerable<ParameterExpression> parameters)
-            : this(ctor, Expression.Lambda<D>(Expression.New(ctor, args), parameters))
+            : this(ctor, Expression.Lambda<TSignature>(Expression.New(ctor, args), parameters))
         {
         }
 
@@ -43,7 +43,7 @@ namespace DotNext.Reflection
         private Constructor(Type valueType, IEnumerable<ParameterExpression>? parameters = null)
         {
             ctorInfo = valueType;
-            invoker = Expression.Lambda<D>(Expression.Default(valueType), parameters ?? Enumerable.Empty<ParameterExpression>()).Compile();
+            invoker = Expression.Lambda<TSignature>(Expression.Default(valueType), parameters ?? Enumerable.Empty<ParameterExpression>()).Compile();
         }
 
         /// <summary>
@@ -51,16 +51,18 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="ctor">The reflected constructor.</param>
         [return: NotNullIfNotNull("ctor")]
-        public static implicit operator D?(Constructor<D>? ctor) => ctor?.invoker;
+        public static implicit operator TSignature?(Constructor<TSignature>? ctor) => ctor?.invoker;
 
         /// <summary>
         /// Gets name of the constructor.
         /// </summary>
         public override string Name => ConstructorName;
 
+        /// <inheritdoc/>
         ConstructorInfo IMember<ConstructorInfo>.RuntimeMember => ctorInfo as ConstructorInfo ?? this;
 
-        D IMember<ConstructorInfo, D>.Invoker => invoker;
+        /// <inheritdoc/>
+        TSignature IMember<ConstructorInfo, TSignature>.Invoker => invoker;
 
         /// <summary>
         /// Gets the attributes associated with this constructor.
@@ -131,7 +133,7 @@ namespace DotNext.Reflection
         public override bool IsGenericMethodDefinition => false;
 
         /// <summary>
-        /// Gets a value that indicates whether the constructor is security-critical or security-safe-critical at the current trust level, 
+        /// Gets a value that indicates whether the constructor is security-critical or security-safe-critical at the current trust level,
         /// and therefore can perform critical operations.
         /// </summary>
         public override bool IsSecurityCritical => ctorInfo switch
@@ -142,7 +144,7 @@ namespace DotNext.Reflection
         };
 
         /// <summary>
-        /// Gets a value that indicates whether the constructor is security-safe-critical at the current trust level; that is, 
+        /// Gets a value that indicates whether the constructor is security-safe-critical at the current trust level; that is,
         /// whether it can perform critical operations and can be accessed by transparent code.
         /// </summary>
         public override bool IsSecuritySafeCritical => ctorInfo switch
@@ -153,7 +155,7 @@ namespace DotNext.Reflection
         };
 
         /// <summary>
-        /// Gets a value that indicates whether the current constructor is transparent at the current trust level, 
+        /// Gets a value that indicates whether the current constructor is transparent at the current trust level,
         /// and therefore cannot perform critical operations.
         /// </summary>
         public override bool IsSecurityTransparent => ctorInfo switch
@@ -211,7 +213,7 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="obj">The object on which to invoke the constructor.</param>
         /// <param name="invokeAttr">Specifies the type of binding.</param>
-        /// <param name="binder">Defines a set of properties and enables the binding, coercion of argument types, and invocation of members using reflection</param>
+        /// <param name="binder">Defines a set of properties and enables the binding, coercion of argument types, and invocation of members using reflection.</param>
         /// <param name="parameters">A list of constructor arguments.</param>
         /// <param name="culture">Used to govern the coercion of types.</param>
         /// <returns>Instantiated object.</returns>
@@ -249,7 +251,7 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="other">Other constructor to compare.</param>
         /// <returns><see langword="true"/> if this object reflects the same constructor as the specified object; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(ConstructorInfo? other) => other is Constructor<D> ctor ? Equals(ctorInfo, ctor.ctorInfo) : Equals(ctorInfo, other);
+        public bool Equals(ConstructorInfo? other) => other is Constructor<TSignature> ctor ? Equals(ctorInfo, ctor.ctorInfo) : Equals(ctorInfo, other);
 
         /// <summary>
         /// Determines whether this constructor is equal to the given constructor.
@@ -258,9 +260,9 @@ namespace DotNext.Reflection
         /// <returns><see langword="true"/> if this object reflects the same constructor as the specified object; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object? other) => other switch
         {
-            Constructor<D> ctor => Equals(ctorInfo, ctor.ctorInfo),
+            Constructor<TSignature> ctor => Equals(ctorInfo, ctor.ctorInfo),
             ConstructorInfo ctor => Equals(ctorInfo, ctor),
-            D invoker => Equals(this.invoker, invoker),
+            TSignature invoker => Equals(this.invoker, invoker),
             _ => false,
         };
 
@@ -276,48 +278,55 @@ namespace DotNext.Reflection
         /// <returns>The hash code of the constructor.</returns>
         public override int GetHashCode() => ctorInfo.GetHashCode();
 
-        private static Constructor<D>? Reflect(Type declaringType, Type[] parameters, bool nonPublic)
+        private static Constructor<TSignature>? Reflect(Type declaringType, Type[] parameters, bool nonPublic)
         {
             ConstructorInfo? ctor = declaringType.GetConstructor(nonPublic ? NonPublicFlags : PublicFlags, Type.DefaultBinder, parameters, Array.Empty<ParameterModifier>());
             if (ctor is null)
-                return declaringType.IsValueType && parameters.Length == 0 ? new Constructor<D>(declaringType) : null;
-            return new Constructor<D>(ctor, Array.ConvertAll(parameters, Expression.Parameter));
+                return declaringType.IsValueType && parameters.Length == 0 ? new Constructor<TSignature>(declaringType) : null;
+            return new Constructor<TSignature>(ctor, Array.ConvertAll(parameters, Expression.Parameter));
         }
 
-        private static Constructor<D>? Reflect(Type declaringType, Type argumentsType, bool nonPublic)
+        private static Constructor<TSignature>? Reflect(Type declaringType, Type argumentsType, bool nonPublic)
         {
             var (parameters, arglist, input) = Signature.Reflect(argumentsType);
             ConstructorInfo? ctor = declaringType.GetConstructor(nonPublic ? NonPublicFlags : PublicFlags, Type.DefaultBinder, parameters, Array.Empty<ParameterModifier>());
 
             if (ctor is null)
-                return declaringType.IsValueType && parameters.Length == 0 ? new Constructor<D>(declaringType, Sequence.Singleton(input)) : null;
-            return new Constructor<D>(ctor, arglist, Sequence.Singleton(input));
+                return declaringType.IsValueType && parameters.Length == 0 ? new Constructor<TSignature>(declaringType, Sequence.Singleton(input)) : null;
+            return new Constructor<TSignature>(ctor, arglist, Sequence.Singleton(input));
         }
 
-        private static Constructor<D>? Reflect(bool nonPublic)
+        private static Constructor<TSignature>? Reflect(bool nonPublic)
         {
-            var delegateType = typeof(D);
-            if (delegateType.IsGenericInstanceOf(typeof(Function<,>)) && typeof(D).GetGenericArguments().Take(out var argumentsType, out var declaringType))
+            var delegateType = typeof(TSignature);
+            if (delegateType.IsGenericInstanceOf(typeof(Function<,>)) && typeof(TSignature).GetGenericArguments().Take(out var argumentsType, out var declaringType))
+            {
                 return Reflect(declaringType, argumentsType, nonPublic);
+            }
             else if (delegateType.IsAbstract)
-                throw new AbstractDelegateException<D>();
+            {
+                throw new AbstractDelegateException<TSignature>();
+            }
             else
             {
-                var (parameters, returnType) = DelegateType.GetInvokeMethod<D>().Decompose(MethodExtensions.GetParameterTypes, method => method.ReturnType);
+                var (parameters, returnType) = DelegateType.GetInvokeMethod<TSignature>().Decompose(MethodExtensions.GetParameterTypes, method => method.ReturnType);
                 return Reflect(returnType, parameters!, nonPublic);
             }
         }
-        private static Constructor<D>? Unreflect(ConstructorInfo ctor, Type argumentsType, Type returnType)
+
+        private static Constructor<TSignature>? Unreflect(ConstructorInfo ctor, Type argumentsType, Type returnType)
         {
             var (_, arglist, input) = Signature.Reflect(argumentsType);
             var prologue = new LinkedList<Expression>();
             var epilogue = new LinkedList<Expression>();
             var locals = new LinkedList<ParameterExpression>();
-            //adjust arguments
+
+            // adjust arguments
             if (!Signature.NormalizeArguments(ctor.GetParameterTypes(), arglist, locals, prologue, epilogue))
                 return null;
             Expression body;
-            //adjust return type
+
+            // adjust return type
             if (returnType == typeof(void) || returnType.IsAssignableFromWithoutBoxing(ctor.DeclaringType))
                 body = Expression.New(ctor, arglist);
             else if (returnType == typeof(object))
@@ -325,7 +334,9 @@ namespace DotNext.Reflection
             else
                 return null;
             if (epilogue.Count == 0)
+            {
                 epilogue.AddFirst(body);
+            }
             else
             {
                 var returnArg = Expression.Parameter(returnType);
@@ -334,37 +345,46 @@ namespace DotNext.Reflection
                 epilogue.AddFirst(body);
                 epilogue.AddLast(returnArg);
             }
+
             body = prologue.Count == 0 && epilogue.Count == 1 ? epilogue.First.Value : Expression.Block(locals, prologue.Concat(epilogue));
-            return new Constructor<D>(ctor, Expression.Lambda<D>(body, input));
+            return new Constructor<TSignature>(ctor, Expression.Lambda<TSignature>(body, input));
         }
 
-        private static Constructor<D>? Unreflect(ConstructorInfo ctor)
+        private static Constructor<TSignature>? Unreflect(ConstructorInfo ctor)
         {
-            var delegateType = typeof(D);
+            var delegateType = typeof(TSignature);
             if (delegateType.IsAbstract)
-                throw new AbstractDelegateException<D>();
-            else if (ctor is Constructor<D> existing)
+            {
+                throw new AbstractDelegateException<TSignature>();
+            }
+            else if (ctor is Constructor<TSignature> existing)
+            {
                 return existing;
+            }
             else if (ctor.IsGenericMethodDefinition || ctor.IsAbstract)
+            {
                 return null;
+            }
             else if (delegateType.IsGenericInstanceOf(typeof(Function<,>)) && delegateType.GetGenericArguments().Take(out var argumentsType, out var returnType))
+            {
                 return Unreflect(ctor, argumentsType, returnType);
+            }
             else
             {
-                var invokeMethod = DelegateType.GetInvokeMethod<D>();
+                var invokeMethod = DelegateType.GetInvokeMethod<TSignature>();
                 return ctor.SignatureEquals(invokeMethod) && invokeMethod.ReturnType.IsAssignableFrom(ctor.DeclaringType) ?
-                    new Constructor<D>(ctor, Array.ConvertAll(ctor.GetParameterTypes(), Expression.Parameter)) :
+                    new Constructor<TSignature>(ctor, Array.ConvertAll(ctor.GetParameterTypes(), Expression.Parameter)) :
                     null;
             }
         }
 
-        internal static Constructor<D>? GetOrCreate(ConstructorInfo ctor)
-            => ctor.GetUserData().GetOrSet(CacheSlot, ctor, new ValueFunc<ConstructorInfo, Constructor<D>?>(Unreflect));
+        internal static Constructor<TSignature>? GetOrCreate(ConstructorInfo ctor)
+            => ctor.GetUserData().GetOrSet(CacheSlot, ctor, new ValueFunc<ConstructorInfo, Constructor<TSignature>?>(Unreflect));
 
-        internal static Constructor<D>? GetOrCreate<T>(bool nonPublic)
+        internal static Constructor<TSignature>? GetOrCreate<T>(bool nonPublic)
         {
             var type = typeof(T);
-            var ctor = type.GetUserData().GetOrSet(CacheSlot, nonPublic, new ValueFunc<bool, Constructor<D>?>(Reflect));
+            var ctor = type.GetUserData().GetOrSet(CacheSlot, nonPublic, new ValueFunc<bool, Constructor<TSignature>?>(Reflect));
             return ctor?.DeclaringType == type ? ctor : null;
         }
     }

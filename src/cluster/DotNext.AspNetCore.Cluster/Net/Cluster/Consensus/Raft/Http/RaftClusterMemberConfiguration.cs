@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Http.Features;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using Microsoft.AspNetCore.Http.Features;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {

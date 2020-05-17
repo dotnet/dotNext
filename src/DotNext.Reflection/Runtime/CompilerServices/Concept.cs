@@ -23,7 +23,7 @@ namespace DotNext.Runtime.CompilerServices
                 throw new ArgumentException(ExceptionMessages.ConceptTypeInvalidAttribution<ConceptAttribute>(conceptType), nameof(conceptType));
             try
             {
-                //run class constructor for concept type and its parents
+                // run class constructor for concept type and its parents
                 while (!(conceptType is null))
                 {
                     RunClassConstructor(conceptType.TypeHandle);
@@ -39,10 +39,10 @@ namespace DotNext.Runtime.CompilerServices
         /// <summary>
         /// Applies constraints described by concept type.
         /// </summary>
-        /// <typeparam name="C">A type describing concept.</typeparam>
+        /// <typeparam name="TConcept">A type describing concept.</typeparam>
         /// <exception cref="ConstraintViolationException">One or more constraints defined by concept type are violated.</exception>
-        /// <exception cref="ArgumentException"><typeparamref name="C"/> is not marked with <see cref="ConceptAttribute"/>.</exception>
-        public static void Assert<C>() => Assert(typeof(C));
+        /// <exception cref="ArgumentException"><typeparamref name="TConcept"/> is not marked with <see cref="ConceptAttribute"/>.</exception>
+        public static void Assert<TConcept>() => Assert(typeof(TConcept));
 
         /// <summary>
         /// Applies a chain of constraints described by multiple concept types.

@@ -13,9 +13,9 @@ namespace DotNext.Metaprogramming
     /// </summary>
     public static class CodeGenerator
     {
-        private static void Place<D, S>(this S statement, D scope)
-            where D : MulticastDelegate
-            where S : Statement, ILexicalScope<Expression, D>
+        private static void Place<TDelegate, TStatement>(this TStatement statement, TDelegate scope)
+            where TDelegate : MulticastDelegate
+            where TStatement : Statement, ILexicalScope<Expression, TDelegate>
             => statement.Parent?.AddStatement(statement.Build(scope));
 
         /// <summary>
@@ -110,6 +110,7 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Adds an expression that decrements given variable by 1 and assigns the result back to the variable.
         /// </summary>
+        /// <param name="variable">The variable to be modified.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void PreDecrementAssign(ParameterExpression variable) => LexicalScope.Current.AddStatement(variable.PreDecrementAssign());
 
@@ -267,11 +268,11 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Inserts expression tree as a statement.
         /// </summary>
-        /// <typeparam name="D">The type of the delegate describing lambda call site.</typeparam>
+        /// <typeparam name="TDelegate">The type of the delegate describing lambda call site.</typeparam>
         /// <param name="lambda">The expression to be inserted as statement.</param>
         /// <param name="arguments">The arguments used to replace lambda parameters.</param>
-        public static void Embed<D>(Expression<D> lambda, params Expression[] arguments)
-            where D : MulticastDelegate
+        public static void Embed<TDelegate>(Expression<TDelegate> lambda, params Expression[] arguments)
+            where TDelegate : MulticastDelegate
             => LexicalScope.Current.AddStatement(ExpressionBuilder.Fragment(lambda, arguments));
 
         /// <summary>
@@ -358,7 +359,6 @@ namespace DotNext.Metaprogramming
         /// <param name="type">The type that declares static method.</param>
         /// <param name="methodName">The name of the static method.</param>
         /// <param name="arguments">The arguments to be passed into static method.</param>
-        /// <returns>An expression representing static method call.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void CallStatic(Type type, string methodName, params Expression[] arguments)
             => LexicalScope.Current.AddStatement(type.CallStatic(methodName, arguments));
@@ -369,7 +369,6 @@ namespace DotNext.Metaprogramming
         /// <typeparam name="T">The type that declares static method.</typeparam>
         /// <param name="methodName">The name of the static method.</param>
         /// <param name="arguments">The arguments to be passed into static method.</param>
-        /// <returns>An expression representing static method call.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void CallStatic<T>(string methodName, params Expression[] arguments)
             => CallStatic(typeof(T), methodName, arguments);
@@ -439,7 +438,7 @@ namespace DotNext.Metaprogramming
         public static ParameterExpression DeclareVariable<T>(string name) => DeclareVariable(typeof(T), name);
 
         /// <summary>
-        /// Declares local variable in the current lexical scope. 
+        /// Declares local variable in the current lexical scope.
         /// </summary>
         /// <param name="variableType">The type of local variable.</param>
         /// <param name="name">The name of local variable.</param>
@@ -457,7 +456,7 @@ namespace DotNext.Metaprogramming
         /// inferred type.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <c>var i = expr;</c>
+        /// The equivalent code is <c>var i = expr;</c>.
         /// </remarks>
         /// <param name="name">The name of the variable.</param>
         /// <param name="init">Initialization expression.</param>
@@ -613,7 +612,7 @@ namespace DotNext.Metaprogramming
         /// Adds <c>for</c> loop statement.
         /// </summary>
         /// <remarks>
-        /// This builder constructs the statement equivalent to <c>for(var i = initializer; condition; iter){ body; }</c>
+        /// This builder constructs the statement equivalent to <c>for(var i = initializer; condition; iter){ body; }</c>.
         /// </remarks>
         /// <param name="initializer">Loop variable initialization expression.</param>
         /// <param name="condition">Loop continuation condition.</param>
@@ -631,7 +630,7 @@ namespace DotNext.Metaprogramming
         /// Adds <c>for</c> loop statement.
         /// </summary>
         /// <remarks>
-        /// This builder constructs the statement equivalent to <c>for(var i = initializer; condition; iter){ body; }</c>
+        /// This builder constructs the statement equivalent to <c>for(var i = initializer; condition; iter){ body; }</c>.
         /// </remarks>
         /// <param name="initializer">Loop variable initialization expression.</param>
         /// <param name="condition">Loop continuation condition.</param>
@@ -649,7 +648,7 @@ namespace DotNext.Metaprogramming
         /// Adds generic loop statement.
         /// </summary>
         /// <remarks>
-        /// This loop is equivalent to <c>while(true){ }</c>
+        /// This loop is equivalent to <c>while(true){ }</c>.
         /// </remarks>
         /// <param name="body">Loop body.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
@@ -680,9 +679,10 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Adds <c>throw</c> statement to the compound statement.
         /// </summary>
-        /// <typeparam name="E">The exception to be thrown.</typeparam>
+        /// <typeparam name="TException">The exception to be thrown.</typeparam>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void Throw<E>() where E : Exception, new() => Throw(Expression.New(typeof(E).GetConstructor(Array.Empty<Type>())));
+        public static void Throw<TException>()
+            where TException : Exception, new() => Throw(Expression.New(typeof(TException).GetConstructor(Array.Empty<Type>())));
 
         /// <summary>
         /// Adds re-throw statement.
@@ -694,7 +694,6 @@ namespace DotNext.Metaprogramming
                 LexicalScope.Current.AddStatement(Expression.Rethrow());
             else
                 throw new InvalidOperationException(ExceptionMessages.InvalidRethrow);
-
         }
 
         /// <summary>
@@ -750,8 +749,8 @@ namespace DotNext.Metaprogramming
         }
 
         /// <summary>
-        /// Adds compound statement hat repeatedly refer to a single object or 
-        /// structure so that the statements can use a simplified syntax when accessing members 
+        /// Adds compound statement hat repeatedly refer to a single object or
+        /// structure so that the statements can use a simplified syntax when accessing members
         /// of the object or structure.
         /// </summary>
         /// <param name="expression">The implicitly referenced object.</param>
@@ -929,7 +928,6 @@ namespace DotNext.Metaprogramming
             return statement.Build(body);
         }
 
-
         /// <summary>
         /// Specifies a pattern to compare to the match expression
         /// and action to be executed if matching is successful.
@@ -963,7 +961,7 @@ namespace DotNext.Metaprogramming
         /// <param name="exceptionType">Expected exception.</param>
         /// <param name="filter">Additional filter to be applied to the caught exception.</param>
         /// <param name="handler">Exception handling block.</param>
-        /// <returns>Structured exception handling builder.</returns>
+        /// <returns>Structured exception handler builder.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static TryBuilder Catch(this TryBuilder builder, Type exceptionType, TryBuilder.Filter? filter, Action<ParameterExpression> handler)
         {
@@ -977,7 +975,7 @@ namespace DotNext.Metaprogramming
         /// <param name="builder">Structured exception handling builder.</param>
         /// <param name="exceptionType">Expected exception.</param>
         /// <param name="handler">Exception handling block.</param>
-        /// <returns>Structured exception handling builder.</returns>
+        /// <returns>Structured exception handler.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static TryBuilder Catch(this TryBuilder builder, Type exceptionType, Action handler)
         {
@@ -991,7 +989,7 @@ namespace DotNext.Metaprogramming
         /// <param name="builder">Structured exception handling builder.</param>
         /// <param name="exceptionType">Expected exception.</param>
         /// <param name="handler">Exception handling block.</param>
-        /// <returns>Structured exception handling builder.</returns>
+        /// <returns>Structured exception handler.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static TryBuilder Catch(this TryBuilder builder, Type exceptionType, Action<ParameterExpression> handler)
             => Catch(builder, exceptionType, null, handler);
@@ -999,33 +997,33 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Constructs exception handling section.
         /// </summary>
-        /// <typeparam name="E">Expected exception.</typeparam>
+        /// <typeparam name="TException">Expected exception.</typeparam>
         /// <param name="builder">Structured exception handling builder.</param>
         /// <param name="handler">Exception handling block.</param>
-        /// <returns>Structured exception handling builder.</returns>
+        /// <returns>Structured exception handler.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static TryBuilder Catch<E>(this TryBuilder builder, Action<ParameterExpression> handler)
-            where E : Exception
-            => Catch(builder, typeof(E), handler);
+        public static TryBuilder Catch<TException>(this TryBuilder builder, Action<ParameterExpression> handler)
+            where TException : Exception
+            => Catch(builder, typeof(TException), handler);
 
         /// <summary>
         /// Constructs exception handling section.
         /// </summary>
-        /// <typeparam name="E">Expected exception.</typeparam>
+        /// <typeparam name="TException">Expected exception.</typeparam>
         /// <param name="builder">Structured exception handling builder.</param>
         /// <param name="handler">Exception handling block.</param>
-        /// <returns>Structured exception handling builder.</returns>
+        /// <returns>Structured exception handler.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static TryBuilder Catch<E>(this TryBuilder builder, Action handler)
-            where E : Exception
-            => Catch(builder, typeof(E), handler);
+        public static TryBuilder Catch<TException>(this TryBuilder builder, Action handler)
+            where TException : Exception
+            => Catch(builder, typeof(TException), handler);
 
         /// <summary>
         /// Constructs exception handling section that may capture any exception.
         /// </summary>
         /// <param name="builder">Structured exception handling builder.</param>
         /// <param name="handler">Exception handling block.</param>
-        /// <returns>Structured exception handling builder.</returns>
+        /// <returns>Structured exception handler.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static TryBuilder Catch(this TryBuilder builder, Action handler)
         {
@@ -1066,7 +1064,7 @@ namespace DotNext.Metaprogramming
         /// <param name="body"><c>try</c> block.</param>
         /// <returns>Structured exception handling builder.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/try-catch-finally">try-catch-finally Statement</seealso>        
+        /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/try-catch-finally">try-catch-finally Statement</seealso>
         public static TryBuilder Try(Expression body) => new TryBuilder(body, LexicalScope.Current);
 
         /// <summary>
@@ -1132,88 +1130,88 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Constructs multi-line lambda function capturing the current lexical scope.
         /// </summary>
-        /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
+        /// <typeparam name="TDelegate">The delegate describing signature of lambda function.</typeparam>
         /// <param name="tailCall"><see langword="true"/> if the lambda expression will be compiled with the tail call optimization, otherwise <see langword="false"/>.</param>
         /// <param name="body">Lambda function builder.</param>
         /// <returns>Constructed lambda expression.</returns>
-        public static Expression<D> Lambda<D>(bool tailCall, Action<LambdaContext> body)
-            where D : Delegate
+        public static Expression<TDelegate> Lambda<TDelegate>(bool tailCall, Action<LambdaContext> body)
+            where TDelegate : Delegate
         {
-            using var expression = new LambdaExpression<D>(tailCall);
+            using var expression = new LambdaExpression<TDelegate>(tailCall);
             return expression.Build(body);
         }
 
         /// <summary>
         /// Constructs single-line lambda function capturing the current lexical scope.
         /// </summary>
-        /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
+        /// <typeparam name="TDelegate">The delegate describing signature of lambda function.</typeparam>
         /// <param name="tailCall"><see langword="true"/> if the lambda expression will be compiled with the tail call optimization, otherwise <see langword="false"/>.</param>
         /// <param name="body">Lambda function builder.</param>
         /// <returns>Constructed lambda expression.</returns>
-        public static Expression<D> Lambda<D>(bool tailCall, Func<LambdaContext, Expression> body)
-            where D : Delegate
+        public static Expression<TDelegate> Lambda<TDelegate>(bool tailCall, Func<LambdaContext, Expression> body)
+            where TDelegate : Delegate
         {
-            using var expression = new LambdaExpression<D>(tailCall);
+            using var expression = new LambdaExpression<TDelegate>(tailCall);
             return expression.Build(body);
         }
 
         /// <summary>
         /// Constructs single-line lambda function capturing the current lexical scope.
         /// </summary>
-        /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
+        /// <typeparam name="TDelegate">The delegate describing signature of lambda function.</typeparam>
         /// <param name="body">Lambda function builder.</param>
         /// <returns>Constructed lambda expression.</returns>
-        public static Expression<D> Lambda<D>(Func<LambdaContext, Expression> body)
-            where D : Delegate
-            => Lambda<D>(false, body);
+        public static Expression<TDelegate> Lambda<TDelegate>(Func<LambdaContext, Expression> body)
+            where TDelegate : Delegate
+            => Lambda<TDelegate>(false, body);
 
         /// <summary>
         /// Constructs multi-line lambda function capturing the current lexical scope.
         /// </summary>
-        /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
+        /// <typeparam name="TDelegate">The delegate describing signature of lambda function.</typeparam>
         /// <param name="tailCall"><see langword="true"/> if the lambda expression will be compiled with the tail call optimization, otherwise <see langword="false"/>.</param>
         /// <param name="body">Lambda function builder.</param>
         /// <returns>Constructed lambda expression.</returns>
-        public static Expression<D> Lambda<D>(bool tailCall, Action<LambdaContext, ParameterExpression> body)
-            where D : Delegate
+        public static Expression<TDelegate> Lambda<TDelegate>(bool tailCall, Action<LambdaContext, ParameterExpression> body)
+            where TDelegate : Delegate
         {
-            using var expression = new LambdaExpression<D>(tailCall);
+            using var expression = new LambdaExpression<TDelegate>(tailCall);
             return expression.Build(body);
         }
 
         /// <summary>
         /// Constructs multi-line lambda function capturing the current lexical scope.
         /// </summary>
-        /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
+        /// <typeparam name="TDelegate">The delegate describing signature of lambda function.</typeparam>
         /// <param name="body">Lambda function builder.</param>
         /// <returns>Constructed lambda expression.</returns>
-        public static Expression<D> Lambda<D>(Action<LambdaContext> body)
-            where D : Delegate
-            => Lambda<D>(false, body);
+        public static Expression<TDelegate> Lambda<TDelegate>(Action<LambdaContext> body)
+            where TDelegate : Delegate
+            => Lambda<TDelegate>(false, body);
 
         /// <summary>
         /// Constructs multi-line lambda function capturing the current lexical scope.
         /// </summary>
-        /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
+        /// <typeparam name="TDelegate">The delegate describing signature of lambda function.</typeparam>
         /// <param name="body">Lambda function builder.</param>
         /// <returns>Constructed lambda expression.</returns>
-        public static Expression<D> Lambda<D>(Action<LambdaContext, ParameterExpression> body)
-            where D : Delegate
-            => Lambda<D>(false, body);
+        public static Expression<TDelegate> Lambda<TDelegate>(Action<LambdaContext, ParameterExpression> body)
+            where TDelegate : Delegate
+            => Lambda<TDelegate>(false, body);
 
         /// <summary>
         /// Constructs multi-line async lambda function capturing the current lexical scope.
         /// </summary>
-        /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
+        /// <typeparam name="TDelegate">The delegate describing signature of lambda function.</typeparam>
         /// <param name="body">Lambda function builder.</param>
         /// <returns>Constructed lambda expression.</returns>
         /// <seealso cref="AwaitExpression"/>
         /// <seealso cref="AsyncResultExpression"/>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/async/#BKMK_HowtoWriteanAsyncMethod">Async methods</seealso>
-        public static Expression<D> AsyncLambda<D>(Action<LambdaContext> body)
-            where D : Delegate
+        public static Expression<TDelegate> AsyncLambda<TDelegate>(Action<LambdaContext> body)
+            where TDelegate : Delegate
         {
-            using var statement = new AsyncLambdaExpression<D>();
+            using var statement = new AsyncLambdaExpression<TDelegate>();
             return statement.Build(body);
         }
     }

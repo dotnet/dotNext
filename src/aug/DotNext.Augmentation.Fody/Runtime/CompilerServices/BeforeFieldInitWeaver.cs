@@ -1,5 +1,5 @@
-﻿using Mono.Cecil;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Mono.Cecil;
 
 namespace DotNext.Runtime.CompilerServices
 {
@@ -11,11 +11,14 @@ namespace DotNext.Runtime.CompilerServices
         {
             ICollection<CustomAttribute> attributesToRemove = new LinkedList<CustomAttribute>();
             foreach (var attribute in type.CustomAttributes)
+            {
                 if (attribute.AttributeType.FullName == BeforeFieldInitAttribute && attribute.ConstructorArguments[0].Value is bool beforeFieldInit)
                 {
                     type.IsBeforeFieldInit = beforeFieldInit;
                     attributesToRemove.Add(attribute);
                 }
+            }
+
             foreach (var attribute in attributesToRemove)
                 type.CustomAttributes.Remove(attribute);
         }

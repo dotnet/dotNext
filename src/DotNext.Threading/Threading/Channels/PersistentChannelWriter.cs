@@ -13,9 +13,9 @@ namespace DotNext.Threading.Channels
     {
         private const string StateFileName = "writer.state";
         private readonly IChannelWriter<T> writer;
+        private readonly FileCreationOptions fileOptions;
         private AsyncLock writeLock;
         private PartitionStream? writeTopic;
-        private readonly FileCreationOptions fileOptions;
         private ChannelCursor cursor;
 
         internal PersistentChannelWriter(IChannelWriter<T> writer, bool singleWriter, long initialSize)
@@ -44,6 +44,7 @@ namespace DotNext.Threading.Channels
                 await partition.FlushAsync(token).ConfigureAwait(false);
                 cursor.Advance(partition.Position);
             }
+
             writer.MessageReady();
         }
 
@@ -55,6 +56,7 @@ namespace DotNext.Threading.Channels
                 writeTopic = null;
                 cursor.Dispose();
             }
+
             writeLock.Dispose();
         }
 

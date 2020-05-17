@@ -7,7 +7,6 @@ namespace DotNext.Metaprogramming
 
     internal sealed class WhileStatement : LoopLexicalScope, ILexicalScope<WhileExpression, Action>, ILexicalScope<WhileExpression, Action<LoopContext>>
     {
-
         private readonly Expression condition;
         private readonly bool conditionFirst;
 

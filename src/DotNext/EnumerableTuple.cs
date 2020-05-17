@@ -12,24 +12,24 @@ namespace DotNext
     /// <summary>
     /// Represents tuple as enumerable collection.
     /// </summary>
-    /// <typeparam name="I">The type of items in the tuple.</typeparam>
-    /// <typeparam name="T">The tuple type.</typeparam>
+    /// <typeparam name="TItem">The type of items in the tuple.</typeparam>
+    /// <typeparam name="TTuple">The tuple type.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct EnumerableTuple<I, T> : IReadOnlyList<I>
-        where T : ITuple
+    public readonly struct EnumerableTuple<TItem, TTuple> : IReadOnlyList<TItem>
+        where TTuple : ITuple
     {
         /// <summary>
         /// Represents enumerator over items in the tuple.
         /// </summary>
         [StructLayout(LayoutKind.Auto)]
-        public struct Enumerator : IEnumerator<I>
+        public struct Enumerator : IEnumerator<TItem>
         {
             private const int InitialPosition = -1;
-            private T tuple;
-            private readonly ValueRefFunc<T, int, I> accessor;
+            private readonly ValueRefFunc<TTuple, int, TItem> accessor;
+            private TTuple tuple;
             private int currentIndex;
 
-            internal Enumerator(T tuple, in ValueRefFunc<T, int, I> accessor)
+            internal Enumerator(TTuple tuple, in ValueRefFunc<TTuple, int, TItem> accessor)
             {
                 this.tuple = tuple;
                 currentIndex = InitialPosition;
@@ -39,8 +39,9 @@ namespace DotNext
             /// <summary>
             /// Gets currently iterating item in the tuple.
             /// </summary>
-            public I Current => accessor.Invoke(ref tuple, currentIndex);
+            public TItem Current => accessor.Invoke(ref tuple, currentIndex);
 
+            /// <inheritdoc/>
             object? IEnumerator.Current => Current;
 
             /// <summary>
@@ -50,18 +51,19 @@ namespace DotNext
             public bool MoveNext() => ++currentIndex < tuple.Length;
 
             /// <summary>
-            /// Sets the enumerator to its initial position, which is before 
+            /// Sets the enumerator to its initial position, which is before
             /// the first item in the tuple.
             /// </summary>
             public void Reset() => currentIndex = InitialPosition;
 
+            /// <inheritdoc/>
             void IDisposable.Dispose() => this = default;
         }
 
-        private readonly T tuple;
-        private readonly ValueRefFunc<T, int, I> accessor;
+        private readonly TTuple tuple;
+        private readonly ValueRefFunc<TTuple, int, TItem> accessor;
 
-        internal EnumerableTuple(T tuple, in ValueRefFunc<T, int, I> accessor)
+        internal EnumerableTuple(TTuple tuple, in ValueRefFunc<TTuple, int, TItem> accessor)
         {
             this.tuple = tuple;
             this.accessor = accessor;
@@ -73,7 +75,7 @@ namespace DotNext
         /// <param name="index">The index of the item.</param>
         /// <returns>Item value.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is invalid.</exception>
-        public I this[int index] => accessor.IsEmpty ? throw new ArgumentOutOfRangeException(nameof(index)) : accessor.Invoke(ref AsRef(tuple), index);
+        public TItem this[int index] => accessor.IsEmpty ? throw new ArgumentOutOfRangeException(nameof(index)) : accessor.Invoke(ref AsRef(tuple), index);
 
         /// <summary>
         /// Gets number of items in the tuple.
@@ -85,7 +87,7 @@ namespace DotNext
         /// </summary>
         /// <param name="output">The memory span to be written.</param>
         /// <returns>The actual of modified elements in memory span.</returns>
-        public int CopyTo(Span<I> output)
+        public int CopyTo(Span<TItem> output)
         {
             int count;
             for (count = 0; count < Math.Min(output.Length, tuple.Length); count++)
@@ -99,8 +101,10 @@ namespace DotNext
         /// <returns>The enumerator over items.</returns>
         public Enumerator GetEnumerator() => new Enumerator(tuple, accessor);
 
-        IEnumerator<I> IEnumerable<I>.GetEnumerator() => GetEnumerator();
+        /// <inheritdoc/>
+        IEnumerator<TItem> IEnumerable<TItem>.GetEnumerator() => GetEnumerator();
 
+        /// <inheritdoc/>
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 
@@ -111,17 +115,17 @@ namespace DotNext
     /// <see cref="ValueTuple"/>
     public static class EnumerableTuple
     {
-        private static E GetItem<E>(ref Tuple<E> tuple, int index)
+        private static TItem GetItem<TItem>(ref Tuple<TItem> tuple, int index)
             => index == 0 ? tuple.Item1 : throw new ArgumentOutOfRangeException(nameof(index));
 
-        private static E GetItem<E>(ref Tuple<E, E> tuple, int index) => index switch
+        private static TItem GetItem<TItem>(ref Tuple<TItem, TItem> tuple, int index) => index switch
         {
             0 => tuple.Item1,
             1 => tuple.Item2,
             _ => throw new ArgumentOutOfRangeException(nameof(index)),
         };
 
-        private static E GetItem<E>(ref Tuple<E, E, E> tuple, int index) => index switch
+        private static TItem GetItem<TItem>(ref Tuple<TItem, TItem, TItem> tuple, int index) => index switch
         {
             0 => tuple.Item1,
             1 => tuple.Item2,
@@ -129,7 +133,7 @@ namespace DotNext
             _ => throw new ArgumentOutOfRangeException(nameof(index)),
         };
 
-        private static E GetItem<E>(ref Tuple<E, E, E, E> tuple, int index) => index switch
+        private static TItem GetItem<TItem>(ref Tuple<TItem, TItem, TItem, TItem> tuple, int index) => index switch
         {
             0 => tuple.Item1,
             1 => tuple.Item2,
@@ -138,7 +142,7 @@ namespace DotNext
             _ => throw new ArgumentOutOfRangeException(nameof(index)),
         };
 
-        private static E GetItem<E>(ref Tuple<E, E, E, E, E> tuple, int index) => index switch
+        private static TItem GetItem<TItem>(ref Tuple<TItem, TItem, TItem, TItem, TItem> tuple, int index) => index switch
         {
             0 => tuple.Item1,
             1 => tuple.Item2,
@@ -148,7 +152,7 @@ namespace DotNext
             _ => throw new ArgumentOutOfRangeException(nameof(index)),
         };
 
-        private static E GetItem<E>(ref Tuple<E, E, E, E, E, E> tuple, int index) => index switch
+        private static TItem GetItem<TItem>(ref Tuple<TItem, TItem, TItem, TItem, TItem, TItem> tuple, int index) => index switch
         {
             0 => tuple.Item1,
             1 => tuple.Item2,
@@ -159,7 +163,7 @@ namespace DotNext
             _ => throw new ArgumentOutOfRangeException(nameof(index)),
         };
 
-        private static E GetItem<E>(ref Tuple<E, E, E, E, E, E, E> tuple, int index) => index switch
+        private static TItem GetItem<TItem>(ref Tuple<TItem, TItem, TItem, TItem, TItem, TItem, TItem> tuple, int index) => index switch
         {
             0 => tuple.Item1,
             1 => tuple.Item2,

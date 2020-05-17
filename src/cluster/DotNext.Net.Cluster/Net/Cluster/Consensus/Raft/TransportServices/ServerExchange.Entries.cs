@@ -49,26 +49,27 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
             => new ValueTask(writer.CopyFromAsync(reader, token));
+
         ValueTask<TResult> IDataTransferObject.GetObjectDataAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token)
             => IDataTransferObject.DecodeAsync<TResult, TDecoder>(reader, parser, token);
     }
 
     internal partial class ServerExchange : ILogEntryProducer<ReceivedLogEntry>
     {
-        private static readonly Action<ServerExchange, State> setStateAction;
-        private static readonly Predicate<ServerExchange> isReadyToReadEntry, isValidStateForResponse, isValidForTransition;
+        private static readonly Action<ServerExchange, State> SetStateAction;
+        private static readonly Predicate<ServerExchange> IsReadyToReadEntryPredicate, IsValidStateForResponsePredicate, IsValidForTransitionPredicate;
 
         static ServerExchange()
         {
-            isReadyToReadEntry = DelegateHelpers.CreateOpenDelegate<Predicate<ServerExchange>>(server => server.IsReadyToReadEntry());
-            isValidStateForResponse = DelegateHelpers.CreateOpenDelegate<Predicate<ServerExchange>>(server => server.IsValidStateForResponse());
-            isValidForTransition = DelegateHelpers.CreateOpenDelegate<Predicate<ServerExchange>>(server => server.IsValidForTransition());
-            setStateAction = DelegateHelpers.CreateOpenDelegate<Action<ServerExchange, State>>((server, state) => server.SetState(state));
+            IsReadyToReadEntryPredicate = DelegateHelpers.CreateOpenDelegate<Predicate<ServerExchange>>(server => server.IsReadyToReadEntry());
+            IsValidStateForResponsePredicate = DelegateHelpers.CreateOpenDelegate<Predicate<ServerExchange>>(server => server.IsValidStateForResponse());
+            IsValidForTransitionPredicate = DelegateHelpers.CreateOpenDelegate<Predicate<ServerExchange>>(server => server.IsValidForTransition());
+            SetStateAction = DelegateHelpers.CreateOpenDelegate<Action<ServerExchange, State>>((server, state) => server.SetState(state));
         }
 
+        private readonly AsyncTrigger transmissionStateTrigger = new AsyncTrigger();
         private int remainingCount, lookupIndex;
         private ReceivedLogEntry currentEntry;
-        private readonly AsyncTrigger transmissionStateTrigger = new AsyncTrigger();
 
         long ILogEntryProducer<ReceivedLogEntry>.RemainingCount => remainingCount;
 
@@ -85,27 +86,29 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         async ValueTask<bool> IAsyncEnumerator<ReceivedLogEntry>.MoveNextAsync()
         {
-            //at the moment of this method call entire exchange can be in the following states:
-            //log entry headers are obtained and entire log entry ready to read
-            //log entry content is completely obtained
-            //iteration was not started
-            //no more entries to enumerate
-            if (remainingCount <= 0) //no more entries to enumerate
+            // at the moment of this method call entire exchange can be in the following states:
+            // log entry headers are obtained and entire log entry ready to read
+            // log entry content is completely obtained
+            // iteration was not started
+            // no more entries to enumerate
+            if (remainingCount <= 0)
             {
-                //resume wait thread to finalize response
-                transmissionStateTrigger.Signal(this, setStateAction, State.ReceivingEntriesFinished);
+                // resume wait thread to finalize response
+                transmissionStateTrigger.Signal(this, SetStateAction, State.ReceivingEntriesFinished);
                 return false;
             }
+
             if (lookupIndex >= 0)
             {
                 await Reader.CompleteAsync().ConfigureAwait(false);
-                await transmissionStateTrigger.WaitAsync(this, isValidForTransition).ConfigureAwait(false);
+                await transmissionStateTrigger.WaitAsync(this, IsValidForTransitionPredicate).ConfigureAwait(false);
                 ReusePipe(false);
             }
+
             lookupIndex += 1;
             remainingCount -= 1;
 
-            return await transmissionStateTrigger.SignalAndWaitAsync(this, setStateAction, State.ReadyToReceiveEntry, isReadyToReadEntry, InfiniteTimeSpan).ConfigureAwait(false);
+            return await transmissionStateTrigger.SignalAndWaitAsync(this, SetStateAction, State.ReadyToReceiveEntry, IsReadyToReadEntryPredicate, InfiniteTimeSpan).ConfigureAwait(false);
         }
 
         private void BeginReceiveEntries(EndPoint sender, ReadOnlySpan<byte> announcement, CancellationToken token)
@@ -124,27 +127,34 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             if (result.IsCompleted | completed)
             {
                 await Writer.CompleteAsync().ConfigureAwait(false);
-                transmissionStateTrigger.Signal(this, setStateAction, State.EntryReceived);
+                transmissionStateTrigger.Signal(this, SetStateAction, State.EntryReceived);
             }
             else
-                transmissionStateTrigger.Signal(this, setStateAction, State.ReceivingEntry);
+            {
+                transmissionStateTrigger.Signal(this, SetStateAction, State.ReceivingEntry);
+            }
+
             return true;
         }
 
         private async ValueTask<bool> ReceivingEntry(ReadOnlyMemory<byte> content, bool completed, CancellationToken token)
         {
             if (content.IsEmpty)
+            {
                 completed = true;
+            }
             else
             {
                 var result = await Writer.WriteAsync(content, token).ConfigureAwait(false);
                 completed |= result.IsCompleted;
             }
+
             if (completed)
             {
                 await Writer.CompleteAsync().ConfigureAwait(false);
-                transmissionStateTrigger.Signal(this, setStateAction, State.AppendEntriesReceived);
+                transmissionStateTrigger.Signal(this, SetStateAction, State.AppendEntriesReceived);
             }
+
             return true;
         }
 
@@ -154,11 +164,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             int count;
             bool isContinueReceiving;
             var resultTask = Cast<Task<Result<bool>>>(task);
-            var stateTask = transmissionStateTrigger.WaitAsync(this, isValidStateForResponse, token);
-            //wait for result or state transition
+            var stateTask = transmissionStateTrigger.WaitAsync(this, IsValidStateForResponsePredicate, token);
+
+            // wait for result or state transition
             if (ReferenceEquals(resultTask, await Task.WhenAny(resultTask, stateTask).ConfigureAwait(false)))
             {
-                //result obtained, finalize transmission
+                // result obtained, finalize transmission
                 task = null;
                 state = State.ReceivingEntriesFinished;
                 remainingCount = 0;
@@ -167,7 +178,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 responseType = MessageType.None;
             }
             else
-                switch (state)   //should be in sync with IsValidStateForResponse
+            {
+                // should be in sync with IsValidStateForResponse
+                switch (state)
                 {
                     case State.ReceivingEntriesFinished:
                         count = IExchange.WriteResult(await resultTask.ConfigureAwait(false), output.Span);
@@ -187,6 +200,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                     default:
                         throw new InvalidOperationException();
                 }
+            }
+
             return (new PacketHeaders(responseType, FlowControl.Ack), count, isContinueReceiving);
         }
 

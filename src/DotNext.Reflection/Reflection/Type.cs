@@ -51,11 +51,12 @@ namespace DotNext.Reflection
         {
             var inputParam = Parameter(RuntimeType.MakeByRefType(), "obj");
             var secondParam = Parameter(RuntimeType.MakeByRefType(), "other");
-            //1. try to resolve equality operator
+
+            // 1. try to resolve equality operator
             Operator<T, T, bool>? equalsOp = Operator<T>.Get<bool>(BinaryOperator.Equal, OperatorLookup.Overloaded);
             if (RuntimeType.IsValueType)
             {
-                //hash code calculator
+                // hash code calculator
                 var method = RuntimeType.GetHashCodeMethod();
                 if (method is null)
                 {
@@ -66,17 +67,22 @@ namespace DotNext.Reflection
                     GetHashCode = Lambda<Operator<T, int>>(Call(null, method, inputParam, Constant(true)), inputParam).Compile();
                 }
                 else
+                {
                     GetHashCode = method.CreateDelegate<Operator<T, int>>();
-                //equality checker
+                }
+
+                // equality checker
                 if (equalsOp is null)
-                    //2. try to find IEquatable.Equals implementation
+                {
+                    // 2. try to find IEquatable.Equals implementation
                     if (typeof(IEquatable<T>).IsAssignableFrom(RuntimeType))
                     {
                         method = typeof(IEquatable<T>).GetMethod(nameof(IEquatable<T>.Equals), BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
                         Debug.Assert(!(method is null));
                         equalsOp = Lambda<Operator<T, T, bool>>(Call(inputParam, method, secondParam), inputParam, secondParam).Compile();
                     }
-                    //3. Use bitwise equality
+
+                    // 3. Use bitwise equality
                     else
                     {
                         method = typeof(BitwiseComparer<>)
@@ -86,15 +92,18 @@ namespace DotNext.Reflection
                         Debug.Assert(!(method is null));
                         equalsOp = Lambda<Operator<T, T, bool>>(Call(null, method, inputParam, secondParam), inputParam, secondParam).Compile();
                     }
+                }
             }
             else
             {
-                //hash code calculator
+                // hash code calculator
                 GetHashCode = Lambda<Operator<T, int>>(Call(inputParam, typeof(object).GetHashCodeMethod()), inputParam).Compile();
-                //equality checker
+
+                // equality checker
                 if (equalsOp is null)
                     equalsOp = Lambda<Operator<T, T, bool>>(Call(null, typeof(object).GetMethod(nameof(Equals), BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly), inputParam, secondParam), inputParam, secondParam).Compile();
             }
+
             Equals = equalsOp;
         }
 
@@ -109,37 +118,37 @@ namespace DotNext.Reflection
         /// <summary>
         /// Determines whether an instance of a specified type can be assigned to an instance of the current type.
         /// </summary>
-        /// <typeparam name="U">The type to compare with the current type.</typeparam>
-        /// <returns><see langword="true"/>, if instance of type <typeparamref name="U"/> can be assigned to type <typeparamref name="T"/>.</returns>
-        public static bool IsAssignableFrom<U>() => RuntimeType.IsAssignableFrom(typeof(U));
+        /// <typeparam name="TOther">The type to compare with the current type.</typeparam>
+        /// <returns><see langword="true"/>, if instance of type <typeparamref name="TOther"/> can be assigned to type <typeparamref name="T"/>.</returns>
+        public static bool IsAssignableFrom<TOther>() => RuntimeType.IsAssignableFrom(typeof(TOther));
 
         /// <summary>
         /// Determines whether an instance of the current type can be assigned to an instance of the specified type.
         /// </summary>
-        /// <typeparam name="U">The type to compare with the current type.</typeparam>
-        /// <returns><see langword="true"/>, if instance of type <typeparamref name="T"/> can be assigned to type <typeparamref name="U"/>.</returns>
-        public static bool IsAssignableTo<U>() => Type<U>.IsAssignableFrom<T>();
+        /// <typeparam name="TOther">The type to compare with the current type.</typeparam>
+        /// <returns><see langword="true"/>, if instance of type <typeparamref name="T"/> can be assigned to type <typeparamref name="TOther"/>.</returns>
+        public static bool IsAssignableTo<TOther>() => Type<TOther>.IsAssignableFrom<T>();
 
         /// <summary>
         /// Applies type cast to the given object respecting overloaded cast operator.
         /// </summary>
-        /// <typeparam name="U">The type of object to be converted.</typeparam>
+        /// <typeparam name="TSource">The type of object to be converted.</typeparam>
         /// <param name="value">The value to be converted.</param>
         /// <returns>Optional conversion result if it is supported for the given type.</returns>
-        public static Optional<T> TryConvert<U>(U value)
+        public static Optional<T> TryConvert<TSource>(TSource value)
         {
-            Operator<U, T>? converter = Type<U>.Operator.Get<T>(UnaryOperator.Convert);
+            Operator<TSource, T>? converter = Type<TSource>.Operator.Get<T>(UnaryOperator.Convert);
             return converter is null ? Optional<T>.Empty : converter(value)!;
         }
 
         /// <summary>
         /// Applies type cast to the given object respecting overloaded cast operator.
         /// </summary>
-        /// <typeparam name="U">The type of object to be converted.</typeparam>
+        /// <typeparam name="TSource">The type of object to be converted.</typeparam>
         /// <param name="value">The value to be converted.</param>
         /// <param name="result">The conversion result.</param>
         /// <returns><see langword="true"/>, if conversion is supported by the given type; otherwise, <see langword="false"/>.</returns>
-        public static bool TryConvert<U>(U value, [NotNullWhen(true)]out T result) => TryConvert(value).TryGet(out result);
+        public static bool TryConvert<TSource>(TSource value, [NotNullWhen(true)]out T result) => TryConvert(value).TryGet(out result);
 
         /// <summary>
         /// Converts object into type <typeparamref name="T"/>.
@@ -149,10 +158,10 @@ namespace DotNext.Reflection
         /// and implicit/explicit cast operators.
         /// </remarks>
         /// <param name="value">The value to convert.</param>
-        /// <typeparam name="U">Type of value to convert.</typeparam>
+        /// <typeparam name="TSource">Type of value to convert.</typeparam>
         /// <returns>Converted value.</returns>
         /// <exception cref="InvalidCastException">Cannot convert values.</exception>
         [return: NotNull]
-        public static T Convert<U>(U value) => TryConvert(value).OrThrow<InvalidCastException>();
+        public static T Convert<TSource>(TSource value) => TryConvert(value).OrThrow<InvalidCastException>();
     }
 }

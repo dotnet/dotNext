@@ -36,6 +36,7 @@ namespace DotNext.Buffers
                 writer.WriteByte((byte)(value | 0x80U));
                 value >>= 7;
             }
+
             writer.WriteByte((byte)value);
         }
     }

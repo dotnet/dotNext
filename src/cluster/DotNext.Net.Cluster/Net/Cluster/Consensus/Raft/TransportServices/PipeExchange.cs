@@ -22,6 +22,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 pipe.Reader.Complete(e);
                 pipe.Writer.Complete(e);
             }
+
             pipe.Reset();
         }
 

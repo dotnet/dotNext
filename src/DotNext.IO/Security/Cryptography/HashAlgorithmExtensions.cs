@@ -22,7 +22,7 @@ namespace DotNext.Security.Cryptography
         /// <param name="count">The number of bytes to add to the hash.</param>
         /// <param name="hash">The buffer used to write the final hash.</param>
         /// <param name="token">The token that can be used to cancel operation.</param>
-        /// <returns></returns>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="InvalidOperationException">Length of <paramref name="hash"/> is not enough to place the final hash.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="System.IO.EndOfStreamException">Unexpected end of stream.</exception>
@@ -37,7 +37,7 @@ namespace DotNext.Security.Cryptography
         /// <param name="reader">The pipe reader.</param>
         /// <param name="hash">The buffer used to write the final hash.</param>
         /// <param name="token">The token that can be used to cancel operation.</param>
-        /// <returns></returns>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="InvalidOperationException">Length of <paramref name="hash"/> is not enough to place the final hash.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

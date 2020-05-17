@@ -87,9 +87,13 @@ namespace DotNext
         public static T[] Insert<T>(this T[] array, T element, long index)
         {
             if (index < 0 || index > array.LongLength)
+            {
                 throw new ArgumentOutOfRangeException(nameof(index));
+            }
             else if (array.LongLength == 0L)
+            {
                 return new[] { element };
+            }
             else
             {
                 var result = new T[array.LongLength + 1];
@@ -111,9 +115,13 @@ namespace DotNext
         public static T[] RemoveAt<T>(this T[] array, long index)
         {
             if (index < 0L || index >= array.LongLength)
+            {
                 throw new ArgumentOutOfRangeException(nameof(index));
+            }
             else if (array.LongLength == 1L)
+            {
                 return Array.Empty<T>();
+            }
             else
             {
                 var newStore = new T[array.LongLength - 1L];
@@ -123,22 +131,29 @@ namespace DotNext
             }
         }
 
-        private static T[] RemoveAll<T, C>(T[] array, in ValueFunc<T, bool> match, ref C callback)
-            where C : struct, IConsumer<T>
+        private static T[] RemoveAll<T, TConsumer>(T[] array, in ValueFunc<T, bool> match, ref TConsumer callback)
+            where TConsumer : struct, IConsumer<T>
         {
             if (array.LongLength == 0L)
                 return array;
             var newLength = 0L;
             var tempArray = new T[array.LongLength];
             foreach (var item in array)
+            {
                 if (match.Invoke(item))
                     callback.Invoke(item);
                 else
                     tempArray[newLength++] = item;
+            }
+
             if (array.LongLength - newLength == 0L)
+            {
                 return array;
+            }
             else if (newLength == 0L)
+            {
                 return Array.Empty<T>();
+            }
             else
             {
                 array = new T[newLength];
@@ -150,6 +165,7 @@ namespace DotNext
         /// <summary>
         /// Removes all the elements that match the conditions defined by the specified predicate.
         /// </summary>
+        /// <typeparam name="T">The type of the elements in array.</typeparam>
         /// <param name="array">Source array. Cannot be <see langword="null"/>.</param>
         /// <param name="match">The predicate that defines the conditions of the elements to remove.</param>
         /// <param name="count">The number of elements removed from this list.</param>
@@ -165,6 +181,7 @@ namespace DotNext
         /// <summary>
         /// Removes all the elements that match the conditions defined by the specified predicate.
         /// </summary>
+        /// <typeparam name="T">The type of the elements in array.</typeparam>
         /// <param name="array">Source array. Cannot be <see langword="null"/>.</param>
         /// <param name="match">The predicate that defines the conditions of the elements to remove.</param>
         /// <param name="count">The number of elements removed from this list.</param>
@@ -175,6 +192,7 @@ namespace DotNext
         /// <summary>
         /// Removes all the elements that match the conditions defined by the specified predicate.
         /// </summary>
+        /// <typeparam name="T">The type of the elements in array.</typeparam>
         /// <param name="array">Source array. Cannot be <see langword="null"/>.</param>
         /// <param name="match">The predicate that defines the conditions of the elements to remove.</param>
         /// <param name="callback">The delegate that is used to accept removed items.</param>
@@ -185,6 +203,7 @@ namespace DotNext
         /// <summary>
         /// Removes all the elements that match the conditions defined by the specified predicate.
         /// </summary>
+        /// <typeparam name="T">The type of the elements in array.</typeparam>
         /// <param name="array">Source array. Cannot be <see langword="null"/>.</param>
         /// <param name="match">The predicate that defines the conditions of the elements to remove.</param>
         /// <param name="callback">The delegate that is used to accept removed items.</param>
@@ -255,9 +274,13 @@ namespace DotNext
         public static T[] RemoveLast<T>(this T[] input, long count)
         {
             if (count == 0L)
+            {
                 return input;
+            }
             else if (count >= input.LongLength)
+            {
                 return Array.Empty<T>();
+            }
             else
             {
                 var result = new T[input.LongLength - count];
@@ -380,22 +403,25 @@ namespace DotNext
         }
 
         /// <summary>
-		/// Determines whether two arrays contain the same set of elements.
-		/// </summary>
-		/// <remarks>
-		/// This method calls <see cref="object.Equals(object, object)"/> for each element type.
-		/// </remarks>
-		/// <param name="first">The first array to compare.</param>
-		/// <param name="second">The second array to compare.</param>
+        /// Determines whether two arrays contain the same set of elements.
+        /// </summary>
+        /// <remarks>
+        /// This method calls <see cref="object.Equals(object, object)"/> for each element type.
+        /// </remarks>
+        /// <param name="first">The first array to compare.</param>
+        /// <param name="second">The second array to compare.</param>
         /// <param name="parallel"><see langword="true"/> to perform parallel iteration over array elements; <see langword="false"/> to perform sequential iteration.</param>
-		/// <returns><see langword="true"/>, if both arrays are equal; otherwise, <see langword="false"/>.</returns>
+        /// <returns><see langword="true"/>, if both arrays are equal; otherwise, <see langword="false"/>.</returns>
         public static bool SequenceEqual(this object?[]? first, object?[]? second, bool parallel = false)
         {
             static bool EqualsSequential(object?[] first, object?[] second)
             {
                 for (var i = 0L; i < first.LongLength; i++)
+                {
                     if (!Equals(first[i], second[i]))
                         return false;
+                }
+
                 return true;
             }
 

@@ -12,6 +12,7 @@ namespace DotNext.Net.Cluster.Messaging
         /// </summary>
         new ISubscriber? Leader { get; }
 
+        /// <inheritdoc/>
         IClusterMember? ICluster.Leader => Leader;
 
         /// <summary>
@@ -19,10 +20,11 @@ namespace DotNext.Net.Cluster.Messaging
         /// </summary>
         new IReadOnlyCollection<ISubscriber> Members { get; }
 
+        /// <inheritdoc/>
         IReadOnlyCollection<IClusterMember> ICluster.Members => Members;
 
         /// <summary>
-        /// Allows to route messages to the leader 
+        /// Allows to route messages to the leader
         /// even if it is changed during transmission.
         /// </summary>
         IOutputChannel LeaderRouter { get; }

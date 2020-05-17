@@ -6,21 +6,20 @@ namespace DotNext.Reflection
     /// <summary>
     /// Represents reflected statically typed method.
     /// </summary>
-    /// <typeparam name="M">The type of the method.</typeparam>
-    /// <typeparam name="D">Type of delegate describing method signature.</typeparam>
-    public interface IMethod<out M, out D> : IMember<M, D>
-        where M : MethodBase
-        where D : Delegate
+    /// <typeparam name="TMethod">The type of the method.</typeparam>
+    /// <typeparam name="TSignature">Type of delegate describing method signature.</typeparam>
+    public interface IMethod<out TMethod, out TSignature> : IMember<TMethod, TSignature>
+        where TMethod : MethodBase
+        where TSignature : Delegate
     {
     }
 
     /// <summary>
     /// Represents regular method.
     /// </summary>
-    /// <typeparam name="D">Type of delegate describing method signature.</typeparam>
-    public interface IMethod<out D> : IMethod<MethodInfo, D>
-        where D : Delegate
+    /// <typeparam name="TSignature">Type of delegate describing method signature.</typeparam>
+    public interface IMethod<out TSignature> : IMethod<MethodInfo, TSignature>
+        where TSignature : Delegate
     {
-
     }
 }

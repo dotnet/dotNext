@@ -10,7 +10,7 @@ namespace DotNext.Net.Cluster.Messaging
     internal sealed class FileMessage : FileStream, IBufferedMessage
     {
         private const int BufferSize = 1024;
-        internal const int MinSize = 10 * 10 * 1024;   //100 KB
+        internal const int MinSize = 10 * 10 * 1024;   // 100 KB
         private readonly string messageName;
 
         internal FileMessage(string name, ContentType type)

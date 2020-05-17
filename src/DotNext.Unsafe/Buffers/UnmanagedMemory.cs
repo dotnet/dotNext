@@ -10,8 +10,8 @@ namespace DotNext.Buffers
     internal class UnmanagedMemory<T> : MemoryManager<T>
         where T : unmanaged
     {
-        private IntPtr address;
         private readonly bool owner;
+        private IntPtr address;
 
         internal UnmanagedMemory(IntPtr address, int length)
         {
@@ -78,6 +78,7 @@ namespace DotNext.Buffers
                 Marshal.FreeHGlobal(address);
                 GC.RemoveMemoryPressure(Size);
             }
+
             address = default;
         }
     }

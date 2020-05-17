@@ -111,28 +111,28 @@ namespace DotNext.Reflection
         /// <summary>
         /// POW(a, b)
         /// </summary>
-        Power = ExpressionType.Power
+        Power = ExpressionType.Power,
     }
 
     /// <summary>
     /// Represents reflected binary operator.
     /// </summary>
-    /// <typeparam name="Op1">The type of the first operand.</typeparam>
-    /// <typeparam name="Op2">The type of the second operand.</typeparam>
-    /// <typeparam name="R">The type of the operator result.</typeparam>
-	public sealed class BinaryOperator<Op1, Op2, R> : Operator<Operator<Op1, Op2, R>>
+    /// <typeparam name="TOperand1">The type of the first operand.</typeparam>
+    /// <typeparam name="TOperand2">The type of the second operand.</typeparam>
+    /// <typeparam name="TResult">The type of the operator result.</typeparam>
+    public sealed class BinaryOperator<TOperand1, TOperand2, TResult> : Operator<Operator<TOperand1, TOperand2, TResult>>
     {
-        private sealed class Cache : Cache<BinaryOperator<Op1, Op2, R>>
+        private sealed class Cache : Cache<BinaryOperator<TOperand1, TOperand2, TResult>>
         {
-            private protected override BinaryOperator<Op1, Op2, R>? Create(Operator.Kind kind) => Reflect(kind);
+            private protected override BinaryOperator<TOperand1, TOperand2, TResult>? Create(Operator.Kind kind) => Reflect(kind);
         }
 
-        private BinaryOperator(Expression<Operator<Op1, Op2, R>> invoker, BinaryOperator type, MethodInfo? overloaded)
+        private BinaryOperator(Expression<Operator<TOperand1, TOperand2, TResult>> invoker, BinaryOperator type, MethodInfo? overloaded)
             : base(invoker.Compile(), type.ToExpressionType(), overloaded)
         {
         }
 
-        private protected override Type DeclaringType => typeof(Op1);
+        private protected override Type DeclaringType => typeof(TOperand1);
 
         /// <summary>
         /// Invokes binary operator.
@@ -142,27 +142,28 @@ namespace DotNext.Reflection
         /// <returns>Result of binary operator.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [return: MaybeNull]
-        public R Invoke(in Op1 first, in Op2 second) => Invoker(in first, in second);
+        public TResult Invoke(in TOperand1 first, in TOperand2 second) => Invoker(in first, in second);
 
         /// <summary>
         /// Type of operator.
         /// </summary>
         public new BinaryOperator Type => (BinaryOperator)base.Type;
 
-        private static Expression<Operator<Op1, Op2, R>>? MakeBinary(Operator.Kind @operator, Operator.Operand first, Operator.Operand second, out MethodInfo? overloaded)
+        private static Expression<Operator<TOperand1, TOperand2, TResult>>? MakeBinary(Operator.Kind @operator, Operator.Operand first, Operator.Operand second, out MethodInfo? overloaded)
         {
-            var resultType = typeof(R);
-            //perform automatic cast from byte/short/ushort/sbyte so binary operators become available for these types
+            var resultType = typeof(TResult);
+
+            // perform automatic cast from byte/short/ushort/sbyte so binary operators become available for these types
             var usePrimitiveCast = resultType.IsPrimitive && first.NormalizePrimitive() && second.NormalizePrimitive();
-            tail_call:  //C# doesn't support tail calls so replace it with label/goto
+            tail_call: // C# doesn't support tail calls so replace it with label/goto
             overloaded = null;
             try
             {
                 var body = @operator.MakeBinary(first, second);
                 overloaded = body.Method;
                 return overloaded is null && usePrimitiveCast ?
-                    Expression.Lambda<Operator<Op1, Op2, R>>(Expression.Convert(body, resultType), first.Source, second.Source) :
-                    Expression.Lambda<Operator<Op1, Op2, R>>(body, first.Source, second.Source);
+                    Expression.Lambda<Operator<TOperand1, TOperand2, TResult>>(Expression.Convert(body, resultType), first.Source, second.Source) :
+                    Expression.Lambda<Operator<TOperand1, TOperand2, TResult>>(body, first.Source, second.Source);
             }
             catch (ArgumentException e)
             {
@@ -172,28 +173,32 @@ namespace DotNext.Reflection
             catch (InvalidOperationException)
             {
                 if (second.Upcast())
+                {
                     goto tail_call;
+                }
                 else if (first.Upcast())
                 {
                     second = second.Source;
                     goto tail_call;
                 }
                 else
+                {
                     return null;
+                }
             }
         }
 
-        private static BinaryOperator<Op1, Op2, R>? Reflect(Operator.Kind op)
+        private static BinaryOperator<TOperand1, TOperand2, TResult>? Reflect(Operator.Kind op)
         {
-            var first = Expression.Parameter(typeof(Op1).MakeByRefType(), "first");
-            var second = Expression.Parameter(typeof(Op2).MakeByRefType(), "second");
+            var first = Expression.Parameter(typeof(TOperand1).MakeByRefType(), "first");
+            var second = Expression.Parameter(typeof(TOperand2).MakeByRefType(), "second");
             var expr = MakeBinary(op, first, second, out var overloaded);
-            return expr is null ? null : new BinaryOperator<Op1, Op2, R>(expr, op, overloaded);
+            return expr is null ? null : new BinaryOperator<TOperand1, TOperand2, TResult>(expr, op, overloaded);
         }
 
-        private static BinaryOperator<Op1, Op2, R>? GetOrCreate(Operator.Kind op) => Cache.Of<Cache>(typeof(Op1)).GetOrCreate(op);
+        private static BinaryOperator<TOperand1, TOperand2, TResult>? GetOrCreate(Operator.Kind op) => Cache.Of<Cache>(typeof(TOperand1)).GetOrCreate(op);
 
-        internal static BinaryOperator<Op1, Op2, R>? GetOrCreate(BinaryOperator @operator, OperatorLookup lookup) => lookup switch
+        internal static BinaryOperator<TOperand1, TOperand2, TResult>? GetOrCreate(BinaryOperator @operator, OperatorLookup lookup) => lookup switch
         {
             OperatorLookup.Predefined => GetOrCreate(new Operator.Kind(@operator, false)),
             OperatorLookup.Overloaded => GetOrCreate(new Operator.Kind(@operator, true)),

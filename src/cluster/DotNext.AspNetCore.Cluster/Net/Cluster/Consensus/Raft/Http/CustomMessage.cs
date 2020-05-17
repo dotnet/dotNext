@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Primitives;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -9,6 +7,8 @@ using System.Net.Http.Headers;
 using System.Net.Mime;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
 using static System.Globalization.CultureInfo;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
@@ -19,7 +19,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
     internal class CustomMessage : HttpMessage, IHttpMessageWriter<IMessage>, IHttpMessageReader<IMessage>
     {
-        //request - represents custom message name
+        // request - represents custom message name
         private const string MessageNameHeader = "X-Raft-Message-Name";
         private static readonly ValueParser<DeliveryMode> DeliveryModeParser = Enum.TryParse;
 
@@ -27,7 +27,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             OneWayNoAck,
             OneWay,
-            RequestReply
+            RequestReply,
         }
 
         private sealed class OutboundMessageContent : OutboundTransferObject
@@ -97,7 +97,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         internal CustomMessage(IPEndPoint sender, IMessage message, bool requiresConfirmation)
             : this(sender, message, requiresConfirmation ? DeliveryMode.OneWay : DeliveryMode.OneWayNoAck)
         {
-
         }
 
         private CustomMessage(HeadersReader<StringValues> headers, Stream body, ContentType contentType, long? length)
@@ -135,7 +134,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         Task IHttpMessageWriter<IMessage>.SaveResponse(HttpResponse response, IMessage message, CancellationToken token)
             => SaveResponse(response, message, token);
 
-        //do not parse response because this is one-way message
+        // do not parse response because this is one-way message
         Task<IMessage> IHttpMessageReader<IMessage>.ParseResponse(HttpResponseMessage response, CancellationToken token) => NullMessage.Task;
 
         private protected static async Task<T> ParseResponse<T>(HttpResponseMessage response, MessageReader<T> reader, CancellationToken token)
@@ -151,7 +150,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     {
         private readonly MessageReader<T> reader;
 
-        internal CustomMessage(IPEndPoint sender, IMessage message, MessageReader<T> reader) : base(sender, message, DeliveryMode.RequestReply) => this.reader = reader;
+        internal CustomMessage(IPEndPoint sender, IMessage message, MessageReader<T> reader)
+            : base(sender, message, DeliveryMode.RequestReply) => this.reader = reader;
 
         Task<T> IHttpMessageReader<T>.ParseResponse(HttpResponseMessage response, CancellationToken token)
             => ParseResponse<T>(response, reader, token);

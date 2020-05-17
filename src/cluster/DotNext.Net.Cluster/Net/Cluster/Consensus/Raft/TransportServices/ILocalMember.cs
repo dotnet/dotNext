@@ -1,8 +1,8 @@
-using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using NullLogger = Microsoft.Extensions.Logging.Abstractions.NullLogger;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices

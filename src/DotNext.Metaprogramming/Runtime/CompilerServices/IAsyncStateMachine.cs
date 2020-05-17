@@ -14,18 +14,25 @@ namespace DotNext.Runtime.CompilerServices
         /// <summary>
         /// Represents final state identifier of async state machine.
         /// </summary>
-        internal const uint FINAL_STATE = 0U;
+        internal const uint FinalState = 0U;
 
         TState State { get; }
+
         uint StateId { get; }
+
         bool MoveNext<TAwaiter>(ref TAwaiter awaiter, uint stateId)
             where TAwaiter : INotifyCompletion;
+
         void Rethrow();
+
         bool HasNoException { get; }
+
         void EnterGuardedCode(uint newState);
+
         void ExitGuardedCode(uint previousState);
-        bool TryRecover<E>([NotNullWhen(true)] out E? exception)
-            where E : Exception;
+
+        bool TryRecover<TException>([NotNullWhen(true)] out TException? exception)
+            where TException : Exception;
     }
 
     /// <summary>

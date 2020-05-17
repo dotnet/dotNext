@@ -11,27 +11,27 @@ namespace DotNext.Collections.Generic
         /// <summary>
         /// Returns lazily converted read-only collection.
         /// </summary>
-        /// <typeparam name="I">Type of items in the source collection.</typeparam>
-        /// <typeparam name="O">Type of items in the target collection.</typeparam>
+        /// <typeparam name="TInput">Type of items in the source collection.</typeparam>
+        /// <typeparam name="TOutput">Type of items in the target collection.</typeparam>
         /// <param name="collection">Read-only collection to convert.</param>
         /// <param name="converter">A collection item conversion function.</param>
         /// <returns>Lazily converted read-only collection.</returns>
-        public static ReadOnlyCollectionView<I, O> Convert<I, O>(this IReadOnlyCollection<I> collection, in ValueFunc<I, O> converter)
-            => new ReadOnlyCollectionView<I, O>(collection, converter);
+        public static ReadOnlyCollectionView<TInput, TOutput> Convert<TInput, TOutput>(this IReadOnlyCollection<TInput> collection, in ValueFunc<TInput, TOutput> converter)
+            => new ReadOnlyCollectionView<TInput, TOutput>(collection, converter);
 
         /// <summary>
         /// Returns lazily converted read-only collection.
         /// </summary>
-        /// <typeparam name="I">Type of items in the source collection.</typeparam>
-        /// <typeparam name="O">Type of items in the target collection.</typeparam>
+        /// <typeparam name="TInput">Type of items in the source collection.</typeparam>
+        /// <typeparam name="TOutput">Type of items in the target collection.</typeparam>
         /// <param name="collection">Read-only collection to convert.</param>
         /// <param name="converter">A collection item conversion function.</param>
         /// <returns>Lazily converted read-only collection.</returns>
-        public static ReadOnlyCollectionView<I, O> Convert<I, O>(this IReadOnlyCollection<I> collection, Converter<I, O> converter)
+        public static ReadOnlyCollectionView<TInput, TOutput> Convert<TInput, TOutput>(this IReadOnlyCollection<TInput> collection, Converter<TInput, TOutput> converter)
             => Convert(collection, converter.AsValueFunc(true));
 
-        private static T[] ToArray<C, T>(C collection, int count)
-            where C : class, IEnumerable<T>
+        private static T[] ToArray<TCollection, T>(TCollection collection, int count)
+            where TCollection : class, IEnumerable<T>
         {
             var result = new T[count];
             var index = 0L;

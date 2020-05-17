@@ -17,7 +17,7 @@ namespace DotNext.Runtime.CompilerServices
     public readonly struct Awaitable<T, [Constraint(typeof(Awaiter<>))] TAwaiter>
         where TAwaiter : ICriticalNotifyCompletion
     {
-        private static readonly Operator<T, TAwaiter> getAwaiter = Type<T>.Method.Require<Operator<T, TAwaiter>>(nameof(Task.GetAwaiter), MethodLookup.Instance)!;
+        private static readonly Operator<T, TAwaiter> GetAwaiterMethod = Type<T>.Method.Require<Operator<T, TAwaiter>>(nameof(Task.GetAwaiter), MethodLookup.Instance)!;
 
         static Awaitable() => Concept.Assert<Awaiter<TAwaiter>>();
 
@@ -47,7 +47,7 @@ namespace DotNext.Runtime.CompilerServices
         /// <param name="obj">The object representing asynchronous computing.</param>
         /// <returns>An awaiter instance.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static TAwaiter GetAwaiter(in T obj) => getAwaiter(in obj)!;
+        public static TAwaiter GetAwaiter(in T obj) => GetAwaiterMethod(in obj)!;
     }
 
     /// <summary>
@@ -55,16 +55,16 @@ namespace DotNext.Runtime.CompilerServices
     /// </summary>
     /// <typeparam name="T">The constrained type.</typeparam>
     /// <typeparam name="TAwaiter">The type constrained with concept <see cref="Awaiter{TAwaiter}"/>.</typeparam>
-    /// <typeparam name="R">The type of asynchronous result.</typeparam>
+    /// <typeparam name="TResult">The type of asynchronous result.</typeparam>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/task-based-asynchronous-pattern-tap">TAP</seealso>
     [Concept]
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct Awaitable<T, [Constraint(typeof(Awaiter<,>))] TAwaiter, R>
+    public readonly struct Awaitable<T, [Constraint(typeof(Awaiter<,>))] TAwaiter, TResult>
         where TAwaiter : ICriticalNotifyCompletion
     {
-        private static readonly Operator<T, TAwaiter> getAwaiter = Type<T>.Method.Require<Operator<T, TAwaiter>>(nameof(Task.GetAwaiter), MethodLookup.Instance)!;
+        private static readonly Operator<T, TAwaiter> GetAwaiterMethod = Type<T>.Method.Require<Operator<T, TAwaiter>>(nameof(Task.GetAwaiter), MethodLookup.Instance)!;
 
-        static Awaitable() => Concept.Assert<Awaiter<TAwaiter, R>>();
+        static Awaitable() => Concept.Assert<Awaiter<TAwaiter, TResult>>();
 
         private readonly T awaitable;
 
@@ -78,13 +78,13 @@ namespace DotNext.Runtime.CompilerServices
         /// Gets awaiter used to await asynchronous result represented by type <typeparamref name="T"/>.
         /// </summary>
         /// <returns>An awaiter instance.</returns>
-        public Awaiter<TAwaiter, R> GetAwaiter() => new Awaiter<TAwaiter, R>(GetAwaiter(in awaitable));
+        public Awaiter<TAwaiter, TResult> GetAwaiter() => new Awaiter<TAwaiter, TResult>(GetAwaiter(in awaitable));
 
         /// <summary>
         /// Gets underlying awaitable object.
         /// </summary>
         /// <param name="awaitable">Awaitable object container.</param>
-        public static implicit operator T(in Awaitable<T, TAwaiter, R> awaitable) => awaitable.awaitable;
+        public static implicit operator T(in Awaitable<T, TAwaiter, TResult> awaitable) => awaitable.awaitable;
 
         /// <summary>
         /// Gets awaiter used to await asynchronous result represented by type <typeparamref name="T"/>.
@@ -92,6 +92,6 @@ namespace DotNext.Runtime.CompilerServices
         /// <param name="obj">The object representing asynchronous computing.</param>
         /// <returns>An awaiter instance.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static TAwaiter GetAwaiter(in T obj) => getAwaiter(in obj)!;
+        public static TAwaiter GetAwaiter(in T obj) => GetAwaiterMethod(in obj)!;
     }
 }

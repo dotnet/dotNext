@@ -88,7 +88,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 transmission = WriteSnapshotAsync(token);
             }
             else
+            {
                 control = FlowControl.Fragment;
+            }
+
             count += await pipe.Reader.CopyToAsync(payload, token).ConfigureAwait(false);
             if (count < payload.Length)
                 control = FlowControl.StreamEnd;
@@ -99,11 +102,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             if (headers.Type == MessageType.Continue)
                 return new ValueTask<bool>(true);
-            else
-            {
-                TrySetResult(IExchange.ReadResult(payload.Span));
-                return default;
-            }
+
+            TrySetResult(IExchange.ReadResult(payload.Span));
+            return default;
         }
 
         async ValueTask IAsyncDisposable.DisposeAsync()

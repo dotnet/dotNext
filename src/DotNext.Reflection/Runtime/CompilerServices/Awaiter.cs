@@ -12,16 +12,16 @@ namespace DotNext.Runtime.CompilerServices
     /// Represents awaiter pattern for type <typeparamref name="TAwaiter"/>
     /// with non-<see cref="void"/> result.
     /// </summary>
-    /// <typeparam name="TAwaiter">Any type implementing awaiter pattern</typeparam>
-    /// <typeparam name="R">Type of asynchronous result</typeparam>
+    /// <typeparam name="TAwaiter">Any type implementing awaiter pattern.</typeparam>
+    /// <typeparam name="TResult">Type of asynchronous result.</typeparam>
     /// <seealso cref="Task{TResult}"/>
     /// <seealso cref="TaskAwaiter{TResult}"/>
     [Concept]
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct Awaiter<[Constraint(typeof(NotifyCompletion<>))]TAwaiter, R> : INotifyCompletion
+    public readonly struct Awaiter<[Constraint(typeof(NotifyCompletion<>))]TAwaiter, TResult> : INotifyCompletion
         where TAwaiter : INotifyCompletion
     {
-        private static readonly MemberGetter<TAwaiter, R> getResult = Type<TAwaiter>.Method.Require<MemberGetter<TAwaiter, R>>(nameof(TaskAwaiter<R>.GetResult), MethodLookup.Instance)!;
+        private static readonly MemberGetter<TAwaiter, TResult> GetResultMethod = Type<TAwaiter>.Method.Require<MemberGetter<TAwaiter, TResult>>(nameof(TaskAwaiter<TResult>.GetResult), MethodLookup.Instance)!;
 
         static Awaiter() => Concept.Assert(typeof(NotifyCompletion<TAwaiter>));
 
@@ -40,20 +40,21 @@ namespace DotNext.Runtime.CompilerServices
         /// <exception cref="TaskCanceledException">The task was cancelled.</exception>
         /// <exception cref="Exception">Task is in faulted state.</exception>
         [return: MaybeNull]
-        public R GetResult() => GetResult(in awaiter);
+        public TResult GetResult() => GetResult(in awaiter);
 
         /// <summary>
         /// Gets a value that indicates whether the asynchronous task has completed.
         /// </summary>
         public bool IsCompleted => NotifyCompletion<TAwaiter>.IsCompleted(in awaiter);
 
+        /// <inheritdoc/>
         void INotifyCompletion.OnCompleted(Action continuation) => awaiter.OnCompleted(continuation);
 
         /// <summary>
         /// Extracts underlying awaiter object from this wrapper.
         /// </summary>
         /// <param name="awaiter">Generic awaiter object.</param>
-        public static implicit operator TAwaiter(in Awaiter<TAwaiter, R> awaiter) => awaiter.awaiter;
+        public static implicit operator TAwaiter(in Awaiter<TAwaiter, TResult> awaiter) => awaiter.awaiter;
 
         /// <summary>
         /// Ends the wait for the completion of the asynchronous task.
@@ -64,14 +65,14 @@ namespace DotNext.Runtime.CompilerServices
         /// <exception cref="Exception">Task is in faulted state.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [return: MaybeNull]
-        public static R GetResult(in TAwaiter awaiter) => getResult(in awaiter);
+        public static TResult GetResult(in TAwaiter awaiter) => GetResultMethod(in awaiter);
     }
 
     /// <summary>
     /// Represents awaiter pattern for type <typeparamref name="TAwaiter"/>.
     /// with <see cref="void"/> result.
     /// </summary>
-    /// <typeparam name="TAwaiter">Any type implementing awaiter pattern</typeparam>
+    /// <typeparam name="TAwaiter">Any type implementing awaiter pattern.</typeparam>
     /// <seealso cref="TaskAwaiter"/>
     /// <seealso cref="Task"/>
     [Concept]
@@ -83,7 +84,7 @@ namespace DotNext.Runtime.CompilerServices
 
         static Awaiter() => Concept.Assert(typeof(NotifyCompletion<TAwaiter>));
 
-        private static readonly GetResultMethod getResult = Type<TAwaiter>.Method.Require<GetResultMethod>(nameof(TaskAwaiter.GetResult), MethodLookup.Instance)!;
+        private static readonly GetResultMethod GetResultImpl = Type<TAwaiter>.Method.Require<GetResultMethod>(nameof(TaskAwaiter.GetResult), MethodLookup.Instance)!;
 
         private readonly TAwaiter awaiter;
 
@@ -105,6 +106,7 @@ namespace DotNext.Runtime.CompilerServices
         /// </summary>
         public bool IsCompleted => NotifyCompletion<TAwaiter>.IsCompleted(in awaiter);
 
+        /// <inheritdoc/>
         void INotifyCompletion.OnCompleted(Action continuation) => awaiter.OnCompleted(continuation);
 
         /// <summary>
@@ -120,6 +122,6 @@ namespace DotNext.Runtime.CompilerServices
         /// <exception cref="TaskCanceledException">The task was cancelled.</exception>
         /// <exception cref="Exception">Task is in faulted state.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void GetResult(in TAwaiter awaiter) => getResult(in awaiter);
+        public static void GetResult(in TAwaiter awaiter) => GetResultImpl(in awaiter);
     }
 }

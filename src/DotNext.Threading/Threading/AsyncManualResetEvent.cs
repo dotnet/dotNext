@@ -18,6 +18,7 @@ namespace DotNext.Threading
             node = initialState ? null : new ISynchronizer.WaitNode();
         }
 
+        /// <inheritdoc/>
         EventResetMode IAsyncResetEvent.ResetMode => EventResetMode.ManualReset;
 
         /// <summary>
@@ -29,7 +30,7 @@ namespace DotNext.Threading
 
         /// <summary>
         /// Sets the state of the event to signaled, allowing one or more awaiters to proceed;
-        /// and, optionally, reverts the state of the event to initial state. 
+        /// and, optionally, reverts the state of the event to initial state.
         /// </summary>
         /// <param name="autoReset"><see langword="true"/> to reset this object to non-signaled state automatically; <see langword="false"/> to leave this object in signaled state.</param>
         /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
@@ -57,10 +58,11 @@ namespace DotNext.Threading
                 node = new ISynchronizer.WaitNode();
                 return true;
             }
-            else
-                return false;
+
+            return false;
         }
 
+        /// <inheritdoc/>
         bool IAsyncEvent.Signal() => Set();
     }
 }

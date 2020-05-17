@@ -7,9 +7,10 @@ namespace DotNext.Net.Cluster.Messaging
         internal InMemoryMessage(string name, ContentType type, int size)
             : base(name, type, size, false)
         {
-
         }
 
-        void IBufferedMessage.PrepareForReuse() { }
+        void IBufferedMessage.PrepareForReuse()
+        {
+        }
     }
 }

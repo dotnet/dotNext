@@ -28,8 +28,8 @@ namespace DotNext.Threading
                     Complete();
                     return true;
                 }
-                else
-                    return false;
+
+                return false;
             }
         }
 
@@ -42,7 +42,8 @@ namespace DotNext.Threading
             if (initialCount < 0)
                 throw new ArgumentOutOfRangeException(nameof(initialCount));
             InitialCount = initialCount;
-            //just 1 node needed to implement countdown event at all
+
+            // just 1 node needed to implement countdown event at all
             if (initialCount > 0L)
                 node = new CounterNode(initialCount);
         }
@@ -63,18 +64,20 @@ namespace DotNext.Threading
             ThrowIfDisposed();
             if (signalCount < 0)
                 throw new ArgumentOutOfRangeException(nameof(signalCount));
-            else if (node is CounterNode counter)
+
+            if (node is CounterNode counter)
             {
                 counter.AddCount(signalCount);
                 return true;
             }
-            else if (autoReset)
+
+            if (autoReset)
             {
                 node = new CounterNode(signalCount);
                 return true;
             }
-            else
-                return false;
+
+            return false;
         }
 
         /// <summary>
@@ -120,28 +123,29 @@ namespace DotNext.Threading
         /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
         public bool Reset() => Reset(InitialCount);
 
-
         /// <summary>
         /// Resets the <see cref="InitialCount"/> property to a specified value.
         /// </summary>
-        /// <param name="count">The number of signals required to set this event.</param>   
+        /// <param name="count">The number of signals required to set this event.</param>
         /// <returns><see langword="true"/>, if state of this object changed from signaled to non-signaled state; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero.</exception>     
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
         public bool Reset(long count)
         {
             ThrowIfDisposed();
             if (count < 0L)
                 throw new ArgumentOutOfRangeException(nameof(count));
-            else if (node is null)    //in signaled state
+
+            // in signaled state
+            if (node is null)
             {
                 node = count > 0L ? new CounterNode(count) : null;
                 InitialCount = count;
                 return true;
             }
-            else
-                return false;
+
+            return false;
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
@@ -151,17 +155,20 @@ namespace DotNext.Threading
             if (signalCount < 1L)
                 throw new ArgumentOutOfRangeException(nameof(signalCount));
             var node = this.node as CounterNode;
-            if (node is null) //already in signaled state
+            if (node is null) // already in signaled state
                 return false;
-            else if (node.Count == 0L || signalCount > node.Count)
+
+            if (node.Count == 0L || signalCount > node.Count)
                 throw new InvalidOperationException();
-            else if (node.Signal(signalCount))   //complete all awaiters
+
+            // complete all awaiters
+            if (node.Signal(signalCount))
             {
                 this.node = autoReset ? new CounterNode(InitialCount) : null;
                 return true;
             }
-            else
-                return false;
+
+            return false;
         }
 
         /// <summary>

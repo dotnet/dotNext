@@ -32,10 +32,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
         }
 
+        /// <inheritdoc/>
         bool ILogEntry.IsSnapshot => isSnapshot;
 
+        /// <inheritdoc/>
         long? IDataTransferObject.Length => 0;
 
+        /// <inheritdoc/>
         bool IDataTransferObject.IsReusable => true;
 
         /// <summary>
@@ -48,8 +51,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         public DateTimeOffset Timestamp { get; }
 
+        /// <inheritdoc/>
         ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token) => new ValueTask();
 
+        /// <inheritdoc/>
         ValueTask<TResult> IDataTransferObject.GetObjectDataAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token) => parser.ReadAsync(IAsyncBinaryReader.Empty, token);
     }
 }

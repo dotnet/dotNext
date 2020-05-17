@@ -59,13 +59,17 @@ namespace DotNext.Threading.Channels
         /// <value>The number of unread messages.</value>
         public long RemainingCount => ((Writer as IChannelInfo)?.Position ?? 0L) - ((Reader as IChannelInfo)?.Position ?? 0L);
 
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's member of internal interface")]
         DirectoryInfo IChannel.Location => location;
 
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's member of internal interface")]
         void IChannelWriter<TInput>.MessageReady() => readTrigger.Signal();
 
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's member of internal interface")]
         ValueTask IChannelWriter<TInput>.SerializeAsync(TInput input, PartitionStream output, CancellationToken token)
             => SerializeAsync(input, output, token);
 
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's member of internal interface")]
         Task IChannelReader<TOutput>.WaitToReadAsync(CancellationToken token) => readTrigger.WaitAsync(token);
 
         private PartitionStream CreateTopicStream(long partition, in FileCreationOptions options)
@@ -76,6 +80,7 @@ namespace DotNext.Threading.Channels
             return result;
         }
 
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's member of internal interface")]
         PartitionStream IChannel.GetOrCreatePartition(ref ChannelCursor state, [NotNull]ref PartitionStream? partition, in FileCreationOptions options, bool deleteOnDispose)
         {
             var partitionNumber = state.Position / maxCount;
@@ -86,10 +91,12 @@ namespace DotNext.Threading.Channels
                 state.Adjust(result);
             }
             else if (partition.PartitionNumber == partitionNumber)
+            {
                 result = partition;
+            }
             else
             {
-                //delete previous topic file
+                // delete previous topic file
                 var fileName = partition.Name;
                 partition.Dispose();
                 if (deleteOnDispose)
@@ -97,6 +104,7 @@ namespace DotNext.Threading.Channels
                 partition = result = CreateTopicStream(partitionNumber, options);
                 state.Reset();
             }
+
             return result;
         }
 
@@ -117,6 +125,7 @@ namespace DotNext.Threading.Channels
         /// <returns>Deserialized message.</returns>
         protected abstract ValueTask<TOutput> DeserializeAsync(Stream input, CancellationToken token);
 
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's member of internal interface")]
         ValueTask<TOutput> IChannelReader<TOutput>.DeserializeAsync(PartitionStream input, CancellationToken token)
             => DeserializeAsync(input, token);
 

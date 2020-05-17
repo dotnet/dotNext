@@ -1,9 +1,9 @@
+using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Threading.Tasks;
 using static Microsoft.Net.Http.Headers.HeaderNames;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
@@ -49,8 +49,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                         return Task.CompletedTask;
                     }
                     else if (leader.IsRemote)
+                    {
                         return redirection(context.Response, new UriBuilder(context.Request.GetEncodedUrl()) { Host = leader.Endpoint.Address.ToString(), Port = applicationPortHint ?? context.Connection.LocalPort }.Uri);
+                    }
                 }
+
                 return next(context);
             }
         }
@@ -71,7 +74,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         /// <param name="path">The path that a leader must handle.</param>
         /// <param name="applicationPortHint">The port number to be inserted into Location header instead of automatically detected port of the local TCP listener.</param>
         /// <param name="redirection">The redirection logic.</param>
-        /// <returns>The request processing pipeline builder.</returns>
+        /// <returns>The request pipeline builder.</returns>
         public static IApplicationBuilder RedirectToLeader(this IApplicationBuilder builder, PathString path, int? applicationPortHint = null, Func<HttpResponse, Uri, Task>? redirection = null)
         {
             var cluster = builder.ApplicationServices.GetRequiredService<RaftHttpCluster>();
