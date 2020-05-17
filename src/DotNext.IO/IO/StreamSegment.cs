@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace DotNext.IO
 {
     /// <summary>
-    /// Represents a portion of the underlying stream in the its of the read-onyl view.
+    /// Represents a portion of the underlying stream in the its of the read-only view.
     /// </summary>
     /// <remarks>
     /// The segmentation is supported only for seekable streams.
