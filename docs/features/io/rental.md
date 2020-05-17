@@ -90,3 +90,18 @@ stream.Write(new byte[512], 0, 512);
 
 # Growable Buffers
 If size of the required buffer is not known and can grow dynamically then you need to use [Dynamic Buffers](./buffers.md) that are based on memory pooling mechanism as well.
+
+Dynamic buffers can be combined with [streams](https://docs.microsoft.com/en-us/dotnet/api/system.io.stream) easily using extension methods from [StreamSource](https://sakno.github.io/dotNext/api/DotNext.IO.StreamSource.html) class, so you can avoid limitation of `RentedMemoryStream` class. With [PooledArrayBufferWriter&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.PooledArrayBufferWriter-1.html) class, it's possible to read/write bytes using stream and utilize memory pooling:
+```csharp
+using DotNext.Buffers;
+using DotNext.IO;
+
+using var writer = new PooledBufferWriter<byte>(ArrayPool<byte>.Shared);
+
+// write bytes using stream
+using Stream writeStream = StreamSource.AsStream(writer);
+writeStream.Write(new byte[1024]);
+
+// read bytes using stream
+using Stream readStream = StreamSource.GetWrittenBytesAsStream(writer);
+```

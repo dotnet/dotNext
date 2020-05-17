@@ -25,6 +25,7 @@ In contrast to `ArrayBufferWriter`, you must not use written memory if `Dispose`
 [PooledArrayBufferWriter&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.PooledArrayBufferWriter-1.html) exposes the same functionality as `PooledBufferWriter` but specialized for working with [ArrayPool&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.arraypool-1). As a result, you can make writes or obtain written memory using [ArraySegment&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.arraysegment-1). Additionally, if the buffer is for bytes (actual generic argument is `byte`) then written memory can be exposed as read-only [MemoryStream](https://docs.microsoft.com/en-us/dotnet/api/system.io.memorystream) without copying written bytes.
 ```csharp
 using DotNext.Buffers;
+using DotNext.IO;
 using System;
 
 using var writer = new PooledBufferWriter<byte>(ArrayPool<byte>.Shared);
@@ -33,5 +34,5 @@ array[0] = 42;
 array[1] = 43;
 span.Advance(2);
 ArraySegment<byte> result = writer.WrittenArray;  //length is 512
-using Stream stream = writer.GetWrittenBytesAsStream();
+using Stream stream = StreamSource.GetWrittenBytesAsStream(writer);
 ```
