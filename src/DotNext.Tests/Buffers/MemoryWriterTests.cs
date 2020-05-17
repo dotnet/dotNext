@@ -1,10 +1,15 @@
 using System;
 using System.Buffers;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 using Xunit;
 
 namespace DotNext.Buffers
 {
+    using StreamSource = IO.StreamSource;
+
     [ExcludeFromCodeCoverage]
     public sealed class MemoryWriterTests : Test
     {
@@ -159,6 +164,28 @@ namespace DotNext.Buffers
             Equal(10, stream.Read(buffer, 0, 10));
             for (var i = 0; i < buffer.Length; i++)
                 Equal(i, buffer[i]);
+        }
+
+        [Fact]
+        public static void StressTest()
+        {
+            var dict = new Dictionary<string, string>
+            {
+                {"Key1", "Value1"},
+                {"Key2", "Value2"}
+            };
+            var formatter = new BinaryFormatter();
+            using var writer = new PooledArrayBufferWriter<byte>();
+            // serialize dictionary to memory
+            using (var output = StreamSource.AsStream(writer))
+            {
+                formatter.Serialize(output, dict);
+            }
+            // deserialize from memory
+            using (var input = StreamSource.GetWrittenBytesAsStream(writer))
+            {
+                Equal(dict, formatter.Deserialize(input));
+            }
         }
     }
 }
