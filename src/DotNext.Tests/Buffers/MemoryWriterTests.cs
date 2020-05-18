@@ -187,5 +187,43 @@ namespace DotNext.Buffers
                 Equal(dict, formatter.Deserialize(input));
             }
         }
+
+        [Fact]
+        public static void ReuseArrayWriter()
+        {
+            using var writer = new PooledArrayBufferWriter<byte>();
+            var span = writer.GetSpan(10);
+            span[0] = 20;
+            span[9] = 30;
+            writer.Advance(10);
+            writer.Clear();
+
+            span = writer.GetSpan(10);
+            span[0] = 40;
+            span[9] = 50;
+            writer.Advance(10);
+
+            Equal(40, writer.WrittenMemory.Span[0]);
+            Equal(50, writer.WrittenMemory.Span[9]);
+        }
+
+        [Fact]
+        public static void ReuseMemoryWriter()
+        {
+            using var writer = new PooledBufferWriter<byte>(MemoryPool<byte>.Shared.ToAllocator());
+            var span = writer.GetSpan(10);
+            span[0] = 20;
+            span[9] = 30;
+            writer.Advance(10);
+            writer.Clear();
+
+            span = writer.GetSpan(10);
+            span[0] = 40;
+            span[9] = 50;
+            writer.Advance(10);
+
+            Equal(40, writer.WrittenMemory.Span[0]);
+            Equal(50, writer.WrittenMemory.Span[9]);
+        }
     }
 }

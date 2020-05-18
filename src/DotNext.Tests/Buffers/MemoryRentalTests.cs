@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using Xunit;
 using static System.Runtime.CompilerServices.Unsafe;
@@ -25,13 +26,9 @@ namespace DotNext.Buffers
             Equal(40, vector.Span[3]);
         }
 
-        [Fact]
-        public static void HeapAllocationTest()
+        private static void MemoryAccess(in MemoryRental<int> vector)
         {
-            using var vector = new MemoryRental<int>(4);
             False(vector.IsEmpty);
-            Equal(4, vector.Length);
-            Equal(4, vector.Span.Length);
             vector[0] = 10;
             vector[1] = 20;
             vector[2] = 30;
@@ -40,6 +37,31 @@ namespace DotNext.Buffers
             Equal(20, vector.Span[1]);
             Equal(30, vector.Span[2]);
             Equal(40, vector.Span[3]);
+        }
+
+        [Fact]
+        public static void ArrayAllocation()
+        {
+            using var vector = new MemoryRental<int>(4);
+            Equal(4, vector.Length);
+            Equal(4, vector.Span.Length);
+            MemoryAccess(vector);
+        }
+
+        [Fact]
+        public static void MemoryAllocation()
+        {
+            using var vector = new MemoryRental<int>(MemoryPool<int>.Shared, 4);
+            Equal(4, vector.Length);
+            Equal(4, vector.Span.Length);
+            MemoryAccess(vector);
+        }
+
+        [Fact]
+        public static void MemoryAllocationDefaultSize()
+        {
+            using var vector = new MemoryRental<int>(MemoryPool<int>.Shared);
+            MemoryAccess(vector);
         }
 
         [Fact]

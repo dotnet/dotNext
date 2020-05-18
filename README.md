@@ -43,37 +43,12 @@ Documentation for older versions:
 * [1.x](https://sakno.github.io/dotNext/versions/1.x/index.html)
 
 # What's new
-Release Date: 05-17-2020
+Release Date: 05-18-2020
 
-This release is mostly aimed to improving code quality of all .NEXT libraries with help of _StyleCop_ analyzer.
-
-<a href="https://www.nuget.org/packages/dotnext/2.4.0">DotNext 2.4.0</a>
-* `DotNext.IO.StreamSource` class allows to convert `ReadOnlyMemory<byte>` or `ReadOnlySequence<byte>` to stream
-* `DotNext.IO.StreamSource` class allows to obtain writable stream for `IBufferWriter<byte>`
-
-<a href="https://www.nuget.org/packages/dotnext.io/2.4.0">DotNext.IO 2.4.0</a>
-* Support of `BeginRead` and `EndRead` methods in `StreamSegment` class
-* Update to the latest `System.IO.Pipelines` library
-
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.4.0">DotNext.Metaprogramming 2.4.0</a>
-* Fixed several compiler warnings
-
-<a href="https://www.nuget.org/packages/dotnext.reflection/2.4.0">DotNext.Reflection 2.4.0</a>
-* Fixed several compiler warnings
-
-<a href="https://www.nuget.org/packages/dotnext.threading/2.4.0">DotNext.Threading 2.4.0</a>
-* Fixed several compiler warnings
-* Update to the latest `System.Threading.Channels` library
-
-<a href="https://www.nuget.org/packages/dotnext.unsafe/2.4.0">DotNext.Unsafe 2.4.0</a>
-* Ability to convert `Pointer<T>` to `IMemoryOwner<T>`
-
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/2.4.0">DotNext.Net.Cluster 2.4.0</a>
-* Added calls to `ConfigureAwait` in multiple places
-
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/2.4.0">DotNext.AspNetCore.Cluster 2.4.0</a>
-* Added calls to `ConfigureAwait` in multiple places
-* Fixed node status tracking when TCP or UDP transport in use
+<a href="https://www.nuget.org/packages/dotnext/2.4.1">DotNext 2.4.1</a>
+* `ArrayRental<T>` can automatically determine array cleanup policy
+* `MemoryRental<T>` is improved for stackalloc/pooling pattern
+* Fixed bug in `Clear` method of `PooledBufferWriter` class
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 

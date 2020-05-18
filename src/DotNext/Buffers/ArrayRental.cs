@@ -1,6 +1,7 @@
 using System;
 using System.Buffers;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers
@@ -23,7 +24,7 @@ namespace DotNext.Buffers
         /// <param name="minimumLength">The minimum length of the array.</param>
         /// <param name="clearArray">Indicates whether the contents of the array should be cleared after calling of <see cref="Dispose()"/>.</param>
         /// <exception cref="ArgumentNullException"><paramref name="pool"/> is <see langword="null"/>.</exception>
-        public ArrayRental(ArrayPool<T> pool, int minimumLength, bool clearArray = false)
+        public ArrayRental(ArrayPool<T> pool, int minimumLength, bool clearArray)
         {
             this.pool = pool ?? throw new ArgumentNullException(nameof(pool));
             array = pool.Rent(minimumLength);
@@ -32,12 +33,32 @@ namespace DotNext.Buffers
         }
 
         /// <summary>
+        /// Obtains a new array from array pool.
+        /// </summary>
+        /// <param name="pool">Array pool.</param>
+        /// <param name="minimumLength">The minimum length of the array.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="pool"/> is <see langword="null"/>.</exception>
+        public ArrayRental(ArrayPool<T> pool, int minimumLength)
+            : this(pool, minimumLength, RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+        {
+        }
+
+        /// <summary>
         /// Obtains a new array from <see cref="ArrayPool{T}.Shared"/>.
         /// </summary>
         /// <param name="minimumLength">The minimum length of the array.</param>
         /// <param name="clearArray">Indicates whether the contents of the array should be cleared after calling of <see cref="Dispose()"/>.</param>
-        public ArrayRental(int minimumLength, bool clearArray = false)
+        public ArrayRental(int minimumLength, bool clearArray)
             : this(ArrayPool<T>.Shared, minimumLength, clearArray)
+        {
+        }
+
+        /// <summary>
+        /// Obtains a new array from <see cref="ArrayPool{T}.Shared"/>.
+        /// </summary>
+        /// <param name="minimumLength">The minimum length of the array.</param>
+        public ArrayRental(int minimumLength)
+            : this(minimumLength, RuntimeHelpers.IsReferenceOrContainsReferences<T>())
         {
         }
 
