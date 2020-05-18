@@ -21,8 +21,10 @@ namespace DotNext.Buffers
     /// use <see cref="ArrayRental{T}"/>.
     /// </remarks>
     /// <example>
+    /// <code>
     /// const int stackallocThreshold = 20;
     /// var memory = size &lt;=stackallocThreshold ? new MemoryRental&lt;byte&gt;(stackalloc [stackallocThreshold], size) : new MemoryRental&lt;byte&gt;(size);
+    /// </code>
     /// </example>
     /// <typeparam name="T">The type of the elements in the rented memory.</typeparam>
     [StructLayout(LayoutKind.Auto)]
