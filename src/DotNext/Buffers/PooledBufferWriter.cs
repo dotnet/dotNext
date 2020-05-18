@@ -68,6 +68,7 @@ namespace DotNext.Buffers
         {
             ThrowIfDisposed();
             buffer.Dispose();
+            buffer = default;
             position = 0;
         }
 

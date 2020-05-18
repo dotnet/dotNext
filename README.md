@@ -48,6 +48,7 @@ Release Date: 05-18-2020
 <a href="https://www.nuget.org/packages/dotnext/2.4.1">DotNext 2.4.1</a>
 * `ArrayRental<T>` can automatically determine array cleanup policy
 * `MemoryRental<T>` is improved for stackalloc/pooling pattern
+* Fixed bug in `Clear` method of `PooledBufferWriter` class
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
