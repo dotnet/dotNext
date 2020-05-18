@@ -11,11 +11,24 @@ namespace DotNext.Buffers
     /// Represents the memory obtained from the pool or allocated
     /// on the stack or heap.
     /// </summary>
+    /// <remarks>
+    /// This type is aimed to be compatible with memory allocated using <c>stackalloc</c> operator.
+    /// If stack allocation threshold is reached (e.g. <see cref="StackallocThreshold"/>) then it's possible to use pooled memory from
+    /// arbitrary <see cref="MemoryPool{T}"/> or <see cref="ArrayPool{T}.Shared"/>. Arbitrary
+    /// <see cref="ArrayPool{T}"/> is not supported because default <see cref="ArrayPool{T}.Shared"/>
+    /// is optimized for per-CPU core allocation which is perfectly for situation when the same
+    /// thread is responsible for renting and releasing array. Otherwise, it's recommended to
+    /// use <see cref="ArrayRental{T}"/>.
+    /// </remarks>
+    /// <example>
+    /// const int StackallocThreshold = 20;
+    /// var memory = size &lt;=StackallocThreshold ? new MemoryRental&lt;byte&gt;(stackalloc [StackallocThreshold], size) : new MemoryRental&lt;byte&gt;(size);
+    /// </example>
     /// <typeparam name="T">The type of the elements in the rented memory.</typeparam>
     [StructLayout(LayoutKind.Auto)]
     public readonly ref struct MemoryRental<T>
     {
-        private const int StackallocThresholdInBytes = 1024;
+        private const int StackallocThresholdInBytes = 512;
 
         /// <summary>
         /// Global recommended number of elements that can be allocated on the stack.
@@ -32,7 +45,7 @@ namespace DotNext.Buffers
             get => StackallocThresholdInBytes / Unsafe.SizeOf<T>();
         }
 
-        private readonly IMemoryOwner<T>? owner;
+        private readonly object? owner;
         private readonly Span<T> memory;
 
         /// <summary>
@@ -44,6 +57,16 @@ namespace DotNext.Buffers
         {
             memory = span;
             owner = null;
+        }
+
+        /// <summary>
+        /// Rents the memory referenced by the span.
+        /// </summary>
+        /// <param name="span">The span that references the memory to rent.</param>
+        /// <param name="length">The actual length of the data.</param>
+        public MemoryRental(Span<T> span, int length)
+            : this(span.Slice(0, length))
+        {
         }
 
         /// <summary>
@@ -59,8 +82,9 @@ namespace DotNext.Buffers
                 throw new ArgumentNullException(nameof(pool));
             if (minBufferSize <= 0)
                 throw new ArgumentOutOfRangeException(nameof(minBufferSize));
-            owner = pool.Rent(minBufferSize);
+            var owner = pool.Rent(minBufferSize);
             memory = owner.Memory.Span.Slice(0, minBufferSize);
+            this.owner = owner;
         }
 
         /// <summary>
@@ -72,17 +96,24 @@ namespace DotNext.Buffers
         {
             if (pool is null)
                 throw new ArgumentNullException(nameof(pool));
-            owner = pool.Rent();
+            var owner = pool.Rent();
             memory = owner.Memory.Span;
+            this.owner = owner;
         }
 
         /// <summary>
-        /// Rents the memory from <see cref="MemoryPool{T}.Shared"/>.
+        /// Rents the memory from <see cref="ArrayPool{T}.Shared"/>.
         /// </summary>
         /// <param name="minBufferSize">The minimum size of the memory to rent.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="minBufferSize"/> is less than or equal to zero.</exception>
         public MemoryRental(int minBufferSize)
-            : this(MemoryPool<T>.Shared, minBufferSize)
         {
+            if (minBufferSize <= 0)
+                throw new ArgumentOutOfRangeException(nameof(minBufferSize));
+
+            var owner = ArrayPool<T>.Shared.Rent(minBufferSize);
+            memory = owner.AsSpan(0, minBufferSize);
+            this.owner = owner;
         }
 
         /// <summary>
@@ -135,6 +166,17 @@ namespace DotNext.Buffers
         /// <summary>
         /// Returns the memory back to the pool.
         /// </summary>
-        public void Dispose() => owner?.Dispose();
+        public void Dispose()
+        {
+            switch (owner)
+            {
+                case IMemoryOwner<T> memory:
+                    memory.Dispose();
+                    break;
+                case T[] array:
+                    ArrayPool<T>.Shared.Return(array, RuntimeHelpers.IsReferenceOrContainsReferences<T>());
+                    break;
+            }
+        }
     }
 }
