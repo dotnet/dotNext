@@ -102,7 +102,8 @@ namespace DotNext.Buffers
         public override void Clear()
         {
             if (buffer.Length > 0)
-                pool.Return(buffer);
+                pool.Return(buffer, RuntimeHelpers.IsReferenceOrContainsReferences<T>());
+            buffer = Array.Empty<T>();
             position = 0;
         }
 
