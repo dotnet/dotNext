@@ -128,7 +128,7 @@ use <a class="xref" href="DotNext.Buffers.ArrayRental-1.html">ArrayRental&lt;T&g
 </div>
   <h5 id="DotNext_Buffers_MemoryRental_1_examples"><strong>Examples</strong></h5>
   <pre><code>const int stackallocThreshold = 20;
-var memory = size &lt;=stackallocThreshold ? new MemoryRental&lt;byte>(stackalloc [stackallocThreshold], size) : new MemoryRental&lt;byte>(size);</code></pre>
+var memory = size &lt;=stackallocThreshold ? new MemoryRental&lt;byte>(stackalloc byte[stackallocThreshold], size) : new MemoryRental&lt;byte>(size);</code></pre>
 
   <h3 id="constructors">Constructors
   </h3>
