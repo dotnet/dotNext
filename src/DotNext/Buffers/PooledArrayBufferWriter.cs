@@ -101,6 +101,7 @@ namespace DotNext.Buffers
         /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
         public override void Clear()
         {
+            ThrowIfDisposed();
             if (buffer.Length > 0)
                 pool.Return(buffer, RuntimeHelpers.IsReferenceOrContainsReferences<T>());
             buffer = Array.Empty<T>();
