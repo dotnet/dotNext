@@ -40,7 +40,7 @@ finally
 The type supports custom array pool that can be passed to the constructor. In some advanced scenarios, you may have already allocated array so you don't to rent a new one from the pool. It is possible to pass such array as an argument of `ArrayRental` constructor.
 
 # MemoryRental
-[MemoryRental&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.ArrayRental-1.html) is more specialized version of `ArrayRental` which is useful in hybrid scenarios when renting can be replaced with stack allocation. This type is **ref**-like value type so it cannot be stored in fields or used inside of **async** methods. The rented memory is only accessible using [Span&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.span-1) data type.
+[MemoryRental&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.MemoryRental-1.html) helps to reduce boilerplate code in `stackalloc` vs memory pooling scenario. The rented memory is only accessible using [Span&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.span-1) data type.
 
 The following example demonstrates how to reverse a string and choose temporary buffers allocation method depending on the size of the string.
 ```csharp
@@ -49,14 +49,18 @@ using DotNext.Buffers;
 public static unsafe string Reverse(this string str)
 {
   if (str.Length == 0) return str;
-  using MemoryRental<char> result = str.Length <= 1024 ? stackalloc char[str.Length] : new MemoryRental<char>(str.Length);
+  const int stackallocThreshold = 128;
+  using MemoryRental<char> result = str.Length <= stackallocThreshold ? new MemoryRental<char>(stackalloc char[stackallocThreshold], str.Length) : new MemoryRental<char>(str.Length);
   str.AsSpan().CopyTo(result.Span);
   result.Span.Reverse();
   fixed (char* ptr = result.Span)
     return new string(ptr, 0, result.Length);
 } 
 ```
-In constrast to `ArrayRental<T>`, this type uses [MemoryPool](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.memorypool-1). It is possible to pass custom memory pool the constructor.
+
+`MemoryRental` can rent the memory using the following mechanisms:
+* Memory pooling using arbitrary [MemoryPool&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.memorypool-1)
+* Array pooling using [ArrayPool&lt;T&gt;.Shared](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.arraypool-1.shared). Arbitrary array pool is not supported.
 
 The type is typically used in unsafe context when you need a temporary buffer to perform in-memory transformations. If you don't have intentions to use **stackalloc** then choose `ArrayRental<T>` instead.
 
