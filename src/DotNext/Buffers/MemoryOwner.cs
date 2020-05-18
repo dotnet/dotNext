@@ -1,7 +1,7 @@
 using System;
 using System.Buffers;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using static System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Buffers
 {
@@ -116,7 +116,7 @@ namespace DotNext.Buffers
                 if (index < 0 || index >= Length)
                     goto invalid_index;
                 if (owner is IMemoryOwner<T> memory)
-                    return ref Add(ref MemoryMarshal.GetReference(memory.Memory.Span), index);
+                    return ref Unsafe.Add(ref MemoryMarshal.GetReference(memory.Memory.Span), index);
                 if (array != null)
                     return ref array[index];
                 invalid_index:
@@ -135,7 +135,7 @@ namespace DotNext.Buffers
                     disposable.Dispose();
                     break;
                 case ArrayPool<T> pool:
-                    pool.Return(array);
+                    pool.Return(array, RuntimeHelpers.IsReferenceOrContainsReferences<T>());
                     break;
             }
         }
