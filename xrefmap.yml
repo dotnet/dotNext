@@ -225,6 +225,15 @@ references:
   fullName.vb: DotNext.Buffers.ArrayRental(Of T).ArrayRental(T(), System.Int32)
   nameWithType: ArrayRental<T>.ArrayRental(T[], Int32)
   nameWithType.vb: ArrayRental(Of T).ArrayRental(T(), Int32)
+- uid: DotNext.Buffers.ArrayRental`1.#ctor(System.Buffers.ArrayPool{`0},System.Int32)
+  name: ArrayRental(ArrayPool<T>, Int32)
+  href: api/DotNext.Buffers.ArrayRental-1.html#DotNext_Buffers_ArrayRental_1__ctor_System_Buffers_ArrayPool__0__System_Int32_
+  commentId: M:DotNext.Buffers.ArrayRental`1.#ctor(System.Buffers.ArrayPool{`0},System.Int32)
+  name.vb: ArrayRental(ArrayPool(Of T), Int32)
+  fullName: DotNext.Buffers.ArrayRental<T>.ArrayRental(System.Buffers.ArrayPool<T>, System.Int32)
+  fullName.vb: DotNext.Buffers.ArrayRental(Of T).ArrayRental(System.Buffers.ArrayPool(Of T), System.Int32)
+  nameWithType: ArrayRental<T>.ArrayRental(ArrayPool<T>, Int32)
+  nameWithType.vb: ArrayRental(Of T).ArrayRental(ArrayPool(Of T), Int32)
 - uid: DotNext.Buffers.ArrayRental`1.#ctor(System.Buffers.ArrayPool{`0},System.Int32,System.Boolean)
   name: ArrayRental(ArrayPool<T>, Int32, Boolean)
   href: api/DotNext.Buffers.ArrayRental-1.html#DotNext_Buffers_ArrayRental_1__ctor_System_Buffers_ArrayPool__0__System_Int32_System_Boolean_
@@ -234,6 +243,14 @@ references:
   fullName.vb: DotNext.Buffers.ArrayRental(Of T).ArrayRental(System.Buffers.ArrayPool(Of T), System.Int32, System.Boolean)
   nameWithType: ArrayRental<T>.ArrayRental(ArrayPool<T>, Int32, Boolean)
   nameWithType.vb: ArrayRental(Of T).ArrayRental(ArrayPool(Of T), Int32, Boolean)
+- uid: DotNext.Buffers.ArrayRental`1.#ctor(System.Int32)
+  name: ArrayRental(Int32)
+  href: api/DotNext.Buffers.ArrayRental-1.html#DotNext_Buffers_ArrayRental_1__ctor_System_Int32_
+  commentId: M:DotNext.Buffers.ArrayRental`1.#ctor(System.Int32)
+  fullName: DotNext.Buffers.ArrayRental<T>.ArrayRental(System.Int32)
+  fullName.vb: DotNext.Buffers.ArrayRental(Of T).ArrayRental(System.Int32)
+  nameWithType: ArrayRental<T>.ArrayRental(Int32)
+  nameWithType.vb: ArrayRental(Of T).ArrayRental(Int32)
 - uid: DotNext.Buffers.ArrayRental`1.#ctor(System.Int32,System.Boolean)
   name: ArrayRental(Int32, Boolean)
   href: api/DotNext.Buffers.ArrayRental-1.html#DotNext_Buffers_ArrayRental_1__ctor_System_Int32_System_Boolean_
@@ -1014,6 +1031,15 @@ references:
   fullName.vb: DotNext.Buffers.MemoryRental(Of T).MemoryRental(System.Span(Of T))
   nameWithType: MemoryRental<T>.MemoryRental(Span<T>)
   nameWithType.vb: MemoryRental(Of T).MemoryRental(Span(Of T))
+- uid: DotNext.Buffers.MemoryRental`1.#ctor(System.Span{`0},System.Int32)
+  name: MemoryRental(Span<T>, Int32)
+  href: api/DotNext.Buffers.MemoryRental-1.html#DotNext_Buffers_MemoryRental_1__ctor_System_Span__0__System_Int32_
+  commentId: M:DotNext.Buffers.MemoryRental`1.#ctor(System.Span{`0},System.Int32)
+  name.vb: MemoryRental(Span(Of T), Int32)
+  fullName: DotNext.Buffers.MemoryRental<T>.MemoryRental(System.Span<T>, System.Int32)
+  fullName.vb: DotNext.Buffers.MemoryRental(Of T).MemoryRental(System.Span(Of T), System.Int32)
+  nameWithType: MemoryRental<T>.MemoryRental(Span<T>, Int32)
+  nameWithType.vb: MemoryRental(Of T).MemoryRental(Span(Of T), Int32)
 - uid: DotNext.Buffers.MemoryRental`1.#ctor*
   name: MemoryRental
   href: api/DotNext.Buffers.MemoryRental-1.html#DotNext_Buffers_MemoryRental_1__ctor_

@@ -269,6 +269,7 @@ public static ValueTask ReadAsync(this PipeReader reader, Memory&lt;byte&gt; out
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static ValueTask&lt;T&gt; ReadAsync&lt;T&gt;(this PipeReader reader, CancellationToken token = default(CancellationToken))
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -868,6 +869,7 @@ public static ValueTask ReadAsync(this PipeReader reader, Memory&lt;byte&gt; out
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static ValueTask&lt;FlushResult&gt; WriteAsync&lt;T&gt;(this PipeWriter writer, T value, CancellationToken token = default(CancellationToken))
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
