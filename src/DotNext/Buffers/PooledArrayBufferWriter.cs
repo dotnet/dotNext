@@ -1,6 +1,7 @@
 using System;
 using System.Buffers;
 using System.IO;
+using System.Runtime.CompilerServices;
 
 namespace DotNext.Buffers
 {
@@ -149,7 +150,7 @@ namespace DotNext.Buffers
         {
             var newBuffer = pool.Rent(newSize);
             buffer.CopyTo(newBuffer, 0);
-            pool.Return(buffer);
+            pool.Return(buffer, RuntimeHelpers.IsReferenceOrContainsReferences<T>());
             buffer = newBuffer;
         }
 
@@ -159,7 +160,7 @@ namespace DotNext.Buffers
             if (disposing)
             {
                 if (buffer.Length > 0)
-                    pool.Return(buffer);
+                    pool.Return(buffer, RuntimeHelpers.IsReferenceOrContainsReferences<T>());
                 buffer = Array.Empty<T>();
             }
 
