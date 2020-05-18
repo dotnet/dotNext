@@ -127,8 +127,8 @@ thread is responsible for renting and releasing array. Otherwise, it's recommend
 use <a class="xref" href="DotNext.Buffers.ArrayRental-1.html">ArrayRental&lt;T&gt;</a>.</p>
 </div>
   <h5 id="DotNext_Buffers_MemoryRental_1_examples"><strong>Examples</strong></h5>
-  <p>const int stackallocThreshold = 20;
-var memory = size &lt;=stackallocThreshold ? new MemoryRental&lt;byte&gt;(stackalloc [stackallocThreshold], size) : new MemoryRental&lt;byte&gt;(size);</p>
+  <pre><code>const int stackallocThreshold = 20;
+var memory = size &lt;=stackallocThreshold ? new MemoryRental&lt;byte>(stackalloc [stackallocThreshold], size) : new MemoryRental&lt;byte>(size);</code></pre>
 
   <h3 id="constructors">Constructors
   </h3>
@@ -137,7 +137,7 @@ var memory = size &lt;=stackallocThreshold ? new MemoryRental&lt;byte&gt;(stacka
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1__ctor_System_Buffers_MemoryPool__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.%23ctor(System.Buffers.MemoryPool%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L95">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L97">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryRental_1__ctor_" data-uid="DotNext.Buffers.MemoryRental`1.#ctor*"></a>
   <h4 id="DotNext_Buffers_MemoryRental_1__ctor_System_Buffers_MemoryPool__0__" data-uid="DotNext.Buffers.MemoryRental`1.#ctor(System.Buffers.MemoryPool{`0})">MemoryRental(MemoryPool&lt;T&gt;)</h4>
@@ -187,7 +187,7 @@ var memory = size &lt;=stackallocThreshold ? new MemoryRental&lt;byte&gt;(stacka
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1__ctor_System_Buffers_MemoryPool__0__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.%23ctor(System.Buffers.MemoryPool%7B%600%7D%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L79">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L81">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryRental_1__ctor_" data-uid="DotNext.Buffers.MemoryRental`1.#ctor*"></a>
   <h4 id="DotNext_Buffers_MemoryRental_1__ctor_System_Buffers_MemoryPool__0__System_Int32_" data-uid="DotNext.Buffers.MemoryRental`1.#ctor(System.Buffers.MemoryPool{`0},System.Int32)">MemoryRental(MemoryPool&lt;T&gt;, Int32)</h4>
@@ -248,7 +248,7 @@ var memory = size &lt;=stackallocThreshold ? new MemoryRental&lt;byte&gt;(stacka
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1__ctor_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.%23ctor(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L109">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L111">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryRental_1__ctor_" data-uid="DotNext.Buffers.MemoryRental`1.#ctor*"></a>
   <h4 id="DotNext_Buffers_MemoryRental_1__ctor_System_Int32_" data-uid="DotNext.Buffers.MemoryRental`1.#ctor(System.Int32)">MemoryRental(Int32)</h4>
@@ -298,7 +298,7 @@ var memory = size &lt;=stackallocThreshold ? new MemoryRental&lt;byte&gt;(stacka
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1__ctor_System_Span__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.%23ctor(System.Span%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L55">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L57">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryRental_1__ctor_" data-uid="DotNext.Buffers.MemoryRental`1.#ctor*"></a>
   <h4 id="DotNext_Buffers_MemoryRental_1__ctor_System_Span__0__" data-uid="DotNext.Buffers.MemoryRental`1.#ctor(System.Span{`0})">MemoryRental(Span&lt;T&gt;)</h4>
@@ -332,7 +332,7 @@ var memory = size &lt;=stackallocThreshold ? new MemoryRental&lt;byte&gt;(stacka
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1__ctor_System_Span__0__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.%23ctor(System.Span%7B%600%7D%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L67">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L69">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryRental_1__ctor_" data-uid="DotNext.Buffers.MemoryRental`1.#ctor*"></a>
   <h4 id="DotNext_Buffers_MemoryRental_1__ctor_System_Span__0__System_Int32_" data-uid="DotNext.Buffers.MemoryRental`1.#ctor(System.Span{`0},System.Int32)">MemoryRental(Span&lt;T&gt;, Int32)</h4>
@@ -374,7 +374,7 @@ var memory = size &lt;=stackallocThreshold ? new MemoryRental&lt;byte&gt;(stacka
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1_IsEmpty.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.IsEmpty%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L128">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L130">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryRental_1_IsEmpty_" data-uid="DotNext.Buffers.MemoryRental`1.IsEmpty*"></a>
   <h4 id="DotNext_Buffers_MemoryRental_1_IsEmpty" data-uid="DotNext.Buffers.MemoryRental`1.IsEmpty">IsEmpty</h4>
@@ -406,7 +406,7 @@ doesn't reference rented memory.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1_Item_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.Item(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L150">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L152">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryRental_1_Item_" data-uid="DotNext.Buffers.MemoryRental`1.Item*"></a>
   <h4 id="DotNext_Buffers_MemoryRental_1_Item_System_Int32_" data-uid="DotNext.Buffers.MemoryRental`1.Item(System.Int32)">Item[Int32]</h4>
@@ -456,7 +456,7 @@ doesn't reference rented memory.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1_Length.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.Length%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L143">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L145">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryRental_1_Length_" data-uid="DotNext.Buffers.MemoryRental`1.Length*"></a>
   <h4 id="DotNext_Buffers_MemoryRental_1_Length" data-uid="DotNext.Buffers.MemoryRental`1.Length">Length</h4>
@@ -487,7 +487,7 @@ doesn't reference rented memory.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1_Span.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.Span%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L122">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L124">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryRental_1_Span_" data-uid="DotNext.Buffers.MemoryRental`1.Span*"></a>
   <h4 id="DotNext_Buffers_MemoryRental_1_Span" data-uid="DotNext.Buffers.MemoryRental`1.Span">Span</h4>
@@ -520,7 +520,7 @@ doesn't reference rented memory.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1_Dispose.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.Dispose%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L169">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L171">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryRental_1_Dispose_" data-uid="DotNext.Buffers.MemoryRental`1.Dispose*"></a>
   <h4 id="DotNext_Buffers_MemoryRental_1_Dispose" data-uid="DotNext.Buffers.MemoryRental`1.Dispose">Dispose()</h4>
@@ -536,7 +536,7 @@ doesn't reference rented memory.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1_ToString.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L164">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L166">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryRental_1_ToString_" data-uid="DotNext.Buffers.MemoryRental`1.ToString*"></a>
   <h4 id="DotNext_Buffers_MemoryRental_1_ToString" data-uid="DotNext.Buffers.MemoryRental`1.ToString">ToString()</h4>
@@ -572,7 +572,7 @@ doesn't reference rented memory.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1_op_Implicit_System_Span__0___DotNext_Buffers_MemoryRental__0_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.op_Implicit(System.Span%7B%600%7D)~DotNext.Buffers.MemoryRental%7B%600%7D%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L135">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L137">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryRental_1_op_Implicit_" data-uid="DotNext.Buffers.MemoryRental`1.op_Implicit*"></a>
   <h4 id="DotNext_Buffers_MemoryRental_1_op_Implicit_System_Span__0___DotNext_Buffers_MemoryRental__0_" data-uid="DotNext.Buffers.MemoryRental`1.op_Implicit(System.Span{`0})~DotNext.Buffers.MemoryRental{`0}">Implicit(Span&lt;T&gt; to MemoryRental&lt;T&gt;)</h4>
@@ -628,7 +628,7 @@ into the rental object.</p>
                     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L28" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L30" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>
