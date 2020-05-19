@@ -172,8 +172,8 @@ namespace DotNext.Buffers
         {
             switch (owner)
             {
-                case IMemoryOwner<T> memory:
-                    memory.Dispose();
+                case IDisposable disposable:
+                    disposable.Dispose();
                     break;
                 case T[] array:
                     ArrayPool<T>.Shared.Return(array, RuntimeHelpers.IsReferenceOrContainsReferences<T>());
