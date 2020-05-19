@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Reflection;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
 using static InlineIL.MethodRef;
@@ -175,6 +174,15 @@ namespace DotNext.Runtime
             Push(action);
             Callvirt(Method(Type<Action>(), nameof(Action.Invoke)));
             Ret();
+        }
+
+        internal static RuntimeMethodHandle ActionInvokeMethod
+        {
+            get
+            {
+                Ldtoken(Method(Type<Action>(), nameof(Action.Invoke)));
+                return Return<RuntimeMethodHandle>();
+            }
         }
 
         /// <summary>
