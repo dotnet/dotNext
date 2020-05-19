@@ -1,7 +1,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static InlineIL.IL;
@@ -159,32 +158,6 @@ namespace DotNext.Runtime
         {
             Ldtoken(typeof(T));
             return Return<RuntimeTypeHandle>();
-        }
-
-        internal static void UnsafeDispose(object disposable)
-        {
-            Debug.Assert(disposable is IDisposable);
-            Push(disposable);
-            Callvirt(Method(Type<IDisposable>(), nameof(IDisposable.Dispose)));
-            Ret();
-        }
-
-        internal static void UnsafeInvoke(object action)
-        {
-            Debug.Assert(action is Action);
-            Push(action);
-            Callvirt(Method(Type<Action>(), nameof(Action.Invoke)));
-            Ret();
-        }
-
-        internal static MethodInfo ActionInvokeMethod
-        {
-            get
-            {
-                Ldtoken(Method(Type<Action>(), nameof(Action.Invoke)));
-                Pop(out RuntimeMethodHandle handle);
-                return (MethodInfo)MethodBase.GetMethodFromHandle(handle);
-            }
         }
 
         /// <summary>
