@@ -78,12 +78,14 @@ namespace DotNext
         }
 
         private static readonly Predicate<Assembly>? IsCollectible;
-        private static readonly WaitCallback ActionInvoker;
+        private static readonly SendOrPostCallback SendOrPostInvoker;
+        private static readonly Action<Action> ActionInvoker;
 
         static DelegateHelpers()
         {
             var isCollectibleGetter = typeof(Assembly).GetProperty("IsCollectible", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)?.GetMethod;
             IsCollectible = isCollectibleGetter?.CreateDelegate<Predicate<Assembly>>();
+            SendOrPostInvoker = Runtime.Intrinsics.UnsafeInvoke;
             ActionInvoker = Runtime.Intrinsics.UnsafeInvoke;
         }
 
@@ -590,9 +592,11 @@ namespace DotNext
             where T : class
             => action.Unbind<Action<T, T1, T2, T3, T4, T5>>(typeof(T));
 
-        internal static void InvokeInContext(this Action action, SynchronizationContext context) => context.Post(Unsafe.As<SendOrPostCallback>(ActionInvoker), action);
+        internal static void InvokeInContext(this Action action, SynchronizationContext context)
+            => context.Post(SendOrPostInvoker, action);
 
-        internal static void InvokeInThreadPool(this Action action) => ThreadPool.QueueUserWorkItem(ActionInvoker, action);
+        internal static void InvokeInThreadPool(this Action action)
+            => ThreadPool.QueueUserWorkItem(ActionInvoker, action, false);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool CanBeUnloaded(Assembly assembly)
