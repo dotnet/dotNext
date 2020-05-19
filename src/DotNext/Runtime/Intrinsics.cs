@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static InlineIL.IL;
@@ -176,12 +177,13 @@ namespace DotNext.Runtime
             Ret();
         }
 
-        internal static RuntimeMethodHandle ActionInvokeMethod
+        internal static MethodInfo ActionInvokeMethod
         {
             get
             {
                 Ldtoken(Method(Type<Action>(), nameof(Action.Invoke)));
-                return Return<RuntimeMethodHandle>();
+                Pop(out RuntimeMethodHandle handle);
+                return (MethodInfo)MethodBase.GetMethodFromHandle(handle);
             }
         }
 

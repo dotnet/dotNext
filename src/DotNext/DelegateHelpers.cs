@@ -86,7 +86,7 @@ namespace DotNext
             var isCollectibleGetter = typeof(Assembly).GetProperty("IsCollectible", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)?.GetMethod;
             IsCollectible = isCollectibleGetter?.CreateDelegate<Predicate<Assembly>>();
             SendOrPostInvoker = Runtime.Intrinsics.UnsafeInvoke;
-            ActionInvoker = CreateDelegate<Action<Action>>((MethodInfo)MethodBase.GetMethodFromHandle(Runtime.Intrinsics.ActionInvokeMethod));
+            ActionInvoker = CreateDelegate<Action<Action>>(Runtime.Intrinsics.ActionInvokeMethod);
         }
 
         [StructLayout(LayoutKind.Auto)]
