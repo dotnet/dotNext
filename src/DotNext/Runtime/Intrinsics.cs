@@ -161,32 +161,6 @@ namespace DotNext.Runtime
             return Return<RuntimeTypeHandle>();
         }
 
-        internal static void UnsafeDispose(object disposable)
-        {
-            Debug.Assert(disposable is IDisposable);
-            Push(disposable);
-            Callvirt(Method(Type<IDisposable>(), nameof(IDisposable.Dispose)));
-            Ret();
-        }
-
-        internal static void UnsafeInvoke(object action)
-        {
-            Debug.Assert(action is Action);
-            Push(action);
-            Callvirt(Method(Type<Action>(), nameof(Action.Invoke)));
-            Ret();
-        }
-
-        internal static MethodInfo ActionInvokeMethod
-        {
-            get
-            {
-                Ldtoken(Method(Type<Action>(), nameof(Action.Invoke)));
-                Pop(out RuntimeMethodHandle handle);
-                return (MethodInfo)MethodBase.GetMethodFromHandle(handle);
-            }
-        }
-
         /// <summary>
         /// Determines whether one or more bit fields are set in the given value.
         /// </summary>

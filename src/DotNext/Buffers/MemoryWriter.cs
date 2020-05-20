@@ -105,7 +105,7 @@ namespace DotNext.Buffers
         /// <returns>The memory block of at least the size <paramref name="sizeHint"/>.</returns>
         /// <exception cref="OutOfMemoryException">The requested buffer size is not available.</exception>
         /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
-        public abstract Span<T> GetSpan(int sizeHint = 0);
+        public virtual Span<T> GetSpan(int sizeHint = 0) => GetMemory(sizeHint).Span;
 
         /// <summary>
         /// Reallocates internal buffer.

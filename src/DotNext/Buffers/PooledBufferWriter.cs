@@ -43,7 +43,7 @@ namespace DotNext.Buffers
             get
             {
                 ThrowIfDisposed();
-                return buffer.Length;
+                return buffer.RawMemory.Length;
             }
         }
 
@@ -56,7 +56,7 @@ namespace DotNext.Buffers
             get
             {
                 ThrowIfDisposed();
-                return buffer.Memory.Slice(0, position);
+                return buffer.RawMemory.Slice(0, position);
             }
         }
 
@@ -84,15 +84,6 @@ namespace DotNext.Buffers
             CheckAndResizeBuffer(sizeHint);
             return buffer.Memory.Slice(position);
         }
-
-        /// <summary>
-        /// Returns the memory to write to that is at least the requested size.
-        /// </summary>
-        /// <param name="sizeHint">The minimum length of the returned memory.</param>
-        /// <returns>The memory block of at least the size <paramref name="sizeHint"/>.</returns>
-        /// <exception cref="OutOfMemoryException">The requested buffer size is not available.</exception>
-        /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
-        public override Span<T> GetSpan(int sizeHint = 0) => GetMemory(sizeHint).Span;
 
         /// <inheritdoc/>
         private protected override void Resize(int newSize)

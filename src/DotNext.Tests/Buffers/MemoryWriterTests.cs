@@ -119,6 +119,7 @@ namespace DotNext.Buffers
         public static void ReadWriteUsingArray()
         {
             using var writer = new PooledArrayBufferWriter<byte>(ArrayPool<byte>.Shared, 25);
+            True(writer.Capacity >= 25);
             True(writer.WrittenArray.Count == 0);
             Equal(0, writer.WrittenCount);
 
@@ -211,6 +212,7 @@ namespace DotNext.Buffers
         public static void ReuseMemoryWriter()
         {
             using var writer = new PooledBufferWriter<byte>(MemoryPool<byte>.Shared.ToAllocator());
+            Equal(0, writer.Capacity);
             var span = writer.GetSpan(10);
             span[0] = 20;
             span[9] = 30;

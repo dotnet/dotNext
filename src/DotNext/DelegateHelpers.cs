@@ -7,9 +7,12 @@ using System.Threading;
 
 namespace DotNext
 {
+    using Runtime.CompilerServices;
+
     /// <summary>
     /// Represents various extensions of delegates.
     /// </summary>
+    [BeforeFieldInit(true)]
     public static class DelegateHelpers
     {
         private interface ITargetRewriter
@@ -85,8 +88,10 @@ namespace DotNext
         {
             var isCollectibleGetter = typeof(Assembly).GetProperty("IsCollectible", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)?.GetMethod;
             IsCollectible = isCollectibleGetter?.CreateDelegate<Predicate<Assembly>>();
-            SendOrPostInvoker = Runtime.Intrinsics.UnsafeInvoke;
-            ActionInvoker = CreateDelegate<Action<Action>>(Runtime.Intrinsics.ActionInvokeMethod);
+            SendOrPostInvoker = UnsafeInvoke;
+            ActionInvoker = UnsafeInvoke;
+
+            static void UnsafeInvoke(object action) => Unsafe.As<Action>(action).Invoke();
         }
 
         [StructLayout(LayoutKind.Auto)]
