@@ -43,12 +43,12 @@ Documentation for older versions:
 * [1.x](https://sakno.github.io/dotNext/versions/1.x/index.html)
 
 # What's new
-Release Date: 05-18-2020
+Release Date: 05-20-2020
 
-<a href="https://www.nuget.org/packages/dotnext/2.4.1">DotNext 2.4.1</a>
-* `ArrayRental<T>` can automatically determine array cleanup policy
-* `MemoryRental<T>` is improved for stackalloc/pooling pattern
-* Fixed bug in `Clear` method of `PooledBufferWriter` class
+<a href="https://www.nuget.org/packages/dotnext/2.4.2">DotNext 2.4.2</a>
+* Reduced memory allocation caused by continuations in `Future` class
+* Improved performance of some methods in `MemoryRental<T>` and `DelegateHelpers` classes
+* Reduced amount of memory re-allocations in `PooledBufferWriter<T>` and `PooledArrayBufferWriter<T>` classes
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 

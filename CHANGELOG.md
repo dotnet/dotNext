@@ -1,6 +1,12 @@
 Release Notes
 ====
 
+# 05-20-2020
+<a href="https://www.nuget.org/packages/dotnext/2.4.2">DotNext 2.4.2</a>
+* Reduced memory allocation caused by continuations in `Future` class
+* Improved performance of some methods in `MemoryRental<T>` and `DelegateHelpers` classes
+* Reduced amount of memory re-allocations in `PooledBufferWriter<T>` and `PooledArrayBufferWriter<T>` classes
+
 # 05-18-2020
 <a href="https://www.nuget.org/packages/dotnext/2.4.1">DotNext 2.4.1</a>
 * `ArrayRental<T>` can automatically determine array cleanup policy

@@ -6,14 +6,24 @@ using System.Threading.Tasks;
 
 namespace DotNext
 {
+    using Runtime.CompilerServices;
+
     /// <summary>
     /// Provides implementation of dispose pattern.
     /// </summary>
     /// <see cref="IDisposable"/>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-dispose">Implementing Dispose method</seealso>
+    [BeforeFieldInit(true)]
     public abstract class Disposable : IDisposable
     {
-        private static readonly WaitCallback DisposeCallback = Runtime.Intrinsics.UnsafeDispose;
+        private static readonly WaitCallback DisposeCallback;
+
+        static Disposable()
+        {
+            DisposeCallback = UnsafeDispose;
+
+            static void UnsafeDispose(object disposable) => Unsafe.As<IDisposable>(disposable).Dispose();
+        }
 
         private volatile bool disposed;
 
@@ -52,8 +62,9 @@ namespace DotNext
         /// Places <see cref="IDisposable.Dispose"/> method call into thread pool.
         /// </summary>
         /// <param name="resource">The resource to be disposed.</param>
-        protected static void QueueDispose(IDisposable resource) =>
-            ThreadPool.QueueUserWorkItem(DisposeCallback, resource);
+        /// <exception cref="ArgumentNullException"><paramref name="resource"/> is <see langword="null"/>.</exception>
+        protected static void QueueDispose(IDisposable resource)
+            => ThreadPool.QueueUserWorkItem(DisposeCallback, resource ?? throw new ArgumentNullException(nameof(resource)));
 
         /// <summary>
         /// Disposes many objects.

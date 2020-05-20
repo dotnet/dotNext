@@ -82,24 +82,24 @@ namespace DotNext.Buffers
         /// </summary>
         public bool IsEmpty => Length == 0;
 
+        internal Memory<T> RawMemory
+        {
+            get
+            {
+                if (owner is IMemoryOwner<T> memory)
+                    return memory.Memory;
+                else if (array != null)
+                    return new Memory<T>(array);
+                else
+                    return default;
+            }
+        }
+
         /// <summary>
         /// Gets the memory belonging to this owner.
         /// </summary>
         /// <value>The memory belonging to this owner.</value>
-        public Memory<T> Memory
-        {
-            get
-            {
-                Memory<T> result;
-                if (owner is IMemoryOwner<T> memory)
-                    result = memory.Memory;
-                else if (array != null)
-                    result = new Memory<T>(array);
-                else
-                    result = default;
-                return result.Slice(0, Length);
-            }
-        }
+        public Memory<T> Memory => RawMemory.Slice(0, Length);
 
         /// <inheritdoc/>
         Memory<T> IConvertible<Memory<T>>.Convert() => Memory;
