@@ -332,12 +332,12 @@
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterMember_DotNext_Net_Cluster_Consensus_Raft_IRaftClusterMember_AppendEntriesAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.DotNext#Net#Cluster#Consensus#Raft#IRaftClusterMember#AppendEntriesAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterMember_DotNext_Net_Cluster_Consensus_Raft_IRaftClusterMember_AppendEntriesAsync__2_System_Int64___1_System_Int64_System_Int64_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.DotNext#Net#Cluster#Consensus#Raft#IRaftClusterMember#AppendEntriesAsync``2(System.Int64,``1,System.Int64,System.Int64,System.Int64,System.Threading.CancellationToken)">IRaftClusterMember.AppendEntriesAsync&lt;TEntry, TList&gt;(Int64, TList, Int64, Int64, Int64, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Transfers transaction log entry to the member.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">Task&lt;Result&lt;bool&gt;&gt; IRaftClusterMember.AppendEntriesAsync&lt;TEntry, TList&gt;(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
+
     where TEntry : IRaftLogEntry where TList : IReadOnlyList&lt;TEntry&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -353,38 +353,32 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">term</span></td>
-        <td><p>Term value maintained by local cluster member.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><span class="xref">TList</span></td>
         <td><span class="parametername">entries</span></td>
-        <td><p>A set of entries to be replicated with this node.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">prevLogIndex</span></td>
-        <td><p>Index of log entry immediately preceding new ones.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">prevLogTerm</span></td>
-        <td><p>Term of <code data-dev-comment-type="paramref" class="paramref">prevLogIndex</code> entry.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">commitIndex</span></td>
-        <td><p>Last entry known to be committed by the local node.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel asynchronous operation.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -399,8 +393,7 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Result-1.html">Result</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;&gt;</td>
-        <td><p><span class="xref">true</span> if message is handled successfully by this member; <span class="xref">false</span> if message is rejected due to invalid Term/Index number.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -415,29 +408,11 @@
     <tbody>
       <tr>
         <td><span class="parametername">TEntry</span></td>
-        <td><p>The type of the log entry.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><span class="parametername">TList</span></td>
-        <td><p>The type of the log entries list.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Net.Cluster.MemberUnavailableException.html">MemberUnavailableException</a></td>
-        <td><p>The member is unreachable through network.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -450,8 +425,7 @@
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterMember_DotNext_Net_Cluster_Consensus_Raft_IRaftClusterMember_InstallSnapshotAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.DotNext#Net#Cluster#Consensus#Raft#IRaftClusterMember#InstallSnapshotAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterMember_DotNext_Net_Cluster_Consensus_Raft_IRaftClusterMember_InstallSnapshotAsync_System_Int64_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.DotNext#Net#Cluster#Consensus#Raft#IRaftClusterMember#InstallSnapshotAsync(System.Int64,DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry,System.Int64,System.Threading.CancellationToken)">IRaftClusterMember.InstallSnapshotAsync(Int64, IRaftLogEntry, Int64, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Installs the snapshot of the log to this cluster member.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -470,26 +444,22 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">term</span></td>
-        <td><p>Leader's term.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry.html">IRaftLogEntry</a></td>
         <td><span class="parametername">snapshot</span></td>
-        <td><p>The log entry representing the snapshot.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">snapshotIndex</span></td>
-        <td><p>The index of the last included log entry in the snapshot.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel asynchronous operation.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -504,24 +474,7 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Result-1.html">Result</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;&gt;</td>
-        <td><p><span class="xref">true</span> if snapshot is installed successfully; otherwise, <span class="xref">false</span>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Net.Cluster.MemberUnavailableException.html">MemberUnavailableException</a></td>
-        <td><p>The member is unreachable through network.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -534,8 +487,7 @@
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterMember_DotNext_Net_Cluster_Consensus_Raft_IRaftClusterMember_NextIndex_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.DotNext#Net#Cluster#Consensus#Raft#IRaftClusterMember#NextIndex*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterMember_DotNext_Net_Cluster_Consensus_Raft_IRaftClusterMember_NextIndex" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.DotNext#Net#Cluster#Consensus#Raft#IRaftClusterMember#NextIndex">IRaftClusterMember.NextIndex</h4>
-  <div class="markdown level1 summary"><p>Index of next log entry to send to this node.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -565,8 +517,7 @@
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterMember_DotNext_Net_Cluster_Consensus_Raft_IRaftClusterMember_VoteAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.DotNext#Net#Cluster#Consensus#Raft#IRaftClusterMember#VoteAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterMember_DotNext_Net_Cluster_Consensus_Raft_IRaftClusterMember_VoteAsync_System_Int64_System_Int64_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.DotNext#Net#Cluster#Consensus#Raft#IRaftClusterMember#VoteAsync(System.Int64,System.Int64,System.Int64,System.Threading.CancellationToken)">IRaftClusterMember.VoteAsync(Int64, Int64, Int64, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Requests vote from the member.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -585,26 +536,22 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">term</span></td>
-        <td><p>Term value maintained by local cluster member.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">lastLogIndex</span></td>
-        <td><p>Index of candidate's last log entry.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">lastLogTerm</span></td>
-        <td><p>Term of candidate's last log entry.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel asynchronous operation.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -619,8 +566,7 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Result-1.html">Result</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;&gt;</td>
-        <td><p>Vote received from member; <span class="xref">true</span> if node accepts new leader, <span class="xref">false</span> if node doesn't accept new leader, <span class="xref">null</span> if node is not available.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -633,8 +579,7 @@
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterMember_DotNext_Net_Cluster_IClusterMember_GetMetadataAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.DotNext#Net#Cluster#IClusterMember#GetMetadataAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterMember_DotNext_Net_Cluster_IClusterMember_GetMetadataAsync_System_Boolean_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.DotNext#Net#Cluster#IClusterMember#GetMetadataAsync(System.Boolean,System.Threading.CancellationToken)">IClusterMember.GetMetadataAsync(Boolean, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Obtains metadata associated with this member.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -653,14 +598,12 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td><span class="parametername">refresh</span></td>
-        <td><p><span class="xref">true</span> to make a network request to the member and update local cache; <span class="xref">false</span> to obtain cached metadata.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel operation.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -675,27 +618,7 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2">IReadOnlyDictionary</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a>&gt;&gt;</td>
-        <td><p>The task representing metadata read operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterMember_DotNext_Net_Cluster_IClusterMember_GetMetadataAsync_System_Boolean_System_Threading_CancellationToken__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>This method is completed synchronously is most cases if <code data-dev-comment-type="paramref" class="paramref">refresh</code> is <span class="xref">false</span>.</p>
-</div>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Net.Cluster.MemberUnavailableException.html">MemberUnavailableException</a></td>
-        <td><p>This member is not reachable through the network.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -708,8 +631,7 @@
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterMember_DotNext_Net_Cluster_IClusterMember_ResignAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.DotNext#Net#Cluster#IClusterMember#ResignAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterMember_DotNext_Net_Cluster_IClusterMember_ResignAsync_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.DotNext#Net#Cluster#IClusterMember#ResignAsync(System.Threading.CancellationToken)">IClusterMember.ResignAsync(CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Revokes leadership.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -728,8 +650,7 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel asynchronous operation.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -744,24 +665,7 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;</td>
-        <td><p><span class="xref">true</span>, if leadership is revoked successfully; otherwise, <span class="xref">false</span>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Net.Cluster.MemberUnavailableException.html">MemberUnavailableException</a></td>
-        <td><p>This member is not reachable through the network.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>

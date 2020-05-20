@@ -1660,23 +1660,6 @@ references:
   fullName.vb: DotNext.Buffers.PooledBufferWriter(Of T).GetMemory
   nameWithType: PooledBufferWriter<T>.GetMemory
   nameWithType.vb: PooledBufferWriter(Of T).GetMemory
-- uid: DotNext.Buffers.PooledBufferWriter`1.GetSpan(System.Int32)
-  name: GetSpan(Int32)
-  href: api/DotNext.Buffers.PooledBufferWriter-1.html#DotNext_Buffers_PooledBufferWriter_1_GetSpan_System_Int32_
-  commentId: M:DotNext.Buffers.PooledBufferWriter`1.GetSpan(System.Int32)
-  fullName: DotNext.Buffers.PooledBufferWriter<T>.GetSpan(System.Int32)
-  fullName.vb: DotNext.Buffers.PooledBufferWriter(Of T).GetSpan(System.Int32)
-  nameWithType: PooledBufferWriter<T>.GetSpan(Int32)
-  nameWithType.vb: PooledBufferWriter(Of T).GetSpan(Int32)
-- uid: DotNext.Buffers.PooledBufferWriter`1.GetSpan*
-  name: GetSpan
-  href: api/DotNext.Buffers.PooledBufferWriter-1.html#DotNext_Buffers_PooledBufferWriter_1_GetSpan_
-  commentId: Overload:DotNext.Buffers.PooledBufferWriter`1.GetSpan
-  isSpec: "True"
-  fullName: DotNext.Buffers.PooledBufferWriter<T>.GetSpan
-  fullName.vb: DotNext.Buffers.PooledBufferWriter(Of T).GetSpan
-  nameWithType: PooledBufferWriter<T>.GetSpan
-  nameWithType.vb: PooledBufferWriter(Of T).GetSpan
 - uid: DotNext.Buffers.PooledBufferWriter`1.WrittenMemory
   name: WrittenMemory
   href: api/DotNext.Buffers.PooledBufferWriter-1.html#DotNext_Buffers_PooledBufferWriter_1_WrittenMemory
