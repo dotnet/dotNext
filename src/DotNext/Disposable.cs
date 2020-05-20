@@ -6,11 +6,14 @@ using System.Threading.Tasks;
 
 namespace DotNext
 {
+    using Runtime.CompilerServices;
+
     /// <summary>
     /// Provides implementation of dispose pattern.
     /// </summary>
     /// <see cref="IDisposable"/>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-dispose">Implementing Dispose method</seealso>
+    [BeforeFieldInit(true)]
     public abstract class Disposable : IDisposable
     {
         private static readonly WaitCallback DisposeCallback;

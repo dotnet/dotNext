@@ -7,9 +7,12 @@ using System.Threading;
 
 namespace DotNext
 {
+    using Runtime.CompilerServices;
+
     /// <summary>
     /// Represents various extensions of delegates.
     /// </summary>
+    [BeforeFieldInit(true)]
     public static class DelegateHelpers
     {
         private interface ITargetRewriter
