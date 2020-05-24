@@ -46,7 +46,7 @@ namespace DotNext.Runtime.CompilerServices
             if (!(rest is null))
             {
                 instance = Expression.Field(instance, "Rest");
-                Build(instance, output.Slice(8));
+                rest.Build(instance, output.Slice(8));
             }
         }
 
