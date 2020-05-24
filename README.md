@@ -5,7 +5,7 @@ This is an override of the default template so you need to enable both in the `d
 ![darkFX - Screenshots](./docs/images/darkfx-screenshots.png)
 
 ## Live Demo
-You can view a demo DocFX project with this template [HERE](https://steffen-wilke.github.io/darkfx/articles/intro.html).
+You can view a demo DocFX project with this template [HERE](https://steffen-wilke.github.io/darkfx/).
 
 ## Install
 
