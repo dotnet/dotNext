@@ -42,7 +42,8 @@ namespace DotNext.Runtime.CompilerServices
             Equal(8, builder.Count);
             
             var tupleType = builder.Build();
-            Equal(typeof(ValueTuple<bool>), tupleType.GetField("Rest")?.FieldType);
+            const string restFieldName = nameof(ValueTuple<bool, bool, bool, bool, bool, bool, bool, bool>.Rest);
+            Equal(typeof(ValueTuple<bool>), tupleType.GetField(restFieldName)?.FieldType);
 
             var members = builder.Build(Expression.New, out _);
             Equal(typeof(DateTime), members[0].Type);
