@@ -695,8 +695,7 @@ namespace DotNext.IO
         public static async ValueTask<long> CopyToAsync(this Stream source, Stream destination, Memory<byte> buffer, CancellationToken token = default)
         {
             var totalBytes = 0L;
-            int count;
-            while ((count = await source.ReadAsync(buffer, token).ConfigureAwait(false)) > 0)
+            for (int count; (count = await source.ReadAsync(buffer, token).ConfigureAwait(false)) > 0; )
             {
                 totalBytes += count;
                 await destination.WriteAsync(buffer.Slice(0, count), token).ConfigureAwait(false);
@@ -716,15 +715,33 @@ namespace DotNext.IO
         public static long CopyTo(this Stream source, Stream destination, Span<byte> buffer, CancellationToken token = default)
         {
             var totalBytes = 0L;
-            int count;
-            while ((count = source.Read(buffer)) > 0)
+            for (int count; (count = source.Read(buffer)) > 0; token.ThrowIfCancellationRequested())
             {
                 totalBytes += count;
-                token.ThrowIfCancellationRequested();
                 destination.Write(buffer.Slice(0, count));
             }
 
             return totalBytes;
+        }
+
+        /// <summary>
+        /// Converts the stream to <see cref="System.Buffers.IBufferWriter{T}"/>.
+        /// </summary>
+        /// <param name="output">The stream to convert.</param>
+        /// <param name="allocator">The allocator of the buffer.</param>
+        /// <returns>The buffered stream writer.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="output"/> or <paramref name="allocator"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentException"><paramref name="output"/> is not writable stream.</exception>
+        public static IFlushableBufferWriter<byte> AsBufferWriter(this Stream output, MemoryAllocator<byte> allocator)
+        {
+            if (output is null)
+                throw new ArgumentNullException(nameof(output));
+            if (allocator is null)
+                throw new ArgumentNullException(nameof(allocator));
+            if (!output.CanWrite)
+                throw new ArgumentException(ExceptionMessages.StreamNotWritable, nameof(output));
+
+            return new BufferedStreamWriter(output, allocator);
         }
     }
 }
