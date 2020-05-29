@@ -1,6 +1,10 @@
 Release Notes
 ====
 
+# 05-29-2020
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.4.1">DotNext.Metaprogramming 2.4.1</a>
+* Fixed dynamic construction of tuples using `ValueTupleBuilder` class (PR [#8](https://github.com/sakno/dotNext/pull/8))
+
 # 05-20-2020
 <a href="https://www.nuget.org/packages/dotnext/2.4.2">DotNext 2.4.2</a>
 * Reduced memory allocation caused by continuations in `Future` class

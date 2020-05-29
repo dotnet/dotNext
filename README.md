@@ -43,12 +43,10 @@ Documentation for older versions:
 * [1.x](https://sakno.github.io/dotNext/versions/1.x/index.html)
 
 # What's new
-Release Date: 05-20-2020
+Release Date: 05-29-2020
 
-<a href="https://www.nuget.org/packages/dotnext/2.4.2">DotNext 2.4.2</a>
-* Reduced memory allocation caused by continuations in `Future` class
-* Improved performance of some methods in `MemoryRental<T>` and `DelegateHelpers` classes
-* Reduced amount of memory re-allocations in `PooledBufferWriter<T>` and `PooledArrayBufferWriter<T>` classes
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.4.1">DotNext.Metaprogramming 2.4.1</a>
+* Fixed dynamic construction of tuples using `ValueTupleBuilder` class (PR [#8](https://github.com/sakno/dotNext/pull/8))
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
