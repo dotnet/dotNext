@@ -46,7 +46,7 @@ Documentation for older versions:
 Release Date: 05-29-2020
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.4.1">DotNext.Metaprogramming 2.4.1</a>
-* Fixed dynamic construction of tuples using `ValueTupleBuilder` class (PR #8)
+* Fixed dynamic construction of tuples using `ValueTupleBuilder` class (PR [#8](https://github.com/sakno/dotNext/pull/8))
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
