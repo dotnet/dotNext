@@ -349,8 +349,10 @@ namespace DotNext.IO
             span[2] = 3;
             span[3] = 4;
             writer.Advance(2);
+            writer.Flush();
             Equal(new byte[] { 1, 2 }, ms.ToArray());
             writer.Advance(2);
+            writer.FlushAsync().GetAwaiter().GetResult();
             Equal(new byte[] { 1, 2, 3, 4 }, ms.ToArray());
             writer.Advance(span.Length - 4);
             Equal(span.Length, ms.Length);
