@@ -17,5 +17,7 @@ namespace DotNext
 
         internal static string DirectoryNotFound(string path)
             => string.Format(Resources.GetString("DirectoryNotFound"), path);
+
+        internal static string WriterInReadMode => Resources.GetString("WriterInReadMode");
     }
 }
