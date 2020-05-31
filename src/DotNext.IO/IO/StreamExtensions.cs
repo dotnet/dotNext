@@ -766,10 +766,10 @@ namespace DotNext.IO
                 throw new ArgumentOutOfRangeException(nameof(bufferSize));
 
             var totalBytes = 0L;
-            while (true)
+            for (int count; ; totalBytes += count)
             {
                 var buffer = destination.GetMemory(bufferSize);
-                var count = await source.ReadAsync(buffer, token).ConfigureAwait(false);
+                count = await source.ReadAsync(buffer, token).ConfigureAwait(false);
                 if (count <= 0)
                     break;
                 destination.Advance(count);
@@ -799,15 +799,14 @@ namespace DotNext.IO
                 throw new ArgumentOutOfRangeException(nameof(bufferSize));
 
             var totalBytes = 0L;
-            while (!token.IsCancellationRequested)
+            for (int count; !token.IsCancellationRequested; totalBytes += count, token.ThrowIfCancellationRequested())
             {
                 var buffer = destination.GetSpan(bufferSize);
-                var count = source.Read(buffer);
+                count = source.Read(buffer);
                 if (count <= 0)
                     break;
                 destination.Advance(count);
             }
-            token.ThrowIfCancellationRequested();
 
             return totalBytes;
         }
