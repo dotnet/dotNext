@@ -86,7 +86,7 @@ namespace DotNext.Buffers
                     return array.Length;
                 if (owner is IMemoryOwner<T> memory)
                     return memory.Memory.Length;
-                return Length;
+                return length;
             }
         }
 
@@ -114,7 +114,7 @@ namespace DotNext.Buffers
                 else
                     result = default;
 
-                return result.Slice(0, Length);
+                return result.Slice(0, length);
             }
         }
 
@@ -130,12 +130,12 @@ namespace DotNext.Buffers
         {
             get
             {
-                if (index < 0 || index >= Length)
+                if (index < 0 || index >= length)
                     goto invalid_index;
-                if (owner is IMemoryOwner<T> memory)
-                    return ref Unsafe.Add(ref MemoryMarshal.GetReference(memory.Memory.Span), index);
                 if (array != null)
                     return ref array[index];
+                if (owner is IMemoryOwner<T> memory)
+                    return ref Unsafe.Add(ref MemoryMarshal.GetReference(memory.Memory.Span), index);
                 invalid_index:
                 throw new ArgumentOutOfRangeException(nameof(index));
             }
