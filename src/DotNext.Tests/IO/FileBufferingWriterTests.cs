@@ -27,6 +27,10 @@ namespace DotNext.IO
             Equal(bytes.Length, writer.Length);
             using var manager = writer.GetWrittenContent();
             Equal(bytes, manager.Memory.ToArray());
+            if (writer.TryGetWrittenContent(out var content))
+            {
+                Equal(bytes, content.ToArray());
+            }
         }
 
         [Theory]
