@@ -254,5 +254,13 @@ namespace DotNext.IO
             await ThrowsAsync<InvalidOperationException>(() => writer.WriteAsync(new byte[2], 0, 2));
             await ThrowsAsync<InvalidOperationException>(writer.GetWrittenContentAsync().AsTask);
         }
+
+        [Fact]
+        public static void EmptyContent()
+        {
+            using var writer = new FileBufferingWriter();
+            True(writer.TryGetWrittenContent(out var content));
+            True(content.IsEmpty);
+        }
     }
 }
