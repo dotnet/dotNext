@@ -40,7 +40,7 @@ namespace DotNext.IO
 
             public override Span<byte> GetSpan()
                 => new Span<byte>(ptr + accessor.PointerOffset, checked((int)accessor.Capacity));
-            
+
             public override MemoryHandle Pin(int elementIndex)
             {
                 if (elementIndex < 0 || elementIndex >= accessor.Capacity)
@@ -67,15 +67,15 @@ namespace DotNext.IO
         {
             internal MemoryManager(Memory<byte> buffer)
                 => Memory = buffer;
-            
+
             public override Span<byte> GetSpan()
                 => Memory.Span;
-            
+
             public override Memory<byte> Memory { get; }
 
             public override MemoryHandle Pin(int elementIndex)
                 => Memory.Slice(elementIndex).Pin();
-            
+
             public override void Unpin()
             {
             }
@@ -89,24 +89,24 @@ namespace DotNext.IO
         {
             Success = 0,
             PersistExistingBuffer,
-            PersistAll
+            PersistAll,
         }
-        
+
         private readonly int memoryThreshold;
         private readonly string tempDir;
         private readonly MemoryAllocator<byte> allocator;
+        private readonly FileOptions options;
         private MemoryOwner<byte> buffer;
         private int position;
         private FileStream? fileBackend;
-        private readonly FileOptions options;
 
         /// <summary>
-        /// Initializes a new 
+        /// Initializes a new writer.
         /// </summary>
-        /// <param name="allocator"></param>
-        /// <param name="memoryThreshold"></param>
-        /// <param name="tempDir"></param>
-        /// <param name="asyncIO"></param>
+        /// <param name="allocator">The allocator of internal buffer.</param>
+        /// <param name="memoryThreshold">The maximum amount of memory in bytes to allocate before switching to a file on disk.</param>
+        /// <param name="tempDir">The location of the directory to write buffered contents to.</param>
+        /// <param name="asyncIO"><see langword="true"/> if you will use asynchronous methods of the instance; otherwise, <see langword="false"/>.</param>
         public FileBufferingWriter(MemoryAllocator<byte>? allocator = null, int memoryThreshold = 32768, string? tempDir = null, bool asyncIO = true)
         {
             if (memoryThreshold <= 0)
@@ -118,7 +118,7 @@ namespace DotNext.IO
             this.memoryThreshold = memoryThreshold;
 
             const FileOptions withAsyncIO = FileOptions.Asynchronous | FileOptions.DeleteOnClose | FileOptions.SequentialScan | FileOptions.WriteThrough;
-            const FileOptions withoutAsyncIO = FileOptions.DeleteOnClose | FileOptions.SequentialScan | FileOptions.WriteThrough;    
+            const FileOptions withoutAsyncIO = FileOptions.DeleteOnClose | FileOptions.SequentialScan | FileOptions.WriteThrough;
             options = asyncIO ? withAsyncIO : withoutAsyncIO;
         }
 
@@ -243,7 +243,7 @@ namespace DotNext.IO
         /// <inheritdoc/>
         public override void Write(byte[] buffer, int offset, int count)
             => Write(new ReadOnlySpan<byte>(buffer, offset, count));
-        
+
         /// <inheritdoc/>
         public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken token)
             => WriteAsync(new ReadOnlyMemory<byte>(buffer, offset, count), token).AsTask();
@@ -279,11 +279,11 @@ namespace DotNext.IO
         /// <inheritdoc/>
         public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken token)
             => Task.FromException<int>(new NotSupportedException());
-        
+
         /// <inheritdoc/>
         public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken token)
             => new ValueTask<int>(Task.FromException<int>(new NotSupportedException()));
-        
+
         /// <inheritdoc/>
         public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
             => throw new NotSupportedException();
@@ -295,7 +295,7 @@ namespace DotNext.IO
         /// <inheritdoc/>
         public override void SetLength(long value)
             => throw new NotSupportedException();
-        
+
         /// <summary>
         /// Drains buffered content to the stream asynchronously.
         /// </summary>
@@ -389,16 +389,16 @@ namespace DotNext.IO
             return totalBytes;
         }
 
-        private (long Offset, long Length) GetOffsetAndLength(in Range range, long length)
+        private static (long Offset, long Length) GetOffsetAndLength(in Range range, long length)
         {
             long start = range.Start.Value;
             if (range.Start.IsFromEnd)
                 start = length - start;
-            
+
             long end = range.End.Value;
             if (range.End.IsFromEnd)
                 end = length - end;
-            
+
             return (start, end - start);
         }
 
@@ -492,6 +492,7 @@ namespace DotNext.IO
                 buffer.Dispose();
                 buffer = default;
             }
+
             base.Dispose(disposing);
         }
 
@@ -503,6 +504,7 @@ namespace DotNext.IO
                 await fileBackend.DisposeAsync().ConfigureAwait(false);
                 fileBackend = null;
             }
+
             buffer.Dispose();
             buffer = default;
         }
