@@ -228,5 +228,13 @@ namespace DotNext.IO
             await writer.CopyToAsync(ms);
             Equal(bytes, ms.WrittenSpan.ToArray());
         }
+
+        [Fact]
+        public static void CtorExceptions()
+        {
+            Throws<ArgumentOutOfRangeException>(() => new FileBufferingWriter(memoryThreshold : -1));
+            var tempFolder = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            Throws<DirectoryNotFoundException>(() => new FileBufferingWriter(tempDir: tempFolder));
+        }
     }
 }
