@@ -92,3 +92,16 @@ In other words, this class has many similarities with [FileBufferingWriteStream]
 * Ability to represent written content as [Memory&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.memory-1)
 
 The last feature is very useful in situations when the size of memory is not known at the time of the call of write operations. If written content is in memory then returned [Memory&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.memory-1) just references it. Otherwise, `FileBufferingWriter` utilizes memory-mapped file feature and returned [Memory&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.memory-1) represents mapped virtual memory. It's better than using pooled memory because of memory deterministic lifetime and GC pressure.
+
+The following example demonstrates this feature:
+```csharp
+using DotNext.IO;
+using System.Buffers;
+
+using var writer = new FileBufferingWriter();
+writer.Write(new byte[] {10, 20, 30});
+using (MemoryManager<byte> manager = writer.GetWrittenContent())
+{
+    Memory<byte> memory = manager.Memory;
+}
+```
