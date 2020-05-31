@@ -166,7 +166,7 @@ namespace DotNext.IO
             }
             else if (buffer.Length - position < size)
             {
-                var newBuffer = allocator(newSize);
+                var newBuffer = allocator.Invoke(newSize, false);
                 buffer.Memory.CopyTo(newBuffer.Memory);
                 buffer.Dispose();
                 buffer = newBuffer;
@@ -214,7 +214,7 @@ namespace DotNext.IO
                     break;
                 case MemoryEvaluationResult.PersistExistingBuffer:
                     await PersistBufferAsync(token).ConfigureAwait(false);
-                    this.buffer = allocator(buffer.Length);
+                    this.buffer = allocator.Invoke(buffer.Length, false);
                     buffer.CopyTo(this.buffer.Memory);
                     position = buffer.Length;
                     break;
@@ -238,7 +238,7 @@ namespace DotNext.IO
                     break;
                 case MemoryEvaluationResult.PersistExistingBuffer:
                     PersistBuffer();
-                    this.buffer = allocator(buffer.Length);
+                    this.buffer = allocator.Invoke(buffer.Length, false);
                     buffer.CopyTo(this.buffer.Memory.Span);
                     position = buffer.Length;
                     break;
@@ -422,10 +422,11 @@ namespace DotNext.IO
         /// <param name="range">The range of buffered content to return.</param>
         /// <returns>The memory manager providing access to buffered content.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="range"/> is invalid.</exception>
+        /// <exception cref="OutOfMemoryException">The size of buffered content is too large and cannot be represented by <see cref="Memory{T}"/> instance.</exception>
         public MemoryManager<byte> Build(Range range)
         {
             if (fileBackend is null)
-                return new MemoryManager(buffer.Memory[range]);
+                return new MemoryManager(buffer.Memory.Slice(0, position)[range]);
 
             PersistBuffer();
             fileBackend.Flush();
@@ -434,6 +435,8 @@ namespace DotNext.IO
                 throw new ArgumentOutOfRangeException(nameof(range));
             if (length == 0L && offset == 0L)
                 return new MemoryManager(default);
+            if (length > int.MaxValue)
+                throw new OutOfMemoryException();
             return new MemoryMappedFileManager(fileBackend, offset, length);
         }
 
@@ -446,16 +449,7 @@ namespace DotNext.IO
         /// <returns>The memory manager providing access to buffered content.</returns>
         /// <exception cref="OutOfMemoryException">The size of buffered content is too large and cannot be represented by <see cref="Memory{T}"/> instance.</exception>
         public MemoryManager<byte> Build()
-        {
-            if (fileBackend is null)
-                return new MemoryManager(buffer.Memory);
-
-            PersistBuffer();
-            fileBackend.Flush();
-            return fileBackend.Length <= int.MaxValue ?
-                new MemoryMappedFileManager(fileBackend, 0, (int)fileBackend.Length) :
-                throw new OutOfMemoryException();
-        }
+            => Build(Range.All);
 
         /// <summary>
         /// Returns buffered content as a source of <see cref="Memory{T}"/> instances asynchronously.
@@ -465,10 +459,11 @@ namespace DotNext.IO
         /// <returns>The memory manager providing access to buffered content.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="range"/> is invalid.</exception>
+        /// <exception cref="OutOfMemoryException">The size of buffered content is too large and cannot be represented by <see cref="Memory{T}"/> instance.</exception>
         public async ValueTask<MemoryManager<byte>> BuildAsync(Range range, CancellationToken token = default)
         {
             if (fileBackend is null)
-                return new MemoryManager(buffer.Memory[range]);
+                return new MemoryManager(buffer.Memory.Slice(0, position)[range]);
 
             await PersistBufferAsync(token).ConfigureAwait(false);
             await fileBackend.FlushAsync(token).ConfigureAwait(false);
@@ -477,6 +472,8 @@ namespace DotNext.IO
                 throw new ArgumentOutOfRangeException(nameof(range));
             if (length == 0L && offset == 0L)
                 return new MemoryManager(default);
+            if (length > int.MaxValue)
+                throw new OutOfMemoryException();
             return new MemoryMappedFileManager(fileBackend, offset, length);
         }
 
@@ -490,17 +487,8 @@ namespace DotNext.IO
         /// <returns>The memory manager providing access to buffered content.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="OutOfMemoryException">The size of buffered content is too large and cannot be represented by <see cref="Memory{T}"/> instance.</exception>
-        public async ValueTask<MemoryManager<byte>> BuildAsync(CancellationToken token = default)
-        {
-            if (fileBackend is null)
-                return new MemoryManager(buffer.Memory);
-
-            await PersistBufferAsync(token).ConfigureAwait(false);
-            await fileBackend.FlushAsync(token).ConfigureAwait(false);
-            return fileBackend.Length <= int.MaxValue ?
-                new MemoryMappedFileManager(fileBackend, 0, (int)fileBackend.Length) :
-                throw new OutOfMemoryException();
-        }
+        public ValueTask<MemoryManager<byte>> BuildAsync(CancellationToken token = default)
+            => BuildAsync(Range.All, token);
 
         /// <inheritdoc/>
         public override long Seek(long offset, SeekOrigin origin)
