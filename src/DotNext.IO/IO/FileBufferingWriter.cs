@@ -26,16 +26,20 @@ namespace DotNext.IO
     {
         private sealed unsafe class MemoryMappedFileManager : MemoryManager<byte>
         {
+            private readonly FileBufferingWriter writer;
             private readonly MemoryMappedFile mappedFile;
             private readonly MemoryMappedViewAccessor accessor;
             private readonly byte* ptr;
 
-            internal MemoryMappedFileManager(FileStream backingStore, long offset, long length)
+            internal MemoryMappedFileManager(FileBufferingWriter writer, long offset, long length)
             {
                 Debug.Assert(length <= int.MaxValue);
-                mappedFile = MemoryMappedFile.CreateFromFile(backingStore, null, backingStore.Length, MemoryMappedFileAccess.ReadWrite, HandleInheritability.None, true);
+                Debug.Assert(writer.fileBackend != null);
+                mappedFile = MemoryMappedFile.CreateFromFile(writer.fileBackend, null, writer.fileBackend.Length, MemoryMappedFileAccess.ReadWrite, HandleInheritability.None, true);
                 accessor = mappedFile.CreateViewAccessor(offset, length, MemoryMappedFileAccess.ReadWrite);
                 accessor.SafeMemoryMappedViewHandle.AcquirePointer(ref ptr);
+                this.writer = writer;
+                writer.isReading = true;
             }
 
             public override Span<byte> GetSpan()
@@ -60,13 +64,28 @@ namespace DotNext.IO
                     accessor.Dispose();
                     mappedFile.Dispose();
                 }
+
+                writer.isReading = false;
             }
         }
 
         private sealed class MemoryManager : MemoryManager<byte>
         {
-            internal MemoryManager(Memory<byte> buffer)
-                => Memory = buffer;
+            private readonly FileBufferingWriter? writer;
+
+            internal MemoryManager()
+            {
+                writer = null;
+                Memory = default;
+            }
+
+            internal MemoryManager(FileBufferingWriter writer, in Range range)
+            {
+                var buffer = writer.buffer;
+                Memory = buffer.Memory.Slice(0, writer.position)[range];
+                this.writer = writer;
+                writer.isReading = true;
+            }
 
             public override Span<byte> GetSpan()
                 => Memory.Span;
@@ -82,6 +101,8 @@ namespace DotNext.IO
 
             protected override void Dispose(bool disposing)
             {
+                if (writer != null)
+                    writer.isReading = false;
             }
         }
 
@@ -99,6 +120,7 @@ namespace DotNext.IO
         private MemoryOwner<byte> buffer;
         private int position;
         private FileStream? fileBackend;
+        private bool isReading;
 
         /// <summary>
         /// Initializes a new writer.
@@ -155,8 +177,12 @@ namespace DotNext.IO
         /// <summary>
         /// Removes all written data.
         /// </summary>
+        /// <exception cref="InvalidOperationException">Attempt to cleanup this writer while reading.</exception>
         public void Clear()
         {
+            if (isReading)
+                throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
+
             buffer.Dispose();
             buffer = default;
             fileBackend?.Dispose();
@@ -213,6 +239,9 @@ namespace DotNext.IO
         /// <inheritdoc/>
         public override async ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken token = default)
         {
+            if (isReading)
+                throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
+
             switch (PrepareMemory(buffer.Length, out var output))
             {
                 case MemoryEvaluationResult.Success:
@@ -238,6 +267,9 @@ namespace DotNext.IO
         /// <inheritdoc/>
         public override void Write(ReadOnlySpan<byte> buffer)
         {
+            if (isReading)
+                throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
+
             switch (PrepareMemory(buffer.Length, out var output))
             {
                 case MemoryEvaluationResult.Success:
@@ -429,12 +461,15 @@ namespace DotNext.IO
         /// </summary>
         /// <param name="range">The range of buffered content to return.</param>
         /// <returns>The memory manager providing access to buffered content.</returns>
+        /// <exception cref="InvalidOperationException">The memory manager is already obtained but not disposed.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="range"/> is invalid.</exception>
         /// <exception cref="OutOfMemoryException">The size of buffered content is too large and cannot be represented by <see cref="Memory{T}"/> instance.</exception>
-        public MemoryManager<byte> Build(Range range)
+        public MemoryManager<byte> GetWrittenContent(Range range)
         {
+            if (isReading)
+                throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
             if (fileBackend is null)
-                return new MemoryManager(buffer.Memory.Slice(0, position)[range]);
+                return new MemoryManager(this, range);
 
             PersistBuffer();
             fileBackend.Flush();
@@ -442,22 +477,23 @@ namespace DotNext.IO
             if (offset < 0L || length < 0L)
                 throw new ArgumentOutOfRangeException(nameof(range));
             if (length == 0L && offset == 0L)
-                return new MemoryManager(default);
+                return new MemoryManager();
             if (length > int.MaxValue)
                 throw new OutOfMemoryException();
-            return new MemoryMappedFileManager(fileBackend, offset, length);
+            return new MemoryMappedFileManager(this, offset, length);
         }
 
         /// <summary>
         /// Returns the whole buffered content as a source of <see cref="Memory{T}"/> instances synchronously.
         /// </summary>
         /// <remarks>
-        /// Use <see cref="Build(Range)"/> if buffered content is too large.
+        /// Use <see cref="GetWrittenContent(Range)"/> if buffered content is too large.
         /// </remarks>
         /// <returns>The memory manager providing access to buffered content.</returns>
+        /// <exception cref="InvalidOperationException">The memory manager is already obtained but not disposed.</exception>
         /// <exception cref="OutOfMemoryException">The size of buffered content is too large and cannot be represented by <see cref="Memory{T}"/> instance.</exception>
-        public MemoryManager<byte> Build()
-            => Build(Range.All);
+        public MemoryManager<byte> GetWrittenContent()
+            => GetWrittenContent(Range.All);
 
         /// <summary>
         /// Returns buffered content as a source of <see cref="Memory{T}"/> instances asynchronously.
@@ -465,13 +501,16 @@ namespace DotNext.IO
         /// <param name="range">The range of buffered content to return.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The memory manager providing access to buffered content.</returns>
+        /// <exception cref="InvalidOperationException">The memory manager is already obtained but not disposed.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="range"/> is invalid.</exception>
         /// <exception cref="OutOfMemoryException">The size of buffered content is too large and cannot be represented by <see cref="Memory{T}"/> instance.</exception>
-        public async ValueTask<MemoryManager<byte>> BuildAsync(Range range, CancellationToken token = default)
+        public async ValueTask<MemoryManager<byte>> GetWrittenContentAsync(Range range, CancellationToken token = default)
         {
+            if (isReading)
+                throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
             if (fileBackend is null)
-                return new MemoryManager(buffer.Memory.Slice(0, position)[range]);
+                return new MemoryManager(this, range);
 
             await PersistBufferAsync(token).ConfigureAwait(false);
             await fileBackend.FlushAsync(token).ConfigureAwait(false);
@@ -479,24 +518,25 @@ namespace DotNext.IO
             if (offset < 0L || length < 0L)
                 throw new ArgumentOutOfRangeException(nameof(range));
             if (length == 0L && offset == 0L)
-                return new MemoryManager(default);
+                return new MemoryManager();
             if (length > int.MaxValue)
                 throw new OutOfMemoryException();
-            return new MemoryMappedFileManager(fileBackend, offset, length);
+            return new MemoryMappedFileManager(this, offset, length);
         }
 
         /// <summary>
         /// Returns the whole buffered content as a source of <see cref="Memory{T}"/> instances asynchronously.
         /// </summary>
         /// <remarks>
-        /// Use <see cref="BuildAsync(Range, CancellationToken)"/> if buffered content is too large.
+        /// Use <see cref="GetWrittenContentAsync(Range, CancellationToken)"/> if buffered content is too large.
         /// </remarks>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The memory manager providing access to buffered content.</returns>
+        /// <exception cref="InvalidOperationException">The memory manager is already obtained but not disposed.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="OutOfMemoryException">The size of buffered content is too large and cannot be represented by <see cref="Memory{T}"/> instance.</exception>
-        public ValueTask<MemoryManager<byte>> BuildAsync(CancellationToken token = default)
-            => BuildAsync(Range.All, token);
+        public ValueTask<MemoryManager<byte>> GetWrittenContentAsync(CancellationToken token = default)
+            => GetWrittenContentAsync(Range.All, token);
 
         /// <inheritdoc/>
         public override long Seek(long offset, SeekOrigin origin)

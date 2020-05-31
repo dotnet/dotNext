@@ -25,7 +25,7 @@ namespace DotNext.IO
             writer.Write(bytes, 0, byte.MaxValue);
             writer.Write(bytes.AsSpan(byte.MaxValue));
             Equal(bytes.Length, writer.Length);
-            using var manager = writer.Build();
+            using var manager = writer.GetWrittenContent();
             Equal(bytes, manager.Memory.ToArray());
         }
 
@@ -43,7 +43,7 @@ namespace DotNext.IO
             await writer.WriteAsync(bytes, 0, byte.MaxValue);
             await writer.WriteAsync(bytes.AsMemory(byte.MaxValue));
             Equal(bytes.Length, writer.Length);
-            using var manager = await writer.BuildAsync();
+            using var manager = await writer.GetWrittenContentAsync();
             Equal(bytes, manager.Memory.ToArray());
         }
 
@@ -61,11 +61,11 @@ namespace DotNext.IO
             await writer.WriteAsync(bytes, 0, byte.MaxValue);
             await writer.WriteAsync(bytes.AsMemory(byte.MaxValue));
             Equal(bytes.Length, writer.Length);
-            using (var manager = await writer.BuildAsync())
+            using (var manager = await writer.GetWrittenContentAsync())
                 Equal(bytes, manager.Memory.ToArray());
             await writer.WriteAsync(new byte[] {3, 4, 5}.AsMemory());
             writer.WriteByte(6);
-            using (var manager = await writer.BuildAsync(500..))
+            using (var manager = await writer.GetWrittenContentAsync(500..))
             {
                 Equal(new byte[] {3, 4, 5, 6}, manager.Memory.ToArray());
             }
@@ -85,7 +85,7 @@ namespace DotNext.IO
             writer.Write(bytes, 0, byte.MaxValue);
             writer.Write(bytes.AsSpan(byte.MaxValue));
             Equal(bytes.Length, writer.Length);
-            using var manager = writer.Build(0..255);
+            using var manager = writer.GetWrittenContent(0..255);
             Equal(bytes.AsMemory(0, 255).ToArray(), manager.Memory.ToArray());
         }
 
@@ -103,7 +103,7 @@ namespace DotNext.IO
             await writer.WriteAsync(bytes, 0, byte.MaxValue);
             await writer.WriteAsync(bytes.AsMemory(byte.MaxValue));
             Equal(bytes.Length, writer.Length);
-            using var manager = await writer.BuildAsync(0..255);
+            using var manager = await writer.GetWrittenContentAsync(0..255);
             Equal(bytes.AsMemory(0, 255).ToArray(), manager.Memory.ToArray());
         }
 
@@ -121,14 +121,14 @@ namespace DotNext.IO
             writer.Write(bytes, 0, byte.MaxValue);
             writer.Write(bytes.AsSpan(byte.MaxValue));
             Equal(bytes.Length, writer.Length);
-            using (var manager = writer.Build())
+            using (var manager = writer.GetWrittenContent())
                 Equal(bytes, manager.Memory.ToArray());
 
             writer.Clear();
             writer.Write(bytes, 0, byte.MaxValue);
             writer.Write(bytes.AsSpan(byte.MaxValue));
             Equal(bytes.Length, writer.Length);
-            using (var manager = writer.Build())
+            using (var manager = writer.GetWrittenContent())
                 Equal(bytes, manager.Memory.ToArray());
         }
 
@@ -235,6 +235,20 @@ namespace DotNext.IO
             Throws<ArgumentOutOfRangeException>(() => new FileBufferingWriter(memoryThreshold : -1));
             var tempFolder = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             Throws<DirectoryNotFoundException>(() => new FileBufferingWriter(tempDir: tempFolder));
+        }
+
+        [Fact]
+        public static async Task WriteDuringReadAsync()
+        {
+            using var writer = new FileBufferingWriter();
+            writer.Write(new byte[] {1, 2, 3});
+            using var manager = writer.GetWrittenContent();
+            Equal(new byte[] {1, 2, 3}, manager.Memory.ToArray());
+            Throws<InvalidOperationException>(writer.Clear);
+            Throws<InvalidOperationException>(() => writer.WriteByte(2));
+            Throws<InvalidOperationException>(() => writer.GetWrittenContent());
+            await ThrowsAsync<InvalidOperationException>(() => writer.WriteAsync(new byte[2], 0, 2));
+            await ThrowsAsync<InvalidOperationException>(writer.GetWrittenContentAsync().AsTask);
         }
     }
 }
