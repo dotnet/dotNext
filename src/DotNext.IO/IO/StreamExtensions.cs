@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Diagnostics.Debug;
+using IByteBufferWriter = System.Buffers.IBufferWriter<byte>;
 
 namespace DotNext.IO
 {
@@ -742,6 +743,73 @@ namespace DotNext.IO
                 throw new ArgumentException(ExceptionMessages.StreamNotWritable, nameof(output));
 
             return new BufferedStreamWriter(output, allocator);
+        }
+
+        /// <summary>
+        /// Asynchronously reads the bytes from the current stream and writes them to buffer
+        /// writer, using a specified cancellation token.
+        /// </summary>
+        /// <param name="source">The source stream.</param>
+        /// <param name="destination">The writer to which the contents of the current stream will be copied.</param>
+        /// <param name="bufferSize">The size, in bytes, of the buffer.</param>
+        /// <param name="token">The token to monitor for cancellation requests.</param>
+        /// <returns>The number of copied bytes.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="destination"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="bufferSize"/> is negative or zero.</exception>
+        /// <exception cref="NotSupportedException"><paramref name="source"/> doesn't support reading.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static async Task<long> CopyToAsync(this Stream source, IByteBufferWriter destination, int bufferSize = 1024, CancellationToken token = default)
+        {
+            if (destination is null)
+                throw new ArgumentNullException(nameof(destination));
+            if (bufferSize <= 0)
+                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+
+            var totalBytes = 0L;
+            while (true)
+            {
+                var buffer = destination.GetMemory(bufferSize);
+                var count = await source.ReadAsync(buffer, token).ConfigureAwait(false);
+                if (count <= 0)
+                    break;
+                destination.Advance(count);
+            }
+
+            return totalBytes;
+        }
+
+        /// <summary>
+        /// Synchronously reads the bytes from the current stream and writes them to buffer
+        /// writer, using a specified cancellation token.
+        /// </summary>
+        /// <param name="source">The source stream.</param>
+        /// <param name="destination">The writer to which the contents of the current stream will be copied.</param>
+        /// <param name="bufferSize">The size, in bytes, of the buffer.</param>
+        /// <param name="token">The token to monitor for cancellation requests.</param>
+        /// <returns>The number of copied bytes.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="destination"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="bufferSize"/> is negative or zero.</exception>
+        /// <exception cref="NotSupportedException"><paramref name="source"/> doesn't support reading.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static long CopyTo(this Stream source, IByteBufferWriter destination, int bufferSize = 1024, CancellationToken token = default)
+        {
+            if (destination is null)
+                throw new ArgumentNullException(nameof(destination));
+            if (bufferSize <= 0)
+                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+
+            var totalBytes = 0L;
+            while (!token.IsCancellationRequested)
+            {
+                var buffer = destination.GetSpan(bufferSize);
+                var count = source.Read(buffer);
+                if (count <= 0)
+                    break;
+                destination.Advance(count);
+            }
+            token.ThrowIfCancellationRequested();
+
+            return totalBytes;
         }
     }
 }
