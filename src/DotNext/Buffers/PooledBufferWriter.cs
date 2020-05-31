@@ -22,7 +22,7 @@ namespace DotNext.Buffers
             if (initialCapacity <= 0)
                 throw new ArgumentOutOfRangeException(nameof(initialCapacity));
             this.allocator = allocator;
-            buffer = allocator(initialCapacity);
+            buffer = allocator.Invoke(initialCapacity, false);
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace DotNext.Buffers
             get
             {
                 ThrowIfDisposed();
-                return buffer.RawMemory.Length;
+                return buffer.Memory.Length;
             }
         }
 
@@ -56,7 +56,7 @@ namespace DotNext.Buffers
             get
             {
                 ThrowIfDisposed();
-                return buffer.RawMemory.Slice(0, position);
+                return buffer.Memory.Slice(0, position);
             }
         }
 
@@ -88,7 +88,7 @@ namespace DotNext.Buffers
         /// <inheritdoc/>
         private protected override void Resize(int newSize)
         {
-            var newBuffer = allocator(newSize);
+            var newBuffer = allocator.Invoke(newSize, false);
             buffer.Memory.CopyTo(newBuffer.Memory);
             buffer.Dispose();
             buffer = newBuffer;

@@ -1,1 +1,3 @@
 BufferTooSmall=The buffer is too small for buffered stream operations
+StreamNotWritable=Stream is not writable
+DirectoryNotFound=Directory {0} doesn't exist

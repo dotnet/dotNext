@@ -43,12 +43,15 @@ Documentation for older versions:
 * [1.x](https://sakno.github.io/dotNext/versions/1.x/index.html)
 
 # What's new
-Release Date: 05-20-2020
+Release Date: 06-01-2020
 
-<a href="https://www.nuget.org/packages/dotnext/2.4.2">DotNext 2.4.2</a>
-* Reduced memory allocation caused by continuations in `Future` class
-* Improved performance of some methods in `MemoryRental<T>` and `DelegateHelpers` classes
-* Reduced amount of memory re-allocations in `PooledBufferWriter<T>` and `PooledArrayBufferWriter<T>` classes
+<a href="https://www.nuget.org/packages/dotnext/2.5.0">DotNext 2.5.0</a>
+* Improved performance of `PooledBufferWriter`
+* `MemoryAllocator<T>` now allows to allocate at least requested number of elements
+
+<a href="https://www.nuget.org/packages/dotnext.io/2.5.0">DotNext.IO 2.5.0</a>
+* Ability to represent stream as [IBufferWriter&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1)
+* `FileBufferingWriter` class is one more growable buffer backed by file in case of very large buffer size
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 

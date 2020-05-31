@@ -46,19 +46,19 @@ namespace DotNext.Runtime.CompilerServices
             if (!(rest is null))
             {
                 instance = Expression.Field(instance, "Rest");
-                Build(instance, output.Slice(8));
+                rest.Build(instance, output.Slice(7));
             }
         }
 
         /// <summary>
         /// Constructs expression tree based on value tuple type.
         /// </summary>
-        /// <typeparam name="TException">Type of expression tree.</typeparam>
+        /// <typeparam name="TExpression">Type of expression tree.</typeparam>
         /// <param name="expressionFactory">A function accepting value tuple type and returning expression tree.</param>
         /// <param name="expression">Constructed expression.</param>
         /// <returns>Sorted array of value tuple type components.</returns>
-        public MemberExpression[] Build<TException>(Func<Type, TException> expressionFactory, out TException expression)
-            where TException : Expression
+        public MemberExpression[] Build<TExpression>(Func<Type, TExpression> expressionFactory, out TExpression expression)
+            where TExpression : Expression
         {
             expression = expressionFactory(Build());
             var fieldAccessExpression = new MemberExpression[Count];
