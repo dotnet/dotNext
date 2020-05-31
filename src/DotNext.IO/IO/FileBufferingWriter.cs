@@ -39,7 +39,7 @@ namespace DotNext.IO
             }
 
             public override Span<byte> GetSpan()
-                => new Span<byte>(ptr + accessor.PointerOffset, checked((int)accessor.Capacity));
+                => new Span<byte>(ptr + accessor.PointerOffset, (int)accessor.Capacity);
 
             public override MemoryHandle Pin(int elementIndex)
             {
@@ -117,8 +117,8 @@ namespace DotNext.IO
             this.tempDir = tempDir;
             this.memoryThreshold = memoryThreshold;
 
-            const FileOptions withAsyncIO = FileOptions.Asynchronous | FileOptions.DeleteOnClose | FileOptions.SequentialScan | FileOptions.WriteThrough;
-            const FileOptions withoutAsyncIO = FileOptions.DeleteOnClose | FileOptions.SequentialScan | FileOptions.WriteThrough;
+            const FileOptions withAsyncIO = FileOptions.Asynchronous | FileOptions.DeleteOnClose | FileOptions.SequentialScan;
+            const FileOptions withoutAsyncIO = FileOptions.DeleteOnClose | FileOptions.SequentialScan;
             options = asyncIO ? withAsyncIO : withoutAsyncIO;
         }
 
@@ -142,7 +142,19 @@ namespace DotNext.IO
         }
 
         /// <inheritdoc/>
-        public override long Length => position + fileBackend?.Length ?? 0L;
+        public override long Length => position + (fileBackend?.Length ?? 0L);
+
+        /// <summary>
+        /// Removes all written data.
+        /// </summary>
+        public void Clear()
+        {
+            buffer.Dispose();
+            buffer = default;
+            fileBackend?.Dispose();
+            fileBackend = null;
+            position = 0;
+        }
 
         private MemoryEvaluationResult PrepareMemory(int size, out Memory<byte> output)
         {
@@ -208,6 +220,7 @@ namespace DotNext.IO
                     break;
                 case MemoryEvaluationResult.PersistAll:
                     await PersistBufferAsync(token).ConfigureAwait(false);
+                    EnsureBackingStore();
                     Debug.Assert(fileBackend != null);
                     await fileBackend.WriteAsync(buffer, token).ConfigureAwait(false);
                     break;
@@ -231,6 +244,7 @@ namespace DotNext.IO
                     break;
                 case MemoryEvaluationResult.PersistAll:
                     PersistBuffer();
+                    EnsureBackingStore();
                     Debug.Assert(fileBackend != null);
                     fileBackend.Write(buffer);
                     break;
@@ -407,6 +421,7 @@ namespace DotNext.IO
         /// </summary>
         /// <param name="range">The range of buffered content to return.</param>
         /// <returns>The memory manager providing access to buffered content.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="range"/> is invalid.</exception>
         public MemoryManager<byte> Build(Range range)
         {
             if (fileBackend is null)
@@ -415,6 +430,10 @@ namespace DotNext.IO
             PersistBuffer();
             fileBackend.Flush();
             var (offset, length) = GetOffsetAndLength(range, fileBackend.Length);
+            if (offset < 0L || length < 0L)
+                throw new ArgumentOutOfRangeException(nameof(range));
+            if (length == 0L && offset == 0L)
+                return new MemoryManager(default);
             return new MemoryMappedFileManager(fileBackend, offset, length);
         }
 
@@ -445,6 +464,7 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The memory manager providing access to buffered content.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="range"/> is invalid.</exception>
         public async ValueTask<MemoryManager<byte>> BuildAsync(Range range, CancellationToken token = default)
         {
             if (fileBackend is null)
@@ -453,6 +473,10 @@ namespace DotNext.IO
             await PersistBufferAsync(token).ConfigureAwait(false);
             await fileBackend.FlushAsync(token).ConfigureAwait(false);
             var (offset, length) = GetOffsetAndLength(range, fileBackend.Length);
+            if (offset < 0L || length < 0L)
+                throw new ArgumentOutOfRangeException(nameof(range));
+            if (length == 0L && offset == 0L)
+                return new MemoryManager(default);
             return new MemoryMappedFileManager(fileBackend, offset, length);
         }
 
