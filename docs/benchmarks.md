@@ -6,8 +6,8 @@ The configuration of all benchmarks:
 
 | Parameter | Configuration |
 | ---- | ---- |
-| Host | .NET Core 3.1.3 (CoreCLR 4.700.20.11803, CoreFX 4.700.20.12001), X64 RyuJIT |
-| Job | .NET Core 3.1.3 (CoreCLR 4.700.20.11803, CoreFX 4.700.20.12001), X64 RyuJIT |
+| Host | .NET Core 3.1.4 (CoreCLR 4.700.20.20201, CoreFX 4.700.20.21406), X64 RyuJIT |
+| Job | .NET Core 3.1.4 (CoreCLR 4.700.20.20201, CoreFX 4.700.20.21406), X64 RyuJIT |
 | LaunchCount | 1 |
 | RunStrategy | Throughput |
 | OS | Ubuntu 18.04.4 |
@@ -173,3 +173,17 @@ Interpretation of benchmark results:
 * _Proxy_ mode of Value Delegate adds a small overhead in comparison with regular delegate
 * If the type of the parameter is less than or equal to the size of CPU register then Value Delegate offers the best performance
 * If the type of the parameter is greater than the size of CPU register then Value Delegate is slower than regular delegate
+
+# File-buffering Writer
+[This benchmark](https://github.com/sakno/dotNext/blob/master/src/DotNext.Benchmarks/IO/FileBufferingWriterBenchmark.cs) compares performance of [FileBufferingWriteStream](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.webutilities.filebufferingwritestream) from ASP.NET Core and [FileBufferingWriter](./api/DotNext.IO.FileBufferingWriter.yml) from .NEXT library.
+
+Both classes switching from in-memory buffer to file-based buffer during benchmark execution. Note that benchmark result highly depends on disk I/O performance. The following results were obtained using NVMe SSD.
+
+| Method | Mean | Error | StdDev |
+| ---- | ---- | ---- | ---- |
+| `FileBufferingWriter` in synchronous mode | 892.4 us | 7.93 us | 7.03 us |
+| `FileBufferingWriteStream` in synchronous mode | 27,833.0 us | 769.15 us | 2,231.44 us |
+| `FileBufferingWriter` in asynchronous mode | 15,770.6 us | 1,954.47 us | 5,762.80 us |
+| `FileBufferingWriteStream` in asynchronous mode | 16,830.6 us | 1,044.00 us | 3,078.27 us |
+
+`FileBufferingWriter` is a winner in synchronous scenario because it has native support for synchronous mode in contrast to `FileBufferingWriteStream`.
