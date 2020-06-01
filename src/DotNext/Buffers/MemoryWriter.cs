@@ -82,6 +82,7 @@ namespace DotNext.Buffers
         /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
         public void Advance(int count)
         {
+            ThrowIfDisposed();
             if (count < 0)
                 throw new ArgumentOutOfRangeException(nameof(count));
             if (position > Capacity - count)

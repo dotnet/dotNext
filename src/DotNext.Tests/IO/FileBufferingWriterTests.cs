@@ -327,5 +327,39 @@ namespace DotNext.IO
             source.Position = 0L;
             Equal(dict, formatter.Deserialize(source));
         }
+
+        [Theory]
+        [InlineData(100)]
+        [InlineData(1000)]
+        public static void BufferedReadWrite(int threshold)
+        {
+            using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: false);
+            var bytes = new byte[500];
+            for (byte i = 0; i < byte.MaxValue; i++)
+                bytes[i] = i;
+
+            IBufferWriter<byte> buffer = writer;
+            buffer.Write(new ReadOnlySpan<byte>(bytes, 0, byte.MaxValue));
+            buffer.Write(bytes.AsSpan(byte.MaxValue));
+            Equal(bytes.Length, writer.Length);
+            using var manager = writer.GetWrittenContent();
+            Equal(bytes, manager.Memory.ToArray());
+            if (writer.TryGetWrittenContent(out var content))
+            {
+                Equal(bytes, content.ToArray());
+            }
+        }
+
+        [Fact]
+        public static void NotEnoughMemory()
+        {
+            using var writer = new FileBufferingWriter(memoryThreshold: 10, asyncIO: false);
+            var bytes = new byte[500];
+            for (byte i = 0; i < byte.MaxValue; i++)
+                bytes[i] = i;
+
+            IBufferWriter<byte> buffer = writer;
+            Throws<OutOfMemoryException>(() => buffer.Write(bytes));
+        }
     }
 }
