@@ -545,7 +545,6 @@ writer, using a specified cancellation token.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T Read&lt;T&gt;(this Stream stream)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -629,7 +628,6 @@ writer, using a specified cancellation token.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static ValueTask&lt;T&gt; ReadAsync&lt;T&gt;(this Stream stream, Memory&lt;byte&gt; buffer, CancellationToken token = default(CancellationToken))
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -730,7 +728,6 @@ writer, using a specified cancellation token.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static ValueTask&lt;T&gt; ReadAsync&lt;T&gt;(this Stream stream, CancellationToken token = default(CancellationToken))
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1861,7 +1858,6 @@ but should be enough to decode at least one character of the specified encoding.
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Write&lt;T&gt;(this Stream stream, in T value)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1919,7 +1915,6 @@ but should be enough to decode at least one character of the specified encoding.
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static ValueTask WriteAsync&lt;T&gt;(this Stream stream, T value, Memory&lt;byte&gt; buffer, CancellationToken token = default(CancellationToken))
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2005,7 +2000,6 @@ but should be enough to decode at least one character of the specified encoding.
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static ValueTask WriteAsync&lt;T&gt;(this Stream stream, T value, CancellationToken token = default(CancellationToken))
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

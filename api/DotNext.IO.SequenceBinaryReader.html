@@ -174,7 +174,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public T Read&lt;T&gt;()
-
     where T : struct</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
@@ -396,7 +395,8 @@
   </span>
   <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#CopyToAsync*"></a>
   <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_System_IO_Pipelines_PipeWriter_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#CopyToAsync(System.IO.Pipelines.PipeWriter,System.Threading.CancellationToken)">IAsyncBinaryReader.CopyToAsync(PipeWriter, CancellationToken)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Copies the content to the specified pipe writer.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -415,12 +415,14 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.pipelines.pipewriter">PipeWriter</a></td>
         <td><span class="parametername">output</span></td>
-        <td></td>
+        <td><p>The writer.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td></td>
+        <td><p>The token that can be used to cancel operation.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -435,7 +437,24 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
-        <td></td>
+        <td><p>The task representing asynchronous execution of this method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -448,7 +467,8 @@
   </span>
   <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#CopyToAsync*"></a>
   <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_System_IO_Stream_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#CopyToAsync(System.IO.Stream,System.Threading.CancellationToken)">IAsyncBinaryReader.CopyToAsync(Stream, CancellationToken)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Copies the content to the specified stream.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -467,12 +487,14 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
         <td><span class="parametername">output</span></td>
-        <td></td>
+        <td><p>The output stream receiving object content.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td></td>
+        <td><p>The token that can be used to cancel asynchronous operation.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -491,6 +513,22 @@
       </tr>
     </tbody>
   </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadAsync_System_Memory_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceBinaryReader.DotNext%23IO%23IAsyncBinaryReader%23ReadAsync(System.Memory%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
@@ -500,7 +538,8 @@
   </span>
   <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadAsync_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadAsync*"></a>
   <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadAsync_System_Memory_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadAsync(System.Memory{System.Byte},System.Threading.CancellationToken)">IAsyncBinaryReader.ReadAsync(Memory&lt;Byte&gt;, CancellationToken)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Reads the block of bytes.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -519,12 +558,14 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.memory-1">Memory</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
         <td><span class="parametername">output</span></td>
-        <td></td>
+        <td><p>The block of memory to fill.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -539,7 +580,29 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
-        <td></td>
+        <td><p>The task representing state of asynchronous execution.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -552,12 +615,12 @@
   </span>
   <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadAsync_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadAsync*"></a>
   <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadAsync__1_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadAsync``1(System.Threading.CancellationToken)">IAsyncBinaryReader.ReadAsync&lt;T&gt;(CancellationToken)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Decodes the value of blittable type.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">ValueTask&lt;T&gt; IAsyncBinaryReader.ReadAsync&lt;T&gt;(CancellationToken token)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -573,7 +636,8 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -588,7 +652,8 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;T&gt;</td>
-        <td></td>
+        <td><p>The decoded value.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -603,7 +668,29 @@
     <tbody>
       <tr>
         <td><span class="parametername">T</span></td>
-        <td></td>
+        <td><p>The type of the result.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -616,7 +703,8 @@
   </span>
   <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadStringAsync_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadStringAsync*"></a>
   <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadStringAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadStringAsync(DotNext.IO.StringLengthEncoding,DotNext.Text.DecodingContext,System.Threading.CancellationToken)">IAsyncBinaryReader.ReadStringAsync(StringLengthEncoding, DecodingContext, CancellationToken)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Decodes the string.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -635,17 +723,20 @@
       <tr>
         <td><a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a></td>
         <td><span class="parametername">lengthFormat</span></td>
-        <td></td>
+        <td><p>The format of the string length encoded in the stream.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
         <td><span class="parametername">context</span></td>
-        <td></td>
+        <td><p>The decoding context containing string characters encoding.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -660,7 +751,34 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a>&gt;</td>
-        <td></td>
+        <td><p>The decoded string.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">lengthFormat</code> is invalid.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -673,7 +791,8 @@
   </span>
   <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadStringAsync_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadStringAsync*"></a>
   <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadStringAsync_System_Int32_DotNext_Text_DecodingContext_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadStringAsync(System.Int32,DotNext.Text.DecodingContext,System.Threading.CancellationToken)">IAsyncBinaryReader.ReadStringAsync(Int32, DecodingContext, CancellationToken)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Decodes the string.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -692,17 +811,20 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
         <td><span class="parametername">length</span></td>
-        <td></td>
+        <td><p>The length of the encoded string, in bytes.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
         <td><span class="parametername">context</span></td>
-        <td></td>
+        <td><p>The decoding context containing string characters encoding.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -717,7 +839,29 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a>&gt;</td>
-        <td></td>
+        <td><p>The decoded string.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
+</td>
       </tr>
     </tbody>
   </table>

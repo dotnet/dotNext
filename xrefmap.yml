@@ -6621,15 +6621,15 @@ references:
   commentId: T:DotNext.IO.FileBufferingWriter
   fullName: DotNext.IO.FileBufferingWriter
   nameWithType: FileBufferingWriter
-- uid: DotNext.IO.FileBufferingWriter.#ctor(System.Nullable{MemoryAllocator{System.Byte}},System.Int32,System.String,System.Boolean)
-  name: FileBufferingWriter(Nullable<MemoryAllocator<Byte>>, Int32, String, Boolean)
-  href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter__ctor_System_Nullable_MemoryAllocator_System_Byte___System_Int32_System_String_System_Boolean_
-  commentId: M:DotNext.IO.FileBufferingWriter.#ctor(System.Nullable{MemoryAllocator{System.Byte}},System.Int32,System.String,System.Boolean)
-  name.vb: FileBufferingWriter(Nullable(Of MemoryAllocator(Of Byte)), Int32, String, Boolean)
-  fullName: DotNext.IO.FileBufferingWriter.FileBufferingWriter(System.Nullable<MemoryAllocator<System.Byte>>, System.Int32, System.String, System.Boolean)
-  fullName.vb: DotNext.IO.FileBufferingWriter.FileBufferingWriter(System.Nullable(Of MemoryAllocator(Of System.Byte)), System.Int32, System.String, System.Boolean)
-  nameWithType: FileBufferingWriter.FileBufferingWriter(Nullable<MemoryAllocator<Byte>>, Int32, String, Boolean)
-  nameWithType.vb: FileBufferingWriter.FileBufferingWriter(Nullable(Of MemoryAllocator(Of Byte)), Int32, String, Boolean)
+- uid: DotNext.IO.FileBufferingWriter.#ctor(System.Nullable{MemoryAllocator{System.Byte}},System.Int32,System.Int32,System.String,System.Boolean)
+  name: FileBufferingWriter(Nullable<MemoryAllocator<Byte>>, Int32, Int32, String, Boolean)
+  href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter__ctor_System_Nullable_MemoryAllocator_System_Byte___System_Int32_System_Int32_System_String_System_Boolean_
+  commentId: M:DotNext.IO.FileBufferingWriter.#ctor(System.Nullable{MemoryAllocator{System.Byte}},System.Int32,System.Int32,System.String,System.Boolean)
+  name.vb: FileBufferingWriter(Nullable(Of MemoryAllocator(Of Byte)), Int32, Int32, String, Boolean)
+  fullName: DotNext.IO.FileBufferingWriter.FileBufferingWriter(System.Nullable<MemoryAllocator<System.Byte>>, System.Int32, System.Int32, System.String, System.Boolean)
+  fullName.vb: DotNext.IO.FileBufferingWriter.FileBufferingWriter(System.Nullable(Of MemoryAllocator(Of System.Byte)), System.Int32, System.Int32, System.String, System.Boolean)
+  nameWithType: FileBufferingWriter.FileBufferingWriter(Nullable<MemoryAllocator<Byte>>, Int32, Int32, String, Boolean)
+  nameWithType.vb: FileBufferingWriter.FileBufferingWriter(Nullable(Of MemoryAllocator(Of Byte)), Int32, Int32, String, Boolean)
 - uid: DotNext.IO.FileBufferingWriter.#ctor*
   name: FileBufferingWriter
   href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter__ctor_
@@ -6637,6 +6637,19 @@ references:
   isSpec: "True"
   fullName: DotNext.IO.FileBufferingWriter.FileBufferingWriter
   nameWithType: FileBufferingWriter.FileBufferingWriter
+- uid: DotNext.IO.FileBufferingWriter.Advance(System.Int32)
+  name: Advance(Int32)
+  href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_Advance_System_Int32_
+  commentId: M:DotNext.IO.FileBufferingWriter.Advance(System.Int32)
+  fullName: DotNext.IO.FileBufferingWriter.Advance(System.Int32)
+  nameWithType: FileBufferingWriter.Advance(Int32)
+- uid: DotNext.IO.FileBufferingWriter.Advance*
+  name: Advance
+  href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_Advance_
+  commentId: Overload:DotNext.IO.FileBufferingWriter.Advance
+  isSpec: "True"
+  fullName: DotNext.IO.FileBufferingWriter.Advance
+  nameWithType: FileBufferingWriter.Advance
 - uid: DotNext.IO.FileBufferingWriter.BeginRead(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)
   name: BeginRead(Byte[], Int32, Int32, AsyncCallback, Object)
   href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_BeginRead_System_Byte___System_Int32_System_Int32_System_AsyncCallback_System_Object_
@@ -6827,6 +6840,32 @@ references:
   isSpec: "True"
   fullName: DotNext.IO.FileBufferingWriter.FlushAsync
   nameWithType: FileBufferingWriter.FlushAsync
+- uid: DotNext.IO.FileBufferingWriter.GetMemory(System.Int32)
+  name: GetMemory(Int32)
+  href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_GetMemory_System_Int32_
+  commentId: M:DotNext.IO.FileBufferingWriter.GetMemory(System.Int32)
+  fullName: DotNext.IO.FileBufferingWriter.GetMemory(System.Int32)
+  nameWithType: FileBufferingWriter.GetMemory(Int32)
+- uid: DotNext.IO.FileBufferingWriter.GetMemory*
+  name: GetMemory
+  href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_GetMemory_
+  commentId: Overload:DotNext.IO.FileBufferingWriter.GetMemory
+  isSpec: "True"
+  fullName: DotNext.IO.FileBufferingWriter.GetMemory
+  nameWithType: FileBufferingWriter.GetMemory
+- uid: DotNext.IO.FileBufferingWriter.GetSpan(System.Int32)
+  name: GetSpan(Int32)
+  href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_GetSpan_System_Int32_
+  commentId: M:DotNext.IO.FileBufferingWriter.GetSpan(System.Int32)
+  fullName: DotNext.IO.FileBufferingWriter.GetSpan(System.Int32)
+  nameWithType: FileBufferingWriter.GetSpan(Int32)
+- uid: DotNext.IO.FileBufferingWriter.GetSpan*
+  name: GetSpan
+  href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_GetSpan_
+  commentId: Overload:DotNext.IO.FileBufferingWriter.GetSpan
+  isSpec: "True"
+  fullName: DotNext.IO.FileBufferingWriter.GetSpan
+  nameWithType: FileBufferingWriter.GetSpan
 - uid: DotNext.IO.FileBufferingWriter.GetWrittenContent
   name: GetWrittenContent()
   href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_GetWrittenContent
@@ -34509,6 +34548,19 @@ references:
   isSpec: "True"
   fullName: DotNext.Runtime.Intrinsics.Equals
   nameWithType: Intrinsics.Equals
+- uid: DotNext.Runtime.Intrinsics.Error(System.Object)
+  name: Error(Object)
+  href: api/DotNext.Runtime.Intrinsics.html#DotNext_Runtime_Intrinsics_Error_System_Object_
+  commentId: M:DotNext.Runtime.Intrinsics.Error(System.Object)
+  fullName: DotNext.Runtime.Intrinsics.Error(System.Object)
+  nameWithType: Intrinsics.Error(Object)
+- uid: DotNext.Runtime.Intrinsics.Error*
+  name: Error
+  href: api/DotNext.Runtime.Intrinsics.html#DotNext_Runtime_Intrinsics_Error_
+  commentId: Overload:DotNext.Runtime.Intrinsics.Error
+  isSpec: "True"
+  fullName: DotNext.Runtime.Intrinsics.Error
+  nameWithType: Intrinsics.Error
 - uid: DotNext.Runtime.Intrinsics.GetHashCode32(System.Void*,System.Int64,System.Boolean)
   name: GetHashCode32(Void*, Int64, Boolean)
   href: api/DotNext.Runtime.Intrinsics.html#DotNext_Runtime_Intrinsics_GetHashCode32_System_Void__System_Int64_System_Boolean_
@@ -34717,6 +34769,19 @@ references:
   fullName.vb: DotNext.Runtime.Intrinsics.Swap(Of T)(ByRef T, ByRef T)
   nameWithType: Intrinsics.Swap<T>(ref T, ref T)
   nameWithType.vb: Intrinsics.Swap(Of T)(ByRef T, ByRef T)
+- uid: DotNext.Runtime.Intrinsics.Throw(System.Object)
+  name: Throw(Object)
+  href: api/DotNext.Runtime.Intrinsics.html#DotNext_Runtime_Intrinsics_Throw_System_Object_
+  commentId: M:DotNext.Runtime.Intrinsics.Throw(System.Object)
+  fullName: DotNext.Runtime.Intrinsics.Throw(System.Object)
+  nameWithType: Intrinsics.Throw(Object)
+- uid: DotNext.Runtime.Intrinsics.Throw*
+  name: Throw
+  href: api/DotNext.Runtime.Intrinsics.html#DotNext_Runtime_Intrinsics_Throw_
+  commentId: Overload:DotNext.Runtime.Intrinsics.Throw
+  isSpec: "True"
+  fullName: DotNext.Runtime.Intrinsics.Throw
+  nameWithType: Intrinsics.Throw
 - uid: DotNext.Runtime.Intrinsics.ThrowIfNull*
   name: ThrowIfNull
   href: api/DotNext.Runtime.Intrinsics.html#DotNext_Runtime_Intrinsics_ThrowIfNull_

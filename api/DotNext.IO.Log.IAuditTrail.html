@@ -445,7 +445,6 @@ It can save the performance of the first modification performed to this log.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">ValueTask&lt;TResult&gt; ReadAsync&lt;TReader, TResult&gt;(TReader reader, long startIndex, long endIndex, CancellationToken token = default(CancellationToken))
-
     where TReader : ILogEntryConsumer&lt;ILogEntry, TResult&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -566,7 +565,6 @@ with the audit trail segment with entries.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">ValueTask&lt;TResult&gt; ReadAsync&lt;TReader, TResult&gt;(TReader reader, long startIndex, CancellationToken token = default(CancellationToken))
-
     where TReader : ILogEntryConsumer&lt;ILogEntry, TResult&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
