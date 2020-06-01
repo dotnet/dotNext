@@ -1,7 +1,9 @@
 using System;
 using System.Buffers;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -285,6 +287,45 @@ namespace DotNext.IO
             using var writer = new FileBufferingWriter();
             True(writer.TryGetWrittenContent(out var content));
             True(content.IsEmpty);
+        }
+
+        [Theory]
+        [InlineData(100)]
+        [InlineData(1000)]
+        [InlineData(10000)]
+        public static void StressTest(int threshold)
+        {
+            var dict = new Dictionary<string, string>
+            {
+                {"Key1", "Value1"},
+                {"Key2", "Value2"}
+            };
+            var formatter = new BinaryFormatter();
+            using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: false);
+            formatter.Serialize(writer, dict);
+            using var manager = writer.GetWrittenContent();
+            using var source = StreamSource.AsStream(manager.Memory);
+            Equal(dict, formatter.Deserialize(source));
+        }
+
+        [Theory]
+        [InlineData(100)]
+        [InlineData(1000)]
+        [InlineData(10000)]
+        public static void StressTest2(int threshold)
+        {
+            var dict = new Dictionary<string, string>
+            {
+                {"Key1", "Value1"},
+                {"Key2", "Value2"}
+            };
+            var formatter = new BinaryFormatter();
+            using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: false);
+            formatter.Serialize(writer, dict);
+            using var source = new MemoryStream(1024);
+            writer.CopyTo(source);
+            source.Position = 0L;
+            Equal(dict, formatter.Deserialize(source));
         }
     }
 }
