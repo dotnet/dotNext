@@ -127,24 +127,34 @@ namespace DotNext.IO
         /// </summary>
         /// <param name="allocator">The allocator of internal buffer.</param>
         /// <param name="memoryThreshold">The maximum amount of memory in bytes to allocate before switching to a file on disk.</param>
+        /// <param name="initialCapacity">Initial capacity of internal buffer. Should not be greater than <paramref name="memoryThreshold"/>.</param>
         /// <param name="tempDir">
         /// The location of the directory to write buffered contents to.
         /// When unspecified, uses the value specified by the environment variable <c>ASPNETCORE_TEMP</c> if available, otherwise
         /// uses the value returned by <see cref="Path.GetTempPath"/>.
         /// </param>
         /// <param name="asyncIO"><see langword="true"/> if you will use asynchronous methods of the instance; otherwise, <see langword="false"/>.</param>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="memoryThreshold"/> is less than or equal to zero.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="memoryThreshold"/> is less than or equal to zero; or <paramref name="initialCapacity"/> is less than zero or greater than <paramref name="memoryThreshold"/>.</exception>
         /// <exception cref="DirectoryNotFoundException"><paramref name="tempDir"/> doesn't exist.</exception>
-        public FileBufferingWriter(MemoryAllocator<byte>? allocator = null, int memoryThreshold = 32768, string? tempDir = null, bool asyncIO = true)
+        public FileBufferingWriter(MemoryAllocator<byte>? allocator = null, int memoryThreshold = 32768, int initialCapacity = 0, string? tempDir = null, bool asyncIO = true)
         {
             if (memoryThreshold <= 0)
                 throw new ArgumentOutOfRangeException(nameof(memoryThreshold));
+            if (initialCapacity < 0 || initialCapacity > memoryThreshold)
+                throw new ArgumentOutOfRangeException(nameof(initialCapacity));
             if (string.IsNullOrEmpty(tempDir))
                 tempDir = Environment.GetEnvironmentVariable("ASPNETCORE_TEMP").IfNullOrEmpty(Path.GetTempPath());
             if (!Directory.Exists(tempDir))
                 throw new DirectoryNotFoundException(ExceptionMessages.DirectoryNotFound(tempDir));
             this.allocator = allocator ?? ArrayPool<byte>.Shared.ToAllocator();
             this.tempDir = tempDir;
+            if (initialCapacity > 0)
+            {
+                buffer = this.allocator.Invoke(initialCapacity, false);
+                if (buffer.Length > memoryThreshold)
+                    memoryThreshold = buffer.Length < int.MaxValue ? buffer.Length + 1 : int.MaxValue;
+            }
+
             this.memoryThreshold = memoryThreshold;
 
             const FileOptions withAsyncIO = FileOptions.Asynchronous | FileOptions.DeleteOnClose | FileOptions.SequentialScan;

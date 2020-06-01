@@ -37,6 +37,28 @@ namespace DotNext.IO
         [InlineData(10)]
         [InlineData(100)]
         [InlineData(1000)]
+        public static void ReadWriteWithInitialCapacity(int threshold)
+        {
+            using var writer = new FileBufferingWriter(memoryThreshold: threshold, initialCapacity: 5, asyncIO: false);
+            var bytes = new byte[500];
+            for (byte i = 0; i < byte.MaxValue; i++)
+                bytes[i] = i;
+
+            writer.Write(bytes, 0, byte.MaxValue);
+            writer.Write(bytes.AsSpan(byte.MaxValue));
+            Equal(bytes.Length, writer.Length);
+            using var manager = writer.GetWrittenContent();
+            Equal(bytes, manager.Memory.ToArray());
+            if (writer.TryGetWrittenContent(out var content))
+            {
+                Equal(bytes, content.ToArray());
+            }
+        }
+
+        [Theory]
+        [InlineData(10)]
+        [InlineData(100)]
+        [InlineData(1000)]
         public static async Task ReadWriteAsync(int threshold)
         {
             using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: true);
@@ -239,6 +261,8 @@ namespace DotNext.IO
             Throws<ArgumentOutOfRangeException>(() => new FileBufferingWriter(memoryThreshold : -1));
             var tempFolder = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             Throws<DirectoryNotFoundException>(() => new FileBufferingWriter(tempDir: tempFolder));
+            Throws<ArgumentOutOfRangeException>(() => new FileBufferingWriter(memoryThreshold: 100, initialCapacity: 101));
+            Throws<ArgumentOutOfRangeException>(() => new FileBufferingWriter(initialCapacity: -1));
         }
 
         [Fact]
