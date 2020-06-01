@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using Xunit;
 
 namespace DotNext.Runtime
@@ -296,6 +297,17 @@ namespace DotNext.Runtime
             obj = Array.Empty<string>();
             True(Intrinsics.IsExactTypeOf<string[]>(obj));
             False(Intrinsics.IsExactTypeOf<object[]>(obj));
+        }
+
+        [Fact]
+        public static void ThrowObjectAsException()
+        {
+            Throws<InvalidOperationException>(() => Intrinsics.Throw(new InvalidOperationException()));
+            var e = Throws<RuntimeWrappedException>(() => Intrinsics.Throw("String"));
+            Equal("String", e.WrappedException);
+            Throws<InvalidOperationException>(new Action(() => throw Intrinsics.Error(new InvalidOperationException())));
+            e = Throws<RuntimeWrappedException>(new Action(() => throw Intrinsics.Error("String")));
+            Equal("String", e.WrappedException);
         }
     }
 }
