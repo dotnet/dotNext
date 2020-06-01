@@ -15,12 +15,13 @@ namespace DotNext.Buffers
     {
         private readonly object? owner;
         private readonly T[]? array;  // not null only if owner is ArrayPool
+        private readonly int length;
 
         internal MemoryOwner(ArrayPool<T>? pool, T[] array, int length)
         {
             this.array = array;
             owner = pool;
-            Length = length;
+            this.length = length;
         }
 
         /// <summary>
@@ -32,7 +33,7 @@ namespace DotNext.Buffers
         {
             array = pool.Rent(length);
             owner = pool;
-            Length = length;
+            this.length = length;
         }
 
         /// <summary>
@@ -45,7 +46,7 @@ namespace DotNext.Buffers
             array = null;
             IMemoryOwner<T> owner;
             this.owner = owner = pool.Rent(length);
-            Length = length < 0 ? owner.Memory.Length : length;
+            this.length = length < 0 ? owner.Memory.Length : length;
         }
 
         /// <summary>
@@ -59,7 +60,7 @@ namespace DotNext.Buffers
             if (length > array.Length || length < 0)
                 throw new ArgumentOutOfRangeException(nameof(length));
             this.array = array;
-            Length = length;
+            this.length = length;
             owner = null;
         }
 
@@ -75,31 +76,47 @@ namespace DotNext.Buffers
         /// <summary>
         /// Gets length of the rented memory, in bytes.
         /// </summary>
-        public int Length { get; }
+        public int Length => length;
+
+        private int RealLength
+        {
+            get
+            {
+                if (array != null)
+                    return array.Length;
+                if (owner is IMemoryOwner<T> memory)
+                    return memory.Memory.Length;
+                return length;
+            }
+        }
 
         /// <summary>
         /// Determines whether this memory is empty.
         /// </summary>
         public bool IsEmpty => Length == 0;
 
-        internal Memory<T> RawMemory
-        {
-            get
-            {
-                if (owner is IMemoryOwner<T> memory)
-                    return memory.Memory;
-                else if (array != null)
-                    return new Memory<T>(array);
-                else
-                    return default;
-            }
-        }
+        internal static void Expand(ref MemoryOwner<T> owner)
+            => Unsafe.AsRef(in owner.length) = owner.RealLength;
 
         /// <summary>
         /// Gets the memory belonging to this owner.
         /// </summary>
         /// <value>The memory belonging to this owner.</value>
-        public Memory<T> Memory => RawMemory.Slice(0, Length);
+        public Memory<T> Memory
+        {
+            get
+            {
+                Memory<T> result;
+                if (array != null)
+                    result = new Memory<T>(array);
+                else if (owner is IMemoryOwner<T> memory)
+                    result = memory.Memory;
+                else
+                    result = default;
+
+                return result.Slice(0, length);
+            }
+        }
 
         /// <inheritdoc/>
         Memory<T> IConvertible<Memory<T>>.Convert() => Memory;
@@ -113,12 +130,12 @@ namespace DotNext.Buffers
         {
             get
             {
-                if (index < 0 || index >= Length)
+                if (index < 0 || index >= length)
                     goto invalid_index;
-                if (owner is IMemoryOwner<T> memory)
-                    return ref Unsafe.Add(ref MemoryMarshal.GetReference(memory.Memory.Span), index);
                 if (array != null)
                     return ref array[index];
+                if (owner is IMemoryOwner<T> memory)
+                    return ref Unsafe.Add(ref MemoryMarshal.GetReference(memory.Memory.Span), index);
                 invalid_index:
                 throw new ArgumentOutOfRangeException(nameof(index));
             }

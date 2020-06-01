@@ -1,6 +1,15 @@
 Release Notes
 ====
 
+# 06-01-2020
+<a href="https://www.nuget.org/packages/dotnext/2.5.0">DotNext 2.5.0</a>
+* Improved performance of `PooledBufferWriter`
+* `MemoryAllocator<T>` now allows to allocate at least requested number of elements
+
+<a href="https://www.nuget.org/packages/dotnext.io/2.5.0">DotNext.IO 2.5.0</a>
+* Ability to represent stream as [IBufferWriter&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1)
+* `FileBufferingWriter` class is one more growable buffer backed by file in case of very large buffer size
+
 # 05-29-2020
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.4.1">DotNext.Metaprogramming 2.4.1</a>
 * Fixed dynamic construction of tuples using `ValueTupleBuilder` class (PR [#8](https://github.com/sakno/dotNext/pull/8))

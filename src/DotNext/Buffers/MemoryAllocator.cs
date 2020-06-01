@@ -39,5 +39,24 @@ namespace DotNext.Buffers
         /// <returns>The memory allocator.</returns>
         public static MemoryAllocator<T> ToAllocator<T>(this MemoryPool<T> pool)
             => pool.Allocate;
+
+        /// <summary>
+        /// Allocates memory.
+        /// </summary>
+        /// <param name="allocator">The memory allocator.</param>
+        /// <param name="length">The number of items in the rented memory.</param>
+        /// <param name="exactSize">
+        /// <see langword="true"/> to ask allocator to allocate exactly <paramref name="length"/>;
+        /// <see langword="false"/> to allocate at least <paramref name="length"/>.
+        /// </param>
+        /// <typeparam name="T">The type of the items in the memory pool.</typeparam>
+        /// <returns>The allocated memory.</returns>
+        public static MemoryOwner<T> Invoke<T>(this MemoryAllocator<T> allocator, int length, bool exactSize)
+        {
+            var result = allocator(length);
+            if (!exactSize)
+                MemoryOwner<T>.Expand(ref result);
+            return result;
+        }
     }
 }

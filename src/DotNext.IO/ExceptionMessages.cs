@@ -12,5 +12,12 @@ namespace DotNext
         private static readonly ResourceManager Resources = new ResourceManager("DotNext.ExceptionMessages", Assembly.GetExecutingAssembly());
 
         internal static string BufferTooSmall => Resources.GetString("BufferTooSmall");
+
+        internal static string StreamNotWritable => Resources.GetString("StreamNotWritable");
+
+        internal static string DirectoryNotFound(string path)
+            => string.Format(Resources.GetString("DirectoryNotFound"), path);
+
+        internal static string WriterInReadMode => Resources.GetString("WriterInReadMode");
     }
 }

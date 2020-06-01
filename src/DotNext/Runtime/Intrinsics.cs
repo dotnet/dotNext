@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Reflection;
@@ -230,7 +231,7 @@ namespace DotNext.Runtime
             Brtrue(notNull);
             Pop();
             Newobj(Constructor(Type<InvalidCastException>()));
-            Throw();
+            Emit.Throw();
             MarkLabel(notNull);
             Unbox_Any<T>();
             return Return<T>();
@@ -849,5 +850,42 @@ namespace DotNext.Runtime
         /// <returns><see langword="true"/> if <paramref name="obj"/> is not <see langword="null"/> and of type <typeparamref name="T"/>; otherwise, <see langword="false"/>.</returns>
         public static bool IsExactTypeOf<T>(object? obj)
             => obj != null && obj.GetType().TypeHandle.Equals(TypeOf<T>());
+
+        /// <summary>
+        /// Throws arbitrary object as exception.
+        /// </summary>
+        /// <remarks>
+        /// This method never returns successfully.
+        /// </remarks>
+        /// <param name="obj">The object to be thrown.</param>
+        /// <exception cref="RuntimeWrappedException">The exception containing wrapped <paramref name="obj"/>.</exception>
+        [DoesNotReturn]
+        [DebuggerHidden]
+        public static void Throw(object obj)
+        {
+            Push(obj);
+            Emit.Throw();
+            throw Unreachable();
+        }
+
+        /// <summary>
+        /// Throws arbitrary object as exception.
+        /// </summary>
+        /// <remarks>
+        /// This method never returns successfully but returned value helpful for constructing terminated statement
+        /// such as <c>throw Error("Error");</c>.
+        /// </remarks>
+        /// <param name="obj">The object to be thrown.</param>
+        /// <returns>The value is never returned from the method.</returns>
+        /// <exception cref="RuntimeWrappedException">The exception containing wrapped <paramref name="obj"/>.</exception>
+        /// <seealso cref="Throw(object)"/>
+        [DoesNotReturn]
+        [DebuggerHidden]
+        public static Exception Error(object obj)
+        {
+            Push(obj);
+            Emit.Throw();
+            throw Unreachable();
+        }
     }
 }

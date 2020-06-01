@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
@@ -7,6 +8,8 @@ using Xunit;
 
 namespace DotNext.IO
 {
+    using Buffers;
+
     [ExcludeFromCodeCoverage]
     public sealed class StreamExtensionsTests : Test
     {
@@ -333,6 +336,58 @@ namespace DotNext.IO
             }
             ms.Position = 0;
             Equal("ABC", await ms.ReadStringAsync(StringLengthEncoding.Compressed, Encoding.UTF8));
+        }
+
+        [Fact]
+        public static void BufferWriterOverStream()
+        {
+            using var ms = new MemoryStream(256);
+            var writer = ms.AsBufferWriter(ArrayPool<byte>.Shared.ToAllocator());
+            var span = writer.GetSpan(4);
+            span[0] = 1;
+            span[1] = 2;
+            span[2] = 3;
+            span[3] = 4;
+            writer.Advance(2);
+            writer.Flush();
+            Equal(new byte[] { 1, 2 }, ms.ToArray());
+            writer.Advance(2);
+            writer.FlushAsync().GetAwaiter().GetResult();
+            Equal(new byte[] { 1, 2, 3, 4 }, ms.ToArray());
+            writer.Advance(span.Length - 4);
+            Equal(span.Length, ms.Length);
+            span = writer.GetSpan(4);
+            writer.Advance(4);
+            Equal(span.Length + 4, ms.Length);
+        }
+
+        [Fact]
+        public static void BufferWriterOverStreamExceptions()
+        {
+            Throws<ArgumentNullException>(() => StreamExtensions.AsBufferWriter(null, ArrayPool<byte>.Shared.ToAllocator()));
+            Throws<ArgumentNullException>(() => Stream.Null.AsBufferWriter(null));
+            using var ms = new MemoryStream(new byte[12], false);
+            Throws<ArgumentException>(() => ms.AsBufferWriter(ArrayPool<byte>.Shared.ToAllocator()));
+        }
+
+        [Fact]
+        public static void CopyToBufferWriter()
+        {
+            var writer = new ArrayBufferWriter<byte>();
+            var bytes = new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+            using var ms = new MemoryStream(bytes, false);
+            Equal(10L, ms.CopyTo(writer, 3));
+            Equal(bytes, writer.WrittenSpan.ToArray());
+        }
+
+        [Fact]
+        public static async Task CopyToBufferWriterAsync()
+        {
+            var writer = new ArrayBufferWriter<byte>();
+            var bytes = new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+            using var ms = new MemoryStream(bytes, false);
+            Equal(10L, await ms.CopyToAsync(writer, 3));
+            Equal(bytes, writer.WrittenSpan.ToArray());
         }
     }
 }
