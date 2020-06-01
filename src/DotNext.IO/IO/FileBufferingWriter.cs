@@ -538,6 +538,29 @@ namespace DotNext.IO
         public ValueTask<MemoryManager<byte>> GetWrittenContentAsync(CancellationToken token = default)
             => GetWrittenContentAsync(Range.All, token);
 
+        /// <summary>
+        /// Attempts to get written content if it is located in memory.
+        /// </summary>
+        /// <remarks>
+        /// If this method returns <see langword="false"/> then
+        /// use <see cref="GetWrittenContent()"/>, <see cref="GetWrittenContent(Range)"/>,
+        /// <see cref="GetWrittenContentAsync(CancellationToken)"/> or <see cref="GetWrittenContentAsync(Range, CancellationToken)"/>
+        /// to obtain the content.
+        /// </remarks>
+        /// <param name="content">The written content.</param>
+        /// <returns><see langword="true"/> if whole content is in memory and available without allocation of <see cref="MemoryManager{T}"/>; otherwise, <see langword="false"/>.</returns>
+        public bool TryGetWrittenContent(out ReadOnlyMemory<byte> content)
+        {
+            if (fileBackend is null)
+            {
+                content = buffer.Memory.Slice(0, position);
+                return true;
+            }
+
+            content = default;
+            return false;
+        }
+
         /// <inheritdoc/>
         public override long Seek(long offset, SeekOrigin origin)
             => throw new NotSupportedException();
