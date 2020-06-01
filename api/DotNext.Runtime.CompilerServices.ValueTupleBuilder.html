@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class ValueTupleBuilder
    | .NEXT ">
-    <meta name="generator" content="docfx 2.53.1.0">
+    <meta name="generator" content="docfx 2.54.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -234,15 +234,15 @@ items.</p>
     <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Runtime/CompilerServices/ValueTupleBuilder.cs/#L60">View Source</a>
   </span>
   <a id="DotNext_Runtime_CompilerServices_ValueTupleBuilder_Build_" data-uid="DotNext.Runtime.CompilerServices.ValueTupleBuilder.Build*"></a>
-  <h4 id="DotNext_Runtime_CompilerServices_ValueTupleBuilder_Build__1_System_Func_System_Type___0____0__" data-uid="DotNext.Runtime.CompilerServices.ValueTupleBuilder.Build``1(System.Func{System.Type,``0},``0@)">Build&lt;TException&gt;(Func&lt;Type, TException&gt;, out TException)</h4>
+  <h4 id="DotNext_Runtime_CompilerServices_ValueTupleBuilder_Build__1_System_Func_System_Type___0____0__" data-uid="DotNext.Runtime.CompilerServices.ValueTupleBuilder.Build``1(System.Func{System.Type,``0},``0@)">Build&lt;TExpression&gt;(Func&lt;Type, TExpression&gt;, out TExpression)</h4>
   <div class="markdown level1 summary"><p>Constructs expression tree based on value tuple type.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public MemberExpression[] Build&lt;TException&gt;(Func&lt;Type, TException&gt; expressionFactory, out TException expression)
+    <pre><code class="lang-csharp hljs">public MemberExpression[] Build&lt;TExpression&gt;(Func&lt;Type, TExpression&gt; expressionFactory, out TExpression expression)
 
-    where TException : Expression</code></pre>
+    where TExpression : Expression</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -255,13 +255,13 @@ items.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.type">Type</a>, TException&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.type">Type</a>, TExpression&gt;</td>
         <td><span class="parametername">expressionFactory</span></td>
         <td><p>A function accepting value tuple type and returning expression tree.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">TException</span></td>
+        <td><span class="xref">TExpression</span></td>
         <td><span class="parametername">expression</span></td>
         <td><p>Constructed expression.</p>
 </td>
@@ -294,7 +294,7 @@ items.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">TException</span></td>
+        <td><span class="parametername">TExpression</span></td>
         <td><p>Type of expression tree.</p>
 </td>
       </tr>

@@ -8,7 +8,7 @@
     <title>Benchmarks | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Benchmarks | .NEXT ">
-    <meta name="generator" content="docfx 2.53.1.0">
+    <meta name="generator" content="docfx 2.54.0.0">
     
     <link rel="shortcut icon" href="fav.ico">
     <link rel="stylesheet" href="styles/docfx.vendor.css">
@@ -74,11 +74,11 @@
 <tbody>
 <tr>
 <td>Host</td>
-<td>.NET Core 3.1.3 (CoreCLR 4.700.20.11803, CoreFX 4.700.20.12001), X64 RyuJIT</td>
+<td>.NET Core 3.1.4 (CoreCLR 4.700.20.20201, CoreFX 4.700.20.21406), X64 RyuJIT</td>
 </tr>
 <tr>
 <td>Job</td>
-<td>.NET Core 3.1.3 (CoreCLR 4.700.20.11803, CoreFX 4.700.20.12001), X64 RyuJIT</td>
+<td>.NET Core 3.1.4 (CoreCLR 4.700.20.20201, CoreFX 4.700.20.21406), X64 RyuJIT</td>
 </tr>
 <tr>
 <td>LaunchCount</td>
@@ -681,6 +681,46 @@ dotnet run -c Bench
 <li>If the type of the parameter is less than or equal to the size of CPU register then Value Delegate offers the best performance</li>
 <li>If the type of the parameter is greater than the size of CPU register then Value Delegate is slower than regular delegate</li>
 </ul>
+<h1 id="file-buffering-writer">File-buffering Writer</h1>
+<p><a href="https://github.com/sakno/dotNext/blob/master/src/DotNext.Benchmarks/IO/FileBufferingWriterBenchmark.cs">This benchmark</a> compares performance of <a href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.webutilities.filebufferingwritestream">FileBufferingWriteStream</a> from ASP.NET Core and <a href="api/DotNext.IO.FileBufferingWriter.html">FileBufferingWriter</a> from .NEXT library.</p>
+<p>Both classes switching from in-memory buffer to file-based buffer during benchmark execution. Note that benchmark result highly depends on disk I/O performance. The following results were obtained using NVMe SSD.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Mean</th>
+<th>Error</th>
+<th>StdDev</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>FileBufferingWriter</code> in synchronous mode</td>
+<td>892.4 us</td>
+<td>7.93 us</td>
+<td>7.03 us</td>
+</tr>
+<tr>
+<td><code>FileBufferingWriteStream</code> in synchronous mode</td>
+<td>27,833.0 us</td>
+<td>769.15 us</td>
+<td>2,231.44 us</td>
+</tr>
+<tr>
+<td><code>FileBufferingWriter</code> in asynchronous mode</td>
+<td>15,770.6 us</td>
+<td>1,954.47 us</td>
+<td>5,762.80 us</td>
+</tr>
+<tr>
+<td><code>FileBufferingWriteStream</code> in asynchronous mode</td>
+<td>16,830.6 us</td>
+<td>1,044.00 us</td>
+<td>3,078.27 us</td>
+</tr>
+</tbody>
+</table>
+<p><code>FileBufferingWriter</code> is a winner in synchronous scenario because it has native support for synchronous mode in contrast to <code>FileBufferingWriteStream</code>.</p>
 </article>
           </div>
           

@@ -8,7 +8,7 @@
     <title>I/O Enhancements | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="I/O Enhancements | .NEXT ">
-    <meta name="generator" content="docfx 2.53.1.0">
+    <meta name="generator" content="docfx 2.54.0.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -134,6 +134,35 @@ const string value = &quot;Hello, world!&quot;;
 var pipe = new Pipe();
 await pipe.Writer.WriteAsync(Guid.NewGuid());
 var result = await pipe.Reader.ReadAsync&lt;Guid&gt;();
+</code></pre>
+<h1 id="file-buffering-writer">File-Buffering Writer</h1>
+<p><a href="../../api/DotNext.IO.FileBufferingWriter.html">FileBufferingWriter</a> class can be used as a temporary buffer of bytes when length of the content is not known or dynamic. It's useful in the following situations:</p>
+<ul>
+<li>Synchronous serialization to stream and copying result to another stream asynchronously</li>
+<li>Asynchronous serialization to stream and copying result to another stream synchronously</li>
+<li>Synchronous serialization to stream and copying result to <a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.pipelines.pipewriter">PipeWriter</a> asynchronously</li>
+<li>Bufferized write to another stream when it's not available immediately</li>
+<li>Dynamic buffer should be represented as <a href="https://docs.microsoft.com/en-us/dotnet/api/system.memory-1">Memory&lt;T&gt;</a></li>
+</ul>
+<p>In other words, this class has many similarities with <a href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.webutilities.filebufferingwritestream">FileBufferingWriteStream</a>. However, <code>FileBufferingWriter</code> has a few advantages:</p>
+<ul>
+<li>It depends on .NET Standard rather than ASP.NET Core or .NET Core</li>
+<li>Ability to use custom <a href="../../api/DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator&lt;T&gt;</a> for memory pooling</li>
+<li>Selection between synchronous and asynchronous modes</li>
+<li>Can drain content to <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter&lt;T&gt;</a></li>
+<li>Ability to represent written content as <a href="https://docs.microsoft.com/en-us/dotnet/api/system.memory-1">Memory&lt;T&gt;</a></li>
+</ul>
+<p>The last feature is very useful in situations when the size of memory is not known at the time of the call of write operations. If written content is in memory then returned <a href="https://docs.microsoft.com/en-us/dotnet/api/system.memory-1">Memory&lt;T&gt;</a> just references it. Otherwise, <code>FileBufferingWriter</code> utilizes memory-mapped file feature and returned <a href="https://docs.microsoft.com/en-us/dotnet/api/system.memory-1">Memory&lt;T&gt;</a> represents mapped virtual memory. It's better than using pooled memory because of memory deterministic lifetime and GC pressure.</p>
+<p>The following example demonstrates this feature:</p>
+<pre><code class="lang-csharp">using DotNext.IO;
+using System.Buffers;
+
+using var writer = new FileBufferingWriter();
+writer.Write(new byte[] {10, 20, 30});
+using (MemoryManager&lt;byte&gt; manager = writer.GetWrittenContent())
+{
+    Memory&lt;byte&gt; memory = manager.Memory;
+}
 </code></pre>
 </article>
           </div>
