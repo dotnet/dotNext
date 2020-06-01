@@ -22,7 +22,7 @@ namespace DotNext.IO
     /// returned <see cref="Memory{T}"/> instance references bytes in memory. Otherwise,
     /// it references memory-mapped file.
     /// </remarks>
-    public sealed class FileBufferingWriter : Stream
+    public sealed class FileBufferingWriter : Stream, IFlushableBufferWriter<byte>
     {
         private sealed unsafe class MemoryMappedFileManager : MemoryManager<byte>
         {
@@ -198,6 +198,44 @@ namespace DotNext.IO
             fileBackend?.Dispose();
             fileBackend = null;
             position = 0;
+        }
+
+        /// <inheritdoc/>
+        public Memory<byte> GetMemory(int sizeHint = 0)
+        {
+            if (sizeHint < 0)
+                throw new ArgumentOutOfRangeException(nameof(sizeHint));
+            if (sizeHint == 0)
+                sizeHint = Math.Max(1, buffer.Length - position);
+
+            switch (PrepareMemory(sizeHint, out var result))
+            {
+                case MemoryEvaluationResult.Success:
+                    break;
+                case MemoryEvaluationResult.PersistExistingBuffer:
+                    PersistBuffer();
+                    buffer = allocator.Invoke(sizeHint, false);
+                    result = buffer.Memory.Slice(0, sizeHint);
+                    break;
+                default:
+                    throw new OutOfMemoryException();
+            }
+
+            return result;
+        }
+
+        /// <inheritdoc/>
+        public Span<byte> GetSpan(int sizeHint = 0)
+            => GetMemory(sizeHint).Span;
+
+        /// <inheritdoc/>
+        public void Advance(int count)
+        {
+            if (count < 0)
+                throw new ArgumentOutOfRangeException(nameof(count));
+            if (position > buffer.Length - count)
+                throw new InvalidOperationException();
+            position += count;
         }
 
         private MemoryEvaluationResult PrepareMemory(int size, out Memory<byte> output)
@@ -600,6 +638,7 @@ namespace DotNext.IO
 
             buffer.Dispose();
             buffer = default;
+            await base.DisposeAsync().ConfigureAwait(false);
         }
     }
 }
