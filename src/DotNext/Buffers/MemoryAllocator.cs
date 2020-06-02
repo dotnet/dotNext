@@ -1,3 +1,4 @@
+using System;
 using System.Buffers;
 
 namespace DotNext.Buffers
@@ -39,6 +40,18 @@ namespace DotNext.Buffers
         /// <returns>The memory allocator.</returns>
         public static MemoryAllocator<T> ToAllocator<T>(this MemoryPool<T> pool)
             => pool.Allocate;
+
+        private static MemoryOwner<T> Allocate<T>(this Func<int, IMemoryOwner<T>> provider, int length)
+            => new MemoryOwner<T>(provider, length);
+
+        /// <summary>
+        /// Converts memory provider to the memory allocator.
+        /// </summary>
+        /// <typeparam name="T">The type of the items in the memory pool.</typeparam>
+        /// <param name="provider">The memory provider.</param>
+        /// <returns>The memory allocator.</returns>
+        public static MemoryAllocator<T> ToAllocator<T>(this Func<int, IMemoryOwner<T>> provider)
+            => provider.Allocate;
 
         /// <summary>
         /// Allocates memory.
