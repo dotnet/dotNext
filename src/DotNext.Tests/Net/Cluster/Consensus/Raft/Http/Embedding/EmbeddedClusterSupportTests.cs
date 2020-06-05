@@ -185,7 +185,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             //wait for response
             for (var timeout = new Threading.Timeout(TimeSpan.FromMinutes(1)); !messageBox.TryDequeue(out response); timeout.ThrowIfExpired())
                 await Task.Delay(10);
-            Equal(1024 * 1024, ((IMessage)response).Length);
+            Equal(1024 * 1024, response.As<IMessage>().Length);
 
             await host1.StopAsync();
             await host2.StopAsync();
