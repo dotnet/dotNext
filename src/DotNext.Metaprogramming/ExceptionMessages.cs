@@ -44,8 +44,11 @@ namespace DotNext
 
         internal static string InvalidRethrow => Resources.GetString("InvalidRethrow");
 
+        internal static string TypeExpected(Type type)
+            => string.Format(Resources.GetString("ExpressionTypeExpected"), type.FullName);
+
         internal static string TypeExpected<T>()
-            => string.Format(Resources.GetString("ExpressionTypeExpected"), typeof(T).FullName);
+            => TypeExpected(typeof(T));
 
         internal static string InvalidFragmentRendering => Resources.GetString("InvalidFragmentRendering");
 
