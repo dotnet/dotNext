@@ -57,7 +57,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                     else
                         options.ListenAnyIP(port);
                 })
-                    .UseShutdownTimeout(TimeSpan.FromMinutes(2))
                     .ConfigureServices(services =>
                     {
                         if (configurator != null)
@@ -65,6 +64,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                     })
                     .UseStartup<TStartup>()
                 )
+                .UseShutdownTimeout(TimeSpan.FromMinutes(2))
                 .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(configuration))
                 .ConfigureLogging(builder => builder.AddDebug().SetMinimumLevel(LogLevel.Debug))
                 .JoinCluster()

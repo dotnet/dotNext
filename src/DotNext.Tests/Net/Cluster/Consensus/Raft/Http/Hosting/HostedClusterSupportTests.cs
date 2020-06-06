@@ -29,7 +29,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
                         else
                             options.ListenAnyIP(port);
                     })
-                    .UseShutdownTimeout(TimeSpan.FromMinutes(2))
                     .ConfigureLogging(builder => builder.AddDebug().SetMinimumLevel(LogLevel.Debug))
                     .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(configuration))
                     .ConfigureServices(services =>
@@ -39,6 +38,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
                     })
                     .UseStartup<TStartup>()
                 )
+                .UseShutdownTimeout(TimeSpan.FromMinutes(2))
                 .JoinCluster()
                 .Build();
         }
