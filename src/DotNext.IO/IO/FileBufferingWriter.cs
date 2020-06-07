@@ -45,6 +45,8 @@ namespace DotNext.IO
             public override Span<byte> GetSpan()
                 => new Span<byte>(ptr + accessor.PointerOffset, (int)accessor.Capacity);
 
+            public override Memory<byte> Memory => CreateMemory((int)accessor.Capacity);
+
             public override MemoryHandle Pin(int elementIndex)
             {
                 if (elementIndex < 0 || elementIndex >= accessor.Capacity)
