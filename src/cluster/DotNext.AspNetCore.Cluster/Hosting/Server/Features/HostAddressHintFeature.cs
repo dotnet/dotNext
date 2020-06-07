@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 
-namespace DotNext.AspNetCore.Hosting.Server.Features
+namespace DotNext.Hosting.Server.Features
 {
     internal sealed class HostAddressHintFeature
     {

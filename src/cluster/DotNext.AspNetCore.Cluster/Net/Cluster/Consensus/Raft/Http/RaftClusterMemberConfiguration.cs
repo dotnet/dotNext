@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http.Features;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
-    using HostAddressHintFeature = AspNetCore.Hosting.Server.Features.HostAddressHintFeature;
+    using HostAddressHintFeature = DotNext.Hosting.Server.Features.HostAddressHintFeature;
 
     internal class RaftClusterMemberConfiguration : ClusterMemberConfiguration
     {

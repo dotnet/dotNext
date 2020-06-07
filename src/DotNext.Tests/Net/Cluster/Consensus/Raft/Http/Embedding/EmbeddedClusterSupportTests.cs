@@ -14,6 +14,7 @@ using Xunit;
 namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
 {
     using Messaging;
+    using static DotNext.Hosting.HostBuilderExtensions;
 
     [ExcludeFromCodeCoverage]
     public sealed class EmbeddedClusterSupportTests : Test
@@ -64,7 +65,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                     })
                     .UseStartup<TStartup>()
                 )
-                .UseShutdownTimeout(TimeSpan.FromMinutes(2))
+                .UseHostOptions(new HostOptions { ShutdownTimeout = TimeSpan.FromMinutes(2) })
                 .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(configuration))
                 .ConfigureLogging(builder => builder.AddDebug().SetMinimumLevel(LogLevel.Debug))
                 .JoinCluster()

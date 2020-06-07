@@ -7,7 +7,7 @@ using IServerAddresses = Microsoft.AspNetCore.Hosting.Server.Features.IServerAdd
 
 namespace DotNext.Net
 {
-    using AspNetCore.Hosting.Server.Features;
+    using Hosting.Server.Features;
 
     internal static class Network
     {
