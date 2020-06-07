@@ -96,7 +96,9 @@ namespace DotNext.Linq.Expressions
 
             localVar = Variable(Left.Type);
 
-            return Block(Left.Type, new[] { localVar },
+            return Block(
+                Left.Type,
+                new[] { localVar },
                 Assign(localVar, Left),
                 Assign(Left, Build(localVar, Right)),
                 localVar);
