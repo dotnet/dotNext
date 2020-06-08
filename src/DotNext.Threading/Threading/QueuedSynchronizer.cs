@@ -196,14 +196,16 @@ namespace DotNext.Threading
         }
 
         private void NotifyObjectDisposed()
-            => AbortSuspendedCallers(new ObjectDisposedException(GetType().Name));
-
-        private void AbortSuspendedCallers(Exception e)
         {
+            var e = new ObjectDisposedException(GetType().Name);
+
             for (WaitNode? current = head, next; !(current is null); current = next)
             {
                 next = current.CleanupAndGotoNext();
-                current.TrySetException(e);
+                if (current is DisposeAsyncNode disposeNode)
+                    disposeNode.Complete();
+                else
+                    current.TrySetException(e);
             }
 
             head = tail = null;
