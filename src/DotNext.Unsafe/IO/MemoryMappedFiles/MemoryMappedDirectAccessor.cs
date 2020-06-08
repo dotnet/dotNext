@@ -80,9 +80,6 @@ namespace DotNext.IO.MemoryMappedFiles
         /// Releases virtual memory associated with the mapped file segment.
         /// </summary>
         public void Dispose()
-        {
-            accessor.SafeMemoryMappedViewHandle.ReleasePointer();
-            accessor.Dispose();
-        }
+            => accessor?.ReleasePointerAndDispose();
     }
 }

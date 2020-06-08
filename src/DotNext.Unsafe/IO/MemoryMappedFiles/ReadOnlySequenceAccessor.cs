@@ -171,6 +171,7 @@ namespace DotNext.IO.MemoryMappedFiles
             }
         }
 
+        /// <inheritdoc/>
         ReadOnlySequence<byte> IConvertible<ReadOnlySequence<byte>>.Convert()
             => Sequence;
 

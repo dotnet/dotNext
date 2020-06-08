@@ -46,8 +46,7 @@ namespace DotNext.IO.MemoryMappedFiles
         {
             if (disposing)
             {
-                accessor.SafeMemoryMappedViewHandle.ReleasePointer();
-                accessor.Dispose();
+                accessor.ReleasePointerAndDispose();
             }
         }
     }
