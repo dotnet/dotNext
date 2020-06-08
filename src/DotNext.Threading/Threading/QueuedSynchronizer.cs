@@ -185,7 +185,6 @@ namespace DotNext.Threading
             {
                 disposeNode.Complete();
                 RemoveNode(disposeNode);
-                NotifyObjectDisposed();
                 Dispose();
                 return true;
             }
@@ -222,7 +221,6 @@ namespace DotNext.Threading
             }
             else
             {
-                NotifyObjectDisposed();
                 Dispose();
                 return new ValueTask();
             }
