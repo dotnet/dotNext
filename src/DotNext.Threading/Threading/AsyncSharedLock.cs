@@ -18,7 +18,7 @@ namespace DotNext.Threading
     /// is limited by the concurrency level passed into the constructor. However, the
     /// only one caller can acquire the lock exclusively.
     /// </remarks>
-    public class AsyncSharedLock : QueuedSynchronizer
+    public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     {
         private const long ExclusiveMode = -1L;
 
@@ -68,6 +68,7 @@ namespace DotNext.Threading
             WaitNode ILockManager<WaitNode>.CreateNode(WaitNode? tail) => tail is null ? new WaitNode() : new WaitNode(tail);
         }
 
+        private static readonly Func<AsyncSharedLock, bool> IsLockHeldPredicate = DelegateHelpers.CreateOpenDelegate<Func<AsyncSharedLock, bool>>(l => l.IsLockHeld);
         private readonly Box<State> state;
 
         /// <summary>
@@ -102,9 +103,13 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="strongLock"><see langword="true"/> to acquire strong(exclusive) lock; <see langword="false"/> to acquire weak lock.</param>
         /// <returns><see langword="true"/> if the caller entered the lock; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
         public bool TryAcquire(bool strongLock)
-            => strongLock ? TryAcquire<StrongLockNode, State>(ref state.Value) : TryAcquire<WaitNode, State>(ref state.Value);
+        {
+            ThrowIfDisposed();
+            return strongLock ? TryAcquire<StrongLockNode, State>(ref state.Value) : TryAcquire<WaitNode, State>(ref state.Value);
+        }
 
         /// <summary>
         /// Attempts to enter the lock asynchronously, with an optional time-out.
@@ -172,8 +177,25 @@ namespace DotNext.Threading
             ref var stateHolder = ref state.Value;
             if (stateHolder.IsEmpty) // nothing to release
                 throw new SynchronizationLockException(ExceptionMessages.NotInWriteLock);
-            stateHolder.RemainingLocks = ConcurrencyLevel - 1;
-            ResumePendingCallers();
+
+            if (stateHolder.RemainingLocks == ExclusiveMode)
+            {
+                stateHolder.RemainingLocks = ConcurrencyLevel - 1;
+                ResumePendingCallers();
+            }
+            else if (stateHolder.IncrementLocks() == ConcurrencyLevel && !ProcessDisposeQueue())
+            {
+                if (head is StrongLockNode exclusiveNode)
+                {
+                    RemoveNode(exclusiveNode);
+                    exclusiveNode.Complete();
+                    stateHolder.RemainingLocks = ExclusiveMode;
+                }
+                else
+                {
+                    ResumePendingCallers();
+                }
+            }
         }
 
         /// <summary>
@@ -188,6 +210,8 @@ namespace DotNext.Threading
             ref var stateHolder = ref state.Value;
             if (stateHolder.IsEmpty) // nothing to release
                 throw new SynchronizationLockException(ExceptionMessages.NotInWriteLock);
+            if (ProcessDisposeQueue())
+                return;
 
             if (stateHolder.IncrementLocks() == ConcurrencyLevel && head is StrongLockNode exclusiveNode)
             {
@@ -200,5 +224,16 @@ namespace DotNext.Threading
                 ResumePendingCallers();
             }
         }
+
+        /// <summary>
+        /// Disposes this lock asynchronously and gracefully.
+        /// </summary>
+        /// <remarks>
+        /// If this lock is not acquired then the method just completes synchronously.
+        /// Otherwise, it waits for calling of <see cref="Release"/> method.
+        /// </remarks>
+        /// <returns>The task representing graceful shutdown of this lock.</returns>
+        public ValueTask DisposeAsync()
+            => IsDisposed ? new ValueTask() : DisposeAsync(IsLockHeldPredicate.Bind(this));
     }
 }
