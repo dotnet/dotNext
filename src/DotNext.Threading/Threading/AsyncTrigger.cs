@@ -135,6 +135,7 @@ namespace DotNext.Threading
         /// <param name="state">The state to be modified.</param>
         /// <param name="mutator">State mutation.</param>
         /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public void Signal<TState>(TState state, Action<TState> mutator)
             where TState : class
         {
