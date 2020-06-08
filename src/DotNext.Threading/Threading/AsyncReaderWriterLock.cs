@@ -237,24 +237,38 @@ namespace DotNext.Threading
         /// Returns a stamp that can be validated later.
         /// </summary>
         /// <returns>Optimistic read stamp. May be invalid.</returns>
+        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
         public LockStamp TryOptimisticRead()
-            => state.Value.WriteLock ? new LockStamp() : new LockStamp(state);
+        {
+            ThrowIfDisposed();
+            return state.Value.WriteLock ? new LockStamp() : new LockStamp(state);
+        }
 
         /// <summary>
         /// Attempts to acquire write lock without blocking.
         /// </summary>
         /// <param name="stamp">The stamp of the read lock.</param>
         /// <returns><see langword="true"/> if lock is acquired successfully; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public bool TryEnterWriteLock(in LockStamp stamp) => stamp.IsValid && TryAcquire<WriteLockNode, State>(ref state.Value);
+        public bool TryEnterWriteLock(in LockStamp stamp)
+        {
+            ThrowIfDisposed();
+            return stamp.IsValid && TryAcquire<WriteLockNode, State>(ref state.Value);
+        }
 
         /// <summary>
         /// Attempts to obtain reader lock synchronously without blocking caller thread.
         /// </summary>
         /// <returns><see langword="true"/> if lock is taken successfuly; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public bool TryEnterReadLock() => TryAcquire<ReadLockNode, State>(ref state.Value);
+        public bool TryEnterReadLock()
+        {
+            ThrowIfDisposed();
+            return TryAcquire<ReadLockNode, State>(ref state.Value);
+        }
 
         /// <summary>
         /// Tries to enter the lock in read mode asynchronously, with an optional time-out.
@@ -311,8 +325,13 @@ namespace DotNext.Threading
         /// Attempts to obtain writer lock synchronously without blocking caller thread.
         /// </summary>
         /// <returns><see langword="true"/> if lock is taken successfuly; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public bool TryEnterWriteLock() => TryAcquire<WriteLockNode, State>(ref state.Value);
+        public bool TryEnterWriteLock()
+        {
+            ThrowIfDisposed();
+            return TryAcquire<WriteLockNode, State>(ref state.Value);
+        }
 
         /// <summary>
         /// Tries to enter the lock in write mode asynchronously, with an optional time-out.
@@ -358,8 +377,13 @@ namespace DotNext.Threading
         /// Attempts to obtain upgradeable reader lock synchronously without blocking caller thread.
         /// </summary>
         /// <returns><see langword="true"/> if lock is taken successfuly; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public bool TryEnterUpgradeableReadLock() => TryAcquire<UpgradeableReadLockNode, State>(ref state.Value);
+        public bool TryEnterUpgradeableReadLock()
+        {
+            ThrowIfDisposed();
+            return TryAcquire<UpgradeableReadLockNode, State>(ref state.Value);
+        }
 
         /// <summary>
         /// Tries to enter the lock in upgradeable mode asynchronously, with an optional time-out.
@@ -390,6 +414,7 @@ namespace DotNext.Threading
         /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
         public Task EnterUpgradeableReadLockAsync(TimeSpan timeout, CancellationToken token = default) => TryEnterUpgradeableReadLockAsync(timeout, token).CheckOnTimeout();
 
+        [CallerMustBeSynchronized]
         private void ProcessReadLocks()
         {
             var readLock = head as ReadLockNode;

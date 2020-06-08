@@ -155,6 +155,7 @@ namespace DotNext.Threading
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         public Task AcquireAsync(bool strongLock, CancellationToken token) => TryAcquireAsync(strongLock, InfiniteTimeSpan, token);
 
+        [CallerMustBeSynchronized]
         private void ResumePendingCallers()
         {
             ref var stateHolder = ref state.Value;
@@ -166,6 +167,7 @@ namespace DotNext.Threading
             }
         }
 
+        [CallerMustBeSynchronized]
         private void Release(ref State stateHolder)
         {
             Debug.Assert(Unsafe.AreSame(ref stateHolder, ref state.Value));
@@ -232,6 +234,6 @@ namespace DotNext.Threading
         /// </remarks>
         /// <returns>The task representing graceful shutdown of this lock.</returns>
         public ValueTask DisposeAsync()
-            => IsDisposed ? new ValueTask() : DisposeAsync(IsLockHeldPredicate.Bind(this));
+            => IsDisposed ? new ValueTask() : DisposeAsync(this, IsLockHeldPredicate);
     }
 }

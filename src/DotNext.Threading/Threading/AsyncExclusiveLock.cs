@@ -120,6 +120,6 @@ namespace DotNext.Threading
         /// </remarks>
         /// <returns>The task representing graceful shutdown of this lock.</returns>
         public ValueTask DisposeAsync()
-            => IsDisposed ? new ValueTask() : DisposeAsync(IsLockHeldPredicate.Bind(this));
+            => IsDisposed ? new ValueTask() : DisposeAsync(this, IsLockHeldPredicate);
     }
 }

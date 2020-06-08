@@ -3,11 +3,11 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Threading.Timeout;
-
 namespace DotNext.Threading
 {
     using Generic;
     using Tasks;
+    using CallerMustBeSynchronizedAttribute = Runtime.CompilerServices.CallerMustBeSynchronizedAttribute;
 
     /// <summary>
     /// Provides a framework for implementing asynchronous locks and related synchronization primitives that rely on first-in-first-out (FIFO) wait queues.
@@ -97,6 +97,7 @@ namespace DotNext.Threading
             return inList;
         }
 
+        [CallerMustBeSynchronized]
         private async Task<bool> WaitAsync(WaitNode node, TimeSpan timeout, CancellationToken token)
         {
             // cannot use Task.WaitAsync here because this method contains side effect in the form of RemoveNode method
@@ -118,6 +119,7 @@ namespace DotNext.Threading
             return await node.Task.ConfigureAwait(false);
         }
 
+        [CallerMustBeSynchronized]
         private async Task<bool> WaitAsync(WaitNode node, CancellationToken token)
         {
             if (ReferenceEquals(node.Task, await Task.WhenAny(node.Task, Task.Delay(InfiniteTimeSpan, token)).ConfigureAwait(false)))
@@ -179,6 +181,7 @@ namespace DotNext.Threading
             head = tail = null;
         }
 
+        [CallerMustBeSynchronized]
         private protected bool ProcessDisposeQueue()
         {
             if (head is DisposeAsyncNode disposeNode)
@@ -210,21 +213,26 @@ namespace DotNext.Threading
         private protected static bool IsTerminalNode(WaitNode? node)
             => node is DisposeAsyncNode;
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        private protected ValueTask DisposeAsync(Func<bool> lockStateChecker)
+        [CallerMustBeSynchronized]        
+        private Task DisposeAsync()
         {
-            if (lockStateChecker())
-            {
-                DisposeAsyncNode disposeNode;
-                if (tail is null)
-                    head = tail = disposeNode = new DisposeAsyncNode();
-                else
-                    tail = disposeNode = new DisposeAsyncNode(tail);
-
-                return new ValueTask(disposeNode.Task);
-            }
+            DisposeAsyncNode disposeNode;
+            if (tail is null)
+                head = tail = disposeNode = new DisposeAsyncNode();
             else
+                tail = disposeNode = new DisposeAsyncNode(tail);
+
+            return disposeNode.Task;
+        }
+
+        private protected static ValueTask DisposeAsync<T>(T synchronizer, Func<T, bool> lockStateChecker)
+            where T : QueuedSynchronizer
+        {
+            lock (synchronizer)
             {
+                if (lockStateChecker(synchronizer))
+                    return new ValueTask(synchronizer.DisposeAsync());
+
                 Dispose();
                 return new ValueTask();
             }
