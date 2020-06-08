@@ -27,7 +27,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
             internal WebHostConfigurer(IServiceProvider services, out RaftHostedClusterMemberConfiguration config, RequestDelegate raftProcessor)
             {
                 this.config = config = services.GetRequiredService<IOptions<RaftHostedClusterMemberConfiguration>>().Value;
-                this.parentHostOptions = services.GetService<IOptions<HostOptions>>()?.Value;
+                parentHostOptions = services.GetService<IOptions<HostOptions>>()?.Value;
                 hostBuilder = services.GetService<IDedicatedHostBuilder>();
                 this.raftProcessor = raftProcessor;
             }
