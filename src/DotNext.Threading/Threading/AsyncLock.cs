@@ -20,7 +20,7 @@ namespace DotNext.Threading
     /// </remarks>
     /// <seealso cref="Lock"/>
     [StructLayout(LayoutKind.Auto)]
-    public struct AsyncLock : IDisposable, IEquatable<AsyncLock>
+    public struct AsyncLock : IDisposable, IEquatable<AsyncLock>, IAsyncDisposable
     {
         internal enum Type : byte
         {
@@ -283,6 +283,36 @@ namespace DotNext.Threading
             if (owner && lockedObject is IDisposable disposable)
                 disposable.Dispose();
             this = default;
+        }
+
+        /// <summary>
+        /// Destroy this lock and asynchronously dispose underlying lock object if it is owned by the given lock.
+        /// </summary>
+        /// <remarks>
+        /// If the given lock is an owner of the underlying lock object then this method will 
+        /// call <see cref="IAsyncDisposable.DisposeAsync"/> or <see cref="IDisposable.Dispose()"/> on it;
+        /// otherwise, the underlying lock object will not be destroyed.
+        /// As a result, this lock is not usable after calling of this method.
+        /// </remarks>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        public ValueTask DisposeAsync()
+        {
+            ValueTask result = default;
+            if (owner)
+            {
+                switch (lockedObject)
+                {
+                    case IAsyncDisposable disposable:
+                        result = disposable.DisposeAsync();
+                        break;
+                    case IDisposable disposable:
+                        disposable.Dispose();
+                        break;
+                }
+            }
+
+            this = default;
+            return result;
         }
 
         /// <summary>
