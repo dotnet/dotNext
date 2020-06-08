@@ -105,7 +105,7 @@ namespace DotNext.IO.MemoryMappedFiles
             internal static void AddSegment(ReadOnlySequenceAccessor cursor, int length, ref MappedSegment? first, ref MappedSegment? last)
             {
                 if (first is null || last is null)
-                    first = last = new MappedSegment(cursor, length);
+                    first = last = new MappedSegment(cursor, length) { RunningIndex = 0L };
                 else
                     last = last.Next(length);
             }
