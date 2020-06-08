@@ -165,6 +165,20 @@ namespace DotNext.Threading
             }
         }
 
+        private void Release(ref State stateHolder)
+        {
+            if (stateHolder.IncrementLocks() == ConcurrencyLevel && head is StrongLockNode exclusiveNode)
+            {
+                RemoveNode(exclusiveNode);
+                exclusiveNode.Complete();
+                stateHolder.RemainingLocks = ExclusiveMode;
+            }
+            else
+            {
+                ResumePendingCallers();
+            }
+        }
+
         /// <summary>
         /// Releases the acquired weak lock or downgrade exclusive lock to the weak lock.
         /// </summary>
@@ -183,18 +197,9 @@ namespace DotNext.Threading
                 stateHolder.RemainingLocks = ConcurrencyLevel - 1;
                 ResumePendingCallers();
             }
-            else if (stateHolder.IncrementLocks() == ConcurrencyLevel && !ProcessDisposeQueue())
+            else if(!ProcessDisposeQueue())
             {
-                if (head is StrongLockNode exclusiveNode)
-                {
-                    RemoveNode(exclusiveNode);
-                    exclusiveNode.Complete();
-                    stateHolder.RemainingLocks = ExclusiveMode;
-                }
-                else
-                {
-                    ResumePendingCallers();
-                }
+                Release(ref stateHolder);
             }
         }
 
@@ -210,18 +215,9 @@ namespace DotNext.Threading
             ref var stateHolder = ref state.Value;
             if (stateHolder.IsEmpty) // nothing to release
                 throw new SynchronizationLockException(ExceptionMessages.NotInWriteLock);
-            if (ProcessDisposeQueue())
-                return;
-
-            if (stateHolder.IncrementLocks() == ConcurrencyLevel && head is StrongLockNode exclusiveNode)
+            if (!ProcessDisposeQueue())
             {
-                RemoveNode(exclusiveNode);
-                exclusiveNode.Complete();
-                stateHolder.RemainingLocks = ExclusiveMode;
-            }
-            else
-            {
-                ResumePendingCallers();
+                Release(ref stateHolder);
             }
         }
 
