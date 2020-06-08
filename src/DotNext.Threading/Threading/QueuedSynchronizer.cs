@@ -239,9 +239,7 @@ namespace DotNext.Threading
         {
             if (disposing)
             {
-                for (var current = head; !(current is null); current = current.CleanupAndGotoNext())
-                    current.TrySetCanceled();
-                head = tail = null;
+                NotifyObjectDisposed();
             }
 
             base.Dispose(disposing);
