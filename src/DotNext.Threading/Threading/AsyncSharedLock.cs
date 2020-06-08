@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -167,6 +168,7 @@ namespace DotNext.Threading
 
         private void Release(ref State stateHolder)
         {
+            Debug.Assert(Unsafe.AreSame(ref stateHolder, ref state.Value));
             if (stateHolder.IncrementLocks() == ConcurrencyLevel && head is StrongLockNode exclusiveNode)
             {
                 RemoveNode(exclusiveNode);
