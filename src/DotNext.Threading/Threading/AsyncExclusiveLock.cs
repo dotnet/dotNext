@@ -95,10 +95,10 @@ namespace DotNext.Threading
         public void Release()
         {
             ThrowIfDisposed();
-            if (ProcessDisposeQueue())
-                return;
             if (!manager.IsAcquired)
                 throw new SynchronizationLockException(ExceptionMessages.NotInWriteLock);
+            if (ProcessDisposeQueue())
+                return;
 
             if (head is null)
             {

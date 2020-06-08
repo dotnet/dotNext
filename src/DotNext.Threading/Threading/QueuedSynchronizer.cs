@@ -190,7 +190,7 @@ namespace DotNext.Threading
                 return true;
             }
 
-            return true;
+            return false;
         }
 
         private void NotifyObjectDisposed()
