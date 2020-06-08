@@ -8,6 +8,7 @@ using static System.Threading.Timeout;
 namespace DotNext.Threading
 {
     using static Runtime.Intrinsics;
+    using CallerMustBeSynchronizedAttribute = Runtime.CompilerServices.CallerMustBeSynchronizedAttribute;
 
     /// <summary>
     /// Represents asynchronous trigger which allows to resume suspended
@@ -57,6 +58,7 @@ namespace DotNext.Threading
         /// <inheritdoc/>
         bool IAsyncEvent.Reset() => false;
 
+        [CallerMustBeSynchronized]
         private void ResumePendingCallers()
         {
             // triggers only stateless nodes
@@ -71,6 +73,7 @@ namespace DotNext.Threading
             }
         }
 
+        [CallerMustBeSynchronized]
         private void ResumePendingCallers<TState>(TState state)
             where TState : class
         {
