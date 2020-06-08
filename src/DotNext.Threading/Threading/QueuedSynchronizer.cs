@@ -64,6 +64,18 @@ namespace DotNext.Threading
             TNode CreateNode(WaitNode? tail);
         }
 
+        private sealed class DisposeAsyncNode : WaitNode
+        {
+            internal DisposeAsyncNode()
+            {
+            }
+
+            internal DisposeAsyncNode(WaitNode previous)
+                : base(previous)
+            {
+            }
+        }
+
         private protected WaitNode? head, tail;
 
         private protected QueuedSynchronizer()
@@ -165,6 +177,55 @@ namespace DotNext.Threading
             }
 
             head = tail = null;
+        }
+
+        private protected bool ProcessDisposeQueue()
+        {
+            if (head is DisposeAsyncNode disposeNode)
+            {
+                disposeNode.Complete();
+                RemoveNode(disposeNode);
+                NotifyObjectDisposed();
+                Dispose();
+                return true;
+            }
+
+            return true;
+        }
+
+        private void NotifyObjectDisposed()
+            => AbortSuspendedCallers(new ObjectDisposedException(GetType().Name));
+
+        private void AbortSuspendedCallers(Exception e)
+        {
+            for (WaitNode? current = head, next; !(current is null); current = next)
+            {
+                next = current.CleanupAndGotoNext();
+                current.TrySetException(e);
+            }
+
+            head = tail = null;
+        }
+
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        private protected ValueTask DisposeAsync(Func<bool> lockStateChecker)
+        {
+            if (lockStateChecker())
+            {
+                DisposeAsyncNode disposeNode;
+                if (tail is null)
+                    head = tail = disposeNode = new DisposeAsyncNode();
+                else
+                    tail = disposeNode = new DisposeAsyncNode(tail);
+
+                return new ValueTask(disposeNode.Task);
+            }
+            else
+            {
+                NotifyObjectDisposed();
+                Dispose();
+                return new ValueTask();
+            }
         }
 
         /// <summary>
