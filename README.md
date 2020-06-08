@@ -55,6 +55,9 @@ Release Date: MM-DD-2020
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.5.0">DotNext.Metaprogramming 2.5.0</a>
 * Introduced null-coalescing assignment expression
 
+<a href="https://www.nuget.org/packages/dotnext.threading/2.5.0">DotNext.Threading 2.5.0</a>
+* Fixed race-condition caused by `AsyncTrigger.Signal` method
+
 <a href="https://www.nuget.org/packages/dotnext.unsafe/2.5.0">DotNext.Unsafe 2.5.0</a>
 * Ability to access memory-mapped file content via [ReadOnlySequence&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1)
 
