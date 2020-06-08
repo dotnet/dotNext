@@ -148,10 +148,12 @@ namespace DotNext.IO.MemoryMappedFiles
         /// The sequence produced by this instance should not be accessed
         /// concurrently.
         /// </remarks>
+        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         public ReadOnlySequence<byte> Sequence
         {
             get
             {
+                ThrowIfDisposed();
                 if (totalLength == 0)
                     return ReadOnlySequence<byte>.Empty;
 
@@ -171,6 +173,7 @@ namespace DotNext.IO.MemoryMappedFiles
 
         private unsafe byte* GetMemory(in Segment window)
         {
+            ThrowIfDisposed();
             if (current != window)
             {
                 segment?.ReleasePointerAndDispose();
