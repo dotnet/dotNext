@@ -157,7 +157,7 @@ namespace DotNext.Threading
         private void ResumePendingCallers()
         {
             ref var stateHolder = ref state.Value;
-            for (WaitNode? current = head, next; !(current is null || current is StrongLockNode) && stateHolder.RemainingLocks > 0L; stateHolder.RemainingLocks--, current = next)
+            for (WaitNode? current = head, next; !(current is null || current is StrongLockNode || IsTerminalNode(current)) && stateHolder.RemainingLocks > 0L; stateHolder.RemainingLocks--, current = next)
             {
                 next = current.Next;
                 RemoveNode(current);

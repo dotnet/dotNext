@@ -174,5 +174,28 @@ namespace DotNext.Threading
             True(acquisition.IsFaulted);
             Throws<ObjectDisposedException>(acquisition.GetAwaiter().GetResult);
         }
+
+        [Fact]
+        public static void GracefulShutdown4()
+        {
+            using var @lock = new AsyncSharedLock(3);
+            True(@lock.TryAcquire(true));
+            var acquisition1 = @lock.AcquireAsync(false, CancellationToken.None);
+            False(acquisition1.IsCompleted);
+            var task = @lock.DisposeAsync();
+            False(task.IsCompleted);
+            var acquisition2 = @lock.AcquireAsync(false, CancellationToken.None);
+            False(task.IsCompleted);
+
+            @lock.Release();
+            True(acquisition1.IsCompletedSuccessfully);
+            False(acquisition2.IsCompleted);
+            False(task.IsCompleted);
+
+            @lock.Release();
+            True(acquisition2.IsFaulted);
+            True(task.IsCompletedSuccessfully);
+            Throws<ObjectDisposedException>(acquisition2.GetAwaiter().GetResult);
+        }
     }
 }

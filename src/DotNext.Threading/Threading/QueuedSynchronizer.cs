@@ -206,6 +206,10 @@ namespace DotNext.Threading
             head = tail = null;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private protected static bool IsTerminalNode(WaitNode? node)
+            => node is DisposeAsyncNode;
+
         [MethodImpl(MethodImplOptions.Synchronized)]
         private protected ValueTask DisposeAsync(Func<bool> lockStateChecker)
         {
