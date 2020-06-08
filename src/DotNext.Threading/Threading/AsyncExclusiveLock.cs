@@ -26,7 +26,7 @@ namespace DotNext.Threading
             WaitNode ILockManager<WaitNode>.CreateNode(WaitNode? tail) => tail is null ? new WaitNode() : new WaitNode(tail);
         }
 
-        private static Func<AsyncExclusiveLock, bool> isLockHeldPredicate = DelegateHelpers.CreateOpenDelegate<Func<AsyncExclusiveLock, bool>>(l => l.IsLockHeld);
+        private static readonly Func<AsyncExclusiveLock, bool> IsLockHeldPredicate = DelegateHelpers.CreateOpenDelegate<Func<AsyncExclusiveLock, bool>>(l => l.IsLockHeld);
         private LockManager manager;
 
         /// <summary>
@@ -120,6 +120,6 @@ namespace DotNext.Threading
         /// </remarks>
         /// <returns>The task representing graceful shutdown of this lock.</returns>
         public ValueTask DisposeAsync()
-            => IsDisposed ? new ValueTask() : DisposeAsync(isLockHeldPredicate.Bind(this));
+            => IsDisposed ? new ValueTask() : DisposeAsync(IsLockHeldPredicate.Bind(this));
     }
 }
