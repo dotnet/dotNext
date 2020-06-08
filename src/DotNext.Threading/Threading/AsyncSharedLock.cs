@@ -226,7 +226,7 @@ namespace DotNext.Threading
         /// </summary>
         /// <remarks>
         /// If this lock is not acquired then the method just completes synchronously.
-        /// Otherwise, it waits for calling of <see cref="Release"/> or <see cref="Downgrade"/> method.
+        /// Otherwise, it waits for calling of <see cref="Release()"/> or <see cref="Downgrade"/> method.
         /// </remarks>
         /// <returns>The task representing graceful shutdown of this lock.</returns>
         public ValueTask DisposeAsync()
