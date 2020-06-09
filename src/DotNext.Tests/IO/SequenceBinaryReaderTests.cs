@@ -43,7 +43,7 @@ namespace DotNext.IO
             IAsyncBinaryReader reader = IAsyncBinaryReader.Create(ms.ToArray());
             var result = await (lengthEnc is null ?
                 reader.ReadStringAsync(encoding.GetByteCount(value), encoding) :
-                reader.ReadStringAsync(lengthEnc.Value, encoding));
+                reader.ReadStringAsync(lengthEnc.GetValueOrDefault(), encoding));
             Equal(value, result);
         }
 
