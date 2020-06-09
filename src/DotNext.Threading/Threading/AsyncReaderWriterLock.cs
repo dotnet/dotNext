@@ -15,7 +15,7 @@ namespace DotNext.Threading
     /// <remarks>
     /// This lock doesn't support recursion.
     /// </remarks>
-    public class AsyncReaderWriterLock : QueuedSynchronizer
+    public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     {
         private sealed class WriteLockNode : WaitNode
         {
@@ -435,6 +435,9 @@ namespace DotNext.Threading
                 RemoveNode(readLock);
                 readLock.Complete();
                 currentState.ReadLocks += 1L;
+
+                if (IsTerminalNode(next))
+                    break;
             }
         }
 
@@ -454,6 +457,9 @@ namespace DotNext.Threading
             ref var currentState = ref state.Value;
             if (currentState.WriteLock || !currentState.Upgradeable || currentState.ReadLocks == 0L)
                 throw new SynchronizationLockException(ExceptionMessages.NotInUpgradeableReadLock);
+            if (ProcessDisposeQueue())
+                return;
+
             currentState.Upgradeable = false;
 
             // no more readers, write lock can be acquired
@@ -485,6 +491,8 @@ namespace DotNext.Threading
             ref var currentState = ref state.Value;
             if (!currentState.WriteLock)
                 throw new SynchronizationLockException(ExceptionMessages.NotInWriteLock);
+            if (ProcessDisposeQueue())
+                return;
 
             if (head is WriteLockNode writeLock)
             {
@@ -515,12 +523,27 @@ namespace DotNext.Threading
             if (currentState.WriteLock || currentState.ReadLocks == 1L && currentState.Upgradeable || currentState.ReadLocks == 0L)
                 throw new SynchronizationLockException(ExceptionMessages.NotInReadLock);
 
-            if (--currentState.ReadLocks == 0L && head is WriteLockNode writeLock)
+            if (!ProcessDisposeQueue() && --currentState.ReadLocks == 0L && head is WriteLockNode writeLock)
             {
                 RemoveNode(writeLock);
                 writeLock.Complete();
                 currentState.WriteLock = true;
             }
+        }
+
+        /// <summary>
+        /// Disposes this lock asynchronously and gracefully.
+        /// </summary>
+        /// <remarks>
+        /// If this lock is not acquired then the method just completes synchronously.
+        /// Otherwise, it waits for calling of <see cref="ExitReadLock"/>,  method.
+        /// </remarks>
+        /// <returns>The task representing graceful shutdown of this lock.</returns>
+        public ValueTask DisposeAsync()
+        {
+            static bool IsLockHeld(AsyncReaderWriterLock rwLock) => rwLock.IsReadLockHeld || rwLock.IsWriteLockHeld;
+
+            return IsDisposed ? new ValueTask() : DisposeAsync(this, IsLockHeld);
         }
     }
 }
