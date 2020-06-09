@@ -58,26 +58,6 @@ namespace DotNext.IO.Pipelines
             }
         }
 
-        [StructLayout(LayoutKind.Auto)]
-        private struct LengthWriter : SevenBitEncodedInt.IWriter
-        {
-            private readonly Memory<byte> writer;
-            private int offset;
-
-            internal LengthWriter(IBufferWriter<byte> output)
-            {
-                writer = output.GetMemory(5);
-                offset = 0;
-            }
-
-            internal readonly int Count => offset;
-
-            void SevenBitEncodedInt.IWriter.WriteByte(byte value)
-            {
-                writer.Span[offset++] = value;
-            }
-        }
-
         private static async ValueTask<TResult> ReadAsync<TResult, TParser>(this PipeReader reader, TParser parser, CancellationToken token)
             where TParser : struct, IBufferReader<TResult>
         {
@@ -264,7 +244,7 @@ namespace DotNext.IO.Pipelines
         public static ValueTask<FlushResult> WriteAsync<T>(this PipeWriter writer, T value, CancellationToken token = default)
             where T : unmanaged
         {
-            writer.Write(Span.AsReadOnlyBytes(in value));
+            writer.Write(in value);
             return writer.FlushAsync(token);
         }
 
@@ -279,8 +259,8 @@ namespace DotNext.IO.Pipelines
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static ValueTask<FlushResult> WriteInt64Async(this PipeWriter writer, long value, bool littleEndian, CancellationToken token = default)
         {
-            value.ReverseIfNeeded(littleEndian);
-            return writer.WriteAsync(value, token);
+            writer.WriteInt64(value, littleEndian);
+            return writer.FlushAsync(token);
         }
 
         /// <summary>
@@ -294,8 +274,8 @@ namespace DotNext.IO.Pipelines
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static ValueTask<FlushResult> WriteInt32Async(this PipeWriter writer, int value, bool littleEndian, CancellationToken token = default)
         {
-            value.ReverseIfNeeded(littleEndian);
-            return writer.WriteAsync(value, token);
+            writer.WriteInt32(value, littleEndian);
+            return writer.FlushAsync(token);
         }
 
         /// <summary>
@@ -309,15 +289,8 @@ namespace DotNext.IO.Pipelines
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static ValueTask<FlushResult> WriteInt16Async(this PipeWriter writer, short value, bool littleEndian, CancellationToken token = default)
         {
-            value.ReverseIfNeeded(littleEndian);
-            return writer.WriteAsync(value, token);
-        }
-
-        private static void Write7BitEncodedInt(this IBufferWriter<byte> output, int value)
-        {
-            var writer = new LengthWriter(output);
-            SevenBitEncodedInt.Encode(ref writer, (uint)value);
-            output.Advance(writer.Count);
+            writer.WriteInt16(value, littleEndian);
+            return writer.FlushAsync(token);
         }
 
         private static ValueTask<FlushResult> WriteLengthAsync(this PipeWriter writer, ReadOnlyMemory<char> value, Encoding encoding, StringLengthEncoding? lengthFormat, CancellationToken token)
