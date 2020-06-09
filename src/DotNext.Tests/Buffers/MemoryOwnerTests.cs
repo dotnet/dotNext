@@ -75,5 +75,12 @@ namespace DotNext.Buffers
             owner[2] = 10;
             Equal(10, array[2]);
         }
+
+        [Fact]
+        public static void ArrayAllocation()
+        {
+            using var owner = MemoryAllocator.CreateArrayAllocator<int>().Invoke(4, false);
+            Equal(4, owner.Length);
+        }
     }
 }

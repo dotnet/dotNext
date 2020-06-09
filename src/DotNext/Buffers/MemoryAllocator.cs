@@ -71,5 +71,18 @@ namespace DotNext.Buffers
                 MemoryOwner<T>.Expand(ref result);
             return result;
         }
+
+        /// <summary>
+        /// Returns array allocator.
+        /// </summary>
+        /// <typeparam name="T">The type of elements in the array.</typeparam>
+        /// <returns>The array allocator.</returns>
+        public static MemoryAllocator<T> CreateArrayAllocator<T>()
+        {
+            return AllocateArray;
+
+            static MemoryOwner<T> AllocateArray(int length)
+                => new MemoryOwner<T>(OneDimensionalArray.New<T>(length));
+        }
     }
 }
