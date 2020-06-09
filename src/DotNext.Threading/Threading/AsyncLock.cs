@@ -289,7 +289,7 @@ namespace DotNext.Threading
         /// Destroy this lock and asynchronously dispose underlying lock object if it is owned by the given lock.
         /// </summary>
         /// <remarks>
-        /// If the given lock is an owner of the underlying lock object then this method will 
+        /// If the given lock is an owner of the underlying lock object then this method will
         /// call <see cref="IAsyncDisposable.DisposeAsync"/> or <see cref="IDisposable.Dispose()"/> on it;
         /// otherwise, the underlying lock object will not be destroyed.
         /// As a result, this lock is not usable after calling of this method.

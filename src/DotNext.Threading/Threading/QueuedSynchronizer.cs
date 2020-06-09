@@ -215,7 +215,7 @@ namespace DotNext.Threading
         private protected static bool IsTerminalNode(WaitNode? node)
             => node is DisposeAsyncNode;
 
-        [CallerMustBeSynchronized]        
+        [CallerMustBeSynchronized]
         private Task DisposeAsync()
         {
             DisposeAsyncNode disposeNode;
