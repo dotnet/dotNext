@@ -1,9 +1,13 @@
 using System;
 using System.Buffers;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace DotNext.Buffers
 {
+    using Text;
+    using StringLengthEncoding = IO.StringLengthEncoding;
+
     /// <summary>
     /// Represents extension methods for writting typed data into buffer.
     /// </summary>
@@ -80,6 +84,62 @@ namespace DotNext.Buffers
             var writer = new LengthWriter(output);
             SevenBitEncodedInt.Encode(ref writer, (uint)value);
             output.Advance(writer.Count);
+        }
+
+        internal static bool WriteLength(this IBufferWriter<byte> writer, ReadOnlySpan<char> value, Encoding encoding, StringLengthEncoding? lengthFormat)
+        {
+            if (lengthFormat is null)
+                return false;
+
+            var length = encoding.GetByteCount(value);
+            switch (lengthFormat.Value)
+            {
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(lengthFormat));
+                case StringLengthEncoding.PlainLittleEndian:
+                    length.ReverseIfNeeded(true);
+                    goto case StringLengthEncoding.Plain;
+                case StringLengthEncoding.PlainBigEndian:
+                    length.ReverseIfNeeded(false);
+                    goto case StringLengthEncoding.Plain;
+                case StringLengthEncoding.Plain:
+                    Write(writer, length);
+                    break;
+                case StringLengthEncoding.Compressed:
+                    Write7BitEncodedInt(writer, length);
+                    break;
+            }
+
+            return true;
+        }
+
+        private static void WriteString(IBufferWriter<byte> writer, ReadOnlySpan<char> value, Encoder encoder, int bytesPerChar, int bufferSize)
+        {
+            for (int charsLeft = value.Length, charsUsed, maxChars; charsLeft > 0; value = value.Slice(charsUsed), charsLeft -= charsUsed)
+            {
+                var buffer = writer.GetMemory(bufferSize);
+                maxChars = buffer.Length / bytesPerChar;
+                charsUsed = Math.Min(maxChars, charsLeft);
+                encoder.Convert(value.Slice(0, charsUsed), buffer.Span, charsUsed == charsLeft, out charsUsed, out var bytesUsed, out _);
+                writer.Advance(bytesUsed);
+            }
+        }
+
+        /// <summary>
+        /// Encodes string using the specified encoding.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The sequence of characters.</param>
+        /// <param name="context">The encoding context.</param>
+        /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
+        /// <param name="lengthFormat">String length encoding format; or <see langword="null"/> to prevent encoding of string length.</param>
+        public static void WriteString(this IBufferWriter<byte> writer, ReadOnlySpan<char> value, EncodingContext context, int bufferSize = 0, StringLengthEncoding? lengthFormat = null)
+        {
+            WriteLength(writer, value, context.Encoding, lengthFormat);
+            if (!value.IsEmpty)
+            {
+                WriteString(writer, value, context.GetEncoder(), context.Encoding.GetMaxByteCount(1), bufferSize);
+            }
         }
     }
 }

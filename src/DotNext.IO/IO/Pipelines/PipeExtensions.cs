@@ -294,37 +294,7 @@ namespace DotNext.IO.Pipelines
         }
 
         private static ValueTask<FlushResult> WriteLengthAsync(this PipeWriter writer, ReadOnlyMemory<char> value, Encoding encoding, StringLengthEncoding? lengthFormat, CancellationToken token)
-        {
-            ValueTask<FlushResult> result;
-            if (lengthFormat is null)
-            {
-                result = new ValueTask<FlushResult>(new FlushResult(false, false));
-            }
-            else
-            {
-                var length = encoding.GetByteCount(value.Span);
-                switch (lengthFormat.Value)
-                {
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(lengthFormat));
-                    case StringLengthEncoding.PlainLittleEndian:
-                        length.ReverseIfNeeded(true);
-                        goto case StringLengthEncoding.Plain;
-                    case StringLengthEncoding.PlainBigEndian:
-                        length.ReverseIfNeeded(false);
-                        goto case StringLengthEncoding.Plain;
-                    case StringLengthEncoding.Plain:
-                        result = writer.WriteAsync(length, token);
-                        break;
-                    case StringLengthEncoding.Compressed:
-                        writer.Write7BitEncodedInt(length);
-                        result = writer.FlushAsync(token);
-                        break;
-                }
-            }
-
-            return result;
-        }
+            => writer.WriteLength(value.Span, encoding, lengthFormat) ? writer.FlushAsync(token) : new ValueTask<FlushResult>(new FlushResult(false, false));
 
         /// <summary>
         /// Encodes the string to bytes and write them to pipe asynchronously.
@@ -343,7 +313,7 @@ namespace DotNext.IO.Pipelines
         {
             var result = await writer.WriteLengthAsync(value, context.Encoding, lengthFormat, token).ConfigureAwait(false);
             result.ThrowIfCancellationRequested(token);
-            if (value.Length == 0)
+            if (value.IsEmpty)
                 return;
             var encoder = context.GetEncoder();
             for (int charsLeft = value.Length, charsUsed, maxChars, bytesPerChar = context.Encoding.GetMaxByteCount(1); charsLeft > 0; value = value.Slice(charsUsed), charsLeft -= charsUsed)
