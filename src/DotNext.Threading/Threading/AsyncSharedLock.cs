@@ -201,7 +201,7 @@ namespace DotNext.Threading
                 stateHolder.RemainingLocks = ConcurrencyLevel - 1;
                 ResumePendingCallers();
             }
-            else if(!ProcessDisposeQueue())
+            else if (!ProcessDisposeQueue())
             {
                 Release(ref stateHolder);
             }
