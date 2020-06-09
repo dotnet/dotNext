@@ -45,25 +45,31 @@ Documentation for older versions:
 # What's new
 Release Date: MM-DD-2020
 
-<a href="https://www.nuget.org/packages/dotnext/2.5.0">DotNext 2.5.0</a>
+<a href="https://www.nuget.org/packages/dotnext/2.6.0">DotNext 2.6.0</a>
 * More ways to create `MemoryOwner<T>`
 * Removed copying of synchronization context when creating continuation for `Future` object
+* `Intrinsics.Throw` method that allows to throw exception even if it's not derived from [Exception](https://docs.microsoft.com/en-us/dotnet/api/system.exception) class. Useful for interop with code written in Managed C++.
 
-<a href="https://www.nuget.org/packages/dotnext.io/2.5.0">DotNext.IO 2.5.0</a>
+<a href="https://www.nuget.org/packages/dotnext.io/2.6.0">DotNext.IO 2.6.0</a>
 * Improved performance of `FileBufferingWriter`
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.5.0">DotNext.Metaprogramming 2.5.0</a>
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.6.0">DotNext.Metaprogramming 2.6.0</a>
 * Introduced null-coalescing assignment expression
 
-<a href="https://www.nuget.org/packages/dotnext.threading/2.5.0">DotNext.Threading 2.5.0</a>
+<a href="https://www.nuget.org/packages/dotnext.threading/2.6.0">DotNext.Threading 2.6.0</a>
 * Fixed race-condition caused by `AsyncTrigger.Signal` method
+* `AsyncLock` now implements [IAsyncDisposable](https://docs.microsoft.com/en-us/dotnet/api/system.iasyncdisposable) interface
+* `AsyncExclusiveLock`, `AsyncReaderWriterLock` and `AsyncSharedLock` now have support of graceful shutdown implemented via [IAsyncDisposable](https://docs.microsoft.com/en-us/dotnet/api/system.iasyncdisposable) interface
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/2.5.0">DotNext.Unsafe 2.5.0</a>
+<a href="https://www.nuget.org/packages/dotnext.unsafe/2.6.0">DotNext.Unsafe 2.6.0</a>
 * Ability to access memory-mapped file content via [ReadOnlySequence&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1)
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/2.5.0">DotNext.AspNetCore.Cluster 2.5.0</a>
-* Respect shutdown timeout inherited from parent host in Hosted Mode
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/2.6.0">DotNext.Net.Cluster 2.6.0</a>
+* Fixed behavior of `PersistentState.DisposeAsync` so it suppress finalization correctly
 
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/2.6.0">DotNext.AspNetCore.Cluster 2.6.0</a>
+* Respect shutdown timeout inherited from parent host in Hosted Mode
+* Updated dependencies
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
