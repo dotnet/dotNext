@@ -130,8 +130,31 @@ namespace DotNext.IO
         /// when you need an object implementing <see cref="IAsyncBinaryWriter"/> interface.
         /// </remarks>
         /// <param name="output">The stream instance.</param>
-        /// <returns>The stream writer.</returns>
+        /// <returns>The binary writer.</returns>
         public static IAsyncBinaryWriter Create(PipeWriter output)
             => new Pipelines.PipeBinaryWriter(output);
+
+        /// <summary>
+        /// Creates default implementation of binary writer for the pipe.
+        /// </summary>
+        /// <param name="output">The stream instance.</param>
+        /// <param name="stringLengthThreshold">
+        /// The threshold for the number of characters.
+        /// If the number of characters is less than or equal to this threshold then
+        /// writer encodes the whole sequence of characters in memory and then flushes the pipe;
+        /// otherwise, the pipe flushes multiple times for each portion of the sequence.
+        /// </param>
+        /// <param name="encodingBufferSize">The size of internal buffer used to encode characters.</param>
+        /// <returns>The binary writer.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="encodingBufferSize"/> or <paramref name="stringLengthThreshold"/> is less than zero.</exception>
+        public static IAsyncBinaryWriter Create(PipeWriter output, int stringLengthThreshold, int encodingBufferSize)
+        {
+            if (stringLengthThreshold < 0)
+                throw new ArgumentOutOfRangeException(nameof(stringLengthThreshold));
+            if (encodingBufferSize < 0)
+                throw new ArgumentOutOfRangeException(nameof(encodingBufferSize));
+
+            return new Pipelines.PipeBinaryWriter(output, stringLengthThreshold, encodingBufferSize);
+        }
     }
 }

@@ -133,7 +133,7 @@ namespace DotNext.Buffers
         /// <param name="context">The encoding context.</param>
         /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
         /// <param name="lengthFormat">String length encoding format; or <see langword="null"/> to prevent encoding of string length.</param>
-        public static void WriteString(this IBufferWriter<byte> writer, ReadOnlySpan<char> value, EncodingContext context, int bufferSize = 0, StringLengthEncoding? lengthFormat = null)
+        public static void WriteString(this IBufferWriter<byte> writer, ReadOnlySpan<char> value, in EncodingContext context, int bufferSize = 0, StringLengthEncoding? lengthFormat = null)
         {
             WriteLength(writer, value, context.Encoding, lengthFormat);
             if (!value.IsEmpty)
