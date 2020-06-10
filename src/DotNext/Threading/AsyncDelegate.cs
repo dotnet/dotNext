@@ -302,6 +302,7 @@ namespace DotNext.Threading
         /// <summary>
         /// Invokes synchronous delegate asynchronously.
         /// </summary>
+        /// <typeparam name="TResult">The type of result of asynchronous operation.</typeparam>
         /// <param name="function">The function to invoke asynchronously.</param>
         /// <param name="state">The state object to be passed to the action.</param>
         /// <param name="callback">The callback to be invoked on completion.</param>
@@ -320,6 +321,7 @@ namespace DotNext.Threading
         /// <summary>
         /// Invokes synchronous delegate asynchronously.
         /// </summary>
+        /// <typeparam name="TResult">The type of result of asynchronous operation.</typeparam>
         /// <param name="function">The function to invoke asynchronously.</param>
         /// <param name="state">The state object to be passed to the action.</param>
         /// <param name="callback">The callback to be invoked on completion.</param>
