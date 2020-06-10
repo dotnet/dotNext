@@ -377,13 +377,20 @@ namespace DotNext.IO
 
             if (HasFlag(options, FileOptions.Asynchronous))
             {
-                task = WriteAsync(buffer, offset, count, CancellationToken.None).ContinueWith(Continuation, state);
+                task = WriteAsync(buffer, offset, count, CancellationToken.None)
+                    .ContinueWith(Continuation, state, CancellationToken.None, TaskContinuationOptions.None, TaskScheduler.Default);
+
                 if (callback != null)
-                    task.ConfigureAwait(false).GetAwaiter().OnCompleted(() => callback(task));
+                {
+                    if (task.IsCompleted)
+                        callback(task);
+                    else
+                        task.ConfigureAwait(false).GetAwaiter().OnCompleted(() => callback(task));
+                }
             }
             else
             {
-            //start synchronous write as separated task
+                // start synchronous write as separated task
                 task = new Action<object?>(_ => Write(buffer, offset, count)).BeginInvoke(state, callback);
             }
 
