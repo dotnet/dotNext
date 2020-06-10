@@ -264,6 +264,22 @@ namespace DotNext.IO.Pipelines
         }
 
         /// <summary>
+        /// Encodes 64-bit unsigned integer asynchronously.
+        /// </summary>
+        /// <param name="writer">The pipe writer.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="littleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing state of asynchronous execution.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        [CLSCompliant(false)]
+        public static ValueTask<FlushResult> WriteUInt64Async(this PipeWriter writer, ulong value, bool littleEndian, CancellationToken token = default)
+        {
+            writer.WriteUInt64(value, littleEndian);
+            return writer.FlushAsync(token);
+        }
+
+        /// <summary>
         /// Encodes 32-bit signed integer asynchronously.
         /// </summary>
         /// <param name="writer">The pipe writer.</param>
@@ -279,6 +295,22 @@ namespace DotNext.IO.Pipelines
         }
 
         /// <summary>
+        /// Encodes 32-bit unsigned integer asynchronously.
+        /// </summary>
+        /// <param name="writer">The pipe writer.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="littleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing state of asynchronous execution.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        [CLSCompliant(false)]
+        public static ValueTask<FlushResult> WriteUInt32Async(this PipeWriter writer, uint value, bool littleEndian, CancellationToken token = default)
+        {
+            writer.WriteUInt32(value, littleEndian);
+            return writer.FlushAsync(token);
+        }
+
+        /// <summary>
         /// Encodes 16-bit signed integer asynchronously.
         /// </summary>
         /// <param name="writer">The pipe writer.</param>
@@ -290,6 +322,22 @@ namespace DotNext.IO.Pipelines
         public static ValueTask<FlushResult> WriteInt16Async(this PipeWriter writer, short value, bool littleEndian, CancellationToken token = default)
         {
             writer.WriteInt16(value, littleEndian);
+            return writer.FlushAsync(token);
+        }
+
+        /// <summary>
+        /// Encodes 16-bit unsigned integer asynchronously.
+        /// </summary>
+        /// <param name="writer">The pipe writer.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="littleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing state of asynchronous execution.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        [CLSCompliant(false)]
+        public static ValueTask<FlushResult> WriteUInt16Async(this PipeWriter writer, ushort value, bool littleEndian, CancellationToken token = default)
+        {
+            writer.WriteUInt16(value, littleEndian);
             return writer.FlushAsync(token);
         }
 

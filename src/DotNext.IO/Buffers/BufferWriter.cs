@@ -56,6 +56,19 @@ namespace DotNext.Buffers
         }
 
         /// <summary>
+        /// Encodes 64-bit unsigned integer.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="littleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
+        [CLSCompliant(false)]
+        public static void WriteUInt64(this IBufferWriter<byte> writer, ulong value, bool littleEndian)
+        {
+            value.ReverseIfNeeded(littleEndian);
+            Write(writer, value);
+        }
+
+        /// <summary>
         /// Encodes 32-bit signed integer.
         /// </summary>
         /// <param name="writer">The buffer writer.</param>
@@ -68,12 +81,38 @@ namespace DotNext.Buffers
         }
 
         /// <summary>
+        /// Encodes 32-bit unsigned integer.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="littleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
+        [CLSCompliant(false)]
+        public static void WriteUInt32(this IBufferWriter<byte> writer, uint value, bool littleEndian)
+        {
+            value.ReverseIfNeeded(littleEndian);
+            Write(writer, value);
+        }
+
+        /// <summary>
         /// Encodes 16-bit signed integer.
         /// </summary>
         /// <param name="writer">The buffer writer.</param>
         /// <param name="value">The value to encode.</param>
         /// <param name="littleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
         public static void WriteInt16(this IBufferWriter<byte> writer, short value, bool littleEndian)
+        {
+            value.ReverseIfNeeded(littleEndian);
+            Write(writer, value);
+        }
+
+        /// <summary>
+        /// Encodes 16-bit unsigned integer.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="littleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
+        [CLSCompliant(false)]
+        public static void WriteUInt16(this IBufferWriter<byte> writer, ushort value, bool littleEndian)
         {
             value.ReverseIfNeeded(littleEndian);
             Write(writer, value);
