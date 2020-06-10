@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
@@ -25,14 +26,28 @@ namespace DotNext.IO
             Equal(8, result[2]);
         }
 
-        [Fact]
-        public static async Task ReadBlittableType()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public static void ReadBlittableType(bool littleEndian)
         {
-            var ms = new MemoryStream(1024);
-            ms.Write(10M);
-            ms.Position = 0;
-            IAsyncBinaryReader reader = IAsyncBinaryReader.Create(ms.ToArray());
-            Equal(10M, await reader.ReadAsync<decimal>());
+            var writer = new ArrayBufferWriter<byte>();
+            writer.Write(10M);
+            writer.WriteInt64(42L, littleEndian);
+            writer.WriteUInt64(43UL, littleEndian);
+            writer.WriteInt32(44, littleEndian);
+            writer.WriteUInt32(45U, littleEndian);
+            writer.WriteInt16(46, littleEndian);
+            writer.WriteUInt16(47, littleEndian);
+
+            var reader = IAsyncBinaryReader.Create(writer.WrittenMemory);
+            Equal(10M, reader.Read<decimal>());
+            Equal(42L, reader.ReadInt64(littleEndian));
+            Equal(43UL, reader.ReadUInt64(littleEndian));
+            Equal(44, reader.ReadInt32(littleEndian));
+            Equal(45U, reader.ReadUInt32(littleEndian));
+            Equal(46, reader.ReadInt16(littleEndian));
+            Equal(47, reader.ReadUInt16(littleEndian));
         }
 
         private static async Task ReadWriteStringUsingEncodingAsync(string value, Encoding encoding, StringLengthEncoding? lengthEnc)
