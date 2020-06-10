@@ -11,18 +11,32 @@ namespace DotNext.IO.Pipelines
     [ExcludeFromCodeCoverage]
     public sealed class PipeExtensionsTests : Test
     {
-        [Fact]
-        public static async Task EncodeDecodeValue()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public static async Task EncodeDecodeValues(bool littleEndian)
         {
-            static async void WriteValueAsync(decimal value, PipeWriter writer)
+            static async void WriteValuesAsync(PipeWriter writer, bool littleEndian)
             {
-                await writer.WriteAsync(value);
+                await writer.WriteAsync(20M);
+                await writer.WriteInt64Async(42L, littleEndian);
+                await writer.WriteUInt64Async(43UL, littleEndian);
+                await writer.WriteInt32Async(44, littleEndian);
+                await writer.WriteUInt32Async(45U, littleEndian);
+                await writer.WriteInt16Async(46, littleEndian);
+                await writer.WriteUInt16Async(47, littleEndian);
                 await writer.CompleteAsync();
             }
 
             var pipe = new Pipe();
-            WriteValueAsync(20M, pipe.Writer);
+            WriteValuesAsync(pipe.Writer, littleEndian);
             Equal(20M, await pipe.Reader.ReadAsync<decimal>());
+            Equal(42L, await pipe.Reader.ReadInt64Async(littleEndian));
+            Equal(43UL, await pipe.Reader.ReadUInt64Async(littleEndian));
+            Equal(44, await pipe.Reader.ReadInt32Async(littleEndian));
+            Equal(45U, await pipe.Reader.ReadUInt32Async(littleEndian));
+            Equal(46, await pipe.Reader.ReadInt16Async(littleEndian));
+            Equal(47, await pipe.Reader.ReadUInt16Async(littleEndian));
         }
 
         [Fact]
