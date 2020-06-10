@@ -13,13 +13,21 @@ namespace DotNext.Buffers
     [ExcludeFromCodeCoverage]
     public sealed class BufferWriterTests : Test
     {
-        [Fact]
-        public static async Task ReadBlittableType()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public static async Task ReadBlittableTypes(bool littleEndian)
         {
             var writer = new ArrayBufferWriter<byte>();
             writer.Write(10M);
+            writer.WriteInt64(42L, littleEndian);
+            writer.WriteInt32(44, littleEndian);
+            writer.WriteInt16(46, littleEndian);
             IAsyncBinaryReader reader = IAsyncBinaryReader.Create(writer.WrittenMemory);
             Equal(10M, await reader.ReadAsync<decimal>());
+            Equal(42L, await reader.ReadInt64Async(littleEndian));
+            Equal(44, await reader.ReadInt32Async(littleEndian));
+            Equal(46, await reader.ReadInt16Async(littleEndian));
         }
 
         private static async Task ReadWriteStringUsingEncodingAsync(string value, Encoding encoding, int bufferSize, StringLengthEncoding? lengthEnc)
