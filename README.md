@@ -48,10 +48,11 @@ Release Date: MM-DD-2020
 <a href="https://www.nuget.org/packages/dotnext/2.6.0">DotNext 2.6.0</a>
 * More ways to create `MemoryOwner<T>`
 * Removed copying of synchronization context when creating continuation for `Future` object
-* `Intrinsics.Throw` method that allows to throw exception even if it's not derived from [Exception](https://docs.microsoft.com/en-us/dotnet/api/system.exception) class. Useful for interop with code written in Managed C++.
+* Introduced APM helper methods in `AsyncDelegate` class
 
 <a href="https://www.nuget.org/packages/dotnext.io/2.6.0">DotNext.IO 2.6.0</a>
 * Improved performance of `FileBufferingWriter`
+* `FileBufferingWriter` now contains correctly implemented `BeginWrite` and `EndWrite` methods 
 * Introduced `BufferWriter` class with extension methods for [IBufferWriter&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) aimed to encoding strings, primitive and blittable types
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.6.0">DotNext.Metaprogramming 2.6.0</a>
