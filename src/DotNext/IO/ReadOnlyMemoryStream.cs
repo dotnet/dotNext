@@ -137,7 +137,19 @@ namespace DotNext.IO
         public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
             => new Func<object?, int>(_ => Read(buffer, offset, count)).BeginInvoke(state, callback);
 
-        public override int EndRead(IAsyncResult ar) => ((Task<int>)ar).Result;
+        private static int EndRead(Task<int> task)
+        {
+            try
+            {
+                return task.Result;
+            }
+            finally
+            {
+                task.Dispose();
+            }
+        }
+        
+        public override int EndRead(IAsyncResult ar) => EndRead((Task<int>)ar);
 
         public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
             => throw new NotSupportedException();

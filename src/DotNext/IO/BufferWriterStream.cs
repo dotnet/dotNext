@@ -78,7 +78,19 @@ namespace DotNext.IO
         public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
             => new Action<object?>(_ => Write(buffer, offset, count)).BeginInvoke(state, callback);
 
-        public override void EndWrite(IAsyncResult ar) => ((Task)ar).ConfigureAwait(false).GetAwaiter().GetResult();
+        private static void EndWrite(Task task)
+        {
+            try
+            {
+                task.ConfigureAwait(false).GetAwaiter().GetResult();
+            }
+            finally
+            {
+                task.Dispose();
+            }
+        }
+
+        public override void EndWrite(IAsyncResult ar) => EndWrite((Task)ar);
 
         public override void CopyTo(Stream destination, int bufferSize) => throw new NotSupportedException();
 
