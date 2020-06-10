@@ -203,11 +203,9 @@ namespace DotNext.IO
             Throws<IOException>(() => src.Seek(-500L, SeekOrigin.End));
         }
 
-        private sealed class CallbackChecker
+        private sealed class CallbackChecker : TaskCompletionSource<bool>
         {
-            internal volatile bool Value;
-
-            internal void DoCallback(IAsyncResult ar) => Value = true;
+            internal void DoCallback(IAsyncResult ar) => SetResult(true);
         }
 
         [Fact]
@@ -216,13 +214,28 @@ namespace DotNext.IO
             using var src = new ReadOnlyMemory<byte>(data).AsStream();
             var buffer = new byte[4];
             src.Position = 1;
-            var checker = new CallbackChecker();
-            var ar = src.BeginRead(buffer, 0, 2, checker.DoCallback, "state");
+            var ar = src.BeginRead(buffer, 0, 2, null, "state");
             False(ar.CompletedSynchronously);
             Equal("state", ar.AsyncState);
             True(ar.AsyncWaitHandle.WaitOne(DefaultTimeout));
             Equal(2, src.EndRead(ar));
-            True(checker.Value);
+            Equal(data[1], buffer[0]);
+            Equal(data[2], buffer[1]);
+            Equal(0, buffer[2]);
+        }
+
+        [Fact]
+        public static async Task ReadApm2()
+        {
+            using var src = new ReadOnlyMemory<byte>(data).AsStream();
+            var buffer = new byte[4];
+            src.Position = 1;
+            var checker = new CallbackChecker();
+            var ar = src.BeginRead(buffer, 0, 2, checker.DoCallback, "state");
+            False(ar.CompletedSynchronously);
+            Equal("state", ar.AsyncState);
+            True(await checker.Task);
+            Equal(2, src.EndRead(ar));
             Equal(data[1], buffer[0]);
             Equal(data[2], buffer[1]);
             Equal(0, buffer[2]);
@@ -382,6 +395,22 @@ namespace DotNext.IO
             Equal(1L, stream.Position);
             Equal(1, writer.WrittenCount);
             stream.Flush();
+            Equal(40, writer.WrittenSpan[0]);
+        }
+
+        [Fact]
+        public static async Task BufferWriterToWritableStreamApm2()
+        {
+            var writer = new ArrayBufferWriter<byte>();
+            using var stream = writer.AsStream();
+            var checker = new CallbackChecker();
+            var ar = stream.BeginWrite(new byte[2] { 30, 40 }, 1, 1, checker.DoCallback, "state");
+            Equal("state", ar.AsyncState);
+            True(await checker.Task);
+            stream.EndWrite(ar);
+            Equal(1L, stream.Position);
+            Equal(1, writer.WrittenCount);
+            await stream.FlushAsync();
             Equal(40, writer.WrittenSpan[0]);
         }
 

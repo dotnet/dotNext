@@ -375,7 +375,36 @@ namespace DotNext.IO
         [InlineData(10, true)]
         [InlineData(100, true)]
         [InlineData(1000, true)]
-        public static async Task ReadWriteApm(int threshold, bool asyncIO)
+        public static void ReadWriteApm(int threshold, bool asyncIO)
+        {
+            using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: asyncIO);
+            var bytes = new byte[500];
+            for (byte i = 0; i < byte.MaxValue; i++)
+                bytes[i] = i;
+            
+            var ar = writer.BeginWrite(bytes, 0, byte.MaxValue, null, "state1");
+            Equal("state1", ar.AsyncState);
+            True(ar.AsyncWaitHandle.WaitOne(DefaultTimeout));
+            writer.EndWrite(ar);
+
+            ar = writer.BeginWrite(bytes, byte.MaxValue, bytes.Length - byte.MaxValue, null, "state2");
+            Equal("state2", ar.AsyncState);
+            True(ar.AsyncWaitHandle.WaitOne(DefaultTimeout));
+            writer.EndWrite(ar);
+
+            Equal(bytes.Length, writer.Length);
+            using var manager = writer.GetWrittenContent();
+            Equal(bytes, manager.Memory.ToArray());
+        }
+
+        [Theory]
+        [InlineData(10, false)]
+        [InlineData(100, false)]
+        [InlineData(1000, false)]
+        [InlineData(10, true)]
+        [InlineData(100, true)]
+        [InlineData(1000, true)]
+        public static async Task ReadWriteApm2(int threshold, bool asyncIO)
         {
             using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: asyncIO);
             var bytes = new byte[500];
