@@ -148,7 +148,7 @@ namespace DotNext.IO
                 task.Dispose();
             }
         }
-        
+
         public override int EndRead(IAsyncResult ar) => EndRead((Task<int>)ar);
 
         public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
