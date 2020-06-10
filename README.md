@@ -54,6 +54,7 @@ Release Date: MM-DD-2020
 * Improved performance of `FileBufferingWriter`
 * `FileBufferingWriter` now contains correctly implemented `BeginWrite` and `EndWrite` methods 
 * Introduced `BufferWriter` class with extension methods for [IBufferWriter&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) aimed to encoding strings, primitive and blittable types
+* Support of `ulong`, `uint` and `ushort` data types available for encoding/decoding in `SequenceBinaryReader` and `PipeExtensions` classes
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.6.0">DotNext.Metaprogramming 2.6.0</a>
 * Introduced null-coalescing assignment expression
