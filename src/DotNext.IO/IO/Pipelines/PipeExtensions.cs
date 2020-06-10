@@ -294,7 +294,13 @@ namespace DotNext.IO.Pipelines
         }
 
         private static ValueTask<FlushResult> WriteLengthAsync(this PipeWriter writer, ReadOnlyMemory<char> value, Encoding encoding, StringLengthEncoding? lengthFormat, CancellationToken token)
-            => writer.WriteLength(value.Span, encoding, lengthFormat) ? writer.FlushAsync(token) : new ValueTask<FlushResult>(new FlushResult(false, false));
+        {
+            if (lengthFormat is null)
+                return new ValueTask<FlushResult>(new FlushResult(false, false));
+
+            writer.WriteLength(value.Span, encoding, lengthFormat.GetValueOrDefault());
+            return writer.FlushAsync(token);
+        }
 
         /// <summary>
         /// Encodes the string to bytes and write them to pipe asynchronously.

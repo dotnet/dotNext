@@ -86,13 +86,10 @@ namespace DotNext.Buffers
             output.Advance(writer.Count);
         }
 
-        internal static bool WriteLength(this IBufferWriter<byte> writer, ReadOnlySpan<char> value, Encoding encoding, StringLengthEncoding? lengthFormat)
+        internal static void WriteLength(this IBufferWriter<byte> writer, ReadOnlySpan<char> value, Encoding encoding, StringLengthEncoding lengthFormat)
         {
-            if (lengthFormat is null)
-                return false;
-
             var length = encoding.GetByteCount(value);
-            switch (lengthFormat.Value)
+            switch (lengthFormat)
             {
                 default:
                     throw new ArgumentOutOfRangeException(nameof(lengthFormat));
@@ -109,8 +106,6 @@ namespace DotNext.Buffers
                     Write7BitEncodedInt(writer, length);
                     break;
             }
-
-            return true;
         }
 
         private static void WriteString(IBufferWriter<byte> writer, ReadOnlySpan<char> value, Encoder encoder, int bytesPerChar, int bufferSize)
@@ -135,11 +130,11 @@ namespace DotNext.Buffers
         /// <param name="lengthFormat">String length encoding format; or <see langword="null"/> to prevent encoding of string length.</param>
         public static void WriteString(this IBufferWriter<byte> writer, ReadOnlySpan<char> value, in EncodingContext context, int bufferSize = 0, StringLengthEncoding? lengthFormat = null)
         {
-            WriteLength(writer, value, context.Encoding, lengthFormat);
+            if (lengthFormat.HasValue)
+                WriteLength(writer, value, context.Encoding, lengthFormat.GetValueOrDefault());
+
             if (!value.IsEmpty)
-            {
                 WriteString(writer, value, context.GetEncoder(), context.Encoding.GetMaxByteCount(1), bufferSize);
-            }
         }
     }
 }
