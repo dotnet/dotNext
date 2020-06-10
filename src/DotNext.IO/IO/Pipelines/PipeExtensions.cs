@@ -169,6 +169,23 @@ namespace DotNext.IO.Pipelines
         }
 
         /// <summary>
+        /// Decodes 64-bit unsigned integer using the specified endianness.
+        /// </summary>
+        /// <param name="reader">The pipe reader.</param>
+        /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        [CLSCompliant(false)]
+        public static async ValueTask<ulong> ReadUInt64Async(this PipeReader reader, bool littleEndian, CancellationToken token = default)
+        {
+            var result = await reader.ReadAsync<ulong>(token).ConfigureAwait(false);
+            result.ReverseIfNeeded(littleEndian);
+            return result;
+        }
+
+        /// <summary>
         /// Decodes 32-bit signed integer using the specified endianness.
         /// </summary>
         /// <param name="reader">The pipe reader.</param>
@@ -185,6 +202,23 @@ namespace DotNext.IO.Pipelines
         }
 
         /// <summary>
+        /// Decodes 32-bit unsigned integer using the specified endianness.
+        /// </summary>
+        /// <param name="reader">The pipe reader.</param>
+        /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        [CLSCompliant(false)]
+        public static async ValueTask<uint> ReadUInt32Async(this PipeReader reader, bool littleEndian, CancellationToken token = default)
+        {
+            var result = await reader.ReadAsync<uint>(token).ConfigureAwait(false);
+            result.ReverseIfNeeded(littleEndian);
+            return result;
+        }
+
+        /// <summary>
         /// Decodes 16-bit signed integer using the specified endianness.
         /// </summary>
         /// <param name="reader">The pipe reader.</param>
@@ -196,6 +230,23 @@ namespace DotNext.IO.Pipelines
         public static async ValueTask<short> ReadInt16Async(this PipeReader reader, bool littleEndian, CancellationToken token = default)
         {
             var result = await reader.ReadAsync<short>(token).ConfigureAwait(false);
+            result.ReverseIfNeeded(littleEndian);
+            return result;
+        }
+
+        /// <summary>
+        /// Decodes 16-bit signed integer using the specified endianness.
+        /// </summary>
+        /// <param name="reader">The pipe reader.</param>
+        /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        [CLSCompliant(false)]
+        public static async ValueTask<ushort> ReadUInt16Async(this PipeReader reader, bool littleEndian, CancellationToken token = default)
+        {
+            var result = await reader.ReadAsync<ushort>(token).ConfigureAwait(false);
             result.ReverseIfNeeded(littleEndian);
             return result;
         }
