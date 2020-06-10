@@ -203,17 +203,26 @@ namespace DotNext.IO
             Throws<IOException>(() => src.Seek(-500L, SeekOrigin.End));
         }
 
+        private sealed class CallbackChecker
+        {
+            internal volatile bool Value;
+
+            internal void DoCallback(IAsyncResult ar) => Value = true;
+        }
+
         [Fact]
         public static void ReadApm()
         {
             using var src = new ReadOnlyMemory<byte>(data).AsStream();
             var buffer = new byte[4];
             src.Position = 1;
-            var ar = src.BeginRead(buffer, 0, 2, null, "state");
+            var checker = new CallbackChecker();
+            var ar = src.BeginRead(buffer, 0, 2, checker.DoCallback, "state");
             False(ar.CompletedSynchronously);
             Equal("state", ar.AsyncState);
             True(ar.AsyncWaitHandle.WaitOne(DefaultTimeout));
             Equal(2, src.EndRead(ar));
+            True(checker.Value);
             Equal(data[1], buffer[0]);
             Equal(data[2], buffer[1]);
             Equal(0, buffer[2]);
