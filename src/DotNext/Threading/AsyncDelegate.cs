@@ -1,9 +1,11 @@
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace DotNext.Threading
 {
     using Runtime.CompilerServices;
+    using static Tasks.Continuation;
 
     /// <summary>
     /// Provides set of methods for asynchronous invocation of various delegates.
@@ -259,5 +261,79 @@ namespace DotNext.Threading
         /// <returns>The task representing state of asynchronous invocation.</returns>
         public static AsyncDelegateFuture InvokeAsync<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> action, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, CancellationToken token = default)
             => token.IsCancellationRequested ? CanceledAsyncDelegateFuture.Instance : new ActionFuture<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, token).Invoke(action);
+
+        /// <summary>
+        /// Invokes synchronous delegate asynchronously.
+        /// </summary>
+        /// <param name="action">The action to invoke asynchronously.</param>
+        /// <param name="state">The state object to be passed to the action.</param>
+        /// <param name="callback">The callback to be invoked on completion.</param>
+        /// <param name="options">The task scheduling options.</param>
+        /// <param name="scheduler">The task scheduler.</param>
+        /// <returns>The task representing asynchronous execution of the action.</returns>
+        public static Task BeginInvoke(this Action<object?> action, object? state, AsyncCallback? callback, TaskCreationOptions options = TaskCreationOptions.None, TaskScheduler? scheduler = null)
+        {
+            var task = Task.Factory.StartNew(action, state, CancellationToken.None, options, scheduler ?? TaskScheduler.Default);
+            if (callback != null)
+                task.OnCompleted(callback);
+
+            return task;
+        }
+
+        /// <summary>
+        /// Invokes synchronous delegate asynchronously.
+        /// </summary>
+        /// <param name="action">The action to invoke asynchronously.</param>
+        /// <param name="state">The state object to be passed to the action.</param>
+        /// <param name="callback">The callback to be invoked on completion.</param>
+        /// <param name="options">The task scheduling options.</param>
+        /// <param name="scheduler">The task scheduler.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing asynchronous execution of the action.</returns>
+        public static Task BeginInvoke(this Action<object?, CancellationToken> action, object? state, AsyncCallback? callback, TaskCreationOptions options = TaskCreationOptions.None, TaskScheduler? scheduler = null, CancellationToken token = default)
+        {
+            var task = Task.Factory.StartNew(s => action(s, token), state, token, options, scheduler ?? TaskScheduler.Default);
+            if (callback != null)
+                task.OnCompleted(callback);
+
+            return task;
+        }
+
+        /// <summary>
+        /// Invokes synchronous delegate asynchronously.
+        /// </summary>
+        /// <param name="function">The function to invoke asynchronously.</param>
+        /// <param name="state">The state object to be passed to the action.</param>
+        /// <param name="callback">The callback to be invoked on completion.</param>
+        /// <param name="options">The task scheduling options.</param>
+        /// <param name="scheduler">The task scheduler.</param>
+        /// <returns>The task representing asynchronous execution of the action.</returns>
+        public static Task<TResult> BeginInvoke<TResult>(this Func<object?, TResult> function, object? state, AsyncCallback? callback, TaskCreationOptions options = TaskCreationOptions.None, TaskScheduler? scheduler = null)
+        {
+            var task = Task<TResult>.Factory.StartNew(function, state, CancellationToken.None, options, scheduler ?? TaskScheduler.Default);
+            if (callback != null)
+                task.OnCompleted(callback);
+
+            return task;
+        }
+
+        /// <summary>
+        /// Invokes synchronous delegate asynchronously.
+        /// </summary>
+        /// <param name="function">The function to invoke asynchronously.</param>
+        /// <param name="state">The state object to be passed to the action.</param>
+        /// <param name="callback">The callback to be invoked on completion.</param>
+        /// <param name="options">The task scheduling options.</param>
+        /// <param name="scheduler">The task scheduler.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing asynchronous execution of the action.</returns>
+        public static Task<TResult> BeginInvoke<TResult>(this Func<object?, CancellationToken, TResult> function, object? state, AsyncCallback? callback, TaskCreationOptions options = TaskCreationOptions.None, TaskScheduler? scheduler = null, CancellationToken token = default)
+        {
+            var task = Task<TResult>.Factory.StartNew(s => function(s, token), state, token, options, scheduler ?? TaskScheduler.Default);
+            if (callback != null)
+                task.OnCompleted(callback);
+
+            return task;
+        }
     }
 }

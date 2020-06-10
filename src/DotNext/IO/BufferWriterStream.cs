@@ -7,7 +7,7 @@ using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.IO
 {
-    using static Threading.Tasks.Continuation;
+    using static Threading.AsyncDelegate;
 
     internal sealed class BufferWriterStream<TWriter> : Stream
         where TWriter : class, IBufferWriter<byte>
@@ -76,19 +76,7 @@ namespace DotNext.IO
         }
 
         public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
-        {
-            var task = Task<int>.Factory.StartNew(
-                s =>
-            {
-                Write(buffer, offset, count);
-                return count;
-            }, state);
-
-            if (!(callback is null))
-                task.OnCompleted(callback);
-
-            return task;
-        }
+            => new Action<object?>(_ => Write(buffer, offset, count)).BeginInvoke(state, callback);
 
         public override void EndWrite(IAsyncResult ar) => ((Task)ar).ConfigureAwait(false).GetAwaiter().GetResult();
 
