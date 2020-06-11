@@ -2,6 +2,7 @@ using System;
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.IO.Pipelines;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
@@ -9,6 +10,7 @@ using Xunit;
 namespace DotNext.IO
 {
     using Buffers;
+    using static Pipelines.PipeExtensions;
 
     [ExcludeFromCodeCoverage]
     public sealed class SequenceBinaryReaderTests : Test
@@ -24,6 +26,30 @@ namespace DotNext.IO
             Equal(1, result[0]);
             Equal(5, result[1]);
             Equal(8, result[2]);
+        }
+
+        [Fact]
+        public static async Task CopyToStream()
+        {
+            var content = new byte[] { 1, 5, 8, 9 };
+            IAsyncBinaryReader reader = IAsyncBinaryReader.Create(new ChunkSequence<byte>(content, 2).ToReadOnlySequence());
+            using var ms = new MemoryStream();
+            await reader.CopyToAsync(ms);
+            ms.Position = 0;
+            Equal(content, ms.ToArray());
+        }
+
+        [Fact]
+        public static async Task CopyToPipe()
+        {
+            var expected = new byte[] { 1, 5, 8, 9 };
+            IAsyncBinaryReader reader = IAsyncBinaryReader.Create(new ChunkSequence<byte>(expected, 2).ToReadOnlySequence());
+            var pipe = new Pipe();
+            await reader.CopyToAsync(pipe.Writer);
+            await pipe.Writer.CompleteAsync();
+            var actual = new byte[expected.Length];
+            await pipe.Reader.ReadBlockAsync(actual);
+            Equal(expected, actual);
         }
 
         [Theory]

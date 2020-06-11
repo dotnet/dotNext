@@ -9,7 +9,7 @@ using Missing = System.Reflection.Missing;
 namespace DotNext.IO
 {
     using Buffers;
-    using static Pipelines.ResultExtensions;
+    using static Pipelines.PipeExtensions;
     using DecodingContext = Text.DecodingContext;
 
     /// <summary>
@@ -235,22 +235,11 @@ namespace DotNext.IO
                 new ValueTask<string>(ReadString(lengthFormat, in context));
 
         /// <inheritdoc/>
-        async Task IAsyncBinaryReader.CopyToAsync(Stream output, CancellationToken token)
-        {
-            while (sequence.TryGet(ref position, out var block))
-                await output.WriteAsync(block, token).ConfigureAwait(false);
-        }
+        Task IAsyncBinaryReader.CopyToAsync(Stream output, CancellationToken token)
+            => output.WriteAsync(sequence.Slice(position), token).AsTask();
 
         /// <inheritdoc/>
-        async Task IAsyncBinaryReader.CopyToAsync(PipeWriter output, CancellationToken token)
-        {
-            while (sequence.TryGet(ref position, out var block))
-            {
-                var result = await output.WriteAsync(block, token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested();
-                if (result.IsCompleted)
-                    break;
-            }
-        }
+        Task IAsyncBinaryReader.CopyToAsync(PipeWriter output, CancellationToken token)
+            => output.WriteAsync(sequence.Slice(position), token).AsTask();
     }
 }
