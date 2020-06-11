@@ -41,6 +41,13 @@ using(await asyncLock.AcquireAsync(CancellationToken.None))
 }
 ```
 
+`AsyncLock` implementing [IAsyncDisposable](https://docs.microsoft.com/en-us/dotnet/api/system.iasyncdisposable) interface for graceful shutdown if supported by underlying lock type. The following lock types have graceful shutdown:
+* [AsyncExclusiveLock](./exclusive.md)
+* [AsyncReaderWriterLock](./rwlock.md)
+* [AsyncSharedLock](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncExclusiveLock.html)
+
+Details of graceful shutdown described in related articles.
+
 # Built-in Reader/Writer Synchronization
 Exclusive lock may not be applicable due to performance reasons for some data types. For example, exclusive lock for dictionary or list is redundant because there are two consumers of these objects: writers and readers.
 
