@@ -66,14 +66,39 @@ var result = await pipe.Reader.ReadStringAsync(StringLengthEncoding.Plain, Encod
 
 In advance to strings, the library supports decoding and encoding values of arbitrary blittable value types.
 ```csharp
-using DotNext.IO;
 using DotNext.IO.Pipelines;
 using System.IO.Pipelines;
 
-const string value = "Hello, world!";
 var pipe = new Pipe();
 await pipe.Writer.WriteAsync(Guid.NewGuid());
 var result = await pipe.Reader.ReadAsync<Guid>();
+```
+
+Starting with version _2.6.0_ there is [BufferWriter](../../api/DotNext.Buffers.BufferWriter.yml) class with extension methods for [IBufferWriter&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) interface allowing to encode strings and primitives synchronously. Now it's possible to control flushing more granular:
+```csharp
+using DotNext.IO;
+using DotNext.IO.Pipelines;
+using System.IO.Pipelines;
+using System.Text;
+
+var pipe = new Pipe();
+pipe.Writer.Write(Guid.NewGuid());
+pipe.Writer.WriteString("Hello, world!".AsSpan(), Encoding.UTF8, StringLengthEncoding.Plain);
+await pipe.Writer.FlushAsync();
+```
+
+# Decoding Data from ReadOnlySequence
+[ReadOnlySequence&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) is a convenient way to read from non-contiguous blocks of memory. However, this API is too low-level and doesn't provide high-level methods for parsing strings and primitives. [SequenceBinaryReader](https://sakno.github.io/dotNext/api/DotNext.IO.SequenceBinaryReader.html) value type is a wrapper for the sequence of memory blocks that provides high-level decoding methods:
+```csharp
+using DotNext.IO;
+using System;
+using System.Buffers;
+using System.Text;
+
+ReadOnlySequence<byte> sequence = ...;
+SequenceBinaryReader reader = IAsyncBinaryReader.Create(sequence);
+int i = reader.ReadInt32(BitConverter.IsLittleEndian);
+string str = reader.ReadString(StringLengthEncoding.Plain, Encoding.UTF8);
 ```
 
 # File-Buffering Writer
