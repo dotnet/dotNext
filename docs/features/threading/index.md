@@ -13,6 +13,7 @@ It is hard to detect root cause of deadlocks occurred by asynchronous locks so u
 
 [AsyncLock](../../api/DotNext.Threading.AsyncLock.yml) is a unified representation of the all supported asynchronous locks:
 * Exclusive lock
+* [Shared lock](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncSharedLock.html)
 * Reader lock
 * Writer lock
 * Upgradeable lock
