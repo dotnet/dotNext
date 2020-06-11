@@ -139,5 +139,93 @@ namespace DotNext.Threading
             True(rwLock.IsWriteLockHeld);
             False(stamp.IsValid);
         }
+
+        [Fact]
+        public static void CallDisposeTwice()
+        {
+            var @lock = new AsyncReaderWriterLock();
+            @lock.Dispose();
+            True(@lock.DisposeAsync().IsCompletedSuccessfully);
+        }
+
+        [Fact]
+        public static void DisposeAsyncCompletedAsynchronously()
+        {
+            using var @lock = new AsyncReaderWriterLock();
+            True(@lock.DisposeAsync().IsCompletedSuccessfully);
+        }
+
+        [Fact]
+        public static void GracefulShutdown()
+        {
+            using var @lock = new AsyncReaderWriterLock();
+            True(@lock.TryEnterWriteLock());
+            var task = @lock.DisposeAsync();
+            False(task.IsCompleted);
+            @lock.ExitWriteLock();
+            True(task.IsCompletedSuccessfully);
+            Throws<ObjectDisposedException>(() => @lock.TryEnterReadLock());
+        }
+
+        [Fact]
+        public static void GracefulShutdown2()
+        {
+            using var @lock = new AsyncReaderWriterLock();
+            True(@lock.TryEnterReadLock());
+            var task = @lock.DisposeAsync();
+            False(task.IsCompleted);
+            var acquisition = @lock.EnterWriteLockAsync(CancellationToken.None);
+            False(acquisition.IsCompleted);
+            @lock.ExitReadLock();
+            True(task.IsCompletedSuccessfully);
+            True(acquisition.IsFaulted);
+            Throws<ObjectDisposedException>(acquisition.GetAwaiter().GetResult);
+        }
+
+        [Fact]
+        public static void GracefulShutdown3()
+        {
+            using var @lock = new AsyncReaderWriterLock();
+            True(@lock.TryEnterWriteLock());
+            var acquisition1 = @lock.EnterReadLockAsync(CancellationToken.None);
+            False(acquisition1.IsCompleted);
+            var task = @lock.DisposeAsync();
+            False(task.IsCompleted);
+            var acquisition2 = @lock.EnterReadLockAsync(CancellationToken.None);
+            False(task.IsCompleted);
+
+            @lock.ExitWriteLock();
+            True(acquisition1.IsCompletedSuccessfully);
+            False(acquisition2.IsCompleted);
+            False(task.IsCompleted);
+
+            @lock.ExitReadLock();
+            True(acquisition2.IsFaulted);
+            True(task.IsCompletedSuccessfully);
+            Throws<ObjectDisposedException>(acquisition2.GetAwaiter().GetResult);
+        }
+
+        [Fact]
+        public static void GracefulShutdown4()
+        {
+            using var @lock = new AsyncReaderWriterLock();
+            True(@lock.TryEnterWriteLock());
+            var acquisition1 = @lock.EnterUpgradeableReadLockAsync(CancellationToken.None);
+            False(acquisition1.IsCompleted);
+            var task = @lock.DisposeAsync();
+            False(task.IsCompleted);
+            var acquisition2 = @lock.EnterReadLockAsync(CancellationToken.None);
+            False(task.IsCompleted);
+
+            @lock.ExitWriteLock();
+            True(acquisition1.IsCompletedSuccessfully);
+            False(acquisition2.IsCompleted);
+            False(task.IsCompleted);
+
+            @lock.ExitUpgradeableReadLock();
+            True(acquisition2.IsFaulted);
+            True(task.IsCompletedSuccessfully);
+            Throws<ObjectDisposedException>(acquisition2.GetAwaiter().GetResult);
+        }
     }
 }

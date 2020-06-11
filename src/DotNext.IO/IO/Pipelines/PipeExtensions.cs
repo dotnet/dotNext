@@ -58,26 +58,6 @@ namespace DotNext.IO.Pipelines
             }
         }
 
-        [StructLayout(LayoutKind.Auto)]
-        private struct LengthWriter : SevenBitEncodedInt.IWriter
-        {
-            private readonly Memory<byte> writer;
-            private int offset;
-
-            internal LengthWriter(IBufferWriter<byte> output)
-            {
-                writer = output.GetMemory(5);
-                offset = 0;
-            }
-
-            internal readonly int Count => offset;
-
-            void SevenBitEncodedInt.IWriter.WriteByte(byte value)
-            {
-                writer.Span[offset++] = value;
-            }
-        }
-
         private static async ValueTask<TResult> ReadAsync<TResult, TParser>(this PipeReader reader, TParser parser, CancellationToken token)
             where TParser : struct, IBufferReader<TResult>
         {
@@ -189,6 +169,23 @@ namespace DotNext.IO.Pipelines
         }
 
         /// <summary>
+        /// Decodes 64-bit unsigned integer using the specified endianness.
+        /// </summary>
+        /// <param name="reader">The pipe reader.</param>
+        /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        [CLSCompliant(false)]
+        public static async ValueTask<ulong> ReadUInt64Async(this PipeReader reader, bool littleEndian, CancellationToken token = default)
+        {
+            var result = await reader.ReadAsync<ulong>(token).ConfigureAwait(false);
+            result.ReverseIfNeeded(littleEndian);
+            return result;
+        }
+
+        /// <summary>
         /// Decodes 32-bit signed integer using the specified endianness.
         /// </summary>
         /// <param name="reader">The pipe reader.</param>
@@ -205,6 +202,23 @@ namespace DotNext.IO.Pipelines
         }
 
         /// <summary>
+        /// Decodes 32-bit unsigned integer using the specified endianness.
+        /// </summary>
+        /// <param name="reader">The pipe reader.</param>
+        /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        [CLSCompliant(false)]
+        public static async ValueTask<uint> ReadUInt32Async(this PipeReader reader, bool littleEndian, CancellationToken token = default)
+        {
+            var result = await reader.ReadAsync<uint>(token).ConfigureAwait(false);
+            result.ReverseIfNeeded(littleEndian);
+            return result;
+        }
+
+        /// <summary>
         /// Decodes 16-bit signed integer using the specified endianness.
         /// </summary>
         /// <param name="reader">The pipe reader.</param>
@@ -216,6 +230,23 @@ namespace DotNext.IO.Pipelines
         public static async ValueTask<short> ReadInt16Async(this PipeReader reader, bool littleEndian, CancellationToken token = default)
         {
             var result = await reader.ReadAsync<short>(token).ConfigureAwait(false);
+            result.ReverseIfNeeded(littleEndian);
+            return result;
+        }
+
+        /// <summary>
+        /// Decodes 16-bit signed integer using the specified endianness.
+        /// </summary>
+        /// <param name="reader">The pipe reader.</param>
+        /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        [CLSCompliant(false)]
+        public static async ValueTask<ushort> ReadUInt16Async(this PipeReader reader, bool littleEndian, CancellationToken token = default)
+        {
+            var result = await reader.ReadAsync<ushort>(token).ConfigureAwait(false);
             result.ReverseIfNeeded(littleEndian);
             return result;
         }
@@ -264,7 +295,7 @@ namespace DotNext.IO.Pipelines
         public static ValueTask<FlushResult> WriteAsync<T>(this PipeWriter writer, T value, CancellationToken token = default)
             where T : unmanaged
         {
-            writer.Write(Span.AsReadOnlyBytes(in value));
+            writer.Write(in value);
             return writer.FlushAsync(token);
         }
 
@@ -279,8 +310,24 @@ namespace DotNext.IO.Pipelines
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static ValueTask<FlushResult> WriteInt64Async(this PipeWriter writer, long value, bool littleEndian, CancellationToken token = default)
         {
-            value.ReverseIfNeeded(littleEndian);
-            return writer.WriteAsync(value, token);
+            writer.WriteInt64(value, littleEndian);
+            return writer.FlushAsync(token);
+        }
+
+        /// <summary>
+        /// Encodes 64-bit unsigned integer asynchronously.
+        /// </summary>
+        /// <param name="writer">The pipe writer.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="littleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing state of asynchronous execution.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        [CLSCompliant(false)]
+        public static ValueTask<FlushResult> WriteUInt64Async(this PipeWriter writer, ulong value, bool littleEndian, CancellationToken token = default)
+        {
+            writer.WriteUInt64(value, littleEndian);
+            return writer.FlushAsync(token);
         }
 
         /// <summary>
@@ -294,8 +341,24 @@ namespace DotNext.IO.Pipelines
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static ValueTask<FlushResult> WriteInt32Async(this PipeWriter writer, int value, bool littleEndian, CancellationToken token = default)
         {
-            value.ReverseIfNeeded(littleEndian);
-            return writer.WriteAsync(value, token);
+            writer.WriteInt32(value, littleEndian);
+            return writer.FlushAsync(token);
+        }
+
+        /// <summary>
+        /// Encodes 32-bit unsigned integer asynchronously.
+        /// </summary>
+        /// <param name="writer">The pipe writer.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="littleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing state of asynchronous execution.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        [CLSCompliant(false)]
+        public static ValueTask<FlushResult> WriteUInt32Async(this PipeWriter writer, uint value, bool littleEndian, CancellationToken token = default)
+        {
+            writer.WriteUInt32(value, littleEndian);
+            return writer.FlushAsync(token);
         }
 
         /// <summary>
@@ -309,48 +372,33 @@ namespace DotNext.IO.Pipelines
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static ValueTask<FlushResult> WriteInt16Async(this PipeWriter writer, short value, bool littleEndian, CancellationToken token = default)
         {
-            value.ReverseIfNeeded(littleEndian);
-            return writer.WriteAsync(value, token);
+            writer.WriteInt16(value, littleEndian);
+            return writer.FlushAsync(token);
         }
 
-        private static void Write7BitEncodedInt(this IBufferWriter<byte> output, int value)
+        /// <summary>
+        /// Encodes 16-bit unsigned integer asynchronously.
+        /// </summary>
+        /// <param name="writer">The pipe writer.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="littleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing state of asynchronous execution.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        [CLSCompliant(false)]
+        public static ValueTask<FlushResult> WriteUInt16Async(this PipeWriter writer, ushort value, bool littleEndian, CancellationToken token = default)
         {
-            var writer = new LengthWriter(output);
-            SevenBitEncodedInt.Encode(ref writer, (uint)value);
-            output.Advance(writer.Count);
+            writer.WriteUInt16(value, littleEndian);
+            return writer.FlushAsync(token);
         }
 
         private static ValueTask<FlushResult> WriteLengthAsync(this PipeWriter writer, ReadOnlyMemory<char> value, Encoding encoding, StringLengthEncoding? lengthFormat, CancellationToken token)
         {
-            ValueTask<FlushResult> result;
             if (lengthFormat is null)
-            {
-                result = new ValueTask<FlushResult>(new FlushResult(false, false));
-            }
-            else
-            {
-                var length = encoding.GetByteCount(value.Span);
-                switch (lengthFormat.Value)
-                {
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(lengthFormat));
-                    case StringLengthEncoding.PlainLittleEndian:
-                        length.ReverseIfNeeded(true);
-                        goto case StringLengthEncoding.Plain;
-                    case StringLengthEncoding.PlainBigEndian:
-                        length.ReverseIfNeeded(false);
-                        goto case StringLengthEncoding.Plain;
-                    case StringLengthEncoding.Plain:
-                        result = writer.WriteAsync(length, token);
-                        break;
-                    case StringLengthEncoding.Compressed:
-                        writer.Write7BitEncodedInt(length);
-                        result = writer.FlushAsync(token);
-                        break;
-                }
-            }
+                return new ValueTask<FlushResult>(new FlushResult(false, false));
 
-            return result;
+            writer.WriteLength(value.Span, encoding, lengthFormat.GetValueOrDefault());
+            return writer.FlushAsync(token);
         }
 
         /// <summary>
@@ -370,7 +418,7 @@ namespace DotNext.IO.Pipelines
         {
             var result = await writer.WriteLengthAsync(value, context.Encoding, lengthFormat, token).ConfigureAwait(false);
             result.ThrowIfCancellationRequested(token);
-            if (value.Length == 0)
+            if (value.IsEmpty)
                 return;
             var encoder = context.GetEncoder();
             for (int charsLeft = value.Length, charsUsed, maxChars, bytesPerChar = context.Encoding.GetMaxByteCount(1); charsLeft > 0; value = value.Slice(charsUsed), charsLeft -= charsUsed)

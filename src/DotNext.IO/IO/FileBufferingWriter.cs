@@ -10,6 +10,8 @@ using static System.Runtime.InteropServices.MemoryMarshal;
 namespace DotNext.IO
 {
     using Buffers;
+    using static Runtime.Intrinsics;
+    using static Threading.AsyncDelegate;
 
     /// <summary>
     /// Represents builder of contiguous block of memory that may
@@ -44,6 +46,8 @@ namespace DotNext.IO
 
             public override Span<byte> GetSpan()
                 => new Span<byte>(ptr + accessor.PointerOffset, (int)accessor.Capacity);
+
+            public override Memory<byte> Memory => CreateMemory((int)accessor.Capacity);
 
             public override MemoryHandle Pin(int elementIndex)
             {
@@ -111,6 +115,18 @@ namespace DotNext.IO
             Success = 0,
             PersistExistingBuffer,
             PersistAll,
+        }
+
+        private static readonly Action<Task, object?> Continuation;
+
+        static FileBufferingWriter()
+        {
+            Continuation = OnCompleted;
+
+            static void OnCompleted(Task task, object? state)
+            {
+                task.ConfigureAwait(false).GetAwaiter().GetResult();
+            }
         }
 
         private readonly int memoryThreshold;
@@ -353,6 +369,49 @@ namespace DotNext.IO
         /// <inheritdoc/>
         public override void WriteByte(byte value)
             => Write(CreateReadOnlySpan(ref value, 1));
+
+        /// <inheritdoc/>
+        public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
+        {
+            Task task;
+
+            if (HasFlag(options, FileOptions.Asynchronous))
+            {
+                task = WriteAsync(buffer, offset, count, CancellationToken.None)
+                    .ContinueWith(Continuation, state, CancellationToken.None, TaskContinuationOptions.None, TaskScheduler.Default);
+
+                if (callback != null)
+                {
+                    if (task.IsCompleted)
+                        callback(task);
+                    else
+                        task.ConfigureAwait(false).GetAwaiter().OnCompleted(() => callback(task));
+                }
+            }
+            else
+            {
+                // start synchronous write as separated task
+                task = new Action<object?>(_ => Write(buffer, offset, count)).BeginInvoke(state, callback);
+            }
+
+            return task;
+        }
+
+        private static void EndWrite(Task task)
+        {
+            try
+            {
+                task.ConfigureAwait(false).GetAwaiter().GetResult();
+            }
+            finally
+            {
+                task.Dispose();
+            }
+        }
+
+        /// <inheritdoc/>
+        public override void EndWrite(IAsyncResult ar)
+            => EndWrite((Task)ar);
 
         /// <inheritdoc/>
         public override void Flush()

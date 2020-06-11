@@ -19,6 +19,13 @@ namespace DotNext.Buffers
         }
 
         [Fact]
+        public static void AsReadOnlySequence()
+        {
+            var sequence = "abcde".Split(2).ToReadOnlySequence();
+            Equal(5, sequence.Length);
+        }
+
+        [Fact]
         public static void SequenceEnumeration()
         {
             var index = 0;

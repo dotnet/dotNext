@@ -442,5 +442,62 @@ namespace DotNext.Linq.Expressions
             var lambda = Expression.Lambda<Func<ListOfInt64, long[]>>(parameter.Slice(1.Index(false), 1.Index(true)), parameter).Compile();
             Equal(new[] { 3L, 5L }, lambda(new ListOfInt64 { 1L, 3L, 5L, 7L }));
         }
+
+        [Fact]
+        public static void NullCoalescingAssignmentOfValueType()
+        {
+            var parameter = Expression.Parameter(typeof(int));
+            var lambda = Expression.Lambda<Func<int, int>>(parameter.NullCoalescingAssignment(10.Const()), parameter).Compile();
+            Equal(0, lambda(0));
+            Equal(42, lambda(42));
+        }
+
+        [Fact]
+        public static void NullCoalescingAssignmentOfNullableValueType()
+        {
+            var parameter = Expression.Parameter(typeof(int?));
+            var lambda = Expression.Lambda<Func<int?, int>>(parameter.NullCoalescingAssignment(new int?(10).Const()).Convert<int>(), parameter).Compile();
+            Equal(0, lambda(0));
+            Equal(10, lambda(null));
+            Equal(42, lambda(42));
+        }
+
+        [Fact]
+        public static void NullCoalescingAssignmentOfVariable()
+        {
+            var parameter = Expression.Parameter(typeof(string));
+            var lambda = Expression.Lambda<Func<string, string>>(parameter.NullCoalescingAssignment(string.Empty.Const()), parameter).Compile();
+            Equal(string.Empty, lambda(null));
+            Equal("Hello, world!", lambda("Hello, world!"));
+        }
+
+        [Fact]
+        public static void NullCoalescingAssignmentOfArrayElement()
+        {
+            var parameter = Expression.Parameter(typeof(string[]));
+            var lambda = Expression.Lambda<Action<string[]>>(parameter.ElementAt(0.Const()).NullCoalescingAssignment(string.Empty.Const()), parameter).Compile();
+            string[] array = { null };
+            lambda(array);
+            Equal(string.Empty, array[0]);
+
+            array[0] = "Hello, world!";
+            lambda(array);
+            Equal("Hello, world!", array[0]);
+        }
+
+        [Fact]
+        public static void NullCoalescingAssignmentOfArrayElement2()
+        {
+            string[] array = { null };
+            Func<string[]> provider = () => array;
+            var parameter = Expression.Parameter(typeof(Func<string[]>));
+            var lambda = Expression.Lambda<Action<Func<string[]>>>(parameter.Invoke().ElementAt(0.Const()).NullCoalescingAssignment(string.Empty.Const()), parameter).Compile();
+            lambda(provider);
+            Equal(string.Empty, array[0]);
+
+            array[0] = "Hello, world!";
+            lambda(provider);
+            Equal("Hello, world!", array[0]);
+        }
     }
 }

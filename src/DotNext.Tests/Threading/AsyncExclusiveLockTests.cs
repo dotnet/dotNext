@@ -63,5 +63,47 @@ namespace DotNext.Threading
             False(waitNode.IsCompletedSuccessfully);
             True(waitNode.IsCanceled);
         }
+
+        [Fact]
+        public static void CallDisposeTwice()
+        {
+            var @lock = new AsyncExclusiveLock();
+            @lock.Dispose();
+            True(@lock.DisposeAsync().IsCompletedSuccessfully);
+        }
+
+        [Fact]
+        public static void DisposeAsyncCompletedAsynchronously()
+        {
+            using var @lock = new AsyncExclusiveLock();
+            True(@lock.DisposeAsync().IsCompletedSuccessfully);
+        }
+
+        [Fact]
+        public static void GracefulShutdown()
+        {
+            using var @lock = new AsyncExclusiveLock();
+            True(@lock.TryAcquire());
+            var task = @lock.DisposeAsync();
+            False(task.IsCompleted);
+            @lock.Release();
+            True(task.IsCompletedSuccessfully);
+            Throws<ObjectDisposedException>(() => @lock.TryAcquire());
+        }
+
+        [Fact]
+        public static void GracefulShutdown2()
+        {
+            using var @lock = new AsyncExclusiveLock();
+            True(@lock.TryAcquire());
+            var task = @lock.DisposeAsync();
+            False(task.IsCompleted);
+            var acquisition = @lock.AcquireAsync(CancellationToken.None);
+            False(acquisition.IsCompleted);
+            @lock.Release();
+            True(task.IsCompletedSuccessfully);
+            True(acquisition.IsFaulted);
+            Throws<ObjectDisposedException>(acquisition.GetAwaiter().GetResult);
+        }
     }
 }

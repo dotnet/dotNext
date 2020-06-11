@@ -50,6 +50,31 @@ namespace DotNext.Buffers
         }
 
         /// <summary>
+        /// Retns the memory.
+        /// </summary>
+        /// <param name="provider">The memory provider.</param>
+        /// <param name="length">The number of elements to rent.</param>
+        public MemoryOwner(Func<int, IMemoryOwner<T>> provider, int length)
+        {
+            array = null;
+            IMemoryOwner<T> owner;
+            this.owner = owner = provider(length);
+            this.length = Math.Min(owner.Memory.Length, length);
+        }
+
+        /// <summary>
+        /// Rents the memory.
+        /// </summary>
+        /// <param name="provider">The memory provider.</param>
+        public MemoryOwner(Func<IMemoryOwner<T>> provider)
+        {
+            array = null;
+            IMemoryOwner<T> owner;
+            this.owner = owner = provider();
+            length = owner.Memory.Length;
+        }
+
+        /// <summary>
         /// Wraps the array as if it was rented.
         /// </summary>
         /// <param name="array">The array to wrap.</param>

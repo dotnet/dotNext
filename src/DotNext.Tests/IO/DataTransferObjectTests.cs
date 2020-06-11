@@ -15,7 +15,7 @@ namespace DotNext.IO
             const string testString = "abcdef";
             using var ms = new MemoryStream(Encoding.Unicode.GetBytes(testString));
             using var dto = new StreamTransferObject(ms, false);
-            Equal(ms.Length, ((IDataTransferObject)dto).Length);
+            Equal(ms.Length, dto.As<IDataTransferObject>().Length);
             Equal(testString, await dto.ToStringAsync(Encoding.Unicode));
             ms.Position = 0;
             Equal(testString, await dto.ToStringAsync(Encoding.Unicode, 1024));

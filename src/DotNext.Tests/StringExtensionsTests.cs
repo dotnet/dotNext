@@ -44,6 +44,7 @@ namespace DotNext
         }
 
         [Fact]
+        [Obsolete("This test is for checking obsolete member")]
         public static void StringRawData()
         {
             var str = "Hello, world!";

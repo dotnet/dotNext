@@ -74,7 +74,7 @@ namespace DotNext.IO.Log
         /// </summary>
         /// <param name="entries">The log entries to be returned by the producer.</param>
         public LogEntryProducer(params TEntry[] entries)
-            : this((IList<TEntry>)entries)
+            : this(entries.As<IList<TEntry>>())
         {
         }
 

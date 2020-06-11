@@ -46,5 +46,26 @@ namespace DotNext.Buffers
             if (littleEndian != BitConverter.IsLittleEndian)
                 value = BinaryPrimitives.ReverseEndianness(value);
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void ReverseIfNeeded(this ref ulong value, bool littleEndian)
+        {
+            if (littleEndian != BitConverter.IsLittleEndian)
+                value = BinaryPrimitives.ReverseEndianness(value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void ReverseIfNeeded(this ref uint value, bool littleEndian)
+        {
+            if (littleEndian != BitConverter.IsLittleEndian)
+                value = BinaryPrimitives.ReverseEndianness(value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void ReverseIfNeeded(this ref ushort value, bool littleEndian)
+        {
+            if (littleEndian != BitConverter.IsLittleEndian)
+                value = BinaryPrimitives.ReverseEndianness(value);
+        }
     }
 }

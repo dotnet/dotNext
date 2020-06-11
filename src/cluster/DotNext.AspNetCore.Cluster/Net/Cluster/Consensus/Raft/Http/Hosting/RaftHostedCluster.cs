@@ -12,6 +12,8 @@ using IServer = Microsoft.AspNetCore.Hosting.Server.IServer;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
 {
+    using static DotNext.Hosting.HostBuilderExtensions;
+
     [SuppressMessage("Usage", "CA1812", Justification = "This class is instantiated by DI container")]
     internal sealed class RaftHostedCluster : RaftHttpCluster
     {
@@ -20,10 +22,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
             private readonly RaftHostedClusterMemberConfiguration config;
             private readonly IDedicatedHostBuilder? hostBuilder;
             private readonly RequestDelegate raftProcessor;
+            private readonly HostOptions? parentHostOptions;
 
             internal WebHostConfigurer(IServiceProvider services, out RaftHostedClusterMemberConfiguration config, RequestDelegate raftProcessor)
             {
                 this.config = config = services.GetRequiredService<IOptions<RaftHostedClusterMemberConfiguration>>().Value;
+                parentHostOptions = services.GetService<IOptions<HostOptions>>()?.Value;
                 hostBuilder = services.GetService<IDedicatedHostBuilder>();
                 this.raftProcessor = raftProcessor;
             }
@@ -47,7 +51,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
                 webHost.Configure(appBuilder);
             }
 
-            internal IHost BuildHost() => new HostBuilder().ConfigureWebHost(Configure).Build();
+            internal IHost BuildHost()
+            {
+                var builder = new HostBuilder().ConfigureWebHost(Configure);
+                if (parentHostOptions != null)
+                    builder = builder.UseHostOptions(parentHostOptions);
+
+                return builder.Build();
+            }
         }
 
         private static readonly Uri Root = new Uri("/", UriKind.Relative);

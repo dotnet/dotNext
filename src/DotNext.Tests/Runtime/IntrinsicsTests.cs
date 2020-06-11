@@ -91,16 +91,16 @@ namespace DotNext.Runtime
         }
 
         [Fact]
-        public static void NullCheck()
+        public unsafe static void NullCheck()
         {
             static void NullRefCheck()
             {
-                ref readonly var ch = ref default(string).GetRawData();
+                ref readonly var ch = ref Unsafe.AsRef<char>(null);
                 Intrinsics.ThrowIfNull(in ch);
             }
             var i = 0L;
             False(Intrinsics.IsNull(in i));
-            ref readonly var ch = ref default(string).GetRawData();
+            ref readonly var ch = ref Unsafe.AsRef<char>(null);
             True(Intrinsics.IsNull(in ch));
             Throws<NullReferenceException>(NullRefCheck);
         }
@@ -133,6 +133,7 @@ namespace DotNext.Runtime
         }
 
         [Fact]
+        [Obsolete("This test is for checking obsolete member")]
         public static void ReadonlyRef()
         {
             var array = new[] { "a", "b", "c" };

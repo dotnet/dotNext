@@ -34,6 +34,8 @@ namespace DotNext.IO.MemoryMappedFiles
 
         public override Span<byte> GetSpan() => Pointer.ToSpan(length);
 
+        public override Memory<byte> Memory => CreateMemory(length);
+
         public override MemoryHandle Pin(int elementIndex) => Pointer.GetHandle(elementIndex);
 
         public override void Unpin()
@@ -44,8 +46,7 @@ namespace DotNext.IO.MemoryMappedFiles
         {
             if (disposing)
             {
-                accessor.SafeMemoryMappedViewHandle.ReleasePointer();
-                accessor.Dispose();
+                accessor.ReleasePointerAndDispose();
             }
         }
     }

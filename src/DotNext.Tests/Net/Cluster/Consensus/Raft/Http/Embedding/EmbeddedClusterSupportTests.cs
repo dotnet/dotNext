@@ -14,6 +14,7 @@ using Xunit;
 namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
 {
     using Messaging;
+    using static DotNext.Hosting.HostBuilderExtensions;
 
     [ExcludeFromCodeCoverage]
     public sealed class EmbeddedClusterSupportTests : Test
@@ -57,7 +58,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                     else
                         options.ListenAnyIP(port);
                 })
-                    .UseShutdownTimeout(TimeSpan.FromMinutes(2))
                     .ConfigureServices(services =>
                     {
                         if (configurator != null)
@@ -65,6 +65,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                     })
                     .UseStartup<TStartup>()
                 )
+                .UseHostOptions(new HostOptions { ShutdownTimeout = TimeSpan.FromMinutes(2) })
                 .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(configuration))
                 .ConfigureLogging(builder => builder.AddDebug().SetMinimumLevel(LogLevel.Debug))
                 .JoinCluster()
@@ -185,7 +186,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             //wait for response
             for (var timeout = new Threading.Timeout(TimeSpan.FromMinutes(1)); !messageBox.TryDequeue(out response); timeout.ThrowIfExpired())
                 await Task.Delay(10);
-            Equal(1024 * 1024, ((IMessage)response).Length);
+            Equal(1024 * 1024, response.As<IMessage>().Length);
 
             await host1.StopAsync();
             await host2.StopAsync();
