@@ -36,6 +36,8 @@
       href: io/rental.md
     - name: Dynamic Buffers
       href: io/buffers.md
+    - name: Memory-Mapped File
+      href: io/mmfile.md
 - name: Threading
   href: threading/index.md
   items:
@@ -100,8 +102,6 @@
       href: unsafe/struct.md
     - name: Calling Function by Pointer
       href: unsafe/funcptr.md
-    - name: Memory-Mapped File
-      href: unsafe/mmfile.md
 - name: Cluster and Distributed Consensus
   href: cluster/index.md
   items:
