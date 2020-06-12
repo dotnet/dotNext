@@ -372,5 +372,11 @@ namespace DotNext
         /// <returns>The enumerator which is limited by count.</returns>
         public static LimitedEnumerator<T> Limit<T>(this IEnumerator<T> enumerator, int count, bool leaveOpen = false)
             => new LimitedEnumerator<T>(enumerator, count, leaveOpen);
+
+        internal static IEnumerator<T> ToEnumerator<T>(ReadOnlyMemory<T> memory)
+        {
+            for (var i = 0; i < memory.Length; i++)
+                yield return memory.Span[i];
+        }
     }
 }

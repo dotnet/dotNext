@@ -1,5 +1,7 @@
 using System;
 using System.Buffers;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace DotNext.Buffers
 {
@@ -7,7 +9,7 @@ namespace DotNext.Buffers
     /// Represents memory-backed output sink which <typeparamref name="T"/> data can be written.
     /// </summary>
     /// <typeparam name="T">The data type that can be written.</typeparam>
-    public abstract class MemoryWriter<T> : Disposable, IBufferWriter<T>, IConvertible<ReadOnlyMemory<T>>
+    public abstract class MemoryWriter<T> : Disposable, IBufferWriter<T>, IConvertible<ReadOnlyMemory<T>>, IReadOnlyList<T>
     {
         /// <summary>
         /// Represents default initial buffer size.
@@ -47,6 +49,10 @@ namespace DotNext.Buffers
                 return position;
             }
         }
+
+        int IReadOnlyCollection<T>.Count => WrittenCount;
+
+        T IReadOnlyList<T>.this[int index] => WrittenMemory.Span[index];
 
         /// <summary>
         /// Gets the total amount of space within the underlying memory.
@@ -140,5 +146,13 @@ namespace DotNext.Buffers
                 Resize(newSize);
             }
         }
+        
+        /// <summary>
+        /// Gets enumerator over all written elements.
+        /// </summary>
+        /// <returns>The enumerator over all written elements.</returns>
+        public IEnumerator<T> GetEnumerator() => Sequence.ToEnumerator(WrittenMemory);
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }
