@@ -189,7 +189,7 @@ namespace DotNext.Buffers
                 Resize(newSize);
             }
         }
-        
+
         /// <summary>
         /// Gets enumerator over all written elements.
         /// </summary>

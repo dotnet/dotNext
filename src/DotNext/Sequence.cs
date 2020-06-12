@@ -376,7 +376,7 @@ namespace DotNext
         /// <summary>
         /// Gets enumerator over all elements in the memory.
         /// </summary>
-        /// <param name="memory"></param>
+        /// <param name="memory">The memory block to be converted.</param>
         /// <typeparam name="T">The type of elements in the memory.</typeparam>
         /// <returns>The enumerator over all elements in the memory.</returns>
         /// <seealso cref="System.Runtime.InteropServices.MemoryMarshal.ToEnumerable{T}(ReadOnlyMemory{T})"/>

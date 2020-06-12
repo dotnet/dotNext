@@ -66,7 +66,7 @@ namespace DotNext.Buffers
         /// </summary>
         /// <param name="index">The index of the element to retrieve.</param>
         /// <value>The element at the specified index.</value>
-        /// <exception cref="IndexOutOfRangeException"><paramref name="index"/> the index is invalid.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> the index is invalid.</exception>
         /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
         public new ref T this[int index]
         {
@@ -74,7 +74,7 @@ namespace DotNext.Buffers
             {
                 ThrowIfDisposed();
                 if (index < 0 || index >= position)
-                    throw new IndexOutOfRangeException();
+                    throw new ArgumentOutOfRangeException(nameof(index));
                 return ref buffer[index];
             }
         }
@@ -130,6 +130,7 @@ namespace DotNext.Buffers
             return true;
         }
 
+        /// <inheritdoc/>
         void IList<T>.Insert(int index, T item)
         {
             ThrowIfDisposed();
@@ -141,7 +142,7 @@ namespace DotNext.Buffers
                 if (buffer.LongLength == 0L)
                     buffer = pool.Rent(1);
             }
-            else if (position < buffer.LongLength) 
+            else if (position < buffer.LongLength)
             {
                 Array.Copy(buffer, index, buffer, index + 1, buffer.LongLength - index);
             }
@@ -209,7 +210,7 @@ namespace DotNext.Buffers
 
         internal TWrapper WrapBuffer<TWrapper>(ValueFunc<T[], int, TWrapper> factory)
             => factory.Invoke(buffer, position);
-        
+
         private void ReleaseBuffer()
         {
             if (buffer.Length > 0)
