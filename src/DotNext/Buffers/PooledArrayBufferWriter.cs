@@ -95,18 +95,14 @@ namespace DotNext.Buffers
 
         private void RemoveAt(int index)
         {
-            if (index == 0 && position == 1L)
+            Array.Copy(buffer, index + 1L, buffer, index, position - index - 1L);
+            buffer[position - 1] = default!;
+
+            if (--position == 0)
             {
                 ReleaseBuffer();
                 buffer = Array.Empty<T>();
             }
-            else
-            {
-                Array.Copy(buffer, index + 1L, buffer, index, position - index - 1L);
-                buffer[position - 1] = default!;
-            }
-
-            position -= 1;
         }
 
         /// <inheritdoc/>
@@ -144,7 +140,7 @@ namespace DotNext.Buffers
             }
             else if (position < buffer.LongLength)
             {
-                Array.Copy(buffer, index, buffer, index + 1, buffer.LongLength - index);
+                Array.Copy(buffer, index, buffer, index + 1, position - index);
             }
             else
             {
