@@ -2,9 +2,9 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using Xunit;
+using Enumerable = System.Linq.Enumerable;
 
 namespace DotNext.Buffers
 {
@@ -245,6 +245,32 @@ namespace DotNext.Buffers
 
             Equal(40, writer.WrittenMemory.Span[0]);
             Equal(50, writer.WrittenMemory.Span[9]);
+        }
+
+        [Fact]
+        public static void WriterAsReadOnlyCollection()
+        {
+            using var writer = new PooledArrayBufferWriter<int>();
+            IReadOnlyList<int> collection = writer;
+            Equal(0, collection.Count);
+            
+            writer.Add(42);
+            Equal(1, writer.WrittenCount);
+            Equal(1, collection.Count);
+            Equal(42, collection[0]);
+            Throws<IndexOutOfRangeException>(() => collection[1]);
+            Equal(42, Enumerable.First(collection));
+            Equal(1, Enumerable.Count(collection));
+
+            writer.AddAll(new[] {43, 44});
+            Equal(3, writer.WrittenCount);
+            Equal(3, collection.Count);
+            Equal(42, collection[0]);
+            Equal(43, collection[1]);
+            Equal(44, collection[2]);
+            Throws<IndexOutOfRangeException>(() => collection[3]);
+            Equal(3, Enumerable.Count(collection));
+            Equal(new[] {42, 43, 44}, Enumerable.ToArray(collection));
         }
     }
 }
