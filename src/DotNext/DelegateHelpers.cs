@@ -133,7 +133,7 @@ namespace DotNext
         public static TDelegate CreateOpenDelegate<TDelegate>(Expression<TDelegate> expression)
             where TDelegate : Delegate
             => GetMethod(expression).CreateDelegate<TDelegate>();
-        
+
         /// <summary>
         /// Creates open delegate for instance property setter.
         /// </summary>
