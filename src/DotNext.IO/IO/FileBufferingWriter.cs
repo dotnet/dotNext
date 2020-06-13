@@ -24,7 +24,7 @@ namespace DotNext.IO
     /// returned <see cref="Memory{T}"/> instance references bytes in memory. Otherwise,
     /// it references memory-mapped file.
     /// </remarks>
-    public sealed class FileBufferingWriter : Stream, IFlushableBufferWriter<byte>
+    public sealed partial class FileBufferingWriter : Stream, IFlushableBufferWriter<byte>
     {
         private sealed unsafe class MemoryMappedFileManager : MemoryManager<byte>
         {
@@ -37,7 +37,7 @@ namespace DotNext.IO
             {
                 Debug.Assert(length <= int.MaxValue);
                 Debug.Assert(writer.fileBackend != null);
-                mappedFile = MemoryMappedFile.CreateFromFile(writer.fileBackend, null, writer.fileBackend.Length, MemoryMappedFileAccess.ReadWrite, HandleInheritability.None, true);
+                mappedFile = CreateMemoryMappedFile(writer.fileBackend);
                 accessor = mappedFile.CreateViewAccessor(offset, length, MemoryMappedFileAccess.ReadWrite);
                 accessor.SafeMemoryMappedViewHandle.AcquirePointer(ref ptr);
                 this.writer = writer;
@@ -177,6 +177,9 @@ namespace DotNext.IO
             const FileOptions withoutAsyncIO = FileOptions.DeleteOnClose | FileOptions.SequentialScan;
             options = asyncIO ? withAsyncIO : withoutAsyncIO;
         }
+
+        private static MemoryMappedFile CreateMemoryMappedFile(FileStream fileBackend)
+            => MemoryMappedFile.CreateFromFile(fileBackend, null, fileBackend.Length, MemoryMappedFileAccess.ReadWrite, HandleInheritability.None, true);
 
         /// <inheritdoc/>
         public override bool CanRead => false;
