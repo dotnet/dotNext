@@ -42,7 +42,7 @@ namespace DotNext.IO
                 tail = buffer.Memory.Slice(0, writer.position);
                 accessor = writer.fileBackend is null ?
                     null :
-                    new ReadOnlySequenceAccessor(CreateMemoryMappedFile(writer.fileBackend), segmentLength, writer.fileBackend.Length, false);
+                    new ReadOnlySequenceAccessor(writer.fileBackend, segmentLength);
                 this.writer = writer;
                 version = ++writer.readVersion;
             }
