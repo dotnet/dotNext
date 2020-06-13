@@ -1,6 +1,7 @@
 using System;
 using System.Buffers;
 using System.Diagnostics;
+using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Runtime.InteropServices;
 
@@ -137,12 +138,53 @@ namespace DotNext.IO.MemoryMappedFiles
         private MemoryMappedViewAccessor? segment;
         private unsafe byte* ptr;
 
-        internal ReadOnlySequenceAccessor(MemoryMappedFile file, int segmentLength, long totalLength, bool leaveOpen = true)
+        private ReadOnlySequenceAccessor(MemoryMappedFile file, int segmentSize, long size, bool leaveOpen)
         {
+            if (segmentSize <= 0 || segmentSize > size)
+                throw new ArgumentOutOfRangeException(nameof(segmentSize));
+            if (size <= 0)
+                throw new ArgumentOutOfRangeException(nameof(size));
+
             mappedFile = file;
-            this.segmentLength = segmentLength;
-            this.totalLength = totalLength;
+            segmentLength = segmentSize;
+            totalLength = size;
             ownsFile = !leaveOpen;
+        }
+
+        /// <summary>
+        /// Initializes a new accessor over memory-mapped file segments represented
+        /// as <see cref="System.Buffers.ReadOnlySequence{T}"/>.
+        /// </summary>
+        /// <param name="file">The memory-mapped file.</param>
+        /// <param name="segmentSize">
+        /// The size of single segment, in bytes, that can be returned by <see cref="System.Buffers.ReadOnlySequence{T}"/>
+        /// as contiguous block of memory. So this parameter defines actual amount of occupied virtual memory.
+        /// </param>
+        /// <param name="size">The observable length, in bytes, of memory-mapped file.</param>
+        /// <returns>The object providing access to memory-mapped file via <see cref="System.Buffers.ReadOnlySequence{T}"/>.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <paramref name="segmentSize"/> is less than or equal to zero;
+        /// or <paramref name="size"/> is less than or equal to zero;
+        /// or <paramref name="segmentSize"/> is greater than <paramref name="size"/>.
+        /// </exception>
+        public ReadOnlySequenceAccessor(MemoryMappedFile file, int segmentSize, long size)
+            : this(file, segmentSize, size, true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new accessor over memory-mapped file segments represented
+        /// as <see cref="System.Buffers.ReadOnlySequence{T}"/>.
+        /// </summary>
+        /// <param name="file">The file stream.</param>
+        /// <param name="segmentSize">
+        /// The size of single segment, in bytes, that can be returned by <see cref="System.Buffers.ReadOnlySequence{T}"/>
+        /// as contiguous block of memory. So this parameter defines actual amount of occupied virtual memory.
+        /// </param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="segmentSize"/> is less than or equal to zero; or it's greater than file size.</exception>
+        public ReadOnlySequenceAccessor(FileStream file, int segmentSize)
+            : this(MemoryMappedFile.CreateFromFile(file, null, file.Length, MemoryMappedFileAccess.Read, HandleInheritability.None, true), segmentSize, file.Length, false)
+        {
         }
 
         internal (ReadOnlySequenceSegment<byte> Head, ReadOnlySequenceSegment<byte> Tail) BuildSegments()

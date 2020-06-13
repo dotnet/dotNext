@@ -22,7 +22,7 @@ namespace DotNext.IO.MemoryMappedFiles
             }
 
             using var mappedFile = MemoryMappedFile.CreateFromFile(tempFile, FileMode.Open, null, content.Length, MemoryMappedFileAccess.Read);
-            using var accessor = mappedFile.CreateSequenceAccessor(129, content.Length);
+            using var accessor = new ReadOnlySequenceAccessor(mappedFile, 129, content.Length);
             var sequence = accessor.Sequence;
             Equal(content.Length, sequence.Length);
             False(sequence.IsSingleSegment);
@@ -47,7 +47,7 @@ namespace DotNext.IO.MemoryMappedFiles
             }
 
             using var mappedFile = MemoryMappedFile.CreateFromFile(tempFile, FileMode.Open, null, content.Length, MemoryMappedFileAccess.Read);
-            using var accessor = mappedFile.CreateSequenceAccessor(129, content.Length);
+            using var accessor = new ReadOnlySequenceAccessor(mappedFile, 129, content.Length);
             var sequence = accessor.Sequence;
             Equal(content.Length, sequence.Length);
             False(sequence.IsSingleSegment);
