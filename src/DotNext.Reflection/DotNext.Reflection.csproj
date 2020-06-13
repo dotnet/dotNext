@@ -5,7 +5,7 @@
     <RootNamespace>DotNext</RootNamespace>
     <Nullable>enable</Nullable>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
-	<Version>2.4.0</Version>
+	<Version>2.6.0</Version>
 	<Authors>Roman Sakno</Authors>
 	<Product>.NEXT Family of Libraries</Product>
 	<Description>Strongly typed reflection, concept types (type classes), fast reflection</Description>
@@ -55,7 +55,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="DotNext" Version="[2.4.0, 3)" />
+    <PackageReference Include="DotNext" Version="[2.6.0, 3)" />
   </ItemGroup>
 
   <ItemGroup>
