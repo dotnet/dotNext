@@ -32,8 +32,9 @@ namespace DotNext.IO
         public sealed class ReadOnlySequenceSource : Disposable, IReadOnlySequence
         {
             private readonly FileBufferingWriter writer;
-            private ReadOnlySequenceAccessor? accessor;
             private readonly Memory<byte> tail;
+            private readonly uint version;
+            private ReadOnlySequenceAccessor? accessor;
 
             internal ReadOnlySequenceSource(FileBufferingWriter writer, int segmentLength)
             {
@@ -43,7 +44,7 @@ namespace DotNext.IO
                     null :
                     new ReadOnlySequenceAccessor(CreateMemoryMappedFile(writer.fileBackend), segmentLength, writer.fileBackend.Length, false);
                 this.writer = writer;
-                writer.isReading = true;
+                version = ++writer.readVersion;
             }
 
             /// <summary>
@@ -76,7 +77,7 @@ namespace DotNext.IO
                     accessor = null;
                 }
 
-                writer.isReading = false;
+                writer.ReleaseReadLock(version);
                 base.Dispose(disposing);
             }
         }
@@ -92,7 +93,7 @@ namespace DotNext.IO
         {
             if (segmentSize <= 0)
                 throw new ArgumentOutOfRangeException(nameof(segmentSize));
-            if (isReading)
+            if (IsReading)
                 throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
 
             fileBackend?.Flush(true);
@@ -110,7 +111,7 @@ namespace DotNext.IO
         {
             if (segmentSize <= 0)
                 throw new ArgumentOutOfRangeException(nameof(segmentSize));
-            if (isReading)
+            if (IsReading)
                 throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
 
             if (fileBackend != null)
