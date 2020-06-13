@@ -6,6 +6,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.IO.MemoryMappedFiles
 {
+    using IReadOnlySequenceSource = Buffers.IReadOnlySequenceSource<byte>;
+
     /// <summary>
     /// Represents factory of <see cref="ReadOnlySequence{T}"/> objects
     /// representing memory-mapped file content.
@@ -17,7 +19,7 @@ namespace DotNext.IO.MemoryMappedFiles
     /// The class uses lazy initialization of memory-mapped file segment
     /// every time when <see cref="ReadOnlySequence{T}"/> switching between segments.
     /// </remarks>
-    public sealed class ReadOnlySequenceAccessor : Disposable, IConvertible<ReadOnlySequence<byte>>
+    public sealed class ReadOnlySequenceAccessor : Disposable, IReadOnlySequenceSource, IConvertible<ReadOnlySequence<byte>>
     {
         [StructLayout(LayoutKind.Auto)]
         private readonly struct Segment : IEquatable<Segment>
@@ -130,15 +132,32 @@ namespace DotNext.IO.MemoryMappedFiles
         private readonly int segmentLength;
         private readonly long totalLength;
         private readonly MemoryMappedFile mappedFile;
+        private readonly bool ownsFile;
         private Segment current;
         private MemoryMappedViewAccessor? segment;
         private unsafe byte* ptr;
 
-        internal ReadOnlySequenceAccessor(MemoryMappedFile file, int segmentLength, long totalLength)
+        internal ReadOnlySequenceAccessor(MemoryMappedFile file, int segmentLength, long totalLength, bool leaveOpen = true)
         {
             mappedFile = file;
             this.segmentLength = segmentLength;
             this.totalLength = totalLength;
+            ownsFile = !leaveOpen;
+        }
+
+        internal (ReadOnlySequenceSegment<byte> Head, ReadOnlySequenceSegment<byte> Tail) BuildSegments()
+        {
+            MappedSegment? first = null, last = null;
+            for (var remainingLength = totalLength; remainingLength > 0; )
+            {
+                var segmentLength = (int)Math.Min(this.segmentLength, remainingLength);
+                MappedSegment.AddSegment(this, segmentLength, ref first, ref last);
+                remainingLength -= segmentLength;
+            }
+
+            Debug.Assert(first != null);
+            Debug.Assert(last != null);
+            return (first, last);
         }
 
         /// <summary>
@@ -157,17 +176,8 @@ namespace DotNext.IO.MemoryMappedFiles
                 if (totalLength == 0)
                     return ReadOnlySequence<byte>.Empty;
 
-                MappedSegment? first = null, last = null;
-                for (var remainingLength = totalLength; remainingLength > 0; )
-                {
-                    var segmentLength = (int)Math.Min(this.segmentLength, remainingLength);
-                    MappedSegment.AddSegment(this, segmentLength, ref first, ref last);
-                    remainingLength -= segmentLength;
-                }
-
-                Debug.Assert(first != null);
-                Debug.Assert(last != null);
-                return new ReadOnlySequence<byte>(first, 0, last, last.Memory.Length);
+                var (head, tail) = BuildSegments();
+                return new ReadOnlySequence<byte>(head, 0, tail, tail.Memory.Length);
             }
         }
 
@@ -198,6 +208,8 @@ namespace DotNext.IO.MemoryMappedFiles
             {
                 segment?.ReleasePointerAndDispose();
                 segment = null;
+                if (ownsFile)
+                    mappedFile.Dispose();
             }
 
             base.Dispose(disposing);

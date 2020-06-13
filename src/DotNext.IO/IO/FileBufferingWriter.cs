@@ -24,41 +24,52 @@ namespace DotNext.IO
     /// returned <see cref="Memory{T}"/> instance references bytes in memory. Otherwise,
     /// it references memory-mapped file.
     /// </remarks>
-    public sealed class FileBufferingWriter : Stream, IFlushableBufferWriter<byte>
+    public sealed partial class FileBufferingWriter : Stream, IFlushableBufferWriter<byte>
     {
         private sealed unsafe class MemoryMappedFileManager : MemoryManager<byte>
         {
             private readonly FileBufferingWriter writer;
             private readonly MemoryMappedFile mappedFile;
             private readonly MemoryMappedViewAccessor accessor;
-            private readonly byte* ptr;
+            private readonly uint version;
+            private byte* ptr;
 
             internal MemoryMappedFileManager(FileBufferingWriter writer, long offset, long length)
             {
                 Debug.Assert(length <= int.MaxValue);
                 Debug.Assert(writer.fileBackend != null);
-                mappedFile = MemoryMappedFile.CreateFromFile(writer.fileBackend, null, writer.fileBackend.Length, MemoryMappedFileAccess.ReadWrite, HandleInheritability.None, true);
+                mappedFile = CreateMemoryMappedFile(writer.fileBackend);
                 accessor = mappedFile.CreateViewAccessor(offset, length, MemoryMappedFileAccess.ReadWrite);
                 accessor.SafeMemoryMappedViewHandle.AcquirePointer(ref ptr);
+                Debug.Assert(ptr != default);
                 this.writer = writer;
-                writer.isReading = true;
+                version = ++writer.readVersion;
+                Debug.Assert(writer.IsReading);
+            }
+
+            private void ThrowIfDisposed()
+            {
+                if (ptr == default)
+                    throw new ObjectDisposedException(GetType().Name);
             }
 
             public override Span<byte> GetSpan()
-                => new Span<byte>(ptr + accessor.PointerOffset, (int)accessor.Capacity);
+            {
+                ThrowIfDisposed();
+                return new Span<byte>(ptr + accessor.PointerOffset, (int)accessor.Capacity);
+            }
 
             public override Memory<byte> Memory => CreateMemory((int)accessor.Capacity);
 
             public override MemoryHandle Pin(int elementIndex)
             {
+                ThrowIfDisposed();
                 if (elementIndex < 0 || elementIndex >= accessor.Capacity)
                     throw new ArgumentOutOfRangeException(nameof(elementIndex));
                 return new MemoryHandle(ptr + accessor.PointerOffset + elementIndex);
             }
 
-            public override void Unpin()
-            {
-            }
+            public override void Unpin() => ThrowIfDisposed();
 
             protected override void Dispose(bool disposing)
             {
@@ -69,35 +80,39 @@ namespace DotNext.IO
                     mappedFile.Dispose();
                 }
 
-                writer.isReading = false;
+                ptr = default;
+                writer.ReleaseReadLock(version);
             }
         }
 
         private sealed class MemoryManager : MemoryManager<byte>
         {
+            private readonly uint version;
             private readonly FileBufferingWriter? writer;
+            private Memory<byte> memory;
 
             internal MemoryManager()
             {
                 writer = null;
-                Memory = default;
+                memory = default;
             }
 
             internal MemoryManager(FileBufferingWriter writer, in Range range)
             {
                 var buffer = writer.buffer;
-                Memory = buffer.Memory.Slice(0, writer.position)[range];
+                memory = buffer.Memory.Slice(0, writer.position)[range];
                 this.writer = writer;
-                writer.isReading = true;
+                version = ++writer.readVersion;
+                Debug.Assert(writer.IsReading);
             }
 
             public override Span<byte> GetSpan()
-                => Memory.Span;
+                => memory.Span;
 
-            public override Memory<byte> Memory { get; }
+            public override Memory<byte> Memory => memory;
 
             public override MemoryHandle Pin(int elementIndex)
-                => Memory.Slice(elementIndex).Pin();
+                => memory.Slice(elementIndex).Pin();
 
             public override void Unpin()
             {
@@ -105,8 +120,12 @@ namespace DotNext.IO
 
             protected override void Dispose(bool disposing)
             {
-                if (writer != null)
-                    writer.isReading = false;
+                if (disposing)
+                {
+                    memory = default;
+                }
+
+                writer?.ReleaseReadLock(version);
             }
         }
 
@@ -136,7 +155,9 @@ namespace DotNext.IO
         private MemoryOwner<byte> buffer;
         private int position;
         private FileStream? fileBackend;
-        private bool isReading;
+
+        // if (x & 1) != 0 then reading is active
+        private uint readVersion;
 
         /// <summary>
         /// Initializes a new writer.
@@ -178,6 +199,9 @@ namespace DotNext.IO
             options = asyncIO ? withAsyncIO : withoutAsyncIO;
         }
 
+        private static MemoryMappedFile CreateMemoryMappedFile(FileStream fileBackend)
+            => MemoryMappedFile.CreateFromFile(fileBackend, null, fileBackend.Length, MemoryMappedFileAccess.ReadWrite, HandleInheritability.None, true);
+
         /// <inheritdoc/>
         public override bool CanRead => false;
 
@@ -200,13 +224,23 @@ namespace DotNext.IO
         /// <inheritdoc/>
         public override long Length => position + (fileBackend?.Length ?? 0L);
 
+        private bool IsReading => (readVersion & 1U) != 0U;
+
+        private void ReleaseReadLock(uint current)
+        {
+            if (current == readVersion)
+                readVersion += 1U;
+
+            Debug.Assert((readVersion & 1U) == 0U);
+        }
+
         /// <summary>
         /// Removes all written data.
         /// </summary>
         /// <exception cref="InvalidOperationException">Attempt to cleanup this writer while reading.</exception>
         public void Clear()
         {
-            if (isReading)
+            if (IsReading)
                 throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
 
             buffer.Dispose();
@@ -303,7 +337,7 @@ namespace DotNext.IO
         /// <inheritdoc/>
         public override async ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken token = default)
         {
-            if (isReading)
+            if (IsReading)
                 throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
 
             switch (PrepareMemory(buffer.Length, out var output))
@@ -331,7 +365,7 @@ namespace DotNext.IO
         /// <inheritdoc/>
         public override void Write(ReadOnlySpan<byte> buffer)
         {
-            if (isReading)
+            if (IsReading)
                 throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
 
             switch (PrepareMemory(buffer.Length, out var output))
@@ -573,7 +607,7 @@ namespace DotNext.IO
         /// <exception cref="OutOfMemoryException">The size of buffered content is too large and cannot be represented by <see cref="Memory{T}"/> instance.</exception>
         public MemoryManager<byte> GetWrittenContent(Range range)
         {
-            if (isReading)
+            if (IsReading)
                 throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
             if (fileBackend is null)
                 return new MemoryManager(this, range);
@@ -614,7 +648,7 @@ namespace DotNext.IO
         /// <exception cref="OutOfMemoryException">The size of buffered content is too large and cannot be represented by <see cref="Memory{T}"/> instance.</exception>
         public async ValueTask<MemoryManager<byte>> GetWrittenContentAsync(Range range, CancellationToken token = default)
         {
-            if (isReading)
+            if (IsReading)
                 throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
             if (fileBackend is null)
                 return new MemoryManager(this, range);

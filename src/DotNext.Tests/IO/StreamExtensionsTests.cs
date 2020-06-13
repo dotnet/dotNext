@@ -389,5 +389,16 @@ namespace DotNext.IO
             Equal(10L, await ms.CopyToAsync(writer, 3));
             Equal(bytes, writer.WrittenSpan.ToArray());
         }
+
+        [Fact]
+        public static void WriteSequence()
+        {
+            var content = new byte[] { 1, 5, 8, 9 };
+            var sequence = new ChunkSequence<byte>(content, 2).ToReadOnlySequence();
+            using var ms = new MemoryStream();
+            ms.Write(sequence);
+            ms.Position = 0;
+            Equal(content, ms.ToArray());
+        }
     }
 }

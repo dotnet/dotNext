@@ -2,9 +2,9 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using Xunit;
+using Enumerable = System.Linq.Enumerable;
 
 namespace DotNext.Buffers
 {
@@ -245,6 +245,90 @@ namespace DotNext.Buffers
 
             Equal(40, writer.WrittenMemory.Span[0]);
             Equal(50, writer.WrittenMemory.Span[9]);
+        }
+
+        [Fact]
+        public static void WriterAsReadOnlyCollection()
+        {
+            using var writer = new PooledArrayBufferWriter<int>();
+            IReadOnlyList<int> collection = writer;
+            Empty(collection);
+            
+            writer.Add(42);
+            Equal(1, writer.WrittenCount);
+            Equal(1, collection.Count);
+            Equal(42, collection[0]);
+            Throws<IndexOutOfRangeException>(() => collection[1]);
+            Equal(42, Enumerable.First(collection));
+            Equal(1, Enumerable.Count(collection));
+
+            writer.AddAll(new[] {43, 44});
+            Equal(3, writer.WrittenCount);
+            Equal(3, collection.Count);
+            Equal(42, collection[0]);
+            Equal(43, collection[1]);
+            Equal(44, collection[2]);
+            Throws<IndexOutOfRangeException>(() => collection[3]);
+            Equal(3, Enumerable.Count(collection));
+            Equal(new[] {42, 43, 44}, Enumerable.ToArray(collection));
+        }
+
+        [Fact]
+        public static void WriterAsList()
+        {
+            using var writer = new PooledArrayBufferWriter<int>();
+            IList<int> list = writer;
+            False(list.IsReadOnly);
+            Empty(writer);
+            True(list.IndexOf(0) < 0);
+            False(list.Contains(0));
+            False(list.Remove(0));
+            Throws<ArgumentOutOfRangeException>(() => list.RemoveAt(0));
+
+            list.Add(42);
+            Equal(1, writer.WrittenCount);
+            Equal(1, list.Count);
+            Equal(42, list[0]);
+            True(list.Contains(42));
+            False(list.Contains(0));
+            Equal(0, list.IndexOf(42));
+            Throws<ArgumentOutOfRangeException>(() => list[1]);
+            Equal(42, Enumerable.First(list));
+            Equal(1, Enumerable.Count(list));
+            list[0] = 10;
+            Equal(10, writer.WrittenArray[0]);
+
+            list.Insert(0, 42);
+            Equal(2, writer.WrittenCount);
+            Equal(2, list.Count);
+            True(list.Contains(10));
+            True(list.Contains(42));
+            Equal(0, list.IndexOf(42));
+            Equal(1, list.IndexOf(10));
+            Equal(42, list[0]);
+            Equal(10, list[1]);
+
+            list.RemoveAt(0);
+            Equal(1, writer.WrittenCount);
+            Equal(1, list.Count);
+            Equal(10, list[0]);
+            True(list.Contains(10));
+            False(list.Contains(42));
+
+            True(list.Remove(10));
+            Empty(list);
+            Throws<ArgumentOutOfRangeException>(() => list.Insert(1, 56));
+
+            list.Insert(0, 56);
+            Equal(1, writer.WrittenCount);
+            Equal(1, list.Count);
+            Equal(56, list[0]);
+
+            //check insertion with overflow
+            for (var i = writer.Capacity; i > 0 ; i--)
+            {
+                list.Insert(0, i + 100);
+            }
         }
     }
 }
