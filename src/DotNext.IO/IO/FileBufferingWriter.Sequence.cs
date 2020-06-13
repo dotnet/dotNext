@@ -12,7 +12,7 @@ namespace DotNext.IO
     {
         private sealed class TailSegment : ReadOnlySequenceSegment<byte>
         {
-            private static Action<ReadOnlySequenceSegment<byte>, ReadOnlySequenceSegment<byte>> SegmentSetter =
+            private static readonly Action<ReadOnlySequenceSegment<byte>, ReadOnlySequenceSegment<byte>> SegmentSetter =
                                 DelegateHelpers.CreateOpenDelegate<TailSegment, ReadOnlySequenceSegment<byte>>(segm => segm.Next)
                                 .Method
                                 .CreateDelegate<Action<ReadOnlySequenceSegment<byte>, ReadOnlySequenceSegment<byte>>>();
@@ -39,7 +39,7 @@ namespace DotNext.IO
             internal ReadOnlySequenceSource(FileBufferingWriter writer, int segmentLength)
             {
                 var buffer = writer.buffer;
-                this.tail = buffer.Memory.Slice(0, writer.position);
+                tail = buffer.Memory.Slice(0, writer.position);
                 accessor = writer.fileBackend is null ?
                     null :
                     new ReadOnlySequenceAccessor(CreateMemoryMappedFile(writer.fileBackend), segmentLength, writer.fileBackend.Length, false);

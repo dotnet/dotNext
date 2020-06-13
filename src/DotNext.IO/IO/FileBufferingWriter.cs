@@ -31,8 +31,8 @@ namespace DotNext.IO
             private readonly FileBufferingWriter writer;
             private readonly MemoryMappedFile mappedFile;
             private readonly MemoryMappedViewAccessor accessor;
-            private byte* ptr;
             private readonly uint version;
+            private byte* ptr;
 
             internal MemoryMappedFileManager(FileBufferingWriter writer, long offset, long length)
             {
@@ -157,7 +157,7 @@ namespace DotNext.IO
         private FileStream? fileBackend;
 
         // if (x & 1) != 0 then reading is active
-        private uint readVersion;    
+        private uint readVersion;
 
         /// <summary>
         /// Initializes a new writer.
