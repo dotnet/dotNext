@@ -21,7 +21,7 @@ namespace DotNext.IO
             internal TailSegment(ReadOnlySequenceSegment<byte> previous, Memory<byte> memory)
             {
                 Memory = memory;
-                RunningIndex = previous.RunningIndex + memory.Length;
+                RunningIndex = previous.RunningIndex + previous.Memory.Length;
                 SegmentSetter(previous, this);
             }
         }
@@ -64,7 +64,7 @@ namespace DotNext.IO
                     if (!this.tail.IsEmpty)
                         tail = new TailSegment(tail, this.tail);
 
-                    return new ReadOnlySequence<byte>(head, 0, head, head.Memory.Length);
+                    return new ReadOnlySequence<byte>(head, 0, tail, tail.Memory.Length);
                 }
             }
 
