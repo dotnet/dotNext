@@ -62,6 +62,11 @@ Release Date: 06-14-2020
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.6.0">DotNext.Metaprogramming 2.6.0</a>
 * Introduced null-coalescing assignment expression
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.reflection/2.6.0">DotNext.Reflection 2.6.0</a>
+* Introduced null-coalescing assignment expression
+* Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.threading/2.6.0">DotNext.Threading 2.6.0</a>
 * Fixed race-condition caused by `AsyncTrigger.Signal` method
