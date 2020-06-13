@@ -133,6 +133,19 @@ namespace DotNext
         public static TDelegate CreateOpenDelegate<TDelegate>(Expression<TDelegate> expression)
             where TDelegate : Delegate
             => GetMethod(expression).CreateDelegate<TDelegate>();
+        
+        /// <summary>
+        /// Creates open delegate for instance property setter.
+        /// </summary>
+        /// <param name="properyExpr">The expression representing property.</param>
+        /// <typeparam name="T">The declaring type.</typeparam>
+        /// <typeparam name="TValue">The type of property value.</typeparam>
+        /// <returns>The open delegate representing property setter.</returns>
+        public static Action<T, TValue> CreateOpenDelegate<T, TValue>(Expression<Func<T, TValue>> properyExpr)
+            where T : class
+            => properyExpr.Body is MemberExpression expr && expr.Member is PropertyInfo property && property.CanWrite ?
+                property.SetMethod.CreateDelegate<Action<T, TValue>>() :
+                throw new ArgumentException(ExceptionMessages.InvalidExpressionTree, nameof(properyExpr));
 
         /// <summary>
         /// Creates a factory for closed delegates.
