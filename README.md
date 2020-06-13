@@ -84,6 +84,10 @@ Release Date: 06-14-2020
 * Respect shutdown timeout inherited from parent host in Hosted Mode
 * Updated dependencies
 
+<a href="https://www.nuget.org/packages/dotnext.augmentation.fody/2.1.0">DotNext.Augmentation.Fody 2.1.0</a>
+* Removed usage of obsolete methods from `Fody`
+* Updated `Fody` version
+
 Changelog for previous versions located [here](./CHANGELOG.md).
 
 # Release Policy
