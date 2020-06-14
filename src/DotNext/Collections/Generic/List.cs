@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using static InlineIL.IL;
+using static InlineIL.IL.Emit;
+using static InlineIL.MethodRef;
+using static InlineIL.TypeRef;
 
 namespace DotNext.Collections.Generic
 {
@@ -64,7 +68,14 @@ namespace DotNext.Collections.Generic
         /// <typeparam name="T">Type of list items.</typeparam>
         /// <param name="list">Read-only list instance.</param>
         /// <returns>A delegate representing indexer.</returns>
-        public static Func<int, T> IndexerGetter<T>(this IReadOnlyList<T> list) => Indexer<T>.ReadOnly.Bind(list);
+        public static Func<int, T> IndexerGetter<T>(this IReadOnlyList<T> list)
+        {
+            Push(list);
+            Dup();
+            Ldvirtftn(PropertyGet(Type<IReadOnlyList<T>>(), "Item"));
+            Newobj(Constructor(Type<Func<int, T>>(), Type<object>(), Type<IntPtr>()));
+            return Return<Func<int, T>>();
+        }
 
         /// <summary>
         /// Returns <see cref="IList{T}.get_Item"/> as delegate
@@ -73,7 +84,14 @@ namespace DotNext.Collections.Generic
         /// <typeparam name="T">Type of list items.</typeparam>
         /// <param name="list">Mutable list instance.</param>
         /// <returns>A delegate representing indexer.</returns>
-        public static Func<int, T> IndexerGetter<T>(this IList<T> list) => Indexer<T>.Getter.Bind(list);
+        public static Func<int, T> IndexerGetter<T>(this IList<T> list)
+        {
+            Push(list);
+            Dup();
+            Ldvirtftn(PropertyGet(Type<IList<T>>(), "Item"));
+            Newobj(Constructor(Type<Func<int, T>>(), Type<object>(), Type<IntPtr>()));
+            return Return<Func<int, T>>();
+        }
 
         /// <summary>
         /// Returns <see cref="IList{T}.set_Item"/> as delegate
@@ -82,7 +100,14 @@ namespace DotNext.Collections.Generic
         /// <typeparam name="T">Type of list items.</typeparam>
         /// <param name="list">Mutable list instance.</param>
         /// <returns>A delegate representing indexer.</returns>
-        public static Action<int, T> IndexerSetter<T>(this IList<T> list) => Indexer<T>.Setter.Bind(list);
+        public static Action<int, T> IndexerSetter<T>(this IList<T> list)
+        {
+            Push(list);
+            Dup();
+            Ldvirtftn(PropertySet(Type<IList<T>>(), "Item"));
+            Newobj(Constructor(Type<Action<int, T>>(), Type<object>(), Type<IntPtr>()));
+            return Return<Action<int, T>>();
+        }
 
         /// <summary>
         /// Converts list into array and perform mapping for each
