@@ -1,40 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using static InlineIL.IL;
+using static InlineIL.IL.Emit;
+using static InlineIL.MethodRef;
+using static InlineIL.TypeRef;
 
 namespace DotNext.Collections.Generic
 {
-    using UnreachableCodeExecutionException = Diagnostics.UnreachableCodeExecutionException;
+    using static Reflection.CollectionType;
 
     /// <summary>
     /// Provides various extensions for <see cref="IList{T}"/> interface.
     /// </summary>
     public static class List
     {
-        private static class Indexer<TCollection, T>
-            where TCollection : class, IEnumerable<T>
-        {
-            internal static readonly Func<TCollection, int, T> Getter;
-            internal static readonly Action<TCollection, int, T>? Setter;
-
-            [SuppressMessage("Design", "CA1065", Justification = "Exception will never throw")]
-            static Indexer()
-            {
-                foreach (var member in typeof(TCollection).GetDefaultMembers())
-                {
-                    if (member is PropertyInfo indexer)
-                    {
-                        Getter = indexer.GetMethod.CreateDelegate<Func<TCollection, int, T>>();
-                        Setter = indexer.SetMethod?.CreateDelegate<Action<TCollection, int, T>>();
-                        return;
-                    }
-                }
-
-                throw new UnreachableCodeExecutionException();
-            }
-        }
-
         /// <summary>
         /// Provides strongly-typed access to list indexer.
         /// </summary>
@@ -44,17 +24,36 @@ namespace DotNext.Collections.Generic
             /// <summary>
             /// Represents read-only list item getter.
             /// </summary>
-            public static Func<IReadOnlyList<T>, int, T> ReadOnly => Indexer<IReadOnlyList<T>, T>.Getter;
+            public static Func<IReadOnlyList<T>, int, T> ReadOnly { get; }
 
             /// <summary>
             /// Represents list item getter.
             /// </summary>
-            public static Func<IList<T>, int, T> Getter => Indexer<IList<T>, T>.Getter;
+            public static Func<IList<T>, int, T> Getter { get; }
 
             /// <summary>
             /// Represents list item setter.
             /// </summary>
-            public static Action<IList<T>, int, T> Setter => Indexer<IList<T>, T>.Setter!;
+            public static Action<IList<T>, int, T> Setter { get; }
+
+            static Indexer()
+            {
+                Ldtoken(PropertyGet(Type<IReadOnlyList<T>>(), ItemIndexerName));
+                Pop(out RuntimeMethodHandle method);
+                Ldtoken(Type<IReadOnlyList<T>>());
+                Pop(out RuntimeTypeHandle type);
+                ReadOnly = DelegateHelpers.CreateDelegate<Func<IReadOnlyList<T>, int, T>>((MethodInfo)MethodBase.GetMethodFromHandle(method, type));
+
+                Ldtoken(PropertyGet(Type<IList<T>>(), ItemIndexerName));
+                Pop(out method);
+                Ldtoken(Type<IList<T>>());
+                Pop(out type);
+                Getter = DelegateHelpers.CreateDelegate<Func<IList<T>, int, T>>((MethodInfo)MethodBase.GetMethodFromHandle(method, type));
+
+                Ldtoken(PropertySet(Type<IList<T>>(), ItemIndexerName));
+                Pop(out method);
+                Setter = DelegateHelpers.CreateDelegate<Action<IList<T>, int, T>>((MethodInfo)MethodBase.GetMethodFromHandle(method, type));
+            }
         }
 
         /// <summary>
@@ -64,7 +63,14 @@ namespace DotNext.Collections.Generic
         /// <typeparam name="T">Type of list items.</typeparam>
         /// <param name="list">Read-only list instance.</param>
         /// <returns>A delegate representing indexer.</returns>
-        public static Func<int, T> IndexerGetter<T>(this IReadOnlyList<T> list) => Indexer<T>.ReadOnly.Bind(list);
+        public static Func<int, T> IndexerGetter<T>(this IReadOnlyList<T> list)
+        {
+            Push(list);
+            Dup();
+            Ldvirtftn(PropertyGet(Type<IReadOnlyList<T>>(), ItemIndexerName));
+            Newobj(Constructor(Type<Func<int, T>>(), Type<object>(), Type<IntPtr>()));
+            return Return<Func<int, T>>();
+        }
 
         /// <summary>
         /// Returns <see cref="IList{T}.get_Item"/> as delegate
@@ -73,7 +79,14 @@ namespace DotNext.Collections.Generic
         /// <typeparam name="T">Type of list items.</typeparam>
         /// <param name="list">Mutable list instance.</param>
         /// <returns>A delegate representing indexer.</returns>
-        public static Func<int, T> IndexerGetter<T>(this IList<T> list) => Indexer<T>.Getter.Bind(list);
+        public static Func<int, T> IndexerGetter<T>(this IList<T> list)
+        {
+            Push(list);
+            Dup();
+            Ldvirtftn(PropertyGet(Type<IList<T>>(), ItemIndexerName));
+            Newobj(Constructor(Type<Func<int, T>>(), Type<object>(), Type<IntPtr>()));
+            return Return<Func<int, T>>();
+        }
 
         /// <summary>
         /// Returns <see cref="IList{T}.set_Item"/> as delegate
@@ -82,7 +95,14 @@ namespace DotNext.Collections.Generic
         /// <typeparam name="T">Type of list items.</typeparam>
         /// <param name="list">Mutable list instance.</param>
         /// <returns>A delegate representing indexer.</returns>
-        public static Action<int, T> IndexerSetter<T>(this IList<T> list) => Indexer<T>.Setter.Bind(list);
+        public static Action<int, T> IndexerSetter<T>(this IList<T> list)
+        {
+            Push(list);
+            Dup();
+            Ldvirtftn(PropertySet(Type<IList<T>>(), ItemIndexerName));
+            Newobj(Constructor(Type<Action<int, T>>(), Type<object>(), Type<IntPtr>()));
+            return Return<Action<int, T>>();
+        }
 
         /// <summary>
         /// Converts list into array and perform mapping for each

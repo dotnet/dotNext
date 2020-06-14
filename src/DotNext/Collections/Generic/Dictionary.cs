@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using static InlineIL.IL;
+using static InlineIL.IL.Emit;
+using static InlineIL.MethodRef;
+using static InlineIL.TypeRef;
 
 namespace DotNext.Collections.Generic
 {
-    using UnreachableCodeExecutionException = Diagnostics.UnreachableCodeExecutionException;
+    using static Reflection.CollectionType;
 
     /// <summary>
     /// Represents various extensions for types <see cref="Dictionary{TKey, TValue}"/>
@@ -13,29 +16,6 @@ namespace DotNext.Collections.Generic
     /// </summary>
     public static class Dictionary
     {
-        private static class Indexer<TDictionary, TKey, TValue>
-            where TDictionary : class, IEnumerable<KeyValuePair<TKey, TValue>>
-        {
-            internal static readonly Func<TDictionary, TKey, TValue> Getter;
-            internal static readonly Action<TDictionary, TKey, TValue>? Setter;
-
-            [SuppressMessage("Design", "CA1065", Justification = "The exception should never be raised")]
-            static Indexer()
-            {
-                foreach (var member in typeof(TDictionary).GetDefaultMembers())
-                {
-                    if (member is PropertyInfo indexer)
-                    {
-                        Getter = indexer.GetMethod.CreateDelegate<Func<TDictionary, TKey, TValue>>();
-                        Setter = indexer.SetMethod?.CreateDelegate<Action<TDictionary, TKey, TValue>>();
-                        return;
-                    }
-                }
-
-                throw new UnreachableCodeExecutionException();
-            }
-        }
-
         /// <summary>
         /// Provides strongly-typed access to dictionary indexer.
         /// </summary>
@@ -46,17 +26,36 @@ namespace DotNext.Collections.Generic
             /// <summary>
             /// Represents read-only dictionary indexer.
             /// </summary>
-            public static Func<IReadOnlyDictionary<TKey, TValue>, TKey, TValue> ReadOnly => Indexer<IReadOnlyDictionary<TKey, TValue>, TKey, TValue>.Getter;
+            public static Func<IReadOnlyDictionary<TKey, TValue>, TKey, TValue> ReadOnly { get; }
 
             /// <summary>
             /// Represents dictionary value getter.
             /// </summary>
-            public static Func<IDictionary<TKey, TValue>, TKey, TValue> Getter => Indexer<IDictionary<TKey, TValue>, TKey, TValue>.Getter;
+            public static Func<IDictionary<TKey, TValue>, TKey, TValue> Getter { get; }
 
             /// <summary>
             /// Represents dictionary value setter.
             /// </summary>
-            public static Action<IDictionary<TKey, TValue>, TKey, TValue> Setter => Indexer<IDictionary<TKey, TValue>, TKey, TValue>.Setter!;
+            public static Action<IDictionary<TKey, TValue>, TKey, TValue> Setter { get; }
+
+            static Indexer()
+            {
+                Ldtoken(PropertyGet(Type<IReadOnlyDictionary<TKey, TValue>>(), ItemIndexerName));
+                Pop(out RuntimeMethodHandle method);
+                Ldtoken(Type<IReadOnlyDictionary<TKey, TValue>>());
+                Pop(out RuntimeTypeHandle type);
+                ReadOnly = DelegateHelpers.CreateDelegate<Func<IReadOnlyDictionary<TKey, TValue>, TKey, TValue>>((MethodInfo)MethodBase.GetMethodFromHandle(method, type));
+
+                Ldtoken(PropertyGet(Type<IDictionary<TKey, TValue>>(), ItemIndexerName));
+                Pop(out method);
+                Ldtoken(Type<IDictionary<TKey, TValue>>());
+                Pop(out type);
+                Getter = DelegateHelpers.CreateDelegate<Func<IDictionary<TKey, TValue>, TKey, TValue>>((MethodInfo)MethodBase.GetMethodFromHandle(method, type));
+
+                Ldtoken(PropertySet(Type<IDictionary<TKey, TValue>>(), ItemIndexerName));
+                Pop(out method);
+                Setter = DelegateHelpers.CreateDelegate<Action<IDictionary<TKey, TValue>, TKey, TValue>>((MethodInfo)MethodBase.GetMethodFromHandle(method, type));
+            }
         }
 
         /// <summary>
@@ -68,7 +67,47 @@ namespace DotNext.Collections.Generic
         /// <param name="dictionary">Read-only dictionary instance.</param>
         /// <returns>A delegate representing dictionary indexer.</returns>
         public static Func<TKey, TValue> IndexerGetter<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> dictionary)
-            => Indexer<TKey, TValue>.ReadOnly.Bind(dictionary);
+        {
+            Push(dictionary);
+            Dup();
+            Ldvirtftn(PropertyGet(Type<IReadOnlyDictionary<TKey, TValue>>(), ItemIndexerName));
+            Newobj(Constructor(Type<Func<TKey, TValue>>(), Type<object>(), Type<IntPtr>()));
+            return Return<Func<TKey, TValue>>();
+        }
+
+        /// <summary>
+        /// Returns <see cref="IReadOnlyDictionary{TKey, TValue}.Keys"/> as
+        /// delegate attached to the dictionary instance.
+        /// </summary>
+        /// <typeparam name="TKey">Type of dictionary keys.</typeparam>
+        /// <typeparam name="TValue">Type of dictionary values.</typeparam>
+        /// <param name="dictionary">Read-only dictionary instance.</param>
+        /// <returns>A delegate providing access to dictionary keys.</returns>
+        public static Func<IEnumerable<TKey>> KeysGetter<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> dictionary)
+        {
+            Push(dictionary);
+            Dup();
+            Ldvirtftn(PropertyGet(Type<IReadOnlyDictionary<TKey, TValue>>(), nameof(IReadOnlyDictionary<TKey, TValue>.Keys)));
+            Newobj(Constructor(Type<Func<IEnumerable<TKey>>>(), Type<object>(), Type<IntPtr>()));
+            return Return<Func<IEnumerable<TKey>>>();
+        }
+
+        /// <summary>
+        /// Returns <see cref="IReadOnlyDictionary{TKey, TValue}.Values"/> as
+        /// delegate attached to the dictionary instance.
+        /// </summary>
+        /// <typeparam name="TKey">Type of dictionary keys.</typeparam>
+        /// <typeparam name="TValue">Type of dictionary values.</typeparam>
+        /// <param name="dictionary">Read-only dictionary instance.</param>
+        /// <returns>A delegate providing access to dictionary keys.</returns>
+        public static Func<IEnumerable<TValue>> ValuesGetter<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> dictionary)
+        {
+            Push(dictionary);
+            Dup();
+            Ldvirtftn(PropertyGet(Type<IReadOnlyDictionary<TKey, TValue>>(), nameof(IReadOnlyDictionary<TKey, TValue>.Values)));
+            Newobj(Constructor(Type<Func<IEnumerable<TKey>>>(), Type<object>(), Type<IntPtr>()));
+            return Return<Func<IEnumerable<TValue>>>();
+        }
 
         /// <summary>
         /// Returns <see cref="IDictionary{TKey, TValue}.get_Item"/> as
@@ -79,7 +118,13 @@ namespace DotNext.Collections.Generic
         /// <param name="dictionary">Mutable dictionary instance.</param>
         /// <returns>A delegate representing dictionary indexer.</returns>
         public static Func<TKey, TValue> IndexerGetter<TKey, TValue>(this IDictionary<TKey, TValue> dictionary)
-            => Indexer<TKey, TValue>.Getter.Bind(dictionary);
+        {
+            Push(dictionary);
+            Dup();
+            Ldvirtftn(PropertyGet(Type<IDictionary<TKey, TValue>>(), ItemIndexerName));
+            Newobj(Constructor(Type<Func<TKey, TValue>>(), Type<object>(), Type<IntPtr>()));
+            return Return<Func<TKey, TValue>>();
+        }
 
         /// <summary>
         /// Returns <see cref="IDictionary{TKey, TValue}.set_Item"/> as
@@ -90,7 +135,47 @@ namespace DotNext.Collections.Generic
         /// <param name="dictionary">Mutable dictionary instance.</param>
         /// <returns>A delegate representing dictionary indexer.</returns>
         public static Action<TKey, TValue> IndexerSetter<TKey, TValue>(this IDictionary<TKey, TValue> dictionary)
-            => Indexer<TKey, TValue>.Setter.Bind(dictionary);
+        {
+            Push(dictionary);
+            Dup();
+            Ldvirtftn(PropertySet(Type<IDictionary<TKey, TValue>>(), ItemIndexerName));
+            Newobj(Constructor(Type<Action<TKey, TValue>>(), Type<object>(), Type<IntPtr>()));
+            return Return<Action<TKey, TValue>>();
+        }
+
+        /// <summary>
+        /// Returns <see cref="IDictionary{TKey, TValue}.Keys"/> as
+        /// delegate attached to the dictionary instance.
+        /// </summary>
+        /// <typeparam name="TKey">Type of dictionary keys.</typeparam>
+        /// <typeparam name="TValue">Type of dictionary values.</typeparam>
+        /// <param name="dictionary">Read-only dictionary instance.</param>
+        /// <returns>A delegate providing access to dictionary keys.</returns>
+        public static Func<ICollection<TKey>> KeysGetter<TKey, TValue>(this IDictionary<TKey, TValue> dictionary)
+        {
+            Push(dictionary);
+            Dup();
+            Ldvirtftn(PropertyGet(Type<IDictionary<TKey, TValue>>(), nameof(IDictionary<TKey, TValue>.Keys)));
+            Newobj(Constructor(Type<Func<ICollection<TKey>>>(), Type<object>(), Type<IntPtr>()));
+            return Return<Func<ICollection<TKey>>>();
+        }
+
+        /// <summary>
+        /// Returns <see cref="IDictionary{TKey, TValue}.Values"/> as
+        /// delegate attached to the dictionary instance.
+        /// </summary>
+        /// <typeparam name="TKey">Type of dictionary keys.</typeparam>
+        /// <typeparam name="TValue">Type of dictionary values.</typeparam>
+        /// <param name="dictionary">Read-only dictionary instance.</param>
+        /// <returns>A delegate providing access to dictionary keys.</returns>
+        public static Func<ICollection<TValue>> ValuesGetter<TKey, TValue>(this IDictionary<TKey, TValue> dictionary)
+        {
+            Push(dictionary);
+            Dup();
+            Ldvirtftn(PropertyGet(Type<IDictionary<TKey, TValue>>(), nameof(IDictionary<TKey, TValue>.Values)));
+            Newobj(Constructor(Type<Func<ICollection<TKey>>>(), Type<object>(), Type<IntPtr>()));
+            return Return<Func<ICollection<TValue>>>();
+        }
 
         /// <summary>
         /// Adds a key-value pair to the dictionary if the key does not exist.

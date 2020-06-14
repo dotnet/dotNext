@@ -310,5 +310,17 @@ namespace DotNext.Runtime
             e = Throws<RuntimeWrappedException>(new Action(() => throw Intrinsics.Error("String")));
             Equal("String", e.WrappedException);
         }
+
+        [Fact]
+        public static void ObjectClone()
+        {
+            var obj = new IntrinsicsTests();
+            var obj2 = Intrinsics.ShallowCopy(obj);
+            obj.field = Guid.NewGuid();
+            obj2.str = string.Empty;
+            NotEqual(obj.field, obj2.field);
+            NotEqual(obj.str, obj2.str);
+            NotSame(obj, obj2);
+        }
     }
 }
