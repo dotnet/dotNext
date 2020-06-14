@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class PipeExtensions
    | .NEXT ">
-    <meta name="generator" content="docfx 2.54.0.0">
+    <meta name="generator" content="docfx 2.55.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -118,7 +118,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_Pipelines_PipeExtensions_CopyToAsync_System_IO_Pipelines_PipeReader_System_Memory_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.CopyToAsync(System.IO.Pipelines.PipeReader%2CSystem.Memory%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.cs/#L253">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.cs/#L284">View Source</a>
   </span>
   <a id="DotNext_IO_Pipelines_PipeExtensions_CopyToAsync_" data-uid="DotNext.IO.Pipelines.PipeExtensions.CopyToAsync*"></a>
   <h4 id="DotNext_IO_Pipelines_PipeExtensions_CopyToAsync_System_IO_Pipelines_PipeReader_System_Memory_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.CopyToAsync(System.IO.Pipelines.PipeReader,System.Memory{System.Byte},System.Threading.CancellationToken)">CopyToAsync(PipeReader, Memory&lt;Byte&gt;, CancellationToken)</h4>
@@ -180,7 +180,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_Pipelines_PipeExtensions_ReadAsync_System_IO_Pipelines_PipeReader_System_Memory_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.ReadAsync(System.IO.Pipelines.PipeReader%2CSystem.Memory%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.cs/#L242">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.cs/#L273">View Source</a>
   </span>
   <a id="DotNext_IO_Pipelines_PipeExtensions_ReadAsync_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadAsync*"></a>
   <h4 id="DotNext_IO_Pipelines_PipeExtensions_ReadAsync_System_IO_Pipelines_PipeReader_System_Memory_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadAsync(System.IO.Pipelines.PipeReader,System.Memory{System.Byte},System.Threading.CancellationToken)">ReadAsync(PipeReader, Memory&lt;Byte&gt;, CancellationToken)</h4>
@@ -259,7 +259,7 @@ public static ValueTask ReadAsync(this PipeReader reader, Memory&lt;byte&gt; out
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_Pipelines_PipeExtensions_ReadAsync__1_System_IO_Pipelines_PipeReader_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.ReadAsync%60%601(System.IO.Pipelines.PipeReader%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.cs/#L171">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.cs/#L151">View Source</a>
   </span>
   <a id="DotNext_IO_Pipelines_PipeExtensions_ReadAsync_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadAsync*"></a>
   <h4 id="DotNext_IO_Pipelines_PipeExtensions_ReadAsync__1_System_IO_Pipelines_PipeReader_System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadAsync``1(System.IO.Pipelines.PipeReader,System.Threading.CancellationToken)">ReadAsync&lt;T&gt;(PipeReader, CancellationToken)</h4>
@@ -269,6 +269,7 @@ public static ValueTask ReadAsync(this PipeReader reader, Memory&lt;byte&gt; out
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static ValueTask&lt;T&gt; ReadAsync&lt;T&gt;(this PipeReader reader, CancellationToken token = default(CancellationToken))
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -348,7 +349,7 @@ public static ValueTask ReadAsync(this PipeReader reader, Memory&lt;byte&gt; out
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_Pipelines_PipeExtensions_ReadBlockAsync_System_IO_Pipelines_PipeReader_System_Memory_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.ReadBlockAsync(System.IO.Pipelines.PipeReader%2CSystem.Memory%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.cs/#L231">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.cs/#L262">View Source</a>
   </span>
   <a id="DotNext_IO_Pipelines_PipeExtensions_ReadBlockAsync_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadBlockAsync*"></a>
   <h4 id="DotNext_IO_Pipelines_PipeExtensions_ReadBlockAsync_System_IO_Pipelines_PipeReader_System_Memory_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadBlockAsync(System.IO.Pipelines.PipeReader,System.Memory{System.Byte},System.Threading.CancellationToken)">ReadBlockAsync(PipeReader, Memory&lt;Byte&gt;, CancellationToken)</h4>
@@ -426,7 +427,7 @@ public static ValueTask ReadAsync(this PipeReader reader, Memory&lt;byte&gt; out
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_Pipelines_PipeExtensions_ReadInt16Async_System_IO_Pipelines_PipeReader_System_Boolean_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.ReadInt16Async(System.IO.Pipelines.PipeReader%2CSystem.Boolean%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.cs/#L216">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.cs/#L230">View Source</a>
   </span>
   <a id="DotNext_IO_Pipelines_PipeExtensions_ReadInt16Async_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadInt16Async*"></a>
   <h4 id="DotNext_IO_Pipelines_PipeExtensions_ReadInt16Async_System_IO_Pipelines_PipeReader_System_Boolean_System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadInt16Async(System.IO.Pipelines.PipeReader,System.Boolean,System.Threading.CancellationToken)">ReadInt16Async(PipeReader, Boolean, CancellationToken)</h4>
@@ -509,7 +510,7 @@ public static ValueTask ReadAsync(this PipeReader reader, Memory&lt;byte&gt; out
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_Pipelines_PipeExtensions_ReadInt32Async_System_IO_Pipelines_PipeReader_System_Boolean_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.ReadInt32Async(System.IO.Pipelines.PipeReader%2CSystem.Boolean%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.cs/#L200">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.cs/#L197">View Source</a>
   </span>
   <a id="DotNext_IO_Pipelines_PipeExtensions_ReadInt32Async_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadInt32Async*"></a>
   <h4 id="DotNext_IO_Pipelines_PipeExtensions_ReadInt32Async_System_IO_Pipelines_PipeReader_System_Boolean_System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadInt32Async(System.IO.Pipelines.PipeReader,System.Boolean,System.Threading.CancellationToken)">ReadInt32Async(PipeReader, Boolean, CancellationToken)</h4>
@@ -592,7 +593,7 @@ public static ValueTask ReadAsync(this PipeReader reader, Memory&lt;byte&gt; out
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_Pipelines_PipeExtensions_ReadInt64Async_System_IO_Pipelines_PipeReader_System_Boolean_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.ReadInt64Async(System.IO.Pipelines.PipeReader%2CSystem.Boolean%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.cs/#L184">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.cs/#L164">View Source</a>
   </span>
   <a id="DotNext_IO_Pipelines_PipeExtensions_ReadInt64Async_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadInt64Async*"></a>
   <h4 id="DotNext_IO_Pipelines_PipeExtensions_ReadInt64Async_System_IO_Pipelines_PipeReader_System_Boolean_System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadInt64Async(System.IO.Pipelines.PipeReader,System.Boolean,System.Threading.CancellationToken)">ReadInt64Async(PipeReader, Boolean, CancellationToken)</h4>
@@ -675,7 +676,7 @@ public static ValueTask ReadAsync(this PipeReader reader, Memory&lt;byte&gt; out
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_Pipelines_PipeExtensions_ReadStringAsync_System_IO_Pipelines_PipeReader_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.ReadStringAsync(System.IO.Pipelines.PipeReader%2CDotNext.IO.StringLengthEncoding%2CDotNext.Text.DecodingContext%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.cs/#L160">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.cs/#L140">View Source</a>
   </span>
   <a id="DotNext_IO_Pipelines_PipeExtensions_ReadStringAsync_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadStringAsync*"></a>
   <h4 id="DotNext_IO_Pipelines_PipeExtensions_ReadStringAsync_System_IO_Pipelines_PipeReader_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadStringAsync(System.IO.Pipelines.PipeReader,DotNext.IO.StringLengthEncoding,DotNext.Text.DecodingContext,System.Threading.CancellationToken)">ReadStringAsync(PipeReader, StringLengthEncoding, DecodingContext, CancellationToken)</h4>
@@ -769,7 +770,7 @@ public static ValueTask ReadAsync(this PipeReader reader, Memory&lt;byte&gt; out
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_Pipelines_PipeExtensions_ReadStringAsync_System_IO_Pipelines_PipeReader_System_Int32_DotNext_Text_DecodingContext_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.ReadStringAsync(System.IO.Pipelines.PipeReader%2CSystem.Int32%2CDotNext.Text.DecodingContext%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.cs/#L114">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.cs/#L94">View Source</a>
   </span>
   <a id="DotNext_IO_Pipelines_PipeExtensions_ReadStringAsync_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadStringAsync*"></a>
   <h4 id="DotNext_IO_Pipelines_PipeExtensions_ReadStringAsync_System_IO_Pipelines_PipeReader_System_Int32_DotNext_Text_DecodingContext_System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadStringAsync(System.IO.Pipelines.PipeReader,System.Int32,DotNext.Text.DecodingContext,System.Threading.CancellationToken)">ReadStringAsync(PipeReader, Int32, DecodingContext, CancellationToken)</h4>
@@ -855,10 +856,340 @@ public static ValueTask ReadAsync(this PipeReader reader, Memory&lt;byte&gt; out
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_Pipelines_PipeExtensions_ReadUInt16Async_System_IO_Pipelines_PipeReader_System_Boolean_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.ReadUInt16Async(System.IO.Pipelines.PipeReader%2CSystem.Boolean%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.cs/#L246">View Source</a>
+  </span>
+  <a id="DotNext_IO_Pipelines_PipeExtensions_ReadUInt16Async_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadUInt16Async*"></a>
+  <h4 id="DotNext_IO_Pipelines_PipeExtensions_ReadUInt16Async_System_IO_Pipelines_PipeReader_System_Boolean_System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadUInt16Async(System.IO.Pipelines.PipeReader,System.Boolean,System.Threading.CancellationToken)">ReadUInt16Async(PipeReader, Boolean, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Decodes 16-bit signed integer using the specified endianness.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public static ValueTask&lt;ushort&gt; ReadUInt16Async(this PipeReader reader, bool littleEndian, CancellationToken token = default(CancellationToken))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.pipelines.pipereader">PipeReader</a></td>
+        <td><span class="parametername">reader</span></td>
+        <td><p>The pipe reader.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">littleEndian</span></td>
+        <td><p><span class="xref">true</span> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint16">UInt16</a>&gt;</td>
+        <td><p>The decoded value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_Pipelines_PipeExtensions_ReadUInt32Async_System_IO_Pipelines_PipeReader_System_Boolean_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.ReadUInt32Async(System.IO.Pipelines.PipeReader%2CSystem.Boolean%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.cs/#L213">View Source</a>
+  </span>
+  <a id="DotNext_IO_Pipelines_PipeExtensions_ReadUInt32Async_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadUInt32Async*"></a>
+  <h4 id="DotNext_IO_Pipelines_PipeExtensions_ReadUInt32Async_System_IO_Pipelines_PipeReader_System_Boolean_System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadUInt32Async(System.IO.Pipelines.PipeReader,System.Boolean,System.Threading.CancellationToken)">ReadUInt32Async(PipeReader, Boolean, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Decodes 32-bit unsigned integer using the specified endianness.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public static ValueTask&lt;uint&gt; ReadUInt32Async(this PipeReader reader, bool littleEndian, CancellationToken token = default(CancellationToken))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.pipelines.pipereader">PipeReader</a></td>
+        <td><span class="parametername">reader</span></td>
+        <td><p>The pipe reader.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">littleEndian</span></td>
+        <td><p><span class="xref">true</span> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint32">UInt32</a>&gt;</td>
+        <td><p>The decoded value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_Pipelines_PipeExtensions_ReadUInt64Async_System_IO_Pipelines_PipeReader_System_Boolean_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.ReadUInt64Async(System.IO.Pipelines.PipeReader%2CSystem.Boolean%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.cs/#L180">View Source</a>
+  </span>
+  <a id="DotNext_IO_Pipelines_PipeExtensions_ReadUInt64Async_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadUInt64Async*"></a>
+  <h4 id="DotNext_IO_Pipelines_PipeExtensions_ReadUInt64Async_System_IO_Pipelines_PipeReader_System_Boolean_System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadUInt64Async(System.IO.Pipelines.PipeReader,System.Boolean,System.Threading.CancellationToken)">ReadUInt64Async(PipeReader, Boolean, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Decodes 64-bit unsigned integer using the specified endianness.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public static ValueTask&lt;ulong&gt; ReadUInt64Async(this PipeReader reader, bool littleEndian, CancellationToken token = default(CancellationToken))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.pipelines.pipereader">PipeReader</a></td>
+        <td><span class="parametername">reader</span></td>
+        <td><p>The pipe reader.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">littleEndian</span></td>
+        <td><p><span class="xref">true</span> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint64">UInt64</a>&gt;</td>
+        <td><p>The decoded value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_Pipelines_PipeExtensions_WriteAsync_System_IO_Pipelines_PipeWriter_System_Buffers_ReadOnlySequence_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.WriteAsync(System.IO.Pipelines.PipeWriter%2CSystem.Buffers.ReadOnlySequence%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.cs/#L446">View Source</a>
+  </span>
+  <a id="DotNext_IO_Pipelines_PipeExtensions_WriteAsync_" data-uid="DotNext.IO.Pipelines.PipeExtensions.WriteAsync*"></a>
+  <h4 id="DotNext_IO_Pipelines_PipeExtensions_WriteAsync_System_IO_Pipelines_PipeWriter_System_Buffers_ReadOnlySequence_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.WriteAsync(System.IO.Pipelines.PipeWriter,System.Buffers.ReadOnlySequence{System.Byte},System.Threading.CancellationToken)">WriteAsync(PipeWriter, ReadOnlySequence&lt;Byte&gt;, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Writes sequence of bytes to the underlying stream asynchronously.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ValueTask&lt;long&gt; WriteAsync(this PipeWriter writer, ReadOnlySequence&lt;byte&gt; sequence, CancellationToken token)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.pipelines.pipewriter">PipeWriter</a></td>
+        <td><span class="parametername">writer</span></td>
+        <td><p>The pipe to write into.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">sequence</span></td>
+        <td><p>The sequence of bytes.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
+        <td><p>The actual number of bytes written to the pipe.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_Pipelines_PipeExtensions_WriteAsync__1_System_IO_Pipelines_PipeWriter___0_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.WriteAsync%60%601(System.IO.Pipelines.PipeWriter%2C%60%600%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.cs/#L264">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.cs/#L295">View Source</a>
   </span>
   <a id="DotNext_IO_Pipelines_PipeExtensions_WriteAsync_" data-uid="DotNext.IO.Pipelines.PipeExtensions.WriteAsync*"></a>
   <h4 id="DotNext_IO_Pipelines_PipeExtensions_WriteAsync__1_System_IO_Pipelines_PipeWriter___0_System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.WriteAsync``1(System.IO.Pipelines.PipeWriter,``0,System.Threading.CancellationToken)">WriteAsync&lt;T&gt;(PipeWriter, T, CancellationToken)</h4>
@@ -868,6 +1199,7 @@ public static ValueTask ReadAsync(this PipeReader reader, Memory&lt;byte&gt; out
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static ValueTask&lt;FlushResult&gt; WriteAsync&lt;T&gt;(this PipeWriter writer, T value, CancellationToken token = default(CancellationToken))
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -937,7 +1269,7 @@ public static ValueTask ReadAsync(this PipeReader reader, Memory&lt;byte&gt; out
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_Pipelines_PipeExtensions_WriteInt16Async_System_IO_Pipelines_PipeWriter_System_Int16_System_Boolean_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.WriteInt16Async(System.IO.Pipelines.PipeWriter%2CSystem.Int16%2CSystem.Boolean%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.cs/#L310">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.cs/#L373">View Source</a>
   </span>
   <a id="DotNext_IO_Pipelines_PipeExtensions_WriteInt16Async_" data-uid="DotNext.IO.Pipelines.PipeExtensions.WriteInt16Async*"></a>
   <h4 id="DotNext_IO_Pipelines_PipeExtensions_WriteInt16Async_System_IO_Pipelines_PipeWriter_System_Int16_System_Boolean_System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.WriteInt16Async(System.IO.Pipelines.PipeWriter,System.Int16,System.Boolean,System.Threading.CancellationToken)">WriteInt16Async(PipeWriter, Int16, Boolean, CancellationToken)</h4>
@@ -1021,7 +1353,7 @@ public static ValueTask ReadAsync(this PipeReader reader, Memory&lt;byte&gt; out
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_Pipelines_PipeExtensions_WriteInt32Async_System_IO_Pipelines_PipeWriter_System_Int32_System_Boolean_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.WriteInt32Async(System.IO.Pipelines.PipeWriter%2CSystem.Int32%2CSystem.Boolean%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.cs/#L295">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.cs/#L342">View Source</a>
   </span>
   <a id="DotNext_IO_Pipelines_PipeExtensions_WriteInt32Async_" data-uid="DotNext.IO.Pipelines.PipeExtensions.WriteInt32Async*"></a>
   <h4 id="DotNext_IO_Pipelines_PipeExtensions_WriteInt32Async_System_IO_Pipelines_PipeWriter_System_Int32_System_Boolean_System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.WriteInt32Async(System.IO.Pipelines.PipeWriter,System.Int32,System.Boolean,System.Threading.CancellationToken)">WriteInt32Async(PipeWriter, Int32, Boolean, CancellationToken)</h4>
@@ -1105,7 +1437,7 @@ public static ValueTask ReadAsync(this PipeReader reader, Memory&lt;byte&gt; out
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_Pipelines_PipeExtensions_WriteInt64Async_System_IO_Pipelines_PipeWriter_System_Int64_System_Boolean_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.WriteInt64Async(System.IO.Pipelines.PipeWriter%2CSystem.Int64%2CSystem.Boolean%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.cs/#L280">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.cs/#L311">View Source</a>
   </span>
   <a id="DotNext_IO_Pipelines_PipeExtensions_WriteInt64Async_" data-uid="DotNext.IO.Pipelines.PipeExtensions.WriteInt64Async*"></a>
   <h4 id="DotNext_IO_Pipelines_PipeExtensions_WriteInt64Async_System_IO_Pipelines_PipeWriter_System_Int64_System_Boolean_System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.WriteInt64Async(System.IO.Pipelines.PipeWriter,System.Int64,System.Boolean,System.Threading.CancellationToken)">WriteInt64Async(PipeWriter, Int64, Boolean, CancellationToken)</h4>
@@ -1189,7 +1521,7 @@ public static ValueTask ReadAsync(this PipeReader reader, Memory&lt;byte&gt; out
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_Pipelines_PipeExtensions_WriteStringAsync_System_IO_Pipelines_PipeWriter_System_ReadOnlyMemory_System_Char__DotNext_Text_EncodingContext_System_Int32_System_Nullable_DotNext_IO_StringLengthEncoding__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.WriteStringAsync(System.IO.Pipelines.PipeWriter%2CSystem.ReadOnlyMemory%7BSystem.Char%7D%2CDotNext.Text.EncodingContext%2CSystem.Int32%2CSystem.Nullable%7BDotNext.IO.StringLengthEncoding%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.cs/#L369">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.cs/#L417">View Source</a>
   </span>
   <a id="DotNext_IO_Pipelines_PipeExtensions_WriteStringAsync_" data-uid="DotNext.IO.Pipelines.PipeExtensions.WriteStringAsync*"></a>
   <h4 id="DotNext_IO_Pipelines_PipeExtensions_WriteStringAsync_System_IO_Pipelines_PipeWriter_System_ReadOnlyMemory_System_Char__DotNext_Text_EncodingContext_System_Int32_System_Nullable_DotNext_IO_StringLengthEncoding__System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.WriteStringAsync(System.IO.Pipelines.PipeWriter,System.ReadOnlyMemory{System.Char},DotNext.Text.EncodingContext,System.Int32,System.Nullable{DotNext.IO.StringLengthEncoding},System.Threading.CancellationToken)">WriteStringAsync(PipeWriter, ReadOnlyMemory&lt;Char&gt;, EncodingContext, Int32, Nullable&lt;StringLengthEncoding&gt;, CancellationToken)</h4>
@@ -1286,6 +1618,261 @@ public static ValueTask ReadAsync(this PipeReader reader, Memory&lt;byte&gt; out
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
         <td><p>Pipe closed unexpectedly.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_Pipelines_PipeExtensions_WriteUInt16Async_System_IO_Pipelines_PipeWriter_System_UInt16_System_Boolean_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.WriteUInt16Async(System.IO.Pipelines.PipeWriter%2CSystem.UInt16%2CSystem.Boolean%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.cs/#L388">View Source</a>
+  </span>
+  <a id="DotNext_IO_Pipelines_PipeExtensions_WriteUInt16Async_" data-uid="DotNext.IO.Pipelines.PipeExtensions.WriteUInt16Async*"></a>
+  <h4 id="DotNext_IO_Pipelines_PipeExtensions_WriteUInt16Async_System_IO_Pipelines_PipeWriter_System_UInt16_System_Boolean_System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.WriteUInt16Async(System.IO.Pipelines.PipeWriter,System.UInt16,System.Boolean,System.Threading.CancellationToken)">WriteUInt16Async(PipeWriter, UInt16, Boolean, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Encodes 16-bit unsigned integer asynchronously.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public static ValueTask&lt;FlushResult&gt; WriteUInt16Async(this PipeWriter writer, ushort value, bool littleEndian, CancellationToken token = default(CancellationToken))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.pipelines.pipewriter">PipeWriter</a></td>
+        <td><span class="parametername">writer</span></td>
+        <td><p>The pipe writer.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint16">UInt16</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value to encode.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">littleEndian</span></td>
+        <td><p><span class="xref">true</span> to use little-endian encoding; <span class="xref">false</span> to use big-endian encoding.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.pipelines.flushresult">FlushResult</a>&gt;</td>
+        <td><p>The task representing state of asynchronous execution.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_Pipelines_PipeExtensions_WriteUInt32Async_System_IO_Pipelines_PipeWriter_System_UInt32_System_Boolean_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.WriteUInt32Async(System.IO.Pipelines.PipeWriter%2CSystem.UInt32%2CSystem.Boolean%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.cs/#L357">View Source</a>
+  </span>
+  <a id="DotNext_IO_Pipelines_PipeExtensions_WriteUInt32Async_" data-uid="DotNext.IO.Pipelines.PipeExtensions.WriteUInt32Async*"></a>
+  <h4 id="DotNext_IO_Pipelines_PipeExtensions_WriteUInt32Async_System_IO_Pipelines_PipeWriter_System_UInt32_System_Boolean_System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.WriteUInt32Async(System.IO.Pipelines.PipeWriter,System.UInt32,System.Boolean,System.Threading.CancellationToken)">WriteUInt32Async(PipeWriter, UInt32, Boolean, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Encodes 32-bit unsigned integer asynchronously.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public static ValueTask&lt;FlushResult&gt; WriteUInt32Async(this PipeWriter writer, uint value, bool littleEndian, CancellationToken token = default(CancellationToken))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.pipelines.pipewriter">PipeWriter</a></td>
+        <td><span class="parametername">writer</span></td>
+        <td><p>The pipe writer.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint32">UInt32</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value to encode.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">littleEndian</span></td>
+        <td><p><span class="xref">true</span> to use little-endian encoding; <span class="xref">false</span> to use big-endian encoding.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.pipelines.flushresult">FlushResult</a>&gt;</td>
+        <td><p>The task representing state of asynchronous execution.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_Pipelines_PipeExtensions_WriteUInt64Async_System_IO_Pipelines_PipeWriter_System_UInt64_System_Boolean_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.WriteUInt64Async(System.IO.Pipelines.PipeWriter%2CSystem.UInt64%2CSystem.Boolean%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.cs/#L326">View Source</a>
+  </span>
+  <a id="DotNext_IO_Pipelines_PipeExtensions_WriteUInt64Async_" data-uid="DotNext.IO.Pipelines.PipeExtensions.WriteUInt64Async*"></a>
+  <h4 id="DotNext_IO_Pipelines_PipeExtensions_WriteUInt64Async_System_IO_Pipelines_PipeWriter_System_UInt64_System_Boolean_System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.WriteUInt64Async(System.IO.Pipelines.PipeWriter,System.UInt64,System.Boolean,System.Threading.CancellationToken)">WriteUInt64Async(PipeWriter, UInt64, Boolean, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Encodes 64-bit unsigned integer asynchronously.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public static ValueTask&lt;FlushResult&gt; WriteUInt64Async(this PipeWriter writer, ulong value, bool littleEndian, CancellationToken token = default(CancellationToken))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.pipelines.pipewriter">PipeWriter</a></td>
+        <td><span class="parametername">writer</span></td>
+        <td><p>The pipe writer.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint64">UInt64</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value to encode.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">littleEndian</span></td>
+        <td><p><span class="xref">true</span> to use little-endian encoding; <span class="xref">false</span> to use big-endian encoding.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.pipelines.flushresult">FlushResult</a>&gt;</td>
+        <td><p>The task representing state of asynchronous execution.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
 </td>
       </tr>
     </tbody>

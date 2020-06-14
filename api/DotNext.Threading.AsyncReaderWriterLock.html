@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class AsyncReaderWriterLock
    | .NEXT ">
-    <meta name="generator" content="docfx 2.54.0.0">
+    <meta name="generator" content="docfx 2.55.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -85,6 +85,7 @@
   <div classs="implements">
     <h5>Implements</h5>
     <div><a class="xref" href="DotNext.Threading.ISynchronizer.html">ISynchronizer</a></div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -102,7 +103,7 @@
   <h6><strong>Assembly</strong>: DotNext.Threading.dll</h6>
   <h5 id="DotNext_Threading_AsyncReaderWriterLock_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class AsyncReaderWriterLock : QueuedSynchronizer, ISynchronizer</code></pre>
+    <pre><code class="lang-csharp hljs">public class AsyncReaderWriterLock : QueuedSynchronizer, ISynchronizer, IAsyncDisposable</code></pre>
   </div>
   <h5 id="DotNext_Threading_AsyncReaderWriterLock_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>This lock doesn't support recursion.</p>
@@ -255,10 +256,46 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_DisposeAsync.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.DisposeAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L542">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncReaderWriterLock_DisposeAsync_" data-uid="DotNext.Threading.AsyncReaderWriterLock.DisposeAsync*"></a>
+  <h4 id="DotNext_Threading_AsyncReaderWriterLock_DisposeAsync" data-uid="DotNext.Threading.AsyncReaderWriterLock.DisposeAsync">DisposeAsync()</h4>
+  <div class="markdown level1 summary"><p>Disposes this lock asynchronously and gracefully.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueTask DisposeAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
+        <td><p>The task representing graceful shutdown of this lock.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AsyncReaderWriterLock_DisposeAsync_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>If this lock is not acquired then the method just completes synchronously.
+Otherwise, it waits for calling of <a class="xref" href="DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_ExitReadLock">ExitReadLock()</a>,  method.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_EnterReadLockAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.EnterReadLockAsync(System.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L286">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L300">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncReaderWriterLock_EnterReadLockAsync_" data-uid="DotNext.Threading.AsyncReaderWriterLock.EnterReadLockAsync*"></a>
   <h4 id="DotNext_Threading_AsyncReaderWriterLock_EnterReadLockAsync_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncReaderWriterLock.EnterReadLockAsync(System.Threading.CancellationToken)">EnterReadLockAsync(CancellationToken)</h4>
@@ -329,7 +366,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_EnterReadLockAsync_System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.EnterReadLockAsync(System.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L297">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L311">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncReaderWriterLock_EnterReadLockAsync_" data-uid="DotNext.Threading.AsyncReaderWriterLock.EnterReadLockAsync*"></a>
   <h4 id="DotNext_Threading_AsyncReaderWriterLock_EnterReadLockAsync_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncReaderWriterLock.EnterReadLockAsync(System.TimeSpan,System.Threading.CancellationToken)">EnterReadLockAsync(TimeSpan, CancellationToken)</h4>
@@ -411,7 +448,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_EnterUpgradeableReadLockAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.EnterUpgradeableReadLockAsync(System.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L380">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L404">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncReaderWriterLock_EnterUpgradeableReadLockAsync_" data-uid="DotNext.Threading.AsyncReaderWriterLock.EnterUpgradeableReadLockAsync*"></a>
   <h4 id="DotNext_Threading_AsyncReaderWriterLock_EnterUpgradeableReadLockAsync_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncReaderWriterLock.EnterUpgradeableReadLockAsync(System.Threading.CancellationToken)">EnterUpgradeableReadLockAsync(CancellationToken)</h4>
@@ -482,7 +519,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_EnterUpgradeableReadLockAsync_System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.EnterUpgradeableReadLockAsync(System.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L391">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L415">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncReaderWriterLock_EnterUpgradeableReadLockAsync_" data-uid="DotNext.Threading.AsyncReaderWriterLock.EnterUpgradeableReadLockAsync*"></a>
   <h4 id="DotNext_Threading_AsyncReaderWriterLock_EnterUpgradeableReadLockAsync_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncReaderWriterLock.EnterUpgradeableReadLockAsync(System.TimeSpan,System.Threading.CancellationToken)">EnterUpgradeableReadLockAsync(TimeSpan, CancellationToken)</h4>
@@ -564,7 +601,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_EnterWriteLockAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.EnterWriteLockAsync(System.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L333">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L352">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncReaderWriterLock_EnterWriteLockAsync_" data-uid="DotNext.Threading.AsyncReaderWriterLock.EnterWriteLockAsync*"></a>
   <h4 id="DotNext_Threading_AsyncReaderWriterLock_EnterWriteLockAsync_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncReaderWriterLock.EnterWriteLockAsync(System.Threading.CancellationToken)">EnterWriteLockAsync(CancellationToken)</h4>
@@ -635,7 +672,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_EnterWriteLockAsync_System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.EnterWriteLockAsync(System.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L344">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L363">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncReaderWriterLock_EnterWriteLockAsync_" data-uid="DotNext.Threading.AsyncReaderWriterLock.EnterWriteLockAsync*"></a>
   <h4 id="DotNext_Threading_AsyncReaderWriterLock_EnterWriteLockAsync_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncReaderWriterLock.EnterWriteLockAsync(System.TimeSpan,System.Threading.CancellationToken)">EnterWriteLockAsync(TimeSpan, CancellationToken)</h4>
@@ -717,7 +754,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_ExitReadLock.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.ExitReadLock%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L485">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L518">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncReaderWriterLock_ExitReadLock_" data-uid="DotNext.Threading.AsyncReaderWriterLock.ExitReadLock*"></a>
   <h4 id="DotNext_Threading_AsyncReaderWriterLock_ExitReadLock" data-uid="DotNext.Threading.AsyncReaderWriterLock.ExitReadLock">ExitReadLock()</h4>
@@ -758,7 +795,7 @@ Lock acquisition is an asynchronous operation.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_ExitUpgradeableReadLock.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.ExitUpgradeableReadLock%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L425">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L453">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncReaderWriterLock_ExitUpgradeableReadLock_" data-uid="DotNext.Threading.AsyncReaderWriterLock.ExitUpgradeableReadLock*"></a>
   <h4 id="DotNext_Threading_AsyncReaderWriterLock_ExitUpgradeableReadLock" data-uid="DotNext.Threading.AsyncReaderWriterLock.ExitUpgradeableReadLock">ExitUpgradeableReadLock()</h4>
@@ -799,7 +836,7 @@ Lock acquisition is an asynchronous operation.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_ExitWriteLock.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.ExitWriteLock%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L456">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L487">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncReaderWriterLock_ExitWriteLock_" data-uid="DotNext.Threading.AsyncReaderWriterLock.ExitWriteLock*"></a>
   <h4 id="DotNext_Threading_AsyncReaderWriterLock_ExitWriteLock" data-uid="DotNext.Threading.AsyncReaderWriterLock.ExitWriteLock">ExitWriteLock()</h4>
@@ -840,7 +877,7 @@ Lock acquisition is an asynchronous operation.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_TryEnterReadLock.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.TryEnterReadLock%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L256">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L266">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncReaderWriterLock_TryEnterReadLock_" data-uid="DotNext.Threading.AsyncReaderWriterLock.TryEnterReadLock*"></a>
   <h4 id="DotNext_Threading_AsyncReaderWriterLock_TryEnterReadLock" data-uid="DotNext.Threading.AsyncReaderWriterLock.TryEnterReadLock">TryEnterReadLock()</h4>
@@ -867,12 +904,28 @@ Lock acquisition is an asynchronous operation.</p>
       </tr>
     </tbody>
   </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This object has been disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_TryEnterReadLockAsync_System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.TryEnterReadLockAsync(System.TimeSpan)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L277">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L291">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncReaderWriterLock_TryEnterReadLockAsync_" data-uid="DotNext.Threading.AsyncReaderWriterLock.TryEnterReadLockAsync*"></a>
   <h4 id="DotNext_Threading_AsyncReaderWriterLock_TryEnterReadLockAsync_System_TimeSpan_" data-uid="DotNext.Threading.AsyncReaderWriterLock.TryEnterReadLockAsync(System.TimeSpan)">TryEnterReadLockAsync(TimeSpan)</h4>
@@ -943,7 +996,7 @@ Lock acquisition is an asynchronous operation.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_TryEnterReadLockAsync_System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.TryEnterReadLockAsync(System.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L267">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L281">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncReaderWriterLock_TryEnterReadLockAsync_" data-uid="DotNext.Threading.AsyncReaderWriterLock.TryEnterReadLockAsync*"></a>
   <h4 id="DotNext_Threading_AsyncReaderWriterLock_TryEnterReadLockAsync_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncReaderWriterLock.TryEnterReadLockAsync(System.TimeSpan,System.Threading.CancellationToken)">TryEnterReadLockAsync(TimeSpan, CancellationToken)</h4>
@@ -1020,7 +1073,7 @@ Lock acquisition is an asynchronous operation.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_TryEnterUpgradeableReadLock.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.TryEnterUpgradeableReadLock%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L361">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L381">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncReaderWriterLock_TryEnterUpgradeableReadLock_" data-uid="DotNext.Threading.AsyncReaderWriterLock.TryEnterUpgradeableReadLock*"></a>
   <h4 id="DotNext_Threading_AsyncReaderWriterLock_TryEnterUpgradeableReadLock" data-uid="DotNext.Threading.AsyncReaderWriterLock.TryEnterUpgradeableReadLock">TryEnterUpgradeableReadLock()</h4>
@@ -1047,12 +1100,28 @@ Lock acquisition is an asynchronous operation.</p>
       </tr>
     </tbody>
   </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This object has been disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_TryEnterUpgradeableReadLockAsync_System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.TryEnterUpgradeableReadLockAsync(System.TimeSpan)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L371">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L395">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncReaderWriterLock_TryEnterUpgradeableReadLockAsync_" data-uid="DotNext.Threading.AsyncReaderWriterLock.TryEnterUpgradeableReadLockAsync*"></a>
   <h4 id="DotNext_Threading_AsyncReaderWriterLock_TryEnterUpgradeableReadLockAsync_System_TimeSpan_" data-uid="DotNext.Threading.AsyncReaderWriterLock.TryEnterUpgradeableReadLockAsync(System.TimeSpan)">TryEnterUpgradeableReadLockAsync(TimeSpan)</h4>
@@ -1123,7 +1192,7 @@ Lock acquisition is an asynchronous operation.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_TryEnterUpgradeableReadLockAsync_System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.TryEnterUpgradeableReadLockAsync(System.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L354">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L373">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncReaderWriterLock_TryEnterUpgradeableReadLockAsync_" data-uid="DotNext.Threading.AsyncReaderWriterLock.TryEnterUpgradeableReadLockAsync*"></a>
   <h4 id="DotNext_Threading_AsyncReaderWriterLock_TryEnterUpgradeableReadLockAsync_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncReaderWriterLock.TryEnterUpgradeableReadLockAsync(System.TimeSpan,System.Threading.CancellationToken)">TryEnterUpgradeableReadLockAsync(TimeSpan, CancellationToken)</h4>
@@ -1200,7 +1269,7 @@ Lock acquisition is an asynchronous operation.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_TryEnterWriteLock.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L314">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L329">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncReaderWriterLock_TryEnterWriteLock_" data-uid="DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock*"></a>
   <h4 id="DotNext_Threading_AsyncReaderWriterLock_TryEnterWriteLock" data-uid="DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock">TryEnterWriteLock()</h4>
@@ -1227,12 +1296,28 @@ Lock acquisition is an asynchronous operation.</p>
       </tr>
     </tbody>
   </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This object has been disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_TryEnterWriteLock_DotNext_Threading_AsyncReaderWriterLock_LockStamp__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock(DotNext.Threading.AsyncReaderWriterLock.LockStamp%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L249">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L254">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncReaderWriterLock_TryEnterWriteLock_" data-uid="DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock*"></a>
   <h4 id="DotNext_Threading_AsyncReaderWriterLock_TryEnterWriteLock_DotNext_Threading_AsyncReaderWriterLock_LockStamp__" data-uid="DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock(DotNext.Threading.AsyncReaderWriterLock.LockStamp@)">TryEnterWriteLock(AsyncReaderWriterLock.LockStamp)</h4>
@@ -1277,12 +1362,28 @@ Lock acquisition is an asynchronous operation.</p>
       </tr>
     </tbody>
   </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This object has been disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_TryEnterWriteLockAsync_System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLockAsync(System.TimeSpan)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L324">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L343">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncReaderWriterLock_TryEnterWriteLockAsync_" data-uid="DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLockAsync*"></a>
   <h4 id="DotNext_Threading_AsyncReaderWriterLock_TryEnterWriteLockAsync_System_TimeSpan_" data-uid="DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLockAsync(System.TimeSpan)">TryEnterWriteLockAsync(TimeSpan)</h4>
@@ -1353,7 +1454,7 @@ Lock acquisition is an asynchronous operation.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_TryEnterWriteLockAsync_System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLockAsync(System.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L307">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L321">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncReaderWriterLock_TryEnterWriteLockAsync_" data-uid="DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLockAsync*"></a>
   <h4 id="DotNext_Threading_AsyncReaderWriterLock_TryEnterWriteLockAsync_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLockAsync(System.TimeSpan,System.Threading.CancellationToken)">TryEnterWriteLockAsync(TimeSpan, CancellationToken)</h4>
@@ -1430,7 +1531,7 @@ Lock acquisition is an asynchronous operation.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_TryOptimisticRead.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.TryOptimisticRead%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L240">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L241">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncReaderWriterLock_TryOptimisticRead_" data-uid="DotNext.Threading.AsyncReaderWriterLock.TryOptimisticRead*"></a>
   <h4 id="DotNext_Threading_AsyncReaderWriterLock_TryOptimisticRead" data-uid="DotNext.Threading.AsyncReaderWriterLock.TryOptimisticRead">TryOptimisticRead()</h4>
@@ -1457,9 +1558,28 @@ Lock acquisition is an asynchronous operation.</p>
       </tr>
     </tbody>
   </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This object has been disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="implements">Implements</h3>
   <div>
       <a class="xref" href="DotNext.Threading.ISynchronizer.html">ISynchronizer</a>
+  </div>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iasyncdisposable">System.IAsyncDisposable</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
@@ -1506,6 +1626,9 @@ Lock acquisition is an asynchronous operation.</p>
   </div>
   <div>
       <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2___">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, ValueFunc&lt;T, TResult1&gt;, ValueFunc&lt;T, TResult2&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_As__1___0_">ObjectExtensions.As&lt;T&gt;(T)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_">LockAcquisition.AcquireReadLock&lt;T&gt;(T)</a>

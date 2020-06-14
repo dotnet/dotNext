@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class BinaryTransferObject&lt;T&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.54.0.0">
+    <meta name="generator" content="docfx 2.55.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -176,8 +176,7 @@
   </span>
   <a id="DotNext_IO_BinaryTransferObject_1_DotNext_IO_IDataTransferObject_IsReusable_" data-uid="DotNext.IO.BinaryTransferObject`1.DotNext#IO#IDataTransferObject#IsReusable*"></a>
   <h4 id="DotNext_IO_BinaryTransferObject_1_DotNext_IO_IDataTransferObject_IsReusable" data-uid="DotNext.IO.BinaryTransferObject`1.DotNext#IO#IDataTransferObject#IsReusable">IDataTransferObject.IsReusable</h4>
-  <div class="markdown level1 summary"><p>Indicates that the content of this object can be copied to the output stream or pipe multiple times.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -207,8 +206,7 @@
   </span>
   <a id="DotNext_IO_BinaryTransferObject_1_DotNext_IO_IDataTransferObject_Length_" data-uid="DotNext.IO.BinaryTransferObject`1.DotNext#IO#IDataTransferObject#Length*"></a>
   <h4 id="DotNext_IO_BinaryTransferObject_1_DotNext_IO_IDataTransferObject_Length" data-uid="DotNext.IO.BinaryTransferObject`1.DotNext#IO#IDataTransferObject#Length">IDataTransferObject.Length</h4>
-  <div class="markdown level1 summary"><p>Gets length of the object payload, in bytes.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -229,9 +227,6 @@
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_IO_BinaryTransferObject_1_DotNext_IO_IDataTransferObject_Length_remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>If value is <span class="xref">null</span> then length of the payload cannot be determined.</p>
-</div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_BinaryTransferObject_1_DotNext_IO_IDataTransferObject_WriteToAsync__1___0_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.BinaryTransferObject%601.DotNext%23IO%23IDataTransferObject%23WriteToAsync%60%601(%60%600%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
@@ -241,12 +236,12 @@
   </span>
   <a id="DotNext_IO_BinaryTransferObject_1_DotNext_IO_IDataTransferObject_WriteToAsync_" data-uid="DotNext.IO.BinaryTransferObject`1.DotNext#IO#IDataTransferObject#WriteToAsync*"></a>
   <h4 id="DotNext_IO_BinaryTransferObject_1_DotNext_IO_IDataTransferObject_WriteToAsync__1___0_System_Threading_CancellationToken_" data-uid="DotNext.IO.BinaryTransferObject`1.DotNext#IO#IDataTransferObject#WriteToAsync``1(``0,System.Threading.CancellationToken)">IDataTransferObject.WriteToAsync&lt;TWriter&gt;(TWriter, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Transforms this object to serialized form.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">ValueTask IDataTransferObject.WriteToAsync&lt;TWriter&gt;(TWriter writer, CancellationToken token)
+
     where TWriter : IAsyncBinaryWriter</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -262,14 +257,12 @@
       <tr>
         <td><span class="xref">TWriter</span></td>
         <td><span class="parametername">writer</span></td>
-        <td><p>The binary writer.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td><p>The toke that can be used to cancel the operation.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -284,8 +277,7 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
-        <td><p>The task representing state of asynchronous execution.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -300,24 +292,7 @@
     <tbody>
       <tr>
         <td><span class="parametername">TWriter</span></td>
-        <td><p>The type of writer.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -373,6 +348,9 @@
   </div>
   <div>
       <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2___">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, ValueFunc&lt;T, TResult1&gt;, ValueFunc&lt;T, TResult2&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_As__1___0_">ObjectExtensions.As&lt;T&gt;(T)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_">LockAcquisition.AcquireReadLock&lt;T&gt;(T)</a>

@@ -8,7 +8,7 @@
     <title>Asynchronous Locks | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Asynchronous Locks | .NEXT ">
-    <meta name="generator" content="docfx 2.54.0.0">
+    <meta name="generator" content="docfx 2.55.0.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -80,6 +80,7 @@
 <p><a href="../../api/DotNext.Threading.AsyncLock.html">AsyncLock</a> is a unified representation of the all supported asynchronous locks:</p>
 <ul>
 <li>Exclusive lock</li>
+<li><a href="https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncSharedLock.html">Shared lock</a></li>
 <li>Reader lock</li>
 <li>Writer lock</li>
 <li>Upgradeable lock</li>
@@ -105,6 +106,13 @@ using(await asyncLock.AcquireAsync(CancellationToken.None))
 
 }
 </code></pre>
+<p><code>AsyncLock</code> implementing <a href="https://docs.microsoft.com/en-us/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a> interface for graceful shutdown if supported by underlying lock type. The following lock types have graceful shutdown:</p>
+<ul>
+<li><a href="exclusive.html">AsyncExclusiveLock</a></li>
+<li><a href="rwlock.html">AsyncReaderWriterLock</a></li>
+<li><a href="https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncExclusiveLock.html">AsyncSharedLock</a></li>
+</ul>
+<p>Details of graceful shutdown described in related articles.</p>
 <h1 id="built-in-readerwriter-synchronization">Built-in Reader/Writer Synchronization</h1>
 <p>Exclusive lock may not be applicable due to performance reasons for some data types. For example, exclusive lock for dictionary or list is redundant because there are two consumers of these objects: writers and readers.</p>
 <p>.NEXT Threading library provides several extension methods for more granular control over synchronization of any reference type:</p>

@@ -515,12 +515,162 @@ references:
   fullName.vb: DotNext.Buffers.ArrayRental(Of T).ToString
   nameWithType: ArrayRental<T>.ToString
   nameWithType.vb: ArrayRental(Of T).ToString
+- uid: DotNext.Buffers.BufferWriter
+  name: BufferWriter
+  href: api/DotNext.Buffers.BufferWriter.html
+  commentId: T:DotNext.Buffers.BufferWriter
+  fullName: DotNext.Buffers.BufferWriter
+  nameWithType: BufferWriter
+- uid: DotNext.Buffers.BufferWriter.Write*
+  name: Write
+  href: api/DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_Write_
+  commentId: Overload:DotNext.Buffers.BufferWriter.Write
+  isSpec: "True"
+  fullName: DotNext.Buffers.BufferWriter.Write
+  nameWithType: BufferWriter.Write
+- uid: DotNext.Buffers.BufferWriter.Write``1(System.Buffers.IBufferWriter{System.Byte},``0@)
+  name: Write<T>(IBufferWriter<Byte>, T)
+  href: api/DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_Write__1_System_Buffers_IBufferWriter_System_Byte____0__
+  commentId: M:DotNext.Buffers.BufferWriter.Write``1(System.Buffers.IBufferWriter{System.Byte},``0@)
+  name.vb: Write(Of T)(IBufferWriter(Of Byte), ByRef T)
+  fullName: DotNext.Buffers.BufferWriter.Write<T>(System.Buffers.IBufferWriter<System.Byte>, T)
+  fullName.vb: DotNext.Buffers.BufferWriter.Write(Of T)(System.Buffers.IBufferWriter(Of System.Byte), ByRef T)
+  nameWithType: BufferWriter.Write<T>(IBufferWriter<Byte>, T)
+  nameWithType.vb: BufferWriter.Write(Of T)(IBufferWriter(Of Byte), ByRef T)
+- uid: DotNext.Buffers.BufferWriter.WriteInt16(System.Buffers.IBufferWriter{System.Byte},System.Int16,System.Boolean)
+  name: WriteInt16(IBufferWriter<Byte>, Int16, Boolean)
+  href: api/DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_WriteInt16_System_Buffers_IBufferWriter_System_Byte__System_Int16_System_Boolean_
+  commentId: M:DotNext.Buffers.BufferWriter.WriteInt16(System.Buffers.IBufferWriter{System.Byte},System.Int16,System.Boolean)
+  name.vb: WriteInt16(IBufferWriter(Of Byte), Int16, Boolean)
+  fullName: DotNext.Buffers.BufferWriter.WriteInt16(System.Buffers.IBufferWriter<System.Byte>, System.Int16, System.Boolean)
+  fullName.vb: DotNext.Buffers.BufferWriter.WriteInt16(System.Buffers.IBufferWriter(Of System.Byte), System.Int16, System.Boolean)
+  nameWithType: BufferWriter.WriteInt16(IBufferWriter<Byte>, Int16, Boolean)
+  nameWithType.vb: BufferWriter.WriteInt16(IBufferWriter(Of Byte), Int16, Boolean)
+- uid: DotNext.Buffers.BufferWriter.WriteInt16*
+  name: WriteInt16
+  href: api/DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_WriteInt16_
+  commentId: Overload:DotNext.Buffers.BufferWriter.WriteInt16
+  isSpec: "True"
+  fullName: DotNext.Buffers.BufferWriter.WriteInt16
+  nameWithType: BufferWriter.WriteInt16
+- uid: DotNext.Buffers.BufferWriter.WriteInt32(System.Buffers.IBufferWriter{System.Byte},System.Int32,System.Boolean)
+  name: WriteInt32(IBufferWriter<Byte>, Int32, Boolean)
+  href: api/DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_WriteInt32_System_Buffers_IBufferWriter_System_Byte__System_Int32_System_Boolean_
+  commentId: M:DotNext.Buffers.BufferWriter.WriteInt32(System.Buffers.IBufferWriter{System.Byte},System.Int32,System.Boolean)
+  name.vb: WriteInt32(IBufferWriter(Of Byte), Int32, Boolean)
+  fullName: DotNext.Buffers.BufferWriter.WriteInt32(System.Buffers.IBufferWriter<System.Byte>, System.Int32, System.Boolean)
+  fullName.vb: DotNext.Buffers.BufferWriter.WriteInt32(System.Buffers.IBufferWriter(Of System.Byte), System.Int32, System.Boolean)
+  nameWithType: BufferWriter.WriteInt32(IBufferWriter<Byte>, Int32, Boolean)
+  nameWithType.vb: BufferWriter.WriteInt32(IBufferWriter(Of Byte), Int32, Boolean)
+- uid: DotNext.Buffers.BufferWriter.WriteInt32*
+  name: WriteInt32
+  href: api/DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_WriteInt32_
+  commentId: Overload:DotNext.Buffers.BufferWriter.WriteInt32
+  isSpec: "True"
+  fullName: DotNext.Buffers.BufferWriter.WriteInt32
+  nameWithType: BufferWriter.WriteInt32
+- uid: DotNext.Buffers.BufferWriter.WriteInt64(System.Buffers.IBufferWriter{System.Byte},System.Int64,System.Boolean)
+  name: WriteInt64(IBufferWriter<Byte>, Int64, Boolean)
+  href: api/DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_WriteInt64_System_Buffers_IBufferWriter_System_Byte__System_Int64_System_Boolean_
+  commentId: M:DotNext.Buffers.BufferWriter.WriteInt64(System.Buffers.IBufferWriter{System.Byte},System.Int64,System.Boolean)
+  name.vb: WriteInt64(IBufferWriter(Of Byte), Int64, Boolean)
+  fullName: DotNext.Buffers.BufferWriter.WriteInt64(System.Buffers.IBufferWriter<System.Byte>, System.Int64, System.Boolean)
+  fullName.vb: DotNext.Buffers.BufferWriter.WriteInt64(System.Buffers.IBufferWriter(Of System.Byte), System.Int64, System.Boolean)
+  nameWithType: BufferWriter.WriteInt64(IBufferWriter<Byte>, Int64, Boolean)
+  nameWithType.vb: BufferWriter.WriteInt64(IBufferWriter(Of Byte), Int64, Boolean)
+- uid: DotNext.Buffers.BufferWriter.WriteInt64*
+  name: WriteInt64
+  href: api/DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_WriteInt64_
+  commentId: Overload:DotNext.Buffers.BufferWriter.WriteInt64
+  isSpec: "True"
+  fullName: DotNext.Buffers.BufferWriter.WriteInt64
+  nameWithType: BufferWriter.WriteInt64
+- uid: DotNext.Buffers.BufferWriter.WriteString(System.Buffers.IBufferWriter{System.Byte},System.ReadOnlySpan{System.Char},DotNext.Text.EncodingContext@,System.Int32,System.Nullable{DotNext.IO.StringLengthEncoding})
+  name: WriteString(IBufferWriter<Byte>, ReadOnlySpan<Char>, EncodingContext, Int32, Nullable<StringLengthEncoding>)
+  href: api/DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_WriteString_System_Buffers_IBufferWriter_System_Byte__System_ReadOnlySpan_System_Char__DotNext_Text_EncodingContext__System_Int32_System_Nullable_DotNext_IO_StringLengthEncoding__
+  commentId: M:DotNext.Buffers.BufferWriter.WriteString(System.Buffers.IBufferWriter{System.Byte},System.ReadOnlySpan{System.Char},DotNext.Text.EncodingContext@,System.Int32,System.Nullable{DotNext.IO.StringLengthEncoding})
+  name.vb: WriteString(IBufferWriter(Of Byte), ReadOnlySpan(Of Char), ByRef EncodingContext, Int32, Nullable(Of StringLengthEncoding))
+  fullName: DotNext.Buffers.BufferWriter.WriteString(System.Buffers.IBufferWriter<System.Byte>, System.ReadOnlySpan<System.Char>, DotNext.Text.EncodingContext, System.Int32, System.Nullable<DotNext.IO.StringLengthEncoding>)
+  fullName.vb: DotNext.Buffers.BufferWriter.WriteString(System.Buffers.IBufferWriter(Of System.Byte), System.ReadOnlySpan(Of System.Char), ByRef DotNext.Text.EncodingContext, System.Int32, System.Nullable(Of DotNext.IO.StringLengthEncoding))
+  nameWithType: BufferWriter.WriteString(IBufferWriter<Byte>, ReadOnlySpan<Char>, EncodingContext, Int32, Nullable<StringLengthEncoding>)
+  nameWithType.vb: BufferWriter.WriteString(IBufferWriter(Of Byte), ReadOnlySpan(Of Char), ByRef EncodingContext, Int32, Nullable(Of StringLengthEncoding))
+- uid: DotNext.Buffers.BufferWriter.WriteString*
+  name: WriteString
+  href: api/DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_WriteString_
+  commentId: Overload:DotNext.Buffers.BufferWriter.WriteString
+  isSpec: "True"
+  fullName: DotNext.Buffers.BufferWriter.WriteString
+  nameWithType: BufferWriter.WriteString
+- uid: DotNext.Buffers.BufferWriter.WriteUInt16(System.Buffers.IBufferWriter{System.Byte},System.UInt16,System.Boolean)
+  name: WriteUInt16(IBufferWriter<Byte>, UInt16, Boolean)
+  href: api/DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_WriteUInt16_System_Buffers_IBufferWriter_System_Byte__System_UInt16_System_Boolean_
+  commentId: M:DotNext.Buffers.BufferWriter.WriteUInt16(System.Buffers.IBufferWriter{System.Byte},System.UInt16,System.Boolean)
+  name.vb: WriteUInt16(IBufferWriter(Of Byte), UInt16, Boolean)
+  fullName: DotNext.Buffers.BufferWriter.WriteUInt16(System.Buffers.IBufferWriter<System.Byte>, System.UInt16, System.Boolean)
+  fullName.vb: DotNext.Buffers.BufferWriter.WriteUInt16(System.Buffers.IBufferWriter(Of System.Byte), System.UInt16, System.Boolean)
+  nameWithType: BufferWriter.WriteUInt16(IBufferWriter<Byte>, UInt16, Boolean)
+  nameWithType.vb: BufferWriter.WriteUInt16(IBufferWriter(Of Byte), UInt16, Boolean)
+- uid: DotNext.Buffers.BufferWriter.WriteUInt16*
+  name: WriteUInt16
+  href: api/DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_WriteUInt16_
+  commentId: Overload:DotNext.Buffers.BufferWriter.WriteUInt16
+  isSpec: "True"
+  fullName: DotNext.Buffers.BufferWriter.WriteUInt16
+  nameWithType: BufferWriter.WriteUInt16
+- uid: DotNext.Buffers.BufferWriter.WriteUInt32(System.Buffers.IBufferWriter{System.Byte},System.UInt32,System.Boolean)
+  name: WriteUInt32(IBufferWriter<Byte>, UInt32, Boolean)
+  href: api/DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_WriteUInt32_System_Buffers_IBufferWriter_System_Byte__System_UInt32_System_Boolean_
+  commentId: M:DotNext.Buffers.BufferWriter.WriteUInt32(System.Buffers.IBufferWriter{System.Byte},System.UInt32,System.Boolean)
+  name.vb: WriteUInt32(IBufferWriter(Of Byte), UInt32, Boolean)
+  fullName: DotNext.Buffers.BufferWriter.WriteUInt32(System.Buffers.IBufferWriter<System.Byte>, System.UInt32, System.Boolean)
+  fullName.vb: DotNext.Buffers.BufferWriter.WriteUInt32(System.Buffers.IBufferWriter(Of System.Byte), System.UInt32, System.Boolean)
+  nameWithType: BufferWriter.WriteUInt32(IBufferWriter<Byte>, UInt32, Boolean)
+  nameWithType.vb: BufferWriter.WriteUInt32(IBufferWriter(Of Byte), UInt32, Boolean)
+- uid: DotNext.Buffers.BufferWriter.WriteUInt32*
+  name: WriteUInt32
+  href: api/DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_WriteUInt32_
+  commentId: Overload:DotNext.Buffers.BufferWriter.WriteUInt32
+  isSpec: "True"
+  fullName: DotNext.Buffers.BufferWriter.WriteUInt32
+  nameWithType: BufferWriter.WriteUInt32
+- uid: DotNext.Buffers.BufferWriter.WriteUInt64(System.Buffers.IBufferWriter{System.Byte},System.UInt64,System.Boolean)
+  name: WriteUInt64(IBufferWriter<Byte>, UInt64, Boolean)
+  href: api/DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_WriteUInt64_System_Buffers_IBufferWriter_System_Byte__System_UInt64_System_Boolean_
+  commentId: M:DotNext.Buffers.BufferWriter.WriteUInt64(System.Buffers.IBufferWriter{System.Byte},System.UInt64,System.Boolean)
+  name.vb: WriteUInt64(IBufferWriter(Of Byte), UInt64, Boolean)
+  fullName: DotNext.Buffers.BufferWriter.WriteUInt64(System.Buffers.IBufferWriter<System.Byte>, System.UInt64, System.Boolean)
+  fullName.vb: DotNext.Buffers.BufferWriter.WriteUInt64(System.Buffers.IBufferWriter(Of System.Byte), System.UInt64, System.Boolean)
+  nameWithType: BufferWriter.WriteUInt64(IBufferWriter<Byte>, UInt64, Boolean)
+  nameWithType.vb: BufferWriter.WriteUInt64(IBufferWriter(Of Byte), UInt64, Boolean)
+- uid: DotNext.Buffers.BufferWriter.WriteUInt64*
+  name: WriteUInt64
+  href: api/DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_WriteUInt64_
+  commentId: Overload:DotNext.Buffers.BufferWriter.WriteUInt64
+  isSpec: "True"
+  fullName: DotNext.Buffers.BufferWriter.WriteUInt64
+  nameWithType: BufferWriter.WriteUInt64
 - uid: DotNext.Buffers.ChunkSequence
   name: ChunkSequence
   href: api/DotNext.Buffers.ChunkSequence.html
   commentId: T:DotNext.Buffers.ChunkSequence
   fullName: DotNext.Buffers.ChunkSequence
   nameWithType: ChunkSequence
+- uid: DotNext.Buffers.ChunkSequence.Concat*
+  name: Concat
+  href: api/DotNext.Buffers.ChunkSequence.html#DotNext_Buffers_ChunkSequence_Concat_
+  commentId: Overload:DotNext.Buffers.ChunkSequence.Concat
+  isSpec: "True"
+  fullName: DotNext.Buffers.ChunkSequence.Concat
+  nameWithType: ChunkSequence.Concat
+- uid: DotNext.Buffers.ChunkSequence.Concat``1(System.Memory{``0},System.Memory{``0})
+  name: Concat<T>(Memory<T>, Memory<T>)
+  href: api/DotNext.Buffers.ChunkSequence.html#DotNext_Buffers_ChunkSequence_Concat__1_System_Memory___0__System_Memory___0__
+  commentId: M:DotNext.Buffers.ChunkSequence.Concat``1(System.Memory{``0},System.Memory{``0})
+  name.vb: Concat(Of T)(Memory(Of T), Memory(Of T))
+  fullName: DotNext.Buffers.ChunkSequence.Concat<T>(System.Memory<T>, System.Memory<T>)
+  fullName.vb: DotNext.Buffers.ChunkSequence.Concat(Of T)(System.Memory(Of T), System.Memory(Of T))
+  nameWithType: ChunkSequence.Concat<T>(Memory<T>, Memory<T>)
+  nameWithType.vb: ChunkSequence.Concat(Of T)(Memory(Of T), Memory(Of T))
 - uid: DotNext.Buffers.ChunkSequence.CopyToAsync(DotNext.Buffers.ChunkSequence{System.Byte},System.IO.Stream,System.Threading.CancellationToken)
   name: CopyToAsync(ChunkSequence<Byte>, Stream, CancellationToken)
   href: api/DotNext.Buffers.ChunkSequence.html#DotNext_Buffers_ChunkSequence_CopyToAsync_DotNext_Buffers_ChunkSequence_System_Byte__System_IO_Stream_System_Threading_CancellationToken_
@@ -546,6 +696,22 @@ references:
   isSpec: "True"
   fullName: DotNext.Buffers.ChunkSequence.CopyToAsync
   nameWithType: ChunkSequence.CopyToAsync
+- uid: DotNext.Buffers.ChunkSequence.ToReadOnlySequence*
+  name: ToReadOnlySequence
+  href: api/DotNext.Buffers.ChunkSequence.html#DotNext_Buffers_ChunkSequence_ToReadOnlySequence_
+  commentId: Overload:DotNext.Buffers.ChunkSequence.ToReadOnlySequence
+  isSpec: "True"
+  fullName: DotNext.Buffers.ChunkSequence.ToReadOnlySequence
+  nameWithType: ChunkSequence.ToReadOnlySequence
+- uid: DotNext.Buffers.ChunkSequence.ToReadOnlySequence``1(System.Collections.Generic.IEnumerable{System.Memory{``0}})
+  name: ToReadOnlySequence<T>(IEnumerable<Memory<T>>)
+  href: api/DotNext.Buffers.ChunkSequence.html#DotNext_Buffers_ChunkSequence_ToReadOnlySequence__1_System_Collections_Generic_IEnumerable_System_Memory___0___
+  commentId: M:DotNext.Buffers.ChunkSequence.ToReadOnlySequence``1(System.Collections.Generic.IEnumerable{System.Memory{``0}})
+  name.vb: ToReadOnlySequence(Of T)(IEnumerable(Of Memory(Of T)))
+  fullName: DotNext.Buffers.ChunkSequence.ToReadOnlySequence<T>(System.Collections.Generic.IEnumerable<System.Memory<T>>)
+  fullName.vb: DotNext.Buffers.ChunkSequence.ToReadOnlySequence(Of T)(System.Collections.Generic.IEnumerable(Of System.Memory(Of T)))
+  nameWithType: ChunkSequence.ToReadOnlySequence<T>(IEnumerable<Memory<T>>)
+  nameWithType.vb: ChunkSequence.ToReadOnlySequence(Of T)(IEnumerable(Of Memory(Of T)))
 - uid: DotNext.Buffers.ChunkSequence`1
   name: ChunkSequence<T>
   href: api/DotNext.Buffers.ChunkSequence-1.html
@@ -771,6 +937,32 @@ references:
   fullName.vb: DotNext.Buffers.IFlushableBufferWriter(Of T)
   nameWithType: IFlushableBufferWriter<T>
   nameWithType.vb: IFlushableBufferWriter(Of T)
+- uid: DotNext.Buffers.IReadOnlySequenceSource`1
+  name: IReadOnlySequenceSource<T>
+  href: api/DotNext.Buffers.IReadOnlySequenceSource-1.html
+  commentId: T:DotNext.Buffers.IReadOnlySequenceSource`1
+  name.vb: IReadOnlySequenceSource(Of T)
+  fullName: DotNext.Buffers.IReadOnlySequenceSource<T>
+  fullName.vb: DotNext.Buffers.IReadOnlySequenceSource(Of T)
+  nameWithType: IReadOnlySequenceSource<T>
+  nameWithType.vb: IReadOnlySequenceSource(Of T)
+- uid: DotNext.Buffers.IReadOnlySequenceSource`1.Sequence
+  name: Sequence
+  href: api/DotNext.Buffers.IReadOnlySequenceSource-1.html#DotNext_Buffers_IReadOnlySequenceSource_1_Sequence
+  commentId: P:DotNext.Buffers.IReadOnlySequenceSource`1.Sequence
+  fullName: DotNext.Buffers.IReadOnlySequenceSource<T>.Sequence
+  fullName.vb: DotNext.Buffers.IReadOnlySequenceSource(Of T).Sequence
+  nameWithType: IReadOnlySequenceSource<T>.Sequence
+  nameWithType.vb: IReadOnlySequenceSource(Of T).Sequence
+- uid: DotNext.Buffers.IReadOnlySequenceSource`1.Sequence*
+  name: Sequence
+  href: api/DotNext.Buffers.IReadOnlySequenceSource-1.html#DotNext_Buffers_IReadOnlySequenceSource_1_Sequence_
+  commentId: Overload:DotNext.Buffers.IReadOnlySequenceSource`1.Sequence
+  isSpec: "True"
+  fullName: DotNext.Buffers.IReadOnlySequenceSource<T>.Sequence
+  fullName.vb: DotNext.Buffers.IReadOnlySequenceSource(Of T).Sequence
+  nameWithType: IReadOnlySequenceSource<T>.Sequence
+  nameWithType.vb: IReadOnlySequenceSource(Of T).Sequence
 - uid: DotNext.Buffers.IUnmanagedMemoryOwner`1
   name: IUnmanagedMemoryOwner<T>
   href: api/DotNext.Buffers.IUnmanagedMemoryOwner-1.html
@@ -803,6 +995,22 @@ references:
   commentId: T:DotNext.Buffers.MemoryAllocator
   fullName: DotNext.Buffers.MemoryAllocator
   nameWithType: MemoryAllocator
+- uid: DotNext.Buffers.MemoryAllocator.CreateArrayAllocator*
+  name: CreateArrayAllocator
+  href: api/DotNext.Buffers.MemoryAllocator.html#DotNext_Buffers_MemoryAllocator_CreateArrayAllocator_
+  commentId: Overload:DotNext.Buffers.MemoryAllocator.CreateArrayAllocator
+  isSpec: "True"
+  fullName: DotNext.Buffers.MemoryAllocator.CreateArrayAllocator
+  nameWithType: MemoryAllocator.CreateArrayAllocator
+- uid: DotNext.Buffers.MemoryAllocator.CreateArrayAllocator``1
+  name: CreateArrayAllocator<T>()
+  href: api/DotNext.Buffers.MemoryAllocator.html#DotNext_Buffers_MemoryAllocator_CreateArrayAllocator__1
+  commentId: M:DotNext.Buffers.MemoryAllocator.CreateArrayAllocator``1
+  name.vb: CreateArrayAllocator(Of T)()
+  fullName: DotNext.Buffers.MemoryAllocator.CreateArrayAllocator<T>()
+  fullName.vb: DotNext.Buffers.MemoryAllocator.CreateArrayAllocator(Of T)()
+  nameWithType: MemoryAllocator.CreateArrayAllocator<T>()
+  nameWithType.vb: MemoryAllocator.CreateArrayAllocator(Of T)()
 - uid: DotNext.Buffers.MemoryAllocator.Invoke*
   name: Invoke
   href: api/DotNext.Buffers.MemoryAllocator.html#DotNext_Buffers_MemoryAllocator_Invoke_
@@ -844,6 +1052,15 @@ references:
   fullName.vb: DotNext.Buffers.MemoryAllocator.ToAllocator(Of T)(System.Buffers.MemoryPool(Of T))
   nameWithType: MemoryAllocator.ToAllocator<T>(MemoryPool<T>)
   nameWithType.vb: MemoryAllocator.ToAllocator(Of T)(MemoryPool(Of T))
+- uid: DotNext.Buffers.MemoryAllocator.ToAllocator``1(System.Func{System.Int32,System.Buffers.IMemoryOwner{``0}})
+  name: ToAllocator<T>(Func<Int32, IMemoryOwner<T>>)
+  href: api/DotNext.Buffers.MemoryAllocator.html#DotNext_Buffers_MemoryAllocator_ToAllocator__1_System_Func_System_Int32_System_Buffers_IMemoryOwner___0___
+  commentId: M:DotNext.Buffers.MemoryAllocator.ToAllocator``1(System.Func{System.Int32,System.Buffers.IMemoryOwner{``0}})
+  name.vb: ToAllocator(Of T)(Func(Of Int32, IMemoryOwner(Of T)))
+  fullName: DotNext.Buffers.MemoryAllocator.ToAllocator<T>(System.Func<System.Int32, System.Buffers.IMemoryOwner<T>>)
+  fullName.vb: DotNext.Buffers.MemoryAllocator.ToAllocator(Of T)(System.Func(Of System.Int32, System.Buffers.IMemoryOwner(Of T)))
+  nameWithType: MemoryAllocator.ToAllocator<T>(Func<Int32, IMemoryOwner<T>>)
+  nameWithType.vb: MemoryAllocator.ToAllocator(Of T)(Func(Of Int32, IMemoryOwner(Of T)))
 - uid: DotNext.Buffers.MemoryAllocator`1
   name: MemoryAllocator<T>
   href: api/DotNext.Buffers.MemoryAllocator-1.html
@@ -898,6 +1115,24 @@ references:
   fullName.vb: DotNext.Buffers.MemoryOwner(Of T).MemoryOwner(System.Buffers.MemoryPool(Of T), System.Int32)
   nameWithType: MemoryOwner<T>.MemoryOwner(MemoryPool<T>, Int32)
   nameWithType.vb: MemoryOwner(Of T).MemoryOwner(MemoryPool(Of T), Int32)
+- uid: DotNext.Buffers.MemoryOwner`1.#ctor(System.Func{System.Buffers.IMemoryOwner{`0}})
+  name: MemoryOwner(Func<IMemoryOwner<T>>)
+  href: api/DotNext.Buffers.MemoryOwner-1.html#DotNext_Buffers_MemoryOwner_1__ctor_System_Func_System_Buffers_IMemoryOwner__0___
+  commentId: M:DotNext.Buffers.MemoryOwner`1.#ctor(System.Func{System.Buffers.IMemoryOwner{`0}})
+  name.vb: MemoryOwner(Func(Of IMemoryOwner(Of T)))
+  fullName: DotNext.Buffers.MemoryOwner<T>.MemoryOwner(System.Func<System.Buffers.IMemoryOwner<T>>)
+  fullName.vb: DotNext.Buffers.MemoryOwner(Of T).MemoryOwner(System.Func(Of System.Buffers.IMemoryOwner(Of T)))
+  nameWithType: MemoryOwner<T>.MemoryOwner(Func<IMemoryOwner<T>>)
+  nameWithType.vb: MemoryOwner(Of T).MemoryOwner(Func(Of IMemoryOwner(Of T)))
+- uid: DotNext.Buffers.MemoryOwner`1.#ctor(System.Func{System.Int32,System.Buffers.IMemoryOwner{`0}},System.Int32)
+  name: MemoryOwner(Func<Int32, IMemoryOwner<T>>, Int32)
+  href: api/DotNext.Buffers.MemoryOwner-1.html#DotNext_Buffers_MemoryOwner_1__ctor_System_Func_System_Int32_System_Buffers_IMemoryOwner__0___System_Int32_
+  commentId: M:DotNext.Buffers.MemoryOwner`1.#ctor(System.Func{System.Int32,System.Buffers.IMemoryOwner{`0}},System.Int32)
+  name.vb: MemoryOwner(Func(Of Int32, IMemoryOwner(Of T)), Int32)
+  fullName: DotNext.Buffers.MemoryOwner<T>.MemoryOwner(System.Func<System.Int32, System.Buffers.IMemoryOwner<T>>, System.Int32)
+  fullName.vb: DotNext.Buffers.MemoryOwner(Of T).MemoryOwner(System.Func(Of System.Int32, System.Buffers.IMemoryOwner(Of T)), System.Int32)
+  nameWithType: MemoryOwner<T>.MemoryOwner(Func<Int32, IMemoryOwner<T>>, Int32)
+  nameWithType.vb: MemoryOwner(Of T).MemoryOwner(Func(Of Int32, IMemoryOwner(Of T)), Int32)
 - uid: DotNext.Buffers.MemoryOwner`1.#ctor*
   name: MemoryOwner
   href: api/DotNext.Buffers.MemoryOwner-1.html#DotNext_Buffers_MemoryOwner_1__ctor_
@@ -1205,6 +1440,41 @@ references:
   fullName.vb: DotNext.Buffers.MemoryWriter(Of T)
   nameWithType: MemoryWriter<T>
   nameWithType.vb: MemoryWriter(Of T)
+- uid: DotNext.Buffers.MemoryWriter`1.Add(`0)
+  name: Add(T)
+  href: api/DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_Add__0_
+  commentId: M:DotNext.Buffers.MemoryWriter`1.Add(`0)
+  fullName: DotNext.Buffers.MemoryWriter<T>.Add(T)
+  fullName.vb: DotNext.Buffers.MemoryWriter(Of T).Add(T)
+  nameWithType: MemoryWriter<T>.Add(T)
+  nameWithType.vb: MemoryWriter(Of T).Add(T)
+- uid: DotNext.Buffers.MemoryWriter`1.Add*
+  name: Add
+  href: api/DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_Add_
+  commentId: Overload:DotNext.Buffers.MemoryWriter`1.Add
+  isSpec: "True"
+  fullName: DotNext.Buffers.MemoryWriter<T>.Add
+  fullName.vb: DotNext.Buffers.MemoryWriter(Of T).Add
+  nameWithType: MemoryWriter<T>.Add
+  nameWithType.vb: MemoryWriter(Of T).Add
+- uid: DotNext.Buffers.MemoryWriter`1.AddAll(System.Collections.Generic.ICollection{`0})
+  name: AddAll(ICollection<T>)
+  href: api/DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_AddAll_System_Collections_Generic_ICollection__0__
+  commentId: M:DotNext.Buffers.MemoryWriter`1.AddAll(System.Collections.Generic.ICollection{`0})
+  name.vb: AddAll(ICollection(Of T))
+  fullName: DotNext.Buffers.MemoryWriter<T>.AddAll(System.Collections.Generic.ICollection<T>)
+  fullName.vb: DotNext.Buffers.MemoryWriter(Of T).AddAll(System.Collections.Generic.ICollection(Of T))
+  nameWithType: MemoryWriter<T>.AddAll(ICollection<T>)
+  nameWithType.vb: MemoryWriter(Of T).AddAll(ICollection(Of T))
+- uid: DotNext.Buffers.MemoryWriter`1.AddAll*
+  name: AddAll
+  href: api/DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_AddAll_
+  commentId: Overload:DotNext.Buffers.MemoryWriter`1.AddAll
+  isSpec: "True"
+  fullName: DotNext.Buffers.MemoryWriter<T>.AddAll
+  fullName.vb: DotNext.Buffers.MemoryWriter(Of T).AddAll
+  nameWithType: MemoryWriter<T>.AddAll
+  nameWithType.vb: MemoryWriter(Of T).AddAll
 - uid: DotNext.Buffers.MemoryWriter`1.Advance(System.Int32)
   name: Advance(Int32)
   href: api/DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_Advance_System_Int32_
@@ -1292,6 +1562,23 @@ references:
   fullName.vb: DotNext.Buffers.MemoryWriter(Of T).FreeCapacity
   nameWithType: MemoryWriter<T>.FreeCapacity
   nameWithType.vb: MemoryWriter(Of T).FreeCapacity
+- uid: DotNext.Buffers.MemoryWriter`1.GetEnumerator
+  name: GetEnumerator()
+  href: api/DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_GetEnumerator
+  commentId: M:DotNext.Buffers.MemoryWriter`1.GetEnumerator
+  fullName: DotNext.Buffers.MemoryWriter<T>.GetEnumerator()
+  fullName.vb: DotNext.Buffers.MemoryWriter(Of T).GetEnumerator()
+  nameWithType: MemoryWriter<T>.GetEnumerator()
+  nameWithType.vb: MemoryWriter(Of T).GetEnumerator()
+- uid: DotNext.Buffers.MemoryWriter`1.GetEnumerator*
+  name: GetEnumerator
+  href: api/DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_GetEnumerator_
+  commentId: Overload:DotNext.Buffers.MemoryWriter`1.GetEnumerator
+  isSpec: "True"
+  fullName: DotNext.Buffers.MemoryWriter<T>.GetEnumerator
+  fullName.vb: DotNext.Buffers.MemoryWriter(Of T).GetEnumerator
+  nameWithType: MemoryWriter<T>.GetEnumerator
+  nameWithType.vb: MemoryWriter(Of T).GetEnumerator
 - uid: DotNext.Buffers.MemoryWriter`1.GetMemory(System.Int32)
   name: GetMemory(Int32)
   href: api/DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_GetMemory_System_Int32_
@@ -1326,6 +1613,81 @@ references:
   fullName.vb: DotNext.Buffers.MemoryWriter(Of T).GetSpan
   nameWithType: MemoryWriter<T>.GetSpan
   nameWithType.vb: MemoryWriter(Of T).GetSpan
+- uid: DotNext.Buffers.MemoryWriter`1.Item(System.Int32)
+  name: Item[Int32]
+  href: api/DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_Item_System_Int32_
+  commentId: P:DotNext.Buffers.MemoryWriter`1.Item(System.Int32)
+  name.vb: Item(Int32)
+  fullName: DotNext.Buffers.MemoryWriter<T>.Item[System.Int32]
+  fullName.vb: DotNext.Buffers.MemoryWriter(Of T).Item(System.Int32)
+  nameWithType: MemoryWriter<T>.Item[Int32]
+  nameWithType.vb: MemoryWriter(Of T).Item(Int32)
+- uid: DotNext.Buffers.MemoryWriter`1.Item*
+  name: Item
+  href: api/DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_Item_
+  commentId: Overload:DotNext.Buffers.MemoryWriter`1.Item
+  isSpec: "True"
+  fullName: DotNext.Buffers.MemoryWriter<T>.Item
+  fullName.vb: DotNext.Buffers.MemoryWriter(Of T).Item
+  nameWithType: MemoryWriter<T>.Item
+  nameWithType.vb: MemoryWriter(Of T).Item
+- uid: DotNext.Buffers.MemoryWriter`1.System#Collections#Generic#IReadOnlyCollection{T}#Count
+  name: IReadOnlyCollection<T>.Count
+  href: api/DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_System_Collections_Generic_IReadOnlyCollection_T__Count
+  commentId: P:DotNext.Buffers.MemoryWriter`1.System#Collections#Generic#IReadOnlyCollection{T}#Count
+  name.vb: System.Collections.Generic.IReadOnlyCollection<T>.Count
+  fullName: DotNext.Buffers.MemoryWriter<T>.System.Collections.Generic.IReadOnlyCollection<T>.Count
+  fullName.vb: DotNext.Buffers.MemoryWriter(Of T).System.Collections.Generic.IReadOnlyCollection<T>.Count
+  nameWithType: MemoryWriter<T>.IReadOnlyCollection<T>.Count
+  nameWithType.vb: MemoryWriter(Of T).System.Collections.Generic.IReadOnlyCollection<T>.Count
+- uid: DotNext.Buffers.MemoryWriter`1.System#Collections#Generic#IReadOnlyCollection{T}#Count*
+  name: IReadOnlyCollection<T>.Count
+  href: api/DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_System_Collections_Generic_IReadOnlyCollection_T__Count_
+  commentId: Overload:DotNext.Buffers.MemoryWriter`1.System#Collections#Generic#IReadOnlyCollection{T}#Count
+  isSpec: "True"
+  name.vb: System.Collections.Generic.IReadOnlyCollection<T>.Count
+  fullName: DotNext.Buffers.MemoryWriter<T>.System.Collections.Generic.IReadOnlyCollection<T>.Count
+  fullName.vb: DotNext.Buffers.MemoryWriter(Of T).System.Collections.Generic.IReadOnlyCollection<T>.Count
+  nameWithType: MemoryWriter<T>.IReadOnlyCollection<T>.Count
+  nameWithType.vb: MemoryWriter(Of T).System.Collections.Generic.IReadOnlyCollection<T>.Count
+- uid: DotNext.Buffers.MemoryWriter`1.System#Collections#Generic#IReadOnlyList{T}#Item(System.Int32)
+  name: IReadOnlyList<T>.Item[Int32]
+  href: api/DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_System_Collections_Generic_IReadOnlyList_T__Item_System_Int32_
+  commentId: P:DotNext.Buffers.MemoryWriter`1.System#Collections#Generic#IReadOnlyList{T}#Item(System.Int32)
+  name.vb: System.Collections.Generic.IReadOnlyList<T>.Item(Int32)
+  fullName: DotNext.Buffers.MemoryWriter<T>.System.Collections.Generic.IReadOnlyList<T>.Item[System.Int32]
+  fullName.vb: DotNext.Buffers.MemoryWriter(Of T).System.Collections.Generic.IReadOnlyList<T>.Item(System.Int32)
+  nameWithType: MemoryWriter<T>.IReadOnlyList<T>.Item[Int32]
+  nameWithType.vb: MemoryWriter(Of T).System.Collections.Generic.IReadOnlyList<T>.Item(Int32)
+- uid: DotNext.Buffers.MemoryWriter`1.System#Collections#Generic#IReadOnlyList{T}#Item*
+  name: IReadOnlyList<T>.Item
+  href: api/DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_System_Collections_Generic_IReadOnlyList_T__Item_
+  commentId: Overload:DotNext.Buffers.MemoryWriter`1.System#Collections#Generic#IReadOnlyList{T}#Item
+  isSpec: "True"
+  name.vb: System.Collections.Generic.IReadOnlyList<T>.Item
+  fullName: DotNext.Buffers.MemoryWriter<T>.System.Collections.Generic.IReadOnlyList<T>.Item
+  fullName.vb: DotNext.Buffers.MemoryWriter(Of T).System.Collections.Generic.IReadOnlyList<T>.Item
+  nameWithType: MemoryWriter<T>.IReadOnlyList<T>.Item
+  nameWithType.vb: MemoryWriter(Of T).System.Collections.Generic.IReadOnlyList<T>.Item
+- uid: DotNext.Buffers.MemoryWriter`1.System#Collections#IEnumerable#GetEnumerator
+  name: IEnumerable.GetEnumerator()
+  href: api/DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_System_Collections_IEnumerable_GetEnumerator
+  commentId: M:DotNext.Buffers.MemoryWriter`1.System#Collections#IEnumerable#GetEnumerator
+  name.vb: System.Collections.IEnumerable.GetEnumerator()
+  fullName: DotNext.Buffers.MemoryWriter<T>.System.Collections.IEnumerable.GetEnumerator()
+  fullName.vb: DotNext.Buffers.MemoryWriter(Of T).System.Collections.IEnumerable.GetEnumerator()
+  nameWithType: MemoryWriter<T>.IEnumerable.GetEnumerator()
+  nameWithType.vb: MemoryWriter(Of T).System.Collections.IEnumerable.GetEnumerator()
+- uid: DotNext.Buffers.MemoryWriter`1.System#Collections#IEnumerable#GetEnumerator*
+  name: IEnumerable.GetEnumerator
+  href: api/DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_System_Collections_IEnumerable_GetEnumerator_
+  commentId: Overload:DotNext.Buffers.MemoryWriter`1.System#Collections#IEnumerable#GetEnumerator
+  isSpec: "True"
+  name.vb: System.Collections.IEnumerable.GetEnumerator
+  fullName: DotNext.Buffers.MemoryWriter<T>.System.Collections.IEnumerable.GetEnumerator
+  fullName.vb: DotNext.Buffers.MemoryWriter(Of T).System.Collections.IEnumerable.GetEnumerator
+  nameWithType: MemoryWriter<T>.IEnumerable.GetEnumerator
+  nameWithType.vb: MemoryWriter(Of T).System.Collections.IEnumerable.GetEnumerator
 - uid: DotNext.Buffers.MemoryWriter`1.WrittenCount
   name: WrittenCount
   href: api/DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_WrittenCount
@@ -1547,6 +1909,195 @@ references:
   fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).GetSpan
   nameWithType: PooledArrayBufferWriter<T>.GetSpan
   nameWithType.vb: PooledArrayBufferWriter(Of T).GetSpan
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.Item(System.Int32)
+  name: Item[Int32]
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_Item_System_Int32_
+  commentId: P:DotNext.Buffers.PooledArrayBufferWriter`1.Item(System.Int32)
+  name.vb: Item(Int32)
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.Item[System.Int32]
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).Item(System.Int32)
+  nameWithType: PooledArrayBufferWriter<T>.Item[Int32]
+  nameWithType.vb: PooledArrayBufferWriter(Of T).Item(Int32)
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.Item*
+  name: Item
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_Item_
+  commentId: Overload:DotNext.Buffers.PooledArrayBufferWriter`1.Item
+  isSpec: "True"
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.Item
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).Item
+  nameWithType: PooledArrayBufferWriter<T>.Item
+  nameWithType.vb: PooledArrayBufferWriter(Of T).Item
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#ICollection{T}#Contains(`0)
+  name: ICollection<T>.Contains(T)
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_ICollection_T__Contains__0_
+  commentId: M:DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#ICollection{T}#Contains(`0)
+  name.vb: System.Collections.Generic.ICollection<T>.Contains(T)
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.System.Collections.Generic.ICollection<T>.Contains(T)
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).System.Collections.Generic.ICollection<T>.Contains(T)
+  nameWithType: PooledArrayBufferWriter<T>.ICollection<T>.Contains(T)
+  nameWithType.vb: PooledArrayBufferWriter(Of T).System.Collections.Generic.ICollection<T>.Contains(T)
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#ICollection{T}#Contains*
+  name: ICollection<T>.Contains
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_ICollection_T__Contains_
+  commentId: Overload:DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#ICollection{T}#Contains
+  isSpec: "True"
+  name.vb: System.Collections.Generic.ICollection<T>.Contains
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.System.Collections.Generic.ICollection<T>.Contains
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).System.Collections.Generic.ICollection<T>.Contains
+  nameWithType: PooledArrayBufferWriter<T>.ICollection<T>.Contains
+  nameWithType.vb: PooledArrayBufferWriter(Of T).System.Collections.Generic.ICollection<T>.Contains
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#ICollection{T}#CopyTo(`0[],System.Int32)
+  name: ICollection<T>.CopyTo(T[], Int32)
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_ICollection_T__CopyTo__0___System_Int32_
+  commentId: M:DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#ICollection{T}#CopyTo(`0[],System.Int32)
+  name.vb: System.Collections.Generic.ICollection<T>.CopyTo(T(), Int32)
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.System.Collections.Generic.ICollection<T>.CopyTo(T[], System.Int32)
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).System.Collections.Generic.ICollection<T>.CopyTo(T(), System.Int32)
+  nameWithType: PooledArrayBufferWriter<T>.ICollection<T>.CopyTo(T[], Int32)
+  nameWithType.vb: PooledArrayBufferWriter(Of T).System.Collections.Generic.ICollection<T>.CopyTo(T(), Int32)
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#ICollection{T}#CopyTo*
+  name: ICollection<T>.CopyTo
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_ICollection_T__CopyTo_
+  commentId: Overload:DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#ICollection{T}#CopyTo
+  isSpec: "True"
+  name.vb: System.Collections.Generic.ICollection<T>.CopyTo
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.System.Collections.Generic.ICollection<T>.CopyTo
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).System.Collections.Generic.ICollection<T>.CopyTo
+  nameWithType: PooledArrayBufferWriter<T>.ICollection<T>.CopyTo
+  nameWithType.vb: PooledArrayBufferWriter(Of T).System.Collections.Generic.ICollection<T>.CopyTo
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#ICollection{T}#Count
+  name: ICollection<T>.Count
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_ICollection_T__Count
+  commentId: P:DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#ICollection{T}#Count
+  name.vb: System.Collections.Generic.ICollection<T>.Count
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.System.Collections.Generic.ICollection<T>.Count
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).System.Collections.Generic.ICollection<T>.Count
+  nameWithType: PooledArrayBufferWriter<T>.ICollection<T>.Count
+  nameWithType.vb: PooledArrayBufferWriter(Of T).System.Collections.Generic.ICollection<T>.Count
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#ICollection{T}#Count*
+  name: ICollection<T>.Count
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_ICollection_T__Count_
+  commentId: Overload:DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#ICollection{T}#Count
+  isSpec: "True"
+  name.vb: System.Collections.Generic.ICollection<T>.Count
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.System.Collections.Generic.ICollection<T>.Count
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).System.Collections.Generic.ICollection<T>.Count
+  nameWithType: PooledArrayBufferWriter<T>.ICollection<T>.Count
+  nameWithType.vb: PooledArrayBufferWriter(Of T).System.Collections.Generic.ICollection<T>.Count
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#ICollection{T}#IsReadOnly
+  name: ICollection<T>.IsReadOnly
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_ICollection_T__IsReadOnly
+  commentId: P:DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#ICollection{T}#IsReadOnly
+  name.vb: System.Collections.Generic.ICollection<T>.IsReadOnly
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.System.Collections.Generic.ICollection<T>.IsReadOnly
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).System.Collections.Generic.ICollection<T>.IsReadOnly
+  nameWithType: PooledArrayBufferWriter<T>.ICollection<T>.IsReadOnly
+  nameWithType.vb: PooledArrayBufferWriter(Of T).System.Collections.Generic.ICollection<T>.IsReadOnly
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#ICollection{T}#IsReadOnly*
+  name: ICollection<T>.IsReadOnly
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_ICollection_T__IsReadOnly_
+  commentId: Overload:DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#ICollection{T}#IsReadOnly
+  isSpec: "True"
+  name.vb: System.Collections.Generic.ICollection<T>.IsReadOnly
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.System.Collections.Generic.ICollection<T>.IsReadOnly
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).System.Collections.Generic.ICollection<T>.IsReadOnly
+  nameWithType: PooledArrayBufferWriter<T>.ICollection<T>.IsReadOnly
+  nameWithType.vb: PooledArrayBufferWriter(Of T).System.Collections.Generic.ICollection<T>.IsReadOnly
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#ICollection{T}#Remove(`0)
+  name: ICollection<T>.Remove(T)
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_ICollection_T__Remove__0_
+  commentId: M:DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#ICollection{T}#Remove(`0)
+  name.vb: System.Collections.Generic.ICollection<T>.Remove(T)
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.System.Collections.Generic.ICollection<T>.Remove(T)
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).System.Collections.Generic.ICollection<T>.Remove(T)
+  nameWithType: PooledArrayBufferWriter<T>.ICollection<T>.Remove(T)
+  nameWithType.vb: PooledArrayBufferWriter(Of T).System.Collections.Generic.ICollection<T>.Remove(T)
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#ICollection{T}#Remove*
+  name: ICollection<T>.Remove
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_ICollection_T__Remove_
+  commentId: Overload:DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#ICollection{T}#Remove
+  isSpec: "True"
+  name.vb: System.Collections.Generic.ICollection<T>.Remove
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.System.Collections.Generic.ICollection<T>.Remove
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).System.Collections.Generic.ICollection<T>.Remove
+  nameWithType: PooledArrayBufferWriter<T>.ICollection<T>.Remove
+  nameWithType.vb: PooledArrayBufferWriter(Of T).System.Collections.Generic.ICollection<T>.Remove
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#IList{T}#IndexOf(`0)
+  name: IList<T>.IndexOf(T)
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_IList_T__IndexOf__0_
+  commentId: M:DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#IList{T}#IndexOf(`0)
+  name.vb: System.Collections.Generic.IList<T>.IndexOf(T)
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.System.Collections.Generic.IList<T>.IndexOf(T)
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).System.Collections.Generic.IList<T>.IndexOf(T)
+  nameWithType: PooledArrayBufferWriter<T>.IList<T>.IndexOf(T)
+  nameWithType.vb: PooledArrayBufferWriter(Of T).System.Collections.Generic.IList<T>.IndexOf(T)
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#IList{T}#IndexOf*
+  name: IList<T>.IndexOf
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_IList_T__IndexOf_
+  commentId: Overload:DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#IList{T}#IndexOf
+  isSpec: "True"
+  name.vb: System.Collections.Generic.IList<T>.IndexOf
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.System.Collections.Generic.IList<T>.IndexOf
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).System.Collections.Generic.IList<T>.IndexOf
+  nameWithType: PooledArrayBufferWriter<T>.IList<T>.IndexOf
+  nameWithType.vb: PooledArrayBufferWriter(Of T).System.Collections.Generic.IList<T>.IndexOf
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#IList{T}#Insert(System.Int32,`0)
+  name: IList<T>.Insert(Int32, T)
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_IList_T__Insert_System_Int32__0_
+  commentId: M:DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#IList{T}#Insert(System.Int32,`0)
+  name.vb: System.Collections.Generic.IList<T>.Insert(Int32, T)
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.System.Collections.Generic.IList<T>.Insert(System.Int32, T)
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).System.Collections.Generic.IList<T>.Insert(System.Int32, T)
+  nameWithType: PooledArrayBufferWriter<T>.IList<T>.Insert(Int32, T)
+  nameWithType.vb: PooledArrayBufferWriter(Of T).System.Collections.Generic.IList<T>.Insert(Int32, T)
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#IList{T}#Insert*
+  name: IList<T>.Insert
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_IList_T__Insert_
+  commentId: Overload:DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#IList{T}#Insert
+  isSpec: "True"
+  name.vb: System.Collections.Generic.IList<T>.Insert
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.System.Collections.Generic.IList<T>.Insert
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).System.Collections.Generic.IList<T>.Insert
+  nameWithType: PooledArrayBufferWriter<T>.IList<T>.Insert
+  nameWithType.vb: PooledArrayBufferWriter(Of T).System.Collections.Generic.IList<T>.Insert
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#IList{T}#Item(System.Int32)
+  name: IList<T>.Item[Int32]
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_IList_T__Item_System_Int32_
+  commentId: P:DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#IList{T}#Item(System.Int32)
+  name.vb: System.Collections.Generic.IList<T>.Item(Int32)
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.System.Collections.Generic.IList<T>.Item[System.Int32]
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).System.Collections.Generic.IList<T>.Item(System.Int32)
+  nameWithType: PooledArrayBufferWriter<T>.IList<T>.Item[Int32]
+  nameWithType.vb: PooledArrayBufferWriter(Of T).System.Collections.Generic.IList<T>.Item(Int32)
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#IList{T}#Item*
+  name: IList<T>.Item
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_IList_T__Item_
+  commentId: Overload:DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#IList{T}#Item
+  isSpec: "True"
+  name.vb: System.Collections.Generic.IList<T>.Item
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.System.Collections.Generic.IList<T>.Item
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).System.Collections.Generic.IList<T>.Item
+  nameWithType: PooledArrayBufferWriter<T>.IList<T>.Item
+  nameWithType.vb: PooledArrayBufferWriter(Of T).System.Collections.Generic.IList<T>.Item
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#IList{T}#RemoveAt(System.Int32)
+  name: IList<T>.RemoveAt(Int32)
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_IList_T__RemoveAt_System_Int32_
+  commentId: M:DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#IList{T}#RemoveAt(System.Int32)
+  name.vb: System.Collections.Generic.IList<T>.RemoveAt(Int32)
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.System.Collections.Generic.IList<T>.RemoveAt(System.Int32)
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).System.Collections.Generic.IList<T>.RemoveAt(System.Int32)
+  nameWithType: PooledArrayBufferWriter<T>.IList<T>.RemoveAt(Int32)
+  nameWithType.vb: PooledArrayBufferWriter(Of T).System.Collections.Generic.IList<T>.RemoveAt(Int32)
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#IList{T}#RemoveAt*
+  name: IList<T>.RemoveAt
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_IList_T__RemoveAt_
+  commentId: Overload:DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#IList{T}#RemoveAt
+  isSpec: "True"
+  name.vb: System.Collections.Generic.IList<T>.RemoveAt
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.System.Collections.Generic.IList<T>.RemoveAt
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).System.Collections.Generic.IList<T>.RemoveAt
+  nameWithType: PooledArrayBufferWriter<T>.IList<T>.RemoveAt
+  nameWithType.vb: PooledArrayBufferWriter(Of T).System.Collections.Generic.IList<T>.RemoveAt
 - uid: DotNext.Buffers.PooledArrayBufferWriter`1.WrittenArray
   name: WrittenArray
   href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_WrittenArray
@@ -3652,6 +4203,15 @@ references:
   fullName.vb: DotNext.DelegateHelpers.CreateOpenDelegate(Of TDelegate)(System.Linq.Expressions.Expression(Of TDelegate))
   nameWithType: DelegateHelpers.CreateOpenDelegate<TDelegate>(Expression<TDelegate>)
   nameWithType.vb: DelegateHelpers.CreateOpenDelegate(Of TDelegate)(Expression(Of TDelegate))
+- uid: DotNext.DelegateHelpers.CreateOpenDelegate``2(System.Linq.Expressions.Expression{System.Func{``0,``1}})
+  name: CreateOpenDelegate<T, TValue>(Expression<Func<T, TValue>>)
+  href: api/DotNext.DelegateHelpers.html#DotNext_DelegateHelpers_CreateOpenDelegate__2_System_Linq_Expressions_Expression_System_Func___0___1___
+  commentId: M:DotNext.DelegateHelpers.CreateOpenDelegate``2(System.Linq.Expressions.Expression{System.Func{``0,``1}})
+  name.vb: CreateOpenDelegate(Of T, TValue)(Expression(Of Func(Of T, TValue)))
+  fullName: DotNext.DelegateHelpers.CreateOpenDelegate<T, TValue>(System.Linq.Expressions.Expression<System.Func<T, TValue>>)
+  fullName.vb: DotNext.DelegateHelpers.CreateOpenDelegate(Of T, TValue)(System.Linq.Expressions.Expression(Of System.Func(Of T, TValue)))
+  nameWithType: DelegateHelpers.CreateOpenDelegate<T, TValue>(Expression<Func<T, TValue>>)
+  nameWithType.vb: DelegateHelpers.CreateOpenDelegate(Of T, TValue)(Expression(Of Func(Of T, TValue)))
 - uid: DotNext.DelegateHelpers.Unbind*
   name: Unbind
   href: api/DotNext.DelegateHelpers.html#DotNext_DelegateHelpers_Unbind_
@@ -6211,6 +6771,31 @@ references:
   fullName.vb: DotNext.GenericArgumentException(Of T).GenericArgumentException
   nameWithType: GenericArgumentException<T>.GenericArgumentException
   nameWithType.vb: GenericArgumentException(Of T).GenericArgumentException
+- uid: DotNext.Hosting
+  name: DotNext.Hosting
+  href: api/DotNext.Hosting.html
+  commentId: N:DotNext.Hosting
+  fullName: DotNext.Hosting
+  nameWithType: DotNext.Hosting
+- uid: DotNext.Hosting.HostBuilderExtensions
+  name: HostBuilderExtensions
+  href: api/DotNext.Hosting.HostBuilderExtensions.html
+  commentId: T:DotNext.Hosting.HostBuilderExtensions
+  fullName: DotNext.Hosting.HostBuilderExtensions
+  nameWithType: HostBuilderExtensions
+- uid: DotNext.Hosting.HostBuilderExtensions.UseHostOptions(Microsoft.Extensions.Hosting.IHostBuilder,Microsoft.Extensions.Hosting.HostOptions)
+  name: UseHostOptions(IHostBuilder, HostOptions)
+  href: api/DotNext.Hosting.HostBuilderExtensions.html#DotNext_Hosting_HostBuilderExtensions_UseHostOptions_Microsoft_Extensions_Hosting_IHostBuilder_Microsoft_Extensions_Hosting_HostOptions_
+  commentId: M:DotNext.Hosting.HostBuilderExtensions.UseHostOptions(Microsoft.Extensions.Hosting.IHostBuilder,Microsoft.Extensions.Hosting.HostOptions)
+  fullName: DotNext.Hosting.HostBuilderExtensions.UseHostOptions(Microsoft.Extensions.Hosting.IHostBuilder, Microsoft.Extensions.Hosting.HostOptions)
+  nameWithType: HostBuilderExtensions.UseHostOptions(IHostBuilder, HostOptions)
+- uid: DotNext.Hosting.HostBuilderExtensions.UseHostOptions*
+  name: UseHostOptions
+  href: api/DotNext.Hosting.HostBuilderExtensions.html#DotNext_Hosting_HostBuilderExtensions_UseHostOptions_
+  commentId: Overload:DotNext.Hosting.HostBuilderExtensions.UseHostOptions
+  isSpec: "True"
+  fullName: DotNext.Hosting.HostBuilderExtensions.UseHostOptions
+  nameWithType: HostBuilderExtensions.UseHostOptions
 - uid: DotNext.ICallable
   name: ICallable
   href: api/DotNext.ICallable.html
@@ -6666,6 +7251,22 @@ references:
   isSpec: "True"
   fullName: DotNext.IO.FileBufferingWriter.BeginRead
   nameWithType: FileBufferingWriter.BeginRead
+- uid: DotNext.IO.FileBufferingWriter.BeginWrite(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)
+  name: BeginWrite(Byte[], Int32, Int32, AsyncCallback, Object)
+  href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_BeginWrite_System_Byte___System_Int32_System_Int32_System_AsyncCallback_System_Object_
+  commentId: M:DotNext.IO.FileBufferingWriter.BeginWrite(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)
+  name.vb: BeginWrite(Byte(), Int32, Int32, AsyncCallback, Object)
+  fullName: DotNext.IO.FileBufferingWriter.BeginWrite(System.Byte[], System.Int32, System.Int32, System.AsyncCallback, System.Object)
+  fullName.vb: DotNext.IO.FileBufferingWriter.BeginWrite(System.Byte(), System.Int32, System.Int32, System.AsyncCallback, System.Object)
+  nameWithType: FileBufferingWriter.BeginWrite(Byte[], Int32, Int32, AsyncCallback, Object)
+  nameWithType.vb: FileBufferingWriter.BeginWrite(Byte(), Int32, Int32, AsyncCallback, Object)
+- uid: DotNext.IO.FileBufferingWriter.BeginWrite*
+  name: BeginWrite
+  href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_BeginWrite_
+  commentId: Overload:DotNext.IO.FileBufferingWriter.BeginWrite
+  isSpec: "True"
+  fullName: DotNext.IO.FileBufferingWriter.BeginWrite
+  nameWithType: FileBufferingWriter.BeginWrite
 - uid: DotNext.IO.FileBufferingWriter.CanRead
   name: CanRead
   href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_CanRead
@@ -6814,6 +7415,19 @@ references:
   isSpec: "True"
   fullName: DotNext.IO.FileBufferingWriter.EndRead
   nameWithType: FileBufferingWriter.EndRead
+- uid: DotNext.IO.FileBufferingWriter.EndWrite(System.IAsyncResult)
+  name: EndWrite(IAsyncResult)
+  href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_EndWrite_System_IAsyncResult_
+  commentId: M:DotNext.IO.FileBufferingWriter.EndWrite(System.IAsyncResult)
+  fullName: DotNext.IO.FileBufferingWriter.EndWrite(System.IAsyncResult)
+  nameWithType: FileBufferingWriter.EndWrite(IAsyncResult)
+- uid: DotNext.IO.FileBufferingWriter.EndWrite*
+  name: EndWrite
+  href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_EndWrite_
+  commentId: Overload:DotNext.IO.FileBufferingWriter.EndWrite
+  isSpec: "True"
+  fullName: DotNext.IO.FileBufferingWriter.EndWrite
+  nameWithType: FileBufferingWriter.EndWrite
 - uid: DotNext.IO.FileBufferingWriter.Flush
   name: Flush()
   href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_Flush
@@ -6872,6 +7486,12 @@ references:
   commentId: M:DotNext.IO.FileBufferingWriter.GetWrittenContent
   fullName: DotNext.IO.FileBufferingWriter.GetWrittenContent()
   nameWithType: FileBufferingWriter.GetWrittenContent()
+- uid: DotNext.IO.FileBufferingWriter.GetWrittenContent(System.Int32)
+  name: GetWrittenContent(Int32)
+  href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_GetWrittenContent_System_Int32_
+  commentId: M:DotNext.IO.FileBufferingWriter.GetWrittenContent(System.Int32)
+  fullName: DotNext.IO.FileBufferingWriter.GetWrittenContent(System.Int32)
+  nameWithType: FileBufferingWriter.GetWrittenContent(Int32)
 - uid: DotNext.IO.FileBufferingWriter.GetWrittenContent(System.Range)
   name: GetWrittenContent(Range)
   href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_GetWrittenContent_System_Range_
@@ -6885,6 +7505,12 @@ references:
   isSpec: "True"
   fullName: DotNext.IO.FileBufferingWriter.GetWrittenContent
   nameWithType: FileBufferingWriter.GetWrittenContent
+- uid: DotNext.IO.FileBufferingWriter.GetWrittenContentAsync(System.Int32,System.Threading.CancellationToken)
+  name: GetWrittenContentAsync(Int32, CancellationToken)
+  href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_GetWrittenContentAsync_System_Int32_System_Threading_CancellationToken_
+  commentId: M:DotNext.IO.FileBufferingWriter.GetWrittenContentAsync(System.Int32,System.Threading.CancellationToken)
+  fullName: DotNext.IO.FileBufferingWriter.GetWrittenContentAsync(System.Int32, System.Threading.CancellationToken)
+  nameWithType: FileBufferingWriter.GetWrittenContentAsync(Int32, CancellationToken)
 - uid: DotNext.IO.FileBufferingWriter.GetWrittenContentAsync(System.Range,System.Threading.CancellationToken)
   name: GetWrittenContentAsync(Range, CancellationToken)
   href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_GetWrittenContentAsync_System_Range_System_Threading_CancellationToken_
@@ -6993,6 +7619,38 @@ references:
   isSpec: "True"
   fullName: DotNext.IO.FileBufferingWriter.ReadByte
   nameWithType: FileBufferingWriter.ReadByte
+- uid: DotNext.IO.FileBufferingWriter.ReadOnlySequenceSource
+  name: FileBufferingWriter.ReadOnlySequenceSource
+  href: api/DotNext.IO.FileBufferingWriter.ReadOnlySequenceSource.html
+  commentId: T:DotNext.IO.FileBufferingWriter.ReadOnlySequenceSource
+  fullName: DotNext.IO.FileBufferingWriter.ReadOnlySequenceSource
+  nameWithType: FileBufferingWriter.ReadOnlySequenceSource
+- uid: DotNext.IO.FileBufferingWriter.ReadOnlySequenceSource.Dispose(System.Boolean)
+  name: Dispose(Boolean)
+  href: api/DotNext.IO.FileBufferingWriter.ReadOnlySequenceSource.html#DotNext_IO_FileBufferingWriter_ReadOnlySequenceSource_Dispose_System_Boolean_
+  commentId: M:DotNext.IO.FileBufferingWriter.ReadOnlySequenceSource.Dispose(System.Boolean)
+  fullName: DotNext.IO.FileBufferingWriter.ReadOnlySequenceSource.Dispose(System.Boolean)
+  nameWithType: FileBufferingWriter.ReadOnlySequenceSource.Dispose(Boolean)
+- uid: DotNext.IO.FileBufferingWriter.ReadOnlySequenceSource.Dispose*
+  name: Dispose
+  href: api/DotNext.IO.FileBufferingWriter.ReadOnlySequenceSource.html#DotNext_IO_FileBufferingWriter_ReadOnlySequenceSource_Dispose_
+  commentId: Overload:DotNext.IO.FileBufferingWriter.ReadOnlySequenceSource.Dispose
+  isSpec: "True"
+  fullName: DotNext.IO.FileBufferingWriter.ReadOnlySequenceSource.Dispose
+  nameWithType: FileBufferingWriter.ReadOnlySequenceSource.Dispose
+- uid: DotNext.IO.FileBufferingWriter.ReadOnlySequenceSource.Sequence
+  name: Sequence
+  href: api/DotNext.IO.FileBufferingWriter.ReadOnlySequenceSource.html#DotNext_IO_FileBufferingWriter_ReadOnlySequenceSource_Sequence
+  commentId: P:DotNext.IO.FileBufferingWriter.ReadOnlySequenceSource.Sequence
+  fullName: DotNext.IO.FileBufferingWriter.ReadOnlySequenceSource.Sequence
+  nameWithType: FileBufferingWriter.ReadOnlySequenceSource.Sequence
+- uid: DotNext.IO.FileBufferingWriter.ReadOnlySequenceSource.Sequence*
+  name: Sequence
+  href: api/DotNext.IO.FileBufferingWriter.ReadOnlySequenceSource.html#DotNext_IO_FileBufferingWriter_ReadOnlySequenceSource_Sequence_
+  commentId: Overload:DotNext.IO.FileBufferingWriter.ReadOnlySequenceSource.Sequence
+  isSpec: "True"
+  fullName: DotNext.IO.FileBufferingWriter.ReadOnlySequenceSource.Sequence
+  nameWithType: FileBufferingWriter.ReadOnlySequenceSource.Sequence
 - uid: DotNext.IO.FileBufferingWriter.Seek(System.Int64,System.IO.SeekOrigin)
   name: Seek(Int64, SeekOrigin)
   href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_Seek_System_Int64_System_IO_SeekOrigin_
@@ -7290,6 +7948,12 @@ references:
   commentId: M:DotNext.IO.IAsyncBinaryWriter.Create(System.IO.Pipelines.PipeWriter)
   fullName: DotNext.IO.IAsyncBinaryWriter.Create(System.IO.Pipelines.PipeWriter)
   nameWithType: IAsyncBinaryWriter.Create(PipeWriter)
+- uid: DotNext.IO.IAsyncBinaryWriter.Create(System.IO.Pipelines.PipeWriter,System.Int32,System.Int32)
+  name: Create(PipeWriter, Int32, Int32)
+  href: api/DotNext.IO.IAsyncBinaryWriter.html#DotNext_IO_IAsyncBinaryWriter_Create_System_IO_Pipelines_PipeWriter_System_Int32_System_Int32_
+  commentId: M:DotNext.IO.IAsyncBinaryWriter.Create(System.IO.Pipelines.PipeWriter,System.Int32,System.Int32)
+  fullName: DotNext.IO.IAsyncBinaryWriter.Create(System.IO.Pipelines.PipeWriter, System.Int32, System.Int32)
+  nameWithType: IAsyncBinaryWriter.Create(PipeWriter, Int32, Int32)
 - uid: DotNext.IO.IAsyncBinaryWriter.Create(System.IO.Stream,System.Memory{System.Byte})
   name: Create(Stream, Memory<Byte>)
   href: api/DotNext.IO.IAsyncBinaryWriter.html#DotNext_IO_IAsyncBinaryWriter_Create_System_IO_Stream_System_Memory_System_Byte__
@@ -8190,6 +8854,57 @@ references:
   isSpec: "True"
   fullName: DotNext.IO.MemoryMappedFiles.MemoryMappedFileExtensions.CreateMemoryAccessor
   nameWithType: MemoryMappedFileExtensions.CreateMemoryAccessor
+- uid: DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor
+  name: ReadOnlySequenceAccessor
+  href: api/DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.html
+  commentId: T:DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor
+  fullName: DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor
+  nameWithType: ReadOnlySequenceAccessor
+- uid: DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.#ctor(System.IO.FileStream,System.Int32)
+  name: ReadOnlySequenceAccessor(FileStream, Int32)
+  href: api/DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.html#DotNext_IO_MemoryMappedFiles_ReadOnlySequenceAccessor__ctor_System_IO_FileStream_System_Int32_
+  commentId: M:DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.#ctor(System.IO.FileStream,System.Int32)
+  fullName: DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.ReadOnlySequenceAccessor(System.IO.FileStream, System.Int32)
+  nameWithType: ReadOnlySequenceAccessor.ReadOnlySequenceAccessor(FileStream, Int32)
+- uid: DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.#ctor(System.IO.MemoryMappedFiles.MemoryMappedFile,System.Int32,System.Int64)
+  name: ReadOnlySequenceAccessor(MemoryMappedFile, Int32, Int64)
+  href: api/DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.html#DotNext_IO_MemoryMappedFiles_ReadOnlySequenceAccessor__ctor_System_IO_MemoryMappedFiles_MemoryMappedFile_System_Int32_System_Int64_
+  commentId: M:DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.#ctor(System.IO.MemoryMappedFiles.MemoryMappedFile,System.Int32,System.Int64)
+  fullName: DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.ReadOnlySequenceAccessor(System.IO.MemoryMappedFiles.MemoryMappedFile, System.Int32, System.Int64)
+  nameWithType: ReadOnlySequenceAccessor.ReadOnlySequenceAccessor(MemoryMappedFile, Int32, Int64)
+- uid: DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.#ctor*
+  name: ReadOnlySequenceAccessor
+  href: api/DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.html#DotNext_IO_MemoryMappedFiles_ReadOnlySequenceAccessor__ctor_
+  commentId: Overload:DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.#ctor
+  isSpec: "True"
+  fullName: DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.ReadOnlySequenceAccessor
+  nameWithType: ReadOnlySequenceAccessor.ReadOnlySequenceAccessor
+- uid: DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.Dispose(System.Boolean)
+  name: Dispose(Boolean)
+  href: api/DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.html#DotNext_IO_MemoryMappedFiles_ReadOnlySequenceAccessor_Dispose_System_Boolean_
+  commentId: M:DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.Dispose(System.Boolean)
+  fullName: DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.Dispose(System.Boolean)
+  nameWithType: ReadOnlySequenceAccessor.Dispose(Boolean)
+- uid: DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.Dispose*
+  name: Dispose
+  href: api/DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.html#DotNext_IO_MemoryMappedFiles_ReadOnlySequenceAccessor_Dispose_
+  commentId: Overload:DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.Dispose
+  isSpec: "True"
+  fullName: DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.Dispose
+  nameWithType: ReadOnlySequenceAccessor.Dispose
+- uid: DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.Sequence
+  name: Sequence
+  href: api/DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.html#DotNext_IO_MemoryMappedFiles_ReadOnlySequenceAccessor_Sequence
+  commentId: P:DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.Sequence
+  fullName: DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.Sequence
+  nameWithType: ReadOnlySequenceAccessor.Sequence
+- uid: DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.Sequence*
+  name: Sequence
+  href: api/DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.html#DotNext_IO_MemoryMappedFiles_ReadOnlySequenceAccessor_Sequence_
+  commentId: Overload:DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.Sequence
+  isSpec: "True"
+  fullName: DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.Sequence
+  nameWithType: ReadOnlySequenceAccessor.Sequence
 - uid: DotNext.IO.Pipelines
   name: DotNext.IO.Pipelines
   href: api/DotNext.IO.Pipelines.html
@@ -8317,6 +9032,54 @@ references:
   isSpec: "True"
   fullName: DotNext.IO.Pipelines.PipeExtensions.ReadStringAsync
   nameWithType: PipeExtensions.ReadStringAsync
+- uid: DotNext.IO.Pipelines.PipeExtensions.ReadUInt16Async(System.IO.Pipelines.PipeReader,System.Boolean,System.Threading.CancellationToken)
+  name: ReadUInt16Async(PipeReader, Boolean, CancellationToken)
+  href: api/DotNext.IO.Pipelines.PipeExtensions.html#DotNext_IO_Pipelines_PipeExtensions_ReadUInt16Async_System_IO_Pipelines_PipeReader_System_Boolean_System_Threading_CancellationToken_
+  commentId: M:DotNext.IO.Pipelines.PipeExtensions.ReadUInt16Async(System.IO.Pipelines.PipeReader,System.Boolean,System.Threading.CancellationToken)
+  fullName: DotNext.IO.Pipelines.PipeExtensions.ReadUInt16Async(System.IO.Pipelines.PipeReader, System.Boolean, System.Threading.CancellationToken)
+  nameWithType: PipeExtensions.ReadUInt16Async(PipeReader, Boolean, CancellationToken)
+- uid: DotNext.IO.Pipelines.PipeExtensions.ReadUInt16Async*
+  name: ReadUInt16Async
+  href: api/DotNext.IO.Pipelines.PipeExtensions.html#DotNext_IO_Pipelines_PipeExtensions_ReadUInt16Async_
+  commentId: Overload:DotNext.IO.Pipelines.PipeExtensions.ReadUInt16Async
+  isSpec: "True"
+  fullName: DotNext.IO.Pipelines.PipeExtensions.ReadUInt16Async
+  nameWithType: PipeExtensions.ReadUInt16Async
+- uid: DotNext.IO.Pipelines.PipeExtensions.ReadUInt32Async(System.IO.Pipelines.PipeReader,System.Boolean,System.Threading.CancellationToken)
+  name: ReadUInt32Async(PipeReader, Boolean, CancellationToken)
+  href: api/DotNext.IO.Pipelines.PipeExtensions.html#DotNext_IO_Pipelines_PipeExtensions_ReadUInt32Async_System_IO_Pipelines_PipeReader_System_Boolean_System_Threading_CancellationToken_
+  commentId: M:DotNext.IO.Pipelines.PipeExtensions.ReadUInt32Async(System.IO.Pipelines.PipeReader,System.Boolean,System.Threading.CancellationToken)
+  fullName: DotNext.IO.Pipelines.PipeExtensions.ReadUInt32Async(System.IO.Pipelines.PipeReader, System.Boolean, System.Threading.CancellationToken)
+  nameWithType: PipeExtensions.ReadUInt32Async(PipeReader, Boolean, CancellationToken)
+- uid: DotNext.IO.Pipelines.PipeExtensions.ReadUInt32Async*
+  name: ReadUInt32Async
+  href: api/DotNext.IO.Pipelines.PipeExtensions.html#DotNext_IO_Pipelines_PipeExtensions_ReadUInt32Async_
+  commentId: Overload:DotNext.IO.Pipelines.PipeExtensions.ReadUInt32Async
+  isSpec: "True"
+  fullName: DotNext.IO.Pipelines.PipeExtensions.ReadUInt32Async
+  nameWithType: PipeExtensions.ReadUInt32Async
+- uid: DotNext.IO.Pipelines.PipeExtensions.ReadUInt64Async(System.IO.Pipelines.PipeReader,System.Boolean,System.Threading.CancellationToken)
+  name: ReadUInt64Async(PipeReader, Boolean, CancellationToken)
+  href: api/DotNext.IO.Pipelines.PipeExtensions.html#DotNext_IO_Pipelines_PipeExtensions_ReadUInt64Async_System_IO_Pipelines_PipeReader_System_Boolean_System_Threading_CancellationToken_
+  commentId: M:DotNext.IO.Pipelines.PipeExtensions.ReadUInt64Async(System.IO.Pipelines.PipeReader,System.Boolean,System.Threading.CancellationToken)
+  fullName: DotNext.IO.Pipelines.PipeExtensions.ReadUInt64Async(System.IO.Pipelines.PipeReader, System.Boolean, System.Threading.CancellationToken)
+  nameWithType: PipeExtensions.ReadUInt64Async(PipeReader, Boolean, CancellationToken)
+- uid: DotNext.IO.Pipelines.PipeExtensions.ReadUInt64Async*
+  name: ReadUInt64Async
+  href: api/DotNext.IO.Pipelines.PipeExtensions.html#DotNext_IO_Pipelines_PipeExtensions_ReadUInt64Async_
+  commentId: Overload:DotNext.IO.Pipelines.PipeExtensions.ReadUInt64Async
+  isSpec: "True"
+  fullName: DotNext.IO.Pipelines.PipeExtensions.ReadUInt64Async
+  nameWithType: PipeExtensions.ReadUInt64Async
+- uid: DotNext.IO.Pipelines.PipeExtensions.WriteAsync(System.IO.Pipelines.PipeWriter,System.Buffers.ReadOnlySequence{System.Byte},System.Threading.CancellationToken)
+  name: WriteAsync(PipeWriter, ReadOnlySequence<Byte>, CancellationToken)
+  href: api/DotNext.IO.Pipelines.PipeExtensions.html#DotNext_IO_Pipelines_PipeExtensions_WriteAsync_System_IO_Pipelines_PipeWriter_System_Buffers_ReadOnlySequence_System_Byte__System_Threading_CancellationToken_
+  commentId: M:DotNext.IO.Pipelines.PipeExtensions.WriteAsync(System.IO.Pipelines.PipeWriter,System.Buffers.ReadOnlySequence{System.Byte},System.Threading.CancellationToken)
+  name.vb: WriteAsync(PipeWriter, ReadOnlySequence(Of Byte), CancellationToken)
+  fullName: DotNext.IO.Pipelines.PipeExtensions.WriteAsync(System.IO.Pipelines.PipeWriter, System.Buffers.ReadOnlySequence<System.Byte>, System.Threading.CancellationToken)
+  fullName.vb: DotNext.IO.Pipelines.PipeExtensions.WriteAsync(System.IO.Pipelines.PipeWriter, System.Buffers.ReadOnlySequence(Of System.Byte), System.Threading.CancellationToken)
+  nameWithType: PipeExtensions.WriteAsync(PipeWriter, ReadOnlySequence<Byte>, CancellationToken)
+  nameWithType.vb: PipeExtensions.WriteAsync(PipeWriter, ReadOnlySequence(Of Byte), CancellationToken)
 - uid: DotNext.IO.Pipelines.PipeExtensions.WriteAsync*
   name: WriteAsync
   href: api/DotNext.IO.Pipelines.PipeExtensions.html#DotNext_IO_Pipelines_PipeExtensions_WriteAsync_
@@ -8388,6 +9151,45 @@ references:
   isSpec: "True"
   fullName: DotNext.IO.Pipelines.PipeExtensions.WriteStringAsync
   nameWithType: PipeExtensions.WriteStringAsync
+- uid: DotNext.IO.Pipelines.PipeExtensions.WriteUInt16Async(System.IO.Pipelines.PipeWriter,System.UInt16,System.Boolean,System.Threading.CancellationToken)
+  name: WriteUInt16Async(PipeWriter, UInt16, Boolean, CancellationToken)
+  href: api/DotNext.IO.Pipelines.PipeExtensions.html#DotNext_IO_Pipelines_PipeExtensions_WriteUInt16Async_System_IO_Pipelines_PipeWriter_System_UInt16_System_Boolean_System_Threading_CancellationToken_
+  commentId: M:DotNext.IO.Pipelines.PipeExtensions.WriteUInt16Async(System.IO.Pipelines.PipeWriter,System.UInt16,System.Boolean,System.Threading.CancellationToken)
+  fullName: DotNext.IO.Pipelines.PipeExtensions.WriteUInt16Async(System.IO.Pipelines.PipeWriter, System.UInt16, System.Boolean, System.Threading.CancellationToken)
+  nameWithType: PipeExtensions.WriteUInt16Async(PipeWriter, UInt16, Boolean, CancellationToken)
+- uid: DotNext.IO.Pipelines.PipeExtensions.WriteUInt16Async*
+  name: WriteUInt16Async
+  href: api/DotNext.IO.Pipelines.PipeExtensions.html#DotNext_IO_Pipelines_PipeExtensions_WriteUInt16Async_
+  commentId: Overload:DotNext.IO.Pipelines.PipeExtensions.WriteUInt16Async
+  isSpec: "True"
+  fullName: DotNext.IO.Pipelines.PipeExtensions.WriteUInt16Async
+  nameWithType: PipeExtensions.WriteUInt16Async
+- uid: DotNext.IO.Pipelines.PipeExtensions.WriteUInt32Async(System.IO.Pipelines.PipeWriter,System.UInt32,System.Boolean,System.Threading.CancellationToken)
+  name: WriteUInt32Async(PipeWriter, UInt32, Boolean, CancellationToken)
+  href: api/DotNext.IO.Pipelines.PipeExtensions.html#DotNext_IO_Pipelines_PipeExtensions_WriteUInt32Async_System_IO_Pipelines_PipeWriter_System_UInt32_System_Boolean_System_Threading_CancellationToken_
+  commentId: M:DotNext.IO.Pipelines.PipeExtensions.WriteUInt32Async(System.IO.Pipelines.PipeWriter,System.UInt32,System.Boolean,System.Threading.CancellationToken)
+  fullName: DotNext.IO.Pipelines.PipeExtensions.WriteUInt32Async(System.IO.Pipelines.PipeWriter, System.UInt32, System.Boolean, System.Threading.CancellationToken)
+  nameWithType: PipeExtensions.WriteUInt32Async(PipeWriter, UInt32, Boolean, CancellationToken)
+- uid: DotNext.IO.Pipelines.PipeExtensions.WriteUInt32Async*
+  name: WriteUInt32Async
+  href: api/DotNext.IO.Pipelines.PipeExtensions.html#DotNext_IO_Pipelines_PipeExtensions_WriteUInt32Async_
+  commentId: Overload:DotNext.IO.Pipelines.PipeExtensions.WriteUInt32Async
+  isSpec: "True"
+  fullName: DotNext.IO.Pipelines.PipeExtensions.WriteUInt32Async
+  nameWithType: PipeExtensions.WriteUInt32Async
+- uid: DotNext.IO.Pipelines.PipeExtensions.WriteUInt64Async(System.IO.Pipelines.PipeWriter,System.UInt64,System.Boolean,System.Threading.CancellationToken)
+  name: WriteUInt64Async(PipeWriter, UInt64, Boolean, CancellationToken)
+  href: api/DotNext.IO.Pipelines.PipeExtensions.html#DotNext_IO_Pipelines_PipeExtensions_WriteUInt64Async_System_IO_Pipelines_PipeWriter_System_UInt64_System_Boolean_System_Threading_CancellationToken_
+  commentId: M:DotNext.IO.Pipelines.PipeExtensions.WriteUInt64Async(System.IO.Pipelines.PipeWriter,System.UInt64,System.Boolean,System.Threading.CancellationToken)
+  fullName: DotNext.IO.Pipelines.PipeExtensions.WriteUInt64Async(System.IO.Pipelines.PipeWriter, System.UInt64, System.Boolean, System.Threading.CancellationToken)
+  nameWithType: PipeExtensions.WriteUInt64Async(PipeWriter, UInt64, Boolean, CancellationToken)
+- uid: DotNext.IO.Pipelines.PipeExtensions.WriteUInt64Async*
+  name: WriteUInt64Async
+  href: api/DotNext.IO.Pipelines.PipeExtensions.html#DotNext_IO_Pipelines_PipeExtensions_WriteUInt64Async_
+  commentId: Overload:DotNext.IO.Pipelines.PipeExtensions.WriteUInt64Async
+  isSpec: "True"
+  fullName: DotNext.IO.Pipelines.PipeExtensions.WriteUInt64Async
+  nameWithType: PipeExtensions.WriteUInt64Async
 - uid: DotNext.IO.Pipelines.ResultExtensions
   name: ResultExtensions
   href: api/DotNext.IO.Pipelines.ResultExtensions.html
@@ -8518,6 +9320,57 @@ references:
   fullName.vb: DotNext.IO.SequenceBinaryReader.DotNext.IO.IAsyncBinaryReader.ReadAsync(Of T)(System.Threading.CancellationToken)
   nameWithType: SequenceBinaryReader.IAsyncBinaryReader.ReadAsync<T>(CancellationToken)
   nameWithType.vb: SequenceBinaryReader.DotNext.IO.IAsyncBinaryReader.ReadAsync(Of T)(CancellationToken)
+- uid: DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadInt16Async(System.Boolean,System.Threading.CancellationToken)
+  name: IAsyncBinaryReader.ReadInt16Async(Boolean, CancellationToken)
+  href: api/DotNext.IO.SequenceBinaryReader.html#DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadInt16Async_System_Boolean_System_Threading_CancellationToken_
+  commentId: M:DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadInt16Async(System.Boolean,System.Threading.CancellationToken)
+  name.vb: DotNext.IO.IAsyncBinaryReader.ReadInt16Async(Boolean, CancellationToken)
+  fullName: DotNext.IO.SequenceBinaryReader.DotNext.IO.IAsyncBinaryReader.ReadInt16Async(System.Boolean, System.Threading.CancellationToken)
+  nameWithType: SequenceBinaryReader.IAsyncBinaryReader.ReadInt16Async(Boolean, CancellationToken)
+  nameWithType.vb: SequenceBinaryReader.DotNext.IO.IAsyncBinaryReader.ReadInt16Async(Boolean, CancellationToken)
+- uid: DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadInt16Async*
+  name: IAsyncBinaryReader.ReadInt16Async
+  href: api/DotNext.IO.SequenceBinaryReader.html#DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadInt16Async_
+  commentId: Overload:DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadInt16Async
+  isSpec: "True"
+  name.vb: DotNext.IO.IAsyncBinaryReader.ReadInt16Async
+  fullName: DotNext.IO.SequenceBinaryReader.DotNext.IO.IAsyncBinaryReader.ReadInt16Async
+  nameWithType: SequenceBinaryReader.IAsyncBinaryReader.ReadInt16Async
+  nameWithType.vb: SequenceBinaryReader.DotNext.IO.IAsyncBinaryReader.ReadInt16Async
+- uid: DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadInt32Async(System.Boolean,System.Threading.CancellationToken)
+  name: IAsyncBinaryReader.ReadInt32Async(Boolean, CancellationToken)
+  href: api/DotNext.IO.SequenceBinaryReader.html#DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadInt32Async_System_Boolean_System_Threading_CancellationToken_
+  commentId: M:DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadInt32Async(System.Boolean,System.Threading.CancellationToken)
+  name.vb: DotNext.IO.IAsyncBinaryReader.ReadInt32Async(Boolean, CancellationToken)
+  fullName: DotNext.IO.SequenceBinaryReader.DotNext.IO.IAsyncBinaryReader.ReadInt32Async(System.Boolean, System.Threading.CancellationToken)
+  nameWithType: SequenceBinaryReader.IAsyncBinaryReader.ReadInt32Async(Boolean, CancellationToken)
+  nameWithType.vb: SequenceBinaryReader.DotNext.IO.IAsyncBinaryReader.ReadInt32Async(Boolean, CancellationToken)
+- uid: DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadInt32Async*
+  name: IAsyncBinaryReader.ReadInt32Async
+  href: api/DotNext.IO.SequenceBinaryReader.html#DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadInt32Async_
+  commentId: Overload:DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadInt32Async
+  isSpec: "True"
+  name.vb: DotNext.IO.IAsyncBinaryReader.ReadInt32Async
+  fullName: DotNext.IO.SequenceBinaryReader.DotNext.IO.IAsyncBinaryReader.ReadInt32Async
+  nameWithType: SequenceBinaryReader.IAsyncBinaryReader.ReadInt32Async
+  nameWithType.vb: SequenceBinaryReader.DotNext.IO.IAsyncBinaryReader.ReadInt32Async
+- uid: DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadInt64Async(System.Boolean,System.Threading.CancellationToken)
+  name: IAsyncBinaryReader.ReadInt64Async(Boolean, CancellationToken)
+  href: api/DotNext.IO.SequenceBinaryReader.html#DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadInt64Async_System_Boolean_System_Threading_CancellationToken_
+  commentId: M:DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadInt64Async(System.Boolean,System.Threading.CancellationToken)
+  name.vb: DotNext.IO.IAsyncBinaryReader.ReadInt64Async(Boolean, CancellationToken)
+  fullName: DotNext.IO.SequenceBinaryReader.DotNext.IO.IAsyncBinaryReader.ReadInt64Async(System.Boolean, System.Threading.CancellationToken)
+  nameWithType: SequenceBinaryReader.IAsyncBinaryReader.ReadInt64Async(Boolean, CancellationToken)
+  nameWithType.vb: SequenceBinaryReader.DotNext.IO.IAsyncBinaryReader.ReadInt64Async(Boolean, CancellationToken)
+- uid: DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadInt64Async*
+  name: IAsyncBinaryReader.ReadInt64Async
+  href: api/DotNext.IO.SequenceBinaryReader.html#DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadInt64Async_
+  commentId: Overload:DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadInt64Async
+  isSpec: "True"
+  name.vb: DotNext.IO.IAsyncBinaryReader.ReadInt64Async
+  fullName: DotNext.IO.SequenceBinaryReader.DotNext.IO.IAsyncBinaryReader.ReadInt64Async
+  nameWithType: SequenceBinaryReader.IAsyncBinaryReader.ReadInt64Async
+  nameWithType.vb: SequenceBinaryReader.DotNext.IO.IAsyncBinaryReader.ReadInt64Async
 - uid: DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadStringAsync(DotNext.IO.StringLengthEncoding,DotNext.Text.DecodingContext,System.Threading.CancellationToken)
   name: IAsyncBinaryReader.ReadStringAsync(StringLengthEncoding, DecodingContext, CancellationToken)
   href: api/DotNext.IO.SequenceBinaryReader.html#DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadStringAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Threading_CancellationToken_
@@ -8568,6 +9421,45 @@ references:
   fullName.vb: DotNext.IO.SequenceBinaryReader.Read(Of T)()
   nameWithType: SequenceBinaryReader.Read<T>()
   nameWithType.vb: SequenceBinaryReader.Read(Of T)()
+- uid: DotNext.IO.SequenceBinaryReader.ReadInt16(System.Boolean)
+  name: ReadInt16(Boolean)
+  href: api/DotNext.IO.SequenceBinaryReader.html#DotNext_IO_SequenceBinaryReader_ReadInt16_System_Boolean_
+  commentId: M:DotNext.IO.SequenceBinaryReader.ReadInt16(System.Boolean)
+  fullName: DotNext.IO.SequenceBinaryReader.ReadInt16(System.Boolean)
+  nameWithType: SequenceBinaryReader.ReadInt16(Boolean)
+- uid: DotNext.IO.SequenceBinaryReader.ReadInt16*
+  name: ReadInt16
+  href: api/DotNext.IO.SequenceBinaryReader.html#DotNext_IO_SequenceBinaryReader_ReadInt16_
+  commentId: Overload:DotNext.IO.SequenceBinaryReader.ReadInt16
+  isSpec: "True"
+  fullName: DotNext.IO.SequenceBinaryReader.ReadInt16
+  nameWithType: SequenceBinaryReader.ReadInt16
+- uid: DotNext.IO.SequenceBinaryReader.ReadInt32(System.Boolean)
+  name: ReadInt32(Boolean)
+  href: api/DotNext.IO.SequenceBinaryReader.html#DotNext_IO_SequenceBinaryReader_ReadInt32_System_Boolean_
+  commentId: M:DotNext.IO.SequenceBinaryReader.ReadInt32(System.Boolean)
+  fullName: DotNext.IO.SequenceBinaryReader.ReadInt32(System.Boolean)
+  nameWithType: SequenceBinaryReader.ReadInt32(Boolean)
+- uid: DotNext.IO.SequenceBinaryReader.ReadInt32*
+  name: ReadInt32
+  href: api/DotNext.IO.SequenceBinaryReader.html#DotNext_IO_SequenceBinaryReader_ReadInt32_
+  commentId: Overload:DotNext.IO.SequenceBinaryReader.ReadInt32
+  isSpec: "True"
+  fullName: DotNext.IO.SequenceBinaryReader.ReadInt32
+  nameWithType: SequenceBinaryReader.ReadInt32
+- uid: DotNext.IO.SequenceBinaryReader.ReadInt64(System.Boolean)
+  name: ReadInt64(Boolean)
+  href: api/DotNext.IO.SequenceBinaryReader.html#DotNext_IO_SequenceBinaryReader_ReadInt64_System_Boolean_
+  commentId: M:DotNext.IO.SequenceBinaryReader.ReadInt64(System.Boolean)
+  fullName: DotNext.IO.SequenceBinaryReader.ReadInt64(System.Boolean)
+  nameWithType: SequenceBinaryReader.ReadInt64(Boolean)
+- uid: DotNext.IO.SequenceBinaryReader.ReadInt64*
+  name: ReadInt64
+  href: api/DotNext.IO.SequenceBinaryReader.html#DotNext_IO_SequenceBinaryReader_ReadInt64_
+  commentId: Overload:DotNext.IO.SequenceBinaryReader.ReadInt64
+  isSpec: "True"
+  fullName: DotNext.IO.SequenceBinaryReader.ReadInt64
+  nameWithType: SequenceBinaryReader.ReadInt64
 - uid: DotNext.IO.SequenceBinaryReader.ReadString(DotNext.IO.StringLengthEncoding,DotNext.Text.DecodingContext@)
   name: ReadString(StringLengthEncoding, DecodingContext)
   href: api/DotNext.IO.SequenceBinaryReader.html#DotNext_IO_SequenceBinaryReader_ReadString_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext__
@@ -8593,6 +9485,45 @@ references:
   isSpec: "True"
   fullName: DotNext.IO.SequenceBinaryReader.ReadString
   nameWithType: SequenceBinaryReader.ReadString
+- uid: DotNext.IO.SequenceBinaryReader.ReadUInt16(System.Boolean)
+  name: ReadUInt16(Boolean)
+  href: api/DotNext.IO.SequenceBinaryReader.html#DotNext_IO_SequenceBinaryReader_ReadUInt16_System_Boolean_
+  commentId: M:DotNext.IO.SequenceBinaryReader.ReadUInt16(System.Boolean)
+  fullName: DotNext.IO.SequenceBinaryReader.ReadUInt16(System.Boolean)
+  nameWithType: SequenceBinaryReader.ReadUInt16(Boolean)
+- uid: DotNext.IO.SequenceBinaryReader.ReadUInt16*
+  name: ReadUInt16
+  href: api/DotNext.IO.SequenceBinaryReader.html#DotNext_IO_SequenceBinaryReader_ReadUInt16_
+  commentId: Overload:DotNext.IO.SequenceBinaryReader.ReadUInt16
+  isSpec: "True"
+  fullName: DotNext.IO.SequenceBinaryReader.ReadUInt16
+  nameWithType: SequenceBinaryReader.ReadUInt16
+- uid: DotNext.IO.SequenceBinaryReader.ReadUInt32(System.Boolean)
+  name: ReadUInt32(Boolean)
+  href: api/DotNext.IO.SequenceBinaryReader.html#DotNext_IO_SequenceBinaryReader_ReadUInt32_System_Boolean_
+  commentId: M:DotNext.IO.SequenceBinaryReader.ReadUInt32(System.Boolean)
+  fullName: DotNext.IO.SequenceBinaryReader.ReadUInt32(System.Boolean)
+  nameWithType: SequenceBinaryReader.ReadUInt32(Boolean)
+- uid: DotNext.IO.SequenceBinaryReader.ReadUInt32*
+  name: ReadUInt32
+  href: api/DotNext.IO.SequenceBinaryReader.html#DotNext_IO_SequenceBinaryReader_ReadUInt32_
+  commentId: Overload:DotNext.IO.SequenceBinaryReader.ReadUInt32
+  isSpec: "True"
+  fullName: DotNext.IO.SequenceBinaryReader.ReadUInt32
+  nameWithType: SequenceBinaryReader.ReadUInt32
+- uid: DotNext.IO.SequenceBinaryReader.ReadUInt64(System.Boolean)
+  name: ReadUInt64(Boolean)
+  href: api/DotNext.IO.SequenceBinaryReader.html#DotNext_IO_SequenceBinaryReader_ReadUInt64_System_Boolean_
+  commentId: M:DotNext.IO.SequenceBinaryReader.ReadUInt64(System.Boolean)
+  fullName: DotNext.IO.SequenceBinaryReader.ReadUInt64(System.Boolean)
+  nameWithType: SequenceBinaryReader.ReadUInt64(Boolean)
+- uid: DotNext.IO.SequenceBinaryReader.ReadUInt64*
+  name: ReadUInt64
+  href: api/DotNext.IO.SequenceBinaryReader.html#DotNext_IO_SequenceBinaryReader_ReadUInt64_
+  commentId: Overload:DotNext.IO.SequenceBinaryReader.ReadUInt64
+  isSpec: "True"
+  fullName: DotNext.IO.SequenceBinaryReader.ReadUInt64
+  nameWithType: SequenceBinaryReader.ReadUInt64
 - uid: DotNext.IO.SequenceBinaryReader.Reset
   name: Reset()
   href: api/DotNext.IO.SequenceBinaryReader.html#DotNext_IO_SequenceBinaryReader_Reset
@@ -8857,6 +9788,15 @@ references:
   isSpec: "True"
   fullName: DotNext.IO.StreamExtensions.ReadStringAsync
   nameWithType: StreamExtensions.ReadStringAsync
+- uid: DotNext.IO.StreamExtensions.Write(System.IO.Stream,System.Buffers.ReadOnlySequence{System.Byte}@,System.Threading.CancellationToken)
+  name: Write(Stream, ReadOnlySequence<Byte>, CancellationToken)
+  href: api/DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_Write_System_IO_Stream_System_Buffers_ReadOnlySequence_System_Byte___System_Threading_CancellationToken_
+  commentId: M:DotNext.IO.StreamExtensions.Write(System.IO.Stream,System.Buffers.ReadOnlySequence{System.Byte}@,System.Threading.CancellationToken)
+  name.vb: Write(Stream, ByRef ReadOnlySequence(Of Byte), CancellationToken)
+  fullName: DotNext.IO.StreamExtensions.Write(System.IO.Stream, System.Buffers.ReadOnlySequence<System.Byte>, System.Threading.CancellationToken)
+  fullName.vb: DotNext.IO.StreamExtensions.Write(System.IO.Stream, ByRef System.Buffers.ReadOnlySequence(Of System.Byte), System.Threading.CancellationToken)
+  nameWithType: StreamExtensions.Write(Stream, ReadOnlySequence<Byte>, CancellationToken)
+  nameWithType.vb: StreamExtensions.Write(Stream, ByRef ReadOnlySequence(Of Byte), CancellationToken)
 - uid: DotNext.IO.StreamExtensions.Write*
   name: Write
   href: api/DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_Write_
@@ -8873,6 +9813,15 @@ references:
   fullName.vb: DotNext.IO.StreamExtensions.Write(Of T)(System.IO.Stream, ByRef T)
   nameWithType: StreamExtensions.Write<T>(Stream, T)
   nameWithType.vb: StreamExtensions.Write(Of T)(Stream, ByRef T)
+- uid: DotNext.IO.StreamExtensions.WriteAsync(System.IO.Stream,System.Buffers.ReadOnlySequence{System.Byte},System.Threading.CancellationToken)
+  name: WriteAsync(Stream, ReadOnlySequence<Byte>, CancellationToken)
+  href: api/DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteAsync_System_IO_Stream_System_Buffers_ReadOnlySequence_System_Byte__System_Threading_CancellationToken_
+  commentId: M:DotNext.IO.StreamExtensions.WriteAsync(System.IO.Stream,System.Buffers.ReadOnlySequence{System.Byte},System.Threading.CancellationToken)
+  name.vb: WriteAsync(Stream, ReadOnlySequence(Of Byte), CancellationToken)
+  fullName: DotNext.IO.StreamExtensions.WriteAsync(System.IO.Stream, System.Buffers.ReadOnlySequence<System.Byte>, System.Threading.CancellationToken)
+  fullName.vb: DotNext.IO.StreamExtensions.WriteAsync(System.IO.Stream, System.Buffers.ReadOnlySequence(Of System.Byte), System.Threading.CancellationToken)
+  nameWithType: StreamExtensions.WriteAsync(Stream, ReadOnlySequence<Byte>, CancellationToken)
+  nameWithType.vb: StreamExtensions.WriteAsync(Stream, ReadOnlySequence(Of Byte), CancellationToken)
 - uid: DotNext.IO.StreamExtensions.WriteAsync*
   name: WriteAsync
   href: api/DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteAsync_
@@ -9567,6 +10516,28 @@ references:
   commentId: F:DotNext.IO.StringLengthEncoding.PlainLittleEndian
   fullName: DotNext.IO.StringLengthEncoding.PlainLittleEndian
   nameWithType: StringLengthEncoding.PlainLittleEndian
+- uid: DotNext.IO.TextWriterExtensions
+  name: TextWriterExtensions
+  href: api/DotNext.IO.TextWriterExtensions.html
+  commentId: T:DotNext.IO.TextWriterExtensions
+  fullName: DotNext.IO.TextWriterExtensions
+  nameWithType: TextWriterExtensions
+- uid: DotNext.IO.TextWriterExtensions.WriteAsync(System.IO.TextWriter,System.Buffers.ReadOnlySequence{System.Char},System.Threading.CancellationToken)
+  name: WriteAsync(TextWriter, ReadOnlySequence<Char>, CancellationToken)
+  href: api/DotNext.IO.TextWriterExtensions.html#DotNext_IO_TextWriterExtensions_WriteAsync_System_IO_TextWriter_System_Buffers_ReadOnlySequence_System_Char__System_Threading_CancellationToken_
+  commentId: M:DotNext.IO.TextWriterExtensions.WriteAsync(System.IO.TextWriter,System.Buffers.ReadOnlySequence{System.Char},System.Threading.CancellationToken)
+  name.vb: WriteAsync(TextWriter, ReadOnlySequence(Of Char), CancellationToken)
+  fullName: DotNext.IO.TextWriterExtensions.WriteAsync(System.IO.TextWriter, System.Buffers.ReadOnlySequence<System.Char>, System.Threading.CancellationToken)
+  fullName.vb: DotNext.IO.TextWriterExtensions.WriteAsync(System.IO.TextWriter, System.Buffers.ReadOnlySequence(Of System.Char), System.Threading.CancellationToken)
+  nameWithType: TextWriterExtensions.WriteAsync(TextWriter, ReadOnlySequence<Char>, CancellationToken)
+  nameWithType.vb: TextWriterExtensions.WriteAsync(TextWriter, ReadOnlySequence(Of Char), CancellationToken)
+- uid: DotNext.IO.TextWriterExtensions.WriteAsync*
+  name: WriteAsync
+  href: api/DotNext.IO.TextWriterExtensions.html#DotNext_IO_TextWriterExtensions_WriteAsync_
+  commentId: Overload:DotNext.IO.TextWriterExtensions.WriteAsync
+  isSpec: "True"
+  fullName: DotNext.IO.TextWriterExtensions.WriteAsync
+  nameWithType: TextWriterExtensions.WriteAsync
 - uid: DotNext.Linq.Expressions
   name: DotNext.Linq.Expressions
   href: api/DotNext.Linq.Expressions.html
@@ -10640,6 +11611,31 @@ references:
   isSpec: "True"
   fullName: DotNext.Linq.Expressions.ExpressionBuilder.NotEqual
   nameWithType: ExpressionBuilder.NotEqual
+- uid: DotNext.Linq.Expressions.ExpressionBuilder.NullCoalescingAssignment(System.Linq.Expressions.IndexExpression,System.Linq.Expressions.Expression)
+  name: NullCoalescingAssignment(IndexExpression, Expression)
+  href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_NullCoalescingAssignment_System_Linq_Expressions_IndexExpression_System_Linq_Expressions_Expression_
+  commentId: M:DotNext.Linq.Expressions.ExpressionBuilder.NullCoalescingAssignment(System.Linq.Expressions.IndexExpression,System.Linq.Expressions.Expression)
+  fullName: DotNext.Linq.Expressions.ExpressionBuilder.NullCoalescingAssignment(System.Linq.Expressions.IndexExpression, System.Linq.Expressions.Expression)
+  nameWithType: ExpressionBuilder.NullCoalescingAssignment(IndexExpression, Expression)
+- uid: DotNext.Linq.Expressions.ExpressionBuilder.NullCoalescingAssignment(System.Linq.Expressions.MemberExpression,System.Linq.Expressions.Expression)
+  name: NullCoalescingAssignment(MemberExpression, Expression)
+  href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_NullCoalescingAssignment_System_Linq_Expressions_MemberExpression_System_Linq_Expressions_Expression_
+  commentId: M:DotNext.Linq.Expressions.ExpressionBuilder.NullCoalescingAssignment(System.Linq.Expressions.MemberExpression,System.Linq.Expressions.Expression)
+  fullName: DotNext.Linq.Expressions.ExpressionBuilder.NullCoalescingAssignment(System.Linq.Expressions.MemberExpression, System.Linq.Expressions.Expression)
+  nameWithType: ExpressionBuilder.NullCoalescingAssignment(MemberExpression, Expression)
+- uid: DotNext.Linq.Expressions.ExpressionBuilder.NullCoalescingAssignment(System.Linq.Expressions.ParameterExpression,System.Linq.Expressions.Expression)
+  name: NullCoalescingAssignment(ParameterExpression, Expression)
+  href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_NullCoalescingAssignment_System_Linq_Expressions_ParameterExpression_System_Linq_Expressions_Expression_
+  commentId: M:DotNext.Linq.Expressions.ExpressionBuilder.NullCoalescingAssignment(System.Linq.Expressions.ParameterExpression,System.Linq.Expressions.Expression)
+  fullName: DotNext.Linq.Expressions.ExpressionBuilder.NullCoalescingAssignment(System.Linq.Expressions.ParameterExpression, System.Linq.Expressions.Expression)
+  nameWithType: ExpressionBuilder.NullCoalescingAssignment(ParameterExpression, Expression)
+- uid: DotNext.Linq.Expressions.ExpressionBuilder.NullCoalescingAssignment*
+  name: NullCoalescingAssignment
+  href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_NullCoalescingAssignment_
+  commentId: Overload:DotNext.Linq.Expressions.ExpressionBuilder.NullCoalescingAssignment
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.ExpressionBuilder.NullCoalescingAssignment
+  nameWithType: ExpressionBuilder.NullCoalescingAssignment
 - uid: DotNext.Linq.Expressions.ExpressionBuilder.OnesComplement(System.Linq.Expressions.Expression)
   name: OnesComplement(Expression)
   href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_OnesComplement_System_Linq_Expressions_Expression_
@@ -11805,6 +12801,128 @@ references:
   isSpec: "True"
   fullName: DotNext.Linq.Expressions.LockExpression.Update
   nameWithType: LockExpression.Update
+- uid: DotNext.Linq.Expressions.NullCoalescingAssignmentExpression
+  name: NullCoalescingAssignmentExpression
+  href: api/DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.html
+  commentId: T:DotNext.Linq.Expressions.NullCoalescingAssignmentExpression
+  fullName: DotNext.Linq.Expressions.NullCoalescingAssignmentExpression
+  nameWithType: NullCoalescingAssignmentExpression
+- uid: DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.#ctor(System.Linq.Expressions.IndexExpression,System.Linq.Expressions.Expression)
+  name: NullCoalescingAssignmentExpression(IndexExpression, Expression)
+  href: api/DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.html#DotNext_Linq_Expressions_NullCoalescingAssignmentExpression__ctor_System_Linq_Expressions_IndexExpression_System_Linq_Expressions_Expression_
+  commentId: M:DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.#ctor(System.Linq.Expressions.IndexExpression,System.Linq.Expressions.Expression)
+  fullName: DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.NullCoalescingAssignmentExpression(System.Linq.Expressions.IndexExpression, System.Linq.Expressions.Expression)
+  nameWithType: NullCoalescingAssignmentExpression.NullCoalescingAssignmentExpression(IndexExpression, Expression)
+- uid: DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.#ctor(System.Linq.Expressions.MemberExpression,System.Linq.Expressions.Expression)
+  name: NullCoalescingAssignmentExpression(MemberExpression, Expression)
+  href: api/DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.html#DotNext_Linq_Expressions_NullCoalescingAssignmentExpression__ctor_System_Linq_Expressions_MemberExpression_System_Linq_Expressions_Expression_
+  commentId: M:DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.#ctor(System.Linq.Expressions.MemberExpression,System.Linq.Expressions.Expression)
+  fullName: DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.NullCoalescingAssignmentExpression(System.Linq.Expressions.MemberExpression, System.Linq.Expressions.Expression)
+  nameWithType: NullCoalescingAssignmentExpression.NullCoalescingAssignmentExpression(MemberExpression, Expression)
+- uid: DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.#ctor(System.Linq.Expressions.ParameterExpression,System.Linq.Expressions.Expression)
+  name: NullCoalescingAssignmentExpression(ParameterExpression, Expression)
+  href: api/DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.html#DotNext_Linq_Expressions_NullCoalescingAssignmentExpression__ctor_System_Linq_Expressions_ParameterExpression_System_Linq_Expressions_Expression_
+  commentId: M:DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.#ctor(System.Linq.Expressions.ParameterExpression,System.Linq.Expressions.Expression)
+  fullName: DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.NullCoalescingAssignmentExpression(System.Linq.Expressions.ParameterExpression, System.Linq.Expressions.Expression)
+  nameWithType: NullCoalescingAssignmentExpression.NullCoalescingAssignmentExpression(ParameterExpression, Expression)
+- uid: DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.#ctor*
+  name: NullCoalescingAssignmentExpression
+  href: api/DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.html#DotNext_Linq_Expressions_NullCoalescingAssignmentExpression__ctor_
+  commentId: Overload:DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.#ctor
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.NullCoalescingAssignmentExpression
+  nameWithType: NullCoalescingAssignmentExpression.NullCoalescingAssignmentExpression
+- uid: DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.CanReduce
+  name: CanReduce
+  href: api/DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.html#DotNext_Linq_Expressions_NullCoalescingAssignmentExpression_CanReduce
+  commentId: P:DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.CanReduce
+  fullName: DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.CanReduce
+  nameWithType: NullCoalescingAssignmentExpression.CanReduce
+- uid: DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.CanReduce*
+  name: CanReduce
+  href: api/DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.html#DotNext_Linq_Expressions_NullCoalescingAssignmentExpression_CanReduce_
+  commentId: Overload:DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.CanReduce
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.CanReduce
+  nameWithType: NullCoalescingAssignmentExpression.CanReduce
+- uid: DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.Left
+  name: Left
+  href: api/DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.html#DotNext_Linq_Expressions_NullCoalescingAssignmentExpression_Left
+  commentId: P:DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.Left
+  fullName: DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.Left
+  nameWithType: NullCoalescingAssignmentExpression.Left
+- uid: DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.Left*
+  name: Left
+  href: api/DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.html#DotNext_Linq_Expressions_NullCoalescingAssignmentExpression_Left_
+  commentId: Overload:DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.Left
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.Left
+  nameWithType: NullCoalescingAssignmentExpression.Left
+- uid: DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.NodeType
+  name: NodeType
+  href: api/DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.html#DotNext_Linq_Expressions_NullCoalescingAssignmentExpression_NodeType
+  commentId: P:DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.NodeType
+  fullName: DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.NodeType
+  nameWithType: NullCoalescingAssignmentExpression.NodeType
+- uid: DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.NodeType*
+  name: NodeType
+  href: api/DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.html#DotNext_Linq_Expressions_NullCoalescingAssignmentExpression_NodeType_
+  commentId: Overload:DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.NodeType
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.NodeType
+  nameWithType: NullCoalescingAssignmentExpression.NodeType
+- uid: DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.Reduce
+  name: Reduce()
+  href: api/DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.html#DotNext_Linq_Expressions_NullCoalescingAssignmentExpression_Reduce
+  commentId: M:DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.Reduce
+  fullName: DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.Reduce()
+  nameWithType: NullCoalescingAssignmentExpression.Reduce()
+- uid: DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.Reduce*
+  name: Reduce
+  href: api/DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.html#DotNext_Linq_Expressions_NullCoalescingAssignmentExpression_Reduce_
+  commentId: Overload:DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.Reduce
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.Reduce
+  nameWithType: NullCoalescingAssignmentExpression.Reduce
+- uid: DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.Right
+  name: Right
+  href: api/DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.html#DotNext_Linq_Expressions_NullCoalescingAssignmentExpression_Right
+  commentId: P:DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.Right
+  fullName: DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.Right
+  nameWithType: NullCoalescingAssignmentExpression.Right
+- uid: DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.Right*
+  name: Right
+  href: api/DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.html#DotNext_Linq_Expressions_NullCoalescingAssignmentExpression_Right_
+  commentId: Overload:DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.Right
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.Right
+  nameWithType: NullCoalescingAssignmentExpression.Right
+- uid: DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.Type
+  name: Type
+  href: api/DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.html#DotNext_Linq_Expressions_NullCoalescingAssignmentExpression_Type
+  commentId: P:DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.Type
+  fullName: DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.Type
+  nameWithType: NullCoalescingAssignmentExpression.Type
+- uid: DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.Type*
+  name: Type
+  href: api/DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.html#DotNext_Linq_Expressions_NullCoalescingAssignmentExpression_Type_
+  commentId: Overload:DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.Type
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.Type
+  nameWithType: NullCoalescingAssignmentExpression.Type
+- uid: DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.VisitChildren(System.Linq.Expressions.ExpressionVisitor)
+  name: VisitChildren(ExpressionVisitor)
+  href: api/DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.html#DotNext_Linq_Expressions_NullCoalescingAssignmentExpression_VisitChildren_System_Linq_Expressions_ExpressionVisitor_
+  commentId: M:DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.VisitChildren(System.Linq.Expressions.ExpressionVisitor)
+  fullName: DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.VisitChildren(System.Linq.Expressions.ExpressionVisitor)
+  nameWithType: NullCoalescingAssignmentExpression.VisitChildren(ExpressionVisitor)
+- uid: DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.VisitChildren*
+  name: VisitChildren
+  href: api/DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.html#DotNext_Linq_Expressions_NullCoalescingAssignmentExpression_VisitChildren_
+  commentId: Overload:DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.VisitChildren
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.NullCoalescingAssignmentExpression.VisitChildren
+  nameWithType: NullCoalescingAssignmentExpression.VisitChildren
 - uid: DotNext.Linq.Expressions.NullSafetyExpression
   name: NullSafetyExpression
   href: api/DotNext.Linq.Expressions.NullSafetyExpression.html
@@ -14600,6 +15718,31 @@ references:
   isSpec: "True"
   fullName: DotNext.Metaprogramming.CodeGenerator.Nop
   nameWithType: CodeGenerator.Nop
+- uid: DotNext.Metaprogramming.CodeGenerator.NullCoalescingAssignment(System.Linq.Expressions.IndexExpression,System.Linq.Expressions.Expression)
+  name: NullCoalescingAssignment(IndexExpression, Expression)
+  href: api/DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_NullCoalescingAssignment_System_Linq_Expressions_IndexExpression_System_Linq_Expressions_Expression_
+  commentId: M:DotNext.Metaprogramming.CodeGenerator.NullCoalescingAssignment(System.Linq.Expressions.IndexExpression,System.Linq.Expressions.Expression)
+  fullName: DotNext.Metaprogramming.CodeGenerator.NullCoalescingAssignment(System.Linq.Expressions.IndexExpression, System.Linq.Expressions.Expression)
+  nameWithType: CodeGenerator.NullCoalescingAssignment(IndexExpression, Expression)
+- uid: DotNext.Metaprogramming.CodeGenerator.NullCoalescingAssignment(System.Linq.Expressions.MemberExpression,System.Linq.Expressions.Expression)
+  name: NullCoalescingAssignment(MemberExpression, Expression)
+  href: api/DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_NullCoalescingAssignment_System_Linq_Expressions_MemberExpression_System_Linq_Expressions_Expression_
+  commentId: M:DotNext.Metaprogramming.CodeGenerator.NullCoalescingAssignment(System.Linq.Expressions.MemberExpression,System.Linq.Expressions.Expression)
+  fullName: DotNext.Metaprogramming.CodeGenerator.NullCoalescingAssignment(System.Linq.Expressions.MemberExpression, System.Linq.Expressions.Expression)
+  nameWithType: CodeGenerator.NullCoalescingAssignment(MemberExpression, Expression)
+- uid: DotNext.Metaprogramming.CodeGenerator.NullCoalescingAssignment(System.Linq.Expressions.ParameterExpression,System.Linq.Expressions.Expression)
+  name: NullCoalescingAssignment(ParameterExpression, Expression)
+  href: api/DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_NullCoalescingAssignment_System_Linq_Expressions_ParameterExpression_System_Linq_Expressions_Expression_
+  commentId: M:DotNext.Metaprogramming.CodeGenerator.NullCoalescingAssignment(System.Linq.Expressions.ParameterExpression,System.Linq.Expressions.Expression)
+  fullName: DotNext.Metaprogramming.CodeGenerator.NullCoalescingAssignment(System.Linq.Expressions.ParameterExpression, System.Linq.Expressions.Expression)
+  nameWithType: CodeGenerator.NullCoalescingAssignment(ParameterExpression, Expression)
+- uid: DotNext.Metaprogramming.CodeGenerator.NullCoalescingAssignment*
+  name: NullCoalescingAssignment
+  href: api/DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_NullCoalescingAssignment_
+  commentId: Overload:DotNext.Metaprogramming.CodeGenerator.NullCoalescingAssignment
+  isSpec: "True"
+  fullName: DotNext.Metaprogramming.CodeGenerator.NullCoalescingAssignment
+  nameWithType: CodeGenerator.NullCoalescingAssignment
 - uid: DotNext.Metaprogramming.CodeGenerator.NullSafeCall(System.Linq.Expressions.Expression,System.Reflection.MethodInfo,System.Collections.Generic.IEnumerable{System.Linq.Expressions.Expression})
   name: NullSafeCall(Expression, MethodInfo, IEnumerable<Expression>)
   href: api/DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_NullSafeCall_System_Linq_Expressions_Expression_System_Reflection_MethodInfo_System_Collections_Generic_IEnumerable_System_Linq_Expressions_Expression__
@@ -20219,6 +21362,22 @@ references:
   commentId: T:DotNext.ObjectExtensions
   fullName: DotNext.ObjectExtensions
   nameWithType: ObjectExtensions
+- uid: DotNext.ObjectExtensions.As*
+  name: As
+  href: api/DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_As_
+  commentId: Overload:DotNext.ObjectExtensions.As
+  isSpec: "True"
+  fullName: DotNext.ObjectExtensions.As
+  nameWithType: ObjectExtensions.As
+- uid: DotNext.ObjectExtensions.As``1(``0)
+  name: As<T>(T)
+  href: api/DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_As__1___0_
+  commentId: M:DotNext.ObjectExtensions.As``1(``0)
+  name.vb: As(Of T)(T)
+  fullName: DotNext.ObjectExtensions.As<T>(T)
+  fullName.vb: DotNext.ObjectExtensions.As(Of T)(T)
+  nameWithType: ObjectExtensions.As<T>(T)
+  nameWithType.vb: ObjectExtensions.As(Of T)(T)
 - uid: DotNext.ObjectExtensions.Decompose*
   name: Decompose
   href: api/DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose_
@@ -35396,6 +36555,22 @@ references:
   fullName.vb: DotNext.Sequence.SkipNulls(Of T)(System.Collections.Generic.IEnumerable(Of T))
   nameWithType: Sequence.SkipNulls<T>(IEnumerable<T>)
   nameWithType.vb: Sequence.SkipNulls(Of T)(IEnumerable(Of T))
+- uid: DotNext.Sequence.ToEnumerator*
+  name: ToEnumerator
+  href: api/DotNext.Sequence.html#DotNext_Sequence_ToEnumerator_
+  commentId: Overload:DotNext.Sequence.ToEnumerator
+  isSpec: "True"
+  fullName: DotNext.Sequence.ToEnumerator
+  nameWithType: Sequence.ToEnumerator
+- uid: DotNext.Sequence.ToEnumerator``1(System.ReadOnlyMemory{``0})
+  name: ToEnumerator<T>(ReadOnlyMemory<T>)
+  href: api/DotNext.Sequence.html#DotNext_Sequence_ToEnumerator__1_System_ReadOnlyMemory___0__
+  commentId: M:DotNext.Sequence.ToEnumerator``1(System.ReadOnlyMemory{``0})
+  name.vb: ToEnumerator(Of T)(ReadOnlyMemory(Of T))
+  fullName: DotNext.Sequence.ToEnumerator<T>(System.ReadOnlyMemory<T>)
+  fullName.vb: DotNext.Sequence.ToEnumerator(Of T)(System.ReadOnlyMemory(Of T))
+  nameWithType: Sequence.ToEnumerator<T>(ReadOnlyMemory<T>)
+  nameWithType.vb: Sequence.ToEnumerator(Of T)(ReadOnlyMemory(Of T))
 - uid: DotNext.Sequence.ToString*
   name: ToString
   href: api/DotNext.Sequence.html#DotNext_Sequence_ToString_
@@ -36752,6 +37927,49 @@ references:
   commentId: T:DotNext.Threading.AsyncDelegate
   fullName: DotNext.Threading.AsyncDelegate
   nameWithType: AsyncDelegate
+- uid: DotNext.Threading.AsyncDelegate.BeginInvoke(System.Action{System.Object,System.Threading.CancellationToken},System.Object,System.AsyncCallback,System.Threading.Tasks.TaskCreationOptions,System.Threading.Tasks.TaskScheduler,System.Threading.CancellationToken)
+  name: BeginInvoke(Action<Object, CancellationToken>, Object, AsyncCallback, TaskCreationOptions, TaskScheduler, CancellationToken)
+  href: api/DotNext.Threading.AsyncDelegate.html#DotNext_Threading_AsyncDelegate_BeginInvoke_System_Action_System_Object_System_Threading_CancellationToken__System_Object_System_AsyncCallback_System_Threading_Tasks_TaskCreationOptions_System_Threading_Tasks_TaskScheduler_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncDelegate.BeginInvoke(System.Action{System.Object,System.Threading.CancellationToken},System.Object,System.AsyncCallback,System.Threading.Tasks.TaskCreationOptions,System.Threading.Tasks.TaskScheduler,System.Threading.CancellationToken)
+  name.vb: BeginInvoke(Action(Of Object, CancellationToken), Object, AsyncCallback, TaskCreationOptions, TaskScheduler, CancellationToken)
+  fullName: DotNext.Threading.AsyncDelegate.BeginInvoke(System.Action<System.Object, System.Threading.CancellationToken>, System.Object, System.AsyncCallback, System.Threading.Tasks.TaskCreationOptions, System.Threading.Tasks.TaskScheduler, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.AsyncDelegate.BeginInvoke(System.Action(Of System.Object, System.Threading.CancellationToken), System.Object, System.AsyncCallback, System.Threading.Tasks.TaskCreationOptions, System.Threading.Tasks.TaskScheduler, System.Threading.CancellationToken)
+  nameWithType: AsyncDelegate.BeginInvoke(Action<Object, CancellationToken>, Object, AsyncCallback, TaskCreationOptions, TaskScheduler, CancellationToken)
+  nameWithType.vb: AsyncDelegate.BeginInvoke(Action(Of Object, CancellationToken), Object, AsyncCallback, TaskCreationOptions, TaskScheduler, CancellationToken)
+- uid: DotNext.Threading.AsyncDelegate.BeginInvoke(System.Action{System.Object},System.Object,System.AsyncCallback,System.Threading.Tasks.TaskCreationOptions,System.Threading.Tasks.TaskScheduler)
+  name: BeginInvoke(Action<Object>, Object, AsyncCallback, TaskCreationOptions, TaskScheduler)
+  href: api/DotNext.Threading.AsyncDelegate.html#DotNext_Threading_AsyncDelegate_BeginInvoke_System_Action_System_Object__System_Object_System_AsyncCallback_System_Threading_Tasks_TaskCreationOptions_System_Threading_Tasks_TaskScheduler_
+  commentId: M:DotNext.Threading.AsyncDelegate.BeginInvoke(System.Action{System.Object},System.Object,System.AsyncCallback,System.Threading.Tasks.TaskCreationOptions,System.Threading.Tasks.TaskScheduler)
+  name.vb: BeginInvoke(Action(Of Object), Object, AsyncCallback, TaskCreationOptions, TaskScheduler)
+  fullName: DotNext.Threading.AsyncDelegate.BeginInvoke(System.Action<System.Object>, System.Object, System.AsyncCallback, System.Threading.Tasks.TaskCreationOptions, System.Threading.Tasks.TaskScheduler)
+  fullName.vb: DotNext.Threading.AsyncDelegate.BeginInvoke(System.Action(Of System.Object), System.Object, System.AsyncCallback, System.Threading.Tasks.TaskCreationOptions, System.Threading.Tasks.TaskScheduler)
+  nameWithType: AsyncDelegate.BeginInvoke(Action<Object>, Object, AsyncCallback, TaskCreationOptions, TaskScheduler)
+  nameWithType.vb: AsyncDelegate.BeginInvoke(Action(Of Object), Object, AsyncCallback, TaskCreationOptions, TaskScheduler)
+- uid: DotNext.Threading.AsyncDelegate.BeginInvoke*
+  name: BeginInvoke
+  href: api/DotNext.Threading.AsyncDelegate.html#DotNext_Threading_AsyncDelegate_BeginInvoke_
+  commentId: Overload:DotNext.Threading.AsyncDelegate.BeginInvoke
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncDelegate.BeginInvoke
+  nameWithType: AsyncDelegate.BeginInvoke
+- uid: DotNext.Threading.AsyncDelegate.BeginInvoke``1(System.Func{System.Object,``0},System.Object,System.AsyncCallback,System.Threading.Tasks.TaskCreationOptions,System.Threading.Tasks.TaskScheduler)
+  name: BeginInvoke<TResult>(Func<Object, TResult>, Object, AsyncCallback, TaskCreationOptions, TaskScheduler)
+  href: api/DotNext.Threading.AsyncDelegate.html#DotNext_Threading_AsyncDelegate_BeginInvoke__1_System_Func_System_Object___0__System_Object_System_AsyncCallback_System_Threading_Tasks_TaskCreationOptions_System_Threading_Tasks_TaskScheduler_
+  commentId: M:DotNext.Threading.AsyncDelegate.BeginInvoke``1(System.Func{System.Object,``0},System.Object,System.AsyncCallback,System.Threading.Tasks.TaskCreationOptions,System.Threading.Tasks.TaskScheduler)
+  name.vb: BeginInvoke(Of TResult)(Func(Of Object, TResult), Object, AsyncCallback, TaskCreationOptions, TaskScheduler)
+  fullName: DotNext.Threading.AsyncDelegate.BeginInvoke<TResult>(System.Func<System.Object, TResult>, System.Object, System.AsyncCallback, System.Threading.Tasks.TaskCreationOptions, System.Threading.Tasks.TaskScheduler)
+  fullName.vb: DotNext.Threading.AsyncDelegate.BeginInvoke(Of TResult)(System.Func(Of System.Object, TResult), System.Object, System.AsyncCallback, System.Threading.Tasks.TaskCreationOptions, System.Threading.Tasks.TaskScheduler)
+  nameWithType: AsyncDelegate.BeginInvoke<TResult>(Func<Object, TResult>, Object, AsyncCallback, TaskCreationOptions, TaskScheduler)
+  nameWithType.vb: AsyncDelegate.BeginInvoke(Of TResult)(Func(Of Object, TResult), Object, AsyncCallback, TaskCreationOptions, TaskScheduler)
+- uid: DotNext.Threading.AsyncDelegate.BeginInvoke``1(System.Func{System.Object,System.Threading.CancellationToken,``0},System.Object,System.AsyncCallback,System.Threading.Tasks.TaskCreationOptions,System.Threading.Tasks.TaskScheduler,System.Threading.CancellationToken)
+  name: BeginInvoke<TResult>(Func<Object, CancellationToken, TResult>, Object, AsyncCallback, TaskCreationOptions, TaskScheduler, CancellationToken)
+  href: api/DotNext.Threading.AsyncDelegate.html#DotNext_Threading_AsyncDelegate_BeginInvoke__1_System_Func_System_Object_System_Threading_CancellationToken___0__System_Object_System_AsyncCallback_System_Threading_Tasks_TaskCreationOptions_System_Threading_Tasks_TaskScheduler_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncDelegate.BeginInvoke``1(System.Func{System.Object,System.Threading.CancellationToken,``0},System.Object,System.AsyncCallback,System.Threading.Tasks.TaskCreationOptions,System.Threading.Tasks.TaskScheduler,System.Threading.CancellationToken)
+  name.vb: BeginInvoke(Of TResult)(Func(Of Object, CancellationToken, TResult), Object, AsyncCallback, TaskCreationOptions, TaskScheduler, CancellationToken)
+  fullName: DotNext.Threading.AsyncDelegate.BeginInvoke<TResult>(System.Func<System.Object, System.Threading.CancellationToken, TResult>, System.Object, System.AsyncCallback, System.Threading.Tasks.TaskCreationOptions, System.Threading.Tasks.TaskScheduler, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.AsyncDelegate.BeginInvoke(Of TResult)(System.Func(Of System.Object, System.Threading.CancellationToken, TResult), System.Object, System.AsyncCallback, System.Threading.Tasks.TaskCreationOptions, System.Threading.Tasks.TaskScheduler, System.Threading.CancellationToken)
+  nameWithType: AsyncDelegate.BeginInvoke<TResult>(Func<Object, CancellationToken, TResult>, Object, AsyncCallback, TaskCreationOptions, TaskScheduler, CancellationToken)
+  nameWithType.vb: AsyncDelegate.BeginInvoke(Of TResult)(Func(Of Object, CancellationToken, TResult), Object, AsyncCallback, TaskCreationOptions, TaskScheduler, CancellationToken)
 - uid: DotNext.Threading.AsyncDelegate.InvokeAsync(System.Action,System.Threading.CancellationToken)
   name: InvokeAsync(Action, CancellationToken)
   href: api/DotNext.Threading.AsyncDelegate.html#DotNext_Threading_AsyncDelegate_InvokeAsync_System_Action_System_Threading_CancellationToken_
@@ -36935,6 +38153,19 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.AsyncExclusiveLock.AcquireAsync
   nameWithType: AsyncExclusiveLock.AcquireAsync
+- uid: DotNext.Threading.AsyncExclusiveLock.DisposeAsync
+  name: DisposeAsync()
+  href: api/DotNext.Threading.AsyncExclusiveLock.html#DotNext_Threading_AsyncExclusiveLock_DisposeAsync
+  commentId: M:DotNext.Threading.AsyncExclusiveLock.DisposeAsync
+  fullName: DotNext.Threading.AsyncExclusiveLock.DisposeAsync()
+  nameWithType: AsyncExclusiveLock.DisposeAsync()
+- uid: DotNext.Threading.AsyncExclusiveLock.DisposeAsync*
+  name: DisposeAsync
+  href: api/DotNext.Threading.AsyncExclusiveLock.html#DotNext_Threading_AsyncExclusiveLock_DisposeAsync_
+  commentId: Overload:DotNext.Threading.AsyncExclusiveLock.DisposeAsync
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncExclusiveLock.DisposeAsync
+  nameWithType: AsyncExclusiveLock.DisposeAsync
 - uid: DotNext.Threading.AsyncExclusiveLock.IsLockHeld
   name: IsLockHeld
   href: api/DotNext.Threading.AsyncExclusiveLock.html#DotNext_Threading_AsyncExclusiveLock_IsLockHeld
@@ -37194,6 +38425,19 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.AsyncLock.Dispose
   nameWithType: AsyncLock.Dispose
+- uid: DotNext.Threading.AsyncLock.DisposeAsync
+  name: DisposeAsync()
+  href: api/DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_DisposeAsync
+  commentId: M:DotNext.Threading.AsyncLock.DisposeAsync
+  fullName: DotNext.Threading.AsyncLock.DisposeAsync()
+  nameWithType: AsyncLock.DisposeAsync()
+- uid: DotNext.Threading.AsyncLock.DisposeAsync*
+  name: DisposeAsync
+  href: api/DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_DisposeAsync_
+  commentId: Overload:DotNext.Threading.AsyncLock.DisposeAsync
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncLock.DisposeAsync
+  nameWithType: AsyncLock.DisposeAsync
 - uid: DotNext.Threading.AsyncLock.Equals(DotNext.Threading.AsyncLock)
   name: Equals(AsyncLock)
   href: api/DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_Equals_DotNext_Threading_AsyncLock_
@@ -37653,6 +38897,19 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.AsyncReaderWriterLock.CurrentReadCount
   nameWithType: AsyncReaderWriterLock.CurrentReadCount
+- uid: DotNext.Threading.AsyncReaderWriterLock.DisposeAsync
+  name: DisposeAsync()
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_DisposeAsync
+  commentId: M:DotNext.Threading.AsyncReaderWriterLock.DisposeAsync
+  fullName: DotNext.Threading.AsyncReaderWriterLock.DisposeAsync()
+  nameWithType: AsyncReaderWriterLock.DisposeAsync()
+- uid: DotNext.Threading.AsyncReaderWriterLock.DisposeAsync*
+  name: DisposeAsync
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_DisposeAsync_
+  commentId: Overload:DotNext.Threading.AsyncReaderWriterLock.DisposeAsync
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncReaderWriterLock.DisposeAsync
+  nameWithType: AsyncReaderWriterLock.DisposeAsync
 - uid: DotNext.Threading.AsyncReaderWriterLock.EnterReadLockAsync(System.Threading.CancellationToken)
   name: EnterReadLockAsync(CancellationToken)
   href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_EnterReadLockAsync_System_Threading_CancellationToken_
@@ -38040,6 +39297,19 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.AsyncSharedLock.ConcurrencyLevel
   nameWithType: AsyncSharedLock.ConcurrencyLevel
+- uid: DotNext.Threading.AsyncSharedLock.DisposeAsync
+  name: DisposeAsync()
+  href: api/DotNext.Threading.AsyncSharedLock.html#DotNext_Threading_AsyncSharedLock_DisposeAsync
+  commentId: M:DotNext.Threading.AsyncSharedLock.DisposeAsync
+  fullName: DotNext.Threading.AsyncSharedLock.DisposeAsync()
+  nameWithType: AsyncSharedLock.DisposeAsync()
+- uid: DotNext.Threading.AsyncSharedLock.DisposeAsync*
+  name: DisposeAsync
+  href: api/DotNext.Threading.AsyncSharedLock.html#DotNext_Threading_AsyncSharedLock_DisposeAsync_
+  commentId: Overload:DotNext.Threading.AsyncSharedLock.DisposeAsync
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncSharedLock.DisposeAsync
+  nameWithType: AsyncSharedLock.DisposeAsync
 - uid: DotNext.Threading.AsyncSharedLock.Downgrade
   name: Downgrade()
   href: api/DotNext.Threading.AsyncSharedLock.html#DotNext_Threading_AsyncSharedLock_Downgrade

@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class DataTransferObject
    | .NEXT ">
-    <meta name="generator" content="docfx 2.54.0.0">
+    <meta name="generator" content="docfx 2.55.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -128,7 +128,9 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static ValueTask&lt;TResult&gt; GetObjectDataAsync&lt;TResult, TObject&gt;(this TObject dto, CancellationToken token = default(CancellationToken))
+
     where TResult : IDataTransferObject.IDecoder&lt;TResult&gt;, new()
+
     where TObject : IDataTransferObject</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -223,6 +225,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Task&lt;byte[]&gt; ToByteArrayAsync&lt;TObject&gt;(this TObject dto, CancellationToken token = default(CancellationToken))
+
     where TObject : IDataTransferObject</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -312,6 +315,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Task&lt;string&gt; ToStringAsync&lt;TObject&gt;(this TObject dto, Encoding encoding, int capacity, CancellationToken token = default(CancellationToken))
+
     where TObject : IDataTransferObject</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -413,6 +417,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Task&lt;string&gt; ToStringAsync&lt;TObject&gt;(this TObject dto, Encoding encoding, CancellationToken token = default(CancellationToken))
+
     where TObject : IDataTransferObject</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -508,6 +513,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static ValueTask&lt;TResult&gt; ToType&lt;TResult, TObject&gt;(this TObject dto, CancellationToken token = default(CancellationToken))
+
     where TResult : struct where TObject : IDataTransferObject</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -602,6 +608,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static ValueTask WriteToAsync&lt;TObject&gt;(this TObject dto, PipeWriter output, CancellationToken token = default(CancellationToken))
+
     where TObject : IDataTransferObject</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -697,6 +704,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static ValueTask WriteToAsync&lt;TObject&gt;(this TObject dto, Stream output, int bufferSize = 1024, CancellationToken token = default(CancellationToken))
+
     where TObject : IDataTransferObject</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -798,6 +806,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static ValueTask WriteToAsync&lt;TObject&gt;(this TObject dto, Stream output, Memory&lt;byte&gt; buffer, CancellationToken token = default(CancellationToken))
+
     where TObject : IDataTransferObject</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

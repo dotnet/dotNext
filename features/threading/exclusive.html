@@ -8,7 +8,7 @@
     <title>Async Exclusive Lock | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Async Exclusive Lock | .NEXT ">
-    <meta name="generator" content="docfx 2.54.0.0">
+    <meta name="generator" content="docfx 2.55.0.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -93,6 +93,12 @@ using(await @lock.AcquireLockAsync(CancellationToken.None))
 </code></pre>
 <p>This class supports methods to determine whether locks are held or contended. These methods are designed for monitoring system state, not for synchronization control.</p>
 <p>Exclusive lock should be destroyed if no longer needed by calling <code>Dispose</code> method which is not thread-safe.</p>
+<h2 id="graceful-shutdown">Graceful Shutdown</h2>
+<p><code>Dispose</code> method is not thread-safe and may cause unpredictable behavior if called on the lock which was acquired previously. This is happening because the method doesn't wait for the lock to be released. Starting with version <em>2.6.0</em> this type of lock implements <a href="https://docs.microsoft.com/en-us/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a> interface and provides a way for graceful shutdown. <code>DisposeAsync</code> behaves in the following way:</p>
+<ul>
+<li>If lock is not acquired then completes synchronously</li>
+<li>If lock is acquired then suspends the caller and wait when it will be released, then dispose the lock</li>
+</ul>
 </article>
           </div>
           

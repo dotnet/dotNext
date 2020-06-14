@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Interface ILogEntryConsumer&lt;TEntry, TResult&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.54.0.0">
+    <meta name="generator" content="docfx 2.55.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -81,6 +81,7 @@
   <h5 id="DotNext_IO_Log_ILogEntryConsumer_2_syntax">Syntax</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public interface ILogEntryConsumer&lt;in TEntry, TResult&gt;
+
     where TEntry : class, ILogEntry</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
@@ -125,6 +126,7 @@ and avoid memory allocations.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">ValueTask&lt;TResult&gt; ReadAsync&lt;TEntryImpl, TList&gt;(TList entries, long? snapshotIndex, CancellationToken token)
+
     where TEntryImpl : TEntry where TList : IReadOnlyList&lt;TEntryImpl&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -245,6 +247,9 @@ because log entries are valid only during the call of this method.</p>
   </div>
   <div>
       <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2___">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, ValueFunc&lt;T, TResult1&gt;, ValueFunc&lt;T, TResult2&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_As__1___0_">ObjectExtensions.As&lt;T&gt;(T)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_">LockAcquisition.AcquireReadLock&lt;T&gt;(T)</a>

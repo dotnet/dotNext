@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class Optional
    | .NEXT ">
-    <meta name="generator" content="docfx 2.54.0.0">
+    <meta name="generator" content="docfx 2.55.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -661,6 +661,7 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T? OrNull&lt;T&gt;(this in Optional&lt;T&gt; value)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -728,6 +729,7 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Task&lt;T?&gt; OrNull&lt;T&gt;(this Task&lt;Optional&lt;T&gt;&gt; task)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -795,6 +797,7 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Task&lt;T&gt; OrThrow&lt;T, TException&gt;(this Task&lt;Optional&lt;T&gt;&gt; task)
+
     where TException : Exception, new()</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -867,6 +870,7 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Task&lt;T&gt; OrThrow&lt;T, TException&gt;(this Task&lt;Optional&lt;T&gt;&gt; task, Func&lt;TException&gt; exceptionFactory)
+
     where TException : Exception</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -945,6 +949,7 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Optional&lt;T&gt; ToOptional&lt;T&gt;(this in T? value)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

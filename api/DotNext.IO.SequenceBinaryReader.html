@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Struct SequenceBinaryReader
    | .NEXT ">
-    <meta name="generator" content="docfx 2.54.0.0">
+    <meta name="generator" content="docfx 2.55.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -174,6 +174,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public T Read&lt;T&gt;()
+
     where T : struct</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
@@ -226,10 +227,208 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceBinaryReader_ReadInt16_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceBinaryReader.ReadInt16(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceBinaryReader.cs/#L117">View Source</a>
+  </span>
+  <a id="DotNext_IO_SequenceBinaryReader_ReadInt16_" data-uid="DotNext.IO.SequenceBinaryReader.ReadInt16*"></a>
+  <h4 id="DotNext_IO_SequenceBinaryReader_ReadInt16_System_Boolean_" data-uid="DotNext.IO.SequenceBinaryReader.ReadInt16(System.Boolean)">ReadInt16(Boolean)</h4>
+  <div class="markdown level1 summary"><p>Decodes 16-bit signed integer using the specified endianness.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public short ReadInt16(bool littleEndian)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">littleEndian</span></td>
+        <td><p><span class="xref">true</span> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int16">Int16</a></td>
+        <td><p>The decoded value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>The underlying sequence doesn't contain necessary amount of bytes to decode the value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceBinaryReader_ReadInt32_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceBinaryReader.ReadInt32(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceBinaryReader.cs/#L90">View Source</a>
+  </span>
+  <a id="DotNext_IO_SequenceBinaryReader_ReadInt32_" data-uid="DotNext.IO.SequenceBinaryReader.ReadInt32*"></a>
+  <h4 id="DotNext_IO_SequenceBinaryReader_ReadInt32_System_Boolean_" data-uid="DotNext.IO.SequenceBinaryReader.ReadInt32(System.Boolean)">ReadInt32(Boolean)</h4>
+  <div class="markdown level1 summary"><p>Decodes 32-bit signed integer using the specified endianness.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int ReadInt32(bool littleEndian)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">littleEndian</span></td>
+        <td><p><span class="xref">true</span> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>The decoded value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>The underlying sequence doesn't contain necessary amount of bytes to decode the value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceBinaryReader_ReadInt64_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceBinaryReader.ReadInt64(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceBinaryReader.cs/#L63">View Source</a>
+  </span>
+  <a id="DotNext_IO_SequenceBinaryReader_ReadInt64_" data-uid="DotNext.IO.SequenceBinaryReader.ReadInt64*"></a>
+  <h4 id="DotNext_IO_SequenceBinaryReader_ReadInt64_System_Boolean_" data-uid="DotNext.IO.SequenceBinaryReader.ReadInt64(System.Boolean)">ReadInt64(Boolean)</h4>
+  <div class="markdown level1 summary"><p>Decodes 64-bit signed integer using the specified endianness.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public long ReadInt64(bool littleEndian)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">littleEndian</span></td>
+        <td><p><span class="xref">true</span> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><p>The decoded value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>The underlying sequence doesn't contain necessary amount of bytes to decode the value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceBinaryReader_ReadString_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext__.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceBinaryReader.ReadString(DotNext.IO.StringLengthEncoding%2CDotNext.Text.DecodingContext%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceBinaryReader.cs/#L85">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceBinaryReader.cs/#L166">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceBinaryReader_ReadString_" data-uid="DotNext.IO.SequenceBinaryReader.ReadString*"></a>
   <h4 id="DotNext_IO_SequenceBinaryReader_ReadString_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext__" data-uid="DotNext.IO.SequenceBinaryReader.ReadString(DotNext.IO.StringLengthEncoding,DotNext.Text.DecodingContext@)">ReadString(StringLengthEncoding, DecodingContext)</h4>
@@ -301,7 +500,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceBinaryReader_ReadString_System_Int32_DotNext_Text_DecodingContext__.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceBinaryReader.ReadString(System.Int32%2CDotNext.Text.DecodingContext%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceBinaryReader.cs/#L64">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceBinaryReader.cs/#L145">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceBinaryReader_ReadString_" data-uid="DotNext.IO.SequenceBinaryReader.ReadString*"></a>
   <h4 id="DotNext_IO_SequenceBinaryReader_ReadString_System_Int32_DotNext_Text_DecodingContext__" data-uid="DotNext.IO.SequenceBinaryReader.ReadString(System.Int32,DotNext.Text.DecodingContext@)">ReadString(Int32, DecodingContext)</h4>
@@ -370,6 +569,207 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceBinaryReader_ReadUInt16_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceBinaryReader.ReadUInt16(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceBinaryReader.cs/#L130">View Source</a>
+  </span>
+  <a id="DotNext_IO_SequenceBinaryReader_ReadUInt16_" data-uid="DotNext.IO.SequenceBinaryReader.ReadUInt16*"></a>
+  <h4 id="DotNext_IO_SequenceBinaryReader_ReadUInt16_System_Boolean_" data-uid="DotNext.IO.SequenceBinaryReader.ReadUInt16(System.Boolean)">ReadUInt16(Boolean)</h4>
+  <div class="markdown level1 summary"><p>Decodes 16-bit unsigned integer using the specified endianness.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public ushort ReadUInt16(bool littleEndian)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">littleEndian</span></td>
+        <td><p><span class="xref">true</span> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint16">UInt16</a></td>
+        <td><p>The decoded value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>The underlying sequence doesn't contain necessary amount of bytes to decode the value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceBinaryReader_ReadUInt32_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceBinaryReader.ReadUInt32(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceBinaryReader.cs/#L103">View Source</a>
+  </span>
+  <a id="DotNext_IO_SequenceBinaryReader_ReadUInt32_" data-uid="DotNext.IO.SequenceBinaryReader.ReadUInt32*"></a>
+  <h4 id="DotNext_IO_SequenceBinaryReader_ReadUInt32_System_Boolean_" data-uid="DotNext.IO.SequenceBinaryReader.ReadUInt32(System.Boolean)">ReadUInt32(Boolean)</h4>
+  <div class="markdown level1 summary"><p>Decodes 32-bit unsigned integer using the specified endianness.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public uint ReadUInt32(bool littleEndian)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">littleEndian</span></td>
+        <td><p><span class="xref">true</span> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint32">UInt32</a></td>
+        <td><p>The decoded value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>The underlying sequence doesn't contain necessary amount of bytes to decode the value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceBinaryReader_ReadUInt64_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceBinaryReader.ReadUInt64(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceBinaryReader.cs/#L76">View Source</a>
+  </span>
+  <a id="DotNext_IO_SequenceBinaryReader_ReadUInt64_" data-uid="DotNext.IO.SequenceBinaryReader.ReadUInt64*"></a>
+  <h4 id="DotNext_IO_SequenceBinaryReader_ReadUInt64_System_Boolean_" data-uid="DotNext.IO.SequenceBinaryReader.ReadUInt64(System.Boolean)">ReadUInt64(Boolean)</h4>
+  <div class="markdown level1 summary"><p>Decodes 64-bit unsigned integer using the specified endianness.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public ulong ReadUInt64(bool littleEndian)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">littleEndian</span></td>
+        <td><p><span class="xref">true</span> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint64">UInt64</a></td>
+        <td><p>The decoded value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>The underlying sequence doesn't contain necessary amount of bytes to decode the value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceBinaryReader_Reset.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceBinaryReader.Reset%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
@@ -391,12 +791,11 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_System_IO_Pipelines_PipeWriter_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceBinaryReader.DotNext%23IO%23IAsyncBinaryReader%23CopyToAsync(System.IO.Pipelines.PipeWriter%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceBinaryReader.cs/#L146">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceBinaryReader.cs/#L242">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#CopyToAsync*"></a>
   <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_System_IO_Pipelines_PipeWriter_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#CopyToAsync(System.IO.Pipelines.PipeWriter,System.Threading.CancellationToken)">IAsyncBinaryReader.CopyToAsync(PipeWriter, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Copies the content to the specified pipe writer.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -415,86 +814,12 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.pipelines.pipewriter">PipeWriter</a></td>
         <td><span class="parametername">output</span></td>
-        <td><p>The writer.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
-        <td><p>The task representing asynchronous execution of this method.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_System_IO_Stream_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceBinaryReader.DotNext%23IO%23IAsyncBinaryReader%23CopyToAsync(System.IO.Stream%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceBinaryReader.cs/#L139">View Source</a>
-  </span>
-  <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#CopyToAsync*"></a>
-  <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_System_IO_Stream_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#CopyToAsync(System.IO.Stream,System.Threading.CancellationToken)">IAsyncBinaryReader.CopyToAsync(Stream, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Copies the content to the specified stream.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">Task IAsyncBinaryReader.CopyToAsync(Stream output, CancellationToken token)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
-        <td><span class="parametername">output</span></td>
-        <td><p>The output stream receiving object content.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel asynchronous operation.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -513,19 +838,55 @@
       </tr>
     </tbody>
   </table>
-  <h5 class="exceptions">Exceptions</h5>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_System_IO_Stream_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceBinaryReader.DotNext%23IO%23IAsyncBinaryReader%23CopyToAsync(System.IO.Stream%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceBinaryReader.cs/#L238">View Source</a>
+  </span>
+  <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#CopyToAsync*"></a>
+  <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_System_IO_Stream_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#CopyToAsync(System.IO.Stream,System.Threading.CancellationToken)">IAsyncBinaryReader.CopyToAsync(Stream, CancellationToken)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Task IAsyncBinaryReader.CopyToAsync(Stream output, CancellationToken token)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
         <th>Type</th>
-        <th>Condition</th>
+        <th>Name</th>
+        <th>Description</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
+        <td><span class="parametername">output</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -534,12 +895,11 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadAsync_System_Memory_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceBinaryReader.DotNext%23IO%23IAsyncBinaryReader%23ReadAsync(System.Memory%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceBinaryReader.cs/#L118">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceBinaryReader.cs/#L199">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadAsync_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadAsync*"></a>
   <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadAsync_System_Memory_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadAsync(System.Memory{System.Byte},System.Threading.CancellationToken)">IAsyncBinaryReader.ReadAsync(Memory&lt;Byte&gt;, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Reads the block of bytes.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -558,14 +918,12 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.memory-1">Memory</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
         <td><span class="parametername">output</span></td>
-        <td><p>The block of memory to fill.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -580,29 +938,7 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
-        <td><p>The task representing state of asynchronous execution.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -611,16 +947,16 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadAsync__1_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceBinaryReader.DotNext%23IO%23IAsyncBinaryReader%23ReadAsync%60%601(System.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceBinaryReader.cs/#L112">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceBinaryReader.cs/#L193">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadAsync_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadAsync*"></a>
   <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadAsync__1_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadAsync``1(System.Threading.CancellationToken)">IAsyncBinaryReader.ReadAsync&lt;T&gt;(CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Decodes the value of blittable type.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">ValueTask&lt;T&gt; IAsyncBinaryReader.ReadAsync&lt;T&gt;(CancellationToken token)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -636,8 +972,7 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -652,8 +987,7 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;T&gt;</td>
-        <td><p>The decoded value.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -668,29 +1002,163 @@
     <tbody>
       <tr>
         <td><span class="parametername">T</span></td>
-        <td><p>The type of the result.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
-  <h5 class="exceptions">Exceptions</h5>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadInt16Async_System_Boolean_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceBinaryReader.DotNext%23IO%23IAsyncBinaryReader%23ReadInt16Async(System.Boolean%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceBinaryReader.cs/#L220">View Source</a>
+  </span>
+  <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadInt16Async_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadInt16Async*"></a>
+  <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadInt16Async_System_Boolean_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadInt16Async(System.Boolean,System.Threading.CancellationToken)">IAsyncBinaryReader.ReadInt16Async(Boolean, CancellationToken)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">ValueTask&lt;short&gt; IAsyncBinaryReader.ReadInt16Async(bool littleEndian, CancellationToken token)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
         <th>Type</th>
-        <th>Condition</th>
+        <th>Name</th>
+        <th>Description</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">littleEndian</span></td>
+        <td></td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
-</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int16">Int16</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadInt32Async_System_Boolean_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceBinaryReader.DotNext%23IO%23IAsyncBinaryReader%23ReadInt32Async(System.Boolean%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceBinaryReader.cs/#L214">View Source</a>
+  </span>
+  <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadInt32Async_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadInt32Async*"></a>
+  <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadInt32Async_System_Boolean_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadInt32Async(System.Boolean,System.Threading.CancellationToken)">IAsyncBinaryReader.ReadInt32Async(Boolean, CancellationToken)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">ValueTask&lt;int&gt; IAsyncBinaryReader.ReadInt32Async(bool littleEndian, CancellationToken token)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">littleEndian</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadInt64Async_System_Boolean_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceBinaryReader.DotNext%23IO%23IAsyncBinaryReader%23ReadInt64Async(System.Boolean%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceBinaryReader.cs/#L208">View Source</a>
+  </span>
+  <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadInt64Async_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadInt64Async*"></a>
+  <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadInt64Async_System_Boolean_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadInt64Async(System.Boolean,System.Threading.CancellationToken)">IAsyncBinaryReader.ReadInt64Async(Boolean, CancellationToken)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">ValueTask&lt;long&gt; IAsyncBinaryReader.ReadInt64Async(bool littleEndian, CancellationToken token)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">littleEndian</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -699,12 +1167,11 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadStringAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceBinaryReader.DotNext%23IO%23IAsyncBinaryReader%23ReadStringAsync(DotNext.IO.StringLengthEncoding%2CDotNext.Text.DecodingContext%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceBinaryReader.cs/#L133">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceBinaryReader.cs/#L232">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadStringAsync_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadStringAsync*"></a>
   <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadStringAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadStringAsync(DotNext.IO.StringLengthEncoding,DotNext.Text.DecodingContext,System.Threading.CancellationToken)">IAsyncBinaryReader.ReadStringAsync(StringLengthEncoding, DecodingContext, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Decodes the string.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -723,20 +1190,17 @@
       <tr>
         <td><a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a></td>
         <td><span class="parametername">lengthFormat</span></td>
-        <td><p>The format of the string length encoded in the stream.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
         <td><span class="parametername">context</span></td>
-        <td><p>The decoding context containing string characters encoding.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -751,34 +1215,7 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a>&gt;</td>
-        <td><p>The decoded string.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
-        <td><p><code data-dev-comment-type="paramref" class="paramref">lengthFormat</code> is invalid.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -787,12 +1224,11 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadStringAsync_System_Int32_DotNext_Text_DecodingContext_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceBinaryReader.DotNext%23IO%23IAsyncBinaryReader%23ReadStringAsync(System.Int32%2CDotNext.Text.DecodingContext%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceBinaryReader.cs/#L127">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceBinaryReader.cs/#L226">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadStringAsync_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadStringAsync*"></a>
   <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadStringAsync_System_Int32_DotNext_Text_DecodingContext_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadStringAsync(System.Int32,DotNext.Text.DecodingContext,System.Threading.CancellationToken)">IAsyncBinaryReader.ReadStringAsync(Int32, DecodingContext, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Decodes the string.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -811,20 +1247,17 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
         <td><span class="parametername">length</span></td>
-        <td><p>The length of the encoded string, in bytes.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
         <td><span class="parametername">context</span></td>
-        <td><p>The decoding context containing string characters encoding.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -839,29 +1272,7 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a>&gt;</td>
-        <td><p>The decoded string.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>

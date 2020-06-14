@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class PooledArrayBufferWriter&lt;T&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.54.0.0">
+    <meta name="generator" content="docfx 2.55.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -88,7 +88,13 @@
     <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
     <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;T&gt;</div>
     <div><a class="xref" href="DotNext.IConvertible-1.html">IConvertible</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;T&gt;&gt;</div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1">IReadOnlyList</a>&lt;T&gt;</div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ireadonlycollection-1">IReadOnlyCollection</a>&lt;T&gt;</div>
     <div><a class="xref" href="DotNext.IConvertible-1.html">IConvertible</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.arraysegment-1">ArraySegment</a>&lt;T&gt;&gt;</div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ilist-1">IList</a>&lt;T&gt;</div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.icollection-1">ICollection</a>&lt;T&gt;</div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;T&gt;</div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.ienumerable">IEnumerable</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -99,10 +105,28 @@
       <a class="xref" href="DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_WrittenCount">MemoryWriter&lt;T&gt;.WrittenCount</a>
     </div>
     <div>
+      <a class="xref" href="DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_Add__0_">MemoryWriter&lt;T&gt;.Add(T)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_AddAll_System_Collections_Generic_ICollection__0__">MemoryWriter&lt;T&gt;.AddAll(ICollection&lt;T&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_System_Collections_Generic_IReadOnlyCollection_T__Count">MemoryWriter&lt;T&gt;.IReadOnlyCollection&lt;T&gt;.Count</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_System_Collections_Generic_IReadOnlyList_T__Item_System_Int32_">MemoryWriter&lt;T&gt;.IReadOnlyList&lt;T&gt;.Item[Int32]</a>
+    </div>
+    <div>
       <a class="xref" href="DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_FreeCapacity">MemoryWriter&lt;T&gt;.FreeCapacity</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_Advance_System_Int32_">MemoryWriter&lt;T&gt;.Advance(Int32)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_GetEnumerator">MemoryWriter&lt;T&gt;.GetEnumerator()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_System_Collections_IEnumerable_GetEnumerator">MemoryWriter&lt;T&gt;.IEnumerable.GetEnumerator()</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposed">Disposable.IsDisposed</a>
@@ -154,7 +178,7 @@
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Buffers_PooledArrayBufferWriter_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class PooledArrayBufferWriter&lt;T&gt; : MemoryWriter&lt;T&gt;, IDisposable, IBufferWriter&lt;T&gt;, IConvertible&lt;ReadOnlyMemory&lt;T&gt;&gt;, IConvertible&lt;ArraySegment&lt;T&gt;&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class PooledArrayBufferWriter&lt;T&gt; : MemoryWriter&lt;T&gt;, IDisposable, IBufferWriter&lt;T&gt;, IConvertible&lt;ReadOnlyMemory&lt;T&gt;&gt;, IReadOnlyList&lt;T&gt;, IReadOnlyCollection&lt;T&gt;, IConvertible&lt;ArraySegment&lt;T&gt;&gt;, IList&lt;T&gt;, ICollection&lt;T&gt;, IEnumerable&lt;T&gt;, IEnumerable</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -182,7 +206,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1__ctor.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.%23ctor%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L48">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L49">View Source</a>
   </span>
   <a id="DotNext_Buffers_PooledArrayBufferWriter_1__ctor_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.#ctor*"></a>
   <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1__ctor" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.#ctor">PooledArrayBufferWriter()</h4>
@@ -199,7 +223,7 @@ as the array pooling mechanism.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1__ctor_System_Buffers_ArrayPool__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.%23ctor(System.Buffers.ArrayPool%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L38">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L39">View Source</a>
   </span>
   <a id="DotNext_Buffers_PooledArrayBufferWriter_1__ctor_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.#ctor*"></a>
   <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1__ctor_System_Buffers_ArrayPool__0__" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.#ctor(System.Buffers.ArrayPool{`0})">PooledArrayBufferWriter(ArrayPool&lt;T&gt;)</h4>
@@ -233,7 +257,7 @@ as the array pooling mechanism.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1__ctor_System_Buffers_ArrayPool__0__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.%23ctor(System.Buffers.ArrayPool%7B%600%7D%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L26">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L27">View Source</a>
   </span>
   <a id="DotNext_Buffers_PooledArrayBufferWriter_1__ctor_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.#ctor*"></a>
   <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1__ctor_System_Buffers_ArrayPool__0__System_Int32_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.#ctor(System.Buffers.ArrayPool{`0},System.Int32)">PooledArrayBufferWriter(ArrayPool&lt;T&gt;, Int32)</h4>
@@ -291,7 +315,7 @@ as the array pooling mechanism.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_Capacity.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.Capacity%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L57">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L169">View Source</a>
   </span>
   <a id="DotNext_Buffers_PooledArrayBufferWriter_1_Capacity_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Capacity*"></a>
   <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_Capacity" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Capacity">Capacity</h4>
@@ -337,10 +361,81 @@ as the array pooling mechanism.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_Item_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.Item(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L71">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_Item_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Item*"></a>
+  <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_Item_System_Int32_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Item(System.Int32)">Item[Int32]</h4>
+  <div class="markdown level1 summary"><p>Gets the element at the specified index.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public T this[int index] { get; }</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The index of the element to retrieve.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><p>The element at the specified index.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">index</code> the index is invalid.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This writer has been disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_WrittenArray.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.WrittenArray%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L83">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L195">View Source</a>
   </span>
   <a id="DotNext_Buffers_PooledArrayBufferWriter_1_WrittenArray_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.WrittenArray*"></a>
   <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_WrittenArray" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.WrittenArray">WrittenArray</h4>
@@ -387,7 +482,7 @@ as the array pooling mechanism.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_WrittenMemory.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.WrittenMemory%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L70">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L182">View Source</a>
   </span>
   <a id="DotNext_Buffers_PooledArrayBufferWriter_1_WrittenMemory_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.WrittenMemory*"></a>
   <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_WrittenMemory" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.WrittenMemory">WrittenMemory</h4>
@@ -438,7 +533,7 @@ as the array pooling mechanism.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_Clear.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.Clear%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L102">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L220">View Source</a>
   </span>
   <a id="DotNext_Buffers_PooledArrayBufferWriter_1_Clear_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Clear*"></a>
   <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_Clear" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Clear">Clear()</h4>
@@ -472,12 +567,11 @@ as the array pooling mechanism.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.Dispose(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L160">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L277">View Source</a>
   </span>
   <a id="DotNext_Buffers_PooledArrayBufferWriter_1_Dispose_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Dispose*"></a>
   <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_Dispose_System_Boolean_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Dispose(System.Boolean)">Dispose(Boolean)</h4>
-  <div class="markdown level1 summary"><p>Releases managed and unmanaged resources associated with this object.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -496,8 +590,7 @@ as the array pooling mechanism.</p>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td><span class="parametername">disposing</span></td>
-        <td><p><span class="xref">true</span> if called from <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose">Dispose()</a>; <span class="xref">false</span> if called from finalizer <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Finalize">Finalize()</a>.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -508,7 +601,7 @@ as the array pooling mechanism.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_GetArray_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.GetArray(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L144">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L261">View Source</a>
   </span>
   <a id="DotNext_Buffers_PooledArrayBufferWriter_1_GetArray_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.GetArray*"></a>
   <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_GetArray_System_Int32_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.GetArray(System.Int32)">GetArray(Int32)</h4>
@@ -579,7 +672,7 @@ as the array pooling mechanism.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_GetMemory_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.GetMemory(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L118">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L235">View Source</a>
   </span>
   <a id="DotNext_Buffers_PooledArrayBufferWriter_1_GetMemory_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.GetMemory*"></a>
   <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_GetMemory_System_Int32_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.GetMemory(System.Int32)">GetMemory(Int32)</h4>
@@ -652,7 +745,7 @@ as the array pooling mechanism.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_GetSpan_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.GetSpan(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L131">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L248">View Source</a>
   </span>
   <a id="DotNext_Buffers_PooledArrayBufferWriter_1_GetSpan_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.GetSpan*"></a>
   <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_GetSpan_System_Int32_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.GetSpan(System.Int32)">GetSpan(Int32)</h4>
@@ -727,12 +820,11 @@ as the array pooling mechanism.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_DotNext_IConvertible_System_ArraySegment_T___Convert.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.DotNext%23IConvertible%7BSystem%23ArraySegment%7BT%7D%7D%23Convert%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L93">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L205">View Source</a>
   </span>
   <a id="DotNext_Buffers_PooledArrayBufferWriter_1_DotNext_IConvertible_System_ArraySegment_T___Convert_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.DotNext#IConvertible{System#ArraySegment{T}}#Convert*"></a>
   <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_DotNext_IConvertible_System_ArraySegment_T___Convert" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.DotNext#IConvertible{System#ArraySegment{T}}#Convert">IConvertible&lt;ArraySegment&lt;T&gt;&gt;.Convert()</h4>
-  <div class="markdown level1 summary"><p>Converts this instance into another type.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -749,8 +841,361 @@ as the array pooling mechanism.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.arraysegment-1">ArraySegment</a>&lt;T&gt;</td>
-        <td><p>The conversion result.</p>
-</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_ICollection_T__Contains__0_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.System%23Collections%23Generic%23ICollection%7BT%7D%23Contains(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L90">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_ICollection_T__Contains_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#ICollection{T}#Contains*"></a>
+  <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_ICollection_T__Contains__0_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#ICollection{T}#Contains(`0)">ICollection&lt;T&gt;.Contains(T)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">bool ICollection&lt;T&gt;.Contains(T item)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">item</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_ICollection_T__CopyTo__0___System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.System%23Collections%23Generic%23ICollection%7BT%7D%23CopyTo(%600%5B%5D%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L61">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_ICollection_T__CopyTo_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#ICollection{T}#CopyTo*"></a>
+  <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_ICollection_T__CopyTo__0___System_Int32_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#ICollection{T}#CopyTo(`0[],System.Int32)">ICollection&lt;T&gt;.CopyTo(T[], Int32)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">void ICollection&lt;T&gt;.CopyTo(T[] array, int arrayIndex)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>T[]</td>
+        <td><span class="parametername">array</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">arrayIndex</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_ICollection_T__Count.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.System%23Collections%23Generic%23ICollection%7BT%7D%23Count%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L55">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_ICollection_T__Count_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#ICollection{T}#Count*"></a>
+  <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_ICollection_T__Count" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#ICollection{T}#Count">ICollection&lt;T&gt;.Count</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">int ICollection&lt;T&gt;.Count { get; }</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_ICollection_T__IsReadOnly.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.System%23Collections%23Generic%23ICollection%7BT%7D%23IsReadOnly%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L58">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_ICollection_T__IsReadOnly_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#ICollection{T}#IsReadOnly*"></a>
+  <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_ICollection_T__IsReadOnly" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#ICollection{T}#IsReadOnly">ICollection&lt;T&gt;.IsReadOnly</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">bool ICollection&lt;T&gt;.IsReadOnly { get; }</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_ICollection_T__Remove__0_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.System%23Collections%23Generic%23ICollection%7BT%7D%23Remove(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L118">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_ICollection_T__Remove_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#ICollection{T}#Remove*"></a>
+  <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_ICollection_T__Remove__0_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#ICollection{T}#Remove(`0)">ICollection&lt;T&gt;.Remove(T)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">bool ICollection&lt;T&gt;.Remove(T item)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">item</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_IList_T__IndexOf__0_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.System%23Collections%23Generic%23IList%7BT%7D%23IndexOf(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L83">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_IList_T__IndexOf_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#IList{T}#IndexOf*"></a>
+  <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_IList_T__IndexOf__0_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#IList{T}#IndexOf(`0)">IList&lt;T&gt;.IndexOf(T)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">int IList&lt;T&gt;.IndexOf(T item)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">item</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_IList_T__Insert_System_Int32__0_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.System%23Collections%23Generic%23IList%7BT%7D%23Insert(System.Int32%2C%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L130">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_IList_T__Insert_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#IList{T}#Insert*"></a>
+  <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_IList_T__Insert_System_Int32__0_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#IList{T}#Insert(System.Int32,`0)">IList&lt;T&gt;.Insert(Int32, T)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">void IList&lt;T&gt;.Insert(int index, T item)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">index</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">item</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_IList_T__Item_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.System%23Collections%23Generic%23IList%7BT%7D%23Item(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L159">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_IList_T__Item_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#IList{T}#Item*"></a>
+  <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_IList_T__Item_System_Int32_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#IList{T}#Item(System.Int32)">IList&lt;T&gt;.Item[Int32]</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">T IList&lt;T&gt;.this[int index] { get; set; }</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">index</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_IList_T__RemoveAt_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.System%23Collections%23Generic%23IList%7BT%7D%23RemoveAt(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L109">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_IList_T__RemoveAt_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#IList{T}#RemoveAt*"></a>
+  <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_System_Collections_Generic_IList_T__RemoveAt_System_Int32_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.System#Collections#Generic#IList{T}#RemoveAt(System.Int32)">IList&lt;T&gt;.RemoveAt(Int32)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">void IList&lt;T&gt;.RemoveAt(int index)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">index</span></td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -765,7 +1210,25 @@ as the array pooling mechanism.</p>
       <a class="xref" href="DotNext.IConvertible-1.html">IConvertible&lt;T&gt;</a>
   </div>
   <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1">System.Collections.Generic.IReadOnlyList&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ireadonlycollection-1">System.Collections.Generic.IReadOnlyCollection&lt;T&gt;</a>
+  </div>
+  <div>
       <a class="xref" href="DotNext.IConvertible-1.html">IConvertible&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ilist-1">System.Collections.Generic.IList&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.icollection-1">System.Collections.Generic.ICollection&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">System.Collections.Generic.IEnumerable&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.ienumerable">System.Collections.IEnumerable</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
@@ -814,6 +1277,36 @@ as the array pooling mechanism.</p>
       <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2___">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, ValueFunc&lt;T, TResult1&gt;, ValueFunc&lt;T, TResult2&gt;)</a>
   </div>
   <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_As__1___0_">ObjectExtensions.As&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_ForEach__1_System_Collections_Generic_IEnumerable___0__System_Action___0__">Sequence.ForEach&lt;T&gt;(IEnumerable&lt;T&gt;, Action&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_ForEach__1_System_Collections_Generic_IEnumerable___0__DotNext_ValueAction___0___">Sequence.ForEach&lt;T&gt;(IEnumerable&lt;T&gt;, ValueAction&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_FirstOrEmpty__1_System_Collections_Generic_IEnumerable___0__">Sequence.FirstOrEmpty&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_FirstOrEmpty__1_System_Collections_Generic_IEnumerable___0__DotNext_ValueFunc___0_System_Boolean___">Sequence.FirstOrEmpty&lt;T&gt;(IEnumerable&lt;T&gt;, ValueFunc&lt;T, Boolean&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_FirstOrEmpty__1_System_Collections_Generic_IEnumerable___0__System_Predicate___0__">Sequence.FirstOrEmpty&lt;T&gt;(IEnumerable&lt;T&gt;, Predicate&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_ElementAt__1_System_Collections_Generic_IEnumerable___0__System_Int32___0__">Sequence.ElementAt&lt;T&gt;(IEnumerable&lt;T&gt;, Int32, out T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_ToString__1_System_Collections_Generic_IEnumerable___0__System_String_System_String_">Sequence.ToString&lt;T&gt;(IEnumerable&lt;T&gt;, String, String)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_Prepend__1_System_Collections_Generic_IEnumerable___0____0___">Sequence.Prepend&lt;T&gt;(IEnumerable&lt;T&gt;, T[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_Append__1_System_Collections_Generic_IEnumerable___0____0___">Sequence.Append&lt;T&gt;(IEnumerable&lt;T&gt;, T[])</a>
+  </div>
+  <div>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_">LockAcquisition.AcquireReadLock&lt;T&gt;(T)</a>
   </div>
   <div>
@@ -832,6 +1325,57 @@ as the array pooling mechanism.</p>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_System_TimeSpan_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T, TimeSpan)</a>
   </div>
   <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_Convert__2_System_Collections_Generic_IReadOnlyCollection___0__DotNext_ValueFunc___0___1___">Collection.Convert&lt;TInput, TOutput&gt;(IReadOnlyCollection&lt;TInput&gt;, ValueFunc&lt;TInput, TOutput&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_Convert__2_System_Collections_Generic_IReadOnlyCollection___0__System_Converter___0___1__">Collection.Convert&lt;TInput, TOutput&gt;(IReadOnlyCollection&lt;TInput&gt;, Converter&lt;TInput, TOutput&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_AddAll__1_System_Collections_Generic_ICollection___0__System_Collections_Generic_IEnumerable___0__">Collection.AddAll&lt;T&gt;(ICollection&lt;T&gt;, IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_IndexerGetter__1_System_Collections_Generic_IReadOnlyList___0__">List.IndexerGetter&lt;T&gt;(IReadOnlyList&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_IndexerGetter__1_System_Collections_Generic_IList___0__">List.IndexerGetter&lt;T&gt;(IList&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_IndexerSetter__1_System_Collections_Generic_IList___0__">List.IndexerSetter&lt;T&gt;(IList&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_ToArray__2_System_Collections_Generic_IList___0__DotNext_ValueFunc___0___1___">List.ToArray&lt;TInput, TOutput&gt;(IList&lt;TInput&gt;, ValueFunc&lt;TInput, TOutput&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_ToArray__2_System_Collections_Generic_IList___0__System_Converter___0___1__">List.ToArray&lt;TInput, TOutput&gt;(IList&lt;TInput&gt;, Converter&lt;TInput, TOutput&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_ToArray__2_System_Collections_Generic_IList___0__DotNext_ValueFunc_System_Int32___0___1___">List.ToArray&lt;TInput, TOutput&gt;(IList&lt;TInput&gt;, ValueFunc&lt;Int32, TInput, TOutput&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_ToArray__2_System_Collections_Generic_IList___0__System_Func_System_Int32___0___1__">List.ToArray&lt;TInput, TOutput&gt;(IList&lt;TInput&gt;, Func&lt;Int32, TInput, TOutput&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_Convert__2_System_Collections_Generic_IReadOnlyList___0__DotNext_ValueFunc___0___1___">List.Convert&lt;TInput, TOutput&gt;(IReadOnlyList&lt;TInput&gt;, ValueFunc&lt;TInput, TOutput&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_Convert__2_System_Collections_Generic_IReadOnlyList___0__System_Converter___0___1__">List.Convert&lt;TInput, TOutput&gt;(IReadOnlyList&lt;TInput&gt;, Converter&lt;TInput, TOutput&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_InsertOrdered__1_System_Collections_Generic_IList___0____0_DotNext_ValueFunc___0___0_System_Int32___">List.InsertOrdered&lt;T&gt;(IList&lt;T&gt;, T, ValueFunc&lt;T, T, Int32&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_InsertOrdered__1_System_Collections_Generic_IList___0____0_System_Comparison___0__">List.InsertOrdered&lt;T&gt;(IList&lt;T&gt;, T, Comparison&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_Insert__1_System_Collections_Generic_IList___0__System_Index___0_">List.Insert&lt;T&gt;(IList&lt;T&gt;, Index, T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_RemoveAt__1_System_Collections_Generic_IList___0__System_Index_">List.RemoveAt&lt;T&gt;(IList&lt;T&gt;, Index)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_Slice__1_System_Collections_Generic_IList___0__System_Range_">List.Slice&lt;T&gt;(IList&lt;T&gt;, Range)</a>
+  </div>
+  <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
   </div>
 </article>
@@ -845,7 +1389,7 @@ as the array pooling mechanism.</p>
                     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L15" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L16" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

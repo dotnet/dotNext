@@ -8,7 +8,7 @@
     <title>Dynamic Buffers | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Dynamic Buffers | .NEXT ">
-    <meta name="generator" content="docfx 2.54.0.0">
+    <meta name="generator" content="docfx 2.55.0.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -89,7 +89,7 @@ var result = writer.WrittenMemory;  //length is 512
 </code></pre>
 <p>In contrast to <code>ArrayBufferWriter</code>, you must not use written memory if <code>Dispose</code> is called. When <code>Dispose</code> method is called, the internal buffer returns to the pool.</p>
 <h1 id="pooledarraybufferwriter">PooledArrayBufferWriter</h1>
-<p><a href="https://sakno.github.io/dotNext/api/DotNext.Buffers.PooledArrayBufferWriter-1.html">PooledArrayBufferWriter&lt;T&gt;</a> exposes the same functionality as <code>PooledBufferWriter</code> but specialized for working with <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.arraypool-1">ArrayPool&lt;T&gt;</a>. As a result, you can make writes or obtain written memory using <a href="https://docs.microsoft.com/en-us/dotnet/api/system.arraysegment-1">ArraySegment&lt;T&gt;</a>. Additionally, if the buffer is for bytes (actual generic argument is <code>byte</code>) then written memory can be exposed as read-only <a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.memorystream">MemoryStream</a> without copying written bytes.</p>
+<p><a href="https://sakno.github.io/dotNext/api/DotNext.Buffers.PooledArrayBufferWriter-1.html">PooledArrayBufferWriter&lt;T&gt;</a> exposes the similar functionality to <code>PooledBufferWriter</code> class but specialized for working with <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.arraypool-1">ArrayPool&lt;T&gt;</a>. As a result, you can make writes or obtain written memory using <a href="https://docs.microsoft.com/en-us/dotnet/api/system.arraysegment-1">ArraySegment&lt;T&gt;</a>. Additionally, if the buffer is for bytes (actual generic argument is <code>byte</code>) then written memory can be exposed as read-only <a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.memorystream">MemoryStream</a> without copying written bytes.</p>
 <pre><code class="lang-csharp">using DotNext.Buffers;
 using DotNext.IO;
 using System;
@@ -102,6 +102,7 @@ span.Advance(2);
 ArraySegment&lt;byte&gt; result = writer.WrittenArray;  //length is 512
 using Stream stream = StreamSource.GetWrittenBytesAsStream(writer);
 </code></pre>
+<p>One more powerful feature is that the class implements <a href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.ilist-1">IList&lt;T&gt;</a> interface so you can use it as fully-functional list which rents the memory instead of allocation on the heap.</p>
 </article>
           </div>
           
