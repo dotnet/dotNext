@@ -70,7 +70,7 @@ namespace DotNext
         /// <returns><see langword="true"/>, if <paramref name="value"/> is equal to one of <paramref name="values"/>.</returns>
         public static bool IsOneOf<T>(this T value, params T?[] values)
             where T : class
-            => value.IsOneOf((IEnumerable<T?>)values);
+            => value.IsOneOf(values.As<IEnumerable<T?>>());
 
         /// <summary>
         /// Performs decomposition of object into two values.
@@ -138,5 +138,26 @@ namespace DotNext
         }
 
         internal static bool IsContravariant(object? obj, Type type) => obj?.GetType().IsAssignableFrom(type) ?? false;
+
+        /// <summary>
+        /// Reinterprets object reference.
+        /// </summary>
+        /// <remarks>
+        /// This method can be used to get access to the explicitly implemented
+        /// interface methods.
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// MemoryManager&lt;T&gt; manager;
+        /// manager.As&lt;IDisposable&gt;().Dispose();
+        /// </code>
+        /// </example>
+        /// <typeparam name="T">The target type.</typeparam>
+        /// <param name="obj">The object reference to reinterpret.</param>
+        /// <returns>The reinterpreted <paramref name="obj"/> reference.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T As<T>(this T obj)
+            where T : class
+            => obj;
     }
 }

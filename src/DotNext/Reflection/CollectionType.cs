@@ -10,6 +10,8 @@ namespace DotNext.Reflection
     /// </summary>
     public static class CollectionType
     {
+        internal const string ItemIndexerName = "Item";
+
         /// <summary>
         /// Obtains type of items in the collection type.
         /// </summary>

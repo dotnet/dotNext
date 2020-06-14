@@ -9,7 +9,7 @@ namespace DotNext.Threading
     /// <summary>
     /// Represents asynchronous mutually exclusive lock.
     /// </summary>
-    public class AsyncExclusiveLock : QueuedSynchronizer
+    public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     {
         private struct LockManager : ILockManager<WaitNode>
         {
@@ -26,6 +26,7 @@ namespace DotNext.Threading
             WaitNode ILockManager<WaitNode>.CreateNode(WaitNode? tail) => tail is null ? new WaitNode() : new WaitNode(tail);
         }
 
+        private static readonly Func<AsyncExclusiveLock, bool> IsLockHeldPredicate = DelegateHelpers.CreateOpenDelegate<Func<AsyncExclusiveLock, bool>>(l => l.IsLockHeld);
         private LockManager manager;
 
         /// <summary>
@@ -37,8 +38,13 @@ namespace DotNext.Threading
         /// Attempts to obtain exclusive lock synchronously without blocking caller thread.
         /// </summary>
         /// <returns><see langword="true"/> if lock is taken successfuly; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public bool TryAcquire() => manager.TryAcquire();
+        public bool TryAcquire()
+        {
+            ThrowIfDisposed();
+            return manager.TryAcquire();
+        }
 
         /// <summary>
         /// Tries to enter the lock in exclusive mode asynchronously, with an optional time-out.
@@ -91,6 +97,8 @@ namespace DotNext.Threading
             ThrowIfDisposed();
             if (!manager.IsAcquired)
                 throw new SynchronizationLockException(ExceptionMessages.NotInWriteLock);
+            if (ProcessDisposeQueue())
+                return;
 
             if (head is null)
             {
@@ -102,5 +110,16 @@ namespace DotNext.Threading
                 RemoveNode(head);
             }
         }
+
+        /// <summary>
+        /// Disposes this lock asynchronously and gracefully.
+        /// </summary>
+        /// <remarks>
+        /// If this lock is not acquired then the method just completes synchronously.
+        /// Otherwise, it waits for calling of <see cref="Release"/> method.
+        /// </remarks>
+        /// <returns>The task representing graceful shutdown of this lock.</returns>
+        public ValueTask DisposeAsync()
+            => IsDisposed ? new ValueTask() : DisposeAsync(this, IsLockHeldPredicate);
     }
 }

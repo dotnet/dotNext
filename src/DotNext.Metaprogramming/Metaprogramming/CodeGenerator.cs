@@ -178,6 +178,36 @@ namespace DotNext.Metaprogramming
         public static void PostDecrementAssign(IndexExpression member) => LexicalScope.Current.AddStatement(member.PostDecrementAssign());
 
         /// <summary>
+        /// Adds an expression that represents null-coalescing assignment of local variable.
+        /// </summary>
+        /// <param name="variable">The variable to be assigned.</param>
+        /// <param name="right">The value to assigned to <paramref name="variable"/> if it is <see langword="null"/>.</param>
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        /// <exception cref="ArgumentException"><paramref name="right"/> is not assignable to <paramref name="variable"/>.</exception>
+        public static void NullCoalescingAssignment(ParameterExpression variable, Expression right)
+            => LexicalScope.Current.AddStatement(variable.NullCoalescingAssignment(right));
+
+        /// <summary>
+        /// Adds an expression that represents null-coalescing assignment of property of field.
+        /// </summary>
+        /// <param name="member">The member to be assigned.</param>
+        /// <param name="right">The value to assign to <paramref name="member"/> if it is <see langword="null"/>.</param>
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        /// <exception cref="ArgumentException"><paramref name="right"/> is not assignable to <paramref name="member"/>.</exception>
+        public static void NullCoalescingAssignment(MemberExpression member, Expression right)
+            => LexicalScope.Current.AddStatement(member.NullCoalescingAssignment(right));
+
+        /// <summary>
+        /// Adds an expression that represents null-coalescing assignment of array element of indexer property.
+        /// </summary>
+        /// <param name="indexer">The indexer property or array element to be assigned.</param>
+        /// <param name="right">The value to assign to <paramref name="indexer"/> if it is <see langword="null"/>.</param>
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        /// <exception cref="ArgumentException"><paramref name="right"/> is not assignable to <paramref name="indexer"/>.</exception>
+        public static void NullCoalescingAssignment(IndexExpression indexer, Expression right)
+            => LexicalScope.Current.AddStatement(indexer.NullCoalescingAssignment(right));
+
+        /// <summary>
         /// Adds constant as in-place statement.
         /// </summary>
         /// <typeparam name="T">The type of the constant.</typeparam>

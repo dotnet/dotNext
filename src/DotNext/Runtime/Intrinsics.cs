@@ -887,5 +887,19 @@ namespace DotNext.Runtime
             Emit.Throw();
             throw Unreachable();
         }
+
+        /// <summary>
+        /// Creates shallow copy of the given object.
+        /// </summary>
+        /// <param name="obj">The object to clone.</param>
+        /// <typeparam name="T">The type of the object to clone.</typeparam>
+        /// <returns>The clone of <paramref name="obj"/>.</returns>
+        public static T ShallowCopy<T>(T obj)
+            where T : class
+        {
+            Push(obj);
+            Call(Method(Type<object>(), nameof(MemberwiseClone)));
+            return Return<T>();
+        }
     }
 }

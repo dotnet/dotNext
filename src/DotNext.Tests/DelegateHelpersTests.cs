@@ -191,5 +191,20 @@ namespace DotNext
             Equal(42, conv.TryInvoke("42"));
             NotNull(conv.TryInvoke("abc").Error);
         }
+
+        private sealed class ClassWithProperty
+        {
+            internal int Prop { get; set; }
+        }
+
+        [Fact]
+        public static void OpenDelegateForPropertySetter()
+        {
+            var obj = new ClassWithProperty();
+            var action = DelegateHelpers.CreateOpenDelegate<ClassWithProperty, int>(obj => obj.Prop);
+            NotNull(action);
+            action(obj, 42);
+            Equal(42, obj.Prop);
+        }
     }
 }

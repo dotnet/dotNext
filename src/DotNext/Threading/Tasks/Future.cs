@@ -91,7 +91,7 @@ namespace DotNext.Threading.Tasks
 
             internal static Action Create(Action callback)
             {
-                var context = SynchronizationContext.Current?.CreateCopy();
+                SynchronizationContext? context = SynchronizationContext.Current;
                 if (context != null)
                     return new Continuation(callback, context).Invoke;
                 var scheduler = TaskScheduler.Current;

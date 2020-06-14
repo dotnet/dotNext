@@ -892,7 +892,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             syncRoot.Dispose();
             await snapshot.DisposeAsync().ConfigureAwait(false);
             await nullSegment.DisposeAsync().ConfigureAwait(false);
-            base.Dispose(true);
+            Dispose();
         }
     }
 }

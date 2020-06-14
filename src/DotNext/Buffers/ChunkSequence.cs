@@ -109,15 +109,17 @@ namespace DotNext.Buffers
         public ReadOnlySequence<T> ToReadOnlySequence()
         {
             if (memory.IsEmpty)
-                return default;
+                return ReadOnlySequence<T>.Empty;
             if (memory.Length < chunkSize)
                 return new ReadOnlySequence<T>(memory);
-            Chunk<T>? first = null, last = null;
+
+            Chunk<T>? head = null, tail = null;
             foreach (var segment in this)
-                Chunk<T>.AddChunk(segment, ref first, ref last);
-            Assert(first != null);
-            Assert(last != null);
-            return new ReadOnlySequence<T>(first, 0, last, last.Memory.Length);
+                Chunk<T>.AddChunk(segment, ref head, ref tail);
+
+            Assert(head != null);
+            Assert(tail != null);
+            return Chunk<T>.CreateSequence(head, tail);
         }
 
         /// <summary>
@@ -133,6 +135,51 @@ namespace DotNext.Buffers
     /// </summary>
     public static class ChunkSequence
     {
+        /// <summary>
+        /// Converts the sequence of memory blocks to <see cref="ReadOnlySequence{T}"/> data type.
+        /// </summary>
+        /// <param name="chunks">The sequence of memory blocks.</param>
+        /// <typeparam name="T">The type of elements in the memory blocks.</typeparam>
+        /// <returns>The constructed <see cref="ReadOnlySequence{T}"/> instance containing memory blocks.</returns>
+        public static ReadOnlySequence<T> ToReadOnlySequence<T>(this IEnumerable<Memory<T>> chunks)
+        {
+            Chunk<T>? head = null, tail = null;
+            foreach (var segment in chunks)
+            {
+                if (!segment.IsEmpty)
+                    Chunk<T>.AddChunk(segment, ref head, ref tail);
+            }
+
+            if (head is null || tail is null)
+                return ReadOnlySequence<T>.Empty;
+
+            if (ReferenceEquals(head, tail))
+                return new ReadOnlySequence<T>(head.Memory);
+
+            return Chunk<T>.CreateSequence(head, tail);
+        }
+
+        /// <summary>
+        /// Converts two memory blocks to <see cref="ReadOnlySequence{T}"/> data type.
+        /// </summary>
+        /// <param name="first">The first memory block.</param>
+        /// <param name="second">The second memory block.</param>
+        /// <typeparam name="T">The type of elements in the memory blocks.</typeparam>
+        /// <returns>The constructed <see cref="ReadOnlySequence{T}"/> instance containing memory blocks.</returns>
+        public static ReadOnlySequence<T> Concat<T>(this Memory<T> first, Memory<T> second)
+        {
+            if (first.IsEmpty)
+                return second.IsEmpty ? ReadOnlySequence<T>.Empty : new ReadOnlySequence<T>(second);
+
+            if (second.IsEmpty)
+                return new ReadOnlySequence<T>(first);
+
+            Chunk<T>? head = null, tail = null;
+            Chunk<T>.AddChunk(first, ref head, ref tail);
+            Chunk<T>.AddChunk(second, ref head, ref tail);
+            return Chunk<T>.CreateSequence(head, tail);
+        }
+
         /// <summary>
         /// Copies chunks of bytes into the stream.
         /// </summary>

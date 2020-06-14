@@ -13,6 +13,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
 {
     using IMessageBus = Messaging.IMessageBus;
     using IReplicationCluster = Replication.IReplicationCluster;
+    using static DotNext.Hosting.HostBuilderExtensions;
 
     [ExcludeFromCodeCoverage]
     public sealed class HostedClusterSupportTests : Test
@@ -29,7 +30,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
                         else
                             options.ListenAnyIP(port);
                     })
-                    .UseShutdownTimeout(TimeSpan.FromMinutes(2))
                     .ConfigureLogging(builder => builder.AddDebug().SetMinimumLevel(LogLevel.Debug))
                     .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(configuration))
                     .ConfigureServices(services =>
@@ -39,6 +39,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
                     })
                     .UseStartup<TStartup>()
                 )
+                .UseHostOptions(new HostOptions { ShutdownTimeout = TimeSpan.FromMinutes(2) })
                 .JoinCluster()
                 .Build();
         }

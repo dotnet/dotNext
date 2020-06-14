@@ -1,5 +1,6 @@
 using System;
 using System.Buffers;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 
@@ -12,7 +13,7 @@ namespace DotNext.Buffers
     /// This class provides additional methods for access to array segments in contrast to <see cref="PooledBufferWriter{T}"/>.
     /// </remarks>
     /// <typeparam name="T">The data type that can be written.</typeparam>
-    public sealed class PooledArrayBufferWriter<T> : MemoryWriter<T>, IConvertible<ArraySegment<T>>
+    public sealed class PooledArrayBufferWriter<T> : MemoryWriter<T>, IConvertible<ArraySegment<T>>, IList<T>
     {
         private readonly ArrayPool<T> pool;
         private T[] buffer;
@@ -48,6 +49,117 @@ namespace DotNext.Buffers
         public PooledArrayBufferWriter()
             : this(ArrayPool<T>.Shared)
         {
+        }
+
+        /// <inheritdoc/>
+        int ICollection<T>.Count => WrittenCount;
+
+        /// <inheritdoc/>
+        bool ICollection<T>.IsReadOnly => false;
+
+        /// <inheritdoc/>
+        void ICollection<T>.CopyTo(T[] array, int arrayIndex)
+            => WrittenMemory.CopyTo(array.AsMemory(arrayIndex));
+
+        /// <summary>
+        /// Gets the element at the specified index.
+        /// </summary>
+        /// <param name="index">The index of the element to retrieve.</param>
+        /// <value>The element at the specified index.</value>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> the index is invalid.</exception>
+        /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
+        public new ref T this[int index]
+        {
+            get
+            {
+                ThrowIfDisposed();
+                if (index < 0 || index >= position)
+                    throw new ArgumentOutOfRangeException(nameof(index));
+                return ref buffer[index];
+            }
+        }
+
+        /// <inheritdoc/>
+        int IList<T>.IndexOf(T item)
+        {
+            ThrowIfDisposed();
+            return Array.IndexOf(buffer, item, 0, position);
+        }
+
+        /// <inheritdoc/>
+        bool ICollection<T>.Contains(T item)
+        {
+            ThrowIfDisposed();
+            return Array.IndexOf(buffer, item, 0, position) >= 0;
+        }
+
+        private void RemoveAt(int index)
+        {
+            Array.Copy(buffer, index + 1L, buffer, index, position - index - 1L);
+            buffer[position - 1] = default!;
+
+            if (--position == 0)
+            {
+                ReleaseBuffer();
+                buffer = Array.Empty<T>();
+            }
+        }
+
+        /// <inheritdoc/>
+        void IList<T>.RemoveAt(int index)
+        {
+            ThrowIfDisposed();
+            if (index < 0 || index >= position)
+                throw new ArgumentOutOfRangeException(nameof(index));
+            RemoveAt(index);
+        }
+
+        /// <inheritdoc/>
+        bool ICollection<T>.Remove(T item)
+        {
+            ThrowIfDisposed();
+            var index = Array.IndexOf(buffer, item, 0, position);
+            if (index < 0)
+                return false;
+
+            RemoveAt(index);
+            return true;
+        }
+
+        /// <inheritdoc/>
+        void IList<T>.Insert(int index, T item)
+        {
+            ThrowIfDisposed();
+            if (index < 0 || index > position)
+                throw new ArgumentOutOfRangeException(nameof(index));
+
+            if (position == 0)
+            {
+                if (buffer.LongLength == 0L)
+                    buffer = pool.Rent(1);
+            }
+            else if (position < buffer.LongLength)
+            {
+                Array.Copy(buffer, index, buffer, index + 1, position - index);
+            }
+            else
+            {
+                var newBuffer = pool.Rent(buffer.Length + 1);
+                Array.Copy(buffer, 0, newBuffer, 0, Math.Min(index + 1, buffer.LongLength));
+                Array.Copy(buffer, index, newBuffer, index + 1, buffer.LongLength - index);
+                ReleaseBuffer();
+                buffer = newBuffer;
+            }
+
+            buffer[index] = item;
+            position += 1;
+        }
+
+        /// <inheritdoc/>
+        T IList<T>.this[int index]
+        {
+            get => this[index];
+            set => this[index] = value;
         }
 
         /// <summary>
@@ -95,6 +207,12 @@ namespace DotNext.Buffers
         internal TWrapper WrapBuffer<TWrapper>(ValueFunc<T[], int, TWrapper> factory)
             => factory.Invoke(buffer, position);
 
+        private void ReleaseBuffer()
+        {
+            if (buffer.Length > 0)
+                pool.Return(buffer, RuntimeHelpers.IsReferenceOrContainsReferences<T>());
+        }
+
         /// <summary>
         /// Clears the data written to the underlying buffer.
         /// </summary>
@@ -102,8 +220,7 @@ namespace DotNext.Buffers
         public override void Clear()
         {
             ThrowIfDisposed();
-            if (buffer.Length > 0)
-                pool.Return(buffer, RuntimeHelpers.IsReferenceOrContainsReferences<T>());
+            ReleaseBuffer();
             buffer = Array.Empty<T>();
             position = 0;
         }
@@ -152,7 +269,7 @@ namespace DotNext.Buffers
         {
             var newBuffer = pool.Rent(newSize);
             buffer.CopyTo(newBuffer, 0);
-            pool.Return(buffer, RuntimeHelpers.IsReferenceOrContainsReferences<T>());
+            ReleaseBuffer();
             buffer = newBuffer;
         }
 
@@ -161,8 +278,7 @@ namespace DotNext.Buffers
         {
             if (disposing)
             {
-                if (buffer.Length > 0)
-                    pool.Return(buffer, RuntimeHelpers.IsReferenceOrContainsReferences<T>());
+                ReleaseBuffer();
                 buffer = Array.Empty<T>();
             }
 

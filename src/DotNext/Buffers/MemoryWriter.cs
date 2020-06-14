@@ -1,5 +1,7 @@
 using System;
 using System.Buffers;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace DotNext.Buffers
 {
@@ -7,7 +9,7 @@ namespace DotNext.Buffers
     /// Represents memory-backed output sink which <typeparamref name="T"/> data can be written.
     /// </summary>
     /// <typeparam name="T">The data type that can be written.</typeparam>
-    public abstract class MemoryWriter<T> : Disposable, IBufferWriter<T>, IConvertible<ReadOnlyMemory<T>>
+    public abstract class MemoryWriter<T> : Disposable, IBufferWriter<T>, IConvertible<ReadOnlyMemory<T>>, IReadOnlyList<T>
     {
         /// <summary>
         /// Represents default initial buffer size.
@@ -47,6 +49,53 @@ namespace DotNext.Buffers
                 return position;
             }
         }
+
+        /// <summary>
+        /// Writes single element.
+        /// </summary>
+        /// <param name="item">The element to write.</param>
+        /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
+        public void Add(T item)
+        {
+            GetSpan(1)[0] = item;
+            Advance(1);
+        }
+
+        /// <summary>
+        /// Writes multiple elements.
+        /// </summary>
+        /// <param name="items">The collection of elements to be copied.</param>
+        /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
+        public void AddAll(ICollection<T> items)
+        {
+            if (items.Count == 0)
+                return;
+
+            var span = GetSpan(items.Count);
+            int count;
+            using (var enumerator = items.GetEnumerator())
+            {
+                for (count = 0; count < items.Count && enumerator.MoveNext(); count++)
+                    span[count] = enumerator.Current;
+            }
+
+            Advance(count);
+        }
+
+        /// <inheritdoc/>
+        int IReadOnlyCollection<T>.Count => WrittenCount;
+
+        /// <summary>
+        /// Gets the element at the specified index.
+        /// </summary>
+        /// <param name="index">The index of the element to retrieve.</param>
+        /// <value>The element at the specified index.</value>
+        /// <exception cref="IndexOutOfRangeException"><paramref name="index"/> the index is invalid.</exception>
+        /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
+        public ref readonly T this[int index] => ref WrittenMemory.Span[index];
+
+        /// <inheritdoc/>
+        T IReadOnlyList<T>.this[int index] => this[index];
 
         /// <summary>
         /// Gets the total amount of space within the underlying memory.
@@ -140,5 +189,14 @@ namespace DotNext.Buffers
                 Resize(newSize);
             }
         }
+
+        /// <summary>
+        /// Gets enumerator over all written elements.
+        /// </summary>
+        /// <returns>The enumerator over all written elements.</returns>
+        public IEnumerator<T> GetEnumerator() => Sequence.ToEnumerator(WrittenMemory);
+
+        /// <inheritdoc/>
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

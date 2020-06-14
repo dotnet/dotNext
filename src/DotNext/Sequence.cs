@@ -372,5 +372,18 @@ namespace DotNext
         /// <returns>The enumerator which is limited by count.</returns>
         public static LimitedEnumerator<T> Limit<T>(this IEnumerator<T> enumerator, int count, bool leaveOpen = false)
             => new LimitedEnumerator<T>(enumerator, count, leaveOpen);
+
+        /// <summary>
+        /// Gets enumerator over all elements in the memory.
+        /// </summary>
+        /// <param name="memory">The memory block to be converted.</param>
+        /// <typeparam name="T">The type of elements in the memory.</typeparam>
+        /// <returns>The enumerator over all elements in the memory.</returns>
+        /// <seealso cref="System.Runtime.InteropServices.MemoryMarshal.ToEnumerable{T}(ReadOnlyMemory{T})"/>
+        public static IEnumerator<T> ToEnumerator<T>(ReadOnlyMemory<T> memory)
+        {
+            for (var i = 0; i < memory.Length; i++)
+                yield return memory.Span[i];
+        }
     }
 }

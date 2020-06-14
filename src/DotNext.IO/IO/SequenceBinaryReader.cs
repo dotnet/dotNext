@@ -9,7 +9,7 @@ using Missing = System.Reflection.Missing;
 namespace DotNext.IO
 {
     using Buffers;
-    using static Pipelines.ResultExtensions;
+    using static Pipelines.PipeExtensions;
     using DecodingContext = Text.DecodingContext;
 
     /// <summary>
@@ -53,6 +53,87 @@ namespace DotNext.IO
         /// <param name="output">The block of memory to fill.</param>
         /// <exception cref="EndOfStreamException">Unexpected end of sequence.</exception>
         public void Read(Memory<byte> output) => Read<Missing, MemoryReader>(new MemoryReader(output));
+
+        /// <summary>
+        /// Decodes 64-bit signed integer using the specified endianness.
+        /// </summary>
+        /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">The underlying sequence doesn't contain necessary amount of bytes to decode the value.</exception>
+        public long ReadInt64(bool littleEndian)
+        {
+            var result = Read<long>();
+            result.ReverseIfNeeded(littleEndian);
+            return result;
+        }
+
+        /// <summary>
+        /// Decodes 64-bit unsigned integer using the specified endianness.
+        /// </summary>
+        /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">The underlying sequence doesn't contain necessary amount of bytes to decode the value.</exception>
+        [CLSCompliant(false)]
+        public ulong ReadUInt64(bool littleEndian)
+        {
+            var result = Read<ulong>();
+            result.ReverseIfNeeded(littleEndian);
+            return result;
+        }
+
+        /// <summary>
+        /// Decodes 32-bit signed integer using the specified endianness.
+        /// </summary>
+        /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">The underlying sequence doesn't contain necessary amount of bytes to decode the value.</exception>
+        public int ReadInt32(bool littleEndian)
+        {
+            var result = Read<int>();
+            result.ReverseIfNeeded(littleEndian);
+            return result;
+        }
+
+        /// <summary>
+        /// Decodes 32-bit unsigned integer using the specified endianness.
+        /// </summary>
+        /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">The underlying sequence doesn't contain necessary amount of bytes to decode the value.</exception>
+        [CLSCompliant(false)]
+        public uint ReadUInt32(bool littleEndian)
+        {
+            var result = Read<uint>();
+            result.ReverseIfNeeded(littleEndian);
+            return result;
+        }
+
+        /// <summary>
+        /// Decodes 16-bit signed integer using the specified endianness.
+        /// </summary>
+        /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">The underlying sequence doesn't contain necessary amount of bytes to decode the value.</exception>
+        public short ReadInt16(bool littleEndian)
+        {
+            var result = Read<short>();
+            result.ReverseIfNeeded(littleEndian);
+            return result;
+        }
+
+        /// <summary>
+        /// Decodes 16-bit unsigned integer using the specified endianness.
+        /// </summary>
+        /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">The underlying sequence doesn't contain necessary amount of bytes to decode the value.</exception>
+        [CLSCompliant(false)]
+        public ushort ReadUInt16(bool littleEndian)
+        {
+            var result = Read<ushort>();
+            result.ReverseIfNeeded(littleEndian);
+            return result;
+        }
 
         /// <summary>
         /// Decodes the string.
@@ -124,6 +205,24 @@ namespace DotNext.IO
         }
 
         /// <inheritdoc/>
+        ValueTask<long> IAsyncBinaryReader.ReadInt64Async(bool littleEndian, CancellationToken token)
+            => token.IsCancellationRequested ?
+                new ValueTask<long>(Task.FromCanceled<long>(token)) :
+                new ValueTask<long>(ReadInt64(littleEndian));
+
+        /// <inheritdoc/>
+        ValueTask<int> IAsyncBinaryReader.ReadInt32Async(bool littleEndian, CancellationToken token)
+            => token.IsCancellationRequested ?
+                new ValueTask<int>(Task.FromCanceled<int>(token)) :
+                new ValueTask<int>(ReadInt32(littleEndian));
+
+        /// <inheritdoc/>
+        ValueTask<short> IAsyncBinaryReader.ReadInt16Async(bool littleEndian, CancellationToken token)
+            => token.IsCancellationRequested ?
+                new ValueTask<short>(Task.FromCanceled<short>(token)) :
+                new ValueTask<short>(ReadInt16(littleEndian));
+
+        /// <inheritdoc/>
         ValueTask<string> IAsyncBinaryReader.ReadStringAsync(int length, DecodingContext context, CancellationToken token)
             => token.IsCancellationRequested ?
                 new ValueTask<string>(Task.FromCanceled<string>(token)) :
@@ -136,22 +235,11 @@ namespace DotNext.IO
                 new ValueTask<string>(ReadString(lengthFormat, in context));
 
         /// <inheritdoc/>
-        async Task IAsyncBinaryReader.CopyToAsync(Stream output, CancellationToken token)
-        {
-            while (sequence.TryGet(ref position, out var block))
-                await output.WriteAsync(block, token).ConfigureAwait(false);
-        }
+        Task IAsyncBinaryReader.CopyToAsync(Stream output, CancellationToken token)
+            => output.WriteAsync(sequence.Slice(position), token).AsTask();
 
         /// <inheritdoc/>
-        async Task IAsyncBinaryReader.CopyToAsync(PipeWriter output, CancellationToken token)
-        {
-            while (sequence.TryGet(ref position, out var block))
-            {
-                var result = await output.WriteAsync(block, token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested();
-                if (result.IsCompleted)
-                    break;
-            }
-        }
+        Task IAsyncBinaryReader.CopyToAsync(PipeWriter output, CancellationToken token)
+            => output.WriteAsync(sequence.Slice(position), token).AsTask();
     }
 }

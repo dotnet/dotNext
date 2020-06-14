@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 namespace DotNext.IO.Pipelines
 {
     using Text;
+    using static Buffers.BufferWriter;
 
     [StructLayout(LayoutKind.Auto)]
     internal readonly struct PipeBinaryReader : IAsyncBinaryReader
@@ -40,24 +41,55 @@ namespace DotNext.IO.Pipelines
     internal readonly struct PipeBinaryWriter : IAsyncBinaryWriter
     {
         private readonly PipeWriter output;
+        private readonly int stringLengthThreshold;
+        private readonly int stringEncodingBufferSize;
 
-        internal PipeBinaryWriter(PipeWriter writer) => output = writer;
-
-        public async ValueTask WriteAsync<T>(T value, CancellationToken token)
-            where T : unmanaged
+        internal PipeBinaryWriter(PipeWriter writer, int stringLengthThreshold = -1, int encodingBufferSize = 0)
         {
-            var result = await output.WriteAsync(value, token).ConfigureAwait(false);
-            result.ThrowIfCancellationRequested();
+            output = writer;
+            this.stringLengthThreshold = stringLengthThreshold;
+            stringEncodingBufferSize = encodingBufferSize;
         }
 
-        public async ValueTask WriteAsync(ReadOnlyMemory<byte> input, CancellationToken token)
+        public ValueTask WriteAsync<T>(T value, CancellationToken token)
+            where T : unmanaged
         {
-            var result = await output.WriteAsync(input, token).ConfigureAwait(false);
-            result.ThrowIfCancellationRequested();
+            return WriteAsync(output, value, token);
+
+            static async ValueTask WriteAsync(PipeWriter output, T value, CancellationToken token)
+            {
+                var result = await output.WriteAsync(value, token).ConfigureAwait(false);
+                result.ThrowIfCancellationRequested();
+            }
+        }
+
+        public ValueTask WriteAsync(ReadOnlyMemory<byte> input, CancellationToken token)
+        {
+            return WriteAsync(output, input, token);
+
+            static async ValueTask WriteAsync(PipeWriter output, ReadOnlyMemory<byte> input, CancellationToken token)
+            {
+                var result = await output.WriteAsync(input, token).ConfigureAwait(false);
+                result.ThrowIfCancellationRequested();
+            }
         }
 
         public ValueTask WriteAsync(ReadOnlyMemory<char> chars, EncodingContext context, StringLengthEncoding? lengthFormat, CancellationToken token)
-            => output.WriteStringAsync(chars, context, lengthFormat: lengthFormat, token: token);
+        {
+            if (chars.Length > stringLengthThreshold)
+            {
+                return output.WriteStringAsync(chars, context, lengthFormat: lengthFormat, token: token);
+            }
+
+            return WriteAndFlushOnceAsync(output, chars, context, lengthFormat, token);
+
+            static async ValueTask WriteAndFlushOnceAsync(PipeWriter output, ReadOnlyMemory<char> chars, EncodingContext context, StringLengthEncoding? lengthFormat, CancellationToken token)
+            {
+                output.WriteString(chars.Span, context, lengthFormat: lengthFormat);
+                var result = await output.FlushAsync(token).ConfigureAwait(false);
+                result.ThrowIfCancellationRequested(token);
+            }
+        }
 
         Task IAsyncBinaryWriter.CopyFromAsync(Stream input, CancellationToken token)
             => input.CopyToAsync(output, token);

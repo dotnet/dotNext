@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -290,6 +291,37 @@ namespace DotNext.IO
 
             encoding.GetBytes(value.Span, buffer.Span);
             await stream.WriteAsync(buffer.Memory, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Writes sequence of bytes to the underlying stream synchronously.
+        /// </summary>
+        /// <param name="stream">The stream to write into.</param>
+        /// <param name="sequence">The sequence of bytes.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static void Write(this Stream stream, in ReadOnlySequence<byte> sequence, CancellationToken token = default)
+        {
+            for (var position = sequence.Start; sequence.TryGet(ref position, out var block); token.ThrowIfCancellationRequested())
+            {
+                stream.Write(block.Span);
+            }
+        }
+
+        /// <summary>
+        /// Writes sequence of bytes to the underlying stream asynchronously.
+        /// </summary>
+        /// <param name="stream">The stream to write into.</param>
+        /// <param name="sequence">The sequence of bytes.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static async ValueTask WriteAsync(this Stream stream, ReadOnlySequence<byte> sequence, CancellationToken token)
+        {
+            for (var position = sequence.Start; sequence.TryGet(ref position, out var block); )
+            {
+                await stream.WriteAsync(block, token).ConfigureAwait(false);
+            }
         }
 
         /// <summary>

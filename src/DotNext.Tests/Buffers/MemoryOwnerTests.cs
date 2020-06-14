@@ -1,3 +1,4 @@
+using System;
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using Xunit;
@@ -33,6 +34,25 @@ namespace DotNext.Buffers
         }
 
         [Fact]
+        public static void RentFromMemoryPool2()
+        {
+            using var owner = new MemoryOwner<byte>(MemoryPool<byte>.Shared.Rent, 10);
+            Equal(10, owner.Memory.Length);
+            owner[1] = 42;
+            Equal(42, owner.Memory.Span[1]);
+        }
+
+        [Fact]
+        public static void RentFromMemoryPool3()
+        {
+            Func<int, IMemoryOwner<byte>> provider = MemoryPool<byte>.Shared.Rent; 
+            using var owner = provider.ToAllocator().Invoke(10);
+            Equal(10, owner.Memory.Length);
+            owner[1] = 42;
+            Equal(42, owner.Memory.Span[1]);
+        }
+
+        [Fact]
         public static void RentFromMemoryPoolDefaultSize()
         {
             using var owner = new MemoryOwner<byte>(MemoryPool<byte>.Shared);
@@ -54,6 +74,13 @@ namespace DotNext.Buffers
             Equal(42, owner.Memory.Length);
             owner[2] = 10;
             Equal(10, array[2]);
+        }
+
+        [Fact]
+        public static void ArrayAllocation()
+        {
+            using var owner = MemoryAllocator.CreateArrayAllocator<int>().Invoke(4, false);
+            Equal(4, owner.Length);
         }
     }
 }

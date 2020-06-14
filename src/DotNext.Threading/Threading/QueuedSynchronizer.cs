@@ -8,6 +8,7 @@ namespace DotNext.Threading
 {
     using Generic;
     using Tasks;
+    using CallerMustBeSynchronizedAttribute = Runtime.CompilerServices.CallerMustBeSynchronizedAttribute;
 
     /// <summary>
     /// Provides a framework for implementing asynchronous locks and related synchronization primitives that rely on first-in-first-out (FIFO) wait queues.
@@ -64,6 +65,18 @@ namespace DotNext.Threading
             TNode CreateNode(WaitNode? tail);
         }
 
+        private sealed class DisposeAsyncNode : WaitNode
+        {
+            internal DisposeAsyncNode()
+            {
+            }
+
+            internal DisposeAsyncNode(WaitNode previous)
+                : base(previous)
+            {
+            }
+        }
+
         private protected WaitNode? head, tail;
 
         private protected QueuedSynchronizer()
@@ -85,6 +98,7 @@ namespace DotNext.Threading
             return inList;
         }
 
+        [CallerMustBeSynchronized]
         private async Task<bool> WaitAsync(WaitNode node, TimeSpan timeout, CancellationToken token)
         {
             // cannot use Task.WaitAsync here because this method contains side effect in the form of RemoveNode method
@@ -106,6 +120,7 @@ namespace DotNext.Threading
             return await node.Task.ConfigureAwait(false);
         }
 
+        [CallerMustBeSynchronized]
         private async Task<bool> WaitAsync(WaitNode node, CancellationToken token)
         {
             if (ReferenceEquals(node.Task, await Task.WhenAny(node.Task, Task.Delay(InfiniteTimeSpan, token)).ConfigureAwait(false)))
@@ -167,6 +182,65 @@ namespace DotNext.Threading
             head = tail = null;
         }
 
+        [CallerMustBeSynchronized]
+        private protected bool ProcessDisposeQueue()
+        {
+            if (head is DisposeAsyncNode disposeNode)
+            {
+                disposeNode.Complete();
+                RemoveNode(disposeNode);
+                Dispose();
+                return true;
+            }
+
+            return false;
+        }
+
+        private void NotifyObjectDisposed()
+        {
+            var e = new ObjectDisposedException(GetType().Name);
+
+            for (WaitNode? current = head, next; !(current is null); current = next)
+            {
+                next = current.CleanupAndGotoNext();
+                if (current is DisposeAsyncNode disposeNode)
+                    disposeNode.Complete();
+                else
+                    current.TrySetException(e);
+            }
+
+            head = tail = null;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private protected static bool IsTerminalNode(WaitNode? node)
+            => node is DisposeAsyncNode;
+
+        [CallerMustBeSynchronized]
+        private Task DisposeAsync()
+        {
+            DisposeAsyncNode disposeNode;
+            if (tail is null)
+                head = tail = disposeNode = new DisposeAsyncNode();
+            else
+                tail = disposeNode = new DisposeAsyncNode(tail);
+
+            return disposeNode.Task;
+        }
+
+        private protected static ValueTask DisposeAsync<T>(T synchronizer, Func<T, bool> lockStateChecker)
+            where T : QueuedSynchronizer
+        {
+            lock (synchronizer)
+            {
+                if (lockStateChecker(synchronizer))
+                    return new ValueTask(synchronizer.DisposeAsync());
+
+                Dispose();
+                return new ValueTask();
+            }
+        }
+
         /// <summary>
         /// Releases all resources associated with exclusive lock.
         /// </summary>
@@ -178,9 +252,7 @@ namespace DotNext.Threading
         {
             if (disposing)
             {
-                for (var current = head; !(current is null); current = current.CleanupAndGotoNext())
-                    current.TrySetCanceled();
-                head = tail = null;
+                NotifyObjectDisposed();
             }
 
             base.Dispose(disposing);

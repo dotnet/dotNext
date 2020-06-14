@@ -13,5 +13,11 @@ namespace DotNext.IO.MemoryMappedFiles
                 3 => FileAccess.ReadWrite,
                 _ => default,
             };
+
+        internal static void ReleasePointerAndDispose(this MemoryMappedViewAccessor accessor)
+        {
+            accessor.SafeMemoryMappedViewHandle.ReleasePointer();
+            accessor.Dispose();
+        }
     }
 }

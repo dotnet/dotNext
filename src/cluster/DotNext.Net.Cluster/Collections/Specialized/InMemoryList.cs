@@ -16,11 +16,7 @@ namespace DotNext.Collections.Specialized
 
         public int Count => memory.Length;
 
-        public IEnumerator<T> GetEnumerator()
-        {
-            for (var i = 0; i < memory.Length; i++)
-                yield return memory.Span[i];
-        }
+        public IEnumerator<T> GetEnumerator() => Sequence.ToEnumerator(memory);
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 

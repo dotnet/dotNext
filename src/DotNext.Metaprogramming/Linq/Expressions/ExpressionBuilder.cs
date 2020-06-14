@@ -1308,5 +1308,44 @@ namespace DotNext.Linq.Expressions
         /// <returns>The expression representing given range.</returns>
         public static RangeExpression Quote(this in Range range)
             => range.Start.Quote().To(range.End.Quote());
+
+        /// <summary>
+        /// Constructs null-coalescing assignment expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <c>left ??= right;</c>.
+        /// </remarks>
+        /// <param name="left">The left operand of the assignment.</param>
+        /// <param name="right">The right operand of the assignment.</param>
+        /// <returns>The constructed expression.</returns>
+        /// <exception cref="ArgumentException"><paramref name="right"/> is not assignable to <paramref name="left"/>.</exception>
+        public static NullCoalescingAssignmentExpression NullCoalescingAssignment(this ParameterExpression left, Expression right)
+            => new NullCoalescingAssignmentExpression(left, right);
+
+        /// <summary>
+        /// Constructs null-coalescing assignment expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <c>left.Member ??= right;</c>.
+        /// </remarks>
+        /// <param name="left">The left operand of the assignment.</param>
+        /// <param name="right">The right operand of the assignment.</param>
+        /// <returns>The constructed expression.</returns>
+        /// <exception cref="ArgumentException"><paramref name="right"/> is not assignable to <paramref name="left"/>.</exception>
+        public static NullCoalescingAssignmentExpression NullCoalescingAssignment(this MemberExpression left, Expression right)
+            => new NullCoalescingAssignmentExpression(left, right);
+
+        /// <summary>
+        /// Constructs null-coalescing assignment expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <c>left.Member ??= right;</c>.
+        /// </remarks>
+        /// <param name="left">The left operand of the assignment.</param>
+        /// <param name="right">The right operand of the assignment.</param>
+        /// <returns>The constructed expression.</returns>
+        /// <exception cref="ArgumentException"><paramref name="right"/> is not assignable to <paramref name="left"/>.</exception>
+        public static NullCoalescingAssignmentExpression NullCoalescingAssignment(this IndexExpression left, Expression right)
+            => new NullCoalescingAssignmentExpression(left, right);
     }
 }

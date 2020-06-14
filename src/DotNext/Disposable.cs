@@ -95,7 +95,7 @@ namespace DotNext
         /// </summary>
         /// <param name="objects">An array of objects to dispose.</param>
         public static void Dispose(params IDisposable?[] objects)
-            => Dispose((IEnumerable<IDisposable?>)objects);
+            => Dispose(objects.As<IEnumerable<IDisposable?>>());
 
         /// <summary>
         /// Disposes many objects in safe manner.
@@ -103,7 +103,7 @@ namespace DotNext
         /// <param name="objects">An array of objects to dispose.</param>
         /// <returns>The task representing asynchronous execution of this method.</returns>
         public static ValueTask DisposeAsync(params IAsyncDisposable?[] objects)
-            => DisposeAsync((IEnumerable<IAsyncDisposable?>)objects);
+            => DisposeAsync(objects.As<IEnumerable<IAsyncDisposable?>>());
 
         /// <summary>
         /// Finalizes this object.

@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Buffers;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.Buffers
 {
     internal sealed class Chunk<T> : ReadOnlySequenceSegment<T>
     {
         private Chunk(ReadOnlyMemory<T> segment)
-        {
-            RunningIndex = 0;
-            Memory = segment;
-        }
+            => Memory = segment;
 
         private new Chunk<T> Next(ReadOnlyMemory<T> segment)
         {
@@ -19,12 +18,17 @@ namespace DotNext.Buffers
             return chunk;
         }
 
-        internal static void AddChunk(ReadOnlyMemory<T> segment, ref Chunk<T>? first, ref Chunk<T>? last)
+        internal static void AddChunk(ReadOnlyMemory<T> segment, [AllowNull] ref Chunk<T> first, [AllowNull] ref Chunk<T> last)
         {
+            Debug.Assert(!segment.IsEmpty);
+
             if (first is null || last is null)
-                first = last = new Chunk<T>(segment);
+                first = last = new Chunk<T>(segment) { RunningIndex = 0L };
             else
                 last = last.Next(segment);
         }
+
+        internal static ReadOnlySequence<T> CreateSequence(Chunk<T> head, Chunk<T> tail)
+            => new ReadOnlySequence<T>(head, 0, tail, tail.Memory.Length);
     }
 }

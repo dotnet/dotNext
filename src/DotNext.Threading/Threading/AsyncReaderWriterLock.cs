@@ -15,7 +15,7 @@ namespace DotNext.Threading
     /// <remarks>
     /// This lock doesn't support recursion.
     /// </remarks>
-    public class AsyncReaderWriterLock : QueuedSynchronizer
+    public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     {
         private sealed class WriteLockNode : WaitNode
         {
@@ -237,24 +237,38 @@ namespace DotNext.Threading
         /// Returns a stamp that can be validated later.
         /// </summary>
         /// <returns>Optimistic read stamp. May be invalid.</returns>
+        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
         public LockStamp TryOptimisticRead()
-            => state.Value.WriteLock ? new LockStamp() : new LockStamp(state);
+        {
+            ThrowIfDisposed();
+            return state.Value.WriteLock ? new LockStamp() : new LockStamp(state);
+        }
 
         /// <summary>
         /// Attempts to acquire write lock without blocking.
         /// </summary>
         /// <param name="stamp">The stamp of the read lock.</param>
         /// <returns><see langword="true"/> if lock is acquired successfully; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public bool TryEnterWriteLock(in LockStamp stamp) => stamp.IsValid && TryAcquire<WriteLockNode, State>(ref state.Value);
+        public bool TryEnterWriteLock(in LockStamp stamp)
+        {
+            ThrowIfDisposed();
+            return stamp.IsValid && TryAcquire<WriteLockNode, State>(ref state.Value);
+        }
 
         /// <summary>
         /// Attempts to obtain reader lock synchronously without blocking caller thread.
         /// </summary>
         /// <returns><see langword="true"/> if lock is taken successfuly; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public bool TryEnterReadLock() => TryAcquire<ReadLockNode, State>(ref state.Value);
+        public bool TryEnterReadLock()
+        {
+            ThrowIfDisposed();
+            return TryAcquire<ReadLockNode, State>(ref state.Value);
+        }
 
         /// <summary>
         /// Tries to enter the lock in read mode asynchronously, with an optional time-out.
@@ -311,8 +325,13 @@ namespace DotNext.Threading
         /// Attempts to obtain writer lock synchronously without blocking caller thread.
         /// </summary>
         /// <returns><see langword="true"/> if lock is taken successfuly; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public bool TryEnterWriteLock() => TryAcquire<WriteLockNode, State>(ref state.Value);
+        public bool TryEnterWriteLock()
+        {
+            ThrowIfDisposed();
+            return TryAcquire<WriteLockNode, State>(ref state.Value);
+        }
 
         /// <summary>
         /// Tries to enter the lock in write mode asynchronously, with an optional time-out.
@@ -358,8 +377,13 @@ namespace DotNext.Threading
         /// Attempts to obtain upgradeable reader lock synchronously without blocking caller thread.
         /// </summary>
         /// <returns><see langword="true"/> if lock is taken successfuly; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public bool TryEnterUpgradeableReadLock() => TryAcquire<UpgradeableReadLockNode, State>(ref state.Value);
+        public bool TryEnterUpgradeableReadLock()
+        {
+            ThrowIfDisposed();
+            return TryAcquire<UpgradeableReadLockNode, State>(ref state.Value);
+        }
 
         /// <summary>
         /// Tries to enter the lock in upgradeable mode asynchronously, with an optional time-out.
@@ -390,6 +414,7 @@ namespace DotNext.Threading
         /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
         public Task EnterUpgradeableReadLockAsync(TimeSpan timeout, CancellationToken token = default) => TryEnterUpgradeableReadLockAsync(timeout, token).CheckOnTimeout();
 
+        [CallerMustBeSynchronized]
         private void ProcessReadLocks()
         {
             var readLock = head as ReadLockNode;
@@ -410,6 +435,9 @@ namespace DotNext.Threading
                 RemoveNode(readLock);
                 readLock.Complete();
                 currentState.ReadLocks += 1L;
+
+                if (IsTerminalNode(next))
+                    break;
             }
         }
 
@@ -429,6 +457,9 @@ namespace DotNext.Threading
             ref var currentState = ref state.Value;
             if (currentState.WriteLock || !currentState.Upgradeable || currentState.ReadLocks == 0L)
                 throw new SynchronizationLockException(ExceptionMessages.NotInUpgradeableReadLock);
+            if (ProcessDisposeQueue())
+                return;
+
             currentState.Upgradeable = false;
 
             // no more readers, write lock can be acquired
@@ -460,6 +491,8 @@ namespace DotNext.Threading
             ref var currentState = ref state.Value;
             if (!currentState.WriteLock)
                 throw new SynchronizationLockException(ExceptionMessages.NotInWriteLock);
+            if (ProcessDisposeQueue())
+                return;
 
             if (head is WriteLockNode writeLock)
             {
@@ -490,12 +523,27 @@ namespace DotNext.Threading
             if (currentState.WriteLock || currentState.ReadLocks == 1L && currentState.Upgradeable || currentState.ReadLocks == 0L)
                 throw new SynchronizationLockException(ExceptionMessages.NotInReadLock);
 
-            if (--currentState.ReadLocks == 0L && head is WriteLockNode writeLock)
+            if (!ProcessDisposeQueue() && --currentState.ReadLocks == 0L && head is WriteLockNode writeLock)
             {
                 RemoveNode(writeLock);
                 writeLock.Complete();
                 currentState.WriteLock = true;
             }
+        }
+
+        /// <summary>
+        /// Disposes this lock asynchronously and gracefully.
+        /// </summary>
+        /// <remarks>
+        /// If this lock is not acquired then the method just completes synchronously.
+        /// Otherwise, it waits for calling of <see cref="ExitReadLock"/>,  method.
+        /// </remarks>
+        /// <returns>The task representing graceful shutdown of this lock.</returns>
+        public ValueTask DisposeAsync()
+        {
+            static bool IsLockHeld(AsyncReaderWriterLock rwLock) => rwLock.IsReadLockHeld || rwLock.IsWriteLockHeld;
+
+            return IsDisposed ? new ValueTask() : DisposeAsync(this, IsLockHeld);
         }
     }
 }
