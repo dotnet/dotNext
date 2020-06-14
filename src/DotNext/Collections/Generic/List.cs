@@ -8,7 +8,7 @@ using static InlineIL.TypeRef;
 
 namespace DotNext.Collections.Generic
 {
-    using static Runtime.Intrinsics;
+    using static Reflection.CollectionType;
 
     /// <summary>
     /// Provides various extensions for <see cref="IList{T}"/> interface.
@@ -39,20 +39,22 @@ namespace DotNext.Collections.Generic
             static Indexer()
             {
                 Ldtoken(PropertyGet(Type<IReadOnlyList<T>>(), ItemIndexerName));
-                Pop(out RuntimeMethodHandle handle);
-                ReadOnly = DelegateHelpers.CreateDelegate<Func<IReadOnlyList<T>, int, T>>((MethodInfo)MethodBase.GetMethodFromHandle(handle, TypeOf<IReadOnlyList<T>>()));
+                Pop(out RuntimeMethodHandle method);
+                Ldtoken(Type<IReadOnlyList<T>>());
+                Pop(out RuntimeTypeHandle type);
+                ReadOnly = DelegateHelpers.CreateDelegate<Func<IReadOnlyList<T>, int, T>>((MethodInfo)MethodBase.GetMethodFromHandle(method, type));
 
                 Ldtoken(PropertyGet(Type<IList<T>>(), ItemIndexerName));
-                Pop(out handle);
-                Getter = DelegateHelpers.CreateDelegate<Func<IList<T>, int, T>>((MethodInfo)MethodBase.GetMethodFromHandle(handle, TypeOf<IList<T>>()));
+                Pop(out method);
+                Ldtoken(Type<IList<T>>());
+                Pop(out type);
+                Getter = DelegateHelpers.CreateDelegate<Func<IList<T>, int, T>>((MethodInfo)MethodBase.GetMethodFromHandle(method, type));
 
                 Ldtoken(PropertySet(Type<IList<T>>(), ItemIndexerName));
-                Pop(out handle);
-                Setter = DelegateHelpers.CreateDelegate<Action<IList<T>, int, T>>((MethodInfo)MethodBase.GetMethodFromHandle(handle, TypeOf<IList<T>>()));
+                Pop(out method);
+                Setter = DelegateHelpers.CreateDelegate<Action<IList<T>, int, T>>((MethodInfo)MethodBase.GetMethodFromHandle(method, type));
             }
         }
-
-        private const string ItemIndexerName = "Item";
 
         /// <summary>
         /// Returns <see cref="IReadOnlyList{T}.get_Item"/> as delegate
