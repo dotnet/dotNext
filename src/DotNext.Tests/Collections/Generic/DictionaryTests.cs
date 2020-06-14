@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Xunit;
+using Enumerable = System.Linq.Enumerable;
 
 namespace DotNext.Collections.Generic
 {
@@ -133,6 +134,32 @@ namespace DotNext.Collections.Generic
             Single(dict);
             opt = dict.TryRemove(10);
             False(opt.HasValue);
+        }
+
+        [Fact]
+        public static void ReadOnlyKeysAndValuesAsDelegate()
+        {
+            IReadOnlyDictionary<string, int> dict = new Dictionary<string, int>()
+            {
+                {"one", 1},
+                {"two", 2}
+            };
+
+            Equal(new HashSet<string>(new[] {"one", "two"}), Enumerable.ToHashSet(dict.KeysGetter().Invoke()));
+            Equal(new HashSet<int>(new[] {1, 2}), Enumerable.ToHashSet(dict.ValuesGetter().Invoke()));
+        }
+
+        [Fact]
+        public static void KeysAndValuesAsDelegate()
+        {
+            IDictionary<string, int> dict = new Dictionary<string, int>()
+            {
+                {"one", 1},
+                {"two", 2}
+            };
+
+            Equal(new HashSet<string>(new[] {"one", "two"}), Enumerable.ToHashSet(dict.KeysGetter().Invoke()));
+            Equal(new HashSet<int>(new[] {1, 2}), Enumerable.ToHashSet(dict.ValuesGetter().Invoke()));
         }
     }
 }

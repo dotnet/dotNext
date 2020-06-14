@@ -76,6 +76,40 @@ namespace DotNext.Collections.Generic
         }
 
         /// <summary>
+        /// Returns <see cref="IReadOnlyDictionary{TKey, TValue}.Keys"/> as
+        /// delegate attached to the dictionary instance.
+        /// </summary>
+        /// <typeparam name="TKey">Type of dictionary keys.</typeparam>
+        /// <typeparam name="TValue">Type of dictionary values.</typeparam>
+        /// <param name="dictionary">Read-only dictionary instance.</param>
+        /// <returns>A delegate providing access to dictionary keys.</returns>
+        public static Func<IEnumerable<TKey>> KeysGetter<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> dictionary)
+        {
+            Push(dictionary);
+            Dup();
+            Ldvirtftn(PropertyGet(Type<IReadOnlyDictionary<TKey, TValue>>(), nameof(IReadOnlyDictionary<TKey, TValue>.Keys)));
+            Newobj(Constructor(Type<Func<IEnumerable<TKey>>>(), Type<object>(), Type<IntPtr>()));
+            return Return<Func<IEnumerable<TKey>>>();
+        }
+
+        /// <summary>
+        /// Returns <see cref="IReadOnlyDictionary{TKey, TValue}.Values"/> as
+        /// delegate attached to the dictionary instance.
+        /// </summary>
+        /// <typeparam name="TKey">Type of dictionary keys.</typeparam>
+        /// <typeparam name="TValue">Type of dictionary values.</typeparam>
+        /// <param name="dictionary">Read-only dictionary instance.</param>
+        /// <returns>A delegate providing access to dictionary keys.</returns>
+        public static Func<IEnumerable<TValue>> ValuesGetter<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> dictionary)
+        {
+            Push(dictionary);
+            Dup();
+            Ldvirtftn(PropertyGet(Type<IReadOnlyDictionary<TKey, TValue>>(), nameof(IReadOnlyDictionary<TKey, TValue>.Values)));
+            Newobj(Constructor(Type<Func<IEnumerable<TKey>>>(), Type<object>(), Type<IntPtr>()));
+            return Return<Func<IEnumerable<TValue>>>();
+        }
+
+        /// <summary>
         /// Returns <see cref="IDictionary{TKey, TValue}.get_Item"/> as
         /// delegate attached to the dictionary instance.
         /// </summary>
@@ -107,6 +141,40 @@ namespace DotNext.Collections.Generic
             Ldvirtftn(PropertySet(Type<IDictionary<TKey, TValue>>(), ItemIndexerName));
             Newobj(Constructor(Type<Action<TKey, TValue>>(), Type<object>(), Type<IntPtr>()));
             return Return<Action<TKey, TValue>>();
+        }
+
+        /// <summary>
+        /// Returns <see cref="IDictionary{TKey, TValue}.Keys"/> as
+        /// delegate attached to the dictionary instance.
+        /// </summary>
+        /// <typeparam name="TKey">Type of dictionary keys.</typeparam>
+        /// <typeparam name="TValue">Type of dictionary values.</typeparam>
+        /// <param name="dictionary">Read-only dictionary instance.</param>
+        /// <returns>A delegate providing access to dictionary keys.</returns>
+        public static Func<ICollection<TKey>> KeysGetter<TKey, TValue>(this IDictionary<TKey, TValue> dictionary)
+        {
+            Push(dictionary);
+            Dup();
+            Ldvirtftn(PropertyGet(Type<IDictionary<TKey, TValue>>(), nameof(IDictionary<TKey, TValue>.Keys)));
+            Newobj(Constructor(Type<Func<ICollection<TKey>>>(), Type<object>(), Type<IntPtr>()));
+            return Return<Func<ICollection<TKey>>>();
+        }
+
+        /// <summary>
+        /// Returns <see cref="IDictionary{TKey, TValue}.Values"/> as
+        /// delegate attached to the dictionary instance.
+        /// </summary>
+        /// <typeparam name="TKey">Type of dictionary keys.</typeparam>
+        /// <typeparam name="TValue">Type of dictionary values.</typeparam>
+        /// <param name="dictionary">Read-only dictionary instance.</param>
+        /// <returns>A delegate providing access to dictionary keys.</returns>
+        public static Func<ICollection<TValue>> ValuesGetter<TKey, TValue>(this IDictionary<TKey, TValue> dictionary)
+        {
+            Push(dictionary);
+            Dup();
+            Ldvirtftn(PropertyGet(Type<IDictionary<TKey, TValue>>(), nameof(IDictionary<TKey, TValue>.Values)));
+            Newobj(Constructor(Type<Func<ICollection<TKey>>>(), Type<object>(), Type<IntPtr>()));
+            return Return<Func<ICollection<TValue>>>();
         }
 
         /// <summary>
