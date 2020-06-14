@@ -15,7 +15,9 @@
 | [Concept Types](https://github.com/dotnet/csharplang/issues/110) | [Documentation](https://sakno.github.io/dotNext/features/concept.html) |
 | [Expression Trees covering additional language constructs](https://github.com/dotnet/csharplang/issues/158), i.e. `foreach`, `await`, patterns, multi-line lambda expressions | [Metaprogramming](https://sakno.github.io/dotNext/features/metaprogramming/index.html) |
 | [Async Locks](https://github.com/dotnet/corefx/issues/34073) | [Documentation](https://sakno.github.io/dotNext/features/threading/index.html) |
-| [High-performance general purpose Write-Ahead Log](https://github.com/dotnet/corefx/issues/25034) | [Persistent Log](https://sakno.github.io/dotNext/features/cluster/wal.html)  | 
+| [High-performance general purpose Write-Ahead Log](https://github.com/dotnet/corefx/issues/25034) | [Persistent Log](https://sakno.github.io/dotNext/features/cluster/wal.html)  |
+| [Memory-mapped file as Memory&lt;byte&gt;](https://github.com/dotnet/runtime/issues/37227) | [MemoryMappedFileExtensions](https://sakno.github.io/dotNext/features/io/mmfile.html) |
+| [Memory-mapped file as ReadOnlySequence&lt;byte&gt;](https://github.com/dotnet/runtime/issues/24805) | [ReadOnlySequenceAccessor](https://sakno.github.io/dotNext/api/DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.html) |
 
 Quick overview of additional features:
 
@@ -43,7 +45,7 @@ Documentation for older versions:
 * [1.x](https://sakno.github.io/dotNext/versions/1.x/index.html)
 
 # What's new
-Release Date: MM-DD-2020
+Release Date: 06-14-2020
 
 <a href="https://www.nuget.org/packages/dotnext/2.6.0">DotNext 2.6.0</a>
 * More ways to create `MemoryOwner<T>`
@@ -52,12 +54,19 @@ Release Date: MM-DD-2020
 
 <a href="https://www.nuget.org/packages/dotnext.io/2.6.0">DotNext.IO 2.6.0</a>
 * Improved performance of `FileBufferingWriter`
-* `FileBufferingWriter` now contains correctly implemented `BeginWrite` and `EndWrite` methods 
+* `FileBufferingWriter` now contains correctly implemented `BeginWrite` and `EndWrite` methods
+* `FileBufferingWriter` ables to return written content as [ReadOnlySequence&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1)
 * Introduced `BufferWriter` class with extension methods for [IBufferWriter&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) aimed to encoding strings, primitive and blittable types
 * Support of `ulong`, `uint` and `ushort` data types available for encoding/decoding in `SequenceBinaryReader` and `PipeExtensions` classes
+* Ability to access memory-mapped file content via [ReadOnlySequence&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1)
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.6.0">DotNext.Metaprogramming 2.6.0</a>
 * Introduced null-coalescing assignment expression
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.reflection/2.6.0">DotNext.Reflection 2.6.0</a>
+* Introduced null-coalescing assignment expression
+* Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.threading/2.6.0">DotNext.Threading 2.6.0</a>
 * Fixed race-condition caused by `AsyncTrigger.Signal` method
@@ -65,7 +74,8 @@ Release Date: MM-DD-2020
 * `AsyncExclusiveLock`, `AsyncReaderWriterLock` and `AsyncSharedLock` now have support of graceful shutdown implemented via [IAsyncDisposable](https://docs.microsoft.com/en-us/dotnet/api/system.iasyncdisposable) interface
 
 <a href="https://www.nuget.org/packages/dotnext.unsafe/2.6.0">DotNext.Unsafe 2.6.0</a>
-* Ability to access memory-mapped file content via [ReadOnlySequence&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1)
+* Optimized performance of methods in `MemoryMappedFileExtensions` class
+* Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/2.6.0">DotNext.Net.Cluster 2.6.0</a>
 * Fixed behavior of `PersistentState.DisposeAsync` so it suppress finalization correctly
@@ -73,6 +83,10 @@ Release Date: MM-DD-2020
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/2.6.0">DotNext.AspNetCore.Cluster 2.6.0</a>
 * Respect shutdown timeout inherited from parent host in Hosted Mode
 * Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.augmentation.fody/2.1.0">DotNext.Augmentation.Fody 2.1.0</a>
+* Removed usage of obsolete methods from `Fody`
+* Updated `Fody` version
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 

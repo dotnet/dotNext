@@ -8,8 +8,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\DotNext\DotNext.csproj" />
 
-    <PackageReference Include="Fody" Version="6.1.1" PrivateAssets="all" />
-    <PackageReference Include="DotNext.Augmentation.Fody" Version="2.0.1" PrivateAssets="all" />
+    <PackageReference Include="Fody" Version="6.2.0" PrivateAssets="all" />
+    <PackageReference Include="DotNext.Augmentation.Fody" Version="2.1.0" PrivateAssets="all" />
   </ItemGroup>
 
 </Project>

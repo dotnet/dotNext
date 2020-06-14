@@ -3,7 +3,7 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <RootNamespace>DotNext</RootNamespace>
     <Nullable>enable</Nullable>
-    <Version>2.4.0</Version>
+    <Version>2.6.0</Version>
     <Authors>Roman Sakno</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>Asynchronous locks and .NET threading extensions</Description>
@@ -42,8 +42,8 @@
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="System.Threading.Channels" Version="4.7.1" />
-    <PackageReference Include="Fody" Version="6.1.1" PrivateAssets="all" />
-    <PackageReference Include="DotNext.Augmentation.Fody" Version="2.0.1" PrivateAssets="all" />
+    <PackageReference Include="Fody" Version="6.2.0" PrivateAssets="all" />
+    <PackageReference Include="DotNext.Augmentation.Fody" Version="2.1.0" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'!='Release'">
@@ -51,7 +51,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="DotNext" Version="[2.4.0, 3)" />
+    <PackageReference Include="DotNext" Version="[2.6.0, 3)" />
   </ItemGroup>
 
   <ItemGroup>

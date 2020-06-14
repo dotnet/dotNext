@@ -1,6 +1,48 @@
 Release Notes
 ====
 
+# 06-14-2020
+<a href="https://www.nuget.org/packages/dotnext/2.6.0">DotNext 2.6.0</a>
+* More ways to create `MemoryOwner<T>`
+* Removed copying of synchronization context when creating continuation for `Future` object
+* Introduced APM helper methods in `AsyncDelegate` class
+
+<a href="https://www.nuget.org/packages/dotnext.io/2.6.0">DotNext.IO 2.6.0</a>
+* Improved performance of `FileBufferingWriter`
+* `FileBufferingWriter` now contains correctly implemented `BeginWrite` and `EndWrite` methods
+* `FileBufferingWriter` ables to return written content as [ReadOnlySequence&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1)
+* Introduced `BufferWriter` class with extension methods for [IBufferWriter&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) aimed to encoding strings, primitive and blittable types
+* Support of `ulong`, `uint` and `ushort` data types available for encoding/decoding in `SequenceBinaryReader` and `PipeExtensions` classes
+* Ability to access memory-mapped file content via [ReadOnlySequence&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1)
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.6.0">DotNext.Metaprogramming 2.6.0</a>
+* Introduced null-coalescing assignment expression
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.reflection/2.6.0">DotNext.Reflection 2.6.0</a>
+* Introduced null-coalescing assignment expression
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/2.6.0">DotNext.Threading 2.6.0</a>
+* Fixed race-condition caused by `AsyncTrigger.Signal` method
+* `AsyncLock` now implements [IAsyncDisposable](https://docs.microsoft.com/en-us/dotnet/api/system.iasyncdisposable) interface
+* `AsyncExclusiveLock`, `AsyncReaderWriterLock` and `AsyncSharedLock` now have support of graceful shutdown implemented via [IAsyncDisposable](https://docs.microsoft.com/en-us/dotnet/api/system.iasyncdisposable) interface
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/2.6.0">DotNext.Unsafe 2.6.0</a>
+* Optimized performance of methods in `MemoryMappedFileExtensions` class
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/2.6.0">DotNext.Net.Cluster 2.6.0</a>
+* Fixed behavior of `PersistentState.DisposeAsync` so it suppress finalization correctly
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/2.6.0">DotNext.AspNetCore.Cluster 2.6.0</a>
+* Respect shutdown timeout inherited from parent host in Hosted Mode
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.augmentation.fody/2.1.0">DotNext.Augmentation.Fody 2.1.0</a>
+* Removed usage of obsolete methods from `Fody`
+* Updated `Fody` version
+
 # 06-01-2020
 <a href="https://www.nuget.org/packages/dotnext/2.5.0">DotNext 2.5.0</a>
 * Improved performance of `PooledBufferWriter`
