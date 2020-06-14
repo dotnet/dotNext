@@ -128,7 +128,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T As&lt;T&gt;(this T obj)
-
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -204,7 +203,6 @@ manager.As&lt;IDisposable>().Dispose();</code></pre>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static (TResult1, TResult2) Decompose&lt;T, TResult1, TResult2&gt;(this T obj, in ValueFunc&lt;T, TResult1&gt; decomposer1, in ValueFunc&lt;T, TResult2&gt; decomposer2)
-
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -294,7 +292,6 @@ manager.As&lt;IDisposable>().Dispose();</code></pre>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Decompose&lt;T, TResult1, TResult2&gt;(this T obj, in ValueFunc&lt;T, TResult1&gt; decomposer1, in ValueFunc&lt;T, TResult2&gt; decomposer2, out TResult1 result1, out TResult2 result2)
-
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -380,7 +377,6 @@ manager.As&lt;IDisposable>().Dispose();</code></pre>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static (TResult1, TResult2) Decompose&lt;T, TResult1, TResult2&gt;(this T obj, Func&lt;T, TResult1&gt; decomposer1, Func&lt;T, TResult2&gt; decomposer2)
-
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -470,7 +466,6 @@ manager.As&lt;IDisposable>().Dispose();</code></pre>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Decompose&lt;T, TResult1, TResult2&gt;(this T obj, Func&lt;T, TResult1&gt; decomposer1, Func&lt;T, TResult2&gt; decomposer2, out TResult1 result1, out TResult2 result2)
-
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -557,7 +552,6 @@ without modification of it.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static UserDataStorage GetUserData&lt;T&gt;(this T obj)
-
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -633,7 +627,6 @@ of the specified objects.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static bool IsOneOf&lt;T&gt;(this T value, params T[] values)
-
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -712,7 +705,6 @@ of the specified objects.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static bool IsOneOf&lt;T&gt;(this T value, IEnumerable&lt;T&gt; values)
-
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

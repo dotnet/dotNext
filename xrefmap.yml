@@ -2650,6 +2650,31 @@ references:
   fullName.vb: DotNext.Collections.Generic.Dictionary.IndexerSetter(Of TKey, TValue)(System.Collections.Generic.IDictionary(Of TKey, TValue))
   nameWithType: Dictionary.IndexerSetter<TKey, TValue>(IDictionary<TKey, TValue>)
   nameWithType.vb: Dictionary.IndexerSetter(Of TKey, TValue)(IDictionary(Of TKey, TValue))
+- uid: DotNext.Collections.Generic.Dictionary.KeysGetter*
+  name: KeysGetter
+  href: api/DotNext.Collections.Generic.Dictionary.html#DotNext_Collections_Generic_Dictionary_KeysGetter_
+  commentId: Overload:DotNext.Collections.Generic.Dictionary.KeysGetter
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.Dictionary.KeysGetter
+  nameWithType: Dictionary.KeysGetter
+- uid: DotNext.Collections.Generic.Dictionary.KeysGetter``2(System.Collections.Generic.IDictionary{``0,``1})
+  name: KeysGetter<TKey, TValue>(IDictionary<TKey, TValue>)
+  href: api/DotNext.Collections.Generic.Dictionary.html#DotNext_Collections_Generic_Dictionary_KeysGetter__2_System_Collections_Generic_IDictionary___0___1__
+  commentId: M:DotNext.Collections.Generic.Dictionary.KeysGetter``2(System.Collections.Generic.IDictionary{``0,``1})
+  name.vb: KeysGetter(Of TKey, TValue)(IDictionary(Of TKey, TValue))
+  fullName: DotNext.Collections.Generic.Dictionary.KeysGetter<TKey, TValue>(System.Collections.Generic.IDictionary<TKey, TValue>)
+  fullName.vb: DotNext.Collections.Generic.Dictionary.KeysGetter(Of TKey, TValue)(System.Collections.Generic.IDictionary(Of TKey, TValue))
+  nameWithType: Dictionary.KeysGetter<TKey, TValue>(IDictionary<TKey, TValue>)
+  nameWithType.vb: Dictionary.KeysGetter(Of TKey, TValue)(IDictionary(Of TKey, TValue))
+- uid: DotNext.Collections.Generic.Dictionary.KeysGetter``2(System.Collections.Generic.IReadOnlyDictionary{``0,``1})
+  name: KeysGetter<TKey, TValue>(IReadOnlyDictionary<TKey, TValue>)
+  href: api/DotNext.Collections.Generic.Dictionary.html#DotNext_Collections_Generic_Dictionary_KeysGetter__2_System_Collections_Generic_IReadOnlyDictionary___0___1__
+  commentId: M:DotNext.Collections.Generic.Dictionary.KeysGetter``2(System.Collections.Generic.IReadOnlyDictionary{``0,``1})
+  name.vb: KeysGetter(Of TKey, TValue)(IReadOnlyDictionary(Of TKey, TValue))
+  fullName: DotNext.Collections.Generic.Dictionary.KeysGetter<TKey, TValue>(System.Collections.Generic.IReadOnlyDictionary<TKey, TValue>)
+  fullName.vb: DotNext.Collections.Generic.Dictionary.KeysGetter(Of TKey, TValue)(System.Collections.Generic.IReadOnlyDictionary(Of TKey, TValue))
+  nameWithType: Dictionary.KeysGetter<TKey, TValue>(IReadOnlyDictionary<TKey, TValue>)
+  nameWithType.vb: Dictionary.KeysGetter(Of TKey, TValue)(IReadOnlyDictionary(Of TKey, TValue))
 - uid: DotNext.Collections.Generic.Dictionary.TryGetValue*
   name: TryGetValue
   href: api/DotNext.Collections.Generic.Dictionary.html#DotNext_Collections_Generic_Dictionary_TryGetValue_
@@ -2691,6 +2716,31 @@ references:
   fullName.vb: DotNext.Collections.Generic.Dictionary.TryRemove(Of TKey, TValue)(System.Collections.Generic.IDictionary(Of TKey, TValue), TKey)
   nameWithType: Dictionary.TryRemove<TKey, TValue>(IDictionary<TKey, TValue>, TKey)
   nameWithType.vb: Dictionary.TryRemove(Of TKey, TValue)(IDictionary(Of TKey, TValue), TKey)
+- uid: DotNext.Collections.Generic.Dictionary.ValuesGetter*
+  name: ValuesGetter
+  href: api/DotNext.Collections.Generic.Dictionary.html#DotNext_Collections_Generic_Dictionary_ValuesGetter_
+  commentId: Overload:DotNext.Collections.Generic.Dictionary.ValuesGetter
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.Dictionary.ValuesGetter
+  nameWithType: Dictionary.ValuesGetter
+- uid: DotNext.Collections.Generic.Dictionary.ValuesGetter``2(System.Collections.Generic.IDictionary{``0,``1})
+  name: ValuesGetter<TKey, TValue>(IDictionary<TKey, TValue>)
+  href: api/DotNext.Collections.Generic.Dictionary.html#DotNext_Collections_Generic_Dictionary_ValuesGetter__2_System_Collections_Generic_IDictionary___0___1__
+  commentId: M:DotNext.Collections.Generic.Dictionary.ValuesGetter``2(System.Collections.Generic.IDictionary{``0,``1})
+  name.vb: ValuesGetter(Of TKey, TValue)(IDictionary(Of TKey, TValue))
+  fullName: DotNext.Collections.Generic.Dictionary.ValuesGetter<TKey, TValue>(System.Collections.Generic.IDictionary<TKey, TValue>)
+  fullName.vb: DotNext.Collections.Generic.Dictionary.ValuesGetter(Of TKey, TValue)(System.Collections.Generic.IDictionary(Of TKey, TValue))
+  nameWithType: Dictionary.ValuesGetter<TKey, TValue>(IDictionary<TKey, TValue>)
+  nameWithType.vb: Dictionary.ValuesGetter(Of TKey, TValue)(IDictionary(Of TKey, TValue))
+- uid: DotNext.Collections.Generic.Dictionary.ValuesGetter``2(System.Collections.Generic.IReadOnlyDictionary{``0,``1})
+  name: ValuesGetter<TKey, TValue>(IReadOnlyDictionary<TKey, TValue>)
+  href: api/DotNext.Collections.Generic.Dictionary.html#DotNext_Collections_Generic_Dictionary_ValuesGetter__2_System_Collections_Generic_IReadOnlyDictionary___0___1__
+  commentId: M:DotNext.Collections.Generic.Dictionary.ValuesGetter``2(System.Collections.Generic.IReadOnlyDictionary{``0,``1})
+  name.vb: ValuesGetter(Of TKey, TValue)(IReadOnlyDictionary(Of TKey, TValue))
+  fullName: DotNext.Collections.Generic.Dictionary.ValuesGetter<TKey, TValue>(System.Collections.Generic.IReadOnlyDictionary<TKey, TValue>)
+  fullName.vb: DotNext.Collections.Generic.Dictionary.ValuesGetter(Of TKey, TValue)(System.Collections.Generic.IReadOnlyDictionary(Of TKey, TValue))
+  nameWithType: Dictionary.ValuesGetter<TKey, TValue>(IReadOnlyDictionary<TKey, TValue>)
+  nameWithType.vb: Dictionary.ValuesGetter(Of TKey, TValue)(IReadOnlyDictionary(Of TKey, TValue))
 - uid: DotNext.Collections.Generic.List
   name: List
   href: api/DotNext.Collections.Generic.List.html
@@ -35903,6 +35953,22 @@ references:
   fullName.vb: DotNext.Runtime.Intrinsics.Reverse(Of T)(ByRef T)
   nameWithType: Intrinsics.Reverse<T>(ref T)
   nameWithType.vb: Intrinsics.Reverse(Of T)(ByRef T)
+- uid: DotNext.Runtime.Intrinsics.ShallowCopy*
+  name: ShallowCopy
+  href: api/DotNext.Runtime.Intrinsics.html#DotNext_Runtime_Intrinsics_ShallowCopy_
+  commentId: Overload:DotNext.Runtime.Intrinsics.ShallowCopy
+  isSpec: "True"
+  fullName: DotNext.Runtime.Intrinsics.ShallowCopy
+  nameWithType: Intrinsics.ShallowCopy
+- uid: DotNext.Runtime.Intrinsics.ShallowCopy``1(``0)
+  name: ShallowCopy<T>(T)
+  href: api/DotNext.Runtime.Intrinsics.html#DotNext_Runtime_Intrinsics_ShallowCopy__1___0_
+  commentId: M:DotNext.Runtime.Intrinsics.ShallowCopy``1(``0)
+  name.vb: ShallowCopy(Of T)(T)
+  fullName: DotNext.Runtime.Intrinsics.ShallowCopy<T>(T)
+  fullName.vb: DotNext.Runtime.Intrinsics.ShallowCopy(Of T)(T)
+  nameWithType: Intrinsics.ShallowCopy<T>(T)
+  nameWithType.vb: Intrinsics.ShallowCopy(Of T)(T)
 - uid: DotNext.Runtime.Intrinsics.Swap*
   name: Swap
   href: api/DotNext.Runtime.Intrinsics.html#DotNext_Runtime_Intrinsics_Swap_

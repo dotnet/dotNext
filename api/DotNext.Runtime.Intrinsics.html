@@ -350,7 +350,6 @@ reinterpreting the object representation of <code data-dev-comment-type="typepar
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Bitcast&lt;T, TResult&gt;(in T input, out TResult output)
-
     where T : struct where TResult : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -612,7 +611,6 @@ public static int Compare(void *first, void *second, long length)</code></pre>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
 public static void Copy&lt;T&gt;(T*input, T*output)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -670,7 +668,6 @@ public static void Copy&lt;T&gt;(T*input, T*output)
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Copy&lt;T&gt;(in T input, out T output)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -729,7 +726,6 @@ public static void Copy&lt;T&gt;(T*input, T*output)
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
 public static void Copy&lt;T&gt;(in T source, ref T destination, long count)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -794,7 +790,6 @@ public static void Copy&lt;T&gt;(in T source, ref T destination, long count)
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
 public static void CopyUnaligned&lt;T&gt;(T*input, T*output)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1574,7 +1569,6 @@ public static T GetReadonlyRef&lt;T&gt;(this T[] array, long index)</code></pre>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static TBase GetReadonlyRef&lt;T, TBase&gt;(this T[] array, long index)
-
     where T : class, TBase</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1653,7 +1647,6 @@ public static T GetReadonlyRef&lt;T&gt;(this T[] array, long index)</code></pre>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static bool HasFlag&lt;T&gt;(T value, T flag)
-
     where T : struct, Enum</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1977,7 +1970,6 @@ On mainstream implementations of .NET CLR, this method is replaced by constant v
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Reverse&lt;T&gt;(ref T value)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2016,6 +2008,73 @@ On mainstream implementations of .NET CLR, this method is replaced by constant v
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_ShallowCopy__1___0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.ShallowCopy%60%601(%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L896">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Intrinsics_ShallowCopy_" data-uid="DotNext.Runtime.Intrinsics.ShallowCopy*"></a>
+  <h4 id="DotNext_Runtime_Intrinsics_ShallowCopy__1___0_" data-uid="DotNext.Runtime.Intrinsics.ShallowCopy``1(``0)">ShallowCopy&lt;T&gt;(T)</h4>
+  <div class="markdown level1 summary"><p>Creates shallow copy of the given object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static T ShallowCopy&lt;T&gt;(T obj)
+    where T : class</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">obj</span></td>
+        <td><p>The object to clone.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><p>The clone of <code data-dev-comment-type="paramref" class="paramref">obj</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of the object to clone.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_Swap__1___0____0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.Swap%60%601(%60%600*%2C%60%600*)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
@@ -2030,7 +2089,6 @@ On mainstream implementations of .NET CLR, this method is replaced by constant v
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
 public static void Swap&lt;T&gt;(T*first, T*second)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
