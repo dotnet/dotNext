@@ -278,6 +278,7 @@ namespace DotNext.IO
         }
 
         [Fact]
+        [Obsolete("This test is for backward compatibility only")]
         public static void BufferWriterToStream()
         {
             using var writer = new PooledArrayBufferWriter<byte>();
