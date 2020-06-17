@@ -198,7 +198,7 @@ namespace DotNext.IO
         [Fact]
         public static void InvalidSeek()
         {
-            using var src = new ReadOnlySequence<byte>(data).AsStream();
+            using var src = new ChunkSequence<byte>(data, 6).ToReadOnlySequence().AsStream();
             Throws<ArgumentOutOfRangeException>(() => src.Seek(500L, SeekOrigin.Begin));
             Throws<IOException>(() => src.Seek(-500L, SeekOrigin.End));
         }
