@@ -3,6 +3,7 @@ using System.Buffers;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.MemoryMarshal;
 using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.IO
@@ -15,12 +16,26 @@ namespace DotNext.IO
     public static class StreamSource
     {
         /// <summary>
+        /// Converts segment of an array to the stream.
+        /// </summary>
+        /// <param name="segment">The array of bytes.</param>
+        /// <param name="writable">Determines whether the stream supports writing.</param>
+        /// <returns>The stream representing the array segment.</returns>
+        public static Stream AsStream(this ArraySegment<byte> segment, bool writable = false)
+            => new MemoryStream(segment.Array, segment.Offset, segment.Count, writable, false);
+
+        /// <summary>
         /// Converts read-only sequence of bytes to a read-only stream.
         /// </summary>
         /// <param name="sequence">The sequence of bytes.</param>
         /// <returns>The stream over sequence of bytes.</returns>
         public static Stream AsStream(this ReadOnlySequence<byte> sequence)
-            => new ReadOnlyMemoryStream(sequence);
+        {
+            if (sequence.IsSingleSegment && TryGetArray(sequence.First, out var segment))
+                return AsStream(segment);
+
+            return new ReadOnlyMemoryStream(sequence);
+        }
 
         /// <summary>
         /// Converts read-only memory to a read-only stream.
@@ -30,16 +45,14 @@ namespace DotNext.IO
         public static Stream AsStream(this ReadOnlyMemory<byte> memory)
             => AsStream(new ReadOnlySequence<byte>(memory));
 
-        private static MemoryStream CreateStream(byte[] buffer, int length)
-            => new MemoryStream(buffer, 0, length, false, false);
-
         /// <summary>
         /// Gets written content as a read-only stream.
         /// </summary>
         /// <param name="writer">The buffer writer.</param>
         /// <returns>The stream representing written bytes.</returns>
+        [Obsolete("Use DotNext.IO.StreamSource.AsStream in combination with WrittenArray or WrittenMemory property instead", true)]
         public static Stream GetWrittenBytesAsStream(this PooledArrayBufferWriter<byte> writer)
-            => writer.WrapBuffer(new ValueFunc<byte[], int, MemoryStream>(CreateStream));
+            => AsStream(writer.WrittenArray);
 
         /// <summary>
         /// Returns the writable stream associated with the buffer writer.
