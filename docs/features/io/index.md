@@ -126,7 +126,7 @@ using System.Buffers;
 
 using var writer = new FileBufferingWriter();
 writer.Write(new byte[] {10, 20, 30});
-using (MemoryManager<byte> manager = writer.GetWrittenContent())
+using (IMemoryOwner<byte> manager = writer.GetWrittenContent())
 {
     Memory<byte> memory = manager.Memory;
 }
