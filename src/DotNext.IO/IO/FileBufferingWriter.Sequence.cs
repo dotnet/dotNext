@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.IO
 {
-    using IReadOnlySequence = Buffers.IReadOnlySequenceSource<byte>;
+    using IReadOnlySequenceSource = Buffers.IReadOnlySequenceSource<byte>;
     using ReadOnlySequenceAccessor = MemoryMappedFiles.ReadOnlySequenceAccessor;
 
     public partial class FileBufferingWriter
@@ -29,7 +29,7 @@ namespace DotNext.IO
         /// Represents source of <see cref="ReadOnlySequence{T}"/> that
         /// represents written content.
         /// </summary>
-        public sealed class ReadOnlySequenceSource : Disposable, IReadOnlySequence
+        public sealed class ReadOnlySequenceSource : Disposable, IReadOnlySequenceSource
         {
             private readonly FileBufferingWriter writer;
             private readonly Memory<byte> tail;

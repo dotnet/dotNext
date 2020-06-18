@@ -605,7 +605,7 @@ namespace DotNext.IO
         /// <exception cref="InvalidOperationException">The memory manager is already obtained but not disposed.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="range"/> is invalid.</exception>
         /// <exception cref="OutOfMemoryException">The size of buffered content is too large and cannot be represented by <see cref="Memory{T}"/> instance.</exception>
-        public MemoryManager<byte> GetWrittenContent(Range range)
+        public IMemoryOwner<byte> GetWrittenContent(Range range)
         {
             if (IsReading)
                 throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
@@ -633,7 +633,7 @@ namespace DotNext.IO
         /// <returns>The memory manager providing access to buffered content.</returns>
         /// <exception cref="InvalidOperationException">The memory manager is already obtained but not disposed.</exception>
         /// <exception cref="OutOfMemoryException">The size of buffered content is too large and cannot be represented by <see cref="Memory{T}"/> instance.</exception>
-        public MemoryManager<byte> GetWrittenContent()
+        public IMemoryOwner<byte> GetWrittenContent()
             => GetWrittenContent(Range.All);
 
         /// <summary>
@@ -646,7 +646,7 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="range"/> is invalid.</exception>
         /// <exception cref="OutOfMemoryException">The size of buffered content is too large and cannot be represented by <see cref="Memory{T}"/> instance.</exception>
-        public async ValueTask<MemoryManager<byte>> GetWrittenContentAsync(Range range, CancellationToken token = default)
+        public async ValueTask<IMemoryOwner<byte>> GetWrittenContentAsync(Range range, CancellationToken token = default)
         {
             if (IsReading)
                 throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
@@ -676,7 +676,7 @@ namespace DotNext.IO
         /// <exception cref="InvalidOperationException">The memory manager is already obtained but not disposed.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="OutOfMemoryException">The size of buffered content is too large and cannot be represented by <see cref="Memory{T}"/> instance.</exception>
-        public ValueTask<MemoryManager<byte>> GetWrittenContentAsync(CancellationToken token = default)
+        public ValueTask<IMemoryOwner<byte>> GetWrittenContentAsync(CancellationToken token = default)
             => GetWrittenContentAsync(Range.All, token);
 
         /// <summary>
