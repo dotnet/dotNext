@@ -4,11 +4,15 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.MemoryMarshal;
-using Unsafe = System.Runtime.CompilerServices.Unsafe;
+using static InlineIL.IL;
+using static InlineIL.IL.Emit;
+using static InlineIL.MethodRef;
+using static InlineIL.TypeRef;
 
 namespace DotNext.IO
 {
     using Buffers;
+    using System.Diagnostics;
 
     /// <summary>
     /// Represents conversion of various buffer types to stream.
@@ -67,15 +71,31 @@ namespace DotNext.IO
         {
             if (writer is IFlushable)
             {
-                flush ??= Flush;
-                flushAsync ??= FlushAsync;
+                flush ??= CreateFlushAction(writer);
+                flushAsync ??= CreateAsyncFlushAction(writer);
             }
 
             return new BufferWriterStream<TWriter>(writer, flush, flushAsync);
 
-            static void Flush(TWriter writer) => Unsafe.As<IFlushable>(writer).Flush();
+            static Action<TWriter> CreateFlushAction(TWriter writer)
+            {
+                Debug.Assert(writer is IFlushable);
+                Ldnull();
+                Push(writer);
+                Ldvirtftn(Method(Type<IFlushable>(), nameof(IFlushable.Flush)));
+                Newobj(Constructor(Type<Action<TWriter>>(), Type<object>(), Type<IntPtr>()));
+                return Return<Action<TWriter>>();
+            }
 
-            static Task FlushAsync(TWriter writer, CancellationToken token) => Unsafe.As<IFlushable>(writer).FlushAsync(token);
+            static Func<TWriter, CancellationToken, Task> CreateAsyncFlushAction(TWriter writer)
+            {
+                Debug.Assert(writer is IFlushable);
+                Ldnull();
+                Push(writer);
+                Ldvirtftn(Method(Type<IFlushable>(), nameof(IFlushable.FlushAsync)));
+                Newobj(Constructor(Type<Func<TWriter, CancellationToken, Task>>(), Type<object>(), Type<IntPtr>()));
+                return Return<Func<TWriter, CancellationToken, Task>>();
+            }
         }
     }
 }

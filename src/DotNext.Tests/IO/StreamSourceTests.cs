@@ -454,5 +454,25 @@ namespace DotNext.IO
             await ThrowsAsync<NotSupportedException>(stream.ReadAsync(new byte[2]).AsTask);
             await ThrowsAsync<NotSupportedException>(() => stream.ReadAsync(new byte[2], 0, 2));
         }
+
+        [Fact]
+        public static void WriteToFlushableWriter()
+        {
+            using var ms = new MemoryStream();
+            using var writer = ms.AsBufferWriter(MemoryAllocator.CreateArrayAllocator<byte>()).AsStream();
+            writer.Write(new byte[] { 1, 2, 3 });
+            writer.Flush();
+            Equal(new byte[] { 1, 2, 3 }, ms.ToArray());
+        }
+
+        [Fact]
+        public static async Task WriteToFlushableWriterAsync()
+        {
+            await using var ms = new MemoryStream();
+            await using var writer = ms.AsBufferWriter(MemoryAllocator.CreateArrayAllocator<byte>()).AsStream();
+            await writer.WriteAsync(new byte[] { 1, 2, 3 });
+            await writer.FlushAsync();
+            Equal(new byte[] { 1, 2, 3 }, ms.ToArray());
+        }
     }
 }
