@@ -34,12 +34,7 @@ namespace DotNext.IO
         /// <param name="sequence">The sequence of bytes.</param>
         /// <returns>The stream over sequence of bytes.</returns>
         public static Stream AsStream(this ReadOnlySequence<byte> sequence)
-        {
-            if (sequence.IsSingleSegment && TryGetArray(sequence.First, out var segment))
-                return AsStream(segment);
-
-            return new ReadOnlyMemoryStream(sequence);
-        }
+            => sequence.IsSingleSegment && TryGetArray(sequence.First, out var segment) ? AsStream(segment) : new ReadOnlyMemoryStream(sequence);
 
         /// <summary>
         /// Converts read-only memory to a read-only stream.
