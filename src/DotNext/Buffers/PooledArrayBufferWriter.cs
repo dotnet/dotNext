@@ -204,9 +204,6 @@ namespace DotNext.Buffers
         /// <inheritdoc/>
         ArraySegment<T> IConvertible<ArraySegment<T>>.Convert() => WrittenArray;
 
-        internal TWrapper WrapBuffer<TWrapper>(ValueFunc<T[], int, TWrapper> factory)
-            => factory.Invoke(buffer, position);
-
         private void ReleaseBuffer()
         {
             if (buffer.Length > 0)
@@ -296,7 +293,7 @@ namespace DotNext.Buffers
         /// </summary>
         /// <param name="writer">The buffer writer.</param>
         /// <returns>The stream representing written bytes.</returns>
-        [Obsolete("Use DotNext.IO.StreamSource.GetWrittenBytesAsStream instead")]
+        [Obsolete("Use DotNext.IO.StreamSource.AsStream in combination with WrittenArray or WrittenMemory property instead", true)]
         public static Stream GetWrittenBytesAsStream(this PooledArrayBufferWriter<byte> writer)
             => IO.StreamSource.GetWrittenBytesAsStream(writer);
     }
