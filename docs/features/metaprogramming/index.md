@@ -34,15 +34,15 @@ The code construction based on the following concepts:
 * [Expression Builder](../../api/DotNext.Linq.Expressions.ExpressionBuilder.yml) provides extension methods for constructing expressions
 
 [Code expressions](https://docs.microsoft.com/en-us/dotnet/api/system.linq.expressions) from .NET library heavily extended with additional expression types:
-    * [using Expression](../../api/DotNext.Linq.Expressions.UsingExpression.yml) represents `using` statement from C#
-    * [lock Expression](../../api/DotNext.Linq.Expressions.LockExpression.yml) represents `lock` statement from C#
-    * [await Expression](../../api/DotNext.Linq.Expressions.AwaitExpression.yml) represents `await` operator from C#
-    * [String Interpolation Expression](../../api/DotNext.Linq.Expressions.InterpolationExpression.yml) represents interpolated string
-    * [for-in Expression](../../api/DotNext.Linq.Expressions.ForEachExpression.yml) represents `foreach` loop from C#
-    * [while Expression](../../api/DotNext.Linq.Expressions.WhileExpression.yml) represents `while` and `do-while` loops from C#
-    * [for Expression](../../api/DotNext.Linq.Expressions.ForExpression.yml) represents `for` loop from C#
-    * [Element Access Expression](../../api/DotNext.Linq.Expressions.CollectionAccessExpression.yml) represents [index](https://docs.microsoft.com/en-us/dotnet/api/system.index)-based access to individual elements of the collection or string
-    * [Slice Expression](../../api/DotNext.Linq.Expressions.SliceExpression.yml) represents [range](https://docs.microsoft.com/en-us/dotnet/api/system.range) of elements in arbitrary collection or string
+* [using Expression](../../api/DotNext.Linq.Expressions.UsingExpression.yml) represents `using` statement from C#
+* [lock Expression](../../api/DotNext.Linq.Expressions.LockExpression.yml) represents `lock` statement from C#
+* [await Expression](../../api/DotNext.Linq.Expressions.AwaitExpression.yml) represents `await` operator from C#
+* [String Interpolation Expression](../../api/DotNext.Linq.Expressions.InterpolationExpression.yml) represents interpolated string
+* [for-in Expression](../../api/DotNext.Linq.Expressions.ForEachExpression.yml) represents `foreach` loop from C#
+* [while Expression](../../api/DotNext.Linq.Expressions.WhileExpression.yml) represents `while` and `do-while` loops from C#
+* [for Expression](../../api/DotNext.Linq.Expressions.ForExpression.yml) represents `for` loop from C#
+* [Element Access Expression](../../api/DotNext.Linq.Expressions.CollectionAccessExpression.yml) represents [index](https://docs.microsoft.com/en-us/dotnet/api/system.index)-based access to individual elements of the collection or string
+* [Slice Expression](../../api/DotNext.Linq.Expressions.SliceExpression.yml) represents [range](https://docs.microsoft.com/en-us/dotnet/api/system.range) of elements in arbitrary collection or string
 
 The lexical scope is enclosed by multi-line lambda function. The body of such function contains the code for generation of expressions and statements.
 
