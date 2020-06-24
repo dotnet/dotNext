@@ -22,7 +22,7 @@ var result = writer.WrittenMemory;  //length is 512
 In contrast to `ArrayBufferWriter`, you must not use written memory if `Dispose` is called. When `Dispose` method is called, the internal buffer returns to the pool.
 
 # PooledArrayBufferWriter
-[PooledArrayBufferWriter&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.PooledArrayBufferWriter-1.html) exposes the similar functionality to `PooledBufferWriter` class but specialized for working with [ArrayPool&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.arraypool-1). As a result, you can make writes or obtain written memory using [ArraySegment&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.arraysegment-1). Additionally, if the buffer is for bytes (actual generic argument is `byte`) then written memory can be exposed as read-only [MemoryStream](https://docs.microsoft.com/en-us/dotnet/api/system.io.memorystream) without copying written bytes.
+[PooledArrayBufferWriter&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.PooledArrayBufferWriter-1.html) class exposes the similar functionality to `PooledBufferWriter` class but specialized for working with [ArrayPool&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.arraypool-1). As a result, you can make writes or obtain written memory using [ArraySegment&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.arraysegment-1).
 ```csharp
 using DotNext.Buffers;
 using DotNext.IO;
@@ -33,8 +33,7 @@ ArraySegment<byte> array = writer.GetArray(1024);
 array[0] = 42;
 array[1] = 43;
 span.Advance(2);
-ArraySegment<byte> result = writer.WrittenArray;  //length is 512
-using Stream stream = StreamSource.GetWrittenBytesAsStream(writer);
+ArraySegment<byte> result = writer.WrittenArray;
 ```
 
-One more powerful feature is that the class implements [IList&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.ilist-1) interface so you can use it as fully-functional list which rents the memory instead of allocation on the heap.
+Additionally, it implements [IList&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.ilist-1) interface so you can use it as fully-functional list which rents the memory instead of allocation on the heap.
