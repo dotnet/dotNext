@@ -106,16 +106,18 @@
 <li><a href="../../api/DotNext.Metaprogramming.CodeGenerator.html">Code Generator</a> provides methods for adding statement such as method calls, assignment, loops, if-then-else statement etc.</li>
 <li><a href="../../api/DotNext.Linq.Expressions.ExpressionBuilder.html">Expression Builder</a> provides extension methods for constructing expressions</li>
 </ul>
-<p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.linq.expressions">Code expressions</a> from .NET library heavily extended with additional expression types:
-* <a href="../../api/DotNext.Linq.Expressions.UsingExpression.html">using Expression</a> represents <code>using</code> statement from C#
-* <a href="../../api/DotNext.Linq.Expressions.LockExpression.html">lock Expression</a> represents <code>lock</code> statement from C#
-* <a href="../../api/DotNext.Linq.Expressions.AwaitExpression.html">await Expression</a> represents <code>await</code> operator from C#
-* <a href="../../api/DotNext.Linq.Expressions.InterpolationExpression.html">String Interpolation Expression</a> represents interpolated string
-* <a href="../../api/DotNext.Linq.Expressions.ForEachExpression.html">for-in Expression</a> represents <code>foreach</code> loop from C#
-* <a href="../../api/DotNext.Linq.Expressions.WhileExpression.html">while Expression</a> represents <code>while</code> and <code>do-while</code> loops from C#
-* <a href="../../api/DotNext.Linq.Expressions.ForExpression.html">for Expression</a> represents <code>for</code> loop from C#
-* <a href="../../api/DotNext.Linq.Expressions.CollectionAccessExpression.html">Element Access Expression</a> represents <a href="https://docs.microsoft.com/en-us/dotnet/api/system.index">index</a>-based access to individual elements of the collection or string
-* <a href="../../api/DotNext.Linq.Expressions.SliceExpression.html">Slice Expression</a> represents <a href="https://docs.microsoft.com/en-us/dotnet/api/system.range">range</a> of elements in arbitrary collection or string</p>
+<p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.linq.expressions">Code expressions</a> from .NET library heavily extended with additional expression types:</p>
+<ul>
+<li><a href="../../api/DotNext.Linq.Expressions.UsingExpression.html">using Expression</a> represents <code>using</code> statement from C#</li>
+<li><a href="../../api/DotNext.Linq.Expressions.LockExpression.html">lock Expression</a> represents <code>lock</code> statement from C#</li>
+<li><a href="../../api/DotNext.Linq.Expressions.AwaitExpression.html">await Expression</a> represents <code>await</code> operator from C#</li>
+<li><a href="../../api/DotNext.Linq.Expressions.InterpolationExpression.html">String Interpolation Expression</a> represents interpolated string</li>
+<li><a href="../../api/DotNext.Linq.Expressions.ForEachExpression.html">for-in Expression</a> represents <code>foreach</code> loop from C#</li>
+<li><a href="../../api/DotNext.Linq.Expressions.WhileExpression.html">while Expression</a> represents <code>while</code> and <code>do-while</code> loops from C#</li>
+<li><a href="../../api/DotNext.Linq.Expressions.ForExpression.html">for Expression</a> represents <code>for</code> loop from C#</li>
+<li><a href="../../api/DotNext.Linq.Expressions.CollectionAccessExpression.html">Element Access Expression</a> represents <a href="https://docs.microsoft.com/en-us/dotnet/api/system.index">index</a>-based access to individual elements of the collection or string</li>
+<li><a href="../../api/DotNext.Linq.Expressions.SliceExpression.html">Slice Expression</a> represents <a href="https://docs.microsoft.com/en-us/dotnet/api/system.range">range</a> of elements in arbitrary collection or string</li>
+</ul>
 <p>The lexical scope is enclosed by multi-line lambda function. The body of such function contains the code for generation of expressions and statements.</p>
 <pre><code class="lang-csharp">using DotNext.Linq.Expressions;
 using System;

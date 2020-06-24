@@ -129,6 +129,7 @@ public static class DelegateHelpers</code></pre>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Action Bind&lt;T&gt;(this Action&lt;T&gt; action, T obj)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -218,6 +219,7 @@ public static class DelegateHelpers</code></pre>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Action&lt;T2&gt; Bind&lt;T1, T2&gt;(this Action&lt;T1, T2&gt; action, T1 obj)
+
     where T1 : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -312,6 +314,7 @@ public static class DelegateHelpers</code></pre>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Func&lt;TResult&gt; Bind&lt;T, TResult&gt;(this Func&lt;T, TResult&gt; func, T obj)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -406,6 +409,7 @@ public static class DelegateHelpers</code></pre>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Action&lt;T2, T3&gt; Bind&lt;T1, T2, T3&gt;(this Action&lt;T1, T2, T3&gt; action, T1 obj)
+
     where T1 : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -505,6 +509,7 @@ public static class DelegateHelpers</code></pre>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Func&lt;T2, TResult&gt; Bind&lt;T1, T2, TResult&gt;(this Func&lt;T1, T2, TResult&gt; func, T1 obj)
+
     where T1 : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -604,6 +609,7 @@ public static class DelegateHelpers</code></pre>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Action&lt;T2, T3, T4&gt; Bind&lt;T1, T2, T3, T4&gt;(this Action&lt;T1, T2, T3, T4&gt; action, T1 obj)
+
     where T1 : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -708,6 +714,7 @@ public static class DelegateHelpers</code></pre>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Func&lt;T2, T3, TResult&gt; Bind&lt;T1, T2, T3, TResult&gt;(this Func&lt;T1, T2, T3, TResult&gt; func, T1 obj)
+
     where T1 : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -812,6 +819,7 @@ public static class DelegateHelpers</code></pre>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Action&lt;T2, T3, T4, T5&gt; Bind&lt;T1, T2, T3, T4, T5&gt;(this Action&lt;T1, T2, T3, T4, T5&gt; action, T1 obj)
+
     where T1 : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -921,6 +929,7 @@ public static class DelegateHelpers</code></pre>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Func&lt;T2, T3, T4, TResult&gt; Bind&lt;T1, T2, T3, T4, TResult&gt;(this Func&lt;T1, T2, T3, T4, TResult&gt; func, T1 obj)
+
     where T1 : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1030,6 +1039,7 @@ public static class DelegateHelpers</code></pre>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Func&lt;T2, T3, T4, T5, TResult&gt; Bind&lt;T1, T2, T3, T4, T5, TResult&gt;(this Func&lt;T1, T2, T3, T4, T5, TResult&gt; func, T1 obj)
+
     where T1 : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1145,6 +1155,7 @@ points to the same method as original delegate.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static TDelegate ChangeType&lt;TDelegate&gt;(this Delegate d)
+
     where TDelegate : Delegate</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1230,6 +1241,7 @@ for <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.eventhand
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static EventHandler&lt;T&gt; Contravariant&lt;TBase, T&gt;(this EventHandler&lt;TBase&gt; handler)
+
     where TBase : class where T : class, TBase</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1308,6 +1320,7 @@ provides contravariant conversion for this delegate type.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Func&lt;object, TDelegate&gt; CreateClosedDelegateFactory&lt;TDelegate&gt;(Expression&lt;TDelegate&gt; expression)
+
     where TDelegate : Delegate</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1321,7 +1334,7 @@ provides contravariant conversion for this delegate type.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.expression-1">Expression</a>&lt;TDelegate&gt;</td>
+        <td><span class="xref">System.Linq.Expressions.Expression</span>&lt;TDelegate&gt;</td>
         <td><span class="parametername">expression</span></td>
         <td><p>The expression tree containing instance method, property, operator call.</p>
 </td>
@@ -1375,6 +1388,7 @@ provides contravariant conversion for this delegate type.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static TDelegate CreateDelegate&lt;TDelegate&gt;(this MethodInfo method, object target = null)
+
     where TDelegate : Delegate</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1388,7 +1402,7 @@ provides contravariant conversion for this delegate type.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.methodinfo">MethodInfo</a></td>
+        <td><span class="xref">System.Reflection.MethodInfo</span></td>
         <td><span class="parametername">method</span></td>
         <td><p>The method to be wrapped into delegate.</p>
 </td>
@@ -1453,6 +1467,7 @@ in expression tree.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static TDelegate CreateOpenDelegate&lt;TDelegate&gt;(Expression&lt;TDelegate&gt; expression)
+
     where TDelegate : Delegate</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1466,7 +1481,7 @@ in expression tree.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.expression-1">Expression</a>&lt;TDelegate&gt;</td>
+        <td><span class="xref">System.Linq.Expressions.Expression</span>&lt;TDelegate&gt;</td>
         <td><span class="parametername">expression</span></td>
         <td><p>The expression tree containing instance method call.</p>
 </td>
@@ -1536,6 +1551,7 @@ in expression tree.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Action&lt;T, TValue&gt; CreateOpenDelegate&lt;T, TValue&gt;(Expression&lt;Func&lt;T, TValue&gt;&gt; properyExpr)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1549,7 +1565,7 @@ in expression tree.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.expression-1">Expression</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;T, TValue&gt;&gt;</td>
+        <td><span class="xref">System.Linq.Expressions.Expression</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;T, TValue&gt;&gt;</td>
         <td><span class="parametername">properyExpr</span></td>
         <td><p>The expression representing property.</p>
 </td>
@@ -1608,6 +1624,7 @@ in expression tree.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Action&lt;T&gt; Unbind&lt;T&gt;(this Action action)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1691,6 +1708,7 @@ in expression tree.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Action&lt;T, TArg&gt; Unbind&lt;T, TArg&gt;(this Action&lt;TArg&gt; action)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1779,6 +1797,7 @@ in expression tree.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Func&lt;T, TResult&gt; Unbind&lt;T, TResult&gt;(this Func&lt;TResult&gt; func)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1867,6 +1886,7 @@ in expression tree.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Action&lt;T, T1, T2&gt; Unbind&lt;T, T1, T2&gt;(this Action&lt;T1, T2&gt; action)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1960,6 +1980,7 @@ in expression tree.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Func&lt;T, TArg, TResult&gt; Unbind&lt;T, TArg, TResult&gt;(this Func&lt;TArg, TResult&gt; func)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2053,6 +2074,7 @@ in expression tree.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Action&lt;T, T1, T2, T3&gt; Unbind&lt;T, T1, T2, T3&gt;(this Action&lt;T1, T2, T3&gt; action)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2151,6 +2173,7 @@ in expression tree.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Func&lt;T, T1, T2, TResult&gt; Unbind&lt;T, T1, T2, TResult&gt;(this Func&lt;T1, T2, TResult&gt; func)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2249,6 +2272,7 @@ in expression tree.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Action&lt;T, T1, T2, T3, T4&gt; Unbind&lt;T, T1, T2, T3, T4&gt;(this Action&lt;T1, T2, T3, T4&gt; action)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2352,6 +2376,7 @@ in expression tree.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Func&lt;T, T1, T2, T3, TResult&gt; Unbind&lt;T, T1, T2, T3, TResult&gt;(this Func&lt;T1, T2, T3, TResult&gt; func)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2455,6 +2480,7 @@ in expression tree.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Action&lt;T, T1, T2, T3, T4, T5&gt; Unbind&lt;T, T1, T2, T3, T4, T5&gt;(this Action&lt;T1, T2, T3, T4, T5&gt; action)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2563,6 +2589,7 @@ in expression tree.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Func&lt;T, T1, T2, T3, T4, TResult&gt; Unbind&lt;T, T1, T2, T3, T4, TResult&gt;(this Func&lt;T1, T2, T3, T4, TResult&gt; func)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2671,6 +2698,7 @@ in expression tree.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Func&lt;T, T1, T2, T3, T4, T5, TResult&gt; Unbind&lt;T, T1, T2, T3, T4, T5, TResult&gt;(this Func&lt;T1, T2, T3, T4, T5, TResult&gt; func)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

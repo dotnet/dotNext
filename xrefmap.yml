@@ -10364,6 +10364,15 @@ references:
   commentId: T:DotNext.IO.StreamSource
   fullName: DotNext.IO.StreamSource
   nameWithType: StreamSource
+- uid: DotNext.IO.StreamSource.AsStream(System.ArraySegment{System.Byte},System.Boolean)
+  name: AsStream(ArraySegment<Byte>, Boolean)
+  href: api/DotNext.IO.StreamSource.html#DotNext_IO_StreamSource_AsStream_System_ArraySegment_System_Byte__System_Boolean_
+  commentId: M:DotNext.IO.StreamSource.AsStream(System.ArraySegment{System.Byte},System.Boolean)
+  name.vb: AsStream(ArraySegment(Of Byte), Boolean)
+  fullName: DotNext.IO.StreamSource.AsStream(System.ArraySegment<System.Byte>, System.Boolean)
+  fullName.vb: DotNext.IO.StreamSource.AsStream(System.ArraySegment(Of System.Byte), System.Boolean)
+  nameWithType: StreamSource.AsStream(ArraySegment<Byte>, Boolean)
+  nameWithType.vb: StreamSource.AsStream(ArraySegment(Of Byte), Boolean)
 - uid: DotNext.IO.StreamSource.AsStream(System.Buffers.ReadOnlySequence{System.Byte})
   name: AsStream(ReadOnlySequence<Byte>)
   href: api/DotNext.IO.StreamSource.html#DotNext_IO_StreamSource_AsStream_System_Buffers_ReadOnlySequence_System_Byte__

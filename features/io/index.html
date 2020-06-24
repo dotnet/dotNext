@@ -181,7 +181,7 @@ using System.Buffers;
 
 using var writer = new FileBufferingWriter();
 writer.Write(new byte[] {10, 20, 30});
-using (MemoryManager&lt;byte&gt; manager = writer.GetWrittenContent())
+using (IMemoryOwner&lt;byte&gt; manager = writer.GetWrittenContent())
 {
     Memory&lt;byte&gt; memory = manager.Memory;
 }

@@ -451,6 +451,7 @@ keyword and late binding.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public Variant&lt;TResult1, TResult2&gt; Convert&lt;TResult1, TResult2&gt;(in ValueFunc&lt;T1, TResult1&gt; mapper1, in ValueFunc&lt;T2, TResult2&gt; mapper2)
+
     where TResult1 : class where TResult2 : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -529,6 +530,7 @@ keyword and late binding.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public Variant&lt;TResult1, TResult2&gt; Convert&lt;TResult1, TResult2&gt;(Converter&lt;T1, TResult1&gt; mapper1, Converter&lt;T2, TResult2&gt; mapper2)
+
     where TResult1 : class where TResult2 : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -705,6 +707,7 @@ container.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public bool Equals&lt;TOther&gt;(TOther other)
+
     where TOther : IVariant</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -851,14 +854,14 @@ container; otherwise, <span class="xref">false</span>.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><span class="xref">System.String</span></td>
         <td><p>The textual representation of the stored value.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.tostring#System_ValueType_ToString">ValueType.ToString()</a></div>
+  <div><span class="xref">System.ValueType.ToString()</span></div>
   <h5 id="DotNext_VariantType_Variant_2_ToString_remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This method calls virtual method <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">ToString()</a>
 for the stored value.</p>
@@ -1290,8 +1293,7 @@ to compare stored values.</p>
   </span>
   <a id="DotNext_VariantType_Variant_2_DotNext_VariantType_IVariant_Value_" data-uid="DotNext.VariantType.Variant`2.DotNext#VariantType#IVariant#Value*"></a>
   <h4 id="DotNext_VariantType_Variant_2_DotNext_VariantType_IVariant_Value" data-uid="DotNext.VariantType.Variant`2.DotNext#VariantType#IVariant#Value">IVariant.Value</h4>
-  <div class="markdown level1 summary"><p>Gets value stored in the container.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
