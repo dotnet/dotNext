@@ -1,5 +1,6 @@
 using System;
 using System.Buffers;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,7 +13,6 @@ using static InlineIL.TypeRef;
 namespace DotNext.IO
 {
     using Buffers;
-    using System.Diagnostics;
 
     /// <summary>
     /// Represents conversion of various buffer types to stream.
