@@ -86,6 +86,7 @@ namespace DotNext
 
         static DelegateHelpers()
         {
+            // TODO: Should be replaced with direct call without reflection in .NET Core 5
             var isCollectibleGetter = typeof(Assembly).GetProperty("IsCollectible", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)?.GetMethod;
             IsCollectible = isCollectibleGetter?.CreateDelegate<Predicate<Assembly>>();
             SendOrPostInvoker = UnsafeInvoke;
