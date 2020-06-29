@@ -428,40 +428,40 @@ namespace DotNext.IO
             Equal(bytes, manager.Memory.ToArray());
         }
 
-        [Theory]
-        [InlineData(10)]
-        [InlineData(100)]
-        [InlineData(1000)]
-        public static void CompatWithReadOnlySequence(int threshold)
-        {
-            using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: false);
-            var bytes = new byte[500];
-            for (byte i = 0; i < byte.MaxValue; i++)
-                bytes[i] = i;
+        // [Theory]
+        // [InlineData(10)]
+        // [InlineData(100)]
+        // [InlineData(1000)]
+        // public static void CompatWithReadOnlySequence(int threshold)
+        // {
+        //     using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: false);
+        //     var bytes = new byte[500];
+        //     for (byte i = 0; i < byte.MaxValue; i++)
+        //         bytes[i] = i;
 
-            writer.Write(bytes, 0, 450);
-            writer.Write(bytes.AsSpan(450));
-            Equal(bytes.Length, writer.Length);
-            using var source = writer.GetWrittenContent(10);
-            Equal(bytes, source.Sequence.ToArray());
-        }
+        //     writer.Write(bytes, 0, 450);
+        //     writer.Write(bytes.AsSpan(450));
+        //     Equal(bytes.Length, writer.Length);
+        //     using var source = writer.GetWrittenContent(10);
+        //     Equal(bytes, source.Sequence.ToArray());
+        // }
 
-        [Theory]
-        [InlineData(10)]
-        [InlineData(100)]
-        [InlineData(1000)]
-        public static async Task CompatWithReadOnlySequenceAsync(int threshold)
-        {
-            await using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: true);
-            var bytes = new byte[500];
-            for (byte i = 0; i < byte.MaxValue; i++)
-                bytes[i] = i;
+        // [Theory]
+        // [InlineData(10)]
+        // [InlineData(100)]
+        // [InlineData(1000)]
+        // public static async Task CompatWithReadOnlySequenceAsync(int threshold)
+        // {
+        //     await using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: true);
+        //     var bytes = new byte[500];
+        //     for (byte i = 0; i < byte.MaxValue; i++)
+        //         bytes[i] = i;
 
-            await writer.WriteAsync(bytes, 0, 450);
-            await writer.WriteAsync(bytes.AsMemory(450));
-            Equal(bytes.Length, writer.Length);
-            using var source = await writer.GetWrittenContentAsync(10);
-            Equal(bytes, source.Sequence.ToArray());
-        }
+        //     await writer.WriteAsync(bytes, 0, 450);
+        //     await writer.WriteAsync(bytes.AsMemory(450));
+        //     Equal(bytes.Length, writer.Length);
+        //     using var source = await writer.GetWrittenContentAsync(10);
+        //     Equal(bytes, source.Sequence.ToArray());
+        // }
     }
 }
