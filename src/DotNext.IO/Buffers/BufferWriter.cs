@@ -2,6 +2,10 @@ using System;
 using System.Buffers;
 using System.Runtime.InteropServices;
 using System.Text;
+using static InlineIL.IL;
+using static InlineIL.IL.Emit;
+using static InlineIL.MethodRef;
+using static InlineIL.TypeRef;
 
 namespace DotNext.Buffers
 {
@@ -13,6 +17,9 @@ namespace DotNext.Buffers
     /// </summary>
     public static class BufferWriter
     {
+        private delegate bool Formatter<T>(in T value, Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
+            where T : struct, IFormattable;
+
         [StructLayout(LayoutKind.Auto)]
         private struct LengthWriter : SevenBitEncodedInt.IWriter
         {
@@ -33,6 +40,22 @@ namespace DotNext.Buffers
             }
         }
 
+        private static readonly Formatter<int> Int32Formatter;
+        private static readonly Formatter<Guid> GuidFormatter;
+
+        static BufferWriter()
+        {
+            Ldnull();
+            Ldftn(Method(Type<int>(), nameof(int.TryFormat)));
+            Newobj(Constructor(Type<Formatter<int>>(), Type<object>(), Type<IntPtr>()));
+            Pop(out Int32Formatter);
+
+            GuidFormatter = TryFormat;
+
+            static bool TryFormat(in Guid value, Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
+                => value.TryFormat(destination, out charsWritten, format);
+        }
+
         /// <summary>
         /// Encodes value of blittable type.
         /// </summary>
@@ -42,6 +65,15 @@ namespace DotNext.Buffers
         public static void Write<T>(this IBufferWriter<byte> writer, in T value)
             where T : unmanaged
             => writer.Write(Span.AsReadOnlyBytes(in value));
+
+        /// <summary>
+        /// Writes single element to the buffer.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to add.</param>
+        /// <typeparam name="T">The type of elements in the buffer.</typeparam>
+        public static void Write<T>(this IBufferWriter<T> writer, T value)
+            => writer.Write(MemoryMarshal.CreateReadOnlySpan(ref value, 1));
 
         /// <summary>
         /// Encodes 64-bit signed integer.
@@ -175,5 +207,78 @@ namespace DotNext.Buffers
             if (!value.IsEmpty)
                 WriteString(writer, value, context.GetEncoder(), context.Encoding.GetMaxByteCount(1), bufferSize);
         }
+
+        /// <summary>
+        /// Writes the array to the buffer.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="buffer">The buffer to write.</param>
+        /// <param name="startIndex">Start index in the buffer.</param>
+        /// <param name="count">The number of elements in the buffer. to write.</param>
+        /// <typeparam name="T">The type of the elements in the buffer.</typeparam>
+        public static void Write<T>(this IBufferWriter<T> writer, T[] buffer, int startIndex, int count)
+            => writer.Write(buffer.AsSpan(startIndex, count));
+        
+        /// <summary>
+        /// Writes line termination symbols to the buffer.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        public static void WriteLine(this IBufferWriter<char> writer)
+            => writer.Write(Environment.NewLine);
+
+        private static void Write<T>(IBufferWriter<char> writer, in T value, int bufferSize, Formatter<T> formatter, ReadOnlySpan<char> format, IFormatProvider? provider)
+            where T : struct, IFormattable
+        {
+            for (int growBy = 0; ; )
+            {
+                var span = writer.GetSpan(bufferSize);
+                if (formatter(in value, span, out var charsWritten, format, provider))
+                {
+                    writer.Advance(charsWritten);
+                    break;
+                }
+                else if (growBy == 0)
+                {
+                    growBy = bufferSize / 2;
+                }
+
+                bufferSize = checked(bufferSize + growBy);
+            }
+        }
+
+        /// <summary>
+        /// Writes string representation of 32-bit signed integer to the buffer. 
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        public static void WriteInt32(this IBufferWriter<char> writer, int value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(writer, in value, sizeof(int) * 8, Int32Formatter, format, provider);
+
+        /// <summary>
+        /// Writes string representation of <see cref="Guid"/> to the buffer. 
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        public static unsafe void WriteGuid(this IBufferWriter<char> writer, Guid value, ReadOnlySpan<char> format = default)
+            => Write(writer, in value, sizeof(Guid) * 2 + 6, GuidFormatter, format, null);
+
+        /// <summary>
+        /// Constructs the string from the buffer.
+        /// </summary>
+        /// <param name="writer">The buffer of characters.</param>
+        /// <returns>The string constructed from the buffer.</returns>
+        public static string BuildString(this ArrayBufferWriter<char> writer)
+            => new string(writer.WrittenSpan);
+
+        /// <summary>
+        /// Constructs the string from the buffer.
+        /// </summary>
+        /// <param name="writer">The buffer of characters.</param>
+        /// <returns>The string constructed from the buffer.</returns>
+        public static string BuildString(this MemoryWriter<char> writer)
+            => new string(writer.WrittenMemory.Span);
     }
 }
