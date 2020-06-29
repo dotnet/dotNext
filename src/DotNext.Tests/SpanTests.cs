@@ -1,10 +1,13 @@
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace DotNext
 {
+    using Buffers;
+
     [ExcludeFromCodeCoverage]
     public sealed class SpanTests : Test
     {
@@ -172,6 +175,35 @@ namespace DotNext
             Equal(ids.First, Span.Read<Guid>(ref span));
             Equal(ids.Second, Span.Read<Guid>(ref span));
             True(span.IsEmpty);
+        }
+
+        public static IEnumerable<object[]> TestAllocators()
+        {
+            yield return new object[] { null };
+            yield return new object[] { MemoryAllocator.CreateArrayAllocator<char>() };
+            yield return new object[] { ArrayPool<char>.Shared.ToAllocator() };
+        }
+        
+        [Theory]
+        [MemberData(nameof(TestAllocators))]
+        public static void Concatenation(MemoryAllocator<char> allocator)
+        {
+            MemoryOwner<char> owner = string.Empty.AsSpan().Concat(string.Empty, allocator);
+            True(owner.IsEmpty);
+            True(owner.Memory.IsEmpty);
+            owner.Dispose();
+
+            owner = "Hello, ".AsSpan().Concat("world!", allocator);
+            False(owner.IsEmpty);
+            False(owner.Memory.IsEmpty);
+            Equal("Hello, world!", new string(owner.Memory.Span));
+            owner.Dispose();
+
+            owner = "Hello, ".AsSpan().Concat("world", "!", allocator);
+            False(owner.IsEmpty);
+            False(owner.Memory.IsEmpty);
+            Equal("Hello, world!", new string(owner.Memory.Span));
+            owner.Dispose();
         }
     }
 }
