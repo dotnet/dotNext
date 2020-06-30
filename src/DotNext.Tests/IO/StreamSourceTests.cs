@@ -42,7 +42,8 @@ namespace DotNext.IO
         public static void EmptyCopyTo()
         {
             using var dest = new MemoryStream();
-            using var src = new ReadOnlySequence<byte>().AsStream();
+            using var src = ReadOnlySequence<byte>.Empty.AsStream();
+            Same(Stream.Null, src);
             Equal(0L, src.Length);
 
             src.CopyTo(dest);
