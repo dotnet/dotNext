@@ -295,18 +295,18 @@ namespace DotNext.Reflection
             Equal(BitwiseComparer<Point>.GetHashCode(point), Type<Point>.GetHashCode(point));
         }
 
-        [Fact]
-        public static void BitwiseEqualityTest()
-        {
-            var guid = Guid.NewGuid();
-            True(Type<Guid>.Equals(in guid, in guid));
-            var point = new Point { X = 10, Y = 20 };
-            True(Type<Point>.Equals(point, point));
-            True(Type<string>.Equals(new string("Hello"), "Hello"));
-            False(Type<object>.Equals(new object(), new object()));
-            True(Type<StructWithProperties>.Equals(new StructWithProperties() { WriteOnlyProp = 20 }, new StructWithProperties { WriteOnlyProp = 20 }));
-            False(Type<StructWithProperties>.Equals(new StructWithProperties() { WriteOnlyProp = 10 }, new StructWithProperties { WriteOnlyProp = 20 }));
-        }
+        // [Fact]
+        // public static void BitwiseEqualityTest()
+        // {
+        //     var guid = Guid.NewGuid();
+        //     True(Type<Guid>.Equals(in guid, in guid));
+        //     var point = new Point { X = 10, Y = 20 };
+        //     True(Type<Point>.Equals(point, point));
+        //     True(Type<string>.Equals(new string("Hello"), "Hello"));
+        //     False(Type<object>.Equals(new object(), new object()));
+        //     True(Type<StructWithProperties>.Equals(new StructWithProperties() { WriteOnlyProp = 20 }, new StructWithProperties { WriteOnlyProp = 20 }));
+        //     False(Type<StructWithProperties>.Equals(new StructWithProperties() { WriteOnlyProp = 10 }, new StructWithProperties { WriteOnlyProp = 20 }));
+        // }
 
         public class ClassA
         {
