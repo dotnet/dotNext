@@ -248,13 +248,11 @@ namespace DotNext.Reflection
         [Fact]
         public static void StaticFieldTest()
         {
-            // MemberGetter<Guid> structField = Type<Guid>.Field<Guid>.RequireStatic(nameof(Guid.Empty));
-            // Guid.Empty.Equals(structField());
-            // MemberGetter<TextReader> objField = Type<TextReader>.Field<TextReader>.RequireStatic(nameof(TextReader.Null));
-            // Same(TextReader.Null, objField());
             var statField = Type<TypeTests>.Field<long>.RequireStatic(nameof(Field), true);
             statField.Value = 42L;
             Equal(Field, statField.Value);
+            MemberGetter<long> getter = statField;
+            Equal(42L, getter());
         }
 
         [Fact]
