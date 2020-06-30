@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 using Xunit;
 
@@ -205,6 +206,28 @@ namespace DotNext
             NotNull(action);
             action(obj, 42);
             Equal(42, obj.Prop);
+        }
+
+        [Fact]
+        public static void BindFunction()
+        {
+            static int Sum(in int x, in int y) => x + y;
+
+            Function<int, int, int> fn = Sum;
+
+            Equal(42, fn.Bind(40).Invoke(2));
+        }
+
+        [Fact]
+        public static void BindProcedure()
+        {
+            static void Append(in StringBuilder x, in int y) => x.Append(y);
+
+            Procedure<StringBuilder, int> proc = Append;
+
+            var builder = new StringBuilder();
+            proc.Bind(builder).Invoke(42);
+            Equal("42", builder.ToString(), StringComparer.Ordinal);
         }
     }
 }

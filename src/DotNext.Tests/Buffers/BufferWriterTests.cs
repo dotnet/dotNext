@@ -1,9 +1,11 @@
 using System;
 using System.Buffers;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using static System.Globalization.CultureInfo;
 
 namespace DotNext.Buffers
 {
@@ -65,6 +67,57 @@ namespace DotNext.Buffers
             await ReadWriteStringUsingEncodingAsync(testString2, Encoding.Unicode, bufferSize, lengthEnc);
             await ReadWriteStringUsingEncodingAsync(testString2, Encoding.UTF7, bufferSize, lengthEnc);
             await ReadWriteStringUsingEncodingAsync(testString2, Encoding.UTF32, bufferSize, lengthEnc);
+        }
+
+        [Fact]
+        public static void ArrayBufferToString()
+        {
+            var writer = new ArrayBufferWriter<char>();
+            writer.Write("Hello, world");
+            writer.Write('!');
+            Equal("Hello, world!", writer.BuildString());
+        }
+
+        public static IEnumerable<object[]> BufferWriters()
+        {
+            yield return new object[] { new PooledBufferWriter<char>(MemoryPool<char>.Shared.ToAllocator()) };
+            yield return new object[] { new PooledArrayBufferWriter<char>() };
+        }
+
+        [Theory]
+        [MemberData(nameof(BufferWriters))]
+        public static void BufferWriteToString(MemoryWriter<char> writer)
+        {
+            using (writer)
+            {
+                writer.Write("Hello, world");
+                writer.Write('!');
+                writer.WriteLine();
+                writer.WriteInt32(42, provider: InvariantCulture);
+                writer.WriteUInt32(56U, provider: InvariantCulture);
+                writer.WriteByte(10, provider: InvariantCulture);
+                writer.WriteSByte(22, provider: InvariantCulture);
+                writer.WriteInt16(88, provider: InvariantCulture);
+                writer.WriteUInt16(99, provider: InvariantCulture);
+                writer.WriteInt64(77, provider: InvariantCulture);
+                writer.WriteUInt64(66, provider: InvariantCulture);
+
+                var guid = Guid.NewGuid();
+                writer.WriteGuid(guid);
+
+                var dt = DateTime.Now;
+                writer.WriteDateTime(dt, provider: InvariantCulture);
+                
+                var dto = DateTimeOffset.Now;
+                writer.WriteDateTime(dto, provider: InvariantCulture);
+
+                writer.WriteBoolean(true);
+                writer.WriteDecimal(42.5M, provider: InvariantCulture);
+                writer.WriteSingle(32.2F, provider: InvariantCulture);
+                writer.WriteDouble(56.6D, provider: InvariantCulture);
+
+                Equal("Hello, world!" + Environment.NewLine + "4256102288997766" + guid + dt.ToString(InvariantCulture) + dto.ToString(InvariantCulture) + bool.TrueString + "42.532.256.6", writer.BuildString());
+            }
         }
     }
 }

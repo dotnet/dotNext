@@ -11,6 +11,8 @@ namespace DotNext.Buffers
     /// <typeparam name="T">The data type that can be written.</typeparam>
     public abstract class MemoryWriter<T> : Disposable, IBufferWriter<T>, IConvertible<ReadOnlyMemory<T>>, IReadOnlyList<T>
     {
+        // TODO: Should be renamed to BufferWriter
+
         /// <summary>
         /// Represents default initial buffer size.
         /// </summary>
