@@ -10,11 +10,12 @@ The memory can be rented using [ArrayPool](https://docs.microsoft.com/en-us/dotn
 * The returned memory or array can have larger size so you need to control bounds by yourself
 
 .NEXT offers convenient wrappers that simplify the rental process and handle situations when renting is optional:
-* [ArrayRental&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.ArrayRental-1.html) if you need to work with arrays
-* [MemoryRental&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.ArrayRental-1.html) if you need to work with [Span&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.span-1)
+* [ArrayRental&lt;T&gt;](../../api/DotNext.Buffers.ArrayRental-1.yml) if you need to work with arrays
+* [MemoryRental&lt;T&gt;](../../api/DotNext.Buffers.MemoryRental-1.yml) if you need to work with [Span&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.span-1)
+* [MemoryOwner&lt;T&gt;](../../api/DotNext.Buffers.MemoryOwner-1.yml) if you need universal mechanism to represent pooled memory obtained from [ArrayPool&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.arraypool-1) or [MemoryPool&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.memorypool-1)
 
 # ArrayRental
-[ArrayRental&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.ArrayRental-1.html) allows to rent the array using array pool and supports **using** statement.
+[ArrayRental&lt;T&gt;](../../api/DotNext.Buffers.ArrayRental-1.yml) allows to rent the array using array pool and supports **using** statement.
 ```csharp
 using DotNext.Buffers;
 
@@ -40,7 +41,7 @@ finally
 The type supports custom array pool that can be passed to the constructor. In some advanced scenarios, you may have already allocated array so you don't to rent a new one from the pool. It is possible to pass such array as an argument of `ArrayRental` constructor.
 
 # MemoryRental
-[MemoryRental&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.MemoryRental-1.html) helps to reduce boilerplate code in `stackalloc` vs memory pooling scenario. The rented memory is only accessible using [Span&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.span-1) data type.
+[MemoryRental&lt;T&gt;](../../api/DotNext.Buffers.MemoryRental-1.yml) helps to reduce boilerplate code in `stackalloc` vs memory pooling scenario. The rented memory is only accessible using [Span&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.span-1) data type.
 
 The following example demonstrates how to reverse a string and choose temporary buffers allocation method depending on the size of the string.
 ```csharp
@@ -67,7 +68,7 @@ The type is typically used in unsafe context when you need a temporary buffer to
 # MemoryOwner
 .NET offers two different models for memory pooling: [MemoryPool&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.memorypool-1) class and [ArrayPool&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.arraypool-1) class. Both are abstract classes so it's not possible to unify memory pooling API. For instance, [configuration model](https://docs.microsoft.com/en-us/dotnet/api/system.io.pipes.pipeoptions) for I/O pipe from .NET expecting `MemoryPool<T>` instance. If you want to use custom `ArrayPool<T>` then you need to write wrapper for it.
 
-.NEXT library contains [MemoryOwner&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.MemoryOwner-1.html) value type that represents rented memory regardless of the rental method:
+.NEXT library contains [MemoryOwner&lt;T&gt;](../../api/DotNext.Buffers.MemoryOwner-1.yml) value type that represents rented memory regardless of the rental method:
 ```csharp
 using DotNext.Buffers;
 using System.Buffers;
@@ -81,10 +82,10 @@ The value type implements [IMemoryOwner&lt;T&gt;](https://docs.microsoft.com/en-
 
 However, `MemoryOwner` provides subset of functionality available in `ArrayRental` and `MemoryRental` which are corner cases and specialized for particular pooling mechanism.
 
-Additionally, .NEXT offers special abstraction layer for memory pooling which is compatible with existing mechanisms in .NET. [MemoryAllocator&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.MemoryAllocator-1.html) delegate represents universal way to rent the memory. The consumer of your library can supply concrete instance of this delegate to supply appropriate allocation mechanism. [MemoryAllocator](https://sakno.github.io/dotNext/api/DotNext.Buffers.MemoryAllocator.html) static class provides extension methods for interop between memory allocator and existing .NET memory pooling APIs.
+Additionally, .NEXT offers special abstraction layer for memory pooling which is compatible with existing mechanisms in .NET. [MemoryAllocator&lt;T&gt;](../../api/DotNext.Buffers.MemoryAllocator-1.yml) delegate represents universal way to rent the memory. The consumer of your library can supply concrete instance of this delegate to supply appropriate allocation mechanism. [MemoryAllocator](../../api/DotNext.Buffers.MemoryAllocator-1.yml) static class provides extension methods for interop between memory allocator and existing .NET memory pooling APIs.
 
 # RentedMemoryStream
-Another way to represent the rented memory is [RentedMemoryStream](https://sakno.github.io/dotNext/api/DotNext.IO.RentedMemoryStream.html) that allows to work with pooled memory in [stream](https://docs.microsoft.com/en-us/dotnet/api/system.io.stream)-like manner. The stream is available for read/write operations. However, it's capacity is fixed and cannot grow. Therefore, you need to request sufficient capacity.
+Another way to represent the rented memory is [RentedMemoryStream](../../api/DotNext.IO.RentedMemoryStream.yml) that allows to work with pooled memory in [stream](https://docs.microsoft.com/en-us/dotnet/api/system.io.stream)-like manner. The stream is available for read/write operations. However, it's capacity is fixed and cannot grow. Therefore, you need to request sufficient capacity.
 ```csharp
 using DotNext.IO;
 
@@ -95,7 +96,7 @@ stream.Write(new byte[512], 0, 512);
 # Growable Buffers
 If size of the required buffer is not known and can grow dynamically then you need to use [Dynamic Buffers](./buffers.md) that are based on memory pooling mechanism as well.
 
-Dynamic buffers can be combined with [streams](https://docs.microsoft.com/en-us/dotnet/api/system.io.stream) easily using extension methods from [StreamSource](https://sakno.github.io/dotNext/api/DotNext.IO.StreamSource.html) class, so you can avoid limitation of `RentedMemoryStream` class. With [PooledArrayBufferWriter&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.PooledArrayBufferWriter-1.html) class, it's possible to read/write bytes using stream and utilize memory pooling:
+Dynamic buffers can be combined with [streams](https://docs.microsoft.com/en-us/dotnet/api/system.io.stream) easily using extension methods from [StreamSource](../../api/DotNext.IO.StreamSource.yml) class, so you can avoid limitation of `RentedMemoryStream` class. With [PooledArrayBufferWriter&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.PooledArrayBufferWriter-1.html) class, it's possible to read/write bytes using stream and utilize memory pooling:
 ```csharp
 using DotNext.Buffers;
 using DotNext.IO;
@@ -107,5 +108,5 @@ using Stream writeStream = StreamSource.AsStream(writer);
 writeStream.Write(new byte[1024]);
 
 // read bytes using stream
-using Stream readStream = StreamSource.GetWrittenBytesAsStream(writer);
+using Stream readStream = StreamSource.AsStream(writer.WrittenMemory);
 ```
