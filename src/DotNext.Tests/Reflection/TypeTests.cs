@@ -245,17 +245,17 @@ namespace DotNext.Reflection
 
         private static long Field = 0;
 
-        [Fact]
-        public static void StaticFieldTest()
-        {
-            MemberGetter<Guid> structField = Type<Guid>.Field<Guid>.RequireStatic(nameof(Guid.Empty));
-            Guid.Empty.Equals(structField());
-            MemberGetter<TextReader> objField = Type<TextReader>.Field<TextReader>.RequireStatic(nameof(TextReader.Null));
-            Same(TextReader.Null, objField());
-            var statField = Type<TypeTests>.Field<long>.RequireStatic(nameof(Field), true);
-            statField.Value = 42L;
-            Equal(Field, statField.Value);
-        }
+        // [Fact]
+        // public static void StaticFieldTest()
+        // {
+        //     MemberGetter<Guid> structField = Type<Guid>.Field<Guid>.RequireStatic(nameof(Guid.Empty));
+        //     Guid.Empty.Equals(structField());
+        //     MemberGetter<TextReader> objField = Type<TextReader>.Field<TextReader>.RequireStatic(nameof(TextReader.Null));
+        //     Same(TextReader.Null, objField());
+        //     var statField = Type<TypeTests>.Field<long>.RequireStatic(nameof(Field), true);
+        //     statField.Value = 42L;
+        //     Equal(Field, statField.Value);
+        // }
 
         [Fact]
         public void InstanceFieldTest()
@@ -295,18 +295,18 @@ namespace DotNext.Reflection
             Equal(BitwiseComparer<Point>.GetHashCode(point), Type<Point>.GetHashCode(point));
         }
 
-        // [Fact]
-        // public static void BitwiseEqualityTest()
-        // {
-        //     var guid = Guid.NewGuid();
-        //     True(Type<Guid>.Equals(in guid, in guid));
-        //     var point = new Point { X = 10, Y = 20 };
-        //     True(Type<Point>.Equals(point, point));
-        //     True(Type<string>.Equals(new string("Hello"), "Hello"));
-        //     False(Type<object>.Equals(new object(), new object()));
-        //     True(Type<StructWithProperties>.Equals(new StructWithProperties() { WriteOnlyProp = 20 }, new StructWithProperties { WriteOnlyProp = 20 }));
-        //     False(Type<StructWithProperties>.Equals(new StructWithProperties() { WriteOnlyProp = 10 }, new StructWithProperties { WriteOnlyProp = 20 }));
-        // }
+        [Fact]
+        public static void BitwiseEqualityTest()
+        {
+            var guid = Guid.NewGuid();
+            True(Type<Guid>.Equals(in guid, in guid));
+            var point = new Point { X = 10, Y = 20 };
+            True(Type<Point>.Equals(point, point));
+            True(Type<string>.Equals(new string("Hello"), "Hello"));
+            False(Type<object>.Equals(new object(), new object()));
+            True(Type<StructWithProperties>.Equals(new StructWithProperties() { WriteOnlyProp = 20 }, new StructWithProperties { WriteOnlyProp = 20 }));
+            False(Type<StructWithProperties>.Equals(new StructWithProperties() { WriteOnlyProp = 10 }, new StructWithProperties { WriteOnlyProp = 20 }));
+        }
 
         public class ClassA
         {
