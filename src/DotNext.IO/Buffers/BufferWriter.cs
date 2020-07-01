@@ -262,6 +262,9 @@ namespace DotNext.Buffers
             for (int charsLeft = value.Length, charsUsed, maxChars; charsLeft > 0; value = value.Slice(charsUsed), charsLeft -= charsUsed)
             {
                 var buffer = writer.GetMemory(bufferSize);
+                if (buffer.Length < bytesPerChar)
+                    buffer = writer.GetMemory(bytesPerChar);
+
                 maxChars = buffer.Length / bytesPerChar;
                 charsUsed = Math.Min(maxChars, charsLeft);
                 encoder.Convert(value.Slice(0, charsUsed), buffer.Span, charsUsed == charsLeft, out charsUsed, out var bytesUsed, out _);
@@ -294,7 +297,7 @@ namespace DotNext.Buffers
 
             ReadOnlySpan<char> result = buffer.Slice(0, charsWritten);
             WriteLength(writer, result, context.Encoding, lengthFormat);
-            WriteString(writer, buffer.Slice(0, charsWritten), context.GetEncoder(), context.Encoding.GetMaxByteCount(1), bufferSize);
+            WriteString(writer, result, context.GetEncoder(), context.Encoding.GetMaxByteCount(1), bufferSize);
             return true;
         }
 
@@ -527,7 +530,7 @@ namespace DotNext.Buffers
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
         /// <param name="allocator">The allocator for internal buffer of characters.</param>
-        public static void WriteDateTime(this IBufferWriter<byte> writer, DateTimeOffset value, in EncodingContext context, StringLengthEncoding lengthFormat, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0, MemoryAllocator<char>? allocator = null)
+        public static void WriteDateTimeOffset(this IBufferWriter<byte> writer, DateTimeOffset value, in EncodingContext context, StringLengthEncoding lengthFormat, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0, MemoryAllocator<char>? allocator = null)
             => Write(writer, in value, DateTimeOffsetFormatter, in context, format, provider, lengthFormat, bufferSize, allocator);
 
         /// <summary>
@@ -674,7 +677,7 @@ namespace DotNext.Buffers
         /// <param name="value">The value to write.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static void WriteDateTime(this IBufferWriter<char> writer, DateTimeOffset value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+        public static void WriteDateTimeOffset(this IBufferWriter<char> writer, DateTimeOffset value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
             => Write(writer, in value, DateTimeOffsetFormatter, format, provider);
 
         /// <summary>
