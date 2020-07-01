@@ -17,6 +17,8 @@ namespace DotNext.Buffers
     /// </summary>
     public static class BufferWriter
     {
+        private const int MaxBufferSize = int.MaxValue / 2;
+
         private delegate bool Formatter<T>(in T value, Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
             where T : struct;
 
@@ -51,7 +53,6 @@ namespace DotNext.Buffers
         private static readonly Formatter<Guid> GuidFormatter;
         private static readonly Formatter<DateTime> DateTimeFormatter;
         private static readonly Formatter<DateTimeOffset> DateTimeOffsetFormatter;
-        private static readonly Formatter<bool> BooleanFormatter;
         private static readonly Formatter<decimal> DecimalFormatter;
         private static readonly Formatter<float> Float32Formatter;
         private static readonly Formatter<double> Float64Formatter;
@@ -124,14 +125,10 @@ namespace DotNext.Buffers
             Newobj(Constructor(Type<Formatter<double>>(), Type<object>(), Type<IntPtr>()));
             Pop(out Float64Formatter);
 
-            BooleanFormatter = TryFormatBoolean;
             GuidFormatter = TryFormatGuid;
 
             static bool TryFormatGuid(in Guid value, Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
                 => value.TryFormat(destination, out charsWritten, format);
-
-            static bool TryFormatBoolean(in bool value, Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
-                => value.TryFormat(destination, out charsWritten);
         }
 
         /// <summary>
@@ -289,6 +286,250 @@ namespace DotNext.Buffers
                 WriteString(writer, value, context.GetEncoder(), context.Encoding.GetMaxByteCount(1), bufferSize);
         }
 
+        private static bool WriteString<T>(IBufferWriter<byte> writer, in T value, Span<char> buffer, Formatter<T> formatter, in EncodingContext context, ReadOnlySpan<char> format, IFormatProvider? provider, StringLengthEncoding lengthFormat, int bufferSize)
+            where T : struct
+        {
+            if (!formatter(in value, buffer, out var charsWritten, format, provider))
+                return false;
+
+            ReadOnlySpan<char> result = buffer.Slice(0, charsWritten);
+            WriteLength(writer, result, context.Encoding, lengthFormat);
+            WriteString(writer, buffer.Slice(0, charsWritten), context.GetEncoder(), context.Encoding.GetMaxByteCount(1), bufferSize);
+            return true;
+        }
+
+        private static void Write<T>(IBufferWriter<byte> writer, in T value, Formatter<T> formatter, in EncodingContext context, ReadOnlySpan<char> format, IFormatProvider? provider, StringLengthEncoding lengthFormat, int bufferSize, MemoryAllocator<char>? allocator)
+            where T : struct
+        {
+            const int initialCharBufferSize = 128;
+
+            // attempt to allocate char buffer on the stack
+            Span<char> charBuffer = stackalloc char[initialCharBufferSize];
+            if (!WriteString(writer, in value, charBuffer, formatter, in context, format, provider, lengthFormat, bufferSize))
+            {
+                for (var charBufferSize = initialCharBufferSize * 2; ; charBufferSize = charBufferSize <= MaxBufferSize ? charBufferSize * 2 : throw new OutOfMemoryException())
+                {
+                    using var owner = allocator is null ? new MemoryOwner<char>(ArrayPool<char>.Shared, charBufferSize) : allocator.Invoke(charBufferSize, false);
+                    if (WriteString(writer, in value, charBuffer, formatter, in context, format, provider, lengthFormat, bufferSize))
+                        break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Encodes 64-bit signed integer as a string.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="context">The encoding context.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
+        /// <param name="allocator">The allocator for internal buffer of characters.</param>
+        public static void WriteInt64(this IBufferWriter<byte> writer, long value, in EncodingContext context, StringLengthEncoding lengthFormat, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0, MemoryAllocator<char>? allocator = null)
+            => Write(writer, in value, Int64Formatter, in context, format, provider, lengthFormat, bufferSize, allocator);
+
+        /// <summary>
+        /// Encodes 64-bit unsigned integer as a string.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="context">The encoding context.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
+        /// <param name="allocator">The allocator for internal buffer of characters.</param>
+        [CLSCompliant(false)]
+        public static void WriteUInt64(this IBufferWriter<byte> writer, ulong value, in EncodingContext context, StringLengthEncoding lengthFormat, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0, MemoryAllocator<char>? allocator = null)
+            => Write(writer, in value, UInt64Formatter, in context, format, provider, lengthFormat, bufferSize, allocator);
+
+        /// <summary>
+        /// Encodes 32-bit signed integer as a string.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="context">The encoding context.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
+        /// <param name="allocator">The allocator for internal buffer of characters.</param>
+        public static void WriteInt32(this IBufferWriter<byte> writer, int value, in EncodingContext context, StringLengthEncoding lengthFormat, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0, MemoryAllocator<char>? allocator = null)
+            => Write(writer, in value, Int32Formatter, in context, format, provider, lengthFormat, bufferSize, allocator);
+
+        /// <summary>
+        /// Encodes 32-bit unsigned integer as a string.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="context">The encoding context.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
+        /// <param name="allocator">The allocator for internal buffer of characters.</param>
+        [CLSCompliant(false)]
+        public static void WriteUInt32(this IBufferWriter<byte> writer, uint value, in EncodingContext context, StringLengthEncoding lengthFormat, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0, MemoryAllocator<char>? allocator = null)
+            => Write(writer, in value, UInt32Formatter, in context, format, provider, lengthFormat, bufferSize, allocator);
+
+        /// <summary>
+        /// Encodes 16-bit signed integer as a string.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="context">The encoding context.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
+        /// <param name="allocator">The allocator for internal buffer of characters.</param>
+        public static void WriteInt16(this IBufferWriter<byte> writer, short value, in EncodingContext context, StringLengthEncoding lengthFormat, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0, MemoryAllocator<char>? allocator = null)
+            => Write(writer, in value, Int16Formatter, in context, format, provider, lengthFormat, bufferSize, allocator);
+
+        /// <summary>
+        /// Encodes 16-bit unsigned integer as a string.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="context">The encoding context.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
+        /// <param name="allocator">The allocator for internal buffer of characters.</param>
+        [CLSCompliant(false)]
+        public static void WriteUInt16(this IBufferWriter<byte> writer, ushort value, in EncodingContext context, StringLengthEncoding lengthFormat, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0, MemoryAllocator<char>? allocator = null)
+            => Write(writer, in value, UInt16Formatter, in context, format, provider, lengthFormat, bufferSize, allocator);
+
+        /// <summary>
+        /// Encodes 8-bit signed integer as a string.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="context">The encoding context.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
+        /// <param name="allocator">The allocator for internal buffer of characters.</param>
+        [CLSCompliant(false)]
+        public static void WriteSByte(this IBufferWriter<byte> writer, sbyte value, in EncodingContext context, StringLengthEncoding lengthFormat, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0, MemoryAllocator<char>? allocator = null)
+            => Write(writer, in value, Int8Formatter, in context, format, provider, lengthFormat, bufferSize, allocator);
+
+        /// <summary>
+        /// Encodes 8-bit unsigned integer as a string.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="context">The encoding context.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
+        /// <param name="allocator">The allocator for internal buffer of characters.</param>
+        public static void WriteByte(this IBufferWriter<byte> writer, byte value, in EncodingContext context, StringLengthEncoding lengthFormat, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0, MemoryAllocator<char>? allocator = null)
+            => Write(writer, in value, UInt8Formatter, in context, format, provider, lengthFormat, bufferSize, allocator);
+
+        /// <summary>
+        /// Encodes <see cref="decimal"/> as a string.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="context">The encoding context.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
+        /// <param name="allocator">The allocator for internal buffer of characters.</param>
+        public static void WriteDecimal(this IBufferWriter<byte> writer, decimal value, in EncodingContext context, StringLengthEncoding lengthFormat, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0, MemoryAllocator<char>? allocator = null)
+            => Write(writer, in value, DecimalFormatter, in context, format, provider, lengthFormat, bufferSize, allocator);
+
+        /// <summary>
+        /// Encodes single-precision floating-point number as a string.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="context">The encoding context.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
+        /// <param name="allocator">The allocator for internal buffer of characters.</param>
+        public static void WriteSingle(this IBufferWriter<byte> writer, float value, in EncodingContext context, StringLengthEncoding lengthFormat, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0, MemoryAllocator<char>? allocator = null)
+            => Write(writer, in value, Float32Formatter, in context, format, provider, lengthFormat, bufferSize, allocator);
+
+        /// <summary>
+        /// Encodes double-precision floating-point number as a string.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="context">The encoding context.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
+        /// <param name="allocator">The allocator for internal buffer of characters.</param>
+        public static void WriteDouble(this IBufferWriter<byte> writer, double value, in EncodingContext context, StringLengthEncoding lengthFormat, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0, MemoryAllocator<char>? allocator = null)
+            => Write(writer, in value, Float64Formatter, in context, format, provider, lengthFormat, bufferSize, allocator);
+
+        /// <summary>
+        /// Encodes <see cref="bool"/> as a string.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="context">The encoding context.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
+        public static void WriteBoolean(this IBufferWriter<byte> writer, bool value, in EncodingContext context, StringLengthEncoding lengthFormat, int bufferSize = 0)
+        {
+            ReadOnlySpan<char> buffer = value ? bool.TrueString : bool.FalseString;
+            WriteLength(writer, buffer, context.Encoding, lengthFormat);
+            WriteString(writer, buffer, context.GetEncoder(), context.Encoding.GetMaxByteCount(1), bufferSize);
+        }
+
+        /// <summary>
+        /// Encodes <see cref="Guid"/> as a string.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="context">The encoding context.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
+        /// <param name="allocator">The allocator for internal buffer of characters.</param>
+        public static void WriteGuid(this IBufferWriter<byte> writer, Guid value, in EncodingContext context, StringLengthEncoding lengthFormat, ReadOnlySpan<char> format = default, int bufferSize = 0, MemoryAllocator<char>? allocator = null)
+            => Write(writer, in value, GuidFormatter, in context, format, null, lengthFormat, bufferSize, allocator);
+
+        /// <summary>
+        /// Encodes <see cref="DateTime"/> as a string.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="context">The encoding context.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
+        /// <param name="allocator">The allocator for internal buffer of characters.</param>
+        public static void WriteDateTime(this IBufferWriter<byte> writer, DateTime value, in EncodingContext context, StringLengthEncoding lengthFormat, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0, MemoryAllocator<char>? allocator = null)
+            => Write(writer, in value, DateTimeFormatter, in context, format, provider, lengthFormat, bufferSize, allocator);
+
+        /// <summary>
+        /// Encodes <see cref="DateTimeOffset"/> as a string.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="context">The encoding context.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
+        /// <param name="allocator">The allocator for internal buffer of characters.</param>
+        public static void WriteDateTime(this IBufferWriter<byte> writer, DateTimeOffset value, in EncodingContext context, StringLengthEncoding lengthFormat, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0, MemoryAllocator<char>? allocator = null)
+            => Write(writer, in value, DateTimeOffsetFormatter, in context, format, provider, lengthFormat, bufferSize, allocator);
+
         /// <summary>
         /// Writes the array to the buffer.
         /// </summary>
@@ -310,8 +551,6 @@ namespace DotNext.Buffers
         private static void Write<T>(IBufferWriter<char> writer, in T value, Formatter<T> formatter, ReadOnlySpan<char> format, IFormatProvider? provider)
             where T : struct
         {
-            const int maxBufferSize = int.MaxValue / 2;
-
             for (int bufferSize = 0; ; )
             {
                 var span = writer.GetSpan(bufferSize);
@@ -321,7 +560,7 @@ namespace DotNext.Buffers
                     break;
                 }
 
-                bufferSize = bufferSize <= maxBufferSize ? bufferSize * 2 : throw new OutOfMemoryException();
+                bufferSize = bufferSize <= MaxBufferSize ? bufferSize * 2 : throw new OutOfMemoryException();
             }
         }
 
@@ -444,7 +683,7 @@ namespace DotNext.Buffers
         /// <param name="writer">The buffer writer.</param>
         /// <param name="value">The value to write.</param>
         public static void WriteBoolean(this IBufferWriter<char> writer, bool value)
-            => Write(writer, in value, BooleanFormatter, default, null);
+            => writer.Write(value ? bool.TrueString : bool.FalseString);
 
         /// <summary>
         /// Writes string representation of <see cref="decimal"/> to the buffer.

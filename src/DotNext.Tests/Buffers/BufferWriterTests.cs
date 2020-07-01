@@ -9,6 +9,7 @@ using static System.Globalization.CultureInfo;
 
 namespace DotNext.Buffers
 {
+    using Text;
     using IAsyncBinaryReader = IO.IAsyncBinaryReader;
     using StringLengthEncoding = IO.StringLengthEncoding;
 
@@ -78,15 +79,15 @@ namespace DotNext.Buffers
             Equal("Hello, world!", writer.BuildString());
         }
 
-        public static IEnumerable<object[]> BufferWriters()
+        public static IEnumerable<object[]> CharWriters()
         {
             yield return new object[] { new PooledBufferWriter<char>(MemoryPool<char>.Shared.ToAllocator()) };
             yield return new object[] { new PooledArrayBufferWriter<char>() };
         }
 
         [Theory]
-        [MemberData(nameof(BufferWriters))]
-        public static void BufferWriteToString(MemoryWriter<char> writer)
+        [MemberData(nameof(CharWriters))]
+        public static void MutableStringBuffer(MemoryWriter<char> writer)
         {
             using (writer)
             {
@@ -117,6 +118,58 @@ namespace DotNext.Buffers
                 writer.WriteDouble(56.6D, provider: InvariantCulture);
 
                 Equal("Hello, world!" + Environment.NewLine + "4256102288997766" + guid + dt.ToString(InvariantCulture) + dto.ToString(InvariantCulture) + bool.TrueString + "42.532.256.6", writer.BuildString());
+            }
+        }
+
+        public static IEnumerable<object[]> ByteWriters()
+        {
+            yield return new object[] { new PooledBufferWriter<byte>(MemoryPool<byte>.Shared.ToAllocator()), Encoding.UTF32 };
+            yield return new object[] { new PooledArrayBufferWriter<byte>(), Encoding.UTF8 };
+        }
+
+        [Theory]
+        [MemberData(nameof(ByteWriters))]
+        public static void EncodeAsString(MemoryWriter<byte> writer, Encoding encoding)
+        {
+            var encodingContext = new EncodingContext(encoding, true);
+            using (writer)
+            {
+                var g = Guid.NewGuid();
+                var dt = DateTime.Now;
+                var dto = DateTimeOffset.Now;
+                writer.WriteInt64(42L, in encodingContext, StringLengthEncoding.Plain, provider: InvariantCulture);
+                writer.WriteUInt64(12UL, in encodingContext, StringLengthEncoding.PlainLittleEndian, provider: InvariantCulture);
+                writer.WriteInt32(34, in encodingContext, StringLengthEncoding.PlainBigEndian, provider: InvariantCulture);
+                writer.WriteUInt32(78, in encodingContext, StringLengthEncoding.Plain, provider: InvariantCulture);
+                writer.WriteInt16(90, in encodingContext, StringLengthEncoding.Plain, provider: InvariantCulture);
+                writer.WriteUInt16(12, in encodingContext, StringLengthEncoding.Plain, format: "X", provider: InvariantCulture);
+                writer.WriteByte(10, in encodingContext, StringLengthEncoding.Plain, format: "X", provider: InvariantCulture);
+                writer.WriteSByte(11, in encodingContext, StringLengthEncoding.Plain, format: "X", provider: InvariantCulture);
+                writer.WriteBoolean(true, in encodingContext, StringLengthEncoding.Plain);
+                writer.WriteGuid(g, in encodingContext, StringLengthEncoding.Plain);
+                writer.WriteDateTime(dt, in encodingContext, StringLengthEncoding.Plain, provider: InvariantCulture);
+                writer.WriteDateTime(dto, in encodingContext, StringLengthEncoding.Plain, provider: InvariantCulture);
+                writer.WriteDecimal(42.5M, in encodingContext, StringLengthEncoding.Plain, provider: InvariantCulture);
+                writer.WriteSingle(32.2F, in encodingContext, StringLengthEncoding.Plain, provider: InvariantCulture);
+                writer.WriteDouble(56.6, in encodingContext, StringLengthEncoding.Plain, provider: InvariantCulture);
+
+                var decodingContext = new DecodingContext(encoding, true);
+                var reader = IAsyncBinaryReader.Create(writer.WrittenMemory);
+                Equal("42", reader.ReadString(StringLengthEncoding.Plain, in decodingContext));
+                Equal("12", reader.ReadString(StringLengthEncoding.PlainLittleEndian, in decodingContext));
+                Equal("34", reader.ReadString(StringLengthEncoding.PlainBigEndian, in decodingContext));
+                Equal("78", reader.ReadString(StringLengthEncoding.Plain, in decodingContext));
+                Equal("90", reader.ReadString(StringLengthEncoding.Plain, in decodingContext));
+                Equal("C", reader.ReadString(StringLengthEncoding.Plain, in decodingContext));
+                Equal("A", reader.ReadString(StringLengthEncoding.Plain, in decodingContext));
+                Equal("B", reader.ReadString(StringLengthEncoding.Plain, in decodingContext));
+                Equal(bool.TrueString, reader.ReadString(StringLengthEncoding.Plain, in decodingContext));
+                Equal(g.ToString(), reader.ReadString(StringLengthEncoding.Plain, in decodingContext));
+                Equal(dt.ToString(InvariantCulture), reader.ReadString(StringLengthEncoding.Plain, in decodingContext));
+                Equal(dto.ToString(InvariantCulture), reader.ReadString(StringLengthEncoding.Plain, in decodingContext));
+                Equal("42.5", reader.ReadString(StringLengthEncoding.Plain, in decodingContext));
+                Equal("32.2", reader.ReadString(StringLengthEncoding.Plain, in decodingContext));
+                Equal("56.6", reader.ReadString(StringLengthEncoding.Plain, in decodingContext));
             }
         }
     }
