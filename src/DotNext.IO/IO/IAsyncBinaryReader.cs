@@ -58,7 +58,7 @@ namespace DotNext.IO
         /// <param name="provider">An object that supplies culture-specific formatting information.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The parsed value.</returns>
-        /// <exception cref="FormatException">The numner is in incorrect format.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
         async ValueTask<long> ReadInt64Async(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
@@ -88,7 +88,7 @@ namespace DotNext.IO
         /// <param name="provider">An object that supplies culture-specific formatting information.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The parsed value.</returns>
-        /// <exception cref="FormatException">The numner is in incorrect format.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
         async ValueTask<int> ReadInt32Async(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
@@ -118,7 +118,7 @@ namespace DotNext.IO
         /// <param name="provider">An object that supplies culture-specific formatting information.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The parsed value.</returns>
-        /// <exception cref="FormatException">The numner is in incorrect format.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
         async ValueTask<short> ReadInt16Async(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
@@ -133,7 +133,7 @@ namespace DotNext.IO
         /// <param name="provider">An object that supplies culture-specific formatting information.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The parsed value.</returns>
-        /// <exception cref="FormatException">The numner is in incorrect format.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
         async ValueTask<float> ReadSingleAsync(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.AllowThousands | NumberStyles.Float, IFormatProvider? provider = null, CancellationToken token = default)
@@ -148,7 +148,7 @@ namespace DotNext.IO
         /// <param name="provider">An object that supplies culture-specific formatting information.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The parsed value.</returns>
-        /// <exception cref="FormatException">The numner is in incorrect format.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
         async ValueTask<double> ReadDoubleAsync(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.AllowThousands | NumberStyles.Float, IFormatProvider? provider = null, CancellationToken token = default)
@@ -163,7 +163,7 @@ namespace DotNext.IO
         /// <param name="provider">An object that supplies culture-specific formatting information.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The parsed value.</returns>
-        /// <exception cref="FormatException">The numner is in incorrect format.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
         async ValueTask<byte> ReadByteAsync(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
@@ -178,7 +178,7 @@ namespace DotNext.IO
         /// <param name="provider">An object that supplies culture-specific formatting information.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The parsed value.</returns>
-        /// <exception cref="FormatException">The numner is in incorrect format.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
         async ValueTask<decimal> ReadDecimalAsync(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Number, IFormatProvider? provider = null, CancellationToken token = default)
@@ -193,11 +193,27 @@ namespace DotNext.IO
         /// <param name="provider">An object that supplies culture-specific formatting information.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The parsed value.</returns>
-        /// <exception cref="FormatException">The numner is in incorrect format.</exception>
+        /// <exception cref="FormatException">The date/time is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
         async ValueTask<DateTime> ReadDateTimeAsync(StringLengthEncoding lengthFormat, DecodingContext context, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
             => DateTime.Parse(await ReadStringAsync(lengthFormat, context, token).ConfigureAwait(false), provider, style);
+
+        /// <summary>
+        /// Parses <see cref="DateTime"/> from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="formats">An array of allowable formats.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="FormatException">The date/time is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        async ValueTask<DateTime> ReadDateTimeAsync(StringLengthEncoding lengthFormat, DecodingContext context, string[] formats, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
+            => DateTime.ParseExact(await ReadStringAsync(lengthFormat, context, token).ConfigureAwait(false), formats, provider, style);
 
         /// <summary>
         /// Parses <see cref="DateTimeOffset"/> from its string representation encoded in the underlying stream.
@@ -208,11 +224,27 @@ namespace DotNext.IO
         /// <param name="provider">An object that supplies culture-specific formatting information.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The parsed value.</returns>
-        /// <exception cref="FormatException">The numner is in incorrect format.</exception>
+        /// <exception cref="FormatException">The date/time is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
         async ValueTask<DateTimeOffset> ReadDateTimeOffsetAsync(StringLengthEncoding lengthFormat, DecodingContext context, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
             => DateTimeOffset.Parse(await ReadStringAsync(lengthFormat, context, token).ConfigureAwait(false), provider, style);
+
+        /// <summary>
+        /// Parses <see cref="DateTimeOffset"/> from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="formats">An array of allowable formats.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="FormatException">The date/time is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        async ValueTask<DateTimeOffset> ReadDateTimeOffsetAsync(StringLengthEncoding lengthFormat, DecodingContext context, string[] formats, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
+            => DateTimeOffset.ParseExact(await ReadStringAsync(lengthFormat, context, token).ConfigureAwait(false), formats, provider, style);
 
         /// <summary>
         /// Reads the block of bytes.

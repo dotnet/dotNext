@@ -153,6 +153,8 @@ namespace DotNext.Buffers
                 writer.WriteGuid(g, in encodingContext, StringLengthEncoding.Plain);
                 writer.WriteDateTime(dt, in encodingContext, StringLengthEncoding.Plain, format: "O", provider: InvariantCulture);
                 writer.WriteDateTimeOffset(dto, in encodingContext, StringLengthEncoding.Plain, format: "O", provider: InvariantCulture);
+                writer.WriteDateTime(dt, in encodingContext, StringLengthEncoding.Plain, format: "O", provider: InvariantCulture);
+                writer.WriteDateTimeOffset(dto, in encodingContext, StringLengthEncoding.Plain, format: "O", provider: InvariantCulture);
                 writer.WriteDecimal(42.5M, in encodingContext, StringLengthEncoding.Plain, provider: InvariantCulture);
                 writer.WriteSingle(32.2F, in encodingContext, StringLengthEncoding.Plain, provider: InvariantCulture);
                 writer.WriteDouble(56.6D, in encodingContext, StringLengthEncoding.Plain, provider: InvariantCulture);
@@ -174,6 +176,8 @@ namespace DotNext.Buffers
                 Equal(g.ToString(), reader.ReadString(StringLengthEncoding.Plain, in decodingContext));
                 Equal(dt, reader.ReadDateTime(StringLengthEncoding.Plain, in decodingContext, style: DateTimeStyles.RoundtripKind, provider: InvariantCulture));
                 Equal(dto, reader.ReadDateTimeOffset(StringLengthEncoding.Plain, in decodingContext, style: DateTimeStyles.RoundtripKind, provider: InvariantCulture));
+                Equal(dt, reader.ReadDateTime(StringLengthEncoding.Plain, in decodingContext, formats: new[] { "O" }, style: DateTimeStyles.RoundtripKind, provider: InvariantCulture));
+                Equal(dto, reader.ReadDateTimeOffset(StringLengthEncoding.Plain, in decodingContext, formats: new[] { "O" }, style: DateTimeStyles.RoundtripKind, provider: InvariantCulture));
                 Equal(42.5M, reader.ReadDecimal(StringLengthEncoding.Plain, in decodingContext, provider: InvariantCulture));
                 Equal(32.2F, reader.ReadSingle(StringLengthEncoding.Plain, in decodingContext, provider: InvariantCulture));
                 Equal(56.6D, reader.ReadDouble(StringLengthEncoding.Plain, in decodingContext, provider: InvariantCulture));
