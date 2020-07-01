@@ -1,5 +1,6 @@
 using System;
 using System.Buffers;
+using System.Globalization;
 using System.IO;
 using System.IO.Pipelines;
 using System.Threading;
@@ -17,6 +18,13 @@ namespace DotNext.IO
     /// </summary>
     public struct SequenceBinaryReader : IAsyncBinaryReader
     {
+        private delegate TResult DataParser<TResult, TStyle>(ReadOnlySpan<char> value, TStyle style, IFormatProvider? provider)
+            where TResult : struct
+            where TStyle : struct, Enum;
+
+        // TODO: Should be replaced with function pointer in C# 9
+        private static readonly DataParser<long, NumberStyles> Int64Parser = long.Parse;
+
         private readonly ReadOnlySequence<byte> sequence;
         private SequencePosition position;
 
@@ -38,6 +46,31 @@ namespace DotNext.IO
             return parser.RemainingBytes == 0 ? parser.Complete() : throw new EndOfStreamException();
         }
 
+        private Span<char> ReadString<TBuffer>(in DecodingContext context, in TBuffer buffer)
+            where TBuffer : struct, IBuffer<char>
+        {
+            var parser = new StringReader<TBuffer>(in context, in buffer);
+            parser.Append<string, StringReader<TBuffer>>(sequence.Slice(position), out position);
+            return parser.IsCompleted ? parser.Result : throw new EndOfStreamException();
+        }
+
+        private unsafe TResult Read<TResult, TStyle>(DataParser<TResult, TStyle> parser, StringLengthEncoding lengthFormat, in DecodingContext context, TStyle style, IFormatProvider? provider)
+            where TResult : struct
+            where TStyle : struct, Enum
+        {
+            var length = ReadLength(lengthFormat);
+            if (length > MemoryRental<char>.StackallocThreshold)
+            {
+                using var buffer = new ArrayBuffer<char>(length);
+                return parser(ReadString(in context, in buffer), style, provider);
+            }
+            else
+            {
+                var buffer = stackalloc char[length];
+                return parser(ReadString(in context, new UnsafeBuffer<char>(buffer, length)), style, provider);
+            }
+        }
+
         /// <summary>
         /// Decodes the value of blittable type from the sequence of bytes.
         /// </summary>
@@ -53,6 +86,19 @@ namespace DotNext.IO
         /// <param name="output">The block of memory to fill.</param>
         /// <exception cref="EndOfStreamException">Unexpected end of sequence.</exception>
         public void Read(Memory<byte> output) => Read<Missing, MemoryReader>(new MemoryReader(output));
+
+        /// <summary>
+        /// Parses 64-bit signed integer from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="FormatException">The numner is in incorrect format.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        public long ReadInt64(StringLengthEncoding lengthFormat, in DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
+            => Read(Int64Parser, lengthFormat, in context, style, provider);
 
         /// <summary>
         /// Decodes 64-bit signed integer using the specified endianness.
@@ -146,7 +192,7 @@ namespace DotNext.IO
         {
             if (length > MemoryRental<char>.StackallocThreshold)
             {
-                var buffer = new ArrayBuffer<char>(length);
+                using var buffer = new ArrayBuffer<char>(length);
                 return Read<string, StringReader<ArrayBuffer<char>>>(new StringReader<ArrayBuffer<char>>(in context, buffer));
             }
             else
@@ -156,14 +202,7 @@ namespace DotNext.IO
             }
         }
 
-        /// <summary>
-        /// Decodes the string.
-        /// </summary>
-        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
-        /// <param name="context">The decoding context containing string characters encoding.</param>
-        /// <returns>The decoded string.</returns>
-        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-        public string ReadString(StringLengthEncoding lengthFormat, in DecodingContext context)
+        private int ReadLength(StringLengthEncoding lengthFormat)
         {
             int length;
             var littleEndian = BitConverter.IsLittleEndian;
@@ -186,8 +225,18 @@ namespace DotNext.IO
             }
 
             length.ReverseIfNeeded(littleEndian);
-            return ReadString(length, in context);
+            return length;
         }
+
+        /// <summary>
+        /// Decodes the string.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <returns>The decoded string.</returns>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        public string ReadString(StringLengthEncoding lengthFormat, in DecodingContext context)
+            => ReadString(ReadLength(lengthFormat), in context);
 
         /// <inheritdoc/>
         ValueTask<T> IAsyncBinaryReader.ReadAsync<T>(CancellationToken token)
@@ -206,33 +255,141 @@ namespace DotNext.IO
 
         /// <inheritdoc/>
         ValueTask<long> IAsyncBinaryReader.ReadInt64Async(bool littleEndian, CancellationToken token)
-            => token.IsCancellationRequested ?
-                new ValueTask<long>(Task.FromCanceled<long>(token)) :
-                new ValueTask<long>(ReadInt64(littleEndian));
+        {
+            Task<long> result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled<long>(token);
+            }
+            else
+            {
+                try
+                {
+                    return new ValueTask<long>(ReadInt64(littleEndian));
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException<long>(e);
+                }
+            }
+
+            return new ValueTask<long>(result);
+        }
+
+        /// <inheritdoc/>
+        ValueTask<long> IAsyncBinaryReader.ReadInt64Async(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
+        {
+            Task<long> result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled<long>(token);
+            }
+            else
+            {
+                try
+                {
+                    return new ValueTask<long>(ReadInt64(lengthFormat, in context, style, provider));
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException<long>(e);
+                }
+            }
+
+            return new ValueTask<long>(result);
+        }
 
         /// <inheritdoc/>
         ValueTask<int> IAsyncBinaryReader.ReadInt32Async(bool littleEndian, CancellationToken token)
-            => token.IsCancellationRequested ?
-                new ValueTask<int>(Task.FromCanceled<int>(token)) :
-                new ValueTask<int>(ReadInt32(littleEndian));
+        {
+            Task<int> result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled<int>(token);
+            }
+            else
+            {
+                try
+                {
+                    return new ValueTask<int>(ReadInt32(littleEndian));
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException<int>(e);
+                }
+            }
+
+            return new ValueTask<int>(result);
+        }
 
         /// <inheritdoc/>
         ValueTask<short> IAsyncBinaryReader.ReadInt16Async(bool littleEndian, CancellationToken token)
-            => token.IsCancellationRequested ?
-                new ValueTask<short>(Task.FromCanceled<short>(token)) :
-                new ValueTask<short>(ReadInt16(littleEndian));
+        {
+            Task<short> result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled<short>(token);
+            }
+            else
+            {
+                try
+                {
+                    return new ValueTask<short>(ReadInt16(littleEndian));
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException<short>(e);
+                }
+            }
+
+            return new ValueTask<short>(result);
+        }
 
         /// <inheritdoc/>
         ValueTask<string> IAsyncBinaryReader.ReadStringAsync(int length, DecodingContext context, CancellationToken token)
-            => token.IsCancellationRequested ?
-                new ValueTask<string>(Task.FromCanceled<string>(token)) :
-                new ValueTask<string>(ReadString(length, in context));
+        {
+            Task<string> result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled<string>(token);
+            }
+            else
+            {
+                try
+                {
+                    return new ValueTask<string>(ReadString(length, context));
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException<string>(e);
+                }
+            }
+
+            return new ValueTask<string>(result);
+        }
 
         /// <inheritdoc/>
         ValueTask<string> IAsyncBinaryReader.ReadStringAsync(StringLengthEncoding lengthFormat, DecodingContext context, CancellationToken token)
-            => token.IsCancellationRequested ?
-                new ValueTask<string>(Task.FromCanceled<string>(token)) :
-                new ValueTask<string>(ReadString(lengthFormat, in context));
+        {
+            Task<string> result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled<string>(token);
+            }
+            else
+            {
+                try
+                {
+                    return new ValueTask<string>(ReadString(lengthFormat, context));
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException<string>(e);
+                }
+            }
+
+            return new ValueTask<string>(result);
+        }
 
         /// <inheritdoc/>
         Task IAsyncBinaryReader.CopyToAsync(Stream output, CancellationToken token)

@@ -1,5 +1,6 @@
 using System;
 using System.Buffers;
+using System.Globalization;
 using System.IO;
 using System.IO.Pipelines;
 using System.Threading;
@@ -47,6 +48,21 @@ namespace DotNext.IO
             result.ReverseIfNeeded(littleEndian);
             return result;
         }
+
+        /// <summary>
+        /// Parses 64-bit signed integer from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="FormatException">The numner is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        async ValueTask<long> ReadInt64Async(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+            => long.Parse(await ReadStringAsync(lengthFormat, context, token).ConfigureAwait(false), style, provider);
 
         /// <summary>
         /// Decodes 32-bit signed integer using the specified endianness.
@@ -110,7 +126,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
         ValueTask<string> ReadStringAsync(StringLengthEncoding lengthFormat, DecodingContext context, CancellationToken token = default);
-
+        
         /// <summary>
         /// Copies the content to the specified stream.
         /// </summary>
