@@ -366,6 +366,29 @@ namespace DotNext.IO
             => Read<DateTimeOffset, DateTimeDecoder>(new DateTimeDecoder(style, formats, provider), lengthFormat, in context);
 
         /// <summary>
+        /// Parses <see cref="Guid"/> from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="FormatException">GUID value is in incorrect format.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        public Guid ReadGuid(StringLengthEncoding lengthFormat, in DecodingContext context)
+            => Read<Guid, GuidDecoder>(new GuidDecoder(), lengthFormat, in context);
+
+        /// <summary>
+        /// Parses <see cref="Guid"/> from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="format">The expected format of GUID value.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="FormatException">GUID value is in incorrect format.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        public Guid ReadGuid(StringLengthEncoding lengthFormat, in DecodingContext context, string format)
+            => Read<Guid, GuidDecoder>(new GuidDecoder(format), lengthFormat, in context);
+
+        /// <summary>
         /// Decodes the string.
         /// </summary>
         /// <param name="length">The length of the encoded string, in bytes.</param>
@@ -691,6 +714,29 @@ namespace DotNext.IO
         }
 
         /// <inheritdoc/>
+        ValueTask<DateTime> IAsyncBinaryReader.ReadDateTimeAsync(StringLengthEncoding lengthFormat, DecodingContext context, string[] formats, DateTimeStyles style, IFormatProvider? provider, CancellationToken token)
+        {
+            Task<DateTime> result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled<DateTime>(token);
+            }
+            else
+            {
+                try
+                {
+                    return new ValueTask<DateTime>(ReadDateTime(lengthFormat, in context, formats, style, provider));
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException<DateTime>(e);
+                }
+            }
+
+            return new ValueTask<DateTime>(result);
+        }
+
+        /// <inheritdoc/>
         ValueTask<DateTimeOffset> IAsyncBinaryReader.ReadDateTimeOffsetAsync(StringLengthEncoding lengthFormat, DecodingContext context, DateTimeStyles style, IFormatProvider? provider, CancellationToken token)
         {
             Task<DateTimeOffset> result;
@@ -711,6 +757,75 @@ namespace DotNext.IO
             }
 
             return new ValueTask<DateTimeOffset>(result);
+        }
+
+        /// <inheritdoc/>
+        ValueTask<DateTimeOffset> IAsyncBinaryReader.ReadDateTimeOffsetAsync(StringLengthEncoding lengthFormat, DecodingContext context, string[] formats, DateTimeStyles style, IFormatProvider? provider, CancellationToken token)
+        {
+            Task<DateTimeOffset> result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled<DateTimeOffset>(token);
+            }
+            else
+            {
+                try
+                {
+                    return new ValueTask<DateTimeOffset>(ReadDateTimeOffset(lengthFormat, in context, formats, style, provider));
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException<DateTimeOffset>(e);
+                }
+            }
+
+            return new ValueTask<DateTimeOffset>(result);
+        }
+
+        /// <inheritdoc/>
+        ValueTask<Guid> IAsyncBinaryReader.ReadGuidAsync(StringLengthEncoding lengthFormat, DecodingContext context, CancellationToken token)
+        {
+            Task<Guid> result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled<Guid>(token);
+            }
+            else
+            {
+                try
+                {
+                    return new ValueTask<Guid>(ReadGuid(lengthFormat, in context));
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException<Guid>(e);
+                }
+            }
+
+            return new ValueTask<Guid>(result);
+        }
+
+        /// <inheritdoc/>
+        ValueTask<Guid> IAsyncBinaryReader.ReadGuidAsync(StringLengthEncoding lengthFormat, DecodingContext context, string format, CancellationToken token)
+        {
+            Task<Guid> result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled<Guid>(token);
+            }
+            else
+            {
+                try
+                {
+                    return new ValueTask<Guid>(ReadGuid(lengthFormat, in context, format));
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException<Guid>(e);
+                }
+            }
+
+            return new ValueTask<Guid>(result);
         }
 
         /// <inheritdoc/>

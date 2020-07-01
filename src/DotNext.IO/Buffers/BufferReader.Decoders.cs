@@ -79,5 +79,16 @@ namespace DotNext.Buffers
             DateTimeOffset ISpanDecoder<DateTimeOffset>.Decode(ReadOnlySpan<char> value)
                 => formats.IsNullOrEmpty() ? DateTimeOffset.Parse(value, provider, style) : DateTimeOffset.ParseExact(value, formats, provider, style);
         }
+
+        [StructLayout(LayoutKind.Auto)]
+        internal readonly struct GuidDecoder : ISpanDecoder<Guid>
+        {
+            private readonly string? format;
+
+            internal GuidDecoder(string format) => this.format = format;
+
+            Guid ISpanDecoder<Guid>.Decode(ReadOnlySpan<char> value)
+                => string.IsNullOrEmpty(format) ? Guid.Parse(value) : Guid.ParseExact(value, format);
+        }
     }
 }

@@ -247,6 +247,33 @@ namespace DotNext.IO
             => DateTimeOffset.ParseExact(await ReadStringAsync(lengthFormat, context, token).ConfigureAwait(false), formats, provider, style);
 
         /// <summary>
+        /// Parses <see cref="Guid"/> from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="FormatException">GUID is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        async ValueTask<Guid> ReadGuidAsync(StringLengthEncoding lengthFormat, DecodingContext context, CancellationToken token = default)
+            => Guid.Parse(await ReadStringAsync(lengthFormat, context, token).ConfigureAwait(false));
+
+        /// <summary>
+        /// Parses <see cref="Guid"/> from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="format">The expected format of GUID value.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="FormatException">GUID is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        async ValueTask<Guid> ReadGuidAsync(StringLengthEncoding lengthFormat, DecodingContext context, string format, CancellationToken token = default)
+            => Guid.ParseExact(await ReadStringAsync(lengthFormat, context, token).ConfigureAwait(false), format);
+
+        /// <summary>
         /// Reads the block of bytes.
         /// </summary>
         /// <param name="output">The block of memory to fill.</param>

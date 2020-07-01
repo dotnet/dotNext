@@ -560,21 +560,6 @@ namespace DotNext.Buffers
             => Write<DoubleFormatter>(writer, value, in context, format, provider, lengthFormat, bufferSize);
 
         /// <summary>
-        /// Encodes <see cref="bool"/> as a string.
-        /// </summary>
-        /// <param name="writer">The buffer writer.</param>
-        /// <param name="value">The value to encode.</param>
-        /// <param name="context">The encoding context.</param>
-        /// <param name="lengthFormat">String length encoding format.</param>
-        /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
-        public static void WriteBoolean(this IBufferWriter<byte> writer, bool value, in EncodingContext context, StringLengthEncoding lengthFormat, int bufferSize = 0)
-        {
-            ReadOnlySpan<char> buffer = value ? bool.TrueString : bool.FalseString;
-            WriteLength(writer, buffer, context.Encoding, lengthFormat);
-            WriteString(writer, buffer, context.GetEncoder(), context.Encoding.GetMaxByteCount(1), bufferSize);
-        }
-
-        /// <summary>
         /// Encodes <see cref="Guid"/> as a string.
         /// </summary>
         /// <param name="writer">The buffer writer.</param>
@@ -758,14 +743,6 @@ namespace DotNext.Buffers
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         public static void WriteDateTimeOffset(this IBufferWriter<char> writer, DateTimeOffset value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
             => Write<DateTimeOffsetFormatter>(writer, value, format, provider);
-
-        /// <summary>
-        /// Writes boolean value as a string.
-        /// </summary>
-        /// <param name="writer">The buffer writer.</param>
-        /// <param name="value">The value to write.</param>
-        public static void WriteBoolean(this IBufferWriter<char> writer, bool value)
-            => writer.Write(value ? bool.TrueString : bool.FalseString);
 
         /// <summary>
         /// Writes string representation of <see cref="decimal"/> to the buffer.
