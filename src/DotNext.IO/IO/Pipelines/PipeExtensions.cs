@@ -443,7 +443,7 @@ namespace DotNext.IO.Pipelines
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The actual number of bytes written to the pipe.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static async ValueTask<long> WriteAsync(this PipeWriter writer, ReadOnlySequence<byte> sequence, CancellationToken token)
+        public static async ValueTask<long> WriteAsync(this PipeWriter writer, ReadOnlySequence<byte> sequence, CancellationToken token = default)
         {
             var count = 0L;
             var flushResult = new FlushResult(false, false);
