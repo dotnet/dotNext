@@ -15,7 +15,7 @@ namespace DotNext.Buffers
         private readonly TBuffer result;
         private int length, resultOffset;
 
-        internal StringReader(in DecodingContext context, in TBuffer result)
+        internal StringReader(in DecodingContext context, TBuffer result)
         {
             decoder = context.GetDecoder();
             encoding = context.Encoding;
@@ -24,15 +24,13 @@ namespace DotNext.Buffers
             resultOffset = 0;
         }
 
-        internal readonly bool IsCompleted => length == 0;
+        public readonly int RemainingBytes => length;
 
-        internal readonly Span<char> Result => result.Span.Slice(0, resultOffset);
+        readonly string IBufferReader<string>.Complete() => new string(Complete());
 
-        readonly int IBufferReader<string>.RemainingBytes => length;
+        internal readonly Span<char> Complete() => result.Span.Slice(0, resultOffset);
 
-        readonly string IBufferReader<string>.Complete() => new string(Result);
-
-        void IBufferReader<string>.Append(ReadOnlySpan<byte> bytes, ref int consumedBytes)
+        public void Append(ReadOnlySpan<byte> bytes, ref int consumedBytes)
         {
             length -= bytes.Length;
             resultOffset += decoder.GetChars(bytes, result.Span.Slice(resultOffset), length == 0);
