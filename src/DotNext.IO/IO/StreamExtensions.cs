@@ -491,8 +491,7 @@ namespace DotNext.IO
             if (maxChars == 0)
                 throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
             var decoder = context.GetDecoder();
-            using var continuousBuffer = new ArrayRental<char>(maxChars + length);
-            var result = continuousBuffer.Memory.Slice(maxChars);
+            using var result = new ArrayRental<char>(length);
             Assert(result.Length == length);
             var resultOffset = 0;
             while (length > 0)
