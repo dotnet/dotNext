@@ -95,7 +95,7 @@ namespace DotNext.IO
             if (lengthFormat is null)
                 return;
             var length = encoding.GetByteCount(value);
-            switch (lengthFormat.Value)
+            switch (lengthFormat.GetValueOrDefault())
             {
                 default:
                     throw new ArgumentOutOfRangeException(nameof(lengthFormat));
@@ -195,7 +195,7 @@ namespace DotNext.IO
             if (lengthFormat is null)
                 return new ValueTask();
             var length = encoding.GetByteCount(value);
-            switch (lengthFormat.Value)
+            switch (lengthFormat.GetValueOrDefault())
             {
                 default:
                     throw new ArgumentOutOfRangeException(nameof(lengthFormat));
