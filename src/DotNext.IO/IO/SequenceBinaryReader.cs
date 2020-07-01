@@ -6,10 +6,6 @@ using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
 using Missing = System.Reflection.Missing;
-using static InlineIL.IL;
-using static InlineIL.IL.Emit;
-using static InlineIL.MethodRef;
-using static InlineIL.TypeRef;
 
 namespace DotNext.IO
 {
@@ -22,25 +18,6 @@ namespace DotNext.IO
     /// </summary>
     public struct SequenceBinaryReader : IAsyncBinaryReader
     {
-        private delegate TResult ValueParser<TResult, TStyle>(ReadOnlySpan<char> value, TStyle style, IFormatProvider? provider)
-            where TResult : struct
-            where TStyle : struct, Enum;
-
-        // TODO: Should be replaced with function pointer in C# 9
-        private static readonly ValueParser<long, NumberStyles> Int64Parser = long.Parse;
-        private static readonly ValueParser<ulong, NumberStyles> UInt64Parser = ulong.Parse;
-        private static readonly ValueParser<int, NumberStyles> Int32Parser = int.Parse;
-        private static readonly ValueParser<uint, NumberStyles> UInt32Parser = uint.Parse;
-        private static readonly ValueParser<short, NumberStyles> Int16Parser = short.Parse;
-        private static readonly ValueParser<ushort, NumberStyles> UInt16Parser = ushort.Parse;
-        private static readonly ValueParser<byte, NumberStyles> UInt8Parser = byte.Parse;
-        private static readonly ValueParser<sbyte, NumberStyles> Int8Parser = sbyte.Parse;
-        private static readonly ValueParser<float, NumberStyles> Float32Parser = float.Parse;
-        private static readonly ValueParser<double, NumberStyles> Float64Parser = double.Parse;
-        private static readonly ValueParser<decimal, NumberStyles> DecimalParser = decimal.Parse;
-        private static readonly ValueParser<DateTime, DateTimeStyles> DateTimeParser = ParseDateTime;
-        private static readonly ValueParser<DateTimeOffset, DateTimeStyles> DateTimeOffsetParser = ParseDateTimeOffset;
-
         private readonly ReadOnlySequence<byte> sequence;
         private SequencePosition position;
 
@@ -49,18 +26,6 @@ namespace DotNext.IO
             this.sequence = sequence;
             position = sequence.Start;
         }
-
-        private static DateTime ParseDateTime(ReadOnlySpan<char> value, DateTimeStyles style, IFormatProvider? provider)
-            => DateTime.Parse(value, provider, style);
-
-        private static DateTime ParseDateTime(string[] formats, ReadOnlySpan<char> value, DateTimeStyles style, IFormatProvider? provider)
-            => DateTime.ParseExact(value, formats, provider, style);
-
-        private static DateTimeOffset ParseDateTimeOffset(ReadOnlySpan<char> value, DateTimeStyles style, IFormatProvider? provider)
-            => DateTimeOffset.Parse(value, provider, style);
-
-        private static DateTimeOffset ParseDateTimeOffset(string[] formats, ReadOnlySpan<char> value, DateTimeStyles style, IFormatProvider? provider)
-            => DateTimeOffset.ParseExact(value, formats, provider, style);
 
         /// <summary>
         /// Resets the reader so it can be used again.
@@ -82,7 +47,7 @@ namespace DotNext.IO
             return parser.IsCompleted ? parser.Result : throw new EndOfStreamException();
         }
 
-        private unsafe TResult Read<TResult, TStyle>(ValueParser<TResult, TStyle> parser, StringLengthEncoding lengthFormat, in DecodingContext context, TStyle style, IFormatProvider? provider)
+        private unsafe TResult Read<TResult, TStyle>(ValueReader<TResult, TStyle> parser, StringLengthEncoding lengthFormat, in DecodingContext context, TStyle style, IFormatProvider? provider)
             where TResult : struct
             where TStyle : struct, Enum
         {
@@ -126,7 +91,7 @@ namespace DotNext.IO
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
         public long ReadInt64(StringLengthEncoding lengthFormat, in DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
-            => Read(Int64Parser, lengthFormat, in context, style, provider);
+            => Read(BufferReader.Int64Parser, lengthFormat, in context, style, provider);
 
         /// <summary>
         /// Parses 64-bit unsigned integer from its string representation encoded in the underlying stream.
@@ -140,7 +105,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
         [CLSCompliant(false)]
         public ulong ReadUInt64(StringLengthEncoding lengthFormat, in DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
-            => Read(UInt64Parser, lengthFormat, in context, style, provider);
+            => Read(BufferReader.UInt64Parser, lengthFormat, in context, style, provider);
 
         /// <summary>
         /// Decodes 64-bit signed integer using the specified endianness.
@@ -193,7 +158,7 @@ namespace DotNext.IO
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
         public int ReadInt32(StringLengthEncoding lengthFormat, in DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
-            => Read(Int32Parser, lengthFormat, in context, style, provider);
+            => Read(BufferReader.Int32Parser, lengthFormat, in context, style, provider);
 
         /// <summary>
         /// Parses 32-bit unsigned integer from its string representation encoded in the underlying stream.
@@ -207,7 +172,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
         [CLSCompliant(false)]
         public uint ReadUInt32(StringLengthEncoding lengthFormat, in DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
-            => Read(UInt32Parser, lengthFormat, in context, style, provider);
+            => Read(BufferReader.UInt32Parser, lengthFormat, in context, style, provider);
 
         /// <summary>
         /// Decodes 32-bit unsigned integer using the specified endianness.
@@ -234,7 +199,7 @@ namespace DotNext.IO
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
         public short ReadInt16(StringLengthEncoding lengthFormat, in DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
-            => Read(Int16Parser, lengthFormat, in context, style, provider);
+            => Read(BufferReader.Int16Parser, lengthFormat, in context, style, provider);
 
         /// <summary>
         /// Decodes 16-bit signed integer using the specified endianness.
@@ -261,7 +226,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
         [CLSCompliant(false)]
         public ushort ReadUInt16(StringLengthEncoding lengthFormat, in DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
-            => Read(UInt16Parser, lengthFormat, in context, style, provider);
+            => Read(BufferReader.UInt16Parser, lengthFormat, in context, style, provider);
 
         /// <summary>
         /// Decodes 16-bit unsigned integer using the specified endianness.
@@ -288,7 +253,7 @@ namespace DotNext.IO
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
         public byte ReadByte(StringLengthEncoding lengthFormat, in DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
-            => Read(UInt8Parser, lengthFormat, in context, style, provider);
+            => Read(BufferReader.UInt8Parser, lengthFormat, in context, style, provider);
 
         /// <summary>
         /// Parses 8-bit unsigned integer from its string representation encoded in the underlying stream.
@@ -302,7 +267,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
         [CLSCompliant(false)]
         public sbyte ReadSByte(StringLengthEncoding lengthFormat, in DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
-            => Read(Int8Parser, lengthFormat, in context, style, provider);
+            => Read(BufferReader.Int8Parser, lengthFormat, in context, style, provider);
 
         /// <summary>
         /// Parses single-precision floating-point number from its string representation encoded in the underlying stream.
@@ -315,7 +280,7 @@ namespace DotNext.IO
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
         public float ReadSingle(StringLengthEncoding lengthFormat, in DecodingContext context, NumberStyles style = NumberStyles.AllowThousands | NumberStyles.Float, IFormatProvider? provider = null)
-            => Read(Float32Parser, lengthFormat, in context, style, provider);
+            => Read(BufferReader.Float32Parser, lengthFormat, in context, style, provider);
 
         /// <summary>
         /// Parses double-precision floating-point number from its string representation encoded in the underlying stream.
@@ -328,7 +293,7 @@ namespace DotNext.IO
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
         public double ReadDouble(StringLengthEncoding lengthFormat, in DecodingContext context, NumberStyles style = NumberStyles.AllowThousands | NumberStyles.Float, IFormatProvider? provider = null)
-            => Read(Float64Parser, lengthFormat, in context, style, provider);
+            => Read(BufferReader.Float64Parser, lengthFormat, in context, style, provider);
 
         /// <summary>
         /// Parses <see cref="decimal"/> from its string representation encoded in the underlying stream.
@@ -341,7 +306,7 @@ namespace DotNext.IO
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
         public decimal ReadDecimal(StringLengthEncoding lengthFormat, in DecodingContext context, NumberStyles style = NumberStyles.Number, IFormatProvider? provider = null)
-            => Read(DecimalParser, lengthFormat, in context, style, provider);
+            => Read(BufferReader.DecimalParser, lengthFormat, in context, style, provider);
 
         /// <summary>
         /// Parses <see cref="DateTime"/> from its string representation encoded in the underlying stream.
@@ -354,7 +319,7 @@ namespace DotNext.IO
         /// <exception cref="FormatException">The date/time is in incorrect format.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
         public DateTime ReadDateTime(StringLengthEncoding lengthFormat, in DecodingContext context, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null)
-            => Read(DateTimeParser, lengthFormat, in context, style, provider);
+            => Read(BufferReader.DateTimeParser, lengthFormat, in context, style, provider);
 
         /// <summary>
         /// Parses <see cref="DateTime"/> from its string representation encoded in the underlying stream.
@@ -368,13 +333,7 @@ namespace DotNext.IO
         /// <exception cref="FormatException">The date/time is in incorrect format.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
         public DateTime ReadDateTime(StringLengthEncoding lengthFormat, in DecodingContext context, string[] formats, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null)
-        {
-            Push(formats);
-            Ldftn(Method(Type<SequenceBinaryReader>(), nameof(ParseDateTime), typeof(string[]), typeof(ReadOnlySpan<char>), typeof(DateTimeStyles), typeof(IFormatProvider)));
-            Newobj(Constructor(Type<ValueParser<DateTime, DateTimeStyles>>(), Type<object>(), Type<IntPtr>()));
-            Pop(out ValueParser<DateTime, DateTimeStyles> parser);
-            return Read(parser, lengthFormat, in context, style, provider);
-        }
+            => Read(BufferReader.CreateDateTimeParser(formats), lengthFormat, in context, style, provider);
 
         /// <summary>
         /// Parses <see cref="DateTimeOffset"/> from its string representation encoded in the underlying stream.
@@ -387,7 +346,7 @@ namespace DotNext.IO
         /// <exception cref="FormatException">The date/time is in incorrect format.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
         public DateTimeOffset ReadDateTimeOffset(StringLengthEncoding lengthFormat, in DecodingContext context, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null)
-            => Read(DateTimeOffsetParser, lengthFormat, in context, style, provider);
+            => Read(BufferReader.DateTimeOffsetParser, lengthFormat, in context, style, provider);
 
         /// <summary>
         /// Parses <see cref="DateTimeOffset"/> from its string representation encoded in the underlying stream.
@@ -401,13 +360,7 @@ namespace DotNext.IO
         /// <exception cref="FormatException">The date/time is in incorrect format.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
         public DateTimeOffset ReadDateTimeOffset(StringLengthEncoding lengthFormat, in DecodingContext context, string[] formats, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null)
-        {
-            Push(formats);
-            Ldftn(Method(Type<SequenceBinaryReader>(), nameof(ParseDateTimeOffset), typeof(string[]), typeof(ReadOnlySpan<char>), typeof(DateTimeStyles), typeof(IFormatProvider)));
-            Newobj(Constructor(Type<ValueParser<DateTimeOffset, DateTimeStyles>>(), Type<object>(), Type<IntPtr>()));
-            Pop(out ValueParser<DateTimeOffset, DateTimeStyles> parser);
-            return Read(parser, lengthFormat, in context, style, provider);
-        }
+            => Read(BufferReader.CreateDateTimeOffsetParser(formats), lengthFormat, in context, style, provider);
 
         /// <summary>
         /// Decodes the string.
