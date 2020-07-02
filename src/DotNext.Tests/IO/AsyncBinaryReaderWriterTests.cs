@@ -114,6 +114,7 @@ namespace DotNext.IO
         {
             await using (source)
             {
+                const byte value8 = 254;
                 const short value16 = 42;
                 const int value32 = int.MaxValue;
                 const long value64 = long.MaxValue;
@@ -130,6 +131,7 @@ namespace DotNext.IO
                 await writer.WriteInt64Async(value64, littleEndian);
                 await writer.WriteAsync(valueM);
                 var encodingContext = new EncodingContext(encoding, true);
+                await writer.WriteByteAsync(value8, StringLengthEncoding.Plain, encodingContext, provider: InvariantCulture);
                 await writer.WriteInt16Async(value16, StringLengthEncoding.Compressed, encodingContext, provider: InvariantCulture);
                 await writer.WriteInt32Async(value32, StringLengthEncoding.Plain, encodingContext, provider: InvariantCulture);
                 await writer.WriteInt64Async(value64, StringLengthEncoding.PlainBigEndian, encodingContext, provider: InvariantCulture);
@@ -149,6 +151,7 @@ namespace DotNext.IO
                 Equal(value64, await reader.ReadInt64Async(littleEndian));
                 Equal(valueM, await reader.ReadAsync<decimal>());
                 var decodingContext = new DecodingContext(encoding, true);
+                Equal(value8, await reader.ReadByteAsync(StringLengthEncoding.Plain, decodingContext, provider: InvariantCulture));
                 Equal(value16, await reader.ReadInt16Async(StringLengthEncoding.Compressed, decodingContext, provider: InvariantCulture));
                 Equal(value32, await reader.ReadInt32Async(StringLengthEncoding.Plain, decodingContext, provider: InvariantCulture));
                 Equal(value64, await reader.ReadInt64Async(StringLengthEncoding.PlainBigEndian, decodingContext, provider: InvariantCulture));
