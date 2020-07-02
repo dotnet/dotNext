@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.IO.Pipelines;
 using System.Runtime.InteropServices;
@@ -36,6 +37,45 @@ namespace DotNext.IO
 
         public ValueTask<string> ReadStringAsync(StringLengthEncoding lengthFormat, DecodingContext context, CancellationToken token = default)
             => StreamExtensions.ReadStringAsync(input, lengthFormat, context, buffer, token);
+
+        ValueTask<byte> IAsyncBinaryReader.ReadByteAsync(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
+            => StreamExtensions.ReadByteAsync(input, lengthFormat, context, buffer, style, provider, token);
+
+        ValueTask<short> IAsyncBinaryReader.ReadInt16Async(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
+            => StreamExtensions.ReadInt16Async(input, lengthFormat, context, buffer, style, provider, token);
+
+        ValueTask<int> IAsyncBinaryReader.ReadInt32Async(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
+            => StreamExtensions.ReadInt32Async(input, lengthFormat, context, buffer, style, provider, token);
+
+        ValueTask<long> IAsyncBinaryReader.ReadInt64Async(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
+            => StreamExtensions.ReadInt64Async(input, lengthFormat, context, buffer, style, provider, token);
+
+        ValueTask<decimal> IAsyncBinaryReader.ReadDecimalAsync(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
+            => StreamExtensions.ReadDecimalAsync(input, lengthFormat, context, buffer, style, provider, token);
+
+        ValueTask<float> IAsyncBinaryReader.ReadSingleAsync(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
+            => StreamExtensions.ReadSingleAsync(input, lengthFormat, context, buffer, style, provider, token);
+
+        ValueTask<double> IAsyncBinaryReader.ReadDoubleAsync(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
+            => StreamExtensions.ReadDoubleAsync(input, lengthFormat, context, buffer, style, provider, token);
+
+        ValueTask<Guid> IAsyncBinaryReader.ReadGuidAsync(StringLengthEncoding lengthFormat, DecodingContext context, CancellationToken token)
+            => StreamExtensions.ReadGuidAsync(input, lengthFormat, context, buffer, token);
+
+        ValueTask<Guid> IAsyncBinaryReader.ReadGuidAsync(StringLengthEncoding lengthFormat, DecodingContext context, string format, CancellationToken token)
+            => StreamExtensions.ReadGuidAsync(input, lengthFormat, context, buffer, format, token);
+
+        ValueTask<DateTime> IAsyncBinaryReader.ReadDateTimeAsync(StringLengthEncoding lengthFormat, DecodingContext context, DateTimeStyles style, IFormatProvider? provider, CancellationToken token)
+            => StreamExtensions.ReadDateTimeAsync(input, lengthFormat, context, buffer, style, provider, token);
+
+        ValueTask<DateTime> IAsyncBinaryReader.ReadDateTimeAsync(StringLengthEncoding lengthFormat, DecodingContext context, string[] formats, DateTimeStyles style, IFormatProvider? provider, CancellationToken token)
+            => StreamExtensions.ReadDateTimeAsync(input, lengthFormat, context, buffer, style, provider, token);
+
+        ValueTask<DateTimeOffset> IAsyncBinaryReader.ReadDateTimeOffsetAsync(StringLengthEncoding lengthFormat, DecodingContext context, DateTimeStyles style, IFormatProvider? provider, CancellationToken token)
+            => StreamExtensions.ReadDateTimeOffsetAsync(input, lengthFormat, context, buffer, style, provider, token);
+
+        ValueTask<DateTimeOffset> IAsyncBinaryReader.ReadDateTimeOffsetAsync(StringLengthEncoding lengthFormat, DecodingContext context, string[] formats, DateTimeStyles style, IFormatProvider? provider, CancellationToken token)
+            => StreamExtensions.ReadDateTimeOffsetAsync(input, lengthFormat, context, buffer, style, provider, token);
 
         Task IAsyncBinaryReader.CopyToAsync(Stream output, CancellationToken token)
             => input.CopyToAsync(output, token);

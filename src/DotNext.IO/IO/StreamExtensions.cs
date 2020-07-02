@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Buffers;
+using System.Globalization;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using static System.Diagnostics.Debug;
 using IByteBufferWriter = System.Buffers.IBufferWriter<byte>;
 
 namespace DotNext.IO
 {
     using Buffers;
     using Text;
+    using static Buffers.BufferReader;
 
     /// <summary>
     /// Represents high-level read/write methods for the stream.
@@ -23,6 +24,8 @@ namespace DotNext.IO
     /// </remarks>
     public static class StreamExtensions
     {
+        private const int BufferSizeForLength = 5;
+
         [StructLayout(LayoutKind.Auto)]
         private readonly struct StreamWriter : SevenBitEncodedInt.IWriter
         {
@@ -324,6 +327,36 @@ namespace DotNext.IO
             }
         }
 
+        private static TResult Read<TResult, TDecoder>(Stream stream, TDecoder decoder, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer)
+            where TResult : struct
+            where TDecoder : ISpanDecoder<TResult>
+        {
+            var length = ReadLength(stream, lengthFormat);
+            if (length == 0)
+                throw new EndOfStreamException();
+            using var result = length <= MemoryRental<byte>.StackallocThreshold ? stackalloc char[length] : new MemoryRental<char>(length);
+            length = ReadString(stream, result.Span, in context, buffer);
+            return decoder.Decode(result.Span.Slice(0, length));
+        }
+
+        private static int ReadString(Stream stream, Span<char> result, in DecodingContext context, Span<byte> buffer)
+        {
+            var maxChars = context.Encoding.GetMaxCharCount(buffer.Length);
+            if (maxChars == 0)
+                throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
+            var decoder = context.GetDecoder();
+            var resultOffset = 0;
+            for (int length = result.Length, n; length > 0; resultOffset += decoder.GetChars(buffer.Slice(0, n), result.Slice(resultOffset), length == 0))
+            {
+                n = stream.Read(buffer.Slice(0, Math.Min(length, buffer.Length)));
+                if (n == 0)
+                    throw new EndOfStreamException();
+                length -= n;
+            }
+
+            return resultOffset;
+        }
+
         /// <summary>
         /// Reads the string using the specified encoding and supplied reusable buffer.
         /// </summary>
@@ -336,29 +369,290 @@ namespace DotNext.IO
         /// <param name="context">The text decoding context.</param>
         /// <param name="buffer">The buffer that is allocated by the caller.</param>
         /// <returns>The string decoded from the log entry content stream.</returns>
-        /// <exception cref="ArgumentException"><paramref name="buffer"/> to small for decoding characters.</exception>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         public static string ReadString(this Stream stream, int length, in DecodingContext context, Span<byte> buffer)
         {
             if (length == 0)
                 return string.Empty;
-            var maxChars = context.Encoding.GetMaxCharCount(buffer.Length);
-            if (maxChars == 0)
-                throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
-            var decoder = context.GetDecoder();
             using var result = length <= MemoryRental<byte>.StackallocThreshold ? stackalloc char[length] : new MemoryRental<char>(length);
-            var resultOffset = 0;
-            while (length > 0)
-            {
-                var n = stream.Read(buffer.Slice(0, Math.Min(length, buffer.Length)));
-                if (n == 0)
-                    throw new EndOfStreamException();
-                length -= n;
-                resultOffset += decoder.GetChars(buffer.Slice(0, n), result.Span.Slice(resultOffset), length == 0);
-            }
-
-            return new string(result.Span.Slice(0, resultOffset));
+            return new string(result.Span.Slice(0, ReadString(stream, result.Span, in context, buffer)));
         }
+
+        /// <summary>
+        /// Decodes 8-bit unsigned integer from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        public static byte ReadByte(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
+            => Read<byte, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, in context, buffer);
+
+        /// <summary>
+        /// Decodes 8-bit signed integer from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        [CLSCompliant(false)]
+        public static sbyte ReadSByte(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
+            => Read<sbyte, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, in context, buffer);
+
+        /// <summary>
+        /// Decodes 16-bit signed integer from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        public static short ReadInt16(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
+            => Read<short, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, in context, buffer);
+
+        /// <summary>
+        /// Decodes 16-bit unsigned integer from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        [CLSCompliant(false)]
+        public static ushort ReadUInt16(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
+            => Read<ushort, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, in context, buffer);
+
+        /// <summary>
+        /// Decodes 32-bit signed integer from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        public static int ReadInt32(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
+            => Read<int, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, in context, buffer);
+
+        /// <summary>
+        /// Decodes 32-bit unsigned integer from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        [CLSCompliant(false)]
+        public static uint ReadUInt32(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
+            => Read<uint, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, in context, buffer);
+
+        /// <summary>
+        /// Decodes 64-bit signed integer from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        public static long ReadInt64(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
+            => Read<long, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, in context, buffer);
+
+        /// <summary>
+        /// Decodes 64-bit unsigned integer from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        [CLSCompliant(false)]
+        public static ulong ReadUInt64(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
+            => Read<ulong, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, in context, buffer);
+
+        /// <summary>
+        /// Decodes single-precision floating-point number from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        public static float ReadSingle(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer, NumberStyles style = NumberStyles.AllowThousands | NumberStyles.Float, IFormatProvider? provider = null)
+            => Read<float, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, in context, buffer);
+
+        /// <summary>
+        /// Decodes double-precision floating-point number from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        public static double ReadDouble(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer, NumberStyles style = NumberStyles.AllowThousands | NumberStyles.Float, IFormatProvider? provider = null)
+            => Read<double, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, in context, buffer);
+
+        /// <summary>
+        /// Decodes <see cref="decimal"/> from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        public static decimal ReadDecimal(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer, NumberStyles style = NumberStyles.Number, IFormatProvider? provider = null)
+            => Read<decimal, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, in context, buffer);
+
+        /// <summary>
+        /// Decodes <see cref="Guid"/> from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">GUID value is in incorrect format.</exception>
+        public static Guid ReadGuid(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer)
+            => Read<Guid, GuidDecoder>(stream, new GuidDecoder(), lengthFormat, in context, buffer);
+
+        /// <summary>
+        /// Decodes <see cref="Guid"/> from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="format">The expected format of GUID value.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">GUID value is in incorrect format.</exception>
+        public static Guid ReadGuid(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer, string format)
+            => Read<Guid, GuidDecoder>(stream, new GuidDecoder(format), lengthFormat, in context, buffer);
+
+        /// <summary>
+        /// Decodes <see cref="DateTime"/> from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The date/time string is in incorrect format.</exception>
+        public static DateTime ReadDateTime(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null)
+            => Read<DateTime, DateTimeDecoder>(stream, new DateTimeDecoder(style, provider), lengthFormat, in context, buffer);
+
+        /// <summary>
+        /// Decodes <see cref="DateTime"/> from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="formats">An array of allowable formats.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The date/time string is in incorrect format.</exception>
+        public static DateTime ReadDateTime(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, string[] formats, Span<byte> buffer, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null)
+            => Read<DateTime, DateTimeDecoder>(stream, new DateTimeDecoder(style, formats, provider), lengthFormat, in context, buffer);
+
+        /// <summary>
+        /// Decodes <see cref="DateTimeOffset"/> from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The date/time string is in incorrect format.</exception>
+        public static DateTimeOffset ReadDateTimeOffset(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null)
+            => Read<DateTimeOffset, DateTimeDecoder>(stream, new DateTimeDecoder(style, provider), lengthFormat, in context, buffer);
+
+        /// <summary>
+        /// Decodes <see cref="DateTimeOffset"/> from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="formats">An array of allowable formats.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The date/time string is in incorrect format.</exception>
+        public static DateTimeOffset ReadDateTimeOffset(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, string[] formats, Span<byte> buffer, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null)
+            => Read<DateTimeOffset, DateTimeDecoder>(stream, new DateTimeDecoder(style, formats, provider), lengthFormat, in context, buffer);
 
         private static int ReadLength(this Stream stream, StringLengthEncoding lengthFormat)
         {
@@ -425,7 +719,7 @@ namespace DotNext.IO
         /// <param name="context">The text decoding context.</param>
         /// <param name="buffer">The buffer that is allocated by the caller.</param>
         /// <returns>The string decoded from the log entry content stream.</returns>
-        /// <exception cref="ArgumentException"><paramref name="buffer"/> to small for decoding characters.</exception>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
         public static string ReadString(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer)
@@ -467,6 +761,54 @@ namespace DotNext.IO
         public static string ReadString(this Stream stream, StringLengthEncoding lengthFormat, Encoding encoding)
             => ReadString(stream, stream.ReadLength(lengthFormat), encoding);
 
+        private static async ValueTask<TResult> ReadAsync<TResult, TDecoder>(Stream stream, TDecoder decoder, StringLengthEncoding lengthFormat, DecodingContext context, Memory<byte> buffer, CancellationToken token)
+            where TResult : struct
+            where TDecoder : ISpanDecoder<TResult>
+        {
+            var length = await ReadLengthAsync(stream, lengthFormat, buffer, token).ConfigureAwait(false);
+            if (length == 0)
+                throw new EndOfStreamException();
+            using var result = new ArrayRental<char>(length);
+            length = await ReadStringAsync(stream, result.Memory, context, buffer, token).ConfigureAwait(false);
+            return decoder.Decode(result.Span.Slice(0, length));
+        }
+
+        private static async ValueTask<TResult> ReadAsync<TResult, TDecoder>(Stream stream, TDecoder decoder, StringLengthEncoding lengthFormat, DecodingContext context, CancellationToken token)
+            where TResult : struct
+            where TDecoder : ISpanDecoder<TResult>
+        {
+            int length;
+            ArrayRental<byte> buffer;
+            using (buffer = new ArrayRental<byte>(BufferSizeForLength))
+                length = await ReadLengthAsync(stream, lengthFormat, buffer.Memory, token).ConfigureAwait(false);
+            if (length == 0)
+                throw new EndOfStreamException();
+            using var result = new ArrayRental<char>(length);
+            using (buffer = new ArrayRental<byte>(length))
+            {
+                length = await ReadStringAsync(stream, result.Memory, context, buffer.Memory, token).ConfigureAwait(false);
+                return decoder.Decode(result.Span.Slice(0, length));
+            }
+        }
+
+        private static async ValueTask<int> ReadStringAsync(this Stream stream, Memory<char> result, DecodingContext context, Memory<byte> buffer, CancellationToken token = default)
+        {
+            var maxChars = context.Encoding.GetMaxCharCount(buffer.Length);
+            if (maxChars == 0)
+                throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
+            var decoder = context.GetDecoder();
+            var resultOffset = 0;
+            for (int length = result.Length, n; length > 0; resultOffset += decoder.GetChars(buffer.Span.Slice(0, n), result.Span.Slice(resultOffset), length == 0))
+            {
+                n = await stream.ReadAsync(buffer.Slice(0, Math.Min(length, buffer.Length)), token).ConfigureAwait(false);
+                if (n == 0)
+                    throw new EndOfStreamException();
+                length -= n;
+            }
+
+            return resultOffset;
+        }
+
         /// <summary>
         /// Reads the string asynchronously using the specified encoding and supplied reusable buffer.
         /// </summary>
@@ -480,30 +822,16 @@ namespace DotNext.IO
         /// <param name="buffer">The buffer that is allocated by the caller.</param>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns>The string decoded from the log entry content stream.</returns>
-        /// <exception cref="ArgumentException"><paramref name="buffer"/> to small for decoding characters.</exception>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static async ValueTask<string> ReadStringAsync(this Stream stream, int length, DecodingContext context, Memory<byte> buffer, CancellationToken token = default)
         {
             if (length == 0)
                 return string.Empty;
-            var maxChars = context.Encoding.GetMaxCharCount(buffer.Length);
-            if (maxChars == 0)
-                throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
-            var decoder = context.GetDecoder();
             using var result = new ArrayRental<char>(length);
-            Assert(result.Length == length);
-            var resultOffset = 0;
-            while (length > 0)
-            {
-                var n = await stream.ReadAsync(buffer.Slice(0, Math.Min(length, buffer.Length)), token).ConfigureAwait(false);
-                if (n == 0)
-                    throw new EndOfStreamException();
-                length -= n;
-                resultOffset += decoder.GetChars(buffer.Span.Slice(0, n), result.Span.Slice(resultOffset), length == 0);
-            }
-
-            return new string(result.Span.Slice(0, resultOffset));
+            length = await ReadStringAsync(stream, result.Memory, context, buffer, token).ConfigureAwait(false);
+            return new string(result.Span.Slice(0, length));
         }
 
         /// <summary>
@@ -519,7 +847,7 @@ namespace DotNext.IO
         /// <param name="buffer">The buffer that is allocated by the caller.</param>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns>The string decoded from the log entry content stream.</returns>
-        /// <exception cref="ArgumentException"><paramref name="buffer"/> to small for decoding characters.</exception>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
@@ -565,9 +893,589 @@ namespace DotNext.IO
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
         public static async ValueTask<string> ReadStringAsync(this Stream stream, StringLengthEncoding lengthFormat, Encoding encoding, CancellationToken token = default)
         {
-            using var lengthDecodingBuffer = new ArrayRental<byte>(5);
+            using var lengthDecodingBuffer = new ArrayRental<byte>(BufferSizeForLength);
             return await ReadStringAsync(stream, await stream.ReadLengthAsync(lengthFormat, lengthDecodingBuffer.Memory, token).ConfigureAwait(false), encoding, token).ConfigureAwait(false);
         }
+
+        /// <summary>
+        /// Decodes 8-bit unsigned integer from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<byte> ReadByteAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, Memory<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<byte, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, buffer, token);
+
+        /// <summary>
+        /// Decodes 8-bit signed integer from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        [CLSCompliant(false)]
+        public static ValueTask<sbyte> ReadSByteAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, Memory<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<sbyte, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, buffer, token);
+
+        /// <summary>
+        /// Decodes 16-bit signed integer from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<short> ReadInt16Async(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, Memory<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<short, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, buffer, token);
+
+        /// <summary>
+        /// Decodes 16-bit unsigned integer from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        [CLSCompliant(false)]
+        public static ValueTask<ushort> ReadUInt16Async(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, Memory<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<ushort, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, buffer, token);
+
+        /// <summary>
+        /// Decodes 32-bit signed integer from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<int> ReadInt32Async(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, Memory<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<int, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, buffer, token);
+
+        /// <summary>
+        /// Decodes 32-bit unsigned integer from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        [CLSCompliant(false)]
+        public static ValueTask<uint> ReadUInt32Async(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, Memory<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<uint, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, buffer, token);
+
+        /// <summary>
+        /// Decodes 64-bit signed integer from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<long> ReadInt64Async(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, Memory<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<long, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, buffer, token);
+
+        /// <summary>
+        /// Decodes 64-bit unsigned integer from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        [CLSCompliant(false)]
+        public static ValueTask<ulong> ReadUInt64Async(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, Memory<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<ulong, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, buffer, token);
+
+        /// <summary>
+        /// Decodes single-precision floating-point number from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<float> ReadSingleAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, Memory<byte> buffer, NumberStyles style = NumberStyles.AllowThousands | NumberStyles.Float, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<float, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, buffer, token);
+
+        /// <summary>
+        /// Decodes double-precision floating-point number from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<double> ReadDoubleAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, Memory<byte> buffer, NumberStyles style = NumberStyles.AllowThousands | NumberStyles.Float, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<double, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, buffer, token);
+
+        /// <summary>
+        /// Decodes <see cref="decimal"/> from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<decimal> ReadDecimalAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, Memory<byte> buffer, NumberStyles style = NumberStyles.Number, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<decimal, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, buffer, token);
+
+        /// <summary>
+        /// Decodes <see cref="Guid"/> from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">GUID value is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<Guid> ReadGuidAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, Memory<byte> buffer, CancellationToken token = default)
+            => ReadAsync<Guid, GuidDecoder>(stream, new GuidDecoder(), lengthFormat, context, buffer, token);
+
+        /// <summary>
+        /// Decodes <see cref="Guid"/> from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="format">The expected format of GUID value.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">GUID value is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<Guid> ReadGuidAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, Memory<byte> buffer, string format, CancellationToken token = default)
+            => ReadAsync<Guid, GuidDecoder>(stream, new GuidDecoder(format), lengthFormat, context, buffer, token);
+
+        /// <summary>
+        /// Decodes <see cref="DateTime"/> from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The date/time string is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<DateTime> ReadDateTimeAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, Memory<byte> buffer, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<DateTime, DateTimeDecoder>(stream, new DateTimeDecoder(style, provider), lengthFormat, context, buffer, token);
+
+        /// <summary>
+        /// Decodes <see cref="DateTime"/> from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="formats">An array of allowable formats.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The date/time string is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<DateTime> ReadDateTimeAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, string[] formats, Memory<byte> buffer, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<DateTime, DateTimeDecoder>(stream, new DateTimeDecoder(style, formats, provider), lengthFormat, context, buffer, token);
+
+        /// <summary>
+        /// Decodes <see cref="DateTimeOffset"/> from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The date/time string is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<DateTimeOffset> ReadDateTimeOffsetAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, Memory<byte> buffer, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<DateTimeOffset, DateTimeDecoder>(stream, new DateTimeDecoder(style, provider), lengthFormat, context, buffer, token);
+
+        /// <summary>
+        /// Decodes <see cref="DateTimeOffset"/> from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="formats">An array of allowable formats.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The date/time string is in incorrect format.</exception>
+        public static ValueTask<DateTimeOffset> ReadDateTimeOffsetAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, string[] formats, Memory<byte> buffer, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<DateTimeOffset, DateTimeDecoder>(stream, new DateTimeDecoder(style, formats, provider), lengthFormat, context, buffer, token);
+
+        /// <summary>
+        /// Decodes 8-bit unsigned integer from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<byte> ReadByteAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<byte, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, token);
+
+        /// <summary>
+        /// Decodes 8-bit signed integer from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        [CLSCompliant(false)]
+        public static ValueTask<sbyte> ReadSByteAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<sbyte, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, token);
+
+        /// <summary>
+        /// Decodes 16-bit signed integer from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<short> ReadInt16Async(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<short, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, token);
+
+        /// <summary>
+        /// Decodes 16-bit unsigned integer from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        [CLSCompliant(false)]
+        public static ValueTask<ushort> ReadUInt16Async(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<ushort, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, token);
+
+        /// <summary>
+        /// Decodes 32-bit signed integer from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<int> ReadInt32Async(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<int, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, token);
+
+        /// <summary>
+        /// Decodes 32-bit unsigned integer from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        [CLSCompliant(false)]
+        public static ValueTask<uint> ReadUInt32Async(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<uint, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, token);
+
+        /// <summary>
+        /// Decodes 64-bit signed integer from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<long> ReadInt64Async(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<long, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, token);
+
+        /// <summary>
+        /// Decodes 64-bit unsigned integer from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        [CLSCompliant(false)]
+        public static ValueTask<ulong> ReadUInt64Async(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<ulong, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, token);
+
+        /// <summary>
+        /// Decodes single-precision floating-point number from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<float> ReadSingleAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.AllowThousands | NumberStyles.Float, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<float, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, token);
+
+        /// <summary>
+        /// Decodes double-precision floating-point number from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<double> ReadDoubleAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.AllowThousands | NumberStyles.Float, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<double, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, token);
+
+        /// <summary>
+        /// Decodes <see cref="decimal"/> from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<decimal> ReadDecimalAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Number, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<decimal, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, token);
+
+        /// <summary>
+        /// Decodes <see cref="Guid"/> from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">GUID value is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<Guid> ReadGuidAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, CancellationToken token = default)
+            => ReadAsync<Guid, GuidDecoder>(stream, new GuidDecoder(), lengthFormat, context, token);
+
+        /// <summary>
+        /// Decodes <see cref="Guid"/> from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="format">The expected format of GUID value.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">GUID value is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<Guid> ReadGuidAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, string format, CancellationToken token = default)
+            => ReadAsync<Guid, GuidDecoder>(stream, new GuidDecoder(format), lengthFormat, context, token);
+
+        /// <summary>
+        /// Decodes <see cref="DateTime"/> from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The date/time string is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<DateTime> ReadDateTimeAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<DateTime, DateTimeDecoder>(stream, new DateTimeDecoder(style, provider), lengthFormat, context, token);
+
+        /// <summary>
+        /// Decodes <see cref="DateTime"/> from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="formats">An array of allowable formats.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The date/time string is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<DateTime> ReadDateTimeAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, string[] formats, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<DateTime, DateTimeDecoder>(stream, new DateTimeDecoder(style, formats, provider), lengthFormat, context, token);
+
+        /// <summary>
+        /// Decodes <see cref="DateTimeOffset"/> from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The date/time string is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<DateTimeOffset> ReadDateTimeOffsetAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<DateTimeOffset, DateTimeDecoder>(stream, new DateTimeDecoder(style, provider), lengthFormat, context, token);
+
+        /// <summary>
+        /// Decodes <see cref="DateTimeOffset"/> from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="formats">An array of allowable formats.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The date/time string is in incorrect format.</exception>
+        public static ValueTask<DateTimeOffset> ReadDateTimeOffsetAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, string[] formats, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<DateTimeOffset, DateTimeDecoder>(stream, new DateTimeDecoder(style, formats, provider), lengthFormat, context, token);
 
         /// <summary>
         /// Reads exact number of bytes.
