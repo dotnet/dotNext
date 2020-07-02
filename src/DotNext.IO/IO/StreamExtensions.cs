@@ -13,6 +13,7 @@ namespace DotNext.IO
     using Buffers;
     using Text;
     using static Buffers.BufferReader;
+    using static Buffers.BufferWriter;
 
     /// <summary>
     /// Represents high-level read/write methods for the stream.
@@ -178,7 +179,7 @@ namespace DotNext.IO
         /// </remarks>
         /// <param name="stream">The stream to write into.</param>
         /// <param name="value">The string to be encoded.</param>
-        /// <param name="encoding">The encoding.</param>
+        /// <param name="encoding">The string encoding.</param>
         /// <param name="lengthFormat">String length encoding format; or <see langword="null"/> to prevent encoding of string length.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
         public static void WriteString(this Stream stream, ReadOnlySpan<char> value, Encoding encoding, StringLengthEncoding? lengthFormat = null)
@@ -191,6 +192,206 @@ namespace DotNext.IO
             encoding.GetBytes(value, buffer.Span);
             stream.Write(buffer.Span);
         }
+
+        private static bool WriteString<T>(Stream stream, T value, Span<char> buffer, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format, IFormatProvider? provider)
+            where T : struct, ISpanFormattable
+        {
+            if (!value.TryFormat(buffer, out var charsWritten, format, provider))
+                return false;
+
+            WriteString(stream, buffer.Slice(0, charsWritten), encoding, lengthFormat);
+            return true;
+        }
+
+        private static void Write<T>(Stream stream, T value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format, IFormatProvider? provider)
+            where T : struct, ISpanFormattable
+        {
+            const int maxBufferSize = int.MaxValue / 2;
+            const int initialCharBufferSize = 128;
+
+            // attempt to allocate char buffer on the stack
+            Span<char> charBuffer = stackalloc char[initialCharBufferSize];
+            if (!WriteString(stream, value, charBuffer, lengthFormat, encoding, format, provider))
+            {
+                for (var charBufferSize = initialCharBufferSize * 2; ; charBufferSize = charBufferSize <= maxBufferSize ? charBufferSize * 2 : throw new OutOfMemoryException())
+                {
+                    using var owner = DefaultAllocator.Invoke(charBufferSize, false);
+                    if (WriteString(stream, value, charBuffer, lengthFormat, encoding, format, provider))
+                        break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Encodes 8-bit unsigned integer as a string.
+        /// </summary>
+        /// <param name="stream">The stream to write into.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="encoding">The string encoding.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        public static void WriteByte(this Stream stream, byte value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write<ByteFormatter>(stream, value, lengthFormat, encoding, format, provider);
+
+        /// <summary>
+        /// Encodes 8-bit signed integer as a string.
+        /// </summary>
+        /// <param name="stream">The stream to write into.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="encoding">The string encoding.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        [CLSCompliant(false)]
+        public static void WriteSByte(this Stream stream, sbyte value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write<SByteFormatter>(stream, value, lengthFormat, encoding, format, provider);
+
+        /// <summary>
+        /// Encodes 16-bit signed integer as a string.
+        /// </summary>
+        /// <param name="stream">The stream to write into.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="encoding">The string encoding.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        public static void WriteInt16(this Stream stream, short value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write<Int16Formatter>(stream, value, lengthFormat, encoding, format, provider);
+
+        /// <summary>
+        /// Encodes 16-bit unsigned integer as a string.
+        /// </summary>
+        /// <param name="stream">The stream to write into.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="encoding">The string encoding.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        [CLSCompliant(false)]
+        public static void WriteUInt16(this Stream stream, ushort value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write<UInt16Formatter>(stream, value, lengthFormat, encoding, format, provider);
+
+        /// <summary>
+        /// Encodes 32-bit signed integer as a string.
+        /// </summary>
+        /// <param name="stream">The stream to write into.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="encoding">The string encoding.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        public static void WriteInt32(this Stream stream, int value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write<Int32Formatter>(stream, value, lengthFormat, encoding, format, provider);
+
+        /// <summary>
+        /// Encodes 32-bit unsigned integer as a string.
+        /// </summary>
+        /// <param name="stream">The stream to write into.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="encoding">The string encoding.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        [CLSCompliant(false)]
+        public static void WriteUInt32(this Stream stream, uint value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write<UInt32Formatter>(stream, value, lengthFormat, encoding, format, provider);
+
+        /// <summary>
+        /// Encodes 64-bit signed integer as a string.
+        /// </summary>
+        /// <param name="stream">The stream to write into.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="encoding">The string encoding.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        public static void WriteInt64(this Stream stream, long value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write<Int64Formatter>(stream, value, lengthFormat, encoding, format, provider);
+
+        /// <summary>
+        /// Encodes 64-bit unsigned integer as a string.
+        /// </summary>
+        /// <param name="stream">The stream to write into.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="encoding">The string encoding.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        [CLSCompliant(false)]
+        public static void WriteUInt64(this Stream stream, ulong value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write<UInt64Formatter>(stream, value, lengthFormat, encoding, format, provider);
+
+        /// <summary>
+        /// Encodes single-precision floating-point number as a string.
+        /// </summary>
+        /// <param name="stream">The stream to write into.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="encoding">The string encoding.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        public static void WriteSingle(this Stream stream, float value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write<SingleFormatter>(stream, value, lengthFormat, encoding, format, provider);
+
+        /// <summary>
+        /// Encodes double-precision floating-point number as a string.
+        /// </summary>
+        /// <param name="stream">The stream to write into.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="encoding">The string encoding.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        public static void WriteDouble(this Stream stream, double value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write<DoubleFormatter>(stream, value, lengthFormat, encoding, format, provider);
+
+        /// <summary>
+        /// Encodes <see cref="decimal"/> as a string.
+        /// </summary>
+        /// <param name="stream">The stream to write into.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="encoding">The string encoding.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        public static void WriteDecimal(this Stream stream, decimal value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write<DecimalFormatter>(stream, value, lengthFormat, encoding, format, provider);
+
+        /// <summary>
+        /// Encodes <see cref="Guid"/> as a string.
+        /// </summary>
+        /// <param name="stream">The stream to write into.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="encoding">The string encoding.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        public static void WriteGuid(this Stream stream, Guid value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default)
+            => Write<GuidFormatter>(stream, value, lengthFormat, encoding, format, null);
+
+        /// <summary>
+        /// Encodes <see cref="DateTime"/> as a string.
+        /// </summary>
+        /// <param name="stream">The stream to write into.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="encoding">The string encoding.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        public static void WriteDateTime(this Stream stream, DateTime value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write<DateTimeFormatter>(stream, value, lengthFormat, encoding, format, provider);
+
+        /// <summary>
+        /// Encodes <see cref="DateTimeOffset"/> as a string.
+        /// </summary>
+        /// <param name="stream">The stream to write into.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="encoding">The string encoding.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        public static void WriteDateTimeOffset(this Stream stream, DateTimeOffset value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write<DateTimeOffsetFormatter>(stream, value, lengthFormat, encoding, format, provider);
 
         private static ValueTask WriteLengthAsync(this Stream stream, ReadOnlySpan<char> value, Encoding encoding, StringLengthEncoding? lengthFormat, Memory<byte> buffer, CancellationToken token)
         {
@@ -609,15 +810,15 @@ namespace DotNext.IO
         /// <param name="stream">The stream to read from.</param>
         /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
         /// <param name="context">The text decoding context.</param>
-        /// <param name="formats">An array of allowable formats.</param>
         /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="formats">An array of allowable formats.</param>
         /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
         /// <param name="provider">An object that supplies culture-specific formatting information.</param>
         /// <returns>The decoded value.</returns>
         /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The date/time string is in incorrect format.</exception>
-        public static DateTime ReadDateTime(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, string[] formats, Span<byte> buffer, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null)
+        public static DateTime ReadDateTime(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer, string[] formats, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null)
             => Read<DateTime, DateTimeDecoder>(stream, new DateTimeDecoder(style, formats, provider), lengthFormat, in context, buffer);
 
         /// <summary>
@@ -642,15 +843,15 @@ namespace DotNext.IO
         /// <param name="stream">The stream to read from.</param>
         /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
         /// <param name="context">The text decoding context.</param>
-        /// <param name="formats">An array of allowable formats.</param>
         /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="formats">An array of allowable formats.</param>
         /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
         /// <param name="provider">An object that supplies culture-specific formatting information.</param>
         /// <returns>The decoded value.</returns>
         /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The date/time string is in incorrect format.</exception>
-        public static DateTimeOffset ReadDateTimeOffset(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, string[] formats, Span<byte> buffer, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null)
+        public static DateTimeOffset ReadDateTimeOffset(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer, string[] formats, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null)
             => Read<DateTimeOffset, DateTimeDecoder>(stream, new DateTimeDecoder(style, formats, provider), lengthFormat, in context, buffer);
 
         private static int ReadLength(this Stream stream, StringLengthEncoding lengthFormat)

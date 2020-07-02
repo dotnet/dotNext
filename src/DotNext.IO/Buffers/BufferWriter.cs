@@ -14,16 +14,16 @@ namespace DotNext.Buffers
     public static class BufferWriter
     {
         private const int MaxBufferSize = int.MaxValue / 2;
-        private static readonly MemoryAllocator<char> DefaultAllocator = ArrayPool<char>.Shared.ToAllocator();
+        internal static readonly MemoryAllocator<char> DefaultAllocator = ArrayPool<char>.Shared.ToAllocator();
 
         // TODO: Replace with function pointers in C# 9
-        private interface ISpanFormattable
+        internal interface ISpanFormattable
         {
             bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider);
         }
 
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct SByteFormatter : ISpanFormattable
+        internal readonly struct SByteFormatter : ISpanFormattable
         {
             private readonly sbyte value;
 
@@ -36,7 +36,7 @@ namespace DotNext.Buffers
         }
 
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct ByteFormatter : ISpanFormattable
+        internal readonly struct ByteFormatter : ISpanFormattable
         {
             private readonly byte value;
 
@@ -49,7 +49,7 @@ namespace DotNext.Buffers
         }
 
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct Int16Formatter : ISpanFormattable
+        internal readonly struct Int16Formatter : ISpanFormattable
         {
             private readonly short value;
 
@@ -62,7 +62,7 @@ namespace DotNext.Buffers
         }
 
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct UInt16Formatter : ISpanFormattable
+        internal readonly struct UInt16Formatter : ISpanFormattable
         {
             private readonly ushort value;
 
@@ -75,7 +75,7 @@ namespace DotNext.Buffers
         }
 
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct Int32Formatter : ISpanFormattable
+        internal readonly struct Int32Formatter : ISpanFormattable
         {
             private readonly int value;
 
@@ -88,7 +88,7 @@ namespace DotNext.Buffers
         }
 
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct UInt32Formatter : ISpanFormattable
+        internal readonly struct UInt32Formatter : ISpanFormattable
         {
             private readonly uint value;
 
@@ -101,7 +101,7 @@ namespace DotNext.Buffers
         }
 
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct Int64Formatter : ISpanFormattable
+        internal readonly struct Int64Formatter : ISpanFormattable
         {
             private readonly long value;
 
@@ -114,7 +114,7 @@ namespace DotNext.Buffers
         }
 
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct UInt64Formatter : ISpanFormattable
+        internal readonly struct UInt64Formatter : ISpanFormattable
         {
             private readonly ulong value;
 
@@ -127,7 +127,7 @@ namespace DotNext.Buffers
         }
 
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct DecimalFormatter : ISpanFormattable
+        internal readonly struct DecimalFormatter : ISpanFormattable
         {
             private readonly decimal value;
 
@@ -140,7 +140,7 @@ namespace DotNext.Buffers
         }
 
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct SingleFormatter : ISpanFormattable
+        internal readonly struct SingleFormatter : ISpanFormattable
         {
             private readonly float value;
 
@@ -153,7 +153,7 @@ namespace DotNext.Buffers
         }
 
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct DoubleFormatter : ISpanFormattable
+        internal readonly struct DoubleFormatter : ISpanFormattable
         {
             private readonly double value;
 
@@ -166,7 +166,7 @@ namespace DotNext.Buffers
         }
 
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct GuidFormatter : ISpanFormattable
+        internal readonly struct GuidFormatter : ISpanFormattable
         {
             private readonly Guid value;
 
@@ -179,7 +179,7 @@ namespace DotNext.Buffers
         }
 
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct DateTimeFormatter : ISpanFormattable
+        internal readonly struct DateTimeFormatter : ISpanFormattable
         {
             private readonly DateTime value;
 
@@ -192,7 +192,7 @@ namespace DotNext.Buffers
         }
 
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct DateTimeOffsetFormatter : ISpanFormattable
+        internal readonly struct DateTimeOffsetFormatter : ISpanFormattable
         {
             private readonly DateTimeOffset value;
 
@@ -205,7 +205,7 @@ namespace DotNext.Buffers
         }
 
         [StructLayout(LayoutKind.Auto)]
-        private struct LengthWriter : SevenBitEncodedInt.IWriter
+        internal struct LengthWriter : SevenBitEncodedInt.IWriter
         {
             private readonly Memory<byte> writer;
             private int offset;
