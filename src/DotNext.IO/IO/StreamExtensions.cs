@@ -7,7 +7,6 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using IByteBufferWriter = System.Buffers.IBufferWriter<byte>;
 
 namespace DotNext.IO
 {
@@ -1701,7 +1700,7 @@ namespace DotNext.IO
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="bufferSize"/> is negative or zero.</exception>
         /// <exception cref="NotSupportedException"><paramref name="source"/> doesn't support reading.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static async Task<long> CopyToAsync(this Stream source, IByteBufferWriter destination, int bufferSize = 1024, CancellationToken token = default)
+        public static async Task<long> CopyToAsync(this Stream source, IBufferWriter<byte> destination, int bufferSize = 1024, CancellationToken token = default)
         {
             if (destination is null)
                 throw new ArgumentNullException(nameof(destination));
@@ -1734,7 +1733,7 @@ namespace DotNext.IO
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="bufferSize"/> is negative or zero.</exception>
         /// <exception cref="NotSupportedException"><paramref name="source"/> doesn't support reading.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static long CopyTo(this Stream source, IByteBufferWriter destination, int bufferSize = 1024, CancellationToken token = default)
+        public static long CopyTo(this Stream source, IBufferWriter<byte> destination, int bufferSize = 1024, CancellationToken token = default)
         {
             if (destination is null)
                 throw new ArgumentNullException(nameof(destination));
