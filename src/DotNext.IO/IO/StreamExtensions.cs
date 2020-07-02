@@ -1197,10 +1197,12 @@ namespace DotNext.IO
         /// <param name="buffer">The buffer that is allocated by the caller.</param>
         /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
         /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns>The decoded value.</returns>
         /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The date/time string is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static ValueTask<DateTimeOffset> ReadDateTimeOffsetAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, string[] formats, Memory<byte> buffer, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<DateTimeOffset, DateTimeDecoder>(stream, new DateTimeDecoder(style, formats, provider), lengthFormat, context, buffer, token);
 
@@ -1471,9 +1473,11 @@ namespace DotNext.IO
         /// <param name="formats">An array of allowable formats.</param>
         /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
         /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns>The decoded value.</returns>
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The date/time string is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static ValueTask<DateTimeOffset> ReadDateTimeOffsetAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, string[] formats, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<DateTimeOffset, DateTimeDecoder>(stream, new DateTimeDecoder(style, formats, provider), lengthFormat, context, token);
 

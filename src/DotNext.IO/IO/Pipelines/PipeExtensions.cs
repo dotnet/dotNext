@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.Globalization;
 using System.IO;
 using System.IO.Pipelines;
 using System.Runtime.CompilerServices;
@@ -15,6 +16,7 @@ namespace DotNext.IO.Pipelines
     using Buffers;
     using Security.Cryptography;
     using Text;
+    using static Buffers.BufferReader;
 
     /// <summary>
     /// Represents extension method for parsing data stored in pipe.
@@ -69,6 +71,26 @@ namespace DotNext.IO.Pipelines
             }
 
             return parser.Complete();
+        }
+
+        private static async ValueTask<TResult> ReadAsync<TResult, TDecoder>(this PipeReader reader, TDecoder decoder, StringLengthEncoding lengthFormat, DecodingContext context, CancellationToken token)
+            where TResult : struct
+            where TDecoder : struct, ISpanDecoder<TResult>
+        {
+            var length = await ReadLengthAsync(reader, lengthFormat, token).ConfigureAwait(false);
+            if (length == 0)
+                throw new EndOfStreamException();
+            using var buffer = new ArrayBuffer<char>(length);
+            var parser = new StringReader<ArrayBuffer<char>>(in context, buffer);
+
+            for (SequencePosition consumed; parser.RemainingBytes > 0; reader.AdvanceTo(consumed))
+            {
+                var readResult = await reader.ReadAsync(token).ConfigureAwait(false);
+                readResult.ThrowIfCancellationRequested(token);
+                parser.Append<string, StringReader<ArrayBuffer<char>>>(readResult.Buffer, out consumed);
+            }
+
+            return parser.RemainingBytes == 0 ? decoder.Decode(parser.Complete()) : throw new EndOfStreamException();
         }
 
         internal static async ValueTask ComputeHashAsync(this PipeReader reader, HashAlgorithm algorithm, int? count, Memory<byte> output, CancellationToken token)
@@ -261,6 +283,281 @@ namespace DotNext.IO.Pipelines
         /// <exception cref="EndOfStreamException">Reader doesn't have enough data.</exception>
         public static async ValueTask ReadBlockAsync(this PipeReader reader, Memory<byte> output, CancellationToken token = default)
             => await ReadAsync<Missing, MemoryReader>(reader, new MemoryReader(output), token).ConfigureAwait(false);
+
+        /// <summary>
+        /// Decodes 8-bit unsigned integer from its string representation.
+        /// </summary>
+        /// <param name="reader">The pipe to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<byte> ReadByteAsync(this PipeReader reader, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<byte, NumberDecoder>(reader, new NumberDecoder(style, provider), lengthFormat, context, token);
+
+        /// <summary>
+        /// Decodes 8-bit signed integer from its string representation.
+        /// </summary>
+        /// <param name="reader">The pipe to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        [CLSCompliant(false)]
+        public static ValueTask<sbyte> ReadSByteAsync(this PipeReader reader, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<sbyte, NumberDecoder>(reader, new NumberDecoder(style, provider), lengthFormat, context, token);
+
+        /// <summary>
+        /// Decodes 16-bit signed integer from its string representation.
+        /// </summary>
+        /// <param name="reader">The pipe to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<short> ReadInt16Async(this PipeReader reader, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<short, NumberDecoder>(reader, new NumberDecoder(style, provider), lengthFormat, context, token);
+
+        /// <summary>
+        /// Decodes 16-bit unsigned integer from its string representation.
+        /// </summary>
+        /// <param name="reader">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        [CLSCompliant(false)]
+        public static ValueTask<ushort> ReadUInt16Async(this PipeReader reader, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<ushort, NumberDecoder>(reader, new NumberDecoder(style, provider), lengthFormat, context, token);
+
+        /// <summary>
+        /// Decodes 32-bit signed integer from its string representation.
+        /// </summary>
+        /// <param name="reader">The pipe to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<int> ReadInt32Async(this PipeReader reader, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<int, NumberDecoder>(reader, new NumberDecoder(style, provider), lengthFormat, context, token);
+
+        /// <summary>
+        /// Decodes 32-bit unsigned integer from its string representation.
+        /// </summary>
+        /// <param name="reader">The pipe to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        [CLSCompliant(false)]
+        public static ValueTask<uint> ReadUInt32Async(this PipeReader reader, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<uint, NumberDecoder>(reader, new NumberDecoder(style, provider), lengthFormat, context, token);
+
+        /// <summary>
+        /// Decodes 64-bit signed integer from its string representation.
+        /// </summary>
+        /// <param name="reader">The pipe to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<long> ReadInt64Async(this PipeReader reader, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<long, NumberDecoder>(reader, new NumberDecoder(style, provider), lengthFormat, context, token);
+
+        /// <summary>
+        /// Decodes 64-bit unsigned integer from its string representation.
+        /// </summary>
+        /// <param name="reader">The pipe to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        [CLSCompliant(false)]
+        public static ValueTask<ulong> ReadUInt64Async(this PipeReader reader, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<ulong, NumberDecoder>(reader, new NumberDecoder(style, provider), lengthFormat, context, token);
+
+        /// <summary>
+        /// Decodes single-precision floating-point number from its string representation.
+        /// </summary>
+        /// <param name="reader">The pipe to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<float> ReadSingleAsync(this PipeReader reader, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.AllowThousands | NumberStyles.Float, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<float, NumberDecoder>(reader, new NumberDecoder(style, provider), lengthFormat, context, token);
+
+        /// <summary>
+        /// Decodes double-precision floating-point number from its string representation.
+        /// </summary>
+        /// <param name="reader">The pipe to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<double> ReadDoubleAsync(this PipeReader reader, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.AllowThousands | NumberStyles.Float, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<double, NumberDecoder>(reader, new NumberDecoder(style, provider), lengthFormat, context, token);
+
+        /// <summary>
+        /// Decodes <see cref="decimal"/> from its string representation.
+        /// </summary>
+        /// <param name="reader">The pipe to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<decimal> ReadDecimalAsync(this PipeReader reader, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Number, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<decimal, NumberDecoder>(reader, new NumberDecoder(style, provider), lengthFormat, context, token);
+
+        /// <summary>
+        /// Decodes <see cref="Guid"/> from its string representation.
+        /// </summary>
+        /// <param name="reader">The pipe to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">GUID value is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<Guid> ReadGuidAsync(this PipeReader reader, StringLengthEncoding lengthFormat, DecodingContext context, CancellationToken token = default)
+            => ReadAsync<Guid, GuidDecoder>(reader, new GuidDecoder(), lengthFormat, context, token);
+
+        /// <summary>
+        /// Decodes <see cref="Guid"/> from its string representation.
+        /// </summary>
+        /// <param name="reader">The pipe to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="format">The expected format of GUID value.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">GUID value is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<Guid> ReadGuidAsync(this PipeReader reader, StringLengthEncoding lengthFormat, DecodingContext context, string format, CancellationToken token = default)
+            => ReadAsync<Guid, GuidDecoder>(reader, new GuidDecoder(format), lengthFormat, context, token);
+
+        /// <summary>
+        /// Decodes <see cref="DateTime"/> from its string representation.
+        /// </summary>
+        /// <param name="reader">The pipe to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The date/time string is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<DateTime> ReadDateTimeAsync(this PipeReader reader, StringLengthEncoding lengthFormat, DecodingContext context, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<DateTime, DateTimeDecoder>(reader, new DateTimeDecoder(style, provider), lengthFormat, context, token);
+
+        /// <summary>
+        /// Decodes <see cref="DateTime"/> from its string representation.
+        /// </summary>
+        /// <param name="reader">The pipe to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="formats">An array of allowable formats.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The date/time string is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<DateTime> ReadDateTimeAsync(this PipeReader reader, StringLengthEncoding lengthFormat, DecodingContext context, string[] formats, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<DateTime, DateTimeDecoder>(reader, new DateTimeDecoder(style, formats, provider), lengthFormat, context, token);
+
+        /// <summary>
+        /// Decodes <see cref="DateTimeOffset"/> from its string representation.
+        /// </summary>
+        /// <param name="reader">The pipe to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The date/time string is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<DateTimeOffset> ReadDateTimeOffsetAsync(this PipeReader reader, StringLengthEncoding lengthFormat, DecodingContext context, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<DateTimeOffset, DateTimeDecoder>(reader, new DateTimeDecoder(style, provider), lengthFormat, context, token);
+
+        /// <summary>
+        /// Decodes <see cref="DateTimeOffset"/> from its string representation.
+        /// </summary>
+        /// <param name="reader">The pipe to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="formats">An array of allowable formats.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The date/time string is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<DateTimeOffset> ReadDateTimeOffsetAsync(this PipeReader reader, StringLengthEncoding lengthFormat, DecodingContext context, string[] formats, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<DateTimeOffset, DateTimeDecoder>(reader, new DateTimeDecoder(style, formats, provider), lengthFormat, context, token);
 
         /// <summary>
         /// Reads the block of memory.
