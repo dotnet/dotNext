@@ -611,6 +611,12 @@ namespace DotNext.IO.Pipelines
             return writer.FlushAsync(token);
         }
 
+        public static ValueTask<FlushResult> WriteInt64Async(this PipeWriter writer, long value, StringLengthEncoding lengthFormat, EncodingContext context,  string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        {
+            writer.WriteInt64(value, lengthFormat, in context, format, provider);
+            return writer.FlushAsync(token);
+        }
+
         /// <summary>
         /// Encodes 64-bit unsigned integer asynchronously.
         /// </summary>
@@ -694,7 +700,7 @@ namespace DotNext.IO.Pipelines
             if (lengthFormat is null)
                 return new ValueTask<FlushResult>(new FlushResult(false, false));
 
-            writer.WriteLength(value.Span, encoding, lengthFormat.GetValueOrDefault());
+            writer.WriteLength(value.Span, lengthFormat.GetValueOrDefault(), encoding);
             return writer.FlushAsync(token);
         }
 
