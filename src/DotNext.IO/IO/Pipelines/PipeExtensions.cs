@@ -603,7 +603,7 @@ namespace DotNext.IO.Pipelines
         /// <param name="value">The value to encode.</param>
         /// <param name="lengthFormat">String length encoding format.</param>
         /// <param name="context">The encoding context.</param>
-        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="format">The format to use.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
@@ -621,7 +621,7 @@ namespace DotNext.IO.Pipelines
         /// <param name="value">The value to encode.</param>
         /// <param name="lengthFormat">String length encoding format.</param>
         /// <param name="context">The encoding context.</param>
-        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="format">The format to use.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
@@ -655,7 +655,7 @@ namespace DotNext.IO.Pipelines
         /// <param name="value">The value to encode.</param>
         /// <param name="lengthFormat">String length encoding format.</param>
         /// <param name="context">The encoding context.</param>
-        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="format">The format to use.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
@@ -689,7 +689,7 @@ namespace DotNext.IO.Pipelines
         /// <param name="value">The value to encode.</param>
         /// <param name="lengthFormat">String length encoding format.</param>
         /// <param name="context">The encoding context.</param>
-        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="format">The format to use.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
@@ -723,7 +723,7 @@ namespace DotNext.IO.Pipelines
         /// <param name="value">The value to encode.</param>
         /// <param name="lengthFormat">String length encoding format.</param>
         /// <param name="context">The encoding context.</param>
-        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="format">The format to use.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
@@ -757,7 +757,7 @@ namespace DotNext.IO.Pipelines
         /// <param name="value">The value to encode.</param>
         /// <param name="lengthFormat">String length encoding format.</param>
         /// <param name="context">The encoding context.</param>
-        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="format">The format to use.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
@@ -791,7 +791,7 @@ namespace DotNext.IO.Pipelines
         /// <param name="value">The value to encode.</param>
         /// <param name="lengthFormat">String length encoding format.</param>
         /// <param name="context">The encoding context.</param>
-        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="format">The format to use.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
@@ -825,7 +825,7 @@ namespace DotNext.IO.Pipelines
         /// <param name="value">The value to encode.</param>
         /// <param name="lengthFormat">String length encoding format.</param>
         /// <param name="context">The encoding context.</param>
-        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="format">The format to use.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
@@ -844,7 +844,7 @@ namespace DotNext.IO.Pipelines
         /// <param name="value">The value to encode.</param>
         /// <param name="lengthFormat">String length encoding format.</param>
         /// <param name="context">The encoding context.</param>
-        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="format">The format to use.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
@@ -863,7 +863,7 @@ namespace DotNext.IO.Pipelines
         /// <param name="value">The value to encode.</param>
         /// <param name="lengthFormat">String length encoding format.</param>
         /// <param name="context">The encoding context.</param>
-        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="format">The format to use.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
@@ -882,7 +882,7 @@ namespace DotNext.IO.Pipelines
         /// <param name="value">The value to encode.</param>
         /// <param name="lengthFormat">String length encoding format.</param>
         /// <param name="context">The encoding context.</param>
-        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="format">The format to use.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
@@ -901,7 +901,7 @@ namespace DotNext.IO.Pipelines
         /// <param name="value">The value to encode.</param>
         /// <param name="lengthFormat">String length encoding format.</param>
         /// <param name="context">The encoding context.</param>
-        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="format">The format to use.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
@@ -919,7 +919,7 @@ namespace DotNext.IO.Pipelines
         /// <param name="value">The value to encode.</param>
         /// <param name="lengthFormat">String length encoding format.</param>
         /// <param name="context">The encoding context.</param>
-        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="format">The format to use.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
@@ -938,7 +938,7 @@ namespace DotNext.IO.Pipelines
         /// <param name="value">The value to encode.</param>
         /// <param name="lengthFormat">String length encoding format.</param>
         /// <param name="context">The encoding context.</param>
-        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="format">The format to use.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>

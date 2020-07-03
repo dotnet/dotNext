@@ -106,6 +106,33 @@ namespace DotNext.IO
         public ValueTask WriteAsync(ReadOnlyMemory<char> chars, EncodingContext context, StringLengthEncoding? lengthFormat, CancellationToken token)
             => output.WriteStringAsync(chars, context, buffer, lengthFormat, token);
 
+        ValueTask IAsyncBinaryWriter.WriteByteAsync(byte value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+            => output.WriteByteAsync(value, lengthFormat, context, buffer, format, provider, token);
+
+        ValueTask IAsyncBinaryWriter.WriteInt16Async(short value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+            => output.WriteInt16Async(value, lengthFormat, context, buffer, format, provider, token);
+
+        ValueTask IAsyncBinaryWriter.WriteInt32Async(int value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+            => output.WriteInt32Async(value, lengthFormat, context, buffer, format, provider, token);
+
+        ValueTask IAsyncBinaryWriter.WriteInt64Async(long value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+            => output.WriteInt64Async(value, lengthFormat, context, buffer, format, provider, token);
+
+        ValueTask IAsyncBinaryWriter.WriteDecimalAsync(decimal value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+            => output.WriteDecimalAsync(value, lengthFormat, context, buffer, format, provider, token);
+
+        ValueTask IAsyncBinaryWriter.WriteSingleAsync(float value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+            => output.WriteSingleAsync(value, lengthFormat, context, buffer, format, provider, token);
+
+        ValueTask IAsyncBinaryWriter.WriteDoubleAsync(double value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+            => output.WriteDoubleAsync(value, lengthFormat, context, buffer, format, provider, token);
+
+        ValueTask IAsyncBinaryWriter.WriteDateTimeAsync(DateTime value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+            => output.WriteDateTimeAsync(value, lengthFormat, context, buffer, format, provider, token);
+
+        ValueTask IAsyncBinaryWriter.WriteDateTimeOffsetAsync(DateTimeOffset value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+            => output.WriteDateTimeOffsetAsync(value, lengthFormat, context, buffer, format, provider, token);
+
         Task IAsyncBinaryWriter.CopyFromAsync(Stream input, CancellationToken token)
             => input.CopyToAsync(output, token);
 

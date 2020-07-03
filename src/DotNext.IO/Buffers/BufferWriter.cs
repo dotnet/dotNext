@@ -408,6 +408,7 @@ namespace DotNext.Buffers
                     using var owner = DefaultAllocator.Invoke(charBufferSize, false);
                     if (WriteString(writer, value, charBuffer, lengthFormat, in context, format, provider, bufferSize))
                         break;
+                    charBufferSize = owner.Length;
                 }
             }
         }
