@@ -755,7 +755,7 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static ValueTask WriteInt32Async(this Stream stream, long value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask WriteInt64Async(this Stream stream, long value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync<Int64Formatter>(stream, value, lengthFormat, context, format, provider, token);
 
         /// <summary>
@@ -986,7 +986,7 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static ValueTask WriteDateTimeAsync(this Stream stream, DateTimeOffset value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask WriteDateTimeOffsetAsync(this Stream stream, DateTimeOffset value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync<DateTimeOffsetFormatter>(stream, value, lengthFormat, context, format, provider, token);
 
         /// <summary>
