@@ -68,7 +68,7 @@ namespace DotNext.Buffers
         {
             var result = allocator(length);
             if (!exactSize)
-                MemoryOwner<T>.Expand(ref result);
+                result.Expand();
             return result;
         }
 
