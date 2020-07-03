@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace DotNext.IO
 {
     using Buffers;
-    using System.Threading;
 
     [ExcludeFromCodeCoverage]
     public sealed class StreamSourceTests : Test
