@@ -6,8 +6,8 @@ The configuration of all benchmarks:
 
 | Parameter | Configuration |
 | ---- | ---- |
-| Host | .NET Core 3.1.4 (CoreCLR 4.700.20.20201, CoreFX 4.700.20.21406), X64 RyuJIT |
-| Job | .NET Core 3.1.4 (CoreCLR 4.700.20.20201, CoreFX 4.700.20.21406), X64 RyuJIT |
+| Host | .NET Core 3.1.5 (CoreCLR 4.700.20.26901, CoreFX 4.700.20.27001), X64 RyuJIT |
+| Job | .NET Core 3.1.5 (CoreCLR 4.700.20.26901, CoreFX 4.700.20.27001), X64 RyuJIT |
 | LaunchCount | 1 |
 | RunStrategy | Throughput |
 | OS | Ubuntu 18.04.4 |
@@ -151,9 +151,9 @@ Strongly typed reflection provided by DotNext Reflection library has the same pe
 
 | Method | Mean | Error | StdDev | Median |
 | ---- | ---- | ---- | ---- | ---- |
-| Atomic | 359.6 us | 7.40 us | 69.64 us | 353.2 us |
-| Synchronized | 947.2 us | 10.30 us | 96.05 us | 945.1 us |
-| SpinLock | 1,707.6 us | 52.27 us | 488.34 us | 1,674.8 us |
+| Atomic | 336.8 us | 9.20 us | 87.27 us | 318.1 us |
+| Synchronized | 902.3 us | 8.32 us | 78.44 us | 896.4 us |
+| SpinLock | 1,814.2 us | 55.27 us | 518.56 us | 1,715.9 us |
 
 # Value Delegate
 [This benchmark](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/FunctionPointerBenchmark.cs) compares performance of indirect method call using classic delegates from .NET and [value delegates](./features/core/valued.md).
@@ -181,9 +181,9 @@ Both classes switching from in-memory buffer to file-based buffer during benchma
 
 | Method | Mean | Error | StdDev |
 | ---- | ---- | ---- | ---- |
-| `FileBufferingWriter` in synchronous mode | 892.4 us | 7.93 us | 7.03 us |
-| `FileBufferingWriteStream` in synchronous mode | 27,833.0 us | 769.15 us | 2,231.44 us |
-| `FileBufferingWriter` in asynchronous mode | 15,770.6 us | 1,954.47 us | 5,762.80 us |
-| `FileBufferingWriteStream` in asynchronous mode | 16,830.6 us | 1,044.00 us | 3,078.27 us |
+| `FileBufferingWriter` in synchronous mode | 877.5 us | 17.13 us | 18.33 us |
+| `FileBufferingWriteStream` in synchronous mode | 26,396.0 us | 943.21 us | 2,751.40 us |
+| `FileBufferingWriter` in asynchronous mode | 14,526.9 us | 1,888.52 us | 5,568.36 us |
+| `FileBufferingWriteStream` in asynchronous mode | 16,819.3 us | 1,074.98 us | 3,169.59 us |
 
 `FileBufferingWriter` is a winner in synchronous scenario because it has native support for synchronous mode in contrast to `FileBufferingWriteStream`.
