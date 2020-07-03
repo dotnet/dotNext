@@ -5,9 +5,12 @@ using System.IO.Pipelines;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using static System.Globalization.CultureInfo;
+using DateTimeStyles = System.Globalization.DateTimeStyles;
 
 namespace DotNext.IO
 {
+    using Text;
     using ChunkSequence = Buffers.ChunkSequence<byte>;
 
     public sealed class AsyncBinaryReaderWriterTests : Test
@@ -86,38 +89,81 @@ namespace DotNext.IO
 
         public static IEnumerable<object[]> GetDataForPrimitives()
         {
-            yield return new object[] { new StreamSource(), true };
-            yield return new object[] { new StreamSource(), false };
-            yield return new object[] { new PipeSource(), true };
-            yield return new object[] { new PipeSource(), false };
-            yield return new object[] { new PipeSourceWithSettings(), true };
-            yield return new object[] { new PipeSourceWithSettings(), false };
-            yield return new object[] { new ReadOnlySequenceSource(), true };
-            yield return new object[] { new ReadOnlySequenceSource(), false };
+            yield return new object[] { new StreamSource(), true, Encoding.UTF8 };
+            yield return new object[] { new StreamSource(), false, Encoding.UTF8 };
+            yield return new object[] { new PipeSource(), true, Encoding.UTF8 };
+            yield return new object[] { new PipeSource(), false, Encoding.UTF8 };
+            yield return new object[] { new PipeSourceWithSettings(), true, Encoding.UTF8 };
+            yield return new object[] { new PipeSourceWithSettings(), false, Encoding.UTF8 };
+            yield return new object[] { new ReadOnlySequenceSource(), true, Encoding.UTF8 };
+            yield return new object[] { new ReadOnlySequenceSource(), false, Encoding.UTF8 };
+
+            yield return new object[] { new StreamSource(), true, Encoding.Unicode };
+            yield return new object[] { new StreamSource(), false, Encoding.Unicode };
+            yield return new object[] { new PipeSource(), true, Encoding.Unicode };
+            yield return new object[] { new PipeSource(), false, Encoding.Unicode };
+            yield return new object[] { new PipeSourceWithSettings(), true, Encoding.Unicode };
+            yield return new object[] { new PipeSourceWithSettings(), false, Encoding.Unicode };
+            yield return new object[] { new ReadOnlySequenceSource(), true, Encoding.Unicode };
+            yield return new object[] { new ReadOnlySequenceSource(), false, Encoding.Unicode };
         }
 
         [Theory]
         [MemberData(nameof(GetDataForPrimitives))]
-        public static async Task WriteReadPrimitivesAsync(IAsyncBinaryReaderWriterSource source, bool littleEndian)
+        public static async Task WriteReadPrimitivesAsync(IAsyncBinaryReaderWriterSource source, bool littleEndian, Encoding encoding)
         {
             await using (source)
             {
+                const byte value8 = 254;
                 const short value16 = 42;
                 const int value32 = int.MaxValue;
                 const long value64 = long.MaxValue;
                 const decimal valueM = 42M;
+                const float valueF = 56.6F;
+                const double valueD = 67.7D;
+                var valueG = Guid.NewGuid();
+                var valueDT = DateTime.Now;
+                var valueDTO = DateTimeOffset.Now;
 
                 var writer = source.CreateWriter();
                 await writer.WriteInt16Async(value16, littleEndian);
                 await writer.WriteInt32Async(value32, littleEndian);
                 await writer.WriteInt64Async(value64, littleEndian);
                 await writer.WriteAsync(valueM);
+                var encodingContext = new EncodingContext(encoding, true);
+                await writer.WriteByteAsync(value8, StringLengthEncoding.Plain, encodingContext, provider: InvariantCulture);
+                await writer.WriteInt16Async(value16, StringLengthEncoding.Compressed, encodingContext, provider: InvariantCulture);
+                await writer.WriteInt32Async(value32, StringLengthEncoding.Plain, encodingContext, provider: InvariantCulture);
+                await writer.WriteInt64Async(value64, StringLengthEncoding.PlainBigEndian, encodingContext, provider: InvariantCulture);
+                await writer.WriteDecimalAsync(valueM, StringLengthEncoding.PlainLittleEndian, encodingContext, provider: InvariantCulture);
+                await writer.WriteSingleAsync(valueF, StringLengthEncoding.Plain, encodingContext, provider: InvariantCulture);
+                await writer.WriteDoubleAsync(valueD, StringLengthEncoding.Plain, encodingContext, provider: InvariantCulture);
+                await writer.WriteGuidAsync(valueG, StringLengthEncoding.Plain, encodingContext);
+                await writer.WriteGuidAsync(valueG, StringLengthEncoding.Plain, encodingContext, "X");
+                await writer.WriteDateTimeAsync(valueDT, StringLengthEncoding.Plain, encodingContext, format: "O", provider: InvariantCulture);
+                await writer.WriteDateTimeOffsetAsync(valueDTO, StringLengthEncoding.Plain, encodingContext, format: "O", provider: InvariantCulture);
+                await writer.WriteDateTimeAsync(valueDT, StringLengthEncoding.Plain, encodingContext, format: "O", provider: InvariantCulture);
+                await writer.WriteDateTimeOffsetAsync(valueDTO, StringLengthEncoding.Plain, encodingContext, format: "O", provider: InvariantCulture);
 
                 var reader = source.CreateReader();
                 Equal(value16, await reader.ReadInt16Async(littleEndian));
                 Equal(value32, await reader.ReadInt32Async(littleEndian));
                 Equal(value64, await reader.ReadInt64Async(littleEndian));
                 Equal(valueM, await reader.ReadAsync<decimal>());
+                var decodingContext = new DecodingContext(encoding, true);
+                Equal(value8, await reader.ReadByteAsync(StringLengthEncoding.Plain, decodingContext, provider: InvariantCulture));
+                Equal(value16, await reader.ReadInt16Async(StringLengthEncoding.Compressed, decodingContext, provider: InvariantCulture));
+                Equal(value32, await reader.ReadInt32Async(StringLengthEncoding.Plain, decodingContext, provider: InvariantCulture));
+                Equal(value64, await reader.ReadInt64Async(StringLengthEncoding.PlainBigEndian, decodingContext, provider: InvariantCulture));
+                Equal(valueM, await reader.ReadDecimalAsync(StringLengthEncoding.PlainLittleEndian, decodingContext, provider: InvariantCulture));
+                Equal(valueF, await reader.ReadSingleAsync(StringLengthEncoding.Plain, decodingContext, provider: InvariantCulture));
+                Equal(valueD, await reader.ReadDoubleAsync(StringLengthEncoding.Plain, decodingContext, provider: InvariantCulture));
+                Equal(valueG, await reader.ReadGuidAsync(StringLengthEncoding.Plain, decodingContext));
+                Equal(valueG, await reader.ReadGuidAsync(StringLengthEncoding.Plain, decodingContext, "X"));
+                Equal(valueDT, await reader.ReadDateTimeAsync(StringLengthEncoding.Plain, decodingContext, style: DateTimeStyles.RoundtripKind, provider: InvariantCulture));
+                Equal(valueDTO, await reader.ReadDateTimeOffsetAsync(StringLengthEncoding.Plain, decodingContext, style: DateTimeStyles.RoundtripKind, provider: InvariantCulture));
+                Equal(valueDT, await reader.ReadDateTimeAsync(StringLengthEncoding.Plain, decodingContext, new[] { "O" }, style: DateTimeStyles.RoundtripKind, provider: InvariantCulture));
+                Equal(valueDTO, await reader.ReadDateTimeOffsetAsync(StringLengthEncoding.Plain, decodingContext, new[] { "O" }, style: DateTimeStyles.RoundtripKind, provider: InvariantCulture));
             }
         }
 

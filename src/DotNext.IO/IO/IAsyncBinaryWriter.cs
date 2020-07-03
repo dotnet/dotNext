@@ -3,6 +3,7 @@ using System.IO;
 using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
+using static System.Globalization.CultureInfo;
 
 namespace DotNext.IO
 {
@@ -26,6 +27,10 @@ namespace DotNext.IO
         ValueTask WriteAsync<T>(T value, CancellationToken token = default)
             where T : unmanaged;
 
+        private ValueTask WriteAsync<T>(T value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+            where T : struct, IFormattable
+            => WriteAsync(value.ToString(format, provider).AsMemory(), context, lengthFormat, token);
+
         /// <summary>
         /// Encodes 64-bit signed integer asynchronously.
         /// </summary>
@@ -39,6 +44,20 @@ namespace DotNext.IO
             value.ReverseIfNeeded(littleEndian);
             return WriteAsync(value, token);
         }
+
+        /// <summary>
+        /// Encodes 64-bit signed integer as a string.
+        /// </summary>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="context">The context describing encoding of characters.</param>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing state of asynchronous execution.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        ValueTask WriteInt64Async(long value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(value, lengthFormat, context, format, provider, token);
 
         /// <summary>
         /// Encodes 32-bit signed integer asynchronously.
@@ -55,6 +74,20 @@ namespace DotNext.IO
         }
 
         /// <summary>
+        /// Encodes 32-bit signed integer as a string.
+        /// </summary>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="context">The context describing encoding of characters.</param>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing state of asynchronous execution.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        ValueTask WriteInt32Async(int value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(value, lengthFormat, context, format, provider, token);
+
+        /// <summary>
         /// Encodes 16-bit signed integer asynchronously.
         /// </summary>
         /// <param name="value">The value to encode.</param>
@@ -67,6 +100,117 @@ namespace DotNext.IO
             value.ReverseIfNeeded(littleEndian);
             return WriteAsync(value, token);
         }
+
+        /// <summary>
+        /// Encodes 16-bit signed integer as a string.
+        /// </summary>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="context">The context describing encoding of characters.</param>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing state of asynchronous execution.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        ValueTask WriteInt16Async(short value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(value, lengthFormat, context, format, provider, token);
+
+        /// <summary>
+        /// Encodes 8-bit unsigned integer as a string.
+        /// </summary>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="context">The context describing encoding of characters.</param>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing state of asynchronous execution.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        ValueTask WriteByteAsync(byte value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(value, lengthFormat, context, format, provider, token);
+
+        /// <summary>
+        /// Encodes <see cref="decimal"/> as a string.
+        /// </summary>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="context">The context describing encoding of characters.</param>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing state of asynchronous execution.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        ValueTask WriteDecimalAsync(decimal value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(value, lengthFormat, context, format, provider, token);
+
+        /// <summary>
+        /// Encodes single-precision floating-point number as a string.
+        /// </summary>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="context">The context describing encoding of characters.</param>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing state of asynchronous execution.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        ValueTask WriteSingleAsync(float value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(value, lengthFormat, context, format, provider, token);
+
+        /// <summary>
+        /// Encodes double-precision floating-point number as a string.
+        /// </summary>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="context">The context describing encoding of characters.</param>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing state of asynchronous execution.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        ValueTask WriteDoubleAsync(double value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(value, lengthFormat, context, format, provider, token);
+
+        /// <summary>
+        /// Encodes <see cref="Guid"/> as a string.
+        /// </summary>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="context">The context describing encoding of characters.</param>
+        /// <param name="format">A standard or custom GUID format string.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing state of asynchronous execution.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        ValueTask WriteGuidAsync(Guid value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, CancellationToken token = default)
+            => WriteAsync(value.ToString(format, InvariantCulture).AsMemory(), context, lengthFormat, token);
+
+        /// <summary>
+        /// Encodes <see cref="DateTime"/> as a string.
+        /// </summary>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="context">The context describing encoding of characters.</param>
+        /// <param name="format">A standard or custom date/time format string.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing state of asynchronous execution.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        ValueTask WriteDateTimeAsync(DateTime value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(value, lengthFormat, context, format, provider, token);
+
+        /// <summary>
+        /// Encodes <see cref="DateTimeOffset"/> as a string.
+        /// </summary>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="context">The context describing encoding of characters.</param>
+        /// <param name="format">A standard or custom date/time format string.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing state of asynchronous execution.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        ValueTask WriteDateTimeOffsetAsync(DateTimeOffset value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(value, lengthFormat, context, format, provider, token);
 
         /// <summary>
         /// Encodes a block of memory.

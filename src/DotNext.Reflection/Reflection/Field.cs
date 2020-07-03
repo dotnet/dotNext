@@ -4,11 +4,11 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using static System.Linq.Expressions.Expression;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
 using static InlineIL.MethodRef;
 using static InlineIL.TypeRef;
-using static System.Linq.Expressions.Expression;
 
 namespace DotNext.Reflection
 {

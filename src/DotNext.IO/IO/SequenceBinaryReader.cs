@@ -1,5 +1,6 @@
 using System;
 using System.Buffers;
+using System.Globalization;
 using System.IO;
 using System.IO.Pipelines;
 using System.Threading;
@@ -9,6 +10,7 @@ using Missing = System.Reflection.Missing;
 namespace DotNext.IO
 {
     using Buffers;
+    using static Buffers.BufferReader;
     using static Pipelines.PipeExtensions;
     using DecodingContext = Text.DecodingContext;
 
@@ -38,6 +40,33 @@ namespace DotNext.IO
             return parser.RemainingBytes == 0 ? parser.Complete() : throw new EndOfStreamException();
         }
 
+        private TResult Read<TResult, TDecoder, TBuffer>(ref TDecoder decoder, in DecodingContext context, TBuffer buffer)
+            where TResult : struct
+            where TBuffer : struct, IBuffer<char>
+            where TDecoder : struct, ISpanDecoder<TResult>
+        {
+            var parser = new StringReader<TBuffer>(in context, buffer);
+            parser.Append<string, StringReader<TBuffer>>(sequence.Slice(position), out position);
+            return parser.RemainingBytes == 0 ? decoder.Decode(parser.Complete()) : throw new EndOfStreamException();
+        }
+
+        private unsafe TResult Read<TResult, TDecoder>(TDecoder decoder, StringLengthEncoding lengthFormat, in DecodingContext context)
+            where TResult : struct
+            where TDecoder : struct, ISpanDecoder<TResult>
+        {
+            var length = ReadLength(lengthFormat);
+            if (length > MemoryRental<char>.StackallocThreshold)
+            {
+                using var buffer = new ArrayBuffer<char>(length);
+                return Read<TResult, TDecoder, ArrayBuffer<char>>(ref decoder, in context, buffer);
+            }
+            else
+            {
+                var buffer = stackalloc char[length];
+                return Read<TResult, TDecoder, UnsafeBuffer<char>>(ref decoder, in context, new UnsafeBuffer<char>(buffer, length));
+            }
+        }
+
         /// <summary>
         /// Decodes the value of blittable type from the sequence of bytes.
         /// </summary>
@@ -53,6 +82,33 @@ namespace DotNext.IO
         /// <param name="output">The block of memory to fill.</param>
         /// <exception cref="EndOfStreamException">Unexpected end of sequence.</exception>
         public void Read(Memory<byte> output) => Read<Missing, MemoryReader>(new MemoryReader(output));
+
+        /// <summary>
+        /// Parses 64-bit signed integer from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        public long ReadInt64(StringLengthEncoding lengthFormat, in DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
+            => Read<long, NumberDecoder>(new NumberDecoder(style, provider), lengthFormat, in context);
+
+        /// <summary>
+        /// Parses 64-bit unsigned integer from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        [CLSCompliant(false)]
+        public ulong ReadUInt64(StringLengthEncoding lengthFormat, in DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
+            => Read<ulong, NumberDecoder>(new NumberDecoder(style, provider), lengthFormat, in context);
 
         /// <summary>
         /// Decodes 64-bit signed integer using the specified endianness.
@@ -95,6 +151,33 @@ namespace DotNext.IO
         }
 
         /// <summary>
+        /// Parses 32-bit signed integer from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        public int ReadInt32(StringLengthEncoding lengthFormat, in DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
+            => Read<int, NumberDecoder>(new NumberDecoder(style, provider), lengthFormat, in context);
+
+        /// <summary>
+        /// Parses 32-bit unsigned integer from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        [CLSCompliant(false)]
+        public uint ReadUInt32(StringLengthEncoding lengthFormat, in DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
+            => Read<uint, NumberDecoder>(new NumberDecoder(style, provider), lengthFormat, in context);
+
+        /// <summary>
         /// Decodes 32-bit unsigned integer using the specified endianness.
         /// </summary>
         /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
@@ -109,6 +192,19 @@ namespace DotNext.IO
         }
 
         /// <summary>
+        /// Parses 16-bit signed integer from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        public short ReadInt16(StringLengthEncoding lengthFormat, in DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
+            => Read<short, NumberDecoder>(new NumberDecoder(style, provider), lengthFormat, in context);
+
+        /// <summary>
         /// Decodes 16-bit signed integer using the specified endianness.
         /// </summary>
         /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
@@ -120,6 +216,20 @@ namespace DotNext.IO
             result.ReverseIfNeeded(littleEndian);
             return result;
         }
+
+        /// <summary>
+        /// Parses 16-bit unsigned integer from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        [CLSCompliant(false)]
+        public ushort ReadUInt16(StringLengthEncoding lengthFormat, in DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
+            => Read<ushort, NumberDecoder>(new NumberDecoder(style, provider), lengthFormat, in context);
 
         /// <summary>
         /// Decodes 16-bit unsigned integer using the specified endianness.
@@ -136,6 +246,149 @@ namespace DotNext.IO
         }
 
         /// <summary>
+        /// Parses 8-bit unsigned integer from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        public byte ReadByte(StringLengthEncoding lengthFormat, in DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
+            => Read<byte, NumberDecoder>(new NumberDecoder(style, provider), lengthFormat, in context);
+
+        /// <summary>
+        /// Parses 8-bit unsigned integer from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        [CLSCompliant(false)]
+        public sbyte ReadSByte(StringLengthEncoding lengthFormat, in DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
+            => Read<sbyte, NumberDecoder>(new NumberDecoder(style, provider), lengthFormat, in context);
+
+        /// <summary>
+        /// Parses single-precision floating-point number from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        public float ReadSingle(StringLengthEncoding lengthFormat, in DecodingContext context, NumberStyles style = NumberStyles.AllowThousands | NumberStyles.Float, IFormatProvider? provider = null)
+            => Read<float, NumberDecoder>(new NumberDecoder(style, provider), lengthFormat, in context);
+
+        /// <summary>
+        /// Parses double-precision floating-point number from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        public double ReadDouble(StringLengthEncoding lengthFormat, in DecodingContext context, NumberStyles style = NumberStyles.AllowThousands | NumberStyles.Float, IFormatProvider? provider = null)
+            => Read<double, NumberDecoder>(new NumberDecoder(style, provider), lengthFormat, in context);
+
+        /// <summary>
+        /// Parses <see cref="decimal"/> from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        public decimal ReadDecimal(StringLengthEncoding lengthFormat, in DecodingContext context, NumberStyles style = NumberStyles.Number, IFormatProvider? provider = null)
+            => Read<decimal, NumberDecoder>(new NumberDecoder(style, provider), lengthFormat, in context);
+
+        /// <summary>
+        /// Parses <see cref="DateTime"/> from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="FormatException">The date/time is in incorrect format.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        public DateTime ReadDateTime(StringLengthEncoding lengthFormat, in DecodingContext context, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null)
+            => Read<DateTime, DateTimeDecoder>(new DateTimeDecoder(style, provider), lengthFormat, in context);
+
+        /// <summary>
+        /// Parses <see cref="DateTime"/> from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="formats">An array of allowable formats.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="FormatException">The date/time is in incorrect format.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        public DateTime ReadDateTime(StringLengthEncoding lengthFormat, in DecodingContext context, string[] formats, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null)
+            => Read<DateTime, DateTimeDecoder>(new DateTimeDecoder(style, formats, provider), lengthFormat, in context);
+
+        /// <summary>
+        /// Parses <see cref="DateTimeOffset"/> from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="FormatException">The date/time is in incorrect format.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        public DateTimeOffset ReadDateTimeOffset(StringLengthEncoding lengthFormat, in DecodingContext context, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null)
+            => Read<DateTimeOffset, DateTimeDecoder>(new DateTimeDecoder(style, provider), lengthFormat, in context);
+
+        /// <summary>
+        /// Parses <see cref="DateTimeOffset"/> from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="formats">An array of allowable formats.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="FormatException">The date/time is in incorrect format.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        public DateTimeOffset ReadDateTimeOffset(StringLengthEncoding lengthFormat, in DecodingContext context, string[] formats, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null)
+            => Read<DateTimeOffset, DateTimeDecoder>(new DateTimeDecoder(style, formats, provider), lengthFormat, in context);
+
+        /// <summary>
+        /// Parses <see cref="Guid"/> from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="FormatException">GUID value is in incorrect format.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        public Guid ReadGuid(StringLengthEncoding lengthFormat, in DecodingContext context)
+            => Read<Guid, GuidDecoder>(new GuidDecoder(), lengthFormat, in context);
+
+        /// <summary>
+        /// Parses <see cref="Guid"/> from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="format">The expected format of GUID value.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="FormatException">GUID value is in incorrect format.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        public Guid ReadGuid(StringLengthEncoding lengthFormat, in DecodingContext context, string format)
+            => Read<Guid, GuidDecoder>(new GuidDecoder(format), lengthFormat, in context);
+
+        /// <summary>
         /// Decodes the string.
         /// </summary>
         /// <param name="length">The length of the encoded string, in bytes.</param>
@@ -146,7 +399,7 @@ namespace DotNext.IO
         {
             if (length > MemoryRental<char>.StackallocThreshold)
             {
-                var buffer = new ArrayBuffer<char>(length);
+                using var buffer = new ArrayBuffer<char>(length);
                 return Read<string, StringReader<ArrayBuffer<char>>>(new StringReader<ArrayBuffer<char>>(in context, buffer));
             }
             else
@@ -156,14 +409,7 @@ namespace DotNext.IO
             }
         }
 
-        /// <summary>
-        /// Decodes the string.
-        /// </summary>
-        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
-        /// <param name="context">The decoding context containing string characters encoding.</param>
-        /// <returns>The decoded string.</returns>
-        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-        public string ReadString(StringLengthEncoding lengthFormat, in DecodingContext context)
+        private int ReadLength(StringLengthEncoding lengthFormat)
         {
             int length;
             var littleEndian = BitConverter.IsLittleEndian;
@@ -186,8 +432,18 @@ namespace DotNext.IO
             }
 
             length.ReverseIfNeeded(littleEndian);
-            return ReadString(length, in context);
+            return length;
         }
+
+        /// <summary>
+        /// Decodes the string.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <returns>The decoded string.</returns>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        public string ReadString(StringLengthEncoding lengthFormat, in DecodingContext context)
+            => ReadString(ReadLength(lengthFormat), in context);
 
         /// <inheritdoc/>
         ValueTask<T> IAsyncBinaryReader.ReadAsync<T>(CancellationToken token)
@@ -206,33 +462,417 @@ namespace DotNext.IO
 
         /// <inheritdoc/>
         ValueTask<long> IAsyncBinaryReader.ReadInt64Async(bool littleEndian, CancellationToken token)
-            => token.IsCancellationRequested ?
-                new ValueTask<long>(Task.FromCanceled<long>(token)) :
-                new ValueTask<long>(ReadInt64(littleEndian));
+        {
+            Task<long> result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled<long>(token);
+            }
+            else
+            {
+                try
+                {
+                    return new ValueTask<long>(ReadInt64(littleEndian));
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException<long>(e);
+                }
+            }
+
+            return new ValueTask<long>(result);
+        }
+
+        /// <inheritdoc/>
+        ValueTask<long> IAsyncBinaryReader.ReadInt64Async(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
+        {
+            Task<long> result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled<long>(token);
+            }
+            else
+            {
+                try
+                {
+                    return new ValueTask<long>(ReadInt64(lengthFormat, in context, style, provider));
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException<long>(e);
+                }
+            }
+
+            return new ValueTask<long>(result);
+        }
 
         /// <inheritdoc/>
         ValueTask<int> IAsyncBinaryReader.ReadInt32Async(bool littleEndian, CancellationToken token)
-            => token.IsCancellationRequested ?
-                new ValueTask<int>(Task.FromCanceled<int>(token)) :
-                new ValueTask<int>(ReadInt32(littleEndian));
+        {
+            Task<int> result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled<int>(token);
+            }
+            else
+            {
+                try
+                {
+                    return new ValueTask<int>(ReadInt32(littleEndian));
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException<int>(e);
+                }
+            }
+
+            return new ValueTask<int>(result);
+        }
+
+        /// <inheritdoc/>
+        ValueTask<int> IAsyncBinaryReader.ReadInt32Async(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
+        {
+            Task<int> result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled<int>(token);
+            }
+            else
+            {
+                try
+                {
+                    return new ValueTask<int>(ReadInt32(lengthFormat, in context, style, provider));
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException<int>(e);
+                }
+            }
+
+            return new ValueTask<int>(result);
+        }
 
         /// <inheritdoc/>
         ValueTask<short> IAsyncBinaryReader.ReadInt16Async(bool littleEndian, CancellationToken token)
-            => token.IsCancellationRequested ?
-                new ValueTask<short>(Task.FromCanceled<short>(token)) :
-                new ValueTask<short>(ReadInt16(littleEndian));
+        {
+            Task<short> result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled<short>(token);
+            }
+            else
+            {
+                try
+                {
+                    return new ValueTask<short>(ReadInt16(littleEndian));
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException<short>(e);
+                }
+            }
+
+            return new ValueTask<short>(result);
+        }
+
+        /// <inheritdoc/>
+        ValueTask<short> IAsyncBinaryReader.ReadInt16Async(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
+        {
+            Task<short> result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled<short>(token);
+            }
+            else
+            {
+                try
+                {
+                    return new ValueTask<short>(ReadInt16(lengthFormat, in context, style, provider));
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException<short>(e);
+                }
+            }
+
+            return new ValueTask<short>(result);
+        }
+
+        /// <inheritdoc/>
+        ValueTask<byte> IAsyncBinaryReader.ReadByteAsync(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
+        {
+            Task<byte> result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled<byte>(token);
+            }
+            else
+            {
+                try
+                {
+                    return new ValueTask<byte>(ReadByte(lengthFormat, in context, style, provider));
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException<byte>(e);
+                }
+            }
+
+            return new ValueTask<byte>(result);
+        }
+
+        /// <inheritdoc/>
+        ValueTask<float> IAsyncBinaryReader.ReadSingleAsync(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
+        {
+            Task<float> result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled<float>(token);
+            }
+            else
+            {
+                try
+                {
+                    return new ValueTask<float>(ReadSingle(lengthFormat, in context, style, provider));
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException<float>(e);
+                }
+            }
+
+            return new ValueTask<float>(result);
+        }
+
+        /// <inheritdoc/>
+        ValueTask<double> IAsyncBinaryReader.ReadDoubleAsync(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
+        {
+            Task<double> result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled<double>(token);
+            }
+            else
+            {
+                try
+                {
+                    return new ValueTask<double>(ReadDouble(lengthFormat, in context, style, provider));
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException<double>(e);
+                }
+            }
+
+            return new ValueTask<double>(result);
+        }
+
+        /// <inheritdoc/>
+        ValueTask<decimal> IAsyncBinaryReader.ReadDecimalAsync(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
+        {
+            Task<decimal> result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled<decimal>(token);
+            }
+            else
+            {
+                try
+                {
+                    return new ValueTask<decimal>(ReadDecimal(lengthFormat, in context, style, provider));
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException<decimal>(e);
+                }
+            }
+
+            return new ValueTask<decimal>(result);
+        }
+
+        /// <inheritdoc/>
+        ValueTask<DateTime> IAsyncBinaryReader.ReadDateTimeAsync(StringLengthEncoding lengthFormat, DecodingContext context, DateTimeStyles style, IFormatProvider? provider, CancellationToken token)
+        {
+            Task<DateTime> result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled<DateTime>(token);
+            }
+            else
+            {
+                try
+                {
+                    return new ValueTask<DateTime>(ReadDateTime(lengthFormat, in context, style, provider));
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException<DateTime>(e);
+                }
+            }
+
+            return new ValueTask<DateTime>(result);
+        }
+
+        /// <inheritdoc/>
+        ValueTask<DateTime> IAsyncBinaryReader.ReadDateTimeAsync(StringLengthEncoding lengthFormat, DecodingContext context, string[] formats, DateTimeStyles style, IFormatProvider? provider, CancellationToken token)
+        {
+            Task<DateTime> result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled<DateTime>(token);
+            }
+            else
+            {
+                try
+                {
+                    return new ValueTask<DateTime>(ReadDateTime(lengthFormat, in context, formats, style, provider));
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException<DateTime>(e);
+                }
+            }
+
+            return new ValueTask<DateTime>(result);
+        }
+
+        /// <inheritdoc/>
+        ValueTask<DateTimeOffset> IAsyncBinaryReader.ReadDateTimeOffsetAsync(StringLengthEncoding lengthFormat, DecodingContext context, DateTimeStyles style, IFormatProvider? provider, CancellationToken token)
+        {
+            Task<DateTimeOffset> result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled<DateTimeOffset>(token);
+            }
+            else
+            {
+                try
+                {
+                    return new ValueTask<DateTimeOffset>(ReadDateTimeOffset(lengthFormat, in context, style, provider));
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException<DateTimeOffset>(e);
+                }
+            }
+
+            return new ValueTask<DateTimeOffset>(result);
+        }
+
+        /// <inheritdoc/>
+        ValueTask<DateTimeOffset> IAsyncBinaryReader.ReadDateTimeOffsetAsync(StringLengthEncoding lengthFormat, DecodingContext context, string[] formats, DateTimeStyles style, IFormatProvider? provider, CancellationToken token)
+        {
+            Task<DateTimeOffset> result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled<DateTimeOffset>(token);
+            }
+            else
+            {
+                try
+                {
+                    return new ValueTask<DateTimeOffset>(ReadDateTimeOffset(lengthFormat, in context, formats, style, provider));
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException<DateTimeOffset>(e);
+                }
+            }
+
+            return new ValueTask<DateTimeOffset>(result);
+        }
+
+        /// <inheritdoc/>
+        ValueTask<Guid> IAsyncBinaryReader.ReadGuidAsync(StringLengthEncoding lengthFormat, DecodingContext context, CancellationToken token)
+        {
+            Task<Guid> result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled<Guid>(token);
+            }
+            else
+            {
+                try
+                {
+                    return new ValueTask<Guid>(ReadGuid(lengthFormat, in context));
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException<Guid>(e);
+                }
+            }
+
+            return new ValueTask<Guid>(result);
+        }
+
+        /// <inheritdoc/>
+        ValueTask<Guid> IAsyncBinaryReader.ReadGuidAsync(StringLengthEncoding lengthFormat, DecodingContext context, string format, CancellationToken token)
+        {
+            Task<Guid> result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled<Guid>(token);
+            }
+            else
+            {
+                try
+                {
+                    return new ValueTask<Guid>(ReadGuid(lengthFormat, in context, format));
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException<Guid>(e);
+                }
+            }
+
+            return new ValueTask<Guid>(result);
+        }
 
         /// <inheritdoc/>
         ValueTask<string> IAsyncBinaryReader.ReadStringAsync(int length, DecodingContext context, CancellationToken token)
-            => token.IsCancellationRequested ?
-                new ValueTask<string>(Task.FromCanceled<string>(token)) :
-                new ValueTask<string>(ReadString(length, in context));
+        {
+            Task<string> result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled<string>(token);
+            }
+            else
+            {
+                try
+                {
+                    return new ValueTask<string>(ReadString(length, context));
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException<string>(e);
+                }
+            }
+
+            return new ValueTask<string>(result);
+        }
 
         /// <inheritdoc/>
         ValueTask<string> IAsyncBinaryReader.ReadStringAsync(StringLengthEncoding lengthFormat, DecodingContext context, CancellationToken token)
-            => token.IsCancellationRequested ?
-                new ValueTask<string>(Task.FromCanceled<string>(token)) :
-                new ValueTask<string>(ReadString(lengthFormat, in context));
+        {
+            Task<string> result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled<string>(token);
+            }
+            else
+            {
+                try
+                {
+                    return new ValueTask<string>(ReadString(lengthFormat, context));
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException<string>(e);
+                }
+            }
+
+            return new ValueTask<string>(result);
+        }
 
         /// <inheritdoc/>
         Task IAsyncBinaryReader.CopyToAsync(Stream output, CancellationToken token)

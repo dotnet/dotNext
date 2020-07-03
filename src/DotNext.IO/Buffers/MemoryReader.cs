@@ -18,15 +18,15 @@ namespace DotNext.Buffers
             eosReached = false;
         }
 
-        public int RemainingBytes => eosReached ? 0 : buffer.Length - offset;
+        public readonly int RemainingBytes => eosReached ? 0 : buffer.Length - offset;
 
         int IBufferReader<int>.Complete() => offset;
 
         Missing IBufferReader<Missing>.Complete() => Missing.Value;
 
-        internal int BytesWritten => offset;
+        internal readonly int BytesWritten => offset;
 
-        internal bool IsCompleted => offset >= buffer.Length;
+        internal readonly bool IsCompleted => offset >= buffer.Length;
 
         public void Append(ReadOnlySpan<byte> block, ref int consumedBytes)
         {

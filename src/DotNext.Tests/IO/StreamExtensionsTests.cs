@@ -5,10 +5,13 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using static System.Globalization.CultureInfo;
+using DateTimeStyles = System.Globalization.DateTimeStyles;
 
 namespace DotNext.IO
 {
     using Buffers;
+    using Text;
 
     [ExcludeFromCodeCoverage]
     public sealed class StreamExtensionsTests : Test
@@ -399,6 +402,119 @@ namespace DotNext.IO
             ms.Write(sequence);
             ms.Position = 0;
             Equal(content, ms.ToArray());
+        }
+
+        [Theory]
+        [InlineData("UTF-8")]
+        [InlineData("UTF-7")]
+        [InlineData("UTF-16")]
+        public static void EncodeAsString(string encodingName)
+        {
+            var encoding = Encoding.GetEncoding(encodingName);
+            using var stream = new MemoryStream();
+            var g = Guid.NewGuid();
+            var dt = DateTime.Now;
+            var dto = DateTimeOffset.Now;
+            stream.WriteInt64(42L, StringLengthEncoding.Plain, encoding, provider: InvariantCulture);
+            stream.WriteUInt64(12UL, StringLengthEncoding.PlainLittleEndian, encoding, provider: InvariantCulture);
+            stream.WriteInt32(34, StringLengthEncoding.PlainBigEndian, encoding, provider: InvariantCulture);
+            stream.WriteUInt32(78, StringLengthEncoding.Plain, encoding, provider: InvariantCulture);
+            stream.WriteInt16(90, StringLengthEncoding.Plain, encoding, provider: InvariantCulture);
+            stream.WriteUInt16(12, StringLengthEncoding.Plain, encoding, format: "X", provider: InvariantCulture);
+            stream.WriteUInt16(12, StringLengthEncoding.Plain, encoding, provider: InvariantCulture);
+            stream.WriteByte(10, StringLengthEncoding.Plain, encoding, format: "X", provider: InvariantCulture);
+            stream.WriteSByte(11, StringLengthEncoding.Plain, encoding, format: "X", provider: InvariantCulture);
+            stream.WriteByte(10, StringLengthEncoding.Plain, encoding, provider: InvariantCulture);
+            stream.WriteSByte(11, StringLengthEncoding.Plain, encoding, provider: InvariantCulture);
+            stream.WriteGuid(g, StringLengthEncoding.Plain, encoding);
+            stream.WriteGuid(g, StringLengthEncoding.Plain, encoding, format: "X");
+            stream.WriteDateTime(dt, StringLengthEncoding.Plain, encoding, format: "O", provider: InvariantCulture);
+            stream.WriteDateTimeOffset(dto, StringLengthEncoding.Plain, encoding, format: "O", provider: InvariantCulture);
+            stream.WriteDateTime(dt, StringLengthEncoding.Plain, encoding, format: "O", provider: InvariantCulture);
+            stream.WriteDateTimeOffset(dto, StringLengthEncoding.Plain, encoding, format: "O", provider: InvariantCulture);
+            stream.WriteDecimal(42.5M, StringLengthEncoding.Plain, encoding, provider: InvariantCulture);
+            stream.WriteSingle(32.2F, StringLengthEncoding.Plain, encoding, provider: InvariantCulture);
+            stream.WriteDouble(56.6D, StringLengthEncoding.Plain, encoding, provider: InvariantCulture);
+
+            stream.Position = 0;
+            var decodingContext = new DecodingContext(encoding);
+            Span<byte> buffer = stackalloc byte[256];
+            Equal(42L, stream.ReadInt64(StringLengthEncoding.Plain, in decodingContext, buffer, provider: InvariantCulture));
+            Equal(12UL, stream.ReadUInt64(StringLengthEncoding.PlainLittleEndian, in decodingContext, buffer, provider: InvariantCulture));
+            Equal(34, stream.ReadInt32(StringLengthEncoding.PlainBigEndian, in decodingContext, buffer, provider: InvariantCulture));
+            Equal(78U, stream.ReadUInt32(StringLengthEncoding.Plain, in decodingContext, buffer, provider: InvariantCulture));
+            Equal(90, stream.ReadInt16(StringLengthEncoding.Plain, in decodingContext, buffer, provider: InvariantCulture));
+            Equal("C", stream.ReadString(StringLengthEncoding.Plain, in decodingContext, buffer));
+            Equal(12, stream.ReadUInt16(StringLengthEncoding.Plain, in decodingContext, buffer, provider: InvariantCulture));
+            Equal("A", stream.ReadString(StringLengthEncoding.Plain, in decodingContext, buffer));
+            Equal("B", stream.ReadString(StringLengthEncoding.Plain, in decodingContext, buffer));
+            Equal(10, stream.ReadByte(StringLengthEncoding.Plain, in decodingContext, buffer, provider: InvariantCulture));
+            Equal(11, stream.ReadSByte(StringLengthEncoding.Plain, in decodingContext, buffer, provider: InvariantCulture));
+            Equal(g, stream.ReadGuid(StringLengthEncoding.Plain, in decodingContext, buffer));
+            Equal(g, stream.ReadGuid(StringLengthEncoding.Plain, in decodingContext, buffer, "X"));
+            Equal(dt, stream.ReadDateTime(StringLengthEncoding.Plain, in decodingContext, buffer, style: DateTimeStyles.RoundtripKind, provider: InvariantCulture));
+            Equal(dto, stream.ReadDateTimeOffset(StringLengthEncoding.Plain, in decodingContext, buffer, style: DateTimeStyles.RoundtripKind, provider: InvariantCulture));
+            Equal(dt, stream.ReadDateTime(StringLengthEncoding.Plain, in decodingContext, buffer, formats: new[] { "O" }, style: DateTimeStyles.RoundtripKind, provider: InvariantCulture));
+            Equal(dto, stream.ReadDateTimeOffset(StringLengthEncoding.Plain, in decodingContext, buffer, formats: new[] { "O" }, style: DateTimeStyles.RoundtripKind, provider: InvariantCulture));
+            Equal(42.5M, stream.ReadDecimal(StringLengthEncoding.Plain, in decodingContext, buffer, provider: InvariantCulture));
+            Equal(32.2F, stream.ReadSingle(StringLengthEncoding.Plain, in decodingContext, buffer, provider: InvariantCulture));
+            Equal(56.6D, stream.ReadDouble(StringLengthEncoding.Plain, in decodingContext, buffer, provider: InvariantCulture));
+        }
+
+        [Theory]
+        [InlineData("UTF-8")]
+        [InlineData("UTF-7")]
+        [InlineData("UTF-16")]
+        public static async Task EncodeAsStringAsync(string encodingName)
+        {
+            var encoding = Encoding.GetEncoding(encodingName);
+            using var stream = new MemoryStream();
+            var g = Guid.NewGuid();
+            var dt = DateTime.Now;
+            var dto = DateTimeOffset.Now;
+            await stream.WriteInt64Async(42L, StringLengthEncoding.Plain, encoding, provider: InvariantCulture);
+            await stream.WriteUInt64Async(12UL, StringLengthEncoding.PlainLittleEndian, encoding, provider: InvariantCulture);
+            await stream.WriteInt32Async(34, StringLengthEncoding.PlainBigEndian, encoding, provider: InvariantCulture);
+            await stream.WriteUInt32Async(78, StringLengthEncoding.Plain, encoding, provider: InvariantCulture);
+            await stream.WriteInt16Async(90, StringLengthEncoding.Plain, encoding, provider: InvariantCulture);
+            await stream.WriteUInt16Async(12, StringLengthEncoding.Plain, encoding, format: "X", provider: InvariantCulture);
+            await stream.WriteUInt16Async(12, StringLengthEncoding.Plain, encoding, provider: InvariantCulture);
+            await stream.WriteByteAsync(10, StringLengthEncoding.Plain, encoding, format: "X", provider: InvariantCulture);
+            await stream.WriteSByteAsync(11, StringLengthEncoding.Plain, encoding, format: "X", provider: InvariantCulture);
+            await stream.WriteByteAsync(10, StringLengthEncoding.Plain, encoding, provider: InvariantCulture);
+            await stream.WriteSByteAsync(11, StringLengthEncoding.Plain, encoding, provider: InvariantCulture);
+            await stream.WriteGuidAsync(g, StringLengthEncoding.Plain, encoding);
+            await stream.WriteGuidAsync(g, StringLengthEncoding.Plain, encoding, format: "X");
+            await stream.WriteDateTimeAsync(dt, StringLengthEncoding.Plain, encoding, format: "O", provider: InvariantCulture);
+            await stream.WriteDateTimeOffsetAsync(dto, StringLengthEncoding.Plain, encoding, format: "O", provider: InvariantCulture);
+            await stream.WriteDateTimeAsync(dt, StringLengthEncoding.Plain, encoding, format: "O", provider: InvariantCulture);
+            await stream.WriteDateTimeOffsetAsync(dto, StringLengthEncoding.Plain, encoding, format: "O", provider: InvariantCulture);
+            await stream.WriteDecimalAsync(42.5M, StringLengthEncoding.Plain, encoding, provider: InvariantCulture);
+            await stream.WriteSingleAsync(32.2F, StringLengthEncoding.Plain, encoding, provider: InvariantCulture);
+            await stream.WriteDoubleAsync(56.6D, StringLengthEncoding.Plain, encoding, provider: InvariantCulture);
+
+            stream.Position = 0;
+            var decodingContext = new DecodingContext(encoding);
+            Equal(42L, await stream.ReadInt64Async(StringLengthEncoding.Plain, decodingContext, provider: InvariantCulture));
+            Equal(12UL, await stream.ReadUInt64Async(StringLengthEncoding.PlainLittleEndian, decodingContext, provider: InvariantCulture));
+            Equal(34, await stream.ReadInt32Async(StringLengthEncoding.PlainBigEndian, decodingContext, provider: InvariantCulture));
+            Equal(78U, await stream.ReadUInt32Async(StringLengthEncoding.Plain, decodingContext, provider: InvariantCulture));
+            Equal(90, await stream.ReadInt16Async(StringLengthEncoding.Plain, decodingContext, provider: InvariantCulture));
+            Equal("C", await stream.ReadStringAsync(StringLengthEncoding.Plain, decodingContext.Encoding));
+            Equal(12, await stream.ReadUInt16Async(StringLengthEncoding.Plain, decodingContext, provider: InvariantCulture));
+            Equal("A", await stream.ReadStringAsync(StringLengthEncoding.Plain, decodingContext.Encoding));
+            Equal("B", await stream.ReadStringAsync(StringLengthEncoding.Plain, decodingContext.Encoding));
+            Equal(10, await stream.ReadByteAsync(StringLengthEncoding.Plain, decodingContext, provider: InvariantCulture));
+            Equal(11, await stream.ReadSByteAsync(StringLengthEncoding.Plain, decodingContext, provider: InvariantCulture));
+            Equal(g, await stream.ReadGuidAsync(StringLengthEncoding.Plain, decodingContext));
+            Equal(g, await stream.ReadGuidAsync(StringLengthEncoding.Plain, decodingContext, "X"));
+            Equal(dt, await stream.ReadDateTimeAsync(StringLengthEncoding.Plain, decodingContext, style: DateTimeStyles.RoundtripKind, provider: InvariantCulture));
+            Equal(dto, await stream.ReadDateTimeOffsetAsync(StringLengthEncoding.Plain, decodingContext, style: DateTimeStyles.RoundtripKind, provider: InvariantCulture));
+            Equal(dt, await stream.ReadDateTimeAsync(StringLengthEncoding.Plain, decodingContext, formats: new[] { "O" }, style: DateTimeStyles.RoundtripKind, provider: InvariantCulture));
+            Equal(dto, await stream.ReadDateTimeOffsetAsync(StringLengthEncoding.Plain, decodingContext, formats: new[] { "O" }, style: DateTimeStyles.RoundtripKind, provider: InvariantCulture));
+            Equal(42.5M, await stream.ReadDecimalAsync(StringLengthEncoding.Plain, decodingContext, provider: InvariantCulture));
+            Equal(32.2F, await stream.ReadSingleAsync(StringLengthEncoding.Plain, decodingContext, provider: InvariantCulture));
+            Equal(56.6D, await stream.ReadDoubleAsync(StringLengthEncoding.Plain, decodingContext, provider: InvariantCulture));
         }
     }
 }
