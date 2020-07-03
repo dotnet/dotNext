@@ -460,7 +460,7 @@ namespace DotNext.IO
                 {
                     return new ValueTask<T>(Read<T>());
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     result = Task.FromException<T>(e);
                 }

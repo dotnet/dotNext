@@ -72,7 +72,7 @@ namespace DotNext.IO
                 {
                     Write(buffer.Span);
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     result = Task.FromException(e);
                 }
@@ -96,7 +96,7 @@ namespace DotNext.IO
                 {
                     Write(new ReadOnlySpan<byte>(buffer, offset, count));
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     result = Task.FromException(e);
                 }
@@ -110,14 +110,8 @@ namespace DotNext.IO
 
         private static void EndWrite(Task task)
         {
-            try
-            {
+            using (task)
                 task.ConfigureAwait(false).GetAwaiter().GetResult();
-            }
-            finally
-            {
-                task.Dispose();
-            }
         }
 
         public override void EndWrite(IAsyncResult ar) => EndWrite((Task)ar);

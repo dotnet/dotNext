@@ -433,14 +433,8 @@ namespace DotNext.IO
 
         private static void EndWrite(Task task)
         {
-            try
-            {
+            using (task)
                 task.ConfigureAwait(false).GetAwaiter().GetResult();
-            }
-            finally
-            {
-                task.Dispose();
-            }
         }
 
         /// <inheritdoc/>
