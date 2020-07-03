@@ -51,6 +51,17 @@ namespace DotNext.Buffers
         {
         }
 
+        /// <summary>
+        /// Initializes a new writer with the specified initial capacity and <see cref="ArrayPool{T}.Shared"/>
+        /// as the array pooling mechanism.
+        /// </summary>
+        /// <param name="initialCapacity">The initial capacity of the writer.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="initialCapacity"/> is less than or equal to zero.</exception>
+        public PooledArrayBufferWriter(int initialCapacity)
+            : this(ArrayPool<T>.Shared, initialCapacity)
+        {
+        }
+
         /// <inheritdoc/>
         int ICollection<T>.Count => WrittenCount;
 

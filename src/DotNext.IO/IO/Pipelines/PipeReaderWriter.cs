@@ -16,7 +16,7 @@ namespace DotNext.IO.Pipelines
     {
         private readonly PipeReader input;
 
-        internal PipeBinaryReader(PipeReader reader) => input = reader;
+        internal PipeBinaryReader(PipeReader reader) => input = reader ?? throw new ArgumentNullException(nameof(reader));
 
         public ValueTask<T> ReadAsync<T>(CancellationToken token)
             where T : unmanaged
@@ -95,7 +95,7 @@ namespace DotNext.IO.Pipelines
 
         internal PipeBinaryWriter(PipeWriter writer, int stringLengthThreshold = -1, int encodingBufferSize = 0)
         {
-            output = writer;
+            output = writer ?? throw new ArgumentNullException(nameof(writer));
             this.stringLengthThreshold = stringLengthThreshold;
             stringEncodingBufferSize = encodingBufferSize;
         }
@@ -108,7 +108,7 @@ namespace DotNext.IO.Pipelines
             static async ValueTask WriteAsync(PipeWriter output, T value, CancellationToken token)
             {
                 var result = await output.WriteAsync(value, token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested();
+                result.ThrowIfCancellationRequested(token);
             }
         }
 
@@ -119,7 +119,7 @@ namespace DotNext.IO.Pipelines
             static async ValueTask WriteAsync(PipeWriter output, ReadOnlyMemory<byte> input, CancellationToken token)
             {
                 var result = await output.WriteAsync(input, token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested();
+                result.ThrowIfCancellationRequested(token);
             }
         }
 
@@ -159,7 +159,7 @@ namespace DotNext.IO.Pipelines
             static async ValueTask WriteAsync(PipeWriter output, short value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
             {
                 var result = await output.WriteInt16Async(value, lengthFormat, context, format, provider, token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested();
+                result.ThrowIfCancellationRequested(token);
             }
         }
 
@@ -181,7 +181,7 @@ namespace DotNext.IO.Pipelines
             static async ValueTask WriteAsync(PipeWriter output, long value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
             {
                 var result = await output.WriteInt64Async(value, lengthFormat, context, format, provider, token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested();
+                result.ThrowIfCancellationRequested(token);
             }
         }
 
@@ -192,7 +192,7 @@ namespace DotNext.IO.Pipelines
             static async ValueTask WriteAsync(PipeWriter output, float value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
             {
                 var result = await output.WriteSingleAsync(value, lengthFormat, context, format, provider, token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested();
+                result.ThrowIfCancellationRequested(token);
             }
         }
 
@@ -203,7 +203,7 @@ namespace DotNext.IO.Pipelines
             static async ValueTask WriteAsync(PipeWriter output, double value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
             {
                 var result = await output.WriteDoubleAsync(value, lengthFormat, context, format, provider, token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested();
+                result.ThrowIfCancellationRequested(token);
             }
         }
 
@@ -214,7 +214,7 @@ namespace DotNext.IO.Pipelines
             static async ValueTask WriteAsync(PipeWriter output, decimal value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
             {
                 var result = await output.WriteDecimalAsync(value, lengthFormat, context, format, provider, token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested();
+                result.ThrowIfCancellationRequested(token);
             }
         }
 
@@ -225,7 +225,7 @@ namespace DotNext.IO.Pipelines
             static async ValueTask WriteAsync(PipeWriter output, Guid value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, CancellationToken token)
             {
                 var result = await output.WriteGuidAsync(value, lengthFormat, context, format, token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested();
+                result.ThrowIfCancellationRequested(token);
             }
         }
 
@@ -236,7 +236,7 @@ namespace DotNext.IO.Pipelines
             static async ValueTask WriteAsync(PipeWriter output, DateTime value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
             {
                 var result = await output.WriteDateTimeAsync(value, lengthFormat, context, format, provider, token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested();
+                result.ThrowIfCancellationRequested(token);
             }
         }
 
@@ -247,7 +247,7 @@ namespace DotNext.IO.Pipelines
             static async ValueTask WriteAsync(PipeWriter output, DateTimeOffset value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
             {
                 var result = await output.WriteDateTimeOffsetAsync(value, lengthFormat, context, format, provider, token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested();
+                result.ThrowIfCancellationRequested(token);
             }
         }
 
@@ -258,7 +258,7 @@ namespace DotNext.IO.Pipelines
             static async ValueTask WriteAsync(PipeWriter output, short value, bool littleEndian, CancellationToken token)
             {
                 var result = await output.WriteInt16Async(value, littleEndian, token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested();
+                result.ThrowIfCancellationRequested(token);
             }
         }
 
@@ -269,7 +269,7 @@ namespace DotNext.IO.Pipelines
             static async ValueTask WriteAsync(PipeWriter output, int value, bool littleEndian, CancellationToken token)
             {
                 var result = await output.WriteInt32Async(value, littleEndian, token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested();
+                result.ThrowIfCancellationRequested(token);
             }
         }
 
@@ -280,7 +280,7 @@ namespace DotNext.IO.Pipelines
             static async ValueTask WriteAsync(PipeWriter output, long value, bool littleEndian, CancellationToken token)
             {
                 var result = await output.WriteInt64Async(value, littleEndian, token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested();
+                result.ThrowIfCancellationRequested(token);
             }
         }
 

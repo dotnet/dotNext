@@ -1013,5 +1013,28 @@ namespace DotNext.IO.Pipelines
 
             return count;
         }
+
+        /// <summary>
+        /// Copies the data from the pipe to the buffer.
+        /// </summary>
+        /// <param name="reader">The pipe to read from.</param>
+        /// <param name="destination">The buffer writer used as destination.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The number of copied bytes.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static async Task<long> CopyToAsync(this PipeReader reader, IBufferWriter<byte> destination, CancellationToken token = default)
+        {
+            ReadResult result;
+            var count = 0L;
+            do
+            {
+                result = await reader.ReadAsync(token).ConfigureAwait(false);
+                result.ThrowIfCancellationRequested(token);
+                count += destination.Write(result.Buffer, token);
+            }
+            while (!result.IsCompleted);
+
+            return count;
+        }
     }
 }

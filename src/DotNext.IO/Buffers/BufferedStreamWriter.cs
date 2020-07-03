@@ -27,7 +27,8 @@ namespace DotNext.Buffers
             if (sizeHint > buffer.Length - position)
             {
                 buffer.Dispose();
-                buffer = allocator(sizeHint);
+                position = 0;
+                buffer = allocator.Invoke(sizeHint, false);
             }
 
             return buffer.Memory.Slice(position);

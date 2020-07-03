@@ -74,6 +74,7 @@ namespace DotNext.IO
         {
             if (writer is IFlushable)
             {
+                // TODO: Should be replaced with function pointer in C# 9
                 flush ??= CreateFlushAction(writer);
                 flushAsync ??= CreateAsyncFlushAction(writer);
             }

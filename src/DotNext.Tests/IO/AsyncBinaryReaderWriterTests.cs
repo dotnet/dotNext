@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Pipelines;
@@ -12,6 +13,7 @@ namespace DotNext.IO
 {
     using Text;
     using ChunkSequence = Buffers.ChunkSequence<byte>;
+    using static Buffers.MemoryAllocator;
 
     public sealed class AsyncBinaryReaderWriterTests : Test
     {
@@ -20,6 +22,17 @@ namespace DotNext.IO
             IAsyncBinaryWriter CreateWriter();
 
             IAsyncBinaryReader CreateReader();
+        }
+
+        private sealed class BufferSource : IAsyncBinaryReaderWriterSource
+        {
+            private readonly MemoryStream stream = new MemoryStream();
+
+            public IAsyncBinaryWriter CreateWriter() => IAsyncBinaryWriter.Create(stream.AsBufferWriter(ArrayPool<byte>.Shared.ToAllocator()));
+
+            public IAsyncBinaryReader CreateReader() => IAsyncBinaryReader.Create(stream.ToArray());
+            
+            ValueTask IAsyncDisposable.DisposeAsync() => stream.DisposeAsync();
         }
 
         private sealed class StreamSource : IAsyncBinaryReaderWriterSource
@@ -93,6 +106,8 @@ namespace DotNext.IO
             yield return new object[] { new StreamSource(), false, Encoding.UTF8 };
             yield return new object[] { new PipeSource(), true, Encoding.UTF8 };
             yield return new object[] { new PipeSource(), false, Encoding.UTF8 };
+            yield return new object[] { new BufferSource(), true, Encoding.UTF8 };
+            yield return new object[] { new BufferSource(), false, Encoding.UTF8 };
             yield return new object[] { new PipeSourceWithSettings(), true, Encoding.UTF8 };
             yield return new object[] { new PipeSourceWithSettings(), false, Encoding.UTF8 };
             yield return new object[] { new ReadOnlySequenceSource(), true, Encoding.UTF8 };
@@ -102,6 +117,8 @@ namespace DotNext.IO
             yield return new object[] { new StreamSource(), false, Encoding.Unicode };
             yield return new object[] { new PipeSource(), true, Encoding.Unicode };
             yield return new object[] { new PipeSource(), false, Encoding.Unicode };
+            yield return new object[] { new BufferSource(), true, Encoding.Unicode };
+            yield return new object[] { new BufferSource(), false, Encoding.Unicode };
             yield return new object[] { new PipeSourceWithSettings(), true, Encoding.Unicode };
             yield return new object[] { new PipeSourceWithSettings(), false, Encoding.Unicode };
             yield return new object[] { new ReadOnlySequenceSource(), true, Encoding.Unicode };
@@ -180,6 +197,18 @@ namespace DotNext.IO
             yield return new object[] { new StreamSource(), Encoding.UTF7, StringLengthEncoding.PlainBigEndian };
             yield return new object[] { new StreamSource(), Encoding.UTF7, StringLengthEncoding.PlainLittleEndian };
             yield return new object[] { new StreamSource(), Encoding.UTF7, null };
+
+            yield return new object[] { new BufferSource(), Encoding.UTF8, StringLengthEncoding.Compressed };
+            yield return new object[] { new BufferSource(), Encoding.UTF8, StringLengthEncoding.Plain };
+            yield return new object[] { new BufferSource(), Encoding.UTF8, StringLengthEncoding.PlainBigEndian };
+            yield return new object[] { new BufferSource(), Encoding.UTF8, StringLengthEncoding.PlainLittleEndian };
+            yield return new object[] { new BufferSource(), Encoding.UTF8, null };
+
+            yield return new object[] { new BufferSource(), Encoding.UTF7, StringLengthEncoding.Compressed };
+            yield return new object[] { new BufferSource(), Encoding.UTF7, StringLengthEncoding.Plain };
+            yield return new object[] { new BufferSource(), Encoding.UTF7, StringLengthEncoding.PlainBigEndian };
+            yield return new object[] { new BufferSource(), Encoding.UTF7, StringLengthEncoding.PlainLittleEndian };
+            yield return new object[] { new BufferSource(), Encoding.UTF7, null };
 
             yield return new object[] { new PipeSource(), Encoding.UTF8, StringLengthEncoding.Compressed };
             yield return new object[] { new PipeSource(), Encoding.UTF8, StringLengthEncoding.Plain };

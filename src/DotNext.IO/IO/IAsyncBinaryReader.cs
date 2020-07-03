@@ -334,6 +334,8 @@ namespace DotNext.IO
         /// <param name="input">The stream to be wrapped into the reader.</param>
         /// <param name="buffer">The buffer used for decoding data from the stream.</param>
         /// <returns>The stream reader.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="input"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> is empty.</exception>
         public static IAsyncBinaryReader Create(Stream input, Memory<byte> buffer) => new AsyncStreamBinaryReader(input, buffer);
 
         /// <summary>
@@ -360,6 +362,7 @@ namespace DotNext.IO
         /// </remarks>
         /// <param name="reader">The pipe reader.</param>
         /// <returns>The binary reader.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="reader"/> is <see langword="null"/>.</exception>
         public static IAsyncBinaryReader Create(PipeReader reader) => new Pipelines.PipeBinaryReader(reader);
     }
 }

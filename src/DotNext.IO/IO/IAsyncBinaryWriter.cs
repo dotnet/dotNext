@@ -9,6 +9,7 @@ namespace DotNext.IO
 {
     using static Buffers.BufferReader;
     using EncodingContext = Text.EncodingContext;
+    using IFlushableBufferWriter = Buffers.IFlushableBufferWriter<byte>;
 
     /// <summary>
     /// Providers a uniform way to encode the data.
@@ -262,6 +263,8 @@ namespace DotNext.IO
         /// <param name="output">The stream instance.</param>
         /// <param name="buffer">The buffer used for encoding binary data.</param>
         /// <returns>The stream writer.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="output"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> is empty.</exception>
         public static IAsyncBinaryWriter Create(Stream output, Memory<byte> buffer)
             => new AsyncStreamBinaryWriter(output, buffer);
 
@@ -275,6 +278,7 @@ namespace DotNext.IO
         /// </remarks>
         /// <param name="output">The stream instance.</param>
         /// <returns>The binary writer.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="output"/> is <see langword="null"/>.</exception>
         public static IAsyncBinaryWriter Create(PipeWriter output)
             => new Pipelines.PipeBinaryWriter(output);
 
@@ -290,6 +294,7 @@ namespace DotNext.IO
         /// </param>
         /// <param name="encodingBufferSize">The size of internal buffer used to encode characters.</param>
         /// <returns>The binary writer.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="output"/> is <see langword="null"/>.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="encodingBufferSize"/> or <paramref name="stringLengthThreshold"/> is less than zero.</exception>
         public static IAsyncBinaryWriter Create(PipeWriter output, int stringLengthThreshold, int encodingBufferSize)
         {
@@ -300,5 +305,14 @@ namespace DotNext.IO
 
             return new Pipelines.PipeBinaryWriter(output, stringLengthThreshold, encodingBufferSize);
         }
+
+        /// <summary>
+        /// Creates default implementation of binary writer for the buffer writer.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <returns>The binary writer.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="writer"/> is <see langword="null"/>.</exception>
+        public static IAsyncBinaryWriter Create(IFlushableBufferWriter writer)
+            => new AsyncBufferWriter(writer);
     }
 }

@@ -21,7 +21,9 @@ namespace DotNext.IO
 
         internal AsyncStreamBinaryReader(Stream input, Memory<byte> buffer)
         {
-            this.input = input;
+            if (buffer.IsEmpty)
+                throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
+            this.input = input ?? throw new ArgumentNullException(nameof(input));
             this.buffer = buffer;
         }
 
@@ -92,7 +94,9 @@ namespace DotNext.IO
 
         internal AsyncStreamBinaryWriter(Stream output, Memory<byte> buffer)
         {
-            this.output = output;
+            if (buffer.IsEmpty)
+                throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
+            this.output = output ?? throw new ArgumentNullException(nameof(output));
             this.buffer = buffer;
         }
 

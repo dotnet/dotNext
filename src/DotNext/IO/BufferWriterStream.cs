@@ -59,20 +59,50 @@ namespace DotNext.IO
 
         public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken token)
         {
-            if (token.IsCancellationRequested)
-                return new ValueTask(Task.FromCanceled(token));
+            Task result;
 
-            Write(buffer.Span);
-            return new ValueTask();
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled(token);
+            }
+            else
+            {
+                result = Task.CompletedTask;
+                try
+                {
+                    Write(buffer.Span);
+                }
+                catch(Exception e)
+                {
+                    result = Task.FromException(e);
+                }
+            }
+
+            return new ValueTask(result);
         }
 
         public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken token)
         {
-            if (token.IsCancellationRequested)
-                return Task.FromCanceled(token);
+            Task result;
 
-            Write(new ReadOnlySpan<byte>(buffer, offset, count));
-            return Task.CompletedTask;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled(token);
+            }
+            else
+            {
+                result = Task.CompletedTask;
+                try
+                {
+                    Write(new ReadOnlySpan<byte>(buffer, offset, count));
+                }
+                catch(Exception e)
+                {
+                    result = Task.FromException(e);
+                }
+            }
+
+            return result;
         }
 
         public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)

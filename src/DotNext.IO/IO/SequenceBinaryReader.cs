@@ -447,17 +447,51 @@ namespace DotNext.IO
 
         /// <inheritdoc/>
         ValueTask<T> IAsyncBinaryReader.ReadAsync<T>(CancellationToken token)
-            => token.IsCancellationRequested ?
-                new ValueTask<T>(Task.FromCanceled<T>(token)) :
-                new ValueTask<T>(Read<T>());
+        {
+            Task<T> result;
+
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled<T>(token);
+            }
+            else
+            {
+                try
+                {
+                    return new ValueTask<T>(Read<T>());
+                }
+                catch(Exception e)
+                {
+                    result = Task.FromException<T>(e);
+                }
+            }
+
+            return new ValueTask<T>(result);
+        }
 
         /// <inheritdoc/>
         ValueTask IAsyncBinaryReader.ReadAsync(Memory<byte> output, CancellationToken token)
         {
+            Task result;
+
             if (token.IsCancellationRequested)
-                return new ValueTask(Task.FromCanceled(token));
-            Read(output);
-            return new ValueTask();
+            {
+                result = Task.FromCanceled(token);
+            }
+            else
+            {
+                result = Task.CompletedTask;
+                try
+                {
+                    Read(output);
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException(e);
+                }
+            }
+
+            return new ValueTask(result);
         }
 
         /// <inheritdoc/>
