@@ -1,9 +1,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
-using static InlineIL.IL;
-using static InlineIL.IL.Emit;
-using RuntimeHelpers = System.Runtime.CompilerServices.RuntimeHelpers;
-using Var = InlineIL.LocalVar;
+using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext
 {
@@ -81,25 +78,7 @@ namespace DotNext
         /// <returns>The managed pointer to the first character in the string.</returns>
         [Obsolete("Use String.GetPinnableReference method instead")]
         public static unsafe ref readonly char GetRawData(this string str)
-        {
-            const string pinnedString = "pinnedStr";
-            const string charRef = "charRef";
-            const string methodExit = "exit";
-            DeclareLocals(true, new Var(pinnedString, typeof(string)).Pinned(), new Var(charRef, typeof(char).MakeByRefType()));
-            Push(str);
-            Stloc(pinnedString);
-            Ldloc(pinnedString);
-            Conv_U();
-            Dup();
-            Brfalse(methodExit);
-            Push(RuntimeHelpers.OffsetToStringData);
-            Conv_U();
-            Add();
-            MarkLabel(methodExit);
-            Stloc(charRef);
-            Ldloc(charRef);
-            return ref ReturnRef<char>();
-        }
+            => ref GetReference(str.AsSpan());
 
         /// <summary>
         /// Extracts substring from the given string.
