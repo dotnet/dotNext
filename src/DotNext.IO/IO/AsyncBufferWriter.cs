@@ -55,6 +55,29 @@ namespace DotNext.IO
         Task IAsyncBinaryWriter.CopyFromAsync(PipeReader input, CancellationToken token)
             => input.CopyToAsync(writer, token);
 
+        Task IAsyncBinaryWriter.WriteAsync(ReadOnlySequence<byte> input, CancellationToken token)
+        {
+            Task result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled(token);
+            }
+            else
+            {
+                result = Task.CompletedTask;
+                try
+                {
+                    writer.Write(input, token);
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException(e);
+                }
+            }
+
+            return result;
+        }
+
         ValueTask IAsyncBinaryWriter.WriteAsync<T>(T value, CancellationToken token)
         {
             Task result;

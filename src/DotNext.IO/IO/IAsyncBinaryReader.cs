@@ -324,6 +324,20 @@ namespace DotNext.IO
         Task CopyToAsync(PipeWriter output, CancellationToken token = default);
 
         /// <summary>
+        /// Copies the content to the specified buffer.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="token">The token that can be used to cancel operation.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        async Task CopyToAsync(IBufferWriter<byte> writer, CancellationToken token = default)
+        {
+            using var stream = writer.AsStream();
+            await CopyToAsync(stream, token).ConfigureAwait(false);
+            await stream.FlushAsync(token).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Creates default implementation of binary reader for the stream.
         /// </summary>
         /// <remarks>

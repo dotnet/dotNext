@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.IO;
 using System.IO.Pipelines;
 using System.Threading;
@@ -251,6 +252,21 @@ namespace DotNext.IO
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         Task CopyFromAsync(PipeReader input, CancellationToken token = default);
+
+        /// <summary>
+        /// Writes the content from the specified sequence of bytes.
+        /// </summary>
+        /// <param name="input">The sequence of bytes to read from.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing state of asynchronous execution.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        async Task WriteAsync(ReadOnlySequence<byte> input, CancellationToken token = default)
+        {
+            for (var position = input.Start; input.TryGet(ref position, out var block); token.ThrowIfCancellationRequested())
+            {
+                await WriteAsync(block, token).ConfigureAwait(false);
+            }
+        }
 
         /// <summary>
         /// Creates default implementation of binary writer for the stream.

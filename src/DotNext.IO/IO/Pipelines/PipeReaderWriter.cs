@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.Globalization;
 using System.IO;
 using System.IO.Pipelines;
@@ -84,6 +85,9 @@ namespace DotNext.IO.Pipelines
 
         Task IAsyncBinaryReader.CopyToAsync(PipeWriter output, CancellationToken token)
             => input.CopyToAsync(output, token);
+
+        Task IAsyncBinaryReader.CopyToAsync(IBufferWriter<byte> writer, CancellationToken token)
+            => input.CopyToAsync(writer, token);
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -289,5 +293,8 @@ namespace DotNext.IO.Pipelines
 
         Task IAsyncBinaryWriter.CopyFromAsync(PipeReader input, CancellationToken token)
             => input.CopyToAsync(output, token);
+
+        Task IAsyncBinaryWriter.WriteAsync(ReadOnlySequence<byte> input, CancellationToken token)
+            => output.WriteAsync(input, token).AsTask();
     }
 }

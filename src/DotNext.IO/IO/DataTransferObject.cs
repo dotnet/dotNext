@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 namespace DotNext.IO
 {
     using ByteBuffer = Buffers.ArrayRental<byte>;
+    using ByteBufferWriter = Buffers.PooledArrayBufferWriter<byte>;
     using PipeBinaryWriter = Pipelines.PipeBinaryWriter;
 
     /// <summary>
@@ -36,24 +37,14 @@ namespace DotNext.IO
                 this.capacity = capacity;
             }
 
-            private static string ReadAsString(MemoryStream content, Encoding encoding)
-            {
-                if (content.Length == 0L)
-                    return string.Empty;
-                if (!content.TryGetBuffer(out var buffer))
-                    buffer = new ArraySegment<byte>(content.ToArray());
-                return encoding.GetString(buffer.AsSpan());
-            }
-
             public async ValueTask<string> ReadAsync<TReader>(TReader reader, CancellationToken token)
                 where TReader : IAsyncBinaryReader
             {
-                using var ms = capacity.HasValue ?
-                    new RentedMemoryStream(capacity.GetValueOrDefault()) :
-                    new MemoryStream(DefaultBufferSize);
-                await reader.CopyToAsync(ms, token).ConfigureAwait(false);
-                ms.Seek(0, SeekOrigin.Begin);
-                return ReadAsString(ms, encoding);
+                using var writer = capacity.HasValue ?
+                    new ByteBufferWriter(capacity.GetValueOrDefault()) :
+                    new ByteBufferWriter();
+                await reader.CopyToAsync(writer, token).ConfigureAwait(false);
+                return writer.WrittenCount == 0 ? string.Empty : encoding.GetString(writer.WrittenMemory.Span);
             }
         }
 

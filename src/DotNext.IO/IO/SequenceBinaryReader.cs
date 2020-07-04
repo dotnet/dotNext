@@ -920,5 +920,29 @@ namespace DotNext.IO
         /// <inheritdoc/>
         Task IAsyncBinaryReader.CopyToAsync(PipeWriter output, CancellationToken token)
             => output.WriteAsync(sequence.Slice(position), token).AsTask();
+
+        /// <inheritdoc/>
+        Task IAsyncBinaryReader.CopyToAsync(IBufferWriter<byte> writer, CancellationToken token)
+        {
+            Task result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled(token);
+            }
+            else
+            {
+                result = Task.CompletedTask;
+                try
+                {
+                    writer.Write(sequence.Slice(position), token);
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException(e);
+                }
+            }
+
+            return result;
+        }
     }
 }
