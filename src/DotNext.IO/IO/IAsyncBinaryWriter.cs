@@ -18,6 +18,7 @@ namespace DotNext.IO
     /// <seealso cref="IAsyncBinaryReader"/>
     public interface IAsyncBinaryWriter
     {
+        // TODO: WriteAsync(ReadOnlySequence<byte>) must be primary method
         /// <summary>
         /// Encodes value of blittable type.
         /// </summary>
