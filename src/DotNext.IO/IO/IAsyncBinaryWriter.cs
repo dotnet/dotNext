@@ -18,7 +18,6 @@ namespace DotNext.IO
     /// <seealso cref="IAsyncBinaryReader"/>
     public interface IAsyncBinaryWriter
     {
-        // TODO: WriteAsync(ReadOnlySequence<byte>) must be primary method
         /// <summary>
         /// Encodes value of blittable type.
         /// </summary>
@@ -28,7 +27,7 @@ namespace DotNext.IO
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         ValueTask WriteAsync<T>(T value, CancellationToken token = default)
-            where T : unmanaged;
+            where T : unmanaged;    // TODO: WriteAsync(ReadOnlySequence<byte>) must be a primary method
 
         private ValueTask WriteAsync<T>(T value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
             where T : struct, IFormattable
