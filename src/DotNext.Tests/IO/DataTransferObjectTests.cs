@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,16 +25,28 @@ namespace DotNext.IO
         [Fact]
         public static async Task MemoryDTO()
         {
-            IDataTransferObject dto = new BinaryTransferObject(new byte[] { 1, 2, 3 });
+            byte[] content = {1, 2, 3};
+            IDataTransferObject dto = new BinaryTransferObject(content);
             Equal(3L, dto.Length);
             True(dto.IsReusable);
             using var ms = new MemoryStream();
             await dto.WriteToAsync(ms);
             Equal(3, ms.Length);
-            var bytes = await dto.ToByteArrayAsync();
-            Equal(1, bytes[0]);
-            Equal(2, bytes[1]);
-            Equal(3, bytes[2]);
+            Equal(content, ms.ToArray());
+            Equal(content, await dto.ToByteArrayAsync());
+        }
+
+        [Fact]
+        public static async Task MemoryDTO2()
+        {
+            byte[] content = { 1, 2, 3 };
+            IDataTransferObject dto = new BinaryTransferObject(content);
+            Equal(3L, dto.Length);
+            True(dto.IsReusable);
+            var writer = new ArrayBufferWriter<byte>();
+            await dto.WriteToAsync(writer);
+            Equal(3, writer.WrittenCount);
+            Equal(content, writer.WrittenSpan.ToArray());
         }
 
         [Fact]
