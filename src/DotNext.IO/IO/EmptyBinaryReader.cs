@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.IO;
 using System.IO.Pipelines;
 using System.Threading;
@@ -33,6 +34,9 @@ namespace DotNext.IO
             => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.CompletedTask;
 
         public Task CopyToAsync(PipeWriter output, CancellationToken token)
+            => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.CompletedTask;
+
+        Task IAsyncBinaryReader.CopyToAsync(IBufferWriter<byte> writer, CancellationToken token)
             => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.CompletedTask;
     }
 }
