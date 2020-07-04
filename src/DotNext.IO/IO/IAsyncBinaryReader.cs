@@ -350,7 +350,7 @@ namespace DotNext.IO
         /// </summary>
         /// <param name="memory">The block of memory.</param>
         /// <returns>The binary reader for the memory block.</returns>
-        public static SequenceBinaryReader Create(ReadOnlyMemory<byte> memory) => Create(new ReadOnlySequence<byte>(memory));
+        public static SequenceBinaryReader Create(ReadOnlyMemory<byte> memory) => new SequenceBinaryReader(memory);
 
         /// <summary>
         /// Creates default implementation of binary reader for the specifed pipe reader.

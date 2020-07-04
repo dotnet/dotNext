@@ -128,7 +128,7 @@ namespace DotNext.IO
             using (writer)
             {
                 await WriteToAsync(new AsyncBufferWriter(writer), token).ConfigureAwait(false);
-                return await parser.ReadAsync(IAsyncBinaryReader.Create(writer.WrittenMemory), token).ConfigureAwait(false);
+                return await parser.ReadAsync(new SequenceBinaryReader(writer.WrittenMemory), token).ConfigureAwait(false);
             }
         }
     }

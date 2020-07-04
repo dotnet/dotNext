@@ -28,6 +28,11 @@ namespace DotNext.IO
             position = sequence.Start;
         }
 
+        internal SequenceBinaryReader(ReadOnlyMemory<byte> memory)
+            : this(new ReadOnlySequence<byte>(memory))
+        {
+        }
+
         /// <summary>
         /// Resets the reader so it can be used again.
         /// </summary>
