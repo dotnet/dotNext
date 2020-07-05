@@ -175,6 +175,54 @@ namespace DotNext.IO.Pipelines
             => ReadAsync<T, ValueReader<T>>(reader, new ValueReader<T>(), token);
 
         /// <summary>
+        /// Reads the entire content using the specified delegate.
+        /// </summary>
+        /// <typeparam name="TArg">The type of the argument to be passed to the content reader.</typeparam>
+        /// <param name="reader">The pipe to read from.</param>
+        /// <param name="consumer">The content reader.</param>
+        /// <param name="arg">The argument to be passed to the content reader.</param>
+        /// <param name="token">The token that can be used to cancel operation.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static async Task ReadAsync<TArg>(this PipeReader reader, ReadOnlySpanAction<byte, TArg> consumer, TArg arg, CancellationToken token = default)
+        {
+            ReadResult result;
+            do
+            {
+                result = await reader.ReadAsync(token).ConfigureAwait(false);
+                result.ThrowIfCancellationRequested();
+                var buffer = result.Buffer;
+                for (var position = buffer.Start; buffer.TryGet(ref position, out var block); reader.AdvanceTo(position), token.ThrowIfCancellationRequested())
+                    consumer(block.Span, arg);
+            }
+            while(!result.IsCompleted);
+        }
+
+        /// <summary>
+        /// Reads the entire content using the specified delegate.
+        /// </summary>
+        /// <typeparam name="TArg">The type of the argument to be passed to the content reader.</typeparam>
+        /// <param name="reader">The pipe to read from.</param>
+        /// <param name="consumer">The content reader.</param>
+        /// <param name="arg">The argument to be passed to the content reader.</param>
+        /// <param name="token">The token that can be used to cancel operation.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static async Task ReadAsync<TArg>(this PipeReader reader, Func<ReadOnlyMemory<byte>, TArg, CancellationToken, ValueTask> consumer, TArg arg, CancellationToken token = default)
+        {
+            ReadResult result;
+            do
+            {
+                result = await reader.ReadAsync(token).ConfigureAwait(false);
+                result.ThrowIfCancellationRequested();
+                var buffer = result.Buffer;
+                for (var position = buffer.Start; buffer.TryGet(ref position, out var block); reader.AdvanceTo(position))
+                    await consumer(block, arg, token);
+            }
+            while(!result.IsCompleted);
+        }
+
+        /// <summary>
         /// Decodes 64-bit signed integer using the specified endianness.
         /// </summary>
         /// <param name="reader">The pipe reader.</param>

@@ -88,6 +88,12 @@ namespace DotNext.IO.Pipelines
 
         Task IAsyncBinaryReader.CopyToAsync(IBufferWriter<byte> writer, CancellationToken token)
             => input.CopyToAsync(writer, token);
+
+        Task IAsyncBinaryReader.CopyToAsync<TArg>(ReadOnlySpanAction<byte, TArg> consumer, TArg arg, CancellationToken token)
+            => input.ReadAsync(consumer, arg, token);
+
+        Task IAsyncBinaryReader.CopyToAsync<TArg>(Func<ReadOnlyMemory<byte>, TArg, CancellationToken, ValueTask> consumer, TArg arg, CancellationToken token)
+            => input.ReadAsync(consumer, arg, token);
     }
 
     [StructLayout(LayoutKind.Auto)]
