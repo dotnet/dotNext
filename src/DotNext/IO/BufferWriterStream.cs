@@ -9,19 +9,20 @@ namespace DotNext.IO
 {
     using static Threading.AsyncDelegate;
 
-    internal sealed class BufferWriterStream<TWriter> : Stream
-        where TWriter : class, IBufferWriter<byte>
+    internal sealed class BufferWriterStream<TArg> : Stream
     {
-        private readonly TWriter writer;
-        private readonly Action<TWriter>? flush;
-        private readonly Func<TWriter, CancellationToken, Task>? flushAsync;
+        private readonly TArg argument;
+        private readonly ReadOnlySpanAction<byte, TArg> writer;
+        private readonly Action<TArg>? flush;
+        private readonly Func<TArg, CancellationToken, Task>? flushAsync;
         private long writtenBytes;
 
-        internal BufferWriterStream(TWriter writer, Action<TWriter>? flush, Func<TWriter, CancellationToken, Task>? flushAsync)
+        internal BufferWriterStream(ReadOnlySpanAction<byte, TArg> writer, TArg arg, Action<TArg>? flush, Func<TArg, CancellationToken, Task>? flushAsync)
         {
             this.writer = writer;
             this.flush = flush;
             this.flushAsync = flushAsync;
+            this.argument = arg;
         }
 
         public override bool CanRead => false;
@@ -49,7 +50,7 @@ namespace DotNext.IO
             if (buffer.IsEmpty)
                 return;
 
-            writer.Write(buffer);
+            writer(buffer, argument);
             writtenBytes += buffer.Length;
         }
 
@@ -126,11 +127,11 @@ namespace DotNext.IO
             if (flush is null)
             {
                 if (flushAsync != null)
-                    flushAsync(writer, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
+                    flushAsync(argument, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
             }
             else
             {
-                flush(writer);
+                flush(argument);
             }
         }
 
@@ -140,11 +141,11 @@ namespace DotNext.IO
             {
                 return flush is null ?
                     Task.CompletedTask
-                    : Task.Factory.StartNew(() => flush(writer), token, TaskCreationOptions.None, TaskScheduler.Current);
+                    : Task.Factory.StartNew(() => flush(argument), token, TaskCreationOptions.None, TaskScheduler.Current);
             }
             else
             {
-                return flushAsync(writer, token);
+                return flushAsync(argument, token);
             }
         }
 

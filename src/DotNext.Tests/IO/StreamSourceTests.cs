@@ -475,5 +475,20 @@ namespace DotNext.IO
             await writer.FlushAsync();
             Equal(new byte[] { 1, 2, 3 }, ms.ToArray());
         }
+
+        [Fact]
+        public static void SpanActionToStream()
+        {
+            static void WriteToBuffer(ReadOnlySpan<byte> block, ArrayBufferWriter<byte> writer)
+                => writer.Write(block);
+
+            var writer = new ArrayBufferWriter<byte>();
+            ReadOnlySpanAction<byte, ArrayBufferWriter<byte>> callback = WriteToBuffer;
+            using var stream = callback.AsStream(writer);
+            byte[] content = { 1, 2, 3 };
+            stream.Write(content);
+            stream.Flush();
+            Equal(content, writer.WrittenMemory.ToArray());
+        }
     }
 }
