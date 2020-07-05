@@ -9,10 +9,10 @@ using static System.Globalization.CultureInfo;
 
 namespace DotNext.IO
 {
-    using static Buffers.BufferReader;
-    using static Pipelines.ResultExtensions;
     using ByteBuffer = Buffers.ArrayRental<byte>;
     using EncodingContext = Text.EncodingContext;
+    using static Buffers.BufferReader;
+    using static Pipelines.ResultExtensions;
 
     /// <summary>
     /// Providers a uniform way to encode the data.
