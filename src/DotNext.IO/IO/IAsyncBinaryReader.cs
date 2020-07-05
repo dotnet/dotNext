@@ -312,7 +312,7 @@ namespace DotNext.IO
         /// <param name="output">The output stream receiving object content.</param>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        Task CopyToAsync(Stream output, CancellationToken token = default);
+        Task CopyToAsync(Stream output, CancellationToken token = default); // TODO: This method should have default implementation
 
         /// <summary>
         /// Copies the content to the specified pipe writer.
@@ -321,7 +321,7 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel operation.</param>
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        Task CopyToAsync(PipeWriter output, CancellationToken token = default);
+        Task CopyToAsync(PipeWriter output, CancellationToken token = default); // TODO: This method should have default implementation
 
         /// <summary>
         /// Copies the content to the specified buffer.
@@ -348,6 +348,7 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         async Task CopyToAsync<TArg>(ReadOnlySpanAction<byte, TArg> consumer, TArg arg, CancellationToken token = default)
         {
+            // TODO: This method should not have default implementation
             using var stream = consumer.AsStream(arg);
             await CopyToAsync(stream, token).ConfigureAwait(false);
         }
@@ -363,6 +364,7 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         async Task CopyToAsync<TArg>(Func<ReadOnlyMemory<byte>, TArg, CancellationToken, ValueTask> consumer, TArg arg, CancellationToken token = default)
         {
+            // TODO: This method should not have default implementation
             using var stream = consumer.AsStream(arg);
             await CopyToAsync(stream, token).ConfigureAwait(false);
         }

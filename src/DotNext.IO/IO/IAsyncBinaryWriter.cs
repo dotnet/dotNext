@@ -4,13 +4,15 @@ using System.IO;
 using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
+using Unsafe = System.Runtime.CompilerServices.Unsafe;
 using static System.Globalization.CultureInfo;
 
 namespace DotNext.IO
 {
     using static Buffers.BufferReader;
+    using static Pipelines.ResultExtensions;
+    using ByteBuffer = Buffers.ArrayRental<byte>;
     using EncodingContext = Text.EncodingContext;
-    using IFlushableBufferWriter = Buffers.IFlushableBufferWriter<byte>;
 
     /// <summary>
     /// Providers a uniform way to encode the data.
@@ -26,8 +28,13 @@ namespace DotNext.IO
         /// <typeparam name="T">The type of the value to encode.</typeparam>
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        ValueTask WriteAsync<T>(T value, CancellationToken token = default)
-            where T : unmanaged;
+        async ValueTask WriteAsync<T>(T value, CancellationToken token = default)
+            where T : unmanaged
+        {
+            using var buffer = new ByteBuffer(Unsafe.SizeOf<T>());
+            Span.AsReadOnlyBytes(value).CopyTo(buffer.Span);
+            await WriteAsync(buffer.Memory, token).ConfigureAwait(false);
+        }
 
         private ValueTask WriteAsync<T>(T value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
             where T : struct, IFormattable
@@ -242,7 +249,13 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        Task CopyFromAsync(Stream input, CancellationToken token = default);
+        async Task CopyFromAsync(Stream input, CancellationToken token = default)
+        {
+            const int defaultBufferSize = 512;
+            using var buffer = new ByteBuffer(defaultBufferSize);
+            for (int count; (count = await input.ReadAsync(buffer.Memory, token).ConfigureAwait(false)) > 0; )
+                await WriteAsync(buffer.Memory.Slice(0, count), token).ConfigureAwait(false);
+        }
 
         /// <summary>
         /// Writes the content from the specified pipe.
@@ -251,7 +264,19 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        Task CopyFromAsync(PipeReader input, CancellationToken token = default);
+        async Task CopyFromAsync(PipeReader input, CancellationToken token = default)
+        {
+            ReadResult result;
+            do
+            {
+                result = await input.ReadAsync(token).ConfigureAwait(false);
+                result.ThrowIfCancellationRequested();
+                var buffer = result.Buffer;
+                for (SequencePosition position = buffer.Start; buffer.TryGet(ref position, out var block); input.AdvanceTo(position))
+                    await WriteAsync(block, token).ConfigureAwait(false);
+            }
+            while (!result.IsCompleted);
+        }
 
         /// <summary>
         /// Writes the content from the specified sequence of bytes.
@@ -343,10 +368,12 @@ namespace DotNext.IO
         /// <summary>
         /// Creates default implementation of binary writer for the buffer writer.
         /// </summary>
+        /// <typeparam name="TWriter">The type of the buffer writer.</typeparam>
         /// <param name="writer">The buffer writer.</param>
         /// <returns>The binary writer.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="writer"/> is <see langword="null"/>.</exception>
-        public static IAsyncBinaryWriter Create(IFlushableBufferWriter writer)
+        public static IAsyncBinaryWriter Create<TWriter>(TWriter writer)
+            where TWriter : class, IBufferWriter<byte>, IFlushable
             => new AsyncBufferWriter(writer);
     }
 }
