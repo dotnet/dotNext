@@ -2322,6 +2322,28 @@ namespace DotNext.IO
         }
 
         /// <summary>
+        /// Writes the memory blocks supplied by the specified delegate.
+        /// </summary>
+        /// <remarks>
+        /// Copy process will be stopped when <paramref name="supplier"/> returns empty <see cref="ReadOnlyMemory{T}"/>.
+        /// </remarks>
+        /// <param name="stream">The destination stream.</param>
+        /// <param name="supplier">The delegate supplying memory blocks.</param>
+        /// <param name="arg">The argument to be passed to the supplier.</param>
+        /// <param name="token">The token that can be used to cancel operation.</param>
+        /// <typeparam name="TArg">The type of the argument to be passed to the supplier.</typeparam>
+        /// <returns>The number of written bytes.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static async Task<long> WriteAsync<TArg>(this Stream stream, Func<TArg, CancellationToken, ValueTask<ReadOnlyMemory<byte>>> supplier, TArg arg, CancellationToken token = default)
+        {
+            var count = 0L;
+            for (ReadOnlyMemory<byte> source; !(source = await supplier(arg, token).ConfigureAwait(false)).IsEmpty; count += source.Length)
+                await stream.WriteAsync(source, token).ConfigureAwait(false);
+
+            return count;
+        }
+
+        /// <summary>
         /// Asynchronously reads the bytes from the source stream and writes them to another stream, using a specified buffer.
         /// </summary>
         /// <param name="source">The source stream to read from.</param>

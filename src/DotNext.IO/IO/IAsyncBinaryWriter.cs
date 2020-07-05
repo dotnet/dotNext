@@ -27,7 +27,7 @@ namespace DotNext.IO
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         ValueTask WriteAsync<T>(T value, CancellationToken token = default)
-            where T : unmanaged;    // TODO: WriteAsync(ReadOnlySequence<byte>) must be a primary method
+            where T : unmanaged;
 
         private ValueTask WriteAsync<T>(T value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
             where T : struct, IFormattable
@@ -266,6 +266,24 @@ namespace DotNext.IO
             {
                 await WriteAsync(block, token).ConfigureAwait(false);
             }
+        }
+
+        /// <summary>
+        /// Writes the content from the delegate supplying memory blocks.
+        /// </summary>
+        /// <remarks>
+        /// Copy process will be stopped when <paramref name="supplier"/> returns empty <see cref="ReadOnlyMemory{T}"/>.
+        /// </remarks>
+        /// <param name="supplier">The delegate supplying memory blocks.</param>
+        /// <param name="arg">The argument to be passed to the supplier.</param>
+        /// <param name="token">The token that can be used to cancel operation.</param>
+        /// <typeparam name="TArg">The type of the argument to be passed to the supplier.</typeparam>
+        /// <returns>The task representing state of asynchronous execution.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        async Task CopyFromAsync<TArg>(Func<TArg, CancellationToken, ValueTask<ReadOnlyMemory<byte>>> supplier, TArg arg, CancellationToken token = default)
+        {
+            for (ReadOnlyMemory<byte> source; !(source = await supplier(arg, token).ConfigureAwait(false)).IsEmpty; )
+                await WriteAsync(source, token).ConfigureAwait(false);
         }
 
         /// <summary>

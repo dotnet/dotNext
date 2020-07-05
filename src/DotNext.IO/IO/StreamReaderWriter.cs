@@ -149,5 +149,8 @@ namespace DotNext.IO
 
         Task IAsyncBinaryWriter.WriteAsync(ReadOnlySequence<byte> input, CancellationToken token)
             => output.WriteAsync(input, token).AsTask();
+
+        Task IAsyncBinaryWriter.CopyFromAsync<TArg>(Func<TArg, CancellationToken, ValueTask<ReadOnlyMemory<byte>>> supplier, TArg arg, CancellationToken token)
+            => output.WriteAsync(supplier, arg, token);
     }
 }

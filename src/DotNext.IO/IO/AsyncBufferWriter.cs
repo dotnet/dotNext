@@ -55,6 +55,12 @@ namespace DotNext.IO
         Task IAsyncBinaryWriter.CopyFromAsync(PipeReader input, CancellationToken token)
             => input.CopyToAsync(writer, token);
 
+        async Task IAsyncBinaryWriter.CopyFromAsync<TArg>(Func<TArg, CancellationToken, ValueTask<ReadOnlyMemory<byte>>> supplier, TArg arg, CancellationToken token)
+        {
+            for (ReadOnlyMemory<byte> source; !(source = await supplier(arg, token).ConfigureAwait(false)).IsEmpty; await FlushAsync(token).ConfigureAwait(false))
+                writer.Write(source.Span);
+        }
+
         Task IAsyncBinaryWriter.WriteAsync(ReadOnlySequence<byte> input, CancellationToken token)
         {
             Task result;
