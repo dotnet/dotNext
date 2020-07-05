@@ -99,6 +99,7 @@ namespace DotNext.IO
                 {
                     var destination = writer.GetSpan(source.Length);
                     source.CopyTo(destination);
+                    writer.Advance(source.Length);
                 }
             }
 
