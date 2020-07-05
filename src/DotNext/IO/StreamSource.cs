@@ -64,14 +64,14 @@ namespace DotNext.IO
         /// <summary>
         /// Returns writable stream that wraps the provided delegate for writing data.
         /// </summary>
-        /// <param name="callback">The callback that is called automatically.</param>
+        /// <param name="writer">The callback that is called automatically.</param>
         /// <param name="arg">The arg to be passed to the callback.</param>
         /// <param name="flush">Optional synchronous flush action.</param>
         /// <param name="flushAsync">Optiona asynchronous flush action.</param>
         /// <typeparam name="TArg">The type of the object that represents the state.</typeparam>
         /// <returns>The writable stream wrapping the callback.</returns>
-        public static Stream AsStream<TArg>(this ReadOnlySpanAction<byte, TArg> callback, TArg arg, Action<TArg>? flush = null, Func<TArg, CancellationToken, Task>? flushAsync = null)
-            => new SpanWriterStream<TArg>(callback, arg, flush, flushAsync);
+        public static Stream AsStream<TArg>(this ReadOnlySpanAction<byte, TArg> writer, TArg arg, Action<TArg>? flush = null, Func<TArg, CancellationToken, Task>? flushAsync = null)
+            => new SpanWriterStream<TArg>(writer, arg, flush, flushAsync);
 
         /// <summary>
         /// Returns writable stream associated with the buffer writer.
@@ -124,6 +124,15 @@ namespace DotNext.IO
             }
         }
 
+        /// <summary>
+        /// Returns writable stream that wraps the provided delegate for writing data.
+        /// </summary>
+        /// <param name="writer">The callback that is called automatically.</param>
+        /// <param name="arg">The arg to be passed to the callback.</param>
+        /// <param name="flush">Optional synchronous flush action.</param>
+        /// <param name="flushAsync">Optiona asynchronous flush action.</param>
+        /// <typeparam name="TArg">The type of the object that represents the state.</typeparam>
+        /// <returns>The writable stream wrapping the callback.</returns>
         public static Stream AsStream<TArg>(this Func<ReadOnlyMemory<byte>, TArg, CancellationToken, ValueTask> writer, TArg arg, Action<TArg>? flush = null, Func<TArg, CancellationToken, Task>? flushAsync = null)
             => new MemoryWriterStream<TArg>(writer, arg, flush, flushAsync);
     }
