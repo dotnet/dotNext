@@ -22,7 +22,7 @@ namespace DotNext.IO
             this.writer = writer;
             this.flush = flush;
             this.flushAsync = flushAsync;
-            this.argument = arg;
+            argument = arg;
         }
 
         public override bool CanRead => false;
