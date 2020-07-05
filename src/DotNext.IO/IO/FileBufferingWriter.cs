@@ -412,6 +412,7 @@ namespace DotNext.IO
             if (HasFlag(options, FileOptions.Asynchronous))
             {
                 task = WriteAsync(buffer, offset, count, CancellationToken.None);
+
                 // attach state only if it's necessary
                 if (state != null)
                     task = task.ContinueWith(Continuation, state, CancellationToken.None, TaskContinuationOptions.None, TaskScheduler.Default);

@@ -55,6 +55,7 @@ namespace DotNext.IO
         public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
         {
             var task = WriteWithTimeoutAsync(buffer.AsMemory(offset, count));
+
             // attach state only if it's necessary
             if (state != null)
                 task = task.AttachState(state);
