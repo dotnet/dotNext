@@ -21,6 +21,11 @@ namespace DotNext.Threading.Tasks
     /// </summary>
     public static class Continuation
     {
+        private static readonly Action<Task, object?> WhenFaultedOrCanceledAction = WhenFaultedOrCanceled;
+
+        private static void WhenFaultedOrCanceled(Task task, object? state)
+            => task.ConfigureAwait(false).GetAwaiter().GetResult();
+
         [SuppressMessage("Design", "CA1068", Justification = "Symmetry with ContinueWith method")]
         private static Task<T> ContinueWithConstant<T, TConstant>(Task<T> task, bool completedSynchronously, Func<Task<T>, T> continuation, CancellationToken token = default, TaskScheduler? scheduler = null)
             where TConstant : Constant<T>, new()
@@ -99,5 +104,8 @@ namespace DotNext.Threading.Tasks
 
         internal static void OnCompleted(this Task task, AsyncCallback callback)
             => task.ConfigureAwait(false).GetAwaiter().OnCompleted(() => callback(task));
+
+        internal static Task AttachState(this Task task, object? state, CancellationToken token = default)
+            => task.ContinueWith(WhenFaultedOrCanceledAction, state, token, TaskContinuationOptions.None, TaskScheduler.Default);
     }
 }

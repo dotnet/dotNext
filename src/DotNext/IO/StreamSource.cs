@@ -71,7 +71,7 @@ namespace DotNext.IO
         /// <typeparam name="TArg">The type of the object that represents the state.</typeparam>
         /// <returns>The writable stream wrapping the callback.</returns>
         public static Stream AsStream<TArg>(this ReadOnlySpanAction<byte, TArg> callback, TArg arg, Action<TArg>? flush = null, Func<TArg, CancellationToken, Task>? flushAsync = null)
-            => new BufferWriterStream<TArg>(callback, arg, flush, flushAsync);
+            => new SpanWriterStream<TArg>(callback, arg, flush, flushAsync);
 
         /// <summary>
         /// Returns writable stream associated with the buffer writer.
@@ -123,5 +123,8 @@ namespace DotNext.IO
                 return Return<Func<TWriter, CancellationToken, Task>>();
             }
         }
+
+        public static Stream AsStream<TArg>(this Func<ReadOnlyMemory<byte>, TArg, CancellationToken, ValueTask> writer, TArg arg, Action<TArg>? flush = null, Func<TArg, CancellationToken, Task>? flushAsync = null)
+            => new MemoryWriterStream<TArg>(writer, arg, flush, flushAsync);
     }
 }
