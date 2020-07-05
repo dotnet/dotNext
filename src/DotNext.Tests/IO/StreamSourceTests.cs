@@ -488,6 +488,7 @@ namespace DotNext.IO
             byte[] content = { 1, 2, 3 };
             stream.Write(content);
             stream.Flush();
+            Equal(3, stream.Position);
             Equal(content, writer.WrittenMemory.ToArray());
         }
     }
