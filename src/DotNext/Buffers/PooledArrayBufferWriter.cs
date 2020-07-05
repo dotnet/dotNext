@@ -225,11 +225,23 @@ namespace DotNext.Buffers
         /// Clears the data written to the underlying buffer.
         /// </summary>
         /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
-        public override void Clear()
+        public override void Clear() => Clear(false);   // TODO: Remove this method in future
+
+        /// <summary>
+        /// Clears the data written to the underlying memory.
+        /// </summary>
+        /// <param name="reuseBuffer"><see langword="true"/> to reuse the internal buffer; <see langword="false"/> to destroy the internal buffer.</param>
+        /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
+        public override void Clear(bool reuseBuffer)
         {
             ThrowIfDisposed();
-            ReleaseBuffer();
-            buffer = Array.Empty<T>();
+
+            if (!reuseBuffer)
+            {
+                ReleaseBuffer();
+                buffer = Array.Empty<T>();
+            }
+
             position = 0;
         }
 

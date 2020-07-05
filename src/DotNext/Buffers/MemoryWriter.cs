@@ -122,7 +122,14 @@ namespace DotNext.Buffers
         /// Clears the data written to the underlying memory.
         /// </summary>
         /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
-        public abstract void Clear();
+        public virtual void Clear() => Clear(false);
+
+        /// <summary>
+        /// Clears the data written to the underlying memory.
+        /// </summary>
+        /// <param name="reuseBuffer"><see langword="true"/> to reuse the internal buffer; <see langword="false"/> to destroy the internal buffer.</param>
+        /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
+        public abstract void Clear(bool reuseBuffer);
 
         /// <summary>
         /// Notifies this writer that <paramref name="count"/> of data items were written.
