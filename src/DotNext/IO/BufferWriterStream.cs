@@ -47,11 +47,11 @@ namespace DotNext.IO
 
         public override void Write(ReadOnlySpan<byte> buffer)
         {
-            if (buffer.IsEmpty)
-                return;
-
-            writer(buffer, argument);
-            writtenBytes += buffer.Length;
+            if (!buffer.IsEmpty)
+            {
+                writer(buffer, argument);
+                writtenBytes += buffer.Length;
+            }
         }
 
         public override void Write(byte[] buffer, int offset, int count) => Write(new ReadOnlySpan<byte>(buffer, offset, count));
