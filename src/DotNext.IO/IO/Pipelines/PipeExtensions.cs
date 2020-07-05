@@ -195,7 +195,7 @@ namespace DotNext.IO.Pipelines
                 for (var position = buffer.Start; buffer.TryGet(ref position, out var block); reader.AdvanceTo(position), token.ThrowIfCancellationRequested())
                     consumer(block.Span, arg);
             }
-            while(!result.IsCompleted);
+            while (!result.IsCompleted);
         }
 
         /// <summary>
@@ -219,7 +219,7 @@ namespace DotNext.IO.Pipelines
                 for (var position = buffer.Start; buffer.TryGet(ref position, out var block); reader.AdvanceTo(position))
                     await consumer(block, arg, token);
             }
-            while(!result.IsCompleted);
+            while (!result.IsCompleted);
         }
 
         /// <summary>

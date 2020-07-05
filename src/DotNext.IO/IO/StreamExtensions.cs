@@ -2471,6 +2471,7 @@ namespace DotNext.IO
         /// <param name="arg">The argument to be passed to the content reader.</param>
         /// <param name="bufferSize">The size of the buffer used to read data.</param>
         /// <param name="token">The token that can be used to cancel operation.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="bufferSize"/> is less than or equal to zero.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static async Task ReadAsync<TArg>(this Stream stream, ReadOnlySpanAction<byte, TArg> reader, TArg arg, int bufferSize = DefaultBufferSize, CancellationToken token = default)
@@ -2502,7 +2503,7 @@ namespace DotNext.IO
             for (int count; (count = await stream.ReadAsync(buffer, token).ConfigureAwait(false)) > 0; )
                 await reader(buffer.Slice(0, count), arg, token).ConfigureAwait(false);
         }
-        
+
         /// <summary>
         /// Reads the entire content using the specified delegate.
         /// </summary>
@@ -2512,6 +2513,7 @@ namespace DotNext.IO
         /// <param name="arg">The argument to be passed to the content reader.</param>
         /// <param name="bufferSize">The size of the buffer used to read data.</param>
         /// <param name="token">The token that can be used to cancel operation.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="bufferSize"/> is less than or equal to zero.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static async Task ReadAsync<TArg>(this Stream stream, Func<ReadOnlyMemory<byte>, TArg, CancellationToken, ValueTask> reader, TArg arg, int bufferSize = DefaultBufferSize, CancellationToken token = default)

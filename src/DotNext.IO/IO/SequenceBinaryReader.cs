@@ -958,7 +958,7 @@ namespace DotNext.IO
                 result = Task.CompletedTask;
                 try
                 {
-                    for(ReadOnlyMemory<byte> block; sequence.TryGet(ref position, out block); token.ThrowIfCancellationRequested())
+                    for (ReadOnlyMemory<byte> block; sequence.TryGet(ref position, out block); token.ThrowIfCancellationRequested())
                         reader(block.Span, arg);
                 }
                 catch (Exception e)
@@ -970,9 +970,10 @@ namespace DotNext.IO
             return result;
         }
 
+        /// <inheritdoc/>
         async Task IAsyncBinaryReader.CopyToAsync<TArg>(Func<ReadOnlyMemory<byte>, TArg, CancellationToken, ValueTask> reader, TArg arg, CancellationToken token)
         {
-            foreach(var segment in sequence.Slice(position))
+            foreach (var segment in sequence.Slice(position))
                 await reader(segment, arg, token).ConfigureAwait(false);
         }
     }
