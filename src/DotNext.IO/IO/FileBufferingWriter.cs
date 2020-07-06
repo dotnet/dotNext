@@ -610,7 +610,7 @@ namespace DotNext.IO
                 return new MemoryManager(this, range);
 
             PersistBuffer();
-            fileBackend.Flush();
+            fileBackend.Flush(true);
             var (offset, length) = GetOffsetAndLength(range, fileBackend.Length);
             if (offset < 0L || length < 0L)
                 throw new ArgumentOutOfRangeException(nameof(range));
