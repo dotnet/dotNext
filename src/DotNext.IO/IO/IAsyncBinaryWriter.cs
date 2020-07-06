@@ -4,15 +4,15 @@ using System.IO;
 using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
-using Unsafe = System.Runtime.CompilerServices.Unsafe;
 using static System.Globalization.CultureInfo;
+using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.IO
 {
-    using ByteBuffer = Buffers.ArrayRental<byte>;
-    using EncodingContext = Text.EncodingContext;
     using static Buffers.BufferReader;
     using static Pipelines.ResultExtensions;
+    using ByteBuffer = Buffers.ArrayRental<byte>;
+    using EncodingContext = Text.EncodingContext;
 
     /// <summary>
     /// Providers a uniform way to encode the data.

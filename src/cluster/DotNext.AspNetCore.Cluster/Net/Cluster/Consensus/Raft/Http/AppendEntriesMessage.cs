@@ -206,10 +206,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                     builder.Write(DoubleDash);
                     builder.Write(boundary);
                     builder.Write(CrLf);
+
                     // write start boundary
                     await stream.WriteStringAsync(builder.WrittenMemory, encodingContext, encodingBuffer.Memory).ConfigureAwait(false);
                     encodingContext.Reset();
-                    
+
                     // write each nested content
                     var writeDivider = false;
                     foreach (var entry in entries)
