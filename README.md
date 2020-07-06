@@ -52,17 +52,30 @@ This release is mainly focused on `DotNext.IO` library to add new API unifying p
 <a href="https://www.nuget.org/packages/dotnext/2.7.0">DotNext 2.7.0</a>
 * Introduced extension methods in [Span](https://sakno.github.io/dotNext/api/DotNext.Span.html) class for concatenation of memory spans
 * Removed allocation of [Stream](https://docs.microsoft.com/en-us/dotnet/api/system.io.stream) in the extension methods of [StreamSource](https://sakno.github.io/dotNext/api/DotNext.IO.StreamSource.html) class when passed [ReadOnlySequence&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) is empty
+* [StreamSource](https://sakno.github.io/dotNext/api/DotNext.IO.StreamSource.html) has additional methods to create streams from various things
+* [PooledArrayBufferWriter&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.PooledArrayBufferWriter-1.html) and [PooledBufferWriter&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.PooledBufferWriter-1.html) support reuse of the internal buffer using overloaded `Clear(bool)` method
 
 <a href="https://www.nuget.org/packages/dotnext.io/2.7.0">DotNext.IO 2.7.0</a>
-* [BufferWriter](https://sakno.github.io/dotNext/api/DotNext.Buffers.BufferWriter.html) now contains extension methods that allow to use any object implementing [IBufferWriter&lt;char&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) as string builder.
+* [BufferWriter](https://sakno.github.io/dotNext/api/DotNext.Buffers.BufferWriter.html) now contains extension methods that allow to use any object implementing [IBufferWriter&lt;char&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) as pooled string builder
 * [IAsyncBinaryReader](https://sakno.github.io/dotNext/api/DotNext.IO.IAsyncBinaryReader.html), [IAsyncBinaryWriter](https://sakno.github.io/dotNext/api/DotNext.IO.IAsyncBinaryWriter.html), [PipeExtensions](https://sakno.github.io/dotNext/api/DotNext.IO.Pipelines.PipeExtensions.html), [StreamExtensions](https://sakno.github.io/dotNext/api/DotNext.IO.StreamExtensions.html), [SequenceBinaryReader](https://sakno.github.io/dotNext/api/DotNext.IO.SequenceBinaryReader.html) types now containing methods for encoding/decoding primitive types, [DateTime](https://docs.microsoft.com/en-us/dotnet/api/system.datetime), [DateTimeOffset](https://docs.microsoft.com/en-us/dotnet/api/system.datetimeoffset), [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid) to/from string representation contained in underlying stream, pipe or [sequence](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) in the binary form
 * Fixed pooled memory leaks in [SequenceBinaryReader](https://sakno.github.io/dotNext/api/DotNext.IO.SequenceBinaryReader.html)
 
 <a href="https://www.nuget.org/packages/dotnext.reflection/2.6.1">DotNext.Reflection 2.6.1</a>
 * Optimized construction of getter/setter for the reflected field
+* Enabled consistent build which is recommended for SourceLink
+
+<a href="https://www.nuget.org/packages/dotnext.threading/2.6.1">DotNext.Threading 2.6.1</a>
+* Enabled consistent build which is recommended for SourceLink
 
 <a href="https://www.nuget.org/packages/dotnext.unsafe/2.6.1">DotNext.Unsafe 2.6.1</a>
-* Migration to newest version of `InlineIL`
+* Enabled consistent build which is recommended for SourceLink
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/2.6.1">DotNext.Net.Cluster 2.6.1</a>
+* Enabled consistent build which is recommended for SourceLink
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/2.6.1">DotNext.AspNetCore.Cluster 2.6.1</a>
+* Reduced memory allocation caused by replication of log entries
+* Enabled consistent build which is recommended for SourceLink
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
