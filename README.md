@@ -60,6 +60,9 @@ This release is mainly focused on `DotNext.IO` library to add new API unifying p
 * [IAsyncBinaryReader](https://sakno.github.io/dotNext/api/DotNext.IO.IAsyncBinaryReader.html), [IAsyncBinaryWriter](https://sakno.github.io/dotNext/api/DotNext.IO.IAsyncBinaryWriter.html), [PipeExtensions](https://sakno.github.io/dotNext/api/DotNext.IO.Pipelines.PipeExtensions.html), [StreamExtensions](https://sakno.github.io/dotNext/api/DotNext.IO.StreamExtensions.html), [SequenceBinaryReader](https://sakno.github.io/dotNext/api/DotNext.IO.SequenceBinaryReader.html) types now containing methods for encoding/decoding primitive types, [DateTime](https://docs.microsoft.com/en-us/dotnet/api/system.datetime), [DateTimeOffset](https://docs.microsoft.com/en-us/dotnet/api/system.datetimeoffset), [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid) to/from string representation contained in underlying stream, pipe or [sequence](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) in the binary form
 * Fixed pooled memory leaks in [SequenceBinaryReader](https://sakno.github.io/dotNext/api/DotNext.IO.SequenceBinaryReader.html)
 
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.6.1">DotNext.Metaprogramming 2.6.1</a>
+* Enabled consistent build which is recommended for SourceLink
+
 <a href="https://www.nuget.org/packages/dotnext.reflection/2.6.1">DotNext.Reflection 2.6.1</a>
 * Optimized construction of getter/setter for the reflected field
 * Enabled consistent build which is recommended for SourceLink
