@@ -38,5 +38,11 @@ namespace DotNext.IO
 
         Task IAsyncBinaryReader.CopyToAsync(IBufferWriter<byte> writer, CancellationToken token)
             => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.CompletedTask;
+
+        Task IAsyncBinaryReader.CopyToAsync<TArg>(Func<ReadOnlyMemory<byte>, TArg, CancellationToken, ValueTask> consumer, TArg arg, CancellationToken token)
+            => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.CompletedTask;
+
+        Task IAsyncBinaryReader.CopyToAsync<TArg>(ReadOnlySpanAction<byte, TArg> consumer, TArg arg, CancellationToken token)
+            => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.CompletedTask;
     }
 }

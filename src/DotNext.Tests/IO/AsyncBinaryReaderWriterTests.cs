@@ -439,5 +439,31 @@ namespace DotNext.IO
                 return new ValueTask();
             }
         }
+
+        [Fact]
+        public static async Task ReadFromEmptyReader()
+        {
+            await using var ms = new MemoryStream();
+            var reader = IAsyncBinaryReader.Empty;
+            await reader.CopyToAsync(ms);
+            Equal(0, ms.Length);
+
+            var writer = new ArrayBufferWriter<byte>();
+            await reader.CopyToAsync(writer);
+            Equal(0, writer.WrittenCount);
+
+            var context = new DecodingContext();
+            await ThrowsAsync<EndOfStreamException>(reader.ReadByteAsync(StringLengthEncoding.Plain, context).AsTask);
+            await ThrowsAsync<EndOfStreamException>(reader.ReadInt16Async(StringLengthEncoding.Plain, context).AsTask);
+            await ThrowsAsync<EndOfStreamException>(reader.ReadInt32Async(StringLengthEncoding.Plain, context).AsTask);
+            await ThrowsAsync<EndOfStreamException>(reader.ReadInt64Async(StringLengthEncoding.Plain, context).AsTask);
+            await ThrowsAsync<EndOfStreamException>(reader.ReadSingleAsync(StringLengthEncoding.Plain, context).AsTask);
+            await ThrowsAsync<EndOfStreamException>(reader.ReadDoubleAsync(StringLengthEncoding.Plain, context).AsTask);
+            await ThrowsAsync<EndOfStreamException>(reader.ReadDecimalAsync(StringLengthEncoding.Plain, context).AsTask);
+            await ThrowsAsync<EndOfStreamException>(reader.ReadStringAsync(StringLengthEncoding.Plain, context).AsTask);
+            await ThrowsAsync<EndOfStreamException>(reader.ReadStringAsync(10, context).AsTask);
+            await ThrowsAsync<EndOfStreamException>(reader.ReadAsync<decimal>().AsTask);
+            await ThrowsAsync<EndOfStreamException>(reader.ReadAsync(new byte[1]).AsTask);
+        }
     }
 }
