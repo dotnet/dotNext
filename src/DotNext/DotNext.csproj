@@ -42,6 +42,7 @@
     <DelaySign>false</DelaySign>
     <AssemblyOriginatorKeyFile>../dotnext.snk</AssemblyOriginatorKeyFile>
     <DebugType>embedded</DebugType>
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
 
   <ItemGroup>

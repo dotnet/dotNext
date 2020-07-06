@@ -35,6 +35,7 @@
     <AssemblyOriginatorKeyFile>../dotnext.snk</AssemblyOriginatorKeyFile>
     <Optimize>true</Optimize>
     <DebugType>embedded</DebugType>
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
 
   <ItemGroup>
