@@ -1,4 +1,5 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
@@ -47,6 +48,18 @@ namespace DotNext.IO
             await dto.WriteToAsync(writer);
             Equal(3, writer.WrittenCount);
             Equal(content, writer.WrittenSpan.ToArray());
+        }
+
+        [Fact]
+        public static async Task MemoryDTO3()
+        {
+            IDataTransferObject dto = new BinaryTransferObject<long> { Content = 42L };
+            Equal(sizeof(long), dto.Length);
+            True(dto.IsReusable);
+            var writer = new ArrayBufferWriter<byte>();
+            await dto.WriteToAsync(writer);
+            Equal(sizeof(long), writer.WrittenCount);
+            Equal(42L, BitConverter.ToInt64(writer.WrittenSpan));
         }
 
         [Fact]
