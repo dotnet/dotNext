@@ -5,10 +5,6 @@ using System.IO.Pipelines;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using static InlineIL.IL;
-using static InlineIL.IL.Emit;
-using static InlineIL.MethodRef;
-using static InlineIL.TypeRef;
 
 namespace DotNext.IO
 {
@@ -27,19 +23,7 @@ namespace DotNext.IO
         internal AsyncBufferWriter(IBufferWriter<byte> writer)
         {
             this.writer = writer ?? throw new ArgumentNullException(nameof(writer));
-            if (writer is IFlushable)
-            {
-                Ldnull();
-                Push(writer);
-                Ldvirtftn(Method(Type<IFlushable>(), nameof(IFlushable.FlushAsync)));
-                Newobj(Constructor(Type<Func<IBufferWriter<byte>, CancellationToken, Task>>(), Type<object>(), Type<IntPtr>()));
-                Pop(out Func<IBufferWriter<byte>, CancellationToken, Task> flush);
-                this.flush = flush;
-            }
-            else
-            {
-                flush = null;
-            }
+            flush = IFlushable.TryReflectAsyncFlushMethod(writer);
         }
 
         private Task FlushAsync(CancellationToken token)
@@ -372,6 +356,29 @@ namespace DotNext.IO
                 try
                 {
                     writer.WriteGuid(value, lengthFormat, in context, format);
+                    result = FlushAsync(token);
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException(e);
+                }
+            }
+
+            return new ValueTask(result);
+        }
+
+        ValueTask IAsyncBinaryWriter.WriteTimeSpanAsync(TimeSpan value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+        {
+            Task result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled(token);
+            }
+            else
+            {
+                try
+                {
+                    writer.WriteTimeSpan(value, lengthFormat, in context, format);
                     result = FlushAsync(token);
                 }
                 catch (Exception e)

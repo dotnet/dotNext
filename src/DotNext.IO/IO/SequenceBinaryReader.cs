@@ -394,6 +394,32 @@ namespace DotNext.IO
             => Read<Guid, GuidDecoder>(new GuidDecoder(format), lengthFormat, in context);
 
         /// <summary>
+        /// Parses <see cref="TimeSpan"/> from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="FormatException">The time span is in incorrect format.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        public TimeSpan ReadTimeSpan(StringLengthEncoding lengthFormat, in DecodingContext context, IFormatProvider? provider = null)
+            => Read<TimeSpan, TimeSpanDecoder>(new TimeSpanDecoder(provider), lengthFormat, in context);
+
+        /// <summary>
+        /// Parses <see cref="TimeSpan"/> from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="formats">An array of allowable formats.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="FormatException">The time span is in incorrect format.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        public TimeSpan ReadTimeSpan(StringLengthEncoding lengthFormat, in DecodingContext context, string[] formats, TimeSpanStyles style = TimeSpanStyles.None, IFormatProvider? provider = null)
+            => Read<TimeSpan, TimeSpanDecoder>(new TimeSpanDecoder(style, formats, provider), lengthFormat, in context);
+
+        /// <summary>
         /// Decodes the string.
         /// </summary>
         /// <param name="length">The length of the encoded string, in bytes.</param>
@@ -865,6 +891,52 @@ namespace DotNext.IO
             }
 
             return new ValueTask<Guid>(result);
+        }
+
+        /// <inheritdoc/>
+        ValueTask<TimeSpan> IAsyncBinaryReader.ReadTimeSpanAsync(StringLengthEncoding lengthFormat, DecodingContext context, IFormatProvider? provider, CancellationToken token)
+        {
+            Task<TimeSpan> result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled<TimeSpan>(token);
+            }
+            else
+            {
+                try
+                {
+                    return new ValueTask<TimeSpan>(ReadTimeSpan(lengthFormat, context, provider));
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException<TimeSpan>(e);
+                }
+            }
+
+            return new ValueTask<TimeSpan>(result);
+        }
+
+        /// <inheritdoc/>
+        ValueTask<TimeSpan> IAsyncBinaryReader.ReadTimeSpanAsync(StringLengthEncoding lengthFormat, DecodingContext context, string[] formats, TimeSpanStyles style, IFormatProvider? provider, CancellationToken token)
+        {
+            Task<TimeSpan> result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled<TimeSpan>(token);
+            }
+            else
+            {
+                try
+                {
+                    return new ValueTask<TimeSpan>(ReadTimeSpan(lengthFormat, context, formats, style, provider));
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException<TimeSpan>(e);
+                }
+            }
+
+            return new ValueTask<TimeSpan>(result);
         }
 
         /// <inheritdoc/>

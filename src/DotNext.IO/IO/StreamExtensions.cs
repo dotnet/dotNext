@@ -394,6 +394,18 @@ namespace DotNext.IO
         public static void WriteDateTimeOffset(this Stream stream, DateTimeOffset value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
             => Write<DateTimeOffsetFormatter>(stream, value, lengthFormat, encoding, format, provider);
 
+        /// <summary>
+        /// Encodes <see cref="TimeSpan"/> as a string.
+        /// </summary>
+        /// <param name="stream">The stream to write into.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="encoding">The string encoding.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        public static void WriteTimeSpan(this Stream stream, TimeSpan value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write<TimeSpanFormatter>(stream, value, lengthFormat, encoding, format, provider);
+
         private static ValueTask WriteLengthAsync(this Stream stream, ReadOnlySpan<char> value, Encoding encoding, StringLengthEncoding? lengthFormat, Memory<byte> buffer, CancellationToken token)
         {
             if (lengthFormat is null)
@@ -990,6 +1002,39 @@ namespace DotNext.IO
             => WriteAsync<DateTimeOffsetFormatter>(stream, value, lengthFormat, context, format, provider, token);
 
         /// <summary>
+        /// Encodes <see cref="TimeSpan"/> as a string.
+        /// </summary>
+        /// <param name="stream">The stream to write into.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="context">The encoding context.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="format">The format to use.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing asynchronous state of the operation.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+        public static ValueTask WriteTimeSpanAsync(this Stream stream, TimeSpan value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync<TimeSpanFormatter>(stream, value, lengthFormat, context, buffer, format, provider, token);
+
+        /// <summary>
+        /// Encodes <see cref="TimeSpan"/> as a string.
+        /// </summary>
+        /// <param name="stream">The stream to write into.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="context">The encoding context.</param>
+        /// <param name="format">The format to use.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing asynchronous state of the operation.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+        public static ValueTask WriteTimeSpanAsync(this Stream stream, TimeSpan value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync<TimeSpanFormatter>(stream, value, lengthFormat, context, format, provider, token);
+
+        /// <summary>
         /// Writes sequence of bytes to the underlying stream synchronously.
         /// </summary>
         /// <param name="stream">The stream to write into.</param>
@@ -1344,6 +1389,36 @@ namespace DotNext.IO
         /// <exception cref="FormatException">The date/time string is in incorrect format.</exception>
         public static DateTimeOffset ReadDateTimeOffset(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer, string[] formats, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null)
             => Read<DateTimeOffset, DateTimeDecoder>(stream, new DateTimeDecoder(style, formats, provider), lengthFormat, in context, buffer);
+
+        /// <summary>
+        /// Parses <see cref="TimeSpan"/> from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="FormatException">The time span is in incorrect format.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        public static TimeSpan ReadTimeSpan(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer, IFormatProvider? provider = null)
+            => Read<TimeSpan, TimeSpanDecoder>(stream, new TimeSpanDecoder(provider), lengthFormat, in context, buffer);
+
+        /// <summary>
+        /// Parses <see cref="DateTimeOffset"/> from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="formats">An array of allowable formats.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="FormatException">The time span is in incorrect format.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        public static TimeSpan ReadTimeSpan(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer, string[] formats, TimeSpanStyles style = TimeSpanStyles.None, IFormatProvider? provider = null)
+            => Read<TimeSpan, TimeSpanDecoder>(stream, new TimeSpanDecoder(style, formats, provider), lengthFormat, in context, buffer);
 
         private static int ReadLength(this Stream stream, StringLengthEncoding lengthFormat)
         {
@@ -1898,6 +1973,42 @@ namespace DotNext.IO
             => ReadAsync<DateTimeOffset, DateTimeDecoder>(stream, new DateTimeDecoder(style, formats, provider), lengthFormat, context, buffer, token);
 
         /// <summary>
+        /// Parses <see cref="TimeSpan"/> from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+        /// <exception cref="FormatException">The time span is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        public static ValueTask<TimeSpan> ReadTimeSpanAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, Memory<byte> buffer, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<TimeSpan, TimeSpanDecoder>(stream, new TimeSpanDecoder(provider), lengthFormat, context, buffer, token);
+
+        /// <summary>
+        /// Parses <see cref="TimeSpan"/> from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="formats">An array of allowable formats.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+        /// <exception cref="FormatException">The time span is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        public static ValueTask<TimeSpan> ReadTimeSpanAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, Memory<byte> buffer, string[] formats, TimeSpanStyles style = TimeSpanStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<TimeSpan, TimeSpanDecoder>(stream, new TimeSpanDecoder(style, formats, provider), lengthFormat, context, buffer, token);
+
+        /// <summary>
         /// Decodes 8-bit unsigned integer from its string representation.
         /// </summary>
         /// <param name="stream">The stream to read from.</param>
@@ -2171,6 +2282,38 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static ValueTask<DateTimeOffset> ReadDateTimeOffsetAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, string[] formats, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<DateTimeOffset, DateTimeDecoder>(stream, new DateTimeDecoder(style, formats, provider), lengthFormat, context, token);
+
+        /// <summary>
+        /// Parses <see cref="TimeSpan"/> from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="FormatException">The time span is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        public static ValueTask<TimeSpan> ReadTimeSpanAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<TimeSpan, TimeSpanDecoder>(stream, new TimeSpanDecoder(provider), lengthFormat, context, token);
+
+        /// <summary>
+        /// Parses <see cref="TimeSpan"/> from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="formats">An array of allowable formats.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="FormatException">The time span is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        public static ValueTask<TimeSpan> ReadTimeSpanAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, string[] formats, TimeSpanStyles style = TimeSpanStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<TimeSpan, TimeSpanDecoder>(stream, new TimeSpanDecoder(style, formats, provider), lengthFormat, context, token);
 
         /// <summary>
         /// Reads exact number of bytes.

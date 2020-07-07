@@ -71,6 +71,12 @@ namespace DotNext.IO.Pipelines
         ValueTask<DateTimeOffset> IAsyncBinaryReader.ReadDateTimeOffsetAsync(StringLengthEncoding lengthFormat, DecodingContext context, string[] formats, DateTimeStyles style, IFormatProvider? provider, CancellationToken token)
             => input.ReadDateTimeOffsetAsync(lengthFormat, context, formats, style, provider, token);
 
+        ValueTask<TimeSpan> IAsyncBinaryReader.ReadTimeSpanAsync(StringLengthEncoding lengthFormat, DecodingContext context, IFormatProvider? provider, CancellationToken token)
+            => input.ReadTimeSpanAsync(lengthFormat, context, provider, token);
+
+        ValueTask<TimeSpan> IAsyncBinaryReader.ReadTimeSpanAsync(StringLengthEncoding lengthFormat, DecodingContext context, string[] formats, TimeSpanStyles style, IFormatProvider? provider, CancellationToken token)
+            => input.ReadTimeSpanAsync(lengthFormat, context, formats, style, provider, token);
+
         ValueTask<short> IAsyncBinaryReader.ReadInt16Async(bool littleEndian, CancellationToken token)
             => input.ReadInt16Async(littleEndian, token);
 
@@ -257,6 +263,17 @@ namespace DotNext.IO.Pipelines
             static async ValueTask WriteAsync(PipeWriter output, DateTimeOffset value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
             {
                 var result = await output.WriteDateTimeOffsetAsync(value, lengthFormat, context, format, provider, token).ConfigureAwait(false);
+                result.ThrowIfCancellationRequested(token);
+            }
+        }
+
+        ValueTask IAsyncBinaryWriter.WriteTimeSpanAsync(TimeSpan value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+        {
+            return WriteAsync(output, value, lengthFormat, context, format, provider, token);
+
+            static async ValueTask WriteAsync(PipeWriter output, TimeSpan value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+            {
+                var result = await output.WriteTimeSpanAsync(value, lengthFormat, context, format, provider, token).ConfigureAwait(false);
                 result.ThrowIfCancellationRequested(token);
             }
         }

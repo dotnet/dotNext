@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Xunit;
 using static System.Globalization.CultureInfo;
 using DateTimeStyles = System.Globalization.DateTimeStyles;
+using TimeSpanStyles = System.Globalization.TimeSpanStyles;
 
 namespace DotNext.IO
 {
@@ -206,6 +207,7 @@ namespace DotNext.IO
                 var valueG = Guid.NewGuid();
                 var valueDT = DateTime.Now;
                 var valueDTO = DateTimeOffset.Now;
+                var valueT = TimeSpan.FromMilliseconds(1024);
 
                 var writer = source.CreateWriter();
                 await writer.WriteInt16Async(value16, littleEndian);
@@ -226,6 +228,8 @@ namespace DotNext.IO
                 await writer.WriteDateTimeOffsetAsync(valueDTO, StringLengthEncoding.Plain, encodingContext, format: "O", provider: InvariantCulture);
                 await writer.WriteDateTimeAsync(valueDT, StringLengthEncoding.Plain, encodingContext, format: "O", provider: InvariantCulture);
                 await writer.WriteDateTimeOffsetAsync(valueDTO, StringLengthEncoding.Plain, encodingContext, format: "O", provider: InvariantCulture);
+                await writer.WriteTimeSpanAsync(valueT, StringLengthEncoding.Plain, encodingContext);
+                await writer.WriteTimeSpanAsync(valueT, StringLengthEncoding.Plain, encodingContext, "G", InvariantCulture);
 
                 var reader = source.CreateReader();
                 Equal(value16, await reader.ReadInt16Async(littleEndian));
@@ -246,6 +250,8 @@ namespace DotNext.IO
                 Equal(valueDTO, await reader.ReadDateTimeOffsetAsync(StringLengthEncoding.Plain, decodingContext, style: DateTimeStyles.RoundtripKind, provider: InvariantCulture));
                 Equal(valueDT, await reader.ReadDateTimeAsync(StringLengthEncoding.Plain, decodingContext, new[] { "O" }, style: DateTimeStyles.RoundtripKind, provider: InvariantCulture));
                 Equal(valueDTO, await reader.ReadDateTimeOffsetAsync(StringLengthEncoding.Plain, decodingContext, new[] { "O" }, style: DateTimeStyles.RoundtripKind, provider: InvariantCulture));
+                Equal(valueT, await reader.ReadTimeSpanAsync(StringLengthEncoding.Plain, decodingContext, InvariantCulture));
+                Equal(valueT, await reader.ReadTimeSpanAsync(StringLengthEncoding.Plain, decodingContext, new[] { "G" }, TimeSpanStyles.None, InvariantCulture));
             }
         }
 

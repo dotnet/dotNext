@@ -222,6 +222,20 @@ namespace DotNext.IO
             => WriteAsync(value, lengthFormat, context, format, provider, token);
 
         /// <summary>
+        /// Encodes <see cref="TimeSpan"/> as a string.
+        /// </summary>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="context">The context describing encoding of characters.</param>
+        /// <param name="format">A standard or custom date/time format string.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing state of asynchronous execution.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        ValueTask WriteTimeSpanAsync(TimeSpan value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(value, lengthFormat, context, format, provider, token);
+
+        /// <summary>
         /// Encodes a block of memory.
         /// </summary>
         /// <param name="input">A block of memory.</param>
