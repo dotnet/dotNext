@@ -8,7 +8,7 @@ using static System.Globalization.CultureInfo;
 
 namespace DotNext.IO
 {
-    using static Buffers.BufferWriter;
+    using Buffers;
 
     [ExcludeFromCodeCoverage]
     public sealed class TextWriterSourceTests : Test
@@ -16,7 +16,7 @@ namespace DotNext.IO
         [Fact]
         public static void WriteText()
         {
-            var writer = new ArrayBufferWriter<char>();
+            using var writer = new PooledArrayBufferWriter<char>();
             using var actual = writer.AsTextWriter();
             
             using TextWriter expected = new StringWriter(InvariantCulture);
