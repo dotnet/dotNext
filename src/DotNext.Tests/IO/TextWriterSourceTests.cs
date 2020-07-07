@@ -60,6 +60,7 @@ namespace DotNext.IO
             actual.WriteLine();
             expected.WriteLine();
 
+            actual.Flush();
             Equal(expected.ToString(), writer.BuildString());
         }
 
@@ -83,6 +84,7 @@ namespace DotNext.IO
             await actual.WriteLineAsync();
             await expected.WriteLineAsync();
 
+            await actual.FlushAsync();
             Equal(expected.ToString(), writer.BuildString());
         }
     }
