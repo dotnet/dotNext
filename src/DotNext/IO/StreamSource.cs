@@ -1,21 +1,16 @@
 using System;
 using System.Buffers;
-using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.MemoryMarshal;
-using static InlineIL.IL;
-using static InlineIL.IL.Emit;
-using static InlineIL.MethodRef;
-using static InlineIL.TypeRef;
 
 namespace DotNext.IO
 {
     using Buffers;
 
     /// <summary>
-    /// Represents conversion of various buffer types to stream.
+    /// Represents <see cref="Stream"/> factory methods.
     /// </summary>
     public static class StreamSource
     {
@@ -84,12 +79,8 @@ namespace DotNext.IO
         public static Stream AsStream<TWriter>(this TWriter writer, Action<TWriter>? flush = null, Func<TWriter, CancellationToken, Task>? flushAsync = null)
             where TWriter : class, IBufferWriter<byte>
         {
-            if (writer is IFlushable)
-            {
-                // TODO: Should be replaced with function pointer in C# 9
-                flush ??= CreateFlushAction(writer);
-                flushAsync ??= CreateAsyncFlushAction(writer);
-            }
+            flush ??= IFlushable.TryReflectFlushMethod(writer);
+            flushAsync ??= IFlushable.TryReflectAsyncFlushMethod(writer);
 
             return AsStream(WriteToBuffer, writer, flush, flushAsync);
 
@@ -101,26 +92,6 @@ namespace DotNext.IO
                     source.CopyTo(destination);
                     writer.Advance(source.Length);
                 }
-            }
-
-            static Action<TWriter> CreateFlushAction(TWriter writer)
-            {
-                Debug.Assert(writer is IFlushable);
-                Ldnull();
-                Push(writer);
-                Ldvirtftn(Method(Type<IFlushable>(), nameof(IFlushable.Flush)));
-                Newobj(Constructor(Type<Action<TWriter>>(), Type<object>(), Type<IntPtr>()));
-                return Return<Action<TWriter>>();
-            }
-
-            static Func<TWriter, CancellationToken, Task> CreateAsyncFlushAction(TWriter writer)
-            {
-                Debug.Assert(writer is IFlushable);
-                Ldnull();
-                Push(writer);
-                Ldvirtftn(Method(Type<IFlushable>(), nameof(IFlushable.FlushAsync)));
-                Newobj(Constructor(Type<Func<TWriter, CancellationToken, Task>>(), Type<object>(), Type<IntPtr>()));
-                return Return<Func<TWriter, CancellationToken, Task>>();
             }
         }
 
