@@ -301,10 +301,8 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         async Task WriteAsync(ReadOnlySequence<byte> input, CancellationToken token = default)
         {
-            for (var position = input.Start; input.TryGet(ref position, out var block); token.ThrowIfCancellationRequested())
-            {
-                await WriteAsync(block, token).ConfigureAwait(false);
-            }
+            foreach (var segment in input)
+                await WriteAsync(segment, token).ConfigureAwait(false);
         }
 
         /// <summary>
