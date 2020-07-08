@@ -100,10 +100,12 @@ namespace DotNext.Buffers
         /// <inheritdoc/>
         private protected override void Resize(int newSize)
         {
+            BeforeAllocationCounter?.WriteMetric(buffer.Length);
             var newBuffer = allocator.Invoke(newSize, false);
             buffer.Memory.CopyTo(newBuffer.Memory);
             buffer.Dispose();
             buffer = newBuffer;
+            AfterAllocationCounter?.WriteMetric(buffer.Length);
         }
 
         /// <inheritdoc/>

@@ -2,6 +2,7 @@ using System;
 using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 
 namespace DotNext.Buffers
 {
@@ -28,6 +29,24 @@ namespace DotNext.Buffers
         /// </summary>
         private protected MemoryWriter()
         {
+        }
+
+        /// <summary>
+        /// Sets the counter used to report internal buffer size before re-allocation.
+        /// </summary>
+        public EventCounter? BeforeAllocationCounter
+        {
+            set;
+            private protected get;
+        }
+
+        /// <summary>
+        /// Sets the counter used to report internal buffer size after re-allocation.
+        /// </summary>
+        public EventCounter? AfterAllocationCounter
+        {
+            set;
+            private protected get;
         }
 
         /// <summary>
