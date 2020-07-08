@@ -287,12 +287,11 @@ namespace DotNext.Buffers
         /// <inheritdoc/>
         private protected override void Resize(int newSize)
         {
-            BeforeAllocationCounter?.WriteMetric(buffer.LongLength);
             var newBuffer = pool.Rent(newSize);
             buffer.CopyTo(newBuffer, 0);
             ReleaseBuffer();
             buffer = newBuffer;
-            AfterAllocationCounter?.WriteMetric(newBuffer.LongLength);
+            AllocationCounter?.WriteMetric(newBuffer.LongLength);
         }
 
         /// <inheritdoc />

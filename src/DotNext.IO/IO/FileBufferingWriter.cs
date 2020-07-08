@@ -201,18 +201,9 @@ namespace DotNext.IO
         }
 
         /// <summary>
-        /// Sets the counter used to report internal buffer size before re-allocation.
+        /// Sets the counter used to report allocation of internal buffer.
         /// </summary>
-        public EventCounter? BeforeAllocationCounter
-        {
-            set;
-            private get;
-        }
-
-        /// <summary>
-        /// Sets the counter used to report internal buffer size after re-allocation.
-        /// </summary>
-        public EventCounter? AfterAllocationCounter
+        public EventCounter? AllocationCounter
         {
             set;
             private get;
@@ -284,6 +275,7 @@ namespace DotNext.IO
                 case MemoryEvaluationResult.PersistExistingBuffer:
                     PersistBuffer();
                     buffer = allocator.Invoke(sizeHint, false);
+                    AllocationCounter?.WriteMetric(buffer.Length);
                     result = buffer.Memory.Slice(0, sizeHint);
                     break;
                 default:
@@ -317,12 +309,11 @@ namespace DotNext.IO
             }
             else if (buffer.Length - position < size)
             {
-                BeforeAllocationCounter?.WriteMetric(buffer.Length);
                 var newBuffer = allocator.Invoke(newSize, false);
                 buffer.Memory.CopyTo(newBuffer.Memory);
                 buffer.Dispose();
                 buffer = newBuffer;
-                AfterAllocationCounter?.WriteMetric(newBuffer.Length);
+                AllocationCounter?.WriteMetric(newBuffer.Length);
             }
 
             output = buffer.Memory.Slice(position, size);
@@ -371,6 +362,7 @@ namespace DotNext.IO
                 case MemoryEvaluationResult.PersistExistingBuffer:
                     await PersistBufferAsync(token).ConfigureAwait(false);
                     this.buffer = allocator.Invoke(buffer.Length, false);
+                    AllocationCounter?.WriteMetric(this.buffer.Length);
                     buffer.CopyTo(this.buffer.Memory);
                     position = buffer.Length;
                     break;
@@ -398,6 +390,7 @@ namespace DotNext.IO
                 case MemoryEvaluationResult.PersistExistingBuffer:
                     PersistBuffer();
                     this.buffer = allocator.Invoke(buffer.Length, false);
+                    AllocationCounter?.WriteMetric(this.buffer.Length);
                     buffer.CopyTo(this.buffer.Memory.Span);
                     position = buffer.Length;
                     break;

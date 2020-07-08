@@ -32,18 +32,9 @@ namespace DotNext.Buffers
         }
 
         /// <summary>
-        /// Sets the counter used to report internal buffer size before re-allocation.
+        /// Sets the counter used to report allocation of internal buffer.
         /// </summary>
-        public EventCounter? BeforeAllocationCounter
-        {
-            set;
-            private protected get;
-        }
-
-        /// <summary>
-        /// Sets the counter used to report internal buffer size after re-allocation.
-        /// </summary>
-        public EventCounter? AfterAllocationCounter
+        public EventCounter? AllocationCounter
         {
             set;
             private protected get;
