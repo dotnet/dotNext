@@ -1,6 +1,7 @@
 using System;
 using System.Buffers;
 using System.Diagnostics;
+using System.Diagnostics.Tracing;
 using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Threading;
@@ -199,6 +200,24 @@ namespace DotNext.IO
             options = asyncIO ? withAsyncIO : withoutAsyncIO;
         }
 
+        /// <summary>
+        /// Sets the counter used to report internal buffer size before re-allocation.
+        /// </summary>
+        public EventCounter? BeforeAllocationCounter
+        {
+            set;
+            private get;
+        }
+
+        /// <summary>
+        /// Sets the counter used to report internal buffer size after re-allocation.
+        /// </summary>
+        public EventCounter? AfterAllocationCounter
+        {
+            set;
+            private get;
+        }
+
         private static MemoryMappedFile CreateMemoryMappedFile(FileStream fileBackend)
             => MemoryMappedFile.CreateFromFile(fileBackend, null, fileBackend.Length, MemoryMappedFileAccess.ReadWrite, HandleInheritability.None, true);
 
@@ -298,10 +317,12 @@ namespace DotNext.IO
             }
             else if (buffer.Length - position < size)
             {
+                BeforeAllocationCounter?.WriteMetric(buffer.Length);
                 var newBuffer = allocator.Invoke(newSize, false);
                 buffer.Memory.CopyTo(newBuffer.Memory);
                 buffer.Dispose();
                 buffer = newBuffer;
+                AfterAllocationCounter?.WriteMetric(newBuffer.Length);
             }
 
             output = buffer.Memory.Slice(position, size);
