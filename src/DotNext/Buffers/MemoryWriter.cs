@@ -40,8 +40,8 @@ namespace DotNext.Buffers
         [DisallowNull]
         public EventCounter? AllocationCounter
         {
-            set => diagObj = value;
             private protected get => diagObj as EventCounter;
+            set => diagObj = value;
         }
 
         /// <summary>
@@ -51,8 +51,8 @@ namespace DotNext.Buffers
         [DisallowNull]
         public Action<int>? BufferSizeCallback
         {
-            set => diagObj = value;
             private protected get => diagObj as Action<int>;
+            set => diagObj = value;
         }
 
         /// <summary>
