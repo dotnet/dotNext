@@ -299,6 +299,7 @@ namespace DotNext.Buffers
         {
             if (disposing)
             {
+                BufferSizeCallback?.Invoke(buffer.Length);
                 ReleaseBuffer();
                 buffer = Array.Empty<T>();
             }

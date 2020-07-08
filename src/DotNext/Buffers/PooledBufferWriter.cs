@@ -112,6 +112,7 @@ namespace DotNext.Buffers
         {
             if (disposing)
             {
+                BufferSizeCallback?.Invoke(buffer.Length);
                 buffer.Dispose();
                 buffer = default;
             }

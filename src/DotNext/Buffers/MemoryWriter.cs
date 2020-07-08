@@ -2,6 +2,7 @@ using System;
 using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Tracing;
 
 namespace DotNext.Buffers
@@ -19,6 +20,8 @@ namespace DotNext.Buffers
         /// </summary>
         private protected const int DefaultInitialBufferSize = 256;
 
+        private object? diagObj;
+
         /// <summary>
         /// Represents position of write cursor.
         /// </summary>
@@ -34,10 +37,22 @@ namespace DotNext.Buffers
         /// <summary>
         /// Sets the counter used to report allocation of internal buffer.
         /// </summary>
+        [DisallowNull]
         public EventCounter? AllocationCounter
         {
-            set;
-            private protected get;
+            set => diagObj = value;
+            private protected get => diagObj as EventCounter;
+        }
+
+        /// <summary>
+        /// Sets the callback used internally to report actual size
+        /// of allocated buffer.
+        /// </summary>
+        [DisallowNull]
+        public Action<int>? BufferSizeCallback
+        {
+            set => diagObj = value;
+            private protected get => diagObj as Action<int>;
         }
 
         /// <summary>
@@ -207,6 +222,17 @@ namespace DotNext.Buffers
 
                 Resize(newSize);
             }
+        }
+
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                diagObj = null;
+            }
+
+            base.Dispose(disposing);
         }
 
         /// <summary>
