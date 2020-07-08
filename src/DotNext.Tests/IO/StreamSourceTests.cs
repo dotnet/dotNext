@@ -428,6 +428,7 @@ namespace DotNext.IO
             True(await checker.Task);
             stream.EndWrite(ar);
             Equal(1L, stream.Position);
+            Equal(1L, stream.Length);
             Equal(1, writer.WrittenCount);
             await stream.FlushAsync();
             Equal(40, writer.WrittenSpan[0]);
@@ -447,7 +448,6 @@ namespace DotNext.IO
             Throws<NotSupportedException>(() => stream.Read(new byte[2]));
             Throws<NotSupportedException>(() => stream.Read(new byte[2], 0, 2));
             Throws<NotSupportedException>(() => stream.Position = 0);
-            Throws<NotSupportedException>(() => stream.Length);
             Throws<NotSupportedException>(() => stream.SetLength(10L));
             Throws<NotSupportedException>(() => stream.Seek(-1L, SeekOrigin.End));
             Throws<NotSupportedException>(() => stream.BeginRead(new byte[2], 0, 2, null, null));
@@ -489,6 +489,7 @@ namespace DotNext.IO
             stream.Write(content);
             stream.Flush();
             Equal(3, stream.Position);
+            Equal(3, stream.Length);
             Equal(content, writer.WrittenMemory.ToArray());
         }
 

@@ -34,7 +34,7 @@ namespace DotNext.IO
             set => throw new NotSupportedException();
         }
 
-        public sealed override long Length => throw new NotSupportedException();
+        public sealed override long Length => writtenBytes;
 
         public sealed override void SetLength(long value) => throw new NotSupportedException();
 
