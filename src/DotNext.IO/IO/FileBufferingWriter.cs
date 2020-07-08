@@ -205,8 +205,8 @@ namespace DotNext.IO
         /// </summary>
         public EventCounter? AllocationCounter
         {
-            set;
             private get;
+            set;
         }
 
         private static MemoryMappedFile CreateMemoryMappedFile(FileStream fileBackend)
