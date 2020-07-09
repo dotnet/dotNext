@@ -43,22 +43,20 @@ namespace DotNext
                 type = type.GetEnumUnderlyingType();
 
             // find conversion method using Reflection
-            var method = typeof(Convert).GetMethod(conversionMethod, new[] { type }) ?? MethodBase.GetMethodFromHandle(ConvertSlowMethodHandle);
-            Debug.Assert(method.IsStatic & method.IsPublic);
-            Converter = method.MethodHandle.GetFunctionPointer();
+            MethodInfo? method = typeof(Convert).GetMethod(conversionMethod, new[] { type });
+            if (method is null)
+            {
+                Ldftn(Method(typeof(EnumConverter<TInput, TOutput>), nameof(ConvertSlow), Type<TInput>()));
+                Pop(out Converter);
+            }
+            else
+            {
+                Debug.Assert(method.IsStatic & method.IsPublic);
+                Converter = method.MethodHandle.GetFunctionPointer();
+            }
         }
 
         private static TOutput ConvertSlow(TInput value) => (TOutput)value.ToType(typeof(TOutput), CurrentCulture);
-
-        private static RuntimeMethodHandle ConvertSlowMethodHandle
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get
-            {
-                Ldtoken(Method(typeof(EnumConverter<TInput, TOutput>), nameof(ConvertSlow), Type<TInput>()));
-                return Return<RuntimeMethodHandle>();
-            }
-        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static TOutput Convert(TInput value)
