@@ -20,6 +20,7 @@ namespace DotNext
 
         static EnumConverter()
         {
+            // TODO: Should be replaced with function pointers in C# 9
             var conversionMethod = System.Type.GetTypeCode(typeof(TOutput)) switch
             {
                 TypeCode.Byte => nameof(System.Convert.ToByte),
