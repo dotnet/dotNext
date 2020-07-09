@@ -1,21 +1,16 @@
 using System;
 using System.Buffers;
-using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.MemoryMarshal;
-using static InlineIL.IL;
-using static InlineIL.IL.Emit;
-using static InlineIL.MethodRef;
-using static InlineIL.TypeRef;
 
 namespace DotNext.IO
 {
     using Buffers;
 
     /// <summary>
-    /// Represents conversion of various buffer types to stream.
+    /// Represents <see cref="Stream"/> factory methods.
     /// </summary>
     public static class StreamSource
     {
@@ -62,43 +57,54 @@ namespace DotNext.IO
             => AsStream(writer.WrittenArray);
 
         /// <summary>
-        /// Returns the writable stream associated with the buffer writer.
+        /// Returns writable stream that wraps the provided delegate for writing data.
+        /// </summary>
+        /// <param name="writer">The callback that is called automatically.</param>
+        /// <param name="arg">The arg to be passed to the callback.</param>
+        /// <param name="flush">Optional synchronous flush action.</param>
+        /// <param name="flushAsync">Optiona asynchronous flush action.</param>
+        /// <typeparam name="TArg">The type of the object that represents the state.</typeparam>
+        /// <returns>The writable stream wrapping the callback.</returns>
+        public static Stream AsStream<TArg>(this ReadOnlySpanAction<byte, TArg> writer, TArg arg, Action<TArg>? flush = null, Func<TArg, CancellationToken, Task>? flushAsync = null)
+            => new SpanWriterStream<TArg>(writer, arg, flush, flushAsync);
+
+        /// <summary>
+        /// Returns writable stream associated with the buffer writer.
         /// </summary>
         /// <typeparam name="TWriter">The type of the writer.</typeparam>
         /// <param name="writer">The writer to be wrapped by the stream.</param>
         /// <param name="flush">Optional synchronous flush action.</param>
         /// <param name="flushAsync">Optiona asynchronous flush action.</param>
-        /// <returns>The stream wrapping buffer writer.</returns>
+        /// <returns>The writable stream wrapping buffer writer.</returns>
         public static Stream AsStream<TWriter>(this TWriter writer, Action<TWriter>? flush = null, Func<TWriter, CancellationToken, Task>? flushAsync = null)
             where TWriter : class, IBufferWriter<byte>
         {
-            if (writer is IFlushable)
-            {
-                flush ??= CreateFlushAction(writer);
-                flushAsync ??= CreateAsyncFlushAction(writer);
-            }
+            flush ??= IFlushable.TryReflectFlushMethod(writer);
+            flushAsync ??= IFlushable.TryReflectAsyncFlushMethod(writer);
 
-            return new BufferWriterStream<TWriter>(writer, flush, flushAsync);
+            return AsStream(WriteToBuffer, writer, flush, flushAsync);
 
-            static Action<TWriter> CreateFlushAction(TWriter writer)
+            static void WriteToBuffer(ReadOnlySpan<byte> source, TWriter writer)
             {
-                Debug.Assert(writer is IFlushable);
-                Ldnull();
-                Push(writer);
-                Ldvirtftn(Method(Type<IFlushable>(), nameof(IFlushable.Flush)));
-                Newobj(Constructor(Type<Action<TWriter>>(), Type<object>(), Type<IntPtr>()));
-                return Return<Action<TWriter>>();
-            }
-
-            static Func<TWriter, CancellationToken, Task> CreateAsyncFlushAction(TWriter writer)
-            {
-                Debug.Assert(writer is IFlushable);
-                Ldnull();
-                Push(writer);
-                Ldvirtftn(Method(Type<IFlushable>(), nameof(IFlushable.FlushAsync)));
-                Newobj(Constructor(Type<Func<TWriter, CancellationToken, Task>>(), Type<object>(), Type<IntPtr>()));
-                return Return<Func<TWriter, CancellationToken, Task>>();
+                if (!source.IsEmpty)
+                {
+                    var destination = writer.GetSpan(source.Length);
+                    source.CopyTo(destination);
+                    writer.Advance(source.Length);
+                }
             }
         }
+
+        /// <summary>
+        /// Returns writable stream that wraps the provided delegate for writing data.
+        /// </summary>
+        /// <param name="writer">The callback that is called automatically.</param>
+        /// <param name="arg">The arg to be passed to the callback.</param>
+        /// <param name="flush">Optional synchronous flush action.</param>
+        /// <param name="flushAsync">Optiona asynchronous flush action.</param>
+        /// <typeparam name="TArg">The type of the object that represents the state.</typeparam>
+        /// <returns>The writable stream wrapping the callback.</returns>
+        public static Stream AsStream<TArg>(this Func<ReadOnlyMemory<byte>, TArg, CancellationToken, ValueTask> writer, TArg arg, Action<TArg>? flush = null, Func<TArg, CancellationToken, Task>? flushAsync = null)
+            => new MemoryWriterStream<TArg>(writer, arg, flush, flushAsync);
     }
 }

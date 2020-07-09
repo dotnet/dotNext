@@ -28,6 +28,11 @@ namespace DotNext.IO
             position = sequence.Start;
         }
 
+        internal SequenceBinaryReader(ReadOnlyMemory<byte> memory)
+            : this(new ReadOnlySequence<byte>(memory))
+        {
+        }
+
         /// <summary>
         /// Resets the reader so it can be used again.
         /// </summary>
@@ -389,6 +394,32 @@ namespace DotNext.IO
             => Read<Guid, GuidDecoder>(new GuidDecoder(format), lengthFormat, in context);
 
         /// <summary>
+        /// Parses <see cref="TimeSpan"/> from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="FormatException">The time span is in incorrect format.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        public TimeSpan ReadTimeSpan(StringLengthEncoding lengthFormat, in DecodingContext context, IFormatProvider? provider = null)
+            => Read<TimeSpan, TimeSpanDecoder>(new TimeSpanDecoder(provider), lengthFormat, in context);
+
+        /// <summary>
+        /// Parses <see cref="TimeSpan"/> from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="formats">An array of allowable formats.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="FormatException">The time span is in incorrect format.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        public TimeSpan ReadTimeSpan(StringLengthEncoding lengthFormat, in DecodingContext context, string[] formats, TimeSpanStyles style = TimeSpanStyles.None, IFormatProvider? provider = null)
+            => Read<TimeSpan, TimeSpanDecoder>(new TimeSpanDecoder(style, formats, provider), lengthFormat, in context);
+
+        /// <summary>
         /// Decodes the string.
         /// </summary>
         /// <param name="length">The length of the encoded string, in bytes.</param>
@@ -447,17 +478,51 @@ namespace DotNext.IO
 
         /// <inheritdoc/>
         ValueTask<T> IAsyncBinaryReader.ReadAsync<T>(CancellationToken token)
-            => token.IsCancellationRequested ?
-                new ValueTask<T>(Task.FromCanceled<T>(token)) :
-                new ValueTask<T>(Read<T>());
+        {
+            Task<T> result;
+
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled<T>(token);
+            }
+            else
+            {
+                try
+                {
+                    return new ValueTask<T>(Read<T>());
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException<T>(e);
+                }
+            }
+
+            return new ValueTask<T>(result);
+        }
 
         /// <inheritdoc/>
         ValueTask IAsyncBinaryReader.ReadAsync(Memory<byte> output, CancellationToken token)
         {
+            Task result;
+
             if (token.IsCancellationRequested)
-                return new ValueTask(Task.FromCanceled(token));
-            Read(output);
-            return new ValueTask();
+            {
+                result = Task.FromCanceled(token);
+            }
+            else
+            {
+                result = Task.CompletedTask;
+                try
+                {
+                    Read(output);
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException(e);
+                }
+            }
+
+            return new ValueTask(result);
         }
 
         /// <inheritdoc/>
@@ -829,6 +894,52 @@ namespace DotNext.IO
         }
 
         /// <inheritdoc/>
+        ValueTask<TimeSpan> IAsyncBinaryReader.ReadTimeSpanAsync(StringLengthEncoding lengthFormat, DecodingContext context, IFormatProvider? provider, CancellationToken token)
+        {
+            Task<TimeSpan> result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled<TimeSpan>(token);
+            }
+            else
+            {
+                try
+                {
+                    return new ValueTask<TimeSpan>(ReadTimeSpan(lengthFormat, context, provider));
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException<TimeSpan>(e);
+                }
+            }
+
+            return new ValueTask<TimeSpan>(result);
+        }
+
+        /// <inheritdoc/>
+        ValueTask<TimeSpan> IAsyncBinaryReader.ReadTimeSpanAsync(StringLengthEncoding lengthFormat, DecodingContext context, string[] formats, TimeSpanStyles style, IFormatProvider? provider, CancellationToken token)
+        {
+            Task<TimeSpan> result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled<TimeSpan>(token);
+            }
+            else
+            {
+                try
+                {
+                    return new ValueTask<TimeSpan>(ReadTimeSpan(lengthFormat, context, formats, style, provider));
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException<TimeSpan>(e);
+                }
+            }
+
+            return new ValueTask<TimeSpan>(result);
+        }
+
+        /// <inheritdoc/>
         ValueTask<string> IAsyncBinaryReader.ReadStringAsync(int length, DecodingContext context, CancellationToken token)
         {
             Task<string> result;
@@ -881,5 +992,61 @@ namespace DotNext.IO
         /// <inheritdoc/>
         Task IAsyncBinaryReader.CopyToAsync(PipeWriter output, CancellationToken token)
             => output.WriteAsync(sequence.Slice(position), token).AsTask();
+
+        /// <inheritdoc/>
+        Task IAsyncBinaryReader.CopyToAsync(IBufferWriter<byte> writer, CancellationToken token)
+        {
+            Task result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled(token);
+            }
+            else
+            {
+                result = Task.CompletedTask;
+                try
+                {
+                    writer.Write(sequence.Slice(position), token);
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException(e);
+                }
+            }
+
+            return result;
+        }
+
+        /// <inheritdoc/>
+        Task IAsyncBinaryReader.CopyToAsync<TArg>(ReadOnlySpanAction<byte, TArg> reader, TArg arg, CancellationToken token)
+        {
+            Task result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled(token);
+            }
+            else
+            {
+                result = Task.CompletedTask;
+                try
+                {
+                    for (ReadOnlyMemory<byte> block; sequence.TryGet(ref position, out block); token.ThrowIfCancellationRequested())
+                        reader(block.Span, arg);
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException(e);
+                }
+            }
+
+            return result;
+        }
+
+        /// <inheritdoc/>
+        async Task IAsyncBinaryReader.CopyToAsync<TArg>(Func<ReadOnlyMemory<byte>, TArg, CancellationToken, ValueTask> reader, TArg arg, CancellationToken token)
+        {
+            foreach (var segment in sequence.Slice(position))
+                await reader(segment, arg, token).ConfigureAwait(false);
+        }
     }
 }

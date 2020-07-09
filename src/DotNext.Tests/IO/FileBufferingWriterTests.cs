@@ -328,6 +328,18 @@ namespace DotNext.IO
             Equal(dict, formatter.Deserialize(source));
         }
 
+        [Fact]
+        public static void StressTest3()
+        {
+            var buffer = new byte[1024 * 1024 * 10];    // 10 MB
+            new Random().NextBytes(buffer);
+            using var writer = new FileBufferingWriter(asyncIO: false);
+            writer.Write(buffer);
+            False(writer.TryGetWrittenContent(out _));
+            using var content = writer.GetWrittenContent();
+            True(buffer.AsSpan().SequenceEqual(content.Memory.Span));
+        }
+
         [Theory]
         [InlineData(100)]
         [InlineData(1000)]

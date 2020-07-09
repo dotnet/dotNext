@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.IO;
 using System.IO.Pipelines;
 using System.Runtime.InteropServices;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 namespace DotNext.IO
 {
     using ByteBuffer = Buffers.ArrayRental<byte>;
+    using ByteBufferWriter = Buffers.PooledArrayBufferWriter<byte>;
     using PipeBinaryWriter = Pipelines.PipeBinaryWriter;
 
     /// <summary>
@@ -36,24 +38,14 @@ namespace DotNext.IO
                 this.capacity = capacity;
             }
 
-            private static string ReadAsString(MemoryStream content, Encoding encoding)
-            {
-                if (content.Length == 0L)
-                    return string.Empty;
-                if (!content.TryGetBuffer(out var buffer))
-                    buffer = new ArraySegment<byte>(content.ToArray());
-                return encoding.GetString(buffer.AsSpan());
-            }
-
             public async ValueTask<string> ReadAsync<TReader>(TReader reader, CancellationToken token)
                 where TReader : IAsyncBinaryReader
             {
-                using var ms = capacity.HasValue ?
-                    new RentedMemoryStream(capacity.GetValueOrDefault()) :
-                    new MemoryStream(DefaultBufferSize);
-                await reader.CopyToAsync(ms, token).ConfigureAwait(false);
-                ms.Seek(0, SeekOrigin.Begin);
-                return ReadAsString(ms, encoding);
+                using var writer = capacity.HasValue ?
+                    new ByteBufferWriter(capacity.GetValueOrDefault()) :
+                    new ByteBufferWriter();
+                await reader.CopyToAsync(writer, token).ConfigureAwait(false);
+                return writer.WrittenCount == 0 ? string.Empty : encoding.GetString(writer.WrittenMemory.Span);
             }
         }
 
@@ -70,6 +62,7 @@ namespace DotNext.IO
             }
         }
 
+        [StructLayout(LayoutKind.Auto)]
         private readonly struct ValueDecoder<T> : IDataTransferObject.IDecoder<T>
             where T : unmanaged
         {
@@ -93,7 +86,7 @@ namespace DotNext.IO
             => dto.WriteToAsync(new AsyncStreamBinaryWriter(output, buffer), token);
 
         /// <summary>
-        /// Copies the object content into the specified stream.
+        /// Copies the object content to the specified stream.
         /// </summary>
         /// <typeparam name="TObject">The type of data transfer object.</typeparam>
         /// <param name="dto">Transfer data object to transform.</param>
@@ -110,7 +103,7 @@ namespace DotNext.IO
         }
 
         /// <summary>
-        /// Copies the object content into the specified pipe writer.
+        /// Copies the object content to the specified pipe writer.
         /// </summary>
         /// <typeparam name="TObject">The type of data transfer object.</typeparam>
         /// <param name="dto">Transfer data object to transform.</param>
@@ -121,6 +114,19 @@ namespace DotNext.IO
         public static ValueTask WriteToAsync<TObject>(this TObject dto, PipeWriter output, CancellationToken token = default)
             where TObject : notnull, IDataTransferObject
             => dto.WriteToAsync(new PipeBinaryWriter(output), token);
+
+        /// <summary>
+        /// Copies the object content to the specified buffer.
+        /// </summary>
+        /// <typeparam name="TObject">The type of data transfer object.</typeparam>
+        /// <param name="dto">Transfer data object to transform.</param>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The task representing state of asynchronous execution.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask WriteToAsync<TObject>(this TObject dto, IBufferWriter<byte> writer, CancellationToken token = default)
+            where TObject : notnull, IDataTransferObject
+            => dto.WriteToAsync(new AsyncBufferWriter(writer), token);
 
         /// <summary>
         /// Converts DTO content to string.

@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.Globalization;
 using System.IO;
 using System.IO.Pipelines;
@@ -21,7 +22,9 @@ namespace DotNext.IO
 
         internal AsyncStreamBinaryReader(Stream input, Memory<byte> buffer)
         {
-            this.input = input;
+            if (buffer.IsEmpty)
+                throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
+            this.input = input ?? throw new ArgumentNullException(nameof(input));
             this.buffer = buffer;
         }
 
@@ -77,11 +80,26 @@ namespace DotNext.IO
         ValueTask<DateTimeOffset> IAsyncBinaryReader.ReadDateTimeOffsetAsync(StringLengthEncoding lengthFormat, DecodingContext context, string[] formats, DateTimeStyles style, IFormatProvider? provider, CancellationToken token)
             => StreamExtensions.ReadDateTimeOffsetAsync(input, lengthFormat, context, buffer, style, provider, token);
 
+        ValueTask<TimeSpan> IAsyncBinaryReader.ReadTimeSpanAsync(StringLengthEncoding lengthFormat, DecodingContext context, IFormatProvider? provider, CancellationToken token)
+            => StreamExtensions.ReadTimeSpanAsync(input, lengthFormat, context, buffer, provider, token);
+
+        ValueTask<TimeSpan> IAsyncBinaryReader.ReadTimeSpanAsync(StringLengthEncoding lengthFormat, DecodingContext context, string[] formats, TimeSpanStyles style, IFormatProvider? provider, CancellationToken token)
+            => StreamExtensions.ReadTimeSpanAsync(input, lengthFormat, context, buffer, formats, style, provider, token);
+
         Task IAsyncBinaryReader.CopyToAsync(Stream output, CancellationToken token)
             => input.CopyToAsync(output, token);
 
         Task IAsyncBinaryReader.CopyToAsync(PipeWriter output, CancellationToken token)
             => input.CopyToAsync(output, token);
+
+        Task IAsyncBinaryReader.CopyToAsync(IBufferWriter<byte> writer, CancellationToken token)
+            => input.CopyToAsync(writer, token: token);
+
+        Task IAsyncBinaryReader.CopyToAsync<TArg>(ReadOnlySpanAction<byte, TArg> reader, TArg arg, CancellationToken token)
+            => input.ReadAsync(reader, arg, buffer, token);
+
+        Task IAsyncBinaryReader.CopyToAsync<TArg>(Func<ReadOnlyMemory<byte>, TArg, CancellationToken, ValueTask> reader, TArg arg, CancellationToken token)
+            => input.ReadAsync(reader, arg, buffer, token);
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -92,7 +110,9 @@ namespace DotNext.IO
 
         internal AsyncStreamBinaryWriter(Stream output, Memory<byte> buffer)
         {
-            this.output = output;
+            if (buffer.IsEmpty)
+                throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
+            this.output = output ?? throw new ArgumentNullException(nameof(output));
             this.buffer = buffer;
         }
 
@@ -133,10 +153,19 @@ namespace DotNext.IO
         ValueTask IAsyncBinaryWriter.WriteDateTimeOffsetAsync(DateTimeOffset value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
             => output.WriteDateTimeOffsetAsync(value, lengthFormat, context, buffer, format, provider, token);
 
+        ValueTask IAsyncBinaryWriter.WriteTimeSpanAsync(TimeSpan value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+            => output.WriteTimeSpanAsync(value, lengthFormat, context, buffer, format, provider, token);
+
         Task IAsyncBinaryWriter.CopyFromAsync(Stream input, CancellationToken token)
             => input.CopyToAsync(output, token);
 
         Task IAsyncBinaryWriter.CopyFromAsync(PipeReader input, CancellationToken token)
             => input.CopyToAsync(output, token);
+
+        Task IAsyncBinaryWriter.WriteAsync(ReadOnlySequence<byte> input, CancellationToken token)
+            => output.WriteAsync(input, token).AsTask();
+
+        Task IAsyncBinaryWriter.CopyFromAsync<TArg>(Func<TArg, CancellationToken, ValueTask<ReadOnlyMemory<byte>>> supplier, TArg arg, CancellationToken token)
+            => output.WriteAsync(supplier, arg, token);
     }
 }

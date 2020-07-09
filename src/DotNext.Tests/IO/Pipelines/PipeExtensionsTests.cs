@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Pipelines;
@@ -206,6 +207,17 @@ namespace DotNext.IO.Pipelines
             await EncodeDecodeStringAsync(Encoding.UTF32, testString, bufferSize, lengthEnc);
             await EncodeDecodeStringAsync(Encoding.UTF7, testString, bufferSize, lengthEnc);
             await EncodeDecodeStringAsync(Encoding.ASCII, testString, bufferSize, lengthEnc);
+        }
+
+        [Fact]
+        public static async Task CopyToBuffer()
+        {
+            var pipe = new Pipe();
+            await pipe.Writer.WriteAsync(new byte[] { 10, 20, 30 });
+            await pipe.Writer.CompleteAsync();
+            var buffer = new ArrayBufferWriter<byte>();
+            Equal(3L, await pipe.Reader.CopyToAsync(buffer));
+            Equal(new byte[] { 10, 20, 30 }, buffer.WrittenMemory.ToArray());
         }
     }
 }

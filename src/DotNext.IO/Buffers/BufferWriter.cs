@@ -5,6 +5,7 @@ using System.Text;
 
 namespace DotNext.Buffers
 {
+    using System.Threading;
     using Text;
     using StringLengthEncoding = IO.StringLengthEncoding;
 
@@ -205,6 +206,19 @@ namespace DotNext.Buffers
         }
 
         [StructLayout(LayoutKind.Auto)]
+        internal readonly struct TimeSpanFormatter : ISpanFormattable
+        {
+            private readonly TimeSpan value;
+
+            internal TimeSpanFormatter(TimeSpan value) => this.value = value;
+
+            bool ISpanFormattable.TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
+                => value.TryFormat(destination, out charsWritten, format, provider);
+
+            public static implicit operator TimeSpanFormatter(TimeSpan value) => new TimeSpanFormatter(value);
+        }
+
+        [StructLayout(LayoutKind.Auto)]
         internal struct LengthWriter : SevenBitEncodedInt.IWriter
         {
             private readonly Memory<byte> writer;
@@ -233,6 +247,25 @@ namespace DotNext.Buffers
         public static void Write<T>(this IBufferWriter<byte> writer, in T value)
             where T : unmanaged
             => writer.Write(Span.AsReadOnlyBytes(in value));
+
+        /// <summary>
+        /// Writes the sequence of elements to the buffer.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements in the sequence.</typeparam>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The sequence of elements to be written.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The number of written elements.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static long Write<T>(this IBufferWriter<T> writer, ReadOnlySequence<T> value, CancellationToken token = default)
+        {
+            var count = 0L;
+
+            for (var position = value.Start; value.TryGet(ref position, out var block); count += block.Length, token.ThrowIfCancellationRequested())
+                writer.Write(block.Span);
+
+            return count;
+        }
 
         /// <summary>
         /// Writes single element to the buffer.
@@ -599,6 +632,19 @@ namespace DotNext.Buffers
             => Write<DateTimeOffsetFormatter>(writer, value, lengthFormat, in context, format, provider, bufferSize);
 
         /// <summary>
+        /// Encodes <see cref="TimeSpan"/> as a string.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="context">The encoding context.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
+        public static void WriteTimeSpan(this IBufferWriter<byte> writer, TimeSpan value, StringLengthEncoding lengthFormat, in EncodingContext context, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0)
+            => Write<TimeSpanFormatter>(writer, value, lengthFormat, in context, format, provider, bufferSize);
+
+        /// <summary>
         /// Writes the array to the buffer.
         /// </summary>
         /// <param name="writer">The buffer writer.</param>
@@ -774,6 +820,16 @@ namespace DotNext.Buffers
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         public static void WriteDouble(this IBufferWriter<char> writer, double value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
             => Write<DoubleFormatter>(writer, value, format, provider);
+
+        /// <summary>
+        /// Writes string representation of <see cref="TimeSpan"/> to the buffer.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        public static void WriteTimeSpan(this IBufferWriter<char> writer, TimeSpan value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write<TimeSpanFormatter>(writer, value, format, provider);
 
         // TODO: Need writer for StringBuilder but it will be available in .NET Core 5
 

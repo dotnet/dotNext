@@ -10,7 +10,6 @@ namespace DotNext.IO
     /// </summary>
     public class StreamTransferObject : Disposable, IDataTransferObject, IAsyncDisposable
     {
-        private const int DefaultBufferSize = 1024;
         private readonly bool leaveOpen;
         private readonly Stream content;
 
@@ -39,7 +38,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    await source.WriteToAsync(content, DefaultBufferSize, token).ConfigureAwait(false);
+                    await source.WriteToAsync(content, token: token).ConfigureAwait(false);
                 }
                 finally
                 {

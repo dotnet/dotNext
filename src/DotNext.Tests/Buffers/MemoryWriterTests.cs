@@ -331,5 +331,21 @@ namespace DotNext.Buffers
                 list.Insert(0, i + 100);
             }
         }
+
+        private sealed class AllocationEventCounter
+        {
+            internal int Value;
+
+            internal void WriteMetric(int value) => this.Value = value;
+        }
+
+        [Fact]
+        public static void BufferSizeCallback()
+        {
+            var counter = new AllocationEventCounter();
+            using (var writer = new PooledArrayBufferWriter<byte> { BufferSizeCallback = counter.WriteMetric})
+                writer.Write(new byte[] { 1, 2, 3 });
+            True(counter.Value >= 3);
+        }
     }
 }

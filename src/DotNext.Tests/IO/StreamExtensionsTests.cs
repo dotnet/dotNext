@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Xunit;
 using static System.Globalization.CultureInfo;
 using DateTimeStyles = System.Globalization.DateTimeStyles;
+using TimeSpanStyles = System.Globalization.TimeSpanStyles;
 
 namespace DotNext.IO
 {
@@ -415,6 +416,7 @@ namespace DotNext.IO
             var g = Guid.NewGuid();
             var dt = DateTime.Now;
             var dto = DateTimeOffset.Now;
+            var t = TimeSpan.FromMilliseconds(1096);
             stream.WriteInt64(42L, StringLengthEncoding.Plain, encoding, provider: InvariantCulture);
             stream.WriteUInt64(12UL, StringLengthEncoding.PlainLittleEndian, encoding, provider: InvariantCulture);
             stream.WriteInt32(34, StringLengthEncoding.PlainBigEndian, encoding, provider: InvariantCulture);
@@ -435,6 +437,8 @@ namespace DotNext.IO
             stream.WriteDecimal(42.5M, StringLengthEncoding.Plain, encoding, provider: InvariantCulture);
             stream.WriteSingle(32.2F, StringLengthEncoding.Plain, encoding, provider: InvariantCulture);
             stream.WriteDouble(56.6D, StringLengthEncoding.Plain, encoding, provider: InvariantCulture);
+            stream.WriteTimeSpan(t, StringLengthEncoding.Plain, encoding, provider: InvariantCulture);
+            stream.WriteTimeSpan(t, StringLengthEncoding.Plain, encoding, "G", provider: InvariantCulture);
 
             stream.Position = 0;
             var decodingContext = new DecodingContext(encoding);
@@ -459,6 +463,8 @@ namespace DotNext.IO
             Equal(42.5M, stream.ReadDecimal(StringLengthEncoding.Plain, in decodingContext, buffer, provider: InvariantCulture));
             Equal(32.2F, stream.ReadSingle(StringLengthEncoding.Plain, in decodingContext, buffer, provider: InvariantCulture));
             Equal(56.6D, stream.ReadDouble(StringLengthEncoding.Plain, in decodingContext, buffer, provider: InvariantCulture));
+            Equal(t, stream.ReadTimeSpan(StringLengthEncoding.Plain, in decodingContext, buffer, provider: InvariantCulture));
+            Equal(t, stream.ReadTimeSpan(StringLengthEncoding.Plain, in decodingContext, buffer, formats: new[] { "G" }, provider: InvariantCulture));
         }
 
         [Theory]
@@ -472,6 +478,7 @@ namespace DotNext.IO
             var g = Guid.NewGuid();
             var dt = DateTime.Now;
             var dto = DateTimeOffset.Now;
+            var t = TimeSpan.FromMilliseconds(1096);
             await stream.WriteInt64Async(42L, StringLengthEncoding.Plain, encoding, provider: InvariantCulture);
             await stream.WriteUInt64Async(12UL, StringLengthEncoding.PlainLittleEndian, encoding, provider: InvariantCulture);
             await stream.WriteInt32Async(34, StringLengthEncoding.PlainBigEndian, encoding, provider: InvariantCulture);
@@ -492,6 +499,8 @@ namespace DotNext.IO
             await stream.WriteDecimalAsync(42.5M, StringLengthEncoding.Plain, encoding, provider: InvariantCulture);
             await stream.WriteSingleAsync(32.2F, StringLengthEncoding.Plain, encoding, provider: InvariantCulture);
             await stream.WriteDoubleAsync(56.6D, StringLengthEncoding.Plain, encoding, provider: InvariantCulture);
+            await stream.WriteTimeSpanAsync(t, StringLengthEncoding.Plain, encoding, provider: InvariantCulture);
+            await stream.WriteTimeSpanAsync(t, StringLengthEncoding.Plain, encoding, "G", provider: InvariantCulture);
 
             stream.Position = 0;
             var decodingContext = new DecodingContext(encoding);
@@ -515,6 +524,8 @@ namespace DotNext.IO
             Equal(42.5M, await stream.ReadDecimalAsync(StringLengthEncoding.Plain, decodingContext, provider: InvariantCulture));
             Equal(32.2F, await stream.ReadSingleAsync(StringLengthEncoding.Plain, decodingContext, provider: InvariantCulture));
             Equal(56.6D, await stream.ReadDoubleAsync(StringLengthEncoding.Plain, decodingContext, provider: InvariantCulture));
+            Equal(t, await stream.ReadTimeSpanAsync(StringLengthEncoding.Plain, decodingContext, provider: InvariantCulture));
+            Equal(t, await stream.ReadTimeSpanAsync(StringLengthEncoding.Plain, decodingContext, formats: new[] { "G" }, provider: InvariantCulture));
         }
     }
 }

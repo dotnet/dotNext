@@ -247,6 +247,36 @@ namespace DotNext.IO
             => DateTimeOffset.ParseExact(await ReadStringAsync(lengthFormat, context, token).ConfigureAwait(false), formats, provider, style);
 
         /// <summary>
+        /// Parses <see cref="TimeSpan"/> from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="FormatException">The time span is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        async ValueTask<TimeSpan> ReadTimeSpanAsync(StringLengthEncoding lengthFormat, DecodingContext context, IFormatProvider? provider = null, CancellationToken token = default)
+            => TimeSpan.Parse(await ReadStringAsync(lengthFormat, context, token).ConfigureAwait(false), provider);
+
+        /// <summary>
+        /// Parses <see cref="TimeSpan"/> from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="formats">An array of allowable formats.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="FormatException">The time span is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        async ValueTask<TimeSpan> ReadTimeSpanAsync(StringLengthEncoding lengthFormat, DecodingContext context, string[] formats, TimeSpanStyles style = TimeSpanStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
+            => TimeSpan.ParseExact(await ReadStringAsync(lengthFormat, context, token).ConfigureAwait(false), formats, provider, style);
+
+        /// <summary>
         /// Parses <see cref="Guid"/> from its string representation encoded in the underlying stream.
         /// </summary>
         /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
@@ -312,7 +342,7 @@ namespace DotNext.IO
         /// <param name="output">The output stream receiving object content.</param>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        Task CopyToAsync(Stream output, CancellationToken token = default);
+        Task CopyToAsync(Stream output, CancellationToken token = default); // TODO: This method should have default implementation
 
         /// <summary>
         /// Copies the content to the specified pipe writer.
@@ -321,7 +351,53 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel operation.</param>
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        Task CopyToAsync(PipeWriter output, CancellationToken token = default);
+        Task CopyToAsync(PipeWriter output, CancellationToken token = default); // TODO: This method should have default implementation
+
+        /// <summary>
+        /// Copies the content to the specified buffer.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="token">The token that can be used to cancel operation.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        async Task CopyToAsync(IBufferWriter<byte> writer, CancellationToken token = default)
+        {
+            using var stream = writer.AsStream();
+            await CopyToAsync(stream, token).ConfigureAwait(false);
+            await stream.FlushAsync(token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Reads the entire content using the specified delegate.
+        /// </summary>
+        /// <typeparam name="TArg">The type of the argument to be passed to the content reader.</typeparam>
+        /// <param name="consumer">The content reader.</param>
+        /// <param name="arg">The argument to be passed to the content reader.</param>
+        /// <param name="token">The token that can be used to cancel operation.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        async Task CopyToAsync<TArg>(ReadOnlySpanAction<byte, TArg> consumer, TArg arg, CancellationToken token = default)
+        {
+            // TODO: This method should not have default implementation
+            using var stream = consumer.AsStream(arg);
+            await CopyToAsync(stream, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Reads the entire content using the specified delegate.
+        /// </summary>
+        /// <typeparam name="TArg">The type of the argument to be passed to the content reader.</typeparam>
+        /// <param name="consumer">The content reader.</param>
+        /// <param name="arg">The argument to be passed to the content reader.</param>
+        /// <param name="token">The token that can be used to cancel operation.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        async Task CopyToAsync<TArg>(Func<ReadOnlyMemory<byte>, TArg, CancellationToken, ValueTask> consumer, TArg arg, CancellationToken token = default)
+        {
+            // TODO: This method should not have default implementation
+            using var stream = consumer.AsStream(arg);
+            await CopyToAsync(stream, token).ConfigureAwait(false);
+        }
 
         /// <summary>
         /// Creates default implementation of binary reader for the stream.
@@ -334,6 +410,8 @@ namespace DotNext.IO
         /// <param name="input">The stream to be wrapped into the reader.</param>
         /// <param name="buffer">The buffer used for decoding data from the stream.</param>
         /// <returns>The stream reader.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="input"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> is empty.</exception>
         public static IAsyncBinaryReader Create(Stream input, Memory<byte> buffer) => new AsyncStreamBinaryReader(input, buffer);
 
         /// <summary>
@@ -348,7 +426,7 @@ namespace DotNext.IO
         /// </summary>
         /// <param name="memory">The block of memory.</param>
         /// <returns>The binary reader for the memory block.</returns>
-        public static SequenceBinaryReader Create(ReadOnlyMemory<byte> memory) => Create(new ReadOnlySequence<byte>(memory));
+        public static SequenceBinaryReader Create(ReadOnlyMemory<byte> memory) => new SequenceBinaryReader(memory);
 
         /// <summary>
         /// Creates default implementation of binary reader for the specifed pipe reader.
@@ -360,6 +438,7 @@ namespace DotNext.IO
         /// </remarks>
         /// <param name="reader">The pipe reader.</param>
         /// <returns>The binary reader.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="reader"/> is <see langword="null"/>.</exception>
         public static IAsyncBinaryReader Create(PipeReader reader) => new Pipelines.PipeBinaryReader(reader);
     }
 }

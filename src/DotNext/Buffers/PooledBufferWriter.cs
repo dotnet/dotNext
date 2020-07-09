@@ -64,11 +64,23 @@ namespace DotNext.Buffers
         /// Clears the data written to the underlying buffer.
         /// </summary>
         /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
-        public override void Clear()
+        public override void Clear() => Clear(false);   // TODO: Remove this method in future
+
+        /// <summary>
+        /// Clears the data written to the underlying memory.
+        /// </summary>
+        /// <param name="reuseBuffer"><see langword="true"/> to reuse the internal buffer; <see langword="false"/> to destroy the internal buffer.</param>
+        /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
+        public override void Clear(bool reuseBuffer)
         {
             ThrowIfDisposed();
-            buffer.Dispose();
-            buffer = default;
+
+            if (!reuseBuffer)
+            {
+                buffer.Dispose();
+                buffer = default;
+            }
+
             position = 0;
         }
 
@@ -92,6 +104,7 @@ namespace DotNext.Buffers
             buffer.Memory.CopyTo(newBuffer.Memory);
             buffer.Dispose();
             buffer = newBuffer;
+            AllocationCounter?.WriteMetric(newBuffer.Length);
         }
 
         /// <inheritdoc/>
@@ -99,6 +112,7 @@ namespace DotNext.Buffers
         {
             if (disposing)
             {
+                BufferSizeCallback?.Invoke(buffer.Length);
                 buffer.Dispose();
                 buffer = default;
             }

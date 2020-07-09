@@ -21,10 +21,8 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static async ValueTask WriteAsync(this TextWriter writer, ReadOnlySequence<char> chars, CancellationToken token = default)
         {
-            for (var position = chars.Start; chars.TryGet(ref position, out var block); )
-            {
-                await writer.WriteAsync(block, token).ConfigureAwait(false);
-            }
+            foreach (var segment in chars)
+                await writer.WriteAsync(segment, token).ConfigureAwait(false);
         }
     }
 }

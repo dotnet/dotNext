@@ -90,5 +90,29 @@ namespace DotNext.Buffers
             Guid ISpanDecoder<Guid>.Decode(ReadOnlySpan<char> value)
                 => string.IsNullOrEmpty(format) ? Guid.Parse(value) : Guid.ParseExact(value, format);
         }
+
+        internal readonly struct TimeSpanDecoder : ISpanDecoder<TimeSpan>
+        {
+            private readonly TimeSpanStyles style;
+            private readonly IFormatProvider? provider;
+            private readonly string[]? formats;
+
+            internal TimeSpanDecoder(IFormatProvider? provider)
+            {
+                style = TimeSpanStyles.None;
+                this.provider = provider;
+                formats = null;
+            }
+
+            internal TimeSpanDecoder(TimeSpanStyles style, string[] formats, IFormatProvider? provider)
+            {
+                this.style = style;
+                this.provider = provider;
+                this.formats = formats;
+            }
+
+            TimeSpan ISpanDecoder<TimeSpan>.Decode(ReadOnlySpan<char> value)
+                => formats.IsNullOrEmpty() ? TimeSpan.Parse(value, provider) : TimeSpan.ParseExact(value, formats, provider, style);
+        }
     }
 }

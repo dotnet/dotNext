@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace DotNext.IO
 {
     using Buffers;
-    using System.Threading;
 
     [ExcludeFromCodeCoverage]
     public sealed class StreamSourceTests : Test
@@ -428,6 +428,7 @@ namespace DotNext.IO
             True(await checker.Task);
             stream.EndWrite(ar);
             Equal(1L, stream.Position);
+            Equal(1L, stream.Length);
             Equal(1, writer.WrittenCount);
             await stream.FlushAsync();
             Equal(40, writer.WrittenSpan[0]);
@@ -447,7 +448,6 @@ namespace DotNext.IO
             Throws<NotSupportedException>(() => stream.Read(new byte[2]));
             Throws<NotSupportedException>(() => stream.Read(new byte[2], 0, 2));
             Throws<NotSupportedException>(() => stream.Position = 0);
-            Throws<NotSupportedException>(() => stream.Length);
             Throws<NotSupportedException>(() => stream.SetLength(10L));
             Throws<NotSupportedException>(() => stream.Seek(-1L, SeekOrigin.End));
             Throws<NotSupportedException>(() => stream.BeginRead(new byte[2], 0, 2, null, null));
@@ -474,6 +474,99 @@ namespace DotNext.IO
             await writer.WriteAsync(new byte[] { 1, 2, 3 });
             await writer.FlushAsync();
             Equal(new byte[] { 1, 2, 3 }, ms.ToArray());
+        }
+
+        [Fact]
+        public static void SpanActionToStream()
+        {
+            static void WriteToBuffer(ReadOnlySpan<byte> block, ArrayBufferWriter<byte> writer)
+                => writer.Write(block);
+
+            var writer = new ArrayBufferWriter<byte>();
+            ReadOnlySpanAction<byte, ArrayBufferWriter<byte>> callback = WriteToBuffer;
+            using var stream = callback.AsStream(writer);
+            byte[] content = { 1, 2, 3 };
+            stream.Write(content);
+            stream.Flush();
+            Equal(3, stream.Position);
+            Equal(3, stream.Length);
+            Equal(content, writer.WrittenMemory.ToArray());
+        }
+
+        [Fact]
+        public static async Task SpanActionToStreamAsync()
+        {
+            static void WriteToBuffer(ReadOnlySpan<byte> block, ArrayBufferWriter<byte> writer)
+                => writer.Write(block);
+
+            var writer = new ArrayBufferWriter<byte>();
+            ReadOnlySpanAction<byte, ArrayBufferWriter<byte>> callback = WriteToBuffer;
+            using var stream = callback.AsStream(writer);
+            byte[] content = { 1, 2, 3 };
+            await stream.WriteAsync(content);
+            await stream.FlushAsync();
+            Equal(3, stream.Position);
+            Equal(content, writer.WrittenMemory.ToArray());
+        }
+
+        [Fact]
+        public static void MemoryFuncToStream()
+        {
+            static ValueTask WriteToBuffer(ReadOnlyMemory<byte> block, ArrayBufferWriter<byte> writer, CancellationToken token)
+            {
+                writer.Write(block.Span);
+                return new ValueTask();
+            }
+
+            var writer = new ArrayBufferWriter<byte>();
+            Func<ReadOnlyMemory<byte>, ArrayBufferWriter<byte>, CancellationToken, ValueTask> callback = WriteToBuffer;
+            using var stream = callback.AsStream(writer);
+            byte[] content = { 1, 2, 3 };
+            stream.Write(content);
+            stream.Flush();
+            Equal(3, stream.Position);
+            Equal(content, writer.WrittenMemory.ToArray());
+        }
+
+        [Fact]
+        public static async Task MemoryFuncToStreamAsync()
+        {
+            static ValueTask WriteToBuffer(ReadOnlyMemory<byte> block, ArrayBufferWriter<byte> writer, CancellationToken token)
+            {
+                writer.Write(block.Span);
+                return new ValueTask();
+            }
+
+            var writer = new ArrayBufferWriter<byte>();
+            Func<ReadOnlyMemory<byte>, ArrayBufferWriter<byte>, CancellationToken, ValueTask> callback = WriteToBuffer;
+            using var stream = callback.AsStream(writer);
+            byte[] content = { 1, 2, 3 };
+            await stream.WriteAsync(content);
+            await stream.FlushAsync();
+            Equal(3, stream.Position);
+            Equal(content, writer.WrittenMemory.ToArray());
+        }
+
+        [Fact]
+        public static async Task MemoryFuncToStreamApm()
+        {
+            static ValueTask WriteToBuffer(ReadOnlyMemory<byte> block, ArrayBufferWriter<byte> writer, CancellationToken token)
+            {
+                writer.Write(block.Span);
+                return new ValueTask();
+            }
+
+            var writer = new ArrayBufferWriter<byte>();
+            Func<ReadOnlyMemory<byte>, ArrayBufferWriter<byte>, CancellationToken, ValueTask> callback = WriteToBuffer;
+            using var stream = callback.AsStream(writer);
+            byte[] content = { 1, 2, 3 };
+            var checker = new CallbackChecker();
+            var ar = stream.BeginWrite(content, 0, content.Length, checker.DoCallback, "state");
+            Equal("state", ar.AsyncState);
+            await checker.Task;
+            stream.EndWrite(ar);
+            Equal(3, stream.Position);
+            Equal(content, writer.WrittenMemory.ToArray());
         }
     }
 }
