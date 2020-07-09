@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class Span
    | .NEXT ">
-    <meta name="generator" content="docfx 2.55.0.0">
+    <meta name="generator" content="docfx 2.56.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -1609,6 +1609,168 @@ into <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonly
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Span_Concat__1_System_ReadOnlySpan___0__System_ReadOnlySpan___0__DotNext_Buffers_MemoryAllocator___0__.md&amp;value=---%0Auid%3A%20DotNext.Span.Concat%60%601(System.ReadOnlySpan%7B%60%600%7D%2CSystem.ReadOnlySpan%7B%60%600%7D%2CDotNext.Buffers.MemoryAllocator%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Span.cs/#L539">View Source</a>
+  </span>
+  <a id="DotNext_Span_Concat_" data-uid="DotNext.Span.Concat*"></a>
+  <h4 id="DotNext_Span_Concat__1_System_ReadOnlySpan___0__System_ReadOnlySpan___0__DotNext_Buffers_MemoryAllocator___0__" data-uid="DotNext.Span.Concat``1(System.ReadOnlySpan{``0},System.ReadOnlySpan{``0},DotNext.Buffers.MemoryAllocator{``0})">Concat&lt;T&gt;(ReadOnlySpan&lt;T&gt;, ReadOnlySpan&lt;T&gt;, MemoryAllocator&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Concatenates memory blocks.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static MemoryOwner&lt;T&gt; Concat&lt;T&gt;(this ReadOnlySpan&lt;T&gt; first, ReadOnlySpan&lt;T&gt; second, MemoryAllocator&lt;T&gt; allocator = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;T&gt;</td>
+        <td><span class="parametername">first</span></td>
+        <td><p>The first memory block.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;T&gt;</td>
+        <td><span class="parametername">second</span></td>
+        <td><p>The second memory block.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator</a>&lt;T&gt;</td>
+        <td><span class="parametername">allocator</span></td>
+        <td><p>The memory allocator used to allocate buffer for the result.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.MemoryOwner-1.html">MemoryOwner</a>&lt;T&gt;</td>
+        <td><p>The memory block containing elements from the specified two memory blocks.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of the elements in the memory.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Span_Concat__1_System_ReadOnlySpan___0__System_ReadOnlySpan___0__System_ReadOnlySpan___0__DotNext_Buffers_MemoryAllocator___0__.md&amp;value=---%0Auid%3A%20DotNext.Span.Concat%60%601(System.ReadOnlySpan%7B%60%600%7D%2CSystem.ReadOnlySpan%7B%60%600%7D%2CSystem.ReadOnlySpan%7B%60%600%7D%2CDotNext.Buffers.MemoryAllocator%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Span.cs/#L565">View Source</a>
+  </span>
+  <a id="DotNext_Span_Concat_" data-uid="DotNext.Span.Concat*"></a>
+  <h4 id="DotNext_Span_Concat__1_System_ReadOnlySpan___0__System_ReadOnlySpan___0__System_ReadOnlySpan___0__DotNext_Buffers_MemoryAllocator___0__" data-uid="DotNext.Span.Concat``1(System.ReadOnlySpan{``0},System.ReadOnlySpan{``0},System.ReadOnlySpan{``0},DotNext.Buffers.MemoryAllocator{``0})">Concat&lt;T&gt;(ReadOnlySpan&lt;T&gt;, ReadOnlySpan&lt;T&gt;, ReadOnlySpan&lt;T&gt;, MemoryAllocator&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Concatenates memory blocks.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static MemoryOwner&lt;T&gt; Concat&lt;T&gt;(this ReadOnlySpan&lt;T&gt; first, ReadOnlySpan&lt;T&gt; second, ReadOnlySpan&lt;T&gt; third, MemoryAllocator&lt;T&gt; allocator = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;T&gt;</td>
+        <td><span class="parametername">first</span></td>
+        <td><p>The first memory block.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;T&gt;</td>
+        <td><span class="parametername">second</span></td>
+        <td><p>The second memory block.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;T&gt;</td>
+        <td><span class="parametername">third</span></td>
+        <td><p>The third memory block.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator</a>&lt;T&gt;</td>
+        <td><span class="parametername">allocator</span></td>
+        <td><p>The memory allocator used to allocate buffer for the result.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.MemoryOwner-1.html">MemoryOwner</a>&lt;T&gt;</td>
+        <td><p>The memory block containing elements from the specified two memory blocks.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of the elements in the memory.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Span_ForEach__1_System_Span___0__DotNext_RefAction___0_System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Span.ForEach%60%601(System.Span%7B%60%600%7D%2CDotNext.RefAction%7B%60%600%2CSystem.Int32%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
@@ -2296,7 +2458,7 @@ from the block of memory and advances the original span.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.String</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
         <td><p>The hexadecimal representation of bytes.</p>
 </td>
       </tr>

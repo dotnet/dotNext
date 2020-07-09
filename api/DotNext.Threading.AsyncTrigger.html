@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class AsyncTrigger
    | .NEXT ">
-    <meta name="generator" content="docfx 2.55.0.0">
+    <meta name="generator" content="docfx 2.56.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -156,7 +156,6 @@ callers based on registered conditions.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public void Signal&lt;TState&gt;(TState state)
-
     where TState : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -224,7 +223,6 @@ callers based on registered conditions.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public void Signal&lt;TState&gt;(TState state, Action&lt;TState&gt; mutator)
-
     where TState : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -298,7 +296,6 @@ callers based on registered conditions.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public void Signal&lt;TState, TArgs&gt;(TState state, Action&lt;TState, TArgs&gt; mutator, TArgs args)
-
     where TState : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -384,7 +381,6 @@ atomically.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public Task SignalAndWaitAsync&lt;TState&gt;(TState state, Action&lt;TState&gt; mutator, Predicate&lt;TState&gt; condition, CancellationToken token = default(CancellationToken))
-
     where TState : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -492,7 +488,6 @@ atomically.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public Task&lt;bool&gt; SignalAndWaitAsync&lt;TState&gt;(TState state, Action&lt;TState&gt; mutator, Predicate&lt;TState&gt; condition, TimeSpan timeout, CancellationToken token = default(CancellationToken))
-
     where TState : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -606,7 +601,6 @@ atomically.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public Task SignalAndWaitAsync&lt;TState&gt;(TState state, Predicate&lt;TState&gt; condition, CancellationToken token = default(CancellationToken))
-
     where TState : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -708,7 +702,6 @@ atomically.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public Task&lt;bool&gt; SignalAndWaitAsync&lt;TState&gt;(TState state, Predicate&lt;TState&gt; condition, TimeSpan timeout, CancellationToken token = default(CancellationToken))
-
     where TState : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -816,7 +809,6 @@ atomically.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public Task SignalAndWaitAsync&lt;TState, TArgs&gt;(TState state, Action&lt;TState, TArgs&gt; mutator, TArgs args, Predicate&lt;TState&gt; condition, CancellationToken token = default(CancellationToken))
-
     where TState : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -935,7 +927,6 @@ atomically.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public Task&lt;bool&gt; SignalAndWaitAsync&lt;TState, TArgs&gt;(TState state, Action&lt;TState, TArgs&gt; mutator, TArgs args, Predicate&lt;TState&gt; condition, TimeSpan timeout, CancellationToken token = default(CancellationToken))
-
     where TState : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1143,7 +1134,6 @@ atomically.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public Task WaitAsync&lt;TState&gt;(TState state, Predicate&lt;TState&gt; condition, CancellationToken token = default(CancellationToken))
-
     where TState : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1244,7 +1234,6 @@ atomically.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public Task&lt;bool&gt; WaitAsync&lt;TState&gt;(TState state, Predicate&lt;TState&gt; condition, TimeSpan timeout, CancellationToken token = default(CancellationToken))
-
     where TState : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1347,7 +1336,8 @@ atomically.</p>
   </span>
   <a id="DotNext_Threading_AsyncTrigger_DotNext_Threading_IAsyncEvent_IsSet_" data-uid="DotNext.Threading.AsyncTrigger.DotNext#Threading#IAsyncEvent#IsSet*"></a>
   <h4 id="DotNext_Threading_AsyncTrigger_DotNext_Threading_IAsyncEvent_IsSet" data-uid="DotNext.Threading.AsyncTrigger.DotNext#Threading#IAsyncEvent#IsSet">IAsyncEvent.IsSet</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Determines whether this event in signaled state.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -1377,7 +1367,8 @@ atomically.</p>
   </span>
   <a id="DotNext_Threading_AsyncTrigger_DotNext_Threading_IAsyncEvent_Reset_" data-uid="DotNext.Threading.AsyncTrigger.DotNext#Threading#IAsyncEvent#Reset*"></a>
   <h4 id="DotNext_Threading_AsyncTrigger_DotNext_Threading_IAsyncEvent_Reset" data-uid="DotNext.Threading.AsyncTrigger.DotNext#Threading#IAsyncEvent#Reset">IAsyncEvent.Reset()</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Changes state of this even to non-signaled.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -1394,7 +1385,24 @@ atomically.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td></td>
+        <td><p><span class="xref">true</span>, if state of this object changed from signaled to non-signaled state; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The current instance has already been disposed.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -1407,7 +1415,8 @@ atomically.</p>
   </span>
   <a id="DotNext_Threading_AsyncTrigger_DotNext_Threading_IAsyncEvent_Signal_" data-uid="DotNext.Threading.AsyncTrigger.DotNext#Threading#IAsyncEvent#Signal*"></a>
   <h4 id="DotNext_Threading_AsyncTrigger_DotNext_Threading_IAsyncEvent_Signal" data-uid="DotNext.Threading.AsyncTrigger.DotNext#Threading#IAsyncEvent#Signal">IAsyncEvent.Signal()</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Raises asynchronous event if it meets internal conditions.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -1424,7 +1433,24 @@ atomically.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td></td>
+        <td><p><span class="xref">true</span>, if state of this object changed from non-signaled to signaled state; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The current instance has already been disposed.</p>
+</td>
       </tr>
     </tbody>
   </table>

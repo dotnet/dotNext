@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Interface IAsyncBinaryReader
    | .NEXT ">
-    <meta name="generator" content="docfx 2.55.0.0">
+    <meta name="generator" content="docfx 2.56.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -90,7 +90,7 @@ from various sources such as streams, pipes, unmanaged memory etc.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_Empty.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.Empty%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L23">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L24">View Source</a>
   </span>
   <a id="DotNext_IO_IAsyncBinaryReader_Empty_" data-uid="DotNext.IO.IAsyncBinaryReader.Empty*"></a>
   <h4 id="DotNext_IO_IAsyncBinaryReader_Empty" data-uid="DotNext.IO.IAsyncBinaryReader.Empty">Empty</h4>
@@ -120,10 +120,82 @@ from various sources such as streams, pipes, unmanaged memory etc.</p>
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_CopyToAsync_System_Buffers_IBufferWriter_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.CopyToAsync(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L363">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_CopyToAsync_" data-uid="DotNext.IO.IAsyncBinaryReader.CopyToAsync*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_CopyToAsync_System_Buffers_IBufferWriter_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.CopyToAsync(System.Buffers.IBufferWriter{System.Byte},System.Threading.CancellationToken)">CopyToAsync(IBufferWriter&lt;Byte&gt;, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Copies the content to the specified buffer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">virtual Task CopyToAsync(IBufferWriter&lt;byte&gt; writer, CancellationToken token = default(CancellationToken))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">writer</span></td>
+        <td><p>The buffer writer.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td><p>The task representing asynchronous execution of this method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_CopyToAsync_System_IO_Pipelines_PipeWriter_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.CopyToAsync(System.IO.Pipelines.PipeWriter%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L129">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L354">View Source</a>
   </span>
   <a id="DotNext_IO_IAsyncBinaryReader_CopyToAsync_" data-uid="DotNext.IO.IAsyncBinaryReader.CopyToAsync*"></a>
   <h4 id="DotNext_IO_IAsyncBinaryReader_CopyToAsync_System_IO_Pipelines_PipeWriter_System_Threading_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.CopyToAsync(System.IO.Pipelines.PipeWriter,System.Threading.CancellationToken)">CopyToAsync(PipeWriter, CancellationToken)</h4>
@@ -195,7 +267,7 @@ from various sources such as streams, pipes, unmanaged memory etc.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_CopyToAsync_System_IO_Stream_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.CopyToAsync(System.IO.Stream%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L120">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L345">View Source</a>
   </span>
   <a id="DotNext_IO_IAsyncBinaryReader_CopyToAsync_" data-uid="DotNext.IO.IAsyncBinaryReader.CopyToAsync*"></a>
   <h4 id="DotNext_IO_IAsyncBinaryReader_CopyToAsync_System_IO_Stream_System_Threading_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.CopyToAsync(System.IO.Stream,System.Threading.CancellationToken)">CopyToAsync(Stream, CancellationToken)</h4>
@@ -263,10 +335,198 @@ from various sources such as streams, pipes, unmanaged memory etc.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_CopyToAsync__1_System_Buffers_ReadOnlySpanAction_System_Byte___0____0_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.CopyToAsync%60%601(System.Buffers.ReadOnlySpanAction%7BSystem.Byte%2C%60%600%7D%2C%60%600%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L379">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_CopyToAsync_" data-uid="DotNext.IO.IAsyncBinaryReader.CopyToAsync*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_CopyToAsync__1_System_Buffers_ReadOnlySpanAction_System_Byte___0____0_System_Threading_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.CopyToAsync``1(System.Buffers.ReadOnlySpanAction{System.Byte,``0},``0,System.Threading.CancellationToken)">CopyToAsync&lt;TArg&gt;(ReadOnlySpanAction&lt;Byte, TArg&gt;, TArg, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Reads the entire content using the specified delegate.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">virtual Task CopyToAsync&lt;TArg&gt;(ReadOnlySpanAction&lt;byte, TArg&gt; consumer, TArg arg, CancellationToken token = default(CancellationToken))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.readonlyspanaction-2">ReadOnlySpanAction</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>, TArg&gt;</td>
+        <td><span class="parametername">consumer</span></td>
+        <td><p>The content reader.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TArg</span></td>
+        <td><span class="parametername">arg</span></td>
+        <td><p>The argument to be passed to the content reader.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td><p>The task representing asynchronous execution of this method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TArg</span></td>
+        <td><p>The type of the argument to be passed to the content reader.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_CopyToAsync__1_System_Func_System_ReadOnlyMemory_System_Byte____0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask____0_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.CopyToAsync%60%601(System.Func%7BSystem.ReadOnlyMemory%7BSystem.Byte%7D%2C%60%600%2CSystem.Threading.CancellationToken%2CSystem.Threading.Tasks.ValueTask%7D%2C%60%600%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L395">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_CopyToAsync_" data-uid="DotNext.IO.IAsyncBinaryReader.CopyToAsync*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_CopyToAsync__1_System_Func_System_ReadOnlyMemory_System_Byte____0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask____0_System_Threading_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.CopyToAsync``1(System.Func{System.ReadOnlyMemory{System.Byte},``0,System.Threading.CancellationToken,System.Threading.Tasks.ValueTask},``0,System.Threading.CancellationToken)">CopyToAsync&lt;TArg&gt;(Func&lt;ReadOnlyMemory&lt;Byte&gt;, TArg, CancellationToken, ValueTask&gt;, TArg, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Reads the entire content using the specified delegate.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">virtual Task CopyToAsync&lt;TArg&gt;(Func&lt;ReadOnlyMemory&lt;byte&gt;, TArg, CancellationToken, ValueTask&gt; consumer, TArg arg, CancellationToken token = default(CancellationToken))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-4">Func</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;, TArg, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a>&gt;</td>
+        <td><span class="parametername">consumer</span></td>
+        <td><p>The content reader.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TArg</span></td>
+        <td><span class="parametername">arg</span></td>
+        <td><p>The argument to be passed to the content reader.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td><p>The task representing asynchronous execution of this method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TArg</span></td>
+        <td><p>The type of the argument to be passed to the content reader.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.Create(System.Buffers.ReadOnlySequence%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L149">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L422">View Source</a>
   </span>
   <a id="DotNext_IO_IAsyncBinaryReader_Create_" data-uid="DotNext.IO.IAsyncBinaryReader.Create*"></a>
   <h4 id="DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__" data-uid="DotNext.IO.IAsyncBinaryReader.Create(System.Buffers.ReadOnlySequence{System.Byte})">Create(ReadOnlySequence&lt;Byte&gt;)</h4>
@@ -316,7 +576,7 @@ from various sources such as streams, pipes, unmanaged memory etc.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_Create_System_IO_Pipelines_PipeReader_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.Create(System.IO.Pipelines.PipeReader)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L168">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L442">View Source</a>
   </span>
   <a id="DotNext_IO_IAsyncBinaryReader_Create_" data-uid="DotNext.IO.IAsyncBinaryReader.Create*"></a>
   <h4 id="DotNext_IO_IAsyncBinaryReader_Create_System_IO_Pipelines_PipeReader_" data-uid="DotNext.IO.IAsyncBinaryReader.Create(System.IO.Pipelines.PipeReader)">Create(PipeReader)</h4>
@@ -366,12 +626,28 @@ from various sources such as streams, pipes, unmanaged memory etc.</p>
 for decoding data from the stream. This method is intended for situation
 when you need an object implementing <a class="xref" href="DotNext.IO.IAsyncBinaryReader.html">IAsyncBinaryReader</a> interface.</p>
 </div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">reader</code> is <span class="xref">null</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_Create_System_IO_Stream_System_Memory_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.Create(System.IO.Stream%2CSystem.Memory%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L142">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L415">View Source</a>
   </span>
   <a id="DotNext_IO_IAsyncBinaryReader_Create_" data-uid="DotNext.IO.IAsyncBinaryReader.Create*"></a>
   <h4 id="DotNext_IO_IAsyncBinaryReader_Create_System_IO_Stream_System_Memory_System_Byte__" data-uid="DotNext.IO.IAsyncBinaryReader.Create(System.IO.Stream,System.Memory{System.Byte})">Create(Stream, Memory&lt;Byte&gt;)</h4>
@@ -427,12 +703,33 @@ when you need an object implementing <a class="xref" href="DotNext.IO.IAsyncBina
 for decoding data from the stream. This method is intended for situation
 when you need an object implementing <a class="xref" href="DotNext.IO.IAsyncBinaryReader.html">IAsyncBinaryReader</a> interface.</p>
 </div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">input</code> is <span class="xref">null</span>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">buffer</code> is empty.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.Create(System.ReadOnlyMemory%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L156">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L429">View Source</a>
   </span>
   <a id="DotNext_IO_IAsyncBinaryReader_Create_" data-uid="DotNext.IO.IAsyncBinaryReader.Create*"></a>
   <h4 id="DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__" data-uid="DotNext.IO.IAsyncBinaryReader.Create(System.ReadOnlyMemory{System.Byte})">Create(ReadOnlyMemory&lt;Byte&gt;)</h4>
@@ -482,7 +779,7 @@ when you need an object implementing <a class="xref" href="DotNext.IO.IAsyncBina
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_ReadAsync_System_Memory_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.ReadAsync(System.Memory%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L89">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L314">View Source</a>
   </span>
   <a id="DotNext_IO_IAsyncBinaryReader_ReadAsync_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadAsync*"></a>
   <h4 id="DotNext_IO_IAsyncBinaryReader_ReadAsync_System_Memory_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadAsync(System.Memory{System.Byte},System.Threading.CancellationToken)">ReadAsync(Memory&lt;Byte&gt;, CancellationToken)</h4>
@@ -559,7 +856,7 @@ when you need an object implementing <a class="xref" href="DotNext.IO.IAsyncBina
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_ReadAsync__1_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.ReadAsync%60%601(System.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L33">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L34">View Source</a>
   </span>
   <a id="DotNext_IO_IAsyncBinaryReader_ReadAsync_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadAsync*"></a>
   <h4 id="DotNext_IO_IAsyncBinaryReader_ReadAsync__1_System_Threading_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadAsync``1(System.Threading.CancellationToken)">ReadAsync&lt;T&gt;(CancellationToken)</h4>
@@ -569,7 +866,6 @@ when you need an object implementing <a class="xref" href="DotNext.IO.IAsyncBina
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">ValueTask&lt;T&gt; ReadAsync&lt;T&gt;(CancellationToken token = default(CancellationToken))
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -645,10 +941,1004 @@ when you need an object implementing <a class="xref" href="DotNext.IO.IAsyncBina
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_ReadByteAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.ReadByteAsync(DotNext.IO.StringLengthEncoding%2CDotNext.Text.DecodingContext%2CSystem.Globalization.NumberStyles%2CSystem.IFormatProvider%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L169">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_ReadByteAsync_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadByteAsync*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_ReadByteAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadByteAsync(DotNext.IO.StringLengthEncoding,DotNext.Text.DecodingContext,System.Globalization.NumberStyles,System.IFormatProvider,System.Threading.CancellationToken)">ReadByteAsync(StringLengthEncoding, DecodingContext, NumberStyles, IFormatProvider, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Parses 8-bit unsigned integer from its string representation encoded in the underlying stream.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">virtual ValueTask&lt;byte&gt; ReadByteAsync(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.AllowLeadingSign | NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite | NumberStyles.Integer, IFormatProvider provider = null, CancellationToken token = default(CancellationToken))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a></td>
+        <td><span class="parametername">lengthFormat</span></td>
+        <td><p>The format of the string length encoded in the stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td><p>The decoding context containing string characters encoding.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.globalization.numberstyles">NumberStyles</a></td>
+        <td><span class="parametername">style</span></td>
+        <td><p>A bitwise combination of the enumeration values that indicates the style elements.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></td>
+        <td><span class="parametername">provider</span></td>
+        <td><p>An object that supplies culture-specific formatting information.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><p>The parsed value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.formatexception">FormatException</a></td>
+        <td><p>The number is in incorrect format.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_ReadDateTimeAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Globalization_DateTimeStyles_System_IFormatProvider_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.ReadDateTimeAsync(DotNext.IO.StringLengthEncoding%2CDotNext.Text.DecodingContext%2CSystem.Globalization.DateTimeStyles%2CSystem.IFormatProvider%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L199">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_ReadDateTimeAsync_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadDateTimeAsync*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_ReadDateTimeAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Globalization_DateTimeStyles_System_IFormatProvider_System_Threading_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadDateTimeAsync(DotNext.IO.StringLengthEncoding,DotNext.Text.DecodingContext,System.Globalization.DateTimeStyles,System.IFormatProvider,System.Threading.CancellationToken)">ReadDateTimeAsync(StringLengthEncoding, DecodingContext, DateTimeStyles, IFormatProvider, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Parses <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.datetime">DateTime</a> from its string representation encoded in the underlying stream.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">virtual ValueTask&lt;DateTime&gt; ReadDateTimeAsync(StringLengthEncoding lengthFormat, DecodingContext context, DateTimeStyles style = DateTimeStyles.None, IFormatProvider provider = null, CancellationToken token = default(CancellationToken))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a></td>
+        <td><span class="parametername">lengthFormat</span></td>
+        <td><p>The format of the string length encoded in the stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td><p>The decoding context containing string characters encoding.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.globalization.datetimestyles">DateTimeStyles</a></td>
+        <td><span class="parametername">style</span></td>
+        <td><p>A bitwise combination of the enumeration values that indicates the style elements.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></td>
+        <td><span class="parametername">provider</span></td>
+        <td><p>An object that supplies culture-specific formatting information.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.datetime">DateTime</a>&gt;</td>
+        <td><p>The parsed value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.formatexception">FormatException</a></td>
+        <td><p>The date/time is in incorrect format.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_ReadDateTimeAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_String___System_Globalization_DateTimeStyles_System_IFormatProvider_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.ReadDateTimeAsync(DotNext.IO.StringLengthEncoding%2CDotNext.Text.DecodingContext%2CSystem.String%5B%5D%2CSystem.Globalization.DateTimeStyles%2CSystem.IFormatProvider%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L215">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_ReadDateTimeAsync_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadDateTimeAsync*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_ReadDateTimeAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_String___System_Globalization_DateTimeStyles_System_IFormatProvider_System_Threading_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadDateTimeAsync(DotNext.IO.StringLengthEncoding,DotNext.Text.DecodingContext,System.String[],System.Globalization.DateTimeStyles,System.IFormatProvider,System.Threading.CancellationToken)">ReadDateTimeAsync(StringLengthEncoding, DecodingContext, String[], DateTimeStyles, IFormatProvider, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Parses <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.datetime">DateTime</a> from its string representation encoded in the underlying stream.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">virtual ValueTask&lt;DateTime&gt; ReadDateTimeAsync(StringLengthEncoding lengthFormat, DecodingContext context, string[] formats, DateTimeStyles style = DateTimeStyles.None, IFormatProvider provider = null, CancellationToken token = default(CancellationToken))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a></td>
+        <td><span class="parametername">lengthFormat</span></td>
+        <td><p>The format of the string length encoded in the stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td><p>The decoding context containing string characters encoding.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a>[]</td>
+        <td><span class="parametername">formats</span></td>
+        <td><p>An array of allowable formats.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.globalization.datetimestyles">DateTimeStyles</a></td>
+        <td><span class="parametername">style</span></td>
+        <td><p>A bitwise combination of the enumeration values that indicates the style elements.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></td>
+        <td><span class="parametername">provider</span></td>
+        <td><p>An object that supplies culture-specific formatting information.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.datetime">DateTime</a>&gt;</td>
+        <td><p>The parsed value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.formatexception">FormatException</a></td>
+        <td><p>The date/time is in incorrect format.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_ReadDateTimeOffsetAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Globalization_DateTimeStyles_System_IFormatProvider_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.ReadDateTimeOffsetAsync(DotNext.IO.StringLengthEncoding%2CDotNext.Text.DecodingContext%2CSystem.Globalization.DateTimeStyles%2CSystem.IFormatProvider%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L230">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_ReadDateTimeOffsetAsync_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadDateTimeOffsetAsync*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_ReadDateTimeOffsetAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Globalization_DateTimeStyles_System_IFormatProvider_System_Threading_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadDateTimeOffsetAsync(DotNext.IO.StringLengthEncoding,DotNext.Text.DecodingContext,System.Globalization.DateTimeStyles,System.IFormatProvider,System.Threading.CancellationToken)">ReadDateTimeOffsetAsync(StringLengthEncoding, DecodingContext, DateTimeStyles, IFormatProvider, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Parses <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.datetimeoffset">DateTimeOffset</a> from its string representation encoded in the underlying stream.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">virtual ValueTask&lt;DateTimeOffset&gt; ReadDateTimeOffsetAsync(StringLengthEncoding lengthFormat, DecodingContext context, DateTimeStyles style = DateTimeStyles.None, IFormatProvider provider = null, CancellationToken token = default(CancellationToken))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a></td>
+        <td><span class="parametername">lengthFormat</span></td>
+        <td><p>The format of the string length encoded in the stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td><p>The decoding context containing string characters encoding.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.globalization.datetimestyles">DateTimeStyles</a></td>
+        <td><span class="parametername">style</span></td>
+        <td><p>A bitwise combination of the enumeration values that indicates the style elements.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></td>
+        <td><span class="parametername">provider</span></td>
+        <td><p>An object that supplies culture-specific formatting information.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.datetimeoffset">DateTimeOffset</a>&gt;</td>
+        <td><p>The parsed value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.formatexception">FormatException</a></td>
+        <td><p>The date/time is in incorrect format.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_ReadDateTimeOffsetAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_String___System_Globalization_DateTimeStyles_System_IFormatProvider_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.ReadDateTimeOffsetAsync(DotNext.IO.StringLengthEncoding%2CDotNext.Text.DecodingContext%2CSystem.String%5B%5D%2CSystem.Globalization.DateTimeStyles%2CSystem.IFormatProvider%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L246">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_ReadDateTimeOffsetAsync_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadDateTimeOffsetAsync*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_ReadDateTimeOffsetAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_String___System_Globalization_DateTimeStyles_System_IFormatProvider_System_Threading_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadDateTimeOffsetAsync(DotNext.IO.StringLengthEncoding,DotNext.Text.DecodingContext,System.String[],System.Globalization.DateTimeStyles,System.IFormatProvider,System.Threading.CancellationToken)">ReadDateTimeOffsetAsync(StringLengthEncoding, DecodingContext, String[], DateTimeStyles, IFormatProvider, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Parses <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.datetimeoffset">DateTimeOffset</a> from its string representation encoded in the underlying stream.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">virtual ValueTask&lt;DateTimeOffset&gt; ReadDateTimeOffsetAsync(StringLengthEncoding lengthFormat, DecodingContext context, string[] formats, DateTimeStyles style = DateTimeStyles.None, IFormatProvider provider = null, CancellationToken token = default(CancellationToken))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a></td>
+        <td><span class="parametername">lengthFormat</span></td>
+        <td><p>The format of the string length encoded in the stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td><p>The decoding context containing string characters encoding.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a>[]</td>
+        <td><span class="parametername">formats</span></td>
+        <td><p>An array of allowable formats.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.globalization.datetimestyles">DateTimeStyles</a></td>
+        <td><span class="parametername">style</span></td>
+        <td><p>A bitwise combination of the enumeration values that indicates the style elements.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></td>
+        <td><span class="parametername">provider</span></td>
+        <td><p>An object that supplies culture-specific formatting information.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.datetimeoffset">DateTimeOffset</a>&gt;</td>
+        <td><p>The parsed value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.formatexception">FormatException</a></td>
+        <td><p>The date/time is in incorrect format.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_ReadDecimalAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.ReadDecimalAsync(DotNext.IO.StringLengthEncoding%2CDotNext.Text.DecodingContext%2CSystem.Globalization.NumberStyles%2CSystem.IFormatProvider%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L184">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_ReadDecimalAsync_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadDecimalAsync*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_ReadDecimalAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadDecimalAsync(DotNext.IO.StringLengthEncoding,DotNext.Text.DecodingContext,System.Globalization.NumberStyles,System.IFormatProvider,System.Threading.CancellationToken)">ReadDecimalAsync(StringLengthEncoding, DecodingContext, NumberStyles, IFormatProvider, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Parses <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.decimal">Decimal</a> from its string representation encoded in the underlying stream.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">virtual ValueTask&lt;decimal&gt; ReadDecimalAsync(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign | NumberStyles.AllowLeadingWhite | NumberStyles.AllowThousands | NumberStyles.AllowTrailingSign | NumberStyles.AllowTrailingWhite | NumberStyles.Integer | NumberStyles.Number, IFormatProvider provider = null, CancellationToken token = default(CancellationToken))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a></td>
+        <td><span class="parametername">lengthFormat</span></td>
+        <td><p>The format of the string length encoded in the stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td><p>The decoding context containing string characters encoding.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.globalization.numberstyles">NumberStyles</a></td>
+        <td><span class="parametername">style</span></td>
+        <td><p>A bitwise combination of the enumeration values that indicates the style elements.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></td>
+        <td><span class="parametername">provider</span></td>
+        <td><p>An object that supplies culture-specific formatting information.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.decimal">Decimal</a>&gt;</td>
+        <td><p>The parsed value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.formatexception">FormatException</a></td>
+        <td><p>The number is in incorrect format.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_ReadDoubleAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.ReadDoubleAsync(DotNext.IO.StringLengthEncoding%2CDotNext.Text.DecodingContext%2CSystem.Globalization.NumberStyles%2CSystem.IFormatProvider%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L154">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_ReadDoubleAsync_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadDoubleAsync*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_ReadDoubleAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadDoubleAsync(DotNext.IO.StringLengthEncoding,DotNext.Text.DecodingContext,System.Globalization.NumberStyles,System.IFormatProvider,System.Threading.CancellationToken)">ReadDoubleAsync(StringLengthEncoding, DecodingContext, NumberStyles, IFormatProvider, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Parses double-precision floating-point number from its string representation encoded in the underlying stream.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">virtual ValueTask&lt;double&gt; ReadDoubleAsync(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent | NumberStyles.AllowLeadingSign | NumberStyles.AllowLeadingWhite | NumberStyles.AllowThousands | NumberStyles.AllowTrailingWhite | NumberStyles.Float | NumberStyles.Integer, IFormatProvider provider = null, CancellationToken token = default(CancellationToken))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a></td>
+        <td><span class="parametername">lengthFormat</span></td>
+        <td><p>The format of the string length encoded in the stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td><p>The decoding context containing string characters encoding.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.globalization.numberstyles">NumberStyles</a></td>
+        <td><span class="parametername">style</span></td>
+        <td><p>A bitwise combination of the enumeration values that indicates the style elements.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></td>
+        <td><span class="parametername">provider</span></td>
+        <td><p>An object that supplies culture-specific formatting information.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>&gt;</td>
+        <td><p>The parsed value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.formatexception">FormatException</a></td>
+        <td><p>The number is in incorrect format.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_ReadGuidAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_String_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.ReadGuidAsync(DotNext.IO.StringLengthEncoding%2CDotNext.Text.DecodingContext%2CSystem.String%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L303">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_ReadGuidAsync_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadGuidAsync*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_ReadGuidAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_String_System_Threading_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadGuidAsync(DotNext.IO.StringLengthEncoding,DotNext.Text.DecodingContext,System.String,System.Threading.CancellationToken)">ReadGuidAsync(StringLengthEncoding, DecodingContext, String, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Parses <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.guid">Guid</a> from its string representation encoded in the underlying stream.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">virtual ValueTask&lt;Guid&gt; ReadGuidAsync(StringLengthEncoding lengthFormat, DecodingContext context, string format, CancellationToken token = default(CancellationToken))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a></td>
+        <td><span class="parametername">lengthFormat</span></td>
+        <td><p>The format of the string length encoded in the stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td><p>The decoding context containing string characters encoding.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><span class="parametername">format</span></td>
+        <td><p>The expected format of GUID value.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.guid">Guid</a>&gt;</td>
+        <td><p>The parsed value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.formatexception">FormatException</a></td>
+        <td><p>GUID is in incorrect format.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_ReadGuidAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.ReadGuidAsync(DotNext.IO.StringLengthEncoding%2CDotNext.Text.DecodingContext%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L289">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_ReadGuidAsync_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadGuidAsync*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_ReadGuidAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Threading_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadGuidAsync(DotNext.IO.StringLengthEncoding,DotNext.Text.DecodingContext,System.Threading.CancellationToken)">ReadGuidAsync(StringLengthEncoding, DecodingContext, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Parses <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.guid">Guid</a> from its string representation encoded in the underlying stream.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">virtual ValueTask&lt;Guid&gt; ReadGuidAsync(StringLengthEncoding lengthFormat, DecodingContext context, CancellationToken token = default(CancellationToken))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a></td>
+        <td><span class="parametername">lengthFormat</span></td>
+        <td><p>The format of the string length encoded in the stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td><p>The decoding context containing string characters encoding.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.guid">Guid</a>&gt;</td>
+        <td><p>The parsed value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.formatexception">FormatException</a></td>
+        <td><p>GUID is in incorrect format.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_ReadInt16Async_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.ReadInt16Async(DotNext.IO.StringLengthEncoding%2CDotNext.Text.DecodingContext%2CSystem.Globalization.NumberStyles%2CSystem.IFormatProvider%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L124">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_ReadInt16Async_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadInt16Async*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_ReadInt16Async_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadInt16Async(DotNext.IO.StringLengthEncoding,DotNext.Text.DecodingContext,System.Globalization.NumberStyles,System.IFormatProvider,System.Threading.CancellationToken)">ReadInt16Async(StringLengthEncoding, DecodingContext, NumberStyles, IFormatProvider, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Parses 16-bit signed integer from its string representation encoded in the underlying stream.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">virtual ValueTask&lt;short&gt; ReadInt16Async(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.AllowLeadingSign | NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite | NumberStyles.Integer, IFormatProvider provider = null, CancellationToken token = default(CancellationToken))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a></td>
+        <td><span class="parametername">lengthFormat</span></td>
+        <td><p>The format of the string length encoded in the stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td><p>The decoding context containing string characters encoding.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.globalization.numberstyles">NumberStyles</a></td>
+        <td><span class="parametername">style</span></td>
+        <td><p>A bitwise combination of the enumeration values that indicates the style elements.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></td>
+        <td><span class="parametername">provider</span></td>
+        <td><p>An object that supplies culture-specific formatting information.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int16">Int16</a>&gt;</td>
+        <td><p>The parsed value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.formatexception">FormatException</a></td>
+        <td><p>The number is in incorrect format.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_ReadInt16Async_System_Boolean_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.ReadInt16Async(System.Boolean%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L74">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L105">View Source</a>
   </span>
   <a id="DotNext_IO_IAsyncBinaryReader_ReadInt16Async_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadInt16Async*"></a>
   <h4 id="DotNext_IO_IAsyncBinaryReader_ReadInt16Async_System_Boolean_System_Threading_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadInt16Async(System.Boolean,System.Threading.CancellationToken)">ReadInt16Async(Boolean, CancellationToken)</h4>
@@ -722,10 +2012,110 @@ when you need an object implementing <a class="xref" href="DotNext.IO.IAsyncBina
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_ReadInt32Async_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.ReadInt32Async(DotNext.IO.StringLengthEncoding%2CDotNext.Text.DecodingContext%2CSystem.Globalization.NumberStyles%2CSystem.IFormatProvider%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L94">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_ReadInt32Async_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadInt32Async*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_ReadInt32Async_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadInt32Async(DotNext.IO.StringLengthEncoding,DotNext.Text.DecodingContext,System.Globalization.NumberStyles,System.IFormatProvider,System.Threading.CancellationToken)">ReadInt32Async(StringLengthEncoding, DecodingContext, NumberStyles, IFormatProvider, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Parses 32-bit signed integer from its string representation encoded in the underlying stream.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">virtual ValueTask&lt;int&gt; ReadInt32Async(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.AllowLeadingSign | NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite | NumberStyles.Integer, IFormatProvider provider = null, CancellationToken token = default(CancellationToken))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a></td>
+        <td><span class="parametername">lengthFormat</span></td>
+        <td><p>The format of the string length encoded in the stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td><p>The decoding context containing string characters encoding.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.globalization.numberstyles">NumberStyles</a></td>
+        <td><span class="parametername">style</span></td>
+        <td><p>A bitwise combination of the enumeration values that indicates the style elements.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></td>
+        <td><span class="parametername">provider</span></td>
+        <td><p>An object that supplies culture-specific formatting information.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
+        <td><p>The parsed value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.formatexception">FormatException</a></td>
+        <td><p>The number is in incorrect format.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_ReadInt32Async_System_Boolean_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.ReadInt32Async(System.Boolean%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L59">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L75">View Source</a>
   </span>
   <a id="DotNext_IO_IAsyncBinaryReader_ReadInt32Async_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadInt32Async*"></a>
   <h4 id="DotNext_IO_IAsyncBinaryReader_ReadInt32Async_System_Boolean_System_Threading_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadInt32Async(System.Boolean,System.Threading.CancellationToken)">ReadInt32Async(Boolean, CancellationToken)</h4>
@@ -799,10 +2189,110 @@ when you need an object implementing <a class="xref" href="DotNext.IO.IAsyncBina
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_ReadInt64Async_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.ReadInt64Async(DotNext.IO.StringLengthEncoding%2CDotNext.Text.DecodingContext%2CSystem.Globalization.NumberStyles%2CSystem.IFormatProvider%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L64">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_ReadInt64Async_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadInt64Async*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_ReadInt64Async_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadInt64Async(DotNext.IO.StringLengthEncoding,DotNext.Text.DecodingContext,System.Globalization.NumberStyles,System.IFormatProvider,System.Threading.CancellationToken)">ReadInt64Async(StringLengthEncoding, DecodingContext, NumberStyles, IFormatProvider, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Parses 64-bit signed integer from its string representation encoded in the underlying stream.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">virtual ValueTask&lt;long&gt; ReadInt64Async(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.AllowLeadingSign | NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite | NumberStyles.Integer, IFormatProvider provider = null, CancellationToken token = default(CancellationToken))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a></td>
+        <td><span class="parametername">lengthFormat</span></td>
+        <td><p>The format of the string length encoded in the stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td><p>The decoding context containing string characters encoding.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.globalization.numberstyles">NumberStyles</a></td>
+        <td><span class="parametername">style</span></td>
+        <td><p>A bitwise combination of the enumeration values that indicates the style elements.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></td>
+        <td><span class="parametername">provider</span></td>
+        <td><p>An object that supplies culture-specific formatting information.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
+        <td><p>The parsed value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.formatexception">FormatException</a></td>
+        <td><p>The number is in incorrect format.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_ReadInt64Async_System_Boolean_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.ReadInt64Async(System.Boolean%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L44">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L45">View Source</a>
   </span>
   <a id="DotNext_IO_IAsyncBinaryReader_ReadInt64Async_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadInt64Async*"></a>
   <h4 id="DotNext_IO_IAsyncBinaryReader_ReadInt64Async_System_Boolean_System_Threading_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadInt64Async(System.Boolean,System.Threading.CancellationToken)">ReadInt64Async(Boolean, CancellationToken)</h4>
@@ -876,10 +2366,110 @@ when you need an object implementing <a class="xref" href="DotNext.IO.IAsyncBina
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_ReadSingleAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.ReadSingleAsync(DotNext.IO.StringLengthEncoding%2CDotNext.Text.DecodingContext%2CSystem.Globalization.NumberStyles%2CSystem.IFormatProvider%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L139">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_ReadSingleAsync_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadSingleAsync*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_ReadSingleAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadSingleAsync(DotNext.IO.StringLengthEncoding,DotNext.Text.DecodingContext,System.Globalization.NumberStyles,System.IFormatProvider,System.Threading.CancellationToken)">ReadSingleAsync(StringLengthEncoding, DecodingContext, NumberStyles, IFormatProvider, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Parses single-precision floating-point number from its string representation encoded in the underlying stream.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">virtual ValueTask&lt;float&gt; ReadSingleAsync(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent | NumberStyles.AllowLeadingSign | NumberStyles.AllowLeadingWhite | NumberStyles.AllowThousands | NumberStyles.AllowTrailingWhite | NumberStyles.Float | NumberStyles.Integer, IFormatProvider provider = null, CancellationToken token = default(CancellationToken))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a></td>
+        <td><span class="parametername">lengthFormat</span></td>
+        <td><p>The format of the string length encoded in the stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td><p>The decoding context containing string characters encoding.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.globalization.numberstyles">NumberStyles</a></td>
+        <td><span class="parametername">style</span></td>
+        <td><p>A bitwise combination of the enumeration values that indicates the style elements.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></td>
+        <td><span class="parametername">provider</span></td>
+        <td><p>An object that supplies culture-specific formatting information.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>&gt;</td>
+        <td><p>The parsed value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.formatexception">FormatException</a></td>
+        <td><p>The number is in incorrect format.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_ReadStringAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.ReadStringAsync(DotNext.IO.StringLengthEncoding%2CDotNext.Text.DecodingContext%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L112">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L337">View Source</a>
   </span>
   <a id="DotNext_IO_IAsyncBinaryReader_ReadStringAsync_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadStringAsync*"></a>
   <h4 id="DotNext_IO_IAsyncBinaryReader_ReadStringAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Threading_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadStringAsync(DotNext.IO.StringLengthEncoding,DotNext.Text.DecodingContext,System.Threading.CancellationToken)">ReadStringAsync(StringLengthEncoding, DecodingContext, CancellationToken)</h4>
@@ -930,7 +2520,7 @@ when you need an object implementing <a class="xref" href="DotNext.IO.IAsyncBina
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<span class="xref">System.String</span>&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a>&gt;</td>
         <td><p>The decoded string.</p>
 </td>
       </tr>
@@ -967,7 +2557,7 @@ when you need an object implementing <a class="xref" href="DotNext.IO.IAsyncBina
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_ReadStringAsync_System_Int32_DotNext_Text_DecodingContext_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.ReadStringAsync(System.Int32%2CDotNext.Text.DecodingContext%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L100">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L325">View Source</a>
   </span>
   <a id="DotNext_IO_IAsyncBinaryReader_ReadStringAsync_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadStringAsync*"></a>
   <h4 id="DotNext_IO_IAsyncBinaryReader_ReadStringAsync_System_Int32_DotNext_Text_DecodingContext_System_Threading_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadStringAsync(System.Int32,DotNext.Text.DecodingContext,System.Threading.CancellationToken)">ReadStringAsync(Int32, DecodingContext, CancellationToken)</h4>
@@ -1018,7 +2608,7 @@ when you need an object implementing <a class="xref" href="DotNext.IO.IAsyncBina
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<span class="xref">System.String</span>&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a>&gt;</td>
         <td><p>The decoded string.</p>
 </td>
       </tr>
@@ -1033,6 +2623,206 @@ when you need an object implementing <a class="xref" href="DotNext.IO.IAsyncBina
       </tr>
     </thead>
     <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_ReadTimeSpanAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_IFormatProvider_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.ReadTimeSpanAsync(DotNext.IO.StringLengthEncoding%2CDotNext.Text.DecodingContext%2CSystem.IFormatProvider%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L260">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_ReadTimeSpanAsync_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadTimeSpanAsync*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_ReadTimeSpanAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_IFormatProvider_System_Threading_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadTimeSpanAsync(DotNext.IO.StringLengthEncoding,DotNext.Text.DecodingContext,System.IFormatProvider,System.Threading.CancellationToken)">ReadTimeSpanAsync(StringLengthEncoding, DecodingContext, IFormatProvider, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Parses <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timespan">TimeSpan</a> from its string representation encoded in the underlying stream.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">virtual ValueTask&lt;TimeSpan&gt; ReadTimeSpanAsync(StringLengthEncoding lengthFormat, DecodingContext context, IFormatProvider provider = null, CancellationToken token = default(CancellationToken))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a></td>
+        <td><span class="parametername">lengthFormat</span></td>
+        <td><p>The format of the string length encoded in the stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td><p>The decoding context containing string characters encoding.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></td>
+        <td><span class="parametername">provider</span></td>
+        <td><p>An object that supplies culture-specific formatting information.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timespan">TimeSpan</a>&gt;</td>
+        <td><p>The parsed value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.formatexception">FormatException</a></td>
+        <td><p>The time span is in incorrect format.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader_ReadTimeSpanAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_String___System_Globalization_TimeSpanStyles_System_IFormatProvider_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader.ReadTimeSpanAsync(DotNext.IO.StringLengthEncoding%2CDotNext.Text.DecodingContext%2CSystem.String%5B%5D%2CSystem.Globalization.TimeSpanStyles%2CSystem.IFormatProvider%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L276">View Source</a>
+  </span>
+  <a id="DotNext_IO_IAsyncBinaryReader_ReadTimeSpanAsync_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadTimeSpanAsync*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryReader_ReadTimeSpanAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_String___System_Globalization_TimeSpanStyles_System_IFormatProvider_System_Threading_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryReader.ReadTimeSpanAsync(DotNext.IO.StringLengthEncoding,DotNext.Text.DecodingContext,System.String[],System.Globalization.TimeSpanStyles,System.IFormatProvider,System.Threading.CancellationToken)">ReadTimeSpanAsync(StringLengthEncoding, DecodingContext, String[], TimeSpanStyles, IFormatProvider, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Parses <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timespan">TimeSpan</a> from its string representation encoded in the underlying stream.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">virtual ValueTask&lt;TimeSpan&gt; ReadTimeSpanAsync(StringLengthEncoding lengthFormat, DecodingContext context, string[] formats, TimeSpanStyles style = TimeSpanStyles.None, IFormatProvider provider = null, CancellationToken token = default(CancellationToken))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a></td>
+        <td><span class="parametername">lengthFormat</span></td>
+        <td><p>The format of the string length encoded in the stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td><p>The decoding context containing string characters encoding.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a>[]</td>
+        <td><span class="parametername">formats</span></td>
+        <td><p>An array of allowable formats.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.globalization.timespanstyles">TimeSpanStyles</a></td>
+        <td><span class="parametername">style</span></td>
+        <td><p>A bitwise combination of the enumeration values that indicates the style elements.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></td>
+        <td><span class="parametername">provider</span></td>
+        <td><p>An object that supplies culture-specific formatting information.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timespan">TimeSpan</a>&gt;</td>
+        <td><p>The parsed value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.formatexception">FormatException</a></td>
+        <td><p>The time span is in incorrect format.</p>
+</td>
+      </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
         <td><p>The operation has been canceled.</p>
@@ -1130,7 +2920,7 @@ when you need an object implementing <a class="xref" href="DotNext.IO.IAsyncBina
                     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_IAsyncBinaryReader.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryReader%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L18" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryReader.cs/#L19" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

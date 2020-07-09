@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class PooledBufferWriter&lt;T&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.55.0.0">
+    <meta name="generator" content="docfx 2.56.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -95,6 +95,12 @@
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_AllocationCounter">MemoryWriter&lt;T&gt;.AllocationCounter</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_BufferSizeCallback">MemoryWriter&lt;T&gt;.BufferSizeCallback</a>
+    </div>
     <div>
       <a class="xref" href="DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_DotNext_IConvertible_System_ReadOnlyMemory_T___Convert">MemoryWriter&lt;T&gt;.IConvertible&lt;ReadOnlyMemory&lt;T&gt;&gt;.Convert()</a>
     </div>
@@ -429,10 +435,62 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledBufferWriter_1_Clear_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledBufferWriter%601.Clear(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledBufferWriter.cs/#L74">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_PooledBufferWriter_1_Clear_" data-uid="DotNext.Buffers.PooledBufferWriter`1.Clear*"></a>
+  <h4 id="DotNext_Buffers_PooledBufferWriter_1_Clear_System_Boolean_" data-uid="DotNext.Buffers.PooledBufferWriter`1.Clear(System.Boolean)">Clear(Boolean)</h4>
+  <div class="markdown level1 summary"><p>Clears the data written to the underlying memory.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override void Clear(bool reuseBuffer)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">reuseBuffer</span></td>
+        <td><p><span class="xref">true</span> to reuse the internal buffer; <span class="xref">false</span> to destroy the internal buffer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><span class="xref">DotNext.Buffers.MemoryWriter&lt;T&gt;.Clear(System.Boolean)</span></div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This writer has been disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledBufferWriter_1_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledBufferWriter%601.Dispose(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledBufferWriter.cs/#L98">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledBufferWriter.cs/#L111">View Source</a>
   </span>
   <a id="DotNext_Buffers_PooledBufferWriter_1_Dispose_" data-uid="DotNext.Buffers.PooledBufferWriter`1.Dispose*"></a>
   <h4 id="DotNext_Buffers_PooledBufferWriter_1_Dispose_System_Boolean_" data-uid="DotNext.Buffers.PooledBufferWriter`1.Dispose(System.Boolean)">Dispose(Boolean)</h4>
@@ -460,13 +518,13 @@
     </tbody>
   </table>
   <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Boolean_">Disposable.Dispose(Boolean)</a></div>
+  <div><span class="xref">DotNext.Buffers.MemoryWriter&lt;T&gt;.Dispose(System.Boolean)</span></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_PooledBufferWriter_1_GetMemory_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledBufferWriter%601.GetMemory(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledBufferWriter.cs/#L82">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledBufferWriter.cs/#L94">View Source</a>
   </span>
   <a id="DotNext_Buffers_PooledBufferWriter_1_GetMemory_" data-uid="DotNext.Buffers.PooledBufferWriter`1.GetMemory*"></a>
   <h4 id="DotNext_Buffers_PooledBufferWriter_1_GetMemory_System_Int32_" data-uid="DotNext.Buffers.PooledBufferWriter`1.GetMemory(System.Int32)">GetMemory(Int32)</h4>
@@ -664,6 +722,15 @@
   </div>
   <div>
       <a class="xref" href="DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_Convert__2_System_Collections_Generic_IReadOnlyList___0__System_Converter___0___1__">List.Convert&lt;TInput, TOutput&gt;(IReadOnlyList&lt;TInput&gt;, Converter&lt;TInput, TOutput&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_Write__1_System_Buffers_IBufferWriter___0__System_Buffers_ReadOnlySequence___0__System_Threading_CancellationToken_">BufferWriter.Write&lt;T&gt;(IBufferWriter&lt;T&gt;, ReadOnlySequence&lt;T&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_Write__1_System_Buffers_IBufferWriter___0____0_">BufferWriter.Write&lt;T&gt;(IBufferWriter&lt;T&gt;, T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_Write__1_System_Buffers_IBufferWriter___0____0___System_Int32_System_Int32_">BufferWriter.Write&lt;T&gt;(IBufferWriter&lt;T&gt;, T[], Int32, Int32)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>

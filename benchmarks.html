@@ -8,7 +8,7 @@
     <title>Benchmarks | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Benchmarks | .NEXT ">
-    <meta name="generator" content="docfx 2.55.0.0">
+    <meta name="generator" content="docfx 2.56.1.0">
     
     <link rel="shortcut icon" href="fav.ico">
     <link rel="stylesheet" href="styles/docfx.vendor.css">
@@ -74,11 +74,11 @@
 <tbody>
 <tr>
 <td>Host</td>
-<td>.NET Core 3.1.4 (CoreCLR 4.700.20.20201, CoreFX 4.700.20.21406), X64 RyuJIT</td>
+<td>.NET Core 3.1.5 (CoreCLR 4.700.20.26901, CoreFX 4.700.20.27001), X64 RyuJIT</td>
 </tr>
 <tr>
 <td>Job</td>
-<td>.NET Core 3.1.4 (CoreCLR 4.700.20.20201, CoreFX 4.700.20.21406), X64 RyuJIT</td>
+<td>.NET Core 3.1.5 (CoreCLR 4.700.20.26901, CoreFX 4.700.20.27001), X64 RyuJIT</td>
 </tr>
 <tr>
 <td>LaunchCount</td>
@@ -603,24 +603,24 @@ dotnet run -c Bench
 <tbody>
 <tr>
 <td>Atomic</td>
-<td>359.6 us</td>
-<td>7.40 us</td>
-<td>69.64 us</td>
-<td>353.2 us</td>
+<td>336.8 us</td>
+<td>9.20 us</td>
+<td>87.27 us</td>
+<td>318.1 us</td>
 </tr>
 <tr>
 <td>Synchronized</td>
-<td>947.2 us</td>
-<td>10.30 us</td>
-<td>96.05 us</td>
-<td>945.1 us</td>
+<td>902.3 us</td>
+<td>8.32 us</td>
+<td>78.44 us</td>
+<td>896.4 us</td>
 </tr>
 <tr>
 <td>SpinLock</td>
-<td>1,707.6 us</td>
-<td>52.27 us</td>
-<td>488.34 us</td>
-<td>1,674.8 us</td>
+<td>1,814.2 us</td>
+<td>55.27 us</td>
+<td>518.56 us</td>
+<td>1,715.9 us</td>
 </tr>
 </tbody>
 </table>
@@ -696,27 +696,27 @@ dotnet run -c Bench
 <tbody>
 <tr>
 <td><code>FileBufferingWriter</code> in synchronous mode</td>
-<td>892.4 us</td>
-<td>7.93 us</td>
-<td>7.03 us</td>
+<td>877.5 us</td>
+<td>17.13 us</td>
+<td>18.33 us</td>
 </tr>
 <tr>
 <td><code>FileBufferingWriteStream</code> in synchronous mode</td>
-<td>27,833.0 us</td>
-<td>769.15 us</td>
-<td>2,231.44 us</td>
+<td>26,396.0 us</td>
+<td>943.21 us</td>
+<td>2,751.40 us</td>
 </tr>
 <tr>
 <td><code>FileBufferingWriter</code> in asynchronous mode</td>
-<td>15,770.6 us</td>
-<td>1,954.47 us</td>
-<td>5,762.80 us</td>
+<td>14,526.9 us</td>
+<td>1,888.52 us</td>
+<td>5,568.36 us</td>
 </tr>
 <tr>
 <td><code>FileBufferingWriteStream</code> in asynchronous mode</td>
-<td>16,830.6 us</td>
-<td>1,044.00 us</td>
-<td>3,078.27 us</td>
+<td>16,819.3 us</td>
+<td>1,074.98 us</td>
+<td>3,169.59 us</td>
 </tr>
 </tbody>
 </table>

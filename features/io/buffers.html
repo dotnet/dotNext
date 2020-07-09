@@ -8,7 +8,7 @@
     <title>Dynamic Buffers | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Dynamic Buffers | .NEXT ">
-    <meta name="generator" content="docfx 2.55.0.0">
+    <meta name="generator" content="docfx 2.56.1.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -78,7 +78,7 @@
 </ul>
 <p>With .NEXT, you have this flexibility.</p>
 <h1 id="pooledbufferwriter">PooledBufferWriter</h1>
-<p><a href="https://sakno.github.io/dotNext/api/DotNext.Buffers.PooledBufferWriter-1.html">PooledBufferWriter&lt;T&gt;</a> is similar to <code>ArrayBufferWriter</code> but accepts <a href="https://sakno.github.io/dotNext/api/DotNext.Buffers.MemoryAllocator-1.html">memory allocator</a> that is used for allocation of internal buffers. Thus, you can use any pooling mechanism from .NET: memory or array pool. If writer detects that capacity exceeded then it rents a new internal buffer and copies written content from previous one.</p>
+<p><a href="../../api/DotNext.Buffers.PooledBufferWriter-1.html">PooledBufferWriter&lt;T&gt;</a> is similar to <code>ArrayBufferWriter</code> but accepts <a href="../../api/DotNext.Buffers.MemoryAllocator-1.html">memory allocator</a> that is used for allocation of internal buffers. Thus, you can use any pooling mechanism from .NET: memory or array pool. If writer detects that capacity exceeded then it rents a new internal buffer and copies written content from previous one.</p>
 <pre><code class="lang-csharp">using DotNext.Buffers;
 
 using var writer = new PooledBufferWriter&lt;byte&gt;(ArrayPool&lt;byte&gt;.Shared.ToAllocator());
@@ -89,12 +89,12 @@ var result = writer.WrittenMemory;  //length is 512
 </code></pre>
 <p>In contrast to <code>ArrayBufferWriter</code>, you must not use written memory if <code>Dispose</code> is called. When <code>Dispose</code> method is called, the internal buffer returns to the pool.</p>
 <h1 id="pooledarraybufferwriter">PooledArrayBufferWriter</h1>
-<p><a href="https://sakno.github.io/dotNext/api/DotNext.Buffers.PooledArrayBufferWriter-1.html">PooledArrayBufferWriter&lt;T&gt;</a> class exposes the similar functionality to <code>PooledBufferWriter</code> class but specialized for working with <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.arraypool-1">ArrayPool&lt;T&gt;</a>. As a result, you can make writes or obtain written memory using <a href="https://docs.microsoft.com/en-us/dotnet/api/system.arraysegment-1">ArraySegment&lt;T&gt;</a>.</p>
+<p><a href="../../api/DotNext.Buffers.PooledArrayBufferWriter-1.html">PooledArrayBufferWriter&lt;T&gt;</a> class exposes the similar functionality to <code>PooledBufferWriter</code> class but specialized for working with <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.arraypool-1">ArrayPool&lt;T&gt;</a>. As a result, you can make writes or obtain written memory using <a href="https://docs.microsoft.com/en-us/dotnet/api/system.arraysegment-1">ArraySegment&lt;T&gt;</a>.</p>
 <pre><code class="lang-csharp">using DotNext.Buffers;
 using DotNext.IO;
 using System;
 
-using var writer = new PooledBufferWriter&lt;byte&gt;(ArrayPool&lt;byte&gt;.Shared);
+using var writer = new PooledArrayBufferWriter&lt;byte&gt;(ArrayPool&lt;byte&gt;.Shared);
 ArraySegment&lt;byte&gt; array = writer.GetArray(1024);
 array[0] = 42;
 array[1] = 43;
@@ -102,6 +102,42 @@ span.Advance(2);
 ArraySegment&lt;byte&gt; result = writer.WrittenArray;
 </code></pre>
 <p>Additionally, it implements <a href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.ilist-1">IList&lt;T&gt;</a> interface so you can use it as fully-functional list which rents the memory instead of allocation on the heap.</p>
+<h1 id="string-buffer">String Buffer</h1>
+<p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.text.stringbuilder">StringBuilder</a> is a great tool from .NET standard library to construct strings dynamically. However, it uses heap-based allocation of chunks and increases GC workload. The solution is to use pooled memory for growing buffer and release it when no longer needed. This approach is implemented by <code>PooledBufferWriter&lt;T&gt;</code> and <code>PooledArrayBufferWriter&lt;T&gt;</code> classes as described above. But we need suitable methods for adding portions of data to the builder similar to the methods of <code>StringBuilder</code>. They are provided as extension methods declared in <a href="../../api/DotNext.Buffers.BufferWriter.html">BufferWriter</a> class for all objects implementing <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter&lt;char&gt;</a> interface:</p>
+<pre><code class="lang-csharp">using DotNext.Buffers;
+
+using var writer = new PooledArrayBufferWriter&lt;char&gt;(ArrayPool&lt;char&gt;.Shared);
+writer.Write(&quot;Hello,&quot;);
+writer.Write(' ');
+writer.Write(&quot;world!&quot;);
+writer.WriteLine();
+writer.Write(2);
+writer.Write('+');
+writer.Write(2);
+writer.Write('=');
+writer.Write(4);
+
+string result = writer.BuildString();
+</code></pre>
+<p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.textwriter">TextWriter</a> is a common way to produce text dynamically and recognizable by many third-party libraries. There is a bridge that allow to use TextWriter API over pooled buffer writer with help of extension methods declared in <a href="../../api/DotNext.IO.TextWriterSource.html">TextWriterSource</a> class:</p>
+<pre><code class="lang-csharp">using DotNext.Buffers;
+using System.IO;
+using static DotNext.IO.TextWriterSource;
+
+using var buffer = new PooledArrayBufferWriter&lt;char&gt;(ArrayPool&lt;char&gt;.Shared);
+using TextWriter writer = buffer.AsTextWriter();
+writer.Write(&quot;Hello,&quot;);
+writer.Write(' ');
+writer.Write(&quot;world!&quot;);
+writer.WriteLine();
+writer.Write(2);
+writer.Write('+');
+writer.Write(2);
+writer.Write('=');
+writer.Write(4);
+
+string result = buffer.BuildString();
+</code></pre>
 </article>
           </div>
           

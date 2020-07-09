@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class Procedure
    | .NEXT ">
-    <meta name="generator" content="docfx 2.55.0.0">
+    <meta name="generator" content="docfx 2.56.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -118,7 +118,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Procedure_ArgList__1_DotNext_Procedure___0__.md&amp;value=---%0Auid%3A%20DotNext.Procedure.ArgList%60%601(DotNext.Procedure%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L66">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L80">View Source</a>
   </span>
   <a id="DotNext_Procedure_ArgList_" data-uid="DotNext.Procedure.ArgList*"></a>
   <h4 id="DotNext_Procedure_ArgList__1_DotNext_Procedure___0__" data-uid="DotNext.Procedure.ArgList``1(DotNext.Procedure{``0})">ArgList&lt;TArgs&gt;(Procedure&lt;TArgs&gt;)</h4>
@@ -128,7 +128,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static TArgs ArgList&lt;TArgs&gt;(this Procedure&lt;TArgs&gt; procedure)
-
     where TArgs : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -186,7 +185,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Procedure_ArgList__2_DotNext_Procedure___0___1__.md&amp;value=---%0Auid%3A%20DotNext.Procedure.ArgList%60%602(DotNext.Procedure%7B%60%600%2C%60%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L77">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L91">View Source</a>
   </span>
   <a id="DotNext_Procedure_ArgList_" data-uid="DotNext.Procedure.ArgList*"></a>
   <h4 id="DotNext_Procedure_ArgList__2_DotNext_Procedure___0___1__" data-uid="DotNext.Procedure.ArgList``2(DotNext.Procedure{``0,``1})">ArgList&lt;T, TArgs&gt;(Procedure&lt;T, TArgs&gt;)</h4>
@@ -196,7 +195,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static TArgs ArgList&lt;T, TArgs&gt;(this Procedure&lt;T, TArgs&gt; procedure)
-
     where TArgs : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -256,10 +254,89 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Procedure_Capture__2_DotNext_Procedure___0___1____0_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Capture%60%602(DotNext.Procedure%7B%60%600%2C%60%601%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Procedure_Bind__2_DotNext_Procedure___0___1____0_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Bind%60%602(DotNext.Procedure%7B%60%600%2C%60%601%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L56">View Source</a>
+  </span>
+  <a id="DotNext_Procedure_Bind_" data-uid="DotNext.Procedure.Bind*"></a>
+  <h4 id="DotNext_Procedure_Bind__2_DotNext_Procedure___0___1____0_" data-uid="DotNext.Procedure.Bind``2(DotNext.Procedure{``0,``1},``0)">Bind&lt;T, TArgs&gt;(Procedure&lt;T, TArgs&gt;, T)</h4>
+  <div class="markdown level1 summary"><p>Converts <a class="xref" href="DotNext.Procedure-2.html">Procedure&lt;T, TArgs&gt;</a> into <a class="xref" href="DotNext.Procedure-1.html">Procedure&lt;TArgs&gt;</a> through
+capturing of the first argument of <a class="xref" href="DotNext.Procedure-2.html">Procedure&lt;T, TArgs&gt;</a> delegate.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Procedure&lt;TArgs&gt; Bind&lt;T, TArgs&gt;(this Procedure&lt;T, TArgs&gt; procedure, T this)
+    where TArgs : struct</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Procedure-2.html">Procedure</a>&lt;T, TArgs&gt;</td>
+        <td><span class="parametername">procedure</span></td>
+        <td><p>The procedure to be converted.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">this</span></td>
+        <td><p>The first argument to be captured.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Procedure-1.html">Procedure</a>&lt;TArgs&gt;</td>
+        <td><p>The procedure instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>Type of instance to be passed into underlying method.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">TArgs</span></td>
+        <td><p>Type of structure with procedure arguments allocated on the stack.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Procedure_Capture__2_DotNext_Procedure___0___1____0_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Capture%60%602(DotNext.Procedure%7B%60%600%2C%60%601%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L69">View Source</a>
   </span>
   <a id="DotNext_Procedure_Capture_" data-uid="DotNext.Procedure.Capture*"></a>
   <h4 id="DotNext_Procedure_Capture__2_DotNext_Procedure___0___1____0_" data-uid="DotNext.Procedure.Capture``2(DotNext.Procedure{``0,``1},``0)">Capture&lt;T, TArgs&gt;(Procedure&lt;T, TArgs&gt;, T)</h4>
@@ -269,8 +346,8 @@ capturing of the first argument of <a class="xref" href="DotNext.Procedure-2.htm
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Procedure&lt;TArgs&gt; Capture&lt;T, TArgs&gt;(this Procedure&lt;T, TArgs&gt; procedure, T this)
-
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use Bind method instead&quot;, true)]
+public static Procedure&lt;TArgs&gt; Capture&lt;T, TArgs&gt;(this Procedure&lt;T, TArgs&gt; procedure, T this)
     where TArgs : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -339,7 +416,7 @@ capturing of the first argument of <a class="xref" href="DotNext.Procedure-2.htm
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Procedure_Invoke_DotNext_Procedure_System_ValueTuple__.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke(DotNext.Procedure%7BSystem.ValueTuple%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L94">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L108">View Source</a>
   </span>
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
   <h4 id="DotNext_Procedure_Invoke_DotNext_Procedure_System_ValueTuple__" data-uid="DotNext.Procedure.Invoke(DotNext.Procedure{System.ValueTuple})">Invoke(Procedure&lt;ValueTuple&gt;)</h4>
@@ -373,7 +450,7 @@ capturing of the first argument of <a class="xref" href="DotNext.Procedure-2.htm
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Procedure_Invoke__1_DotNext_Procedure___0_System_ValueTuple____0__.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%601(DotNext.Procedure%7B%60%600%2CSystem.ValueTuple%7D%2C%60%600%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L87">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L101">View Source</a>
   </span>
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
   <h4 id="DotNext_Procedure_Invoke__1_DotNext_Procedure___0_System_ValueTuple____0__" data-uid="DotNext.Procedure.Invoke``1(DotNext.Procedure{``0,System.ValueTuple},``0@)">Invoke&lt;T&gt;(Procedure&lt;T, ValueTuple&gt;, T)</h4>
@@ -429,7 +506,7 @@ capturing of the first argument of <a class="xref" href="DotNext.Procedure-2.htm
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Procedure_Invoke__1_DotNext_Procedure_System_ValueTuple___0_____0_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%601(DotNext.Procedure%7BSystem.ValueTuple%7B%60%600%7D%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L114">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L128">View Source</a>
   </span>
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
   <h4 id="DotNext_Procedure_Invoke__1_DotNext_Procedure_System_ValueTuple___0_____0_" data-uid="DotNext.Procedure.Invoke``1(DotNext.Procedure{System.ValueTuple{``0}},``0)">Invoke&lt;T&gt;(Procedure&lt;(T)&gt;, T)</h4>
@@ -485,7 +562,7 @@ capturing of the first argument of <a class="xref" href="DotNext.Procedure-2.htm
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Procedure_Invoke__10_DotNext_Procedure___0_System_ValueTuple___1___2___3___4___5___6___7_System_ValueTuple___8___9______0____1___2___3___4___5___6___7___8___9_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%6010(DotNext.Procedure%7B%60%600%2CSystem.ValueTuple%7B%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2CSystem.ValueTuple%7B%60%608%2C%60%609%7D%7D%7D%2C%60%600%40%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2C%60%608%2C%60%609)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L393">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L407">View Source</a>
   </span>
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
   <h4 id="DotNext_Procedure_Invoke__10_DotNext_Procedure___0_System_ValueTuple___1___2___3___4___5___6___7_System_ValueTuple___8___9______0____1___2___3___4___5___6___7___8___9_" data-uid="DotNext.Procedure.Invoke``10(DotNext.Procedure{``0,System.ValueTuple{``1,``2,``3,``4,``5,``6,``7,System.ValueTuple{``8,``9}}},``0@,``1,``2,``3,``4,``5,``6,``7,``8,``9)">Invoke&lt;T, T1, T2, T3, T4, T5, T6, T7, T8, T9&gt;(Procedure&lt;T, (T1, T2, T3, T4, T5, T6, T7, T8, T9)&gt;, T, T1, T2, T3, T4, T5, T6, T7, T8, T9)</h4>
@@ -640,7 +717,7 @@ capturing of the first argument of <a class="xref" href="DotNext.Procedure-2.htm
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Procedure_Invoke__10_DotNext_Procedure_System_ValueTuple___0___1___2___3___4___5___6_System_ValueTuple___7___8___9______0___1___2___3___4___5___6___7___8___9_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%6010(DotNext.Procedure%7BSystem.ValueTuple%7B%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2CSystem.ValueTuple%7B%60%607%2C%60%608%2C%60%609%7D%7D%7D%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2C%60%608%2C%60%609)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L474">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L488">View Source</a>
   </span>
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
   <h4 id="DotNext_Procedure_Invoke__10_DotNext_Procedure_System_ValueTuple___0___1___2___3___4___5___6_System_ValueTuple___7___8___9______0___1___2___3___4___5___6___7___8___9_" data-uid="DotNext.Procedure.Invoke``10(DotNext.Procedure{System.ValueTuple{``0,``1,``2,``3,``4,``5,``6,System.ValueTuple{``7,``8,``9}}},``0,``1,``2,``3,``4,``5,``6,``7,``8,``9)">Invoke&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, T10&gt;(Procedure&lt;(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)&gt;, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)</h4>
@@ -795,7 +872,7 @@ capturing of the first argument of <a class="xref" href="DotNext.Procedure-2.htm
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Procedure_Invoke__11_DotNext_Procedure___0_System_ValueTuple___1___2___3___4___5___6___7_System_ValueTuple___8___9___10______0____1___2___3___4___5___6___7___8___9___10_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%6011(DotNext.Procedure%7B%60%600%2CSystem.ValueTuple%7B%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2CSystem.ValueTuple%7B%60%608%2C%60%609%2C%60%6010%7D%7D%7D%2C%60%600%40%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2C%60%608%2C%60%609%2C%60%6010)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L447">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L461">View Source</a>
   </span>
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
   <h4 id="DotNext_Procedure_Invoke__11_DotNext_Procedure___0_System_ValueTuple___1___2___3___4___5___6___7_System_ValueTuple___8___9___10______0____1___2___3___4___5___6___7___8___9___10_" data-uid="DotNext.Procedure.Invoke``11(DotNext.Procedure{``0,System.ValueTuple{``1,``2,``3,``4,``5,``6,``7,System.ValueTuple{``8,``9,``10}}},``0@,``1,``2,``3,``4,``5,``6,``7,``8,``9,``10)">Invoke&lt;T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10&gt;(Procedure&lt;T, (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)&gt;, T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)</h4>
@@ -961,7 +1038,7 @@ capturing of the first argument of <a class="xref" href="DotNext.Procedure-2.htm
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Procedure_Invoke__2_DotNext_Procedure___0_System_ValueTuple___1_____0____1_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%602(DotNext.Procedure%7B%60%600%2CSystem.ValueTuple%7B%60%601%7D%7D%2C%60%600%40%2C%60%601)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L105">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L119">View Source</a>
   </span>
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
   <h4 id="DotNext_Procedure_Invoke__2_DotNext_Procedure___0_System_ValueTuple___1_____0____1_" data-uid="DotNext.Procedure.Invoke``2(DotNext.Procedure{``0,System.ValueTuple{``1}},``0@,``1)">Invoke&lt;T, TParam&gt;(Procedure&lt;T, (TParam)&gt;, T, TParam)</h4>
@@ -1028,7 +1105,7 @@ capturing of the first argument of <a class="xref" href="DotNext.Procedure-2.htm
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Procedure_Invoke__2_DotNext_Procedure_System_ValueTuple___0___1_____0___1_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%602(DotNext.Procedure%7BSystem.ValueTuple%7B%60%600%2C%60%601%7D%7D%2C%60%600%2C%60%601)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L138">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L152">View Source</a>
   </span>
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
   <h4 id="DotNext_Procedure_Invoke__2_DotNext_Procedure_System_ValueTuple___0___1_____0___1_" data-uid="DotNext.Procedure.Invoke``2(DotNext.Procedure{System.ValueTuple{``0,``1}},``0,``1)">Invoke&lt;T1, T2&gt;(Procedure&lt;(T1, T2)&gt;, T1, T2)</h4>
@@ -1095,7 +1172,7 @@ capturing of the first argument of <a class="xref" href="DotNext.Procedure-2.htm
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Procedure_Invoke__3_DotNext_Procedure___0_System_ValueTuple___1___2_____0____1___2_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%603(DotNext.Procedure%7B%60%600%2CSystem.ValueTuple%7B%60%601%2C%60%602%7D%7D%2C%60%600%40%2C%60%601%2C%60%602)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L127">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L141">View Source</a>
   </span>
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
   <h4 id="DotNext_Procedure_Invoke__3_DotNext_Procedure___0_System_ValueTuple___1___2_____0____1___2_" data-uid="DotNext.Procedure.Invoke``3(DotNext.Procedure{``0,System.ValueTuple{``1,``2}},``0@,``1,``2)">Invoke&lt;T, T1, T2&gt;(Procedure&lt;T, (T1, T2)&gt;, T, T1, T2)</h4>
@@ -1173,7 +1250,7 @@ capturing of the first argument of <a class="xref" href="DotNext.Procedure-2.htm
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Procedure_Invoke__3_DotNext_Procedure_System_ValueTuple___0___1___2_____0___1___2_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%603(DotNext.Procedure%7BSystem.ValueTuple%7B%60%600%2C%60%601%2C%60%602%7D%7D%2C%60%600%2C%60%601%2C%60%602)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L166">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L180">View Source</a>
   </span>
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
   <h4 id="DotNext_Procedure_Invoke__3_DotNext_Procedure_System_ValueTuple___0___1___2_____0___1___2_" data-uid="DotNext.Procedure.Invoke``3(DotNext.Procedure{System.ValueTuple{``0,``1,``2}},``0,``1,``2)">Invoke&lt;T1, T2, T3&gt;(Procedure&lt;(T1, T2, T3)&gt;, T1, T2, T3)</h4>
@@ -1251,7 +1328,7 @@ capturing of the first argument of <a class="xref" href="DotNext.Procedure-2.htm
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Procedure_Invoke__4_DotNext_Procedure___0_System_ValueTuple___1___2___3_____0____1___2___3_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%604(DotNext.Procedure%7B%60%600%2CSystem.ValueTuple%7B%60%601%2C%60%602%2C%60%603%7D%7D%2C%60%600%40%2C%60%601%2C%60%602%2C%60%603)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L153">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L167">View Source</a>
   </span>
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
   <h4 id="DotNext_Procedure_Invoke__4_DotNext_Procedure___0_System_ValueTuple___1___2___3_____0____1___2___3_" data-uid="DotNext.Procedure.Invoke``4(DotNext.Procedure{``0,System.ValueTuple{``1,``2,``3}},``0@,``1,``2,``3)">Invoke&lt;T, T1, T2, T3&gt;(Procedure&lt;T, (T1, T2, T3)&gt;, T, T1, T2, T3)</h4>
@@ -1340,7 +1417,7 @@ capturing of the first argument of <a class="xref" href="DotNext.Procedure-2.htm
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Procedure_Invoke__4_DotNext_Procedure_System_ValueTuple___0___1___2___3_____0___1___2___3_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%604(DotNext.Procedure%7BSystem.ValueTuple%7B%60%600%2C%60%601%2C%60%602%2C%60%603%7D%7D%2C%60%600%2C%60%601%2C%60%602%2C%60%603)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L198">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L212">View Source</a>
   </span>
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
   <h4 id="DotNext_Procedure_Invoke__4_DotNext_Procedure_System_ValueTuple___0___1___2___3_____0___1___2___3_" data-uid="DotNext.Procedure.Invoke``4(DotNext.Procedure{System.ValueTuple{``0,``1,``2,``3}},``0,``1,``2,``3)">Invoke&lt;T1, T2, T3, T4&gt;(Procedure&lt;(T1, T2, T3, T4)&gt;, T1, T2, T3, T4)</h4>
@@ -1429,7 +1506,7 @@ capturing of the first argument of <a class="xref" href="DotNext.Procedure-2.htm
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Procedure_Invoke__5_DotNext_Procedure___0_System_ValueTuple___1___2___3___4_____0____1___2___3___4_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%605(DotNext.Procedure%7B%60%600%2CSystem.ValueTuple%7B%60%601%2C%60%602%2C%60%603%2C%60%604%7D%7D%2C%60%600%40%2C%60%601%2C%60%602%2C%60%603%2C%60%604)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L183">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L197">View Source</a>
   </span>
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
   <h4 id="DotNext_Procedure_Invoke__5_DotNext_Procedure___0_System_ValueTuple___1___2___3___4_____0____1___2___3___4_" data-uid="DotNext.Procedure.Invoke``5(DotNext.Procedure{``0,System.ValueTuple{``1,``2,``3,``4}},``0@,``1,``2,``3,``4)">Invoke&lt;T, T1, T2, T3, T4&gt;(Procedure&lt;T, (T1, T2, T3, T4)&gt;, T, T1, T2, T3, T4)</h4>
@@ -1529,7 +1606,7 @@ capturing of the first argument of <a class="xref" href="DotNext.Procedure-2.htm
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Procedure_Invoke__5_DotNext_Procedure_System_ValueTuple___0___1___2___3___4_____0___1___2___3___4_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%605(DotNext.Procedure%7BSystem.ValueTuple%7B%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%7D%7D%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L234">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L248">View Source</a>
   </span>
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
   <h4 id="DotNext_Procedure_Invoke__5_DotNext_Procedure_System_ValueTuple___0___1___2___3___4_____0___1___2___3___4_" data-uid="DotNext.Procedure.Invoke``5(DotNext.Procedure{System.ValueTuple{``0,``1,``2,``3,``4}},``0,``1,``2,``3,``4)">Invoke&lt;T1, T2, T3, T4, T5&gt;(Procedure&lt;(T1, T2, T3, T4, T5)&gt;, T1, T2, T3, T4, T5)</h4>
@@ -1629,7 +1706,7 @@ capturing of the first argument of <a class="xref" href="DotNext.Procedure-2.htm
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Procedure_Invoke__6_DotNext_Procedure___0_System_ValueTuple___1___2___3___4___5_____0____1___2___3___4___5_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%606(DotNext.Procedure%7B%60%600%2CSystem.ValueTuple%7B%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%7D%7D%2C%60%600%40%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L217">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L231">View Source</a>
   </span>
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
   <h4 id="DotNext_Procedure_Invoke__6_DotNext_Procedure___0_System_ValueTuple___1___2___3___4___5_____0____1___2___3___4___5_" data-uid="DotNext.Procedure.Invoke``6(DotNext.Procedure{``0,System.ValueTuple{``1,``2,``3,``4,``5}},``0@,``1,``2,``3,``4,``5)">Invoke&lt;T, T1, T2, T3, T4, T5&gt;(Procedure&lt;T, (T1, T2, T3, T4, T5)&gt;, T, T1, T2, T3, T4, T5)</h4>
@@ -1740,7 +1817,7 @@ capturing of the first argument of <a class="xref" href="DotNext.Procedure-2.htm
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Procedure_Invoke__6_DotNext_Procedure_System_ValueTuple___0___1___2___3___4___5_____0___1___2___3___4___5_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%606(DotNext.Procedure%7BSystem.ValueTuple%7B%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%7D%7D%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L274">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L288">View Source</a>
   </span>
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
   <h4 id="DotNext_Procedure_Invoke__6_DotNext_Procedure_System_ValueTuple___0___1___2___3___4___5_____0___1___2___3___4___5_" data-uid="DotNext.Procedure.Invoke``6(DotNext.Procedure{System.ValueTuple{``0,``1,``2,``3,``4,``5}},``0,``1,``2,``3,``4,``5)">Invoke&lt;T1, T2, T3, T4, T5, T6&gt;(Procedure&lt;(T1, T2, T3, T4, T5, T6)&gt;, T1, T2, T3, T4, T5, T6)</h4>
@@ -1851,7 +1928,7 @@ capturing of the first argument of <a class="xref" href="DotNext.Procedure-2.htm
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Procedure_Invoke__7_DotNext_Procedure___0_System_ValueTuple___1___2___3___4___5___6_____0____1___2___3___4___5___6_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%607(DotNext.Procedure%7B%60%600%2CSystem.ValueTuple%7B%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%7D%7D%2C%60%600%40%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L255">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L269">View Source</a>
   </span>
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
   <h4 id="DotNext_Procedure_Invoke__7_DotNext_Procedure___0_System_ValueTuple___1___2___3___4___5___6_____0____1___2___3___4___5___6_" data-uid="DotNext.Procedure.Invoke``7(DotNext.Procedure{``0,System.ValueTuple{``1,``2,``3,``4,``5,``6}},``0@,``1,``2,``3,``4,``5,``6)">Invoke&lt;T, T1, T2, T3, T4, T5, T6&gt;(Procedure&lt;T, (T1, T2, T3, T4, T5, T6)&gt;, T, T1, T2, T3, T4, T5, T6)</h4>
@@ -1973,7 +2050,7 @@ capturing of the first argument of <a class="xref" href="DotNext.Procedure-2.htm
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Procedure_Invoke__7_DotNext_Procedure_System_ValueTuple___0___1___2___3___4___5___6_____0___1___2___3___4___5___6_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%607(DotNext.Procedure%7BSystem.ValueTuple%7B%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%7D%7D%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L318">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L332">View Source</a>
   </span>
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
   <h4 id="DotNext_Procedure_Invoke__7_DotNext_Procedure_System_ValueTuple___0___1___2___3___4___5___6_____0___1___2___3___4___5___6_" data-uid="DotNext.Procedure.Invoke``7(DotNext.Procedure{System.ValueTuple{``0,``1,``2,``3,``4,``5,``6}},``0,``1,``2,``3,``4,``5,``6)">Invoke&lt;T1, T2, T3, T4, T5, T6, T7&gt;(Procedure&lt;(T1, T2, T3, T4, T5, T6, T7)&gt;, T1, T2, T3, T4, T5, T6, T7)</h4>
@@ -2095,7 +2172,7 @@ capturing of the first argument of <a class="xref" href="DotNext.Procedure-2.htm
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Procedure_Invoke__8_DotNext_Procedure___0_System_ValueTuple___1___2___3___4___5___6___7_____0____1___2___3___4___5___6___7_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%608(DotNext.Procedure%7B%60%600%2CSystem.ValueTuple%7B%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%7D%7D%2C%60%600%40%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L297">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L311">View Source</a>
   </span>
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
   <h4 id="DotNext_Procedure_Invoke__8_DotNext_Procedure___0_System_ValueTuple___1___2___3___4___5___6___7_____0____1___2___3___4___5___6___7_" data-uid="DotNext.Procedure.Invoke``8(DotNext.Procedure{``0,System.ValueTuple{``1,``2,``3,``4,``5,``6,``7}},``0@,``1,``2,``3,``4,``5,``6,``7)">Invoke&lt;T, T1, T2, T3, T4, T5, T6, T7&gt;(Procedure&lt;T, (T1, T2, T3, T4, T5, T6, T7)&gt;, T, T1, T2, T3, T4, T5, T6, T7)</h4>
@@ -2228,7 +2305,7 @@ capturing of the first argument of <a class="xref" href="DotNext.Procedure-2.htm
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Procedure_Invoke__8_DotNext_Procedure_System_ValueTuple___0___1___2___3___4___5___6_System_ValueTuple___7______0___1___2___3___4___5___6___7_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%608(DotNext.Procedure%7BSystem.ValueTuple%7B%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2CSystem.ValueTuple%7B%60%607%7D%7D%7D%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L366">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L380">View Source</a>
   </span>
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
   <h4 id="DotNext_Procedure_Invoke__8_DotNext_Procedure_System_ValueTuple___0___1___2___3___4___5___6_System_ValueTuple___7______0___1___2___3___4___5___6___7_" data-uid="DotNext.Procedure.Invoke``8(DotNext.Procedure{System.ValueTuple{``0,``1,``2,``3,``4,``5,``6,System.ValueTuple{``7}}},``0,``1,``2,``3,``4,``5,``6,``7)">Invoke&lt;T1, T2, T3, T4, T5, T6, T7, T8&gt;(Procedure&lt;(T1, T2, T3, T4, T5, T6, T7, T8)&gt;, T1, T2, T3, T4, T5, T6, T7, T8)</h4>
@@ -2361,7 +2438,7 @@ capturing of the first argument of <a class="xref" href="DotNext.Procedure-2.htm
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Procedure_Invoke__9_DotNext_Procedure___0_System_ValueTuple___1___2___3___4___5___6___7_System_ValueTuple___8______0____1___2___3___4___5___6___7___8_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%609(DotNext.Procedure%7B%60%600%2CSystem.ValueTuple%7B%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2CSystem.ValueTuple%7B%60%608%7D%7D%7D%2C%60%600%40%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2C%60%608)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L343">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L357">View Source</a>
   </span>
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
   <h4 id="DotNext_Procedure_Invoke__9_DotNext_Procedure___0_System_ValueTuple___1___2___3___4___5___6___7_System_ValueTuple___8______0____1___2___3___4___5___6___7___8_" data-uid="DotNext.Procedure.Invoke``9(DotNext.Procedure{``0,System.ValueTuple{``1,``2,``3,``4,``5,``6,``7,System.ValueTuple{``8}}},``0@,``1,``2,``3,``4,``5,``6,``7,``8)">Invoke&lt;T, T1, T2, T3, T4, T5, T6, T7, T8&gt;(Procedure&lt;T, (T1, T2, T3, T4, T5, T6, T7, T8)&gt;, T, T1, T2, T3, T4, T5, T6, T7, T8)</h4>
@@ -2505,7 +2582,7 @@ capturing of the first argument of <a class="xref" href="DotNext.Procedure-2.htm
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Procedure_Invoke__9_DotNext_Procedure_System_ValueTuple___0___1___2___3___4___5___6_System_ValueTuple___7___8______0___1___2___3___4___5___6___7___8_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%609(DotNext.Procedure%7BSystem.ValueTuple%7B%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2CSystem.ValueTuple%7B%60%607%2C%60%608%7D%7D%7D%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2C%60%608)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L418">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L432">View Source</a>
   </span>
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
   <h4 id="DotNext_Procedure_Invoke__9_DotNext_Procedure_System_ValueTuple___0___1___2___3___4___5___6_System_ValueTuple___7___8______0___1___2___3___4___5___6___7___8_" data-uid="DotNext.Procedure.Invoke``9(DotNext.Procedure{System.ValueTuple{``0,``1,``2,``3,``4,``5,``6,System.ValueTuple{``7,``8}}},``0,``1,``2,``3,``4,``5,``6,``7,``8)">Invoke&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9&gt;(Procedure&lt;(T1, T2, T3, T4, T5, T6, T7, T8, T9)&gt;, T1, T2, T3, T4, T5, T6, T7, T8, T9)</h4>
