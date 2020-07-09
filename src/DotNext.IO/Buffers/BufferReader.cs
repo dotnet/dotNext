@@ -5,7 +5,7 @@ using BinaryPrimitives = System.Buffers.Binary.BinaryPrimitives;
 
 namespace DotNext.Buffers
 {
-    internal static class BufferReader
+    internal static partial class BufferReader
     {
         internal static void Append<TResult, TParser>(this ref TParser parser, in ReadOnlySequence<byte> input, out SequencePosition consumed)
             where TParser : struct, IBufferReader<TResult>

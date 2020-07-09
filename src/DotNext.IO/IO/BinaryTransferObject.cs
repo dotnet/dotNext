@@ -72,10 +72,7 @@ namespace DotNext.IO
         long? IDataTransferObject.Length => Content.Length;
 
         /// <inheritdoc/>
-        async ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
-        {
-            foreach (var segment in Content)
-                await writer.WriteAsync(segment, token).ConfigureAwait(false);
-        }
+        ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+            => new ValueTask(writer.WriteAsync(Content, token));
     }
 }

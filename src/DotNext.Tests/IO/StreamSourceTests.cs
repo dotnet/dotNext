@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace DotNext.IO
 {
     using Buffers;
-    using System.Threading;
 
     [ExcludeFromCodeCoverage]
     public sealed class StreamSourceTests : Test
@@ -42,7 +42,8 @@ namespace DotNext.IO
         public static void EmptyCopyTo()
         {
             using var dest = new MemoryStream();
-            using var src = new ReadOnlySequence<byte>().AsStream();
+            using var src = ReadOnlySequence<byte>.Empty.AsStream();
+            Same(Stream.Null, src);
             Equal(0L, src.Length);
 
             src.CopyTo(dest);
@@ -53,7 +54,7 @@ namespace DotNext.IO
         public static void SeekAndCopy()
         {
             using var dest = new MemoryStream();
-            using var src = new ReadOnlySequence<byte>(data).AsStream();
+            using var src = new ChunkSequence<byte>(data, 5).ToReadOnlySequence().AsStream();
             NotEqual(0L, src.Length);
             src.Position = data.Length;
 
@@ -77,7 +78,7 @@ namespace DotNext.IO
         public static void CopyAfterReuse()
         {
             var dest = new MemoryStream();
-            using var src = new ReadOnlySequence<byte>(data).AsStream();
+            using var src = new ChunkSequence<byte>(data, 5).ToReadOnlySequence().AsStream();
 
             src.CopyTo(dest);
             Equal(data, dest.ToArray());
@@ -95,7 +96,7 @@ namespace DotNext.IO
         public static void SeekFromEnd()
         {
             using var dest = new MemoryStream();
-            using var src = new ReadOnlySequence<byte>(data).AsStream();
+            using var src = new ChunkSequence<byte>(data, 5).ToReadOnlySequence().AsStream();
             Equal(data.Length - 1, src.Seek(-1L, SeekOrigin.End));
             src.CopyTo(dest);
             Equal(1L, dest.Length);
@@ -106,7 +107,7 @@ namespace DotNext.IO
         public static void SeekFromStart()
         {
             using var dest = new MemoryStream();
-            using var src = new ReadOnlySequence<byte>(data).AsStream();
+            using var src = new ChunkSequence<byte>(data, 5).ToReadOnlySequence().AsStream();
             Equal(data.Length - 1, src.Seek(data.Length - 1, SeekOrigin.Begin));
             src.CopyTo(dest);
             Equal(1L, dest.Length);
@@ -117,7 +118,7 @@ namespace DotNext.IO
         public static void SeekFromCurrent()
         {
             using var dest = new MemoryStream();
-            using var src = new ReadOnlySequence<byte>(data).AsStream();
+            using var src = new ChunkSequence<byte>(data, 5).ToReadOnlySequence().AsStream();
             src.Position = 1;
             Equal(data.Length - 1, src.Seek(data.Length - 2, SeekOrigin.Current));
             src.CopyTo(dest);
@@ -198,7 +199,7 @@ namespace DotNext.IO
         [Fact]
         public static void InvalidSeek()
         {
-            using var src = new ReadOnlySequence<byte>(data).AsStream();
+            using var src = new ChunkSequence<byte>(data, 6).ToReadOnlySequence().AsStream();
             Throws<ArgumentOutOfRangeException>(() => src.Seek(500L, SeekOrigin.Begin));
             Throws<IOException>(() => src.Seek(-500L, SeekOrigin.End));
         }
@@ -211,7 +212,7 @@ namespace DotNext.IO
         [Fact]
         public static void ReadApm()
         {
-            using var src = new ReadOnlyMemory<byte>(data).AsStream();
+            using var src = new ChunkSequence<byte>(data, 5).ToReadOnlySequence().AsStream();
             var buffer = new byte[4];
             src.Position = 1;
             var ar = src.BeginRead(buffer, 0, 2, null, "state");
@@ -227,7 +228,7 @@ namespace DotNext.IO
         [Fact]
         public static async Task ReadApm2()
         {
-            using var src = new ReadOnlyMemory<byte>(data).AsStream();
+            using var src = new ChunkSequence<byte>(data, 5).ToReadOnlySequence().AsStream();
             var buffer = new byte[4];
             src.Position = 1;
             var checker = new CallbackChecker();
@@ -244,7 +245,7 @@ namespace DotNext.IO
         [Fact]
         public static void Truncation()
         {
-            using var src = new ReadOnlyMemory<byte>(data).AsStream();
+            using var src = new ChunkSequence<byte>(data, 5).ToReadOnlySequence().AsStream();
             src.Position = 1L;
             src.SetLength(data.Length - 2L);
             Equal(data.Length - 2L, src.Length);
@@ -272,12 +273,30 @@ namespace DotNext.IO
             Throws<NotSupportedException>(() => src.Write(new byte[2]));
             Throws<NotSupportedException>(() => src.WriteByte(42));
             Throws<NotSupportedException>(() => src.BeginWrite(new byte[2], 0, 2, null, null));
+            Throws<ArgumentException>(() => src.EndWrite(Task.CompletedTask));
+            await ThrowsAsync<NotSupportedException>(src.WriteAsync(new ReadOnlyMemory<byte>()).AsTask);
+            await ThrowsAsync<NotSupportedException>(() => src.WriteAsync(new byte[2], 0, 2));
+        }
+
+        [Fact]
+        public static async Task WriteNotSupported2()
+        {
+            using var src = new ChunkSequence<byte>(data, 5).ToReadOnlySequence().AsStream();
+            True(src.CanRead);
+            True(src.CanSeek);
+            False(src.CanWrite);
+            False(src.CanTimeout);
+            Throws<NotSupportedException>(() => src.Write(new byte[2], 0, 2));
+            Throws<NotSupportedException>(() => src.Write(new byte[2]));
+            Throws<NotSupportedException>(() => src.WriteByte(42));
+            Throws<NotSupportedException>(() => src.BeginWrite(new byte[2], 0, 2, null, null));
             Throws<InvalidOperationException>(() => src.EndWrite(Task.CompletedTask));
             await ThrowsAsync<NotSupportedException>(src.WriteAsync(new ReadOnlyMemory<byte>()).AsTask);
             await ThrowsAsync<NotSupportedException>(() => src.WriteAsync(new byte[2], 0, 2));
         }
 
         [Fact]
+        [Obsolete("This test is for backward compatibility only")]
         public static void BufferWriterToStream()
         {
             using var writer = new PooledArrayBufferWriter<byte>();
@@ -409,6 +428,7 @@ namespace DotNext.IO
             True(await checker.Task);
             stream.EndWrite(ar);
             Equal(1L, stream.Position);
+            Equal(1L, stream.Length);
             Equal(1, writer.WrittenCount);
             await stream.FlushAsync();
             Equal(40, writer.WrittenSpan[0]);
@@ -428,13 +448,125 @@ namespace DotNext.IO
             Throws<NotSupportedException>(() => stream.Read(new byte[2]));
             Throws<NotSupportedException>(() => stream.Read(new byte[2], 0, 2));
             Throws<NotSupportedException>(() => stream.Position = 0);
-            Throws<NotSupportedException>(() => stream.Length);
             Throws<NotSupportedException>(() => stream.SetLength(10L));
             Throws<NotSupportedException>(() => stream.Seek(-1L, SeekOrigin.End));
             Throws<NotSupportedException>(() => stream.BeginRead(new byte[2], 0, 2, null, null));
             Throws<InvalidOperationException>(() => stream.EndRead(Task.CompletedTask));
             await ThrowsAsync<NotSupportedException>(stream.ReadAsync(new byte[2]).AsTask);
             await ThrowsAsync<NotSupportedException>(() => stream.ReadAsync(new byte[2], 0, 2));
+        }
+
+        [Fact]
+        public static void WriteToFlushableWriter()
+        {
+            using var ms = new MemoryStream();
+            using var writer = ms.AsBufferWriter(MemoryAllocator.CreateArrayAllocator<byte>()).AsStream();
+            writer.Write(new byte[] { 1, 2, 3 });
+            writer.Flush();
+            Equal(new byte[] { 1, 2, 3 }, ms.ToArray());
+        }
+
+        [Fact]
+        public static async Task WriteToFlushableWriterAsync()
+        {
+            await using var ms = new MemoryStream();
+            await using var writer = ms.AsBufferWriter(MemoryAllocator.CreateArrayAllocator<byte>()).AsStream();
+            await writer.WriteAsync(new byte[] { 1, 2, 3 });
+            await writer.FlushAsync();
+            Equal(new byte[] { 1, 2, 3 }, ms.ToArray());
+        }
+
+        [Fact]
+        public static void SpanActionToStream()
+        {
+            static void WriteToBuffer(ReadOnlySpan<byte> block, ArrayBufferWriter<byte> writer)
+                => writer.Write(block);
+
+            var writer = new ArrayBufferWriter<byte>();
+            ReadOnlySpanAction<byte, ArrayBufferWriter<byte>> callback = WriteToBuffer;
+            using var stream = callback.AsStream(writer);
+            byte[] content = { 1, 2, 3 };
+            stream.Write(content);
+            stream.Flush();
+            Equal(3, stream.Position);
+            Equal(3, stream.Length);
+            Equal(content, writer.WrittenMemory.ToArray());
+        }
+
+        [Fact]
+        public static async Task SpanActionToStreamAsync()
+        {
+            static void WriteToBuffer(ReadOnlySpan<byte> block, ArrayBufferWriter<byte> writer)
+                => writer.Write(block);
+
+            var writer = new ArrayBufferWriter<byte>();
+            ReadOnlySpanAction<byte, ArrayBufferWriter<byte>> callback = WriteToBuffer;
+            using var stream = callback.AsStream(writer);
+            byte[] content = { 1, 2, 3 };
+            await stream.WriteAsync(content);
+            await stream.FlushAsync();
+            Equal(3, stream.Position);
+            Equal(content, writer.WrittenMemory.ToArray());
+        }
+
+        [Fact]
+        public static void MemoryFuncToStream()
+        {
+            static ValueTask WriteToBuffer(ReadOnlyMemory<byte> block, ArrayBufferWriter<byte> writer, CancellationToken token)
+            {
+                writer.Write(block.Span);
+                return new ValueTask();
+            }
+
+            var writer = new ArrayBufferWriter<byte>();
+            Func<ReadOnlyMemory<byte>, ArrayBufferWriter<byte>, CancellationToken, ValueTask> callback = WriteToBuffer;
+            using var stream = callback.AsStream(writer);
+            byte[] content = { 1, 2, 3 };
+            stream.Write(content);
+            stream.Flush();
+            Equal(3, stream.Position);
+            Equal(content, writer.WrittenMemory.ToArray());
+        }
+
+        [Fact]
+        public static async Task MemoryFuncToStreamAsync()
+        {
+            static ValueTask WriteToBuffer(ReadOnlyMemory<byte> block, ArrayBufferWriter<byte> writer, CancellationToken token)
+            {
+                writer.Write(block.Span);
+                return new ValueTask();
+            }
+
+            var writer = new ArrayBufferWriter<byte>();
+            Func<ReadOnlyMemory<byte>, ArrayBufferWriter<byte>, CancellationToken, ValueTask> callback = WriteToBuffer;
+            using var stream = callback.AsStream(writer);
+            byte[] content = { 1, 2, 3 };
+            await stream.WriteAsync(content);
+            await stream.FlushAsync();
+            Equal(3, stream.Position);
+            Equal(content, writer.WrittenMemory.ToArray());
+        }
+
+        [Fact]
+        public static async Task MemoryFuncToStreamApm()
+        {
+            static ValueTask WriteToBuffer(ReadOnlyMemory<byte> block, ArrayBufferWriter<byte> writer, CancellationToken token)
+            {
+                writer.Write(block.Span);
+                return new ValueTask();
+            }
+
+            var writer = new ArrayBufferWriter<byte>();
+            Func<ReadOnlyMemory<byte>, ArrayBufferWriter<byte>, CancellationToken, ValueTask> callback = WriteToBuffer;
+            using var stream = callback.AsStream(writer);
+            byte[] content = { 1, 2, 3 };
+            var checker = new CallbackChecker();
+            var ar = stream.BeginWrite(content, 0, content.Length, checker.DoCallback, "state");
+            Equal("state", ar.AsyncState);
+            await checker.Task;
+            stream.EndWrite(ar);
+            Equal(3, stream.Position);
+            Equal(content, writer.WrittenMemory.ToArray());
         }
     }
 }

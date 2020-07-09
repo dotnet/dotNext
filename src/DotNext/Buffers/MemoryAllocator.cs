@@ -68,7 +68,7 @@ namespace DotNext.Buffers
         {
             var result = allocator(length);
             if (!exactSize)
-                MemoryOwner<T>.Expand(ref result);
+                result.Expand();
             return result;
         }
 
@@ -79,6 +79,7 @@ namespace DotNext.Buffers
         /// <returns>The array allocator.</returns>
         public static MemoryAllocator<T> CreateArrayAllocator<T>()
         {
+            // TODO: Should be replaced with GC.AllocateUninitializedArray
             return AllocateArray;
 
             static MemoryOwner<T> AllocateArray(int length)

@@ -1,11 +1,12 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Xunit;
 
 namespace DotNext.Text
 {
     [ExcludeFromCodeCoverage]
-    public sealed class EncodingWithoutPreambleTests : Test
+    public sealed class EncodingExtensionsTests : Test
     {
         [Fact]
         public static void ByteOrderMark()
@@ -22,6 +23,26 @@ namespace DotNext.Text
             Equal(Encoding.UTF8.IsBrowserSave, withoutPreamble.IsBrowserSave);
             Equal(Encoding.UTF8.IsSingleByte, withoutPreamble.IsSingleByte);
             Equal(Encoding.UTF8.IsMailNewsSave, withoutPreamble.IsMailNewsSave);
+        }
+
+        [Theory]
+        [InlineData("UTF-8")]
+        [InlineData("UTF-7")]
+        [InlineData("UTF-32LE")]
+        [InlineData("UTF-32BE")]
+        [InlineData("UTF-16LE")]
+        [InlineData("UTF-16BE")]
+        public static void EncodeDecode(string encodingName)
+        {
+            const string text = "Hello, world! Привет, мир! #@%^&*()";
+
+            Encoding enc = Encoding.GetEncoding(encodingName);
+            using var bytes = enc.GetBytes(text.AsSpan());
+            False(bytes.IsEmpty);
+
+            using var chars = enc.GetChars(bytes.Memory.Span);
+            False(chars.IsEmpty);
+            Equal(text, new string(chars.Memory.Span));
         }
     }
 }

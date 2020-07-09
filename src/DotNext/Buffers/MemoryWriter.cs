@@ -2,6 +2,8 @@ using System;
 using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.Tracing;
 
 namespace DotNext.Buffers
 {
@@ -11,10 +13,14 @@ namespace DotNext.Buffers
     /// <typeparam name="T">The data type that can be written.</typeparam>
     public abstract class MemoryWriter<T> : Disposable, IBufferWriter<T>, IConvertible<ReadOnlyMemory<T>>, IReadOnlyList<T>
     {
+        // TODO: Should be renamed to BufferWriter
+
         /// <summary>
         /// Represents default initial buffer size.
         /// </summary>
         private protected const int DefaultInitialBufferSize = 256;
+
+        private object? diagObj;
 
         /// <summary>
         /// Represents position of write cursor.
@@ -26,6 +32,27 @@ namespace DotNext.Buffers
         /// </summary>
         private protected MemoryWriter()
         {
+        }
+
+        /// <summary>
+        /// Sets the counter used to report allocation of internal buffer.
+        /// </summary>
+        [DisallowNull]
+        public EventCounter? AllocationCounter
+        {
+            private protected get => diagObj as EventCounter;
+            set => diagObj = value;
+        }
+
+        /// <summary>
+        /// Sets the callback used internally to report actual size
+        /// of allocated buffer.
+        /// </summary>
+        [DisallowNull]
+        public Action<int>? BufferSizeCallback
+        {
+            private protected get => diagObj as Action<int>;
+            set => diagObj = value;
         }
 
         /// <summary>
@@ -120,7 +147,14 @@ namespace DotNext.Buffers
         /// Clears the data written to the underlying memory.
         /// </summary>
         /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
-        public abstract void Clear();
+        public virtual void Clear() => Clear(false);
+
+        /// <summary>
+        /// Clears the data written to the underlying memory.
+        /// </summary>
+        /// <param name="reuseBuffer"><see langword="true"/> to reuse the internal buffer; <see langword="false"/> to destroy the internal buffer.</param>
+        /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
+        public abstract void Clear(bool reuseBuffer);
 
         /// <summary>
         /// Notifies this writer that <paramref name="count"/> of data items were written.
@@ -188,6 +222,17 @@ namespace DotNext.Buffers
 
                 Resize(newSize);
             }
+        }
+
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                diagObj = null;
+            }
+
+            base.Dispose(disposing);
         }
 
         /// <summary>

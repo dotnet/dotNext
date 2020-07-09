@@ -5,7 +5,7 @@
     <RootNamespace>DotNext</RootNamespace>
     <Nullable>enable</Nullable>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
-	<Version>2.6.0</Version>
+	<Version>2.6.1</Version>
 	<Authors>Roman Sakno</Authors>
 	<Product>.NEXT Family of Libraries</Product>
 	<Description>Strongly typed reflection, concept types (type classes), fast reflection</Description>
@@ -40,6 +40,7 @@
     <AssemblyOriginatorKeyFile>../dotnext.snk</AssemblyOriginatorKeyFile>
     <Optimize>true</Optimize>
     <DebugType>embedded</DebugType>
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
 
   <ItemGroup>
@@ -47,7 +48,8 @@
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="Fody" Version="6.2.0" PrivateAssets="all" />
-    <PackageReference Include="DotNext.Augmentation.Fody" Version="2.0.1" PrivateAssets="all" />
+    <PackageReference Include="DotNext.Augmentation.Fody" Version="2.1.0" PrivateAssets="all" />
+    <PackageReference Include="InlineIL.Fody" Version="1.4.2" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'!='Release'">
@@ -55,7 +57,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="DotNext" Version="[2.6.0, 3)" />
+    <PackageReference Include="DotNext" Version="[2.7.0, 3)" />
   </ItemGroup>
 
   <ItemGroup>

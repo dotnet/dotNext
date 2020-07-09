@@ -19,6 +19,7 @@ namespace DotNext.IO.MemoryMappedFiles
             using (var fs = new FileStream(tempFile, FileMode.Open, FileAccess.Write, FileShare.None))
             {
                 fs.Write(content);
+                fs.Flush();
             }
 
             using var mappedFile = MemoryMappedFile.CreateFromFile(tempFile, FileMode.Open, null, content.Length, MemoryMappedFileAccess.Read);
@@ -44,6 +45,7 @@ namespace DotNext.IO.MemoryMappedFiles
             using (var fs = new FileStream(tempFile, FileMode.Open, FileAccess.Write, FileShare.None))
             {
                 fs.Write(content);
+                fs.Flush();
             }
 
             using var mappedFile = MemoryMappedFile.CreateFromFile(tempFile, FileMode.Open, null, content.Length, MemoryMappedFileAccess.Read);

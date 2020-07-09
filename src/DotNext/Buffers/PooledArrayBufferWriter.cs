@@ -51,6 +51,17 @@ namespace DotNext.Buffers
         {
         }
 
+        /// <summary>
+        /// Initializes a new writer with the specified initial capacity and <see cref="ArrayPool{T}.Shared"/>
+        /// as the array pooling mechanism.
+        /// </summary>
+        /// <param name="initialCapacity">The initial capacity of the writer.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="initialCapacity"/> is less than or equal to zero.</exception>
+        public PooledArrayBufferWriter(int initialCapacity)
+            : this(ArrayPool<T>.Shared, initialCapacity)
+        {
+        }
+
         /// <inheritdoc/>
         int ICollection<T>.Count => WrittenCount;
 
@@ -204,9 +215,6 @@ namespace DotNext.Buffers
         /// <inheritdoc/>
         ArraySegment<T> IConvertible<ArraySegment<T>>.Convert() => WrittenArray;
 
-        internal TWrapper WrapBuffer<TWrapper>(ValueFunc<T[], int, TWrapper> factory)
-            => factory.Invoke(buffer, position);
-
         private void ReleaseBuffer()
         {
             if (buffer.Length > 0)
@@ -217,11 +225,23 @@ namespace DotNext.Buffers
         /// Clears the data written to the underlying buffer.
         /// </summary>
         /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
-        public override void Clear()
+        public override void Clear() => Clear(false);   // TODO: Remove this method in future
+
+        /// <summary>
+        /// Clears the data written to the underlying memory.
+        /// </summary>
+        /// <param name="reuseBuffer"><see langword="true"/> to reuse the internal buffer; <see langword="false"/> to destroy the internal buffer.</param>
+        /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
+        public override void Clear(bool reuseBuffer)
         {
             ThrowIfDisposed();
-            ReleaseBuffer();
-            buffer = Array.Empty<T>();
+
+            if (!reuseBuffer)
+            {
+                ReleaseBuffer();
+                buffer = Array.Empty<T>();
+            }
+
             position = 0;
         }
 
@@ -271,6 +291,7 @@ namespace DotNext.Buffers
             buffer.CopyTo(newBuffer, 0);
             ReleaseBuffer();
             buffer = newBuffer;
+            AllocationCounter?.WriteMetric(newBuffer.LongLength);
         }
 
         /// <inheritdoc />
@@ -278,6 +299,7 @@ namespace DotNext.Buffers
         {
             if (disposing)
             {
+                BufferSizeCallback?.Invoke(buffer.Length);
                 ReleaseBuffer();
                 buffer = Array.Empty<T>();
             }
@@ -296,7 +318,7 @@ namespace DotNext.Buffers
         /// </summary>
         /// <param name="writer">The buffer writer.</param>
         /// <returns>The stream representing written bytes.</returns>
-        [Obsolete("Use DotNext.IO.StreamSource.GetWrittenBytesAsStream instead")]
+        [Obsolete("Use DotNext.IO.StreamSource.AsStream in combination with WrittenArray or WrittenMemory property instead", true)]
         public static Stream GetWrittenBytesAsStream(this PooledArrayBufferWriter<byte> writer)
             => IO.StreamSource.GetWrittenBytesAsStream(writer);
     }

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace DotNext.IO
 {
     using ByteBuffer = Buffers.ArrayRental<byte>;
+    using ByteBufferWriter = Buffers.PooledArrayBufferWriter<byte>;
 
     /// <summary>
     /// Represents structured data unit that can be transferred over wire.
@@ -114,14 +115,21 @@ namespace DotNext.IO
         async ValueTask<TResult> GetObjectDataAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token = default)
             where TDecoder : notnull, IDecoder<TResult>
         {
-            const int bufferSize = 1024;
-            using var ms = Length.TryGetValue(out var length) && length <= int.MaxValue ?
-                new RentedMemoryStream((int)length) :
-                new MemoryStream(bufferSize);
-            using var buffer = new ByteBuffer(bufferSize);
-            await WriteToAsync(new AsyncStreamBinaryWriter(ms, buffer.Memory), token).ConfigureAwait(false);
-            ms.Position = 0;
-            return await parser.ReadAsync(new AsyncStreamBinaryReader(ms, buffer.Memory), token).ConfigureAwait(false);
+            ByteBufferWriter writer;
+            if (Length.TryGetValue(out var length))
+            {
+                writer = length <= int.MaxValue ? new ByteBufferWriter((int)length) : throw new OutOfMemoryException();
+            }
+            else
+            {
+                writer = new ByteBufferWriter();
+            }
+
+            using (writer)
+            {
+                await WriteToAsync(new AsyncBufferWriter(writer), token).ConfigureAwait(false);
+                return await parser.ReadAsync(new SequenceBinaryReader(writer.WrittenMemory), token).ConfigureAwait(false);
+            }
         }
     }
 }

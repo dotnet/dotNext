@@ -1,6 +1,7 @@
 using System;
 using System.Buffers;
 using System.Diagnostics;
+using System.Diagnostics.Tracing;
 using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Threading;
@@ -199,6 +200,15 @@ namespace DotNext.IO
             options = asyncIO ? withAsyncIO : withoutAsyncIO;
         }
 
+        /// <summary>
+        /// Sets the counter used to report allocation of internal buffer.
+        /// </summary>
+        public EventCounter? AllocationCounter
+        {
+            private get;
+            set;
+        }
+
         private static MemoryMappedFile CreateMemoryMappedFile(FileStream fileBackend)
             => MemoryMappedFile.CreateFromFile(fileBackend, null, fileBackend.Length, MemoryMappedFileAccess.ReadWrite, HandleInheritability.None, true);
 
@@ -265,6 +275,7 @@ namespace DotNext.IO
                 case MemoryEvaluationResult.PersistExistingBuffer:
                     PersistBuffer();
                     buffer = allocator.Invoke(sizeHint, false);
+                    AllocationCounter?.WriteMetric(buffer.Length);
                     result = buffer.Memory.Slice(0, sizeHint);
                     break;
                 default:
@@ -302,6 +313,7 @@ namespace DotNext.IO
                 buffer.Memory.CopyTo(newBuffer.Memory);
                 buffer.Dispose();
                 buffer = newBuffer;
+                AllocationCounter?.WriteMetric(newBuffer.Length);
             }
 
             output = buffer.Memory.Slice(position, size);
@@ -350,6 +362,7 @@ namespace DotNext.IO
                 case MemoryEvaluationResult.PersistExistingBuffer:
                     await PersistBufferAsync(token).ConfigureAwait(false);
                     this.buffer = allocator.Invoke(buffer.Length, false);
+                    AllocationCounter?.WriteMetric(this.buffer.Length);
                     buffer.CopyTo(this.buffer.Memory);
                     position = buffer.Length;
                     break;
@@ -377,6 +390,7 @@ namespace DotNext.IO
                 case MemoryEvaluationResult.PersistExistingBuffer:
                     PersistBuffer();
                     this.buffer = allocator.Invoke(buffer.Length, false);
+                    AllocationCounter?.WriteMetric(this.buffer.Length);
                     buffer.CopyTo(this.buffer.Memory.Span);
                     position = buffer.Length;
                     break;
@@ -411,8 +425,11 @@ namespace DotNext.IO
 
             if (HasFlag(options, FileOptions.Asynchronous))
             {
-                task = WriteAsync(buffer, offset, count, CancellationToken.None)
-                    .ContinueWith(Continuation, state, CancellationToken.None, TaskContinuationOptions.None, TaskScheduler.Default);
+                task = WriteAsync(buffer, offset, count, CancellationToken.None);
+
+                // attach state only if it's necessary
+                if (state != null)
+                    task = task.ContinueWith(Continuation, state, CancellationToken.None, TaskContinuationOptions.None, TaskScheduler.Default);
 
                 if (callback != null)
                 {
@@ -433,14 +450,8 @@ namespace DotNext.IO
 
         private static void EndWrite(Task task)
         {
-            try
-            {
+            using (task)
                 task.ConfigureAwait(false).GetAwaiter().GetResult();
-            }
-            finally
-            {
-                task.Dispose();
-            }
         }
 
         /// <inheritdoc/>
@@ -605,7 +616,7 @@ namespace DotNext.IO
         /// <exception cref="InvalidOperationException">The memory manager is already obtained but not disposed.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="range"/> is invalid.</exception>
         /// <exception cref="OutOfMemoryException">The size of buffered content is too large and cannot be represented by <see cref="Memory{T}"/> instance.</exception>
-        public MemoryManager<byte> GetWrittenContent(Range range)
+        public IMemoryOwner<byte> GetWrittenContent(Range range)
         {
             if (IsReading)
                 throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
@@ -613,7 +624,7 @@ namespace DotNext.IO
                 return new MemoryManager(this, range);
 
             PersistBuffer();
-            fileBackend.Flush();
+            fileBackend.Flush(true);
             var (offset, length) = GetOffsetAndLength(range, fileBackend.Length);
             if (offset < 0L || length < 0L)
                 throw new ArgumentOutOfRangeException(nameof(range));
@@ -633,7 +644,7 @@ namespace DotNext.IO
         /// <returns>The memory manager providing access to buffered content.</returns>
         /// <exception cref="InvalidOperationException">The memory manager is already obtained but not disposed.</exception>
         /// <exception cref="OutOfMemoryException">The size of buffered content is too large and cannot be represented by <see cref="Memory{T}"/> instance.</exception>
-        public MemoryManager<byte> GetWrittenContent()
+        public IMemoryOwner<byte> GetWrittenContent()
             => GetWrittenContent(Range.All);
 
         /// <summary>
@@ -646,7 +657,7 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="range"/> is invalid.</exception>
         /// <exception cref="OutOfMemoryException">The size of buffered content is too large and cannot be represented by <see cref="Memory{T}"/> instance.</exception>
-        public async ValueTask<MemoryManager<byte>> GetWrittenContentAsync(Range range, CancellationToken token = default)
+        public async ValueTask<IMemoryOwner<byte>> GetWrittenContentAsync(Range range, CancellationToken token = default)
         {
             if (IsReading)
                 throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
@@ -676,7 +687,7 @@ namespace DotNext.IO
         /// <exception cref="InvalidOperationException">The memory manager is already obtained but not disposed.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="OutOfMemoryException">The size of buffered content is too large and cannot be represented by <see cref="Memory{T}"/> instance.</exception>
-        public ValueTask<MemoryManager<byte>> GetWrittenContentAsync(CancellationToken token = default)
+        public ValueTask<IMemoryOwner<byte>> GetWrittenContentAsync(CancellationToken token = default)
             => GetWrittenContentAsync(Range.All, token);
 
         /// <summary>

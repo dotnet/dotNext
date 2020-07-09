@@ -2,20 +2,30 @@ using System;
 using System.Buffers;
 using System.Threading;
 using System.Threading.Tasks;
+using static InlineIL.IL;
+using static InlineIL.IL.Emit;
+using static InlineIL.MethodRef;
+using static InlineIL.TypeRef;
 
 namespace DotNext.IO
 {
-    using IReadOnlySequence = Buffers.IReadOnlySequenceSource<byte>;
+    using IReadOnlySequenceSource = Buffers.IReadOnlySequenceSource<byte>;
     using ReadOnlySequenceAccessor = MemoryMappedFiles.ReadOnlySequenceAccessor;
 
     public partial class FileBufferingWriter
     {
         private sealed class TailSegment : ReadOnlySequenceSegment<byte>
         {
-            private static readonly Action<ReadOnlySequenceSegment<byte>, ReadOnlySequenceSegment<byte>> SegmentSetter =
-                                DelegateHelpers.CreateOpenDelegate<TailSegment, ReadOnlySequenceSegment<byte>>(segm => segm.Next)
-                                .Method
-                                .CreateDelegate<Action<ReadOnlySequenceSegment<byte>, ReadOnlySequenceSegment<byte>>>();
+            private static readonly Action<ReadOnlySequenceSegment<byte>, ReadOnlySequenceSegment<byte>> SegmentSetter;
+
+            static TailSegment()
+            {
+                // TODO: Should be replaced with function pointer in C# 9
+                Ldnull();
+                Ldftn(PropertySet(Type<ReadOnlySequenceSegment<byte>>(), nameof(Next)));
+                Newobj(Constructor(Type<Action<ReadOnlySequenceSegment<byte>, ReadOnlySequenceSegment<byte>>>(), Type<object>(), Type<IntPtr>()));
+                Pop(out SegmentSetter);
+            }
 
             internal TailSegment(ReadOnlySequenceSegment<byte> previous, Memory<byte> memory)
             {
@@ -29,7 +39,7 @@ namespace DotNext.IO
         /// Represents source of <see cref="ReadOnlySequence{T}"/> that
         /// represents written content.
         /// </summary>
-        public sealed class ReadOnlySequenceSource : Disposable, IReadOnlySequence
+        public sealed class ReadOnlySequenceSource : Disposable, IReadOnlySequenceSource
         {
             private readonly FileBufferingWriter writer;
             private readonly Memory<byte> tail;

@@ -24,11 +24,13 @@ namespace DotNext.Buffers
             resultOffset = 0;
         }
 
-        readonly int IBufferReader<string>.RemainingBytes => length;
+        public readonly int RemainingBytes => length;
 
-        readonly string IBufferReader<string>.Complete() => new string(result.Span.Slice(0, resultOffset));
+        readonly string IBufferReader<string>.Complete() => new string(Complete());
 
-        void IBufferReader<string>.Append(ReadOnlySpan<byte> bytes, ref int consumedBytes)
+        internal readonly Span<char> Complete() => result.Span.Slice(0, resultOffset);
+
+        public void Append(ReadOnlySpan<byte> bytes, ref int consumedBytes)
         {
             length -= bytes.Length;
             resultOffset += decoder.GetChars(bytes, result.Span.Slice(resultOffset), length == 0);

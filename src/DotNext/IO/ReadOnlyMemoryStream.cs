@@ -88,10 +88,24 @@ namespace DotNext.IO
 
         public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken token)
         {
+            Task<int> result;
             if (token.IsCancellationRequested)
-                return new ValueTask<int>(Task.FromCanceled<int>(token));
+            {
+                result = Task.FromCanceled<int>(token);
+            }
+            else
+            {
+                try
+                {
+                    return new ValueTask<int>(Read(buffer.Span));
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException<int>(e);
+                }
+            }
 
-            return new ValueTask<int>(Read(buffer.Span));
+            return new ValueTask<int>(result);
         }
 
         public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken token)
@@ -139,14 +153,8 @@ namespace DotNext.IO
 
         private static int EndRead(Task<int> task)
         {
-            try
-            {
+            using (task)
                 return task.Result;
-            }
-            finally
-            {
-                task.Dispose();
-            }
         }
 
         public override int EndRead(IAsyncResult ar) => EndRead((Task<int>)ar);

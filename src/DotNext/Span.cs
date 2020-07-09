@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -8,9 +9,8 @@ using NumberStyles = System.Globalization.NumberStyles;
 
 namespace DotNext
 {
+    using Buffers;
     using Runtime;
-    using ByteBuffer = Buffers.MemoryRental<byte>;
-    using CharBuffer = Buffers.MemoryRental<char>;
 
     /// <summary>
     /// Provides extension methods for type <see cref="Span{T}"/> and <see cref="ReadOnlySpan{T}"/>.
@@ -420,7 +420,7 @@ namespace DotNext
             var count = bytes.Length * 2;
             if (count == 0)
                 return string.Empty;
-            using CharBuffer buffer = count <= CharBuffer.StackallocThreshold ? stackalloc char[count] : new CharBuffer(count);
+            using MemoryRental<char> buffer = count <= MemoryRental<char>.StackallocThreshold ? stackalloc char[count] : new MemoryRental<char>(count);
             count = ToHex(bytes, buffer.Span, lowercased);
             return new string(buffer.Span.Slice(0, count));
         }
@@ -457,7 +457,7 @@ namespace DotNext
             var count = chars.Length / 2;
             if (count == 0)
                 return Array.Empty<byte>();
-            using ByteBuffer buffer = count <= ByteBuffer.StackallocThreshold ? stackalloc byte[count] : new ByteBuffer(count);
+            using MemoryRental<byte> buffer = count <= MemoryRental<byte>.StackallocThreshold ? stackalloc byte[count] : new MemoryRental<byte>(count);
             count = FromHex(chars, buffer.Span);
             return buffer.Span.Slice(0, count).ToArray();
         }
@@ -527,5 +527,57 @@ namespace DotNext
         public static unsafe Span<byte> AsBytes<T>(T* pointer)
             where T : unmanaged
             => AsBytes(ref pointer[0]);
+
+        /// <summary>
+        /// Concatenates memory blocks.
+        /// </summary>
+        /// <param name="first">The first memory block.</param>
+        /// <param name="second">The second memory block.</param>
+        /// <param name="allocator">The memory allocator used to allocate buffer for the result.</param>
+        /// <typeparam name="T">The type of the elements in the memory.</typeparam>
+        /// <returns>The memory block containing elements from the specified two memory blocks.</returns>
+        public static MemoryOwner<T> Concat<T>(this ReadOnlySpan<T> first, ReadOnlySpan<T> second, MemoryAllocator<T>? allocator = null)
+        {
+            if (first.IsEmpty && second.IsEmpty)
+                return default;
+
+            var length = checked(first.Length + second.Length);
+            var result = allocator is null ?
+                new MemoryOwner<T>(ArrayPool<T>.Shared, length) :
+                allocator(length);
+
+            var output = result.Memory.Span;
+            first.CopyTo(output);
+            second.CopyTo(output.Slice(first.Length));
+
+            return result;
+        }
+
+        /// <summary>
+        /// Concatenates memory blocks.
+        /// </summary>
+        /// <param name="first">The first memory block.</param>
+        /// <param name="second">The second memory block.</param>
+        /// <param name="third">The third memory block.</param>
+        /// <param name="allocator">The memory allocator used to allocate buffer for the result.</param>
+        /// <typeparam name="T">The type of the elements in the memory.</typeparam>
+        /// <returns>The memory block containing elements from the specified two memory blocks.</returns>
+        public static MemoryOwner<T> Concat<T>(this ReadOnlySpan<T> first, ReadOnlySpan<T> second, ReadOnlySpan<T> third, MemoryAllocator<T>? allocator = null)
+        {
+            if (first.IsEmpty && second.IsEmpty && third.IsEmpty)
+                return default;
+
+            var length = checked(first.Length + second.Length + third.Length);
+            var result = allocator is null ?
+                new MemoryOwner<T>(ArrayPool<T>.Shared, length) :
+                allocator(length);
+
+            var output = result.Memory.Span;
+            first.CopyTo(output);
+            second.CopyTo(output = output.Slice(first.Length));
+            third.CopyTo(output.Slice(second.Length));
+
+            return result;
+        }
     }
 }

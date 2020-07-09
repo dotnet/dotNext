@@ -16,7 +16,6 @@ namespace DotNext.Collections.Generic
     /// <typeparam name="TOutput">Type of values in the converted dictionary.</typeparam>
     [StructLayout(LayoutKind.Auto)]
     public readonly struct ReadOnlyDictionaryView<TKey, TInput, TOutput> : IReadOnlyDictionary<TKey, TOutput>, IEquatable<ReadOnlyDictionaryView<TKey, TInput, TOutput>>
-        where TKey : notnull
     {
         private readonly IReadOnlyDictionary<TKey, TInput> source;
         private readonly ValueFunc<TInput, TOutput> mapper;
@@ -82,7 +81,7 @@ namespace DotNext.Collections.Generic
         /// This parameter is passed uninitialized.
         /// </param>
         /// <returns><see langword="true"/>, if the dictionary contains the specified key; otherwise, <see langword="false"/>.</returns>
-        public bool TryGetValue(TKey key, [MaybeNullWhen(false)]out TOutput value)
+        public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TOutput value)
         {
             if (source.TryGetValue(key, out var sourceVal))
             {

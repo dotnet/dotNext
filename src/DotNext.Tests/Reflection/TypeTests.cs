@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using Xunit;
 
 namespace DotNext.Reflection
@@ -248,13 +247,11 @@ namespace DotNext.Reflection
         [Fact]
         public static void StaticFieldTest()
         {
-            MemberGetter<Guid> structField = Type<Guid>.Field<Guid>.RequireStatic(nameof(Guid.Empty));
-            Guid.Empty.Equals(structField());
-            MemberGetter<TextReader> objField = Type<TextReader>.Field<TextReader>.RequireStatic(nameof(TextReader.Null));
-            Same(TextReader.Null, objField());
             var statField = Type<TypeTests>.Field<long>.RequireStatic(nameof(Field), true);
             statField.Value = 42L;
             Equal(Field, statField.Value);
+            MemberGetter<long> getter = statField;
+            Equal(42L, getter());
         }
 
         [Fact]
@@ -319,7 +316,7 @@ namespace DotNext.Reflection
         }
 
         [Fact]
-        public void PropertyOverloadintTest()
+        public void PropertyOverloadingTest()
         {
             MemberGetter<ClassB, int> property = Type<ClassB>.Property<int>.Require(nameof(ClassB.PropertyName));
             var obj = new ClassB() { PropertyName = 42 };

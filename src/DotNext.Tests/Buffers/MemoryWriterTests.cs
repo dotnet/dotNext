@@ -169,13 +169,14 @@ namespace DotNext.Buffers
         }
 
         [Fact]
+        [Obsolete("This test is for backward compatibility only")]
         public static void StreamInterop()
         {
             using var writer = new PooledArrayBufferWriter<byte>();
             var span = writer.GetSpan(10);
             new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }.AsSpan().CopyTo(span);
             writer.Advance(10);
-            using var stream = IO.StreamSource.GetWrittenBytesAsStream(writer);
+            using var stream = StreamSource.GetWrittenBytesAsStream(writer);
             True(stream.CanRead);
             False(stream.CanWrite);
             Equal(0, stream.Position);
@@ -202,7 +203,7 @@ namespace DotNext.Buffers
                 formatter.Serialize(output, dict);
             }
             // deserialize from memory
-            using (var input = StreamSource.GetWrittenBytesAsStream(writer))
+            using (var input = StreamSource.AsStream(writer.WrittenArray))
             {
                 Equal(dict, formatter.Deserialize(input));
             }
@@ -329,6 +330,22 @@ namespace DotNext.Buffers
             {
                 list.Insert(0, i + 100);
             }
+        }
+
+        private sealed class AllocationEventCounter
+        {
+            internal int Value;
+
+            internal void WriteMetric(int value) => this.Value = value;
+        }
+
+        [Fact]
+        public static void BufferSizeCallback()
+        {
+            var counter = new AllocationEventCounter();
+            using (var writer = new PooledArrayBufferWriter<byte> { BufferSizeCallback = counter.WriteMetric})
+                writer.Write(new byte[] { 1, 2, 3 });
+            True(counter.Value >= 3);
         }
     }
 }

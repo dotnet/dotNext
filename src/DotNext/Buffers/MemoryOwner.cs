@@ -103,25 +103,28 @@ namespace DotNext.Buffers
         /// </summary>
         public int Length => length;
 
-        private int RealLength
+        // WARNING: This is mutable method and should be used with care
+        internal void Expand()
         {
-            get
-            {
-                if (array != null)
-                    return array.Length;
-                if (owner is IMemoryOwner<T> memory)
-                    return memory.Memory.Length;
-                return length;
-            }
+            int length;
+
+            if (array != null)
+                length = array.Length;
+            else if (owner is IMemoryOwner<T> memory)
+                length = memory.Memory.Length;
+            else
+                goto exit;
+
+            Unsafe.AsRef(in this.length) = length;
+
+            exit:
+            return;
         }
 
         /// <summary>
         /// Determines whether this memory is empty.
         /// </summary>
         public bool IsEmpty => Length == 0;
-
-        internal static void Expand(ref MemoryOwner<T> owner)
-            => Unsafe.AsRef(in owner.length) = owner.RealLength;
 
         /// <summary>
         /// Gets the memory belonging to this owner.

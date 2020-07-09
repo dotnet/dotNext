@@ -5,6 +5,10 @@ using System.Globalization;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using static System.Linq.Expressions.Expression;
+using static InlineIL.IL;
+using static InlineIL.IL.Emit;
+using static InlineIL.MethodRef;
+using static InlineIL.TypeRef;
 
 namespace DotNext.Reflection
 {
@@ -254,9 +258,25 @@ namespace DotNext.Reflection
 
             // TODO: Should be optimized when LINQ Expression will have a support for ref return
             provider = Lambda<Provider>(Call(typeof(Unsafe), nameof(Unsafe.AsRef), new[] { field.FieldType }, Field(instanceParam, field)), instanceParam).Compile();
-            const BindingFlags staticPrivate = BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.NonPublic;
-            getter = GetType().GetMethod(nameof(GetValue), staticPrivate).CreateDelegate<MemberGetter<T, TValue>>(provider);
-            setter = field.IsInitOnly ? null : GetType().GetMethod(nameof(SetValue), staticPrivate).CreateDelegate<MemberSetter<T, TValue>>(provider);
+
+            Push(provider);
+            Ldftn(Method(Type<Field<T, TValue>>(), nameof(GetValue), Type<Provider>(), Type<T>().MakeByRefType()));
+            Newobj(Constructor(Type<MemberGetter<T, TValue>>(), Type<object>(), Type<IntPtr>()));
+            Pop(out MemberGetter<T, TValue> getter);
+            this.getter = getter;
+
+            if (field.IsInitOnly)
+            {
+                setter = null;
+            }
+            else
+            {
+                Push(provider);
+                Ldftn(Method(Type<Field<T, TValue>>(), nameof(SetValue), Type<Provider>(), Type<T>().MakeByRefType(), Type<TValue>()));
+                Newobj(Constructor(Type<MemberSetter<T, TValue>>(), Type<object>(), Type<IntPtr>()));
+                Pop(out MemberSetter<T, TValue> setter);
+                this.setter = setter;
+            }
         }
 
         [return: MaybeNull]
@@ -398,9 +418,25 @@ namespace DotNext.Reflection
         {
             // TODO: Should be optimized when LINQ Expression will have a support for ref return
             provider = Lambda<Provider>(Call(typeof(Unsafe), nameof(Unsafe.AsRef), new[] { field.FieldType }, Field(null, field))).Compile();
-            const BindingFlags staticPrivate = BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.NonPublic;
-            getter = GetType().GetMethod(nameof(GetValue), staticPrivate).CreateDelegate<MemberGetter<TValue>>(provider);
-            setter = field.IsInitOnly ? null : GetType().GetMethod(nameof(SetValue), staticPrivate).CreateDelegate<MemberSetter<TValue>>(provider);
+
+            Push(provider);
+            Ldftn(Method(Type<Field<TValue>>(), nameof(GetValue), Type<Provider>()));
+            Newobj(Constructor(Type<MemberGetter<TValue>>(), Type<object>(), Type<IntPtr>()));
+            Pop(out MemberGetter<TValue> getter);
+            this.getter = getter;
+
+            if (field.IsInitOnly)
+            {
+                setter = null;
+            }
+            else
+            {
+                Push(provider);
+                Ldftn(Method(Type<Field<TValue>>(), nameof(SetValue), Type<Provider>(), Type<TValue>()));
+                Newobj(Constructor(Type<MemberSetter<TValue>>(), Type<object>(), Type<IntPtr>()));
+                Pop(out MemberSetter<TValue> setter);
+                this.setter = setter;
+            }
         }
 
         [return: MaybeNull]

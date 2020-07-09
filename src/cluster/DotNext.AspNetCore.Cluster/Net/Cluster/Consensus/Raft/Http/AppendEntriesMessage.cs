@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Primitives;
+using static System.Buffers.BuffersExtensions;
 using static System.Globalization.CultureInfo;
 using HeaderNames = Microsoft.Net.Http.Headers.HeaderNames;
 using HeaderUtils = Microsoft.Net.Http.Headers.HeaderUtilities;
@@ -169,22 +170,30 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             internal int Count => entries.Count;
 
-            private static void WriteHeader(StringBuilder builder, string headerName, string headerValue)
-                => builder.Append(headerName).Append(": ").Append(headerValue).Append(CrLf);
-
-            private static ValueTask EncodeHeadersToStreamAsync(Stream output, StringBuilder builder, TEntry entry, bool writeDivider, string boundary, EncodingContext context, Memory<byte> buffer)
+            private static void WriteHeader(MemoryWriter<char> builder, string headerName, string headerValue)
             {
-                builder.Clear();
+                builder.Write(headerName);
+                builder.Write(": ");
+                builder.Write(headerValue);
+                builder.Write(CrLf);
+            }
+
+            private static ValueTask EncodeHeadersToStreamAsync(Stream output, MemoryWriter<char> builder, TEntry entry, bool writeDivider, string boundary, EncodingContext context, Memory<byte> buffer)
+            {
                 if (writeDivider)
-                    builder.Append(CrLf + DoubleDash).Append(boundary).Append(CrLf);
+                {
+                    builder.Write(CrLf + DoubleDash);
+                    builder.Write(boundary);
+                    builder.Write(CrLf);
+                }
 
                 // write headers
                 WriteHeader(builder, RequestVoteMessage.RecordTermHeader, entry.Term.ToString(InvariantCulture));
                 WriteHeader(builder, HeaderNames.LastModified, HeaderUtils.FormatDate(entry.Timestamp));
 
                 // Extra CRLF to end headers (even if there are no headers)
-                builder.Append(CrLf);
-                return output.WriteStringAsync(builder.ToString().AsMemory(), context, buffer);
+                builder.Write(CrLf);
+                return output.WriteStringAsync(builder.WrittenMemory, context, buffer);
             }
 
             protected override async Task SerializeToStreamAsync(Stream stream, TransportContext context)
@@ -192,25 +201,34 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 const int maxChars = 128;   // it is empiric value measured using Console.WriteLine(builder.Length)
                 EncodingContext encodingContext = DefaultHttpEncoding;
                 using (var encodingBuffer = new ArrayRental<byte>(DefaultHttpEncoding.GetMaxByteCount(maxChars)))
+                using (var builder = new PooledArrayBufferWriter<char>(maxChars))
                 {
+                    builder.Write(DoubleDash);
+                    builder.Write(boundary);
+                    builder.Write(CrLf);
+
                     // write start boundary
-                    await stream.WriteStringAsync((DoubleDash + boundary + CrLf).AsMemory(), encodingContext, encodingBuffer.Memory).ConfigureAwait(false);
+                    await stream.WriteStringAsync(builder.WrittenMemory, encodingContext, encodingBuffer.Memory).ConfigureAwait(false);
                     encodingContext.Reset();
-                    var builder = new StringBuilder(maxChars);
 
                     // write each nested content
                     var writeDivider = false;
                     foreach (var entry in entries)
                     {
+                        builder.Clear(true);
                         await EncodeHeadersToStreamAsync(stream, builder, entry, writeDivider, boundary, encodingContext, encodingBuffer.Memory).ConfigureAwait(false);
                         encodingContext.Reset();
-                        Debug.Assert(builder.Length <= maxChars);
+                        Debug.Assert(builder.WrittenCount <= maxChars);
                         writeDivider = true;
                         await entry.WriteToAsync(stream).ConfigureAwait(false);
                     }
 
                     // write footer
-                    await stream.WriteStringAsync((CrLf + DoubleDash + boundary + DoubleDash + CrLf).AsMemory(), encodingContext, encodingBuffer.Memory).ConfigureAwait(false);
+                    builder.Clear(true);
+                    builder.Write(CrLf + DoubleDash);
+                    builder.Write(boundary);
+                    builder.Write(DoubleDash + CrLf);
+                    await stream.WriteStringAsync(builder.WrittenMemory, encodingContext, encodingBuffer.Memory).ConfigureAwait(false);
                 }
 
                 encodingContext.Reset();
