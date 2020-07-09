@@ -47,7 +47,8 @@ namespace DotNext
             if (method is null)
             {
                 Ldftn(Method(typeof(EnumConverter<TInput, TOutput>), nameof(ConvertSlow), Type<TInput>()));
-                Pop(out Converter);
+                Pop(out IntPtr methodPtr);
+                Converter = methodPtr;
             }
             else
             {
