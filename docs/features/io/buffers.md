@@ -53,4 +53,27 @@ writer.Write('+');
 writer.Write(2);
 writer.Write('=');
 writer.Write(4);
+
+string result = writer.BuildString();
+```
+
+[TextWriter](https://docs.microsoft.com/en-us/dotnet/api/system.io.textwriter) is a common way to produce text dynamically and recognizable by many third-party libraries. There is a bridge that allow to use TextWriter API over pooled buffer writer with help of extension methods declared in [TextWriterSource](../../api/DotNext.IO.TextWriterSource.yml) class:
+```csharp
+using DotNext.Buffers;
+using System.IO;
+using static DotNext.IO.TextWriterSource;
+
+using var buffer = new PooledArrayBufferWriter<char>(ArrayPool<char>.Shared);
+using TextWriter writer = buffer.AsTextWriter();
+writer.Write("Hello,");
+writer.Write(' ');
+writer.Write("world!");
+writer.WriteLine();
+writer.Write(2);
+writer.Write('+');
+writer.Write(2);
+writer.Write('=');
+writer.Write(4);
+
+string result = buffer.BuildString();
 ```
