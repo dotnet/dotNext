@@ -45,7 +45,7 @@ Documentation for older versions:
 * [1.x](https://sakno.github.io/dotNext/versions/1.x/index.html)
 
 # What's new
-Release Date: 06-30-2020
+Release Date: 07-09-2020
 
 This release is mainly focused on `DotNext.IO` library to add new API unifying programming experience across I/O pipelines, streams, [sequences](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) and [buffer writers](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1).
 
@@ -59,6 +59,7 @@ This release is mainly focused on `DotNext.IO` library to add new API unifying p
 * [BufferWriter](https://sakno.github.io/dotNext/api/DotNext.Buffers.BufferWriter.html) now contains extension methods that allow to use any object implementing [IBufferWriter&lt;char&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) as pooled string builder
 * [IAsyncBinaryReader](https://sakno.github.io/dotNext/api/DotNext.IO.IAsyncBinaryReader.html), [IAsyncBinaryWriter](https://sakno.github.io/dotNext/api/DotNext.IO.IAsyncBinaryWriter.html), [PipeExtensions](https://sakno.github.io/dotNext/api/DotNext.IO.Pipelines.PipeExtensions.html), [StreamExtensions](https://sakno.github.io/dotNext/api/DotNext.IO.StreamExtensions.html), [SequenceBinaryReader](https://sakno.github.io/dotNext/api/DotNext.IO.SequenceBinaryReader.html) types now containing methods for encoding/decoding primitive types, [DateTime](https://docs.microsoft.com/en-us/dotnet/api/system.datetime), [DateTimeOffset](https://docs.microsoft.com/en-us/dotnet/api/system.datetimeoffset), [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid) to/from string representation contained in underlying stream, pipe or [sequence](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) in the binary form
 * Fixed pooled memory leaks in [SequenceBinaryReader](https://sakno.github.io/dotNext/api/DotNext.IO.SequenceBinaryReader.html)
+* [TextWriter](https://docs.microsoft.com/en-us/dotnet/api/system.io.textwriter) over [IBufferWriter&lt;char&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) interface using extension method in [TextWriterSource](https://sakno.github.io/dotNext/api/DotNext.IO.TextWriterSource.html) class
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.6.1">DotNext.Metaprogramming 2.6.1</a>
 * Enabled consistent build which is recommended for SourceLink
