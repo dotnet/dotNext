@@ -1,6 +1,10 @@
 Release Notes
 ====
 
+# 07-11-2020
+<a href="https://www.nuget.org/packages/dotnext.unsafe/2.7.0">DotNext.Unsafe 2.7.0</a>
+* `UnmanagedMemoryPool<T>.GetAllocator` public static method is added for compatibility with [MemoryAllocator&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.MemoryAllocator-1.html) delegate
+
 # 07-09-2020
 This release is mainly focused on `DotNext.IO` library to add new API unifying programming experience across I/O pipelines, streams, [sequences](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) and [buffer writers](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1).
 
