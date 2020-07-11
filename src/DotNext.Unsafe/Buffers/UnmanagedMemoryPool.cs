@@ -48,7 +48,7 @@ namespace DotNext.Buffers
             return Return<MemoryAllocator<T>>();
 
             static Func<int, IUnmanagedMemoryOwner<T>> CreateProvider(bool zeroMem)
-                => new Func<int, IUnmanagedMemoryOwner<T>>(length => new UnmanagedMemoryOwner<T>(length, zeroMem, false));
+                => new Func<int, IUnmanagedMemoryOwner<T>>(length => Allocate(length, zeroMem));
         }
 
         private static MemoryOwner<T> Allocate(Func<int, IUnmanagedMemoryOwner<T>> provider, int length)
