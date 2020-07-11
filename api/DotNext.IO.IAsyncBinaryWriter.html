@@ -579,6 +579,7 @@ when you need an object implementing <a class="xref" href="DotNext.IO.IAsyncBina
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">static IAsyncBinaryWriter Create&lt;TWriter&gt;(TWriter writer)
+
     where TWriter : class, IBufferWriter&lt;byte&gt;, IFlushable</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -895,6 +896,7 @@ when you need an object implementing <a class="xref" href="DotNext.IO.IAsyncBina
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">virtual ValueTask WriteAsync&lt;T&gt;(T value, CancellationToken token = default(CancellationToken))
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

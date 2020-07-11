@@ -364,6 +364,7 @@ and implicit/explicit cast operators.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Constructor&lt;Function&lt;TArgs, T&gt;&gt; GetConstructor&lt;TArgs&gt;(bool nonPublic = false)
+
     where TArgs : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -432,6 +433,7 @@ and has arguments described by type <code data-dev-comment-type="typeparamref" c
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Method&lt;Procedure&lt;T, TArgs&gt;&gt; GetMethod&lt;TArgs&gt;(string methodName, bool nonPublic = false)
+
     where TArgs : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -512,6 +514,7 @@ by type <code data-dev-comment-type="typeparamref" class="typeparamref">TArgs</c
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Method&lt;Function&lt;T, TArgs, TResult&gt;&gt; GetMethod&lt;TArgs, TResult&gt;(string methodName, bool nonPublic = false)
+
     where TArgs : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -596,6 +599,7 @@ and has arguments described by type <code data-dev-comment-type="typeparamref" c
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Method&lt;Procedure&lt;TArgs&gt;&gt; GetStaticMethod&lt;TArgs&gt;(string methodName, bool nonPublic = false)
+
     where TArgs : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -676,6 +680,7 @@ by type <code data-dev-comment-type="typeparamref" class="typeparamref">TArgs</c
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Method&lt;Function&lt;TArgs, TResult&gt;&gt; GetStaticMethod&lt;TArgs, TResult&gt;(string methodName, bool nonPublic = false)
+
     where TArgs : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -874,6 +879,7 @@ performed by .NET Runtime.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T NewInstance&lt;TArgs&gt;(in TArgs args, bool nonPublic = false)
+
     where TArgs : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -963,6 +969,7 @@ performed by .NET Runtime.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Constructor&lt;Function&lt;TArgs, T&gt;&gt; RequireConstructor&lt;TArgs&gt;(bool nonPublic = false)
+
     where TArgs : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1047,6 +1054,7 @@ and has arguments described by type <code data-dev-comment-type="typeparamref" c
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Method&lt;Procedure&lt;T, TArgs&gt;&gt; RequireMethod&lt;TArgs&gt;(string methodName, bool nonPublic = false)
+
     where TArgs : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1143,6 +1151,7 @@ by type <code data-dev-comment-type="typeparamref" class="typeparamref">TArgs</c
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Method&lt;Function&lt;T, TArgs, TResult&gt;&gt; RequireMethod&lt;TArgs, TResult&gt;(string methodName, bool nonPublic = false)
+
     where TArgs : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1243,6 +1252,7 @@ and has arguments described by type <code data-dev-comment-type="typeparamref" c
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Method&lt;Procedure&lt;TArgs&gt;&gt; RequireStaticMethod&lt;TArgs&gt;(string methodName, bool nonPublic = false)
+
     where TArgs : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1339,6 +1349,7 @@ by type <code data-dev-comment-type="typeparamref" class="typeparamref">TArgs</c
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Method&lt;Function&lt;TArgs, TResult&gt;&gt; RequireStaticMethod&lt;TArgs, TResult&gt;(string methodName, bool nonPublic = false)
+
     where TArgs : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

@@ -174,6 +174,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public T Read&lt;T&gt;()
+
     where T : struct</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
@@ -2483,8 +2484,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
   </span>
   <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#CopyToAsync*"></a>
   <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_System_Buffers_IBufferWriter_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#CopyToAsync(System.Buffers.IBufferWriter{System.Byte},System.Threading.CancellationToken)">IAsyncBinaryReader.CopyToAsync(IBufferWriter&lt;Byte&gt;, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Copies the content to the specified buffer.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -2503,158 +2503,12 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
         <td><span class="parametername">writer</span></td>
-        <td><p>The buffer writer.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
-        <td><p>The task representing asynchronous execution of this method.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_System_IO_Pipelines_PipeWriter_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceBinaryReader.DotNext%23IO%23IAsyncBinaryReader%23CopyToAsync(System.IO.Pipelines.PipeWriter%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceBinaryReader.cs/#L993">View Source</a>
-  </span>
-  <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#CopyToAsync*"></a>
-  <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_System_IO_Pipelines_PipeWriter_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#CopyToAsync(System.IO.Pipelines.PipeWriter,System.Threading.CancellationToken)">IAsyncBinaryReader.CopyToAsync(PipeWriter, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Copies the content to the specified pipe writer.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">Task IAsyncBinaryReader.CopyToAsync(PipeWriter output, CancellationToken token)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.pipelines.pipewriter">PipeWriter</a></td>
-        <td><span class="parametername">output</span></td>
-        <td><p>The writer.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
-        <td><p>The task representing asynchronous execution of this method.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_System_IO_Stream_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceBinaryReader.DotNext%23IO%23IAsyncBinaryReader%23CopyToAsync(System.IO.Stream%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceBinaryReader.cs/#L989">View Source</a>
-  </span>
-  <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#CopyToAsync*"></a>
-  <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_System_IO_Stream_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#CopyToAsync(System.IO.Stream,System.Threading.CancellationToken)">IAsyncBinaryReader.CopyToAsync(Stream, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Copies the content to the specified stream.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">Task IAsyncBinaryReader.CopyToAsync(Stream output, CancellationToken token)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
-        <td><span class="parametername">output</span></td>
-        <td><p>The output stream receiving object content.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel asynchronous operation.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -2673,19 +2527,107 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
       </tr>
     </tbody>
   </table>
-  <h5 class="exceptions">Exceptions</h5>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_System_IO_Pipelines_PipeWriter_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceBinaryReader.DotNext%23IO%23IAsyncBinaryReader%23CopyToAsync(System.IO.Pipelines.PipeWriter%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceBinaryReader.cs/#L993">View Source</a>
+  </span>
+  <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#CopyToAsync*"></a>
+  <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_System_IO_Pipelines_PipeWriter_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#CopyToAsync(System.IO.Pipelines.PipeWriter,System.Threading.CancellationToken)">IAsyncBinaryReader.CopyToAsync(PipeWriter, CancellationToken)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Task IAsyncBinaryReader.CopyToAsync(PipeWriter output, CancellationToken token)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
         <th>Type</th>
-        <th>Condition</th>
+        <th>Name</th>
+        <th>Description</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.pipelines.pipewriter">PipeWriter</a></td>
+        <td><span class="parametername">output</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_System_IO_Stream_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceBinaryReader.DotNext%23IO%23IAsyncBinaryReader%23CopyToAsync(System.IO.Stream%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceBinaryReader.cs/#L989">View Source</a>
+  </span>
+  <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#CopyToAsync*"></a>
+  <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_System_IO_Stream_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#CopyToAsync(System.IO.Stream,System.Threading.CancellationToken)">IAsyncBinaryReader.CopyToAsync(Stream, CancellationToken)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Task IAsyncBinaryReader.CopyToAsync(Stream output, CancellationToken token)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
+        <td><span class="parametername">output</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -2698,8 +2640,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
   </span>
   <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#CopyToAsync*"></a>
   <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync__1_System_Buffers_ReadOnlySpanAction_System_Byte___0____0_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#CopyToAsync``1(System.Buffers.ReadOnlySpanAction{System.Byte,``0},``0,System.Threading.CancellationToken)">IAsyncBinaryReader.CopyToAsync&lt;TArg&gt;(ReadOnlySpanAction&lt;Byte, TArg&gt;, TArg, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Reads the entire content using the specified delegate.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -2723,14 +2664,12 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
       <tr>
         <td><span class="xref">TArg</span></td>
         <td><span class="parametername">arg</span></td>
-        <td><p>The argument to be passed to the content reader.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel operation.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -2745,8 +2684,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
-        <td><p>The task representing asynchronous execution of this method.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -2761,24 +2699,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
     <tbody>
       <tr>
         <td><span class="parametername">TArg</span></td>
-        <td><p>The type of the argument to be passed to the content reader.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -2791,8 +2712,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
   </span>
   <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#CopyToAsync*"></a>
   <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync__1_System_Func_System_ReadOnlyMemory_System_Byte____0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask____0_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#CopyToAsync``1(System.Func{System.ReadOnlyMemory{System.Byte},``0,System.Threading.CancellationToken,System.Threading.Tasks.ValueTask},``0,System.Threading.CancellationToken)">IAsyncBinaryReader.CopyToAsync&lt;TArg&gt;(Func&lt;ReadOnlyMemory&lt;Byte&gt;, TArg, CancellationToken, ValueTask&gt;, TArg, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Reads the entire content using the specified delegate.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -2816,14 +2736,12 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
       <tr>
         <td><span class="xref">TArg</span></td>
         <td><span class="parametername">arg</span></td>
-        <td><p>The argument to be passed to the content reader.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel operation.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -2838,8 +2756,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
-        <td><p>The task representing asynchronous execution of this method.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -2854,24 +2771,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
     <tbody>
       <tr>
         <td><span class="parametername">TArg</span></td>
-        <td><p>The type of the argument to be passed to the content reader.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -2884,8 +2784,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
   </span>
   <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadAsync_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadAsync*"></a>
   <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadAsync_System_Memory_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadAsync(System.Memory{System.Byte},System.Threading.CancellationToken)">IAsyncBinaryReader.ReadAsync(Memory&lt;Byte&gt;, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Reads the block of bytes.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -2904,14 +2803,12 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.memory-1">Memory</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
         <td><span class="parametername">output</span></td>
-        <td><p>The block of memory to fill.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -2926,29 +2823,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
-        <td><p>The task representing state of asynchronous execution.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -2961,12 +2836,12 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
   </span>
   <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadAsync_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadAsync*"></a>
   <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadAsync__1_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadAsync``1(System.Threading.CancellationToken)">IAsyncBinaryReader.ReadAsync&lt;T&gt;(CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Decodes the value of blittable type.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">ValueTask&lt;T&gt; IAsyncBinaryReader.ReadAsync&lt;T&gt;(CancellationToken token)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2982,8 +2857,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -2998,8 +2872,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;T&gt;</td>
-        <td><p>The decoded value.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -3014,29 +2887,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
     <tbody>
       <tr>
         <td><span class="parametername">T</span></td>
-        <td><p>The type of the result.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -3049,8 +2900,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
   </span>
   <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadByteAsync_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadByteAsync*"></a>
   <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadByteAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadByteAsync(DotNext.IO.StringLengthEncoding,DotNext.Text.DecodingContext,System.Globalization.NumberStyles,System.IFormatProvider,System.Threading.CancellationToken)">IAsyncBinaryReader.ReadByteAsync(StringLengthEncoding, DecodingContext, NumberStyles, IFormatProvider, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Parses 8-bit unsigned integer from its string representation encoded in the underlying stream.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -3069,32 +2919,27 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
       <tr>
         <td><a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a></td>
         <td><span class="parametername">lengthFormat</span></td>
-        <td><p>The format of the string length encoded in the stream.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
         <td><span class="parametername">context</span></td>
-        <td><p>The decoding context containing string characters encoding.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.globalization.numberstyles">NumberStyles</a></td>
         <td><span class="parametername">style</span></td>
-        <td><p>A bitwise combination of the enumeration values that indicates the style elements.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></td>
         <td><span class="parametername">provider</span></td>
-        <td><p>An object that supplies culture-specific formatting information.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -3109,34 +2954,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
-        <td><p>The parsed value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.formatexception">FormatException</a></td>
-        <td><p>The number is in incorrect format.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -3149,8 +2967,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
   </span>
   <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadDateTimeAsync_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadDateTimeAsync*"></a>
   <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadDateTimeAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Globalization_DateTimeStyles_System_IFormatProvider_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadDateTimeAsync(DotNext.IO.StringLengthEncoding,DotNext.Text.DecodingContext,System.Globalization.DateTimeStyles,System.IFormatProvider,System.Threading.CancellationToken)">IAsyncBinaryReader.ReadDateTimeAsync(StringLengthEncoding, DecodingContext, DateTimeStyles, IFormatProvider, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Parses <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.datetime">DateTime</a> from its string representation encoded in the underlying stream.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -3169,32 +2986,27 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
       <tr>
         <td><a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a></td>
         <td><span class="parametername">lengthFormat</span></td>
-        <td><p>The format of the string length encoded in the stream.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
         <td><span class="parametername">context</span></td>
-        <td><p>The decoding context containing string characters encoding.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.globalization.datetimestyles">DateTimeStyles</a></td>
         <td><span class="parametername">style</span></td>
-        <td><p>A bitwise combination of the enumeration values that indicates the style elements.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></td>
         <td><span class="parametername">provider</span></td>
-        <td><p>An object that supplies culture-specific formatting information.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -3209,34 +3021,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.datetime">DateTime</a>&gt;</td>
-        <td><p>The parsed value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.formatexception">FormatException</a></td>
-        <td><p>The date/time is in incorrect format.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -3249,8 +3034,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
   </span>
   <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadDateTimeAsync_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadDateTimeAsync*"></a>
   <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadDateTimeAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_String___System_Globalization_DateTimeStyles_System_IFormatProvider_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadDateTimeAsync(DotNext.IO.StringLengthEncoding,DotNext.Text.DecodingContext,System.String[],System.Globalization.DateTimeStyles,System.IFormatProvider,System.Threading.CancellationToken)">IAsyncBinaryReader.ReadDateTimeAsync(StringLengthEncoding, DecodingContext, String[], DateTimeStyles, IFormatProvider, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Parses <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.datetime">DateTime</a> from its string representation encoded in the underlying stream.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -3269,38 +3053,32 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
       <tr>
         <td><a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a></td>
         <td><span class="parametername">lengthFormat</span></td>
-        <td><p>The format of the string length encoded in the stream.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
         <td><span class="parametername">context</span></td>
-        <td><p>The decoding context containing string characters encoding.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a>[]</td>
         <td><span class="parametername">formats</span></td>
-        <td><p>An array of allowable formats.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.globalization.datetimestyles">DateTimeStyles</a></td>
         <td><span class="parametername">style</span></td>
-        <td><p>A bitwise combination of the enumeration values that indicates the style elements.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></td>
         <td><span class="parametername">provider</span></td>
-        <td><p>An object that supplies culture-specific formatting information.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -3315,34 +3093,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.datetime">DateTime</a>&gt;</td>
-        <td><p>The parsed value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.formatexception">FormatException</a></td>
-        <td><p>The date/time is in incorrect format.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -3355,8 +3106,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
   </span>
   <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadDateTimeOffsetAsync_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadDateTimeOffsetAsync*"></a>
   <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadDateTimeOffsetAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Globalization_DateTimeStyles_System_IFormatProvider_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadDateTimeOffsetAsync(DotNext.IO.StringLengthEncoding,DotNext.Text.DecodingContext,System.Globalization.DateTimeStyles,System.IFormatProvider,System.Threading.CancellationToken)">IAsyncBinaryReader.ReadDateTimeOffsetAsync(StringLengthEncoding, DecodingContext, DateTimeStyles, IFormatProvider, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Parses <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.datetimeoffset">DateTimeOffset</a> from its string representation encoded in the underlying stream.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -3375,32 +3125,27 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
       <tr>
         <td><a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a></td>
         <td><span class="parametername">lengthFormat</span></td>
-        <td><p>The format of the string length encoded in the stream.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
         <td><span class="parametername">context</span></td>
-        <td><p>The decoding context containing string characters encoding.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.globalization.datetimestyles">DateTimeStyles</a></td>
         <td><span class="parametername">style</span></td>
-        <td><p>A bitwise combination of the enumeration values that indicates the style elements.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></td>
         <td><span class="parametername">provider</span></td>
-        <td><p>An object that supplies culture-specific formatting information.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -3415,34 +3160,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.datetimeoffset">DateTimeOffset</a>&gt;</td>
-        <td><p>The parsed value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.formatexception">FormatException</a></td>
-        <td><p>The date/time is in incorrect format.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -3455,8 +3173,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
   </span>
   <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadDateTimeOffsetAsync_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadDateTimeOffsetAsync*"></a>
   <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadDateTimeOffsetAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_String___System_Globalization_DateTimeStyles_System_IFormatProvider_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadDateTimeOffsetAsync(DotNext.IO.StringLengthEncoding,DotNext.Text.DecodingContext,System.String[],System.Globalization.DateTimeStyles,System.IFormatProvider,System.Threading.CancellationToken)">IAsyncBinaryReader.ReadDateTimeOffsetAsync(StringLengthEncoding, DecodingContext, String[], DateTimeStyles, IFormatProvider, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Parses <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.datetimeoffset">DateTimeOffset</a> from its string representation encoded in the underlying stream.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -3475,38 +3192,32 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
       <tr>
         <td><a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a></td>
         <td><span class="parametername">lengthFormat</span></td>
-        <td><p>The format of the string length encoded in the stream.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
         <td><span class="parametername">context</span></td>
-        <td><p>The decoding context containing string characters encoding.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a>[]</td>
         <td><span class="parametername">formats</span></td>
-        <td><p>An array of allowable formats.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.globalization.datetimestyles">DateTimeStyles</a></td>
         <td><span class="parametername">style</span></td>
-        <td><p>A bitwise combination of the enumeration values that indicates the style elements.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></td>
         <td><span class="parametername">provider</span></td>
-        <td><p>An object that supplies culture-specific formatting information.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -3521,34 +3232,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.datetimeoffset">DateTimeOffset</a>&gt;</td>
-        <td><p>The parsed value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.formatexception">FormatException</a></td>
-        <td><p>The date/time is in incorrect format.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -3561,8 +3245,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
   </span>
   <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadDecimalAsync_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadDecimalAsync*"></a>
   <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadDecimalAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadDecimalAsync(DotNext.IO.StringLengthEncoding,DotNext.Text.DecodingContext,System.Globalization.NumberStyles,System.IFormatProvider,System.Threading.CancellationToken)">IAsyncBinaryReader.ReadDecimalAsync(StringLengthEncoding, DecodingContext, NumberStyles, IFormatProvider, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Parses <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.decimal">Decimal</a> from its string representation encoded in the underlying stream.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -3581,32 +3264,27 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
       <tr>
         <td><a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a></td>
         <td><span class="parametername">lengthFormat</span></td>
-        <td><p>The format of the string length encoded in the stream.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
         <td><span class="parametername">context</span></td>
-        <td><p>The decoding context containing string characters encoding.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.globalization.numberstyles">NumberStyles</a></td>
         <td><span class="parametername">style</span></td>
-        <td><p>A bitwise combination of the enumeration values that indicates the style elements.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></td>
         <td><span class="parametername">provider</span></td>
-        <td><p>An object that supplies culture-specific formatting information.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -3621,34 +3299,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.decimal">Decimal</a>&gt;</td>
-        <td><p>The parsed value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.formatexception">FormatException</a></td>
-        <td><p>The number is in incorrect format.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -3661,8 +3312,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
   </span>
   <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadDoubleAsync_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadDoubleAsync*"></a>
   <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadDoubleAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadDoubleAsync(DotNext.IO.StringLengthEncoding,DotNext.Text.DecodingContext,System.Globalization.NumberStyles,System.IFormatProvider,System.Threading.CancellationToken)">IAsyncBinaryReader.ReadDoubleAsync(StringLengthEncoding, DecodingContext, NumberStyles, IFormatProvider, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Parses double-precision floating-point number from its string representation encoded in the underlying stream.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -3681,32 +3331,27 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
       <tr>
         <td><a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a></td>
         <td><span class="parametername">lengthFormat</span></td>
-        <td><p>The format of the string length encoded in the stream.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
         <td><span class="parametername">context</span></td>
-        <td><p>The decoding context containing string characters encoding.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.globalization.numberstyles">NumberStyles</a></td>
         <td><span class="parametername">style</span></td>
-        <td><p>A bitwise combination of the enumeration values that indicates the style elements.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></td>
         <td><span class="parametername">provider</span></td>
-        <td><p>An object that supplies culture-specific formatting information.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -3721,34 +3366,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>&gt;</td>
-        <td><p>The parsed value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.formatexception">FormatException</a></td>
-        <td><p>The number is in incorrect format.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -3761,8 +3379,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
   </span>
   <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadGuidAsync_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadGuidAsync*"></a>
   <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadGuidAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_String_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadGuidAsync(DotNext.IO.StringLengthEncoding,DotNext.Text.DecodingContext,System.String,System.Threading.CancellationToken)">IAsyncBinaryReader.ReadGuidAsync(StringLengthEncoding, DecodingContext, String, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Parses <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.guid">Guid</a> from its string representation encoded in the underlying stream.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -3781,26 +3398,22 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
       <tr>
         <td><a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a></td>
         <td><span class="parametername">lengthFormat</span></td>
-        <td><p>The format of the string length encoded in the stream.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
         <td><span class="parametername">context</span></td>
-        <td><p>The decoding context containing string characters encoding.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
         <td><span class="parametername">format</span></td>
-        <td><p>The expected format of GUID value.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -3815,34 +3428,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.guid">Guid</a>&gt;</td>
-        <td><p>The parsed value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.formatexception">FormatException</a></td>
-        <td><p>GUID is in incorrect format.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -3855,8 +3441,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
   </span>
   <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadGuidAsync_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadGuidAsync*"></a>
   <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadGuidAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadGuidAsync(DotNext.IO.StringLengthEncoding,DotNext.Text.DecodingContext,System.Threading.CancellationToken)">IAsyncBinaryReader.ReadGuidAsync(StringLengthEncoding, DecodingContext, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Parses <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.guid">Guid</a> from its string representation encoded in the underlying stream.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -3875,20 +3460,17 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
       <tr>
         <td><a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a></td>
         <td><span class="parametername">lengthFormat</span></td>
-        <td><p>The format of the string length encoded in the stream.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
         <td><span class="parametername">context</span></td>
-        <td><p>The decoding context containing string characters encoding.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -3903,34 +3485,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.guid">Guid</a>&gt;</td>
-        <td><p>The parsed value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.formatexception">FormatException</a></td>
-        <td><p>GUID is in incorrect format.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -3943,8 +3498,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
   </span>
   <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadInt16Async_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadInt16Async*"></a>
   <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadInt16Async_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadInt16Async(DotNext.IO.StringLengthEncoding,DotNext.Text.DecodingContext,System.Globalization.NumberStyles,System.IFormatProvider,System.Threading.CancellationToken)">IAsyncBinaryReader.ReadInt16Async(StringLengthEncoding, DecodingContext, NumberStyles, IFormatProvider, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Parses 16-bit signed integer from its string representation encoded in the underlying stream.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -3963,32 +3517,27 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
       <tr>
         <td><a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a></td>
         <td><span class="parametername">lengthFormat</span></td>
-        <td><p>The format of the string length encoded in the stream.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
         <td><span class="parametername">context</span></td>
-        <td><p>The decoding context containing string characters encoding.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.globalization.numberstyles">NumberStyles</a></td>
         <td><span class="parametername">style</span></td>
-        <td><p>A bitwise combination of the enumeration values that indicates the style elements.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></td>
         <td><span class="parametername">provider</span></td>
-        <td><p>An object that supplies culture-specific formatting information.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -4003,34 +3552,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int16">Int16</a>&gt;</td>
-        <td><p>The parsed value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.formatexception">FormatException</a></td>
-        <td><p>The number is in incorrect format.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -4043,8 +3565,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
   </span>
   <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadInt16Async_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadInt16Async*"></a>
   <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadInt16Async_System_Boolean_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadInt16Async(System.Boolean,System.Threading.CancellationToken)">IAsyncBinaryReader.ReadInt16Async(Boolean, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Decodes 16-bit signed integer using the specified endianness.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -4063,14 +3584,12 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td><span class="parametername">littleEndian</span></td>
-        <td><p><span class="xref">true</span> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -4085,29 +3604,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int16">Int16</a>&gt;</td>
-        <td><p>The decoded value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -4120,8 +3617,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
   </span>
   <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadInt32Async_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadInt32Async*"></a>
   <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadInt32Async_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadInt32Async(DotNext.IO.StringLengthEncoding,DotNext.Text.DecodingContext,System.Globalization.NumberStyles,System.IFormatProvider,System.Threading.CancellationToken)">IAsyncBinaryReader.ReadInt32Async(StringLengthEncoding, DecodingContext, NumberStyles, IFormatProvider, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Parses 32-bit signed integer from its string representation encoded in the underlying stream.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -4140,32 +3636,27 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
       <tr>
         <td><a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a></td>
         <td><span class="parametername">lengthFormat</span></td>
-        <td><p>The format of the string length encoded in the stream.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
         <td><span class="parametername">context</span></td>
-        <td><p>The decoding context containing string characters encoding.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.globalization.numberstyles">NumberStyles</a></td>
         <td><span class="parametername">style</span></td>
-        <td><p>A bitwise combination of the enumeration values that indicates the style elements.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></td>
         <td><span class="parametername">provider</span></td>
-        <td><p>An object that supplies culture-specific formatting information.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -4180,34 +3671,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
-        <td><p>The parsed value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.formatexception">FormatException</a></td>
-        <td><p>The number is in incorrect format.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -4220,8 +3684,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
   </span>
   <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadInt32Async_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadInt32Async*"></a>
   <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadInt32Async_System_Boolean_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadInt32Async(System.Boolean,System.Threading.CancellationToken)">IAsyncBinaryReader.ReadInt32Async(Boolean, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Decodes 32-bit signed integer using the specified endianness.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -4240,14 +3703,12 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td><span class="parametername">littleEndian</span></td>
-        <td><p><span class="xref">true</span> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -4262,29 +3723,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
-        <td><p>The decoded value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -4297,8 +3736,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
   </span>
   <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadInt64Async_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadInt64Async*"></a>
   <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadInt64Async_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadInt64Async(DotNext.IO.StringLengthEncoding,DotNext.Text.DecodingContext,System.Globalization.NumberStyles,System.IFormatProvider,System.Threading.CancellationToken)">IAsyncBinaryReader.ReadInt64Async(StringLengthEncoding, DecodingContext, NumberStyles, IFormatProvider, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Parses 64-bit signed integer from its string representation encoded in the underlying stream.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -4317,32 +3755,27 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
       <tr>
         <td><a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a></td>
         <td><span class="parametername">lengthFormat</span></td>
-        <td><p>The format of the string length encoded in the stream.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
         <td><span class="parametername">context</span></td>
-        <td><p>The decoding context containing string characters encoding.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.globalization.numberstyles">NumberStyles</a></td>
         <td><span class="parametername">style</span></td>
-        <td><p>A bitwise combination of the enumeration values that indicates the style elements.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></td>
         <td><span class="parametername">provider</span></td>
-        <td><p>An object that supplies culture-specific formatting information.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -4357,34 +3790,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
-        <td><p>The parsed value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.formatexception">FormatException</a></td>
-        <td><p>The number is in incorrect format.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -4397,8 +3803,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
   </span>
   <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadInt64Async_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadInt64Async*"></a>
   <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadInt64Async_System_Boolean_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadInt64Async(System.Boolean,System.Threading.CancellationToken)">IAsyncBinaryReader.ReadInt64Async(Boolean, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Decodes 64-bit signed integer using the specified endianness.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -4417,14 +3822,12 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td><span class="parametername">littleEndian</span></td>
-        <td><p><span class="xref">true</span> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -4439,29 +3842,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
-        <td><p>The decoded value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -4474,8 +3855,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
   </span>
   <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadSingleAsync_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadSingleAsync*"></a>
   <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadSingleAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadSingleAsync(DotNext.IO.StringLengthEncoding,DotNext.Text.DecodingContext,System.Globalization.NumberStyles,System.IFormatProvider,System.Threading.CancellationToken)">IAsyncBinaryReader.ReadSingleAsync(StringLengthEncoding, DecodingContext, NumberStyles, IFormatProvider, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Parses single-precision floating-point number from its string representation encoded in the underlying stream.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -4494,32 +3874,27 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
       <tr>
         <td><a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a></td>
         <td><span class="parametername">lengthFormat</span></td>
-        <td><p>The format of the string length encoded in the stream.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
         <td><span class="parametername">context</span></td>
-        <td><p>The decoding context containing string characters encoding.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.globalization.numberstyles">NumberStyles</a></td>
         <td><span class="parametername">style</span></td>
-        <td><p>A bitwise combination of the enumeration values that indicates the style elements.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></td>
         <td><span class="parametername">provider</span></td>
-        <td><p>An object that supplies culture-specific formatting information.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -4534,34 +3909,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>&gt;</td>
-        <td><p>The parsed value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.formatexception">FormatException</a></td>
-        <td><p>The number is in incorrect format.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -4574,8 +3922,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
   </span>
   <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadStringAsync_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadStringAsync*"></a>
   <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadStringAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadStringAsync(DotNext.IO.StringLengthEncoding,DotNext.Text.DecodingContext,System.Threading.CancellationToken)">IAsyncBinaryReader.ReadStringAsync(StringLengthEncoding, DecodingContext, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Decodes the string.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -4594,20 +3941,17 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
       <tr>
         <td><a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a></td>
         <td><span class="parametername">lengthFormat</span></td>
-        <td><p>The format of the string length encoded in the stream.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
         <td><span class="parametername">context</span></td>
-        <td><p>The decoding context containing string characters encoding.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -4622,34 +3966,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a>&gt;</td>
-        <td><p>The decoded string.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
-        <td><p><code data-dev-comment-type="paramref" class="paramref">lengthFormat</code> is invalid.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -4662,8 +3979,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
   </span>
   <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadStringAsync_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadStringAsync*"></a>
   <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadStringAsync_System_Int32_DotNext_Text_DecodingContext_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadStringAsync(System.Int32,DotNext.Text.DecodingContext,System.Threading.CancellationToken)">IAsyncBinaryReader.ReadStringAsync(Int32, DecodingContext, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Decodes the string.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -4682,20 +3998,17 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
         <td><span class="parametername">length</span></td>
-        <td><p>The length of the encoded string, in bytes.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
         <td><span class="parametername">context</span></td>
-        <td><p>The decoding context containing string characters encoding.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -4710,29 +4023,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a>&gt;</td>
-        <td><p>The decoded string.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -4745,8 +4036,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
   </span>
   <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadTimeSpanAsync_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadTimeSpanAsync*"></a>
   <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadTimeSpanAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_IFormatProvider_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadTimeSpanAsync(DotNext.IO.StringLengthEncoding,DotNext.Text.DecodingContext,System.IFormatProvider,System.Threading.CancellationToken)">IAsyncBinaryReader.ReadTimeSpanAsync(StringLengthEncoding, DecodingContext, IFormatProvider, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Parses <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timespan">TimeSpan</a> from its string representation encoded in the underlying stream.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -4765,26 +4055,22 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
       <tr>
         <td><a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a></td>
         <td><span class="parametername">lengthFormat</span></td>
-        <td><p>The format of the string length encoded in the stream.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
         <td><span class="parametername">context</span></td>
-        <td><p>The decoding context containing string characters encoding.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></td>
         <td><span class="parametername">provider</span></td>
-        <td><p>An object that supplies culture-specific formatting information.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -4799,34 +4085,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timespan">TimeSpan</a>&gt;</td>
-        <td><p>The parsed value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.formatexception">FormatException</a></td>
-        <td><p>The time span is in incorrect format.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -4839,8 +4098,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
   </span>
   <a id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadTimeSpanAsync_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadTimeSpanAsync*"></a>
   <h4 id="DotNext_IO_SequenceBinaryReader_DotNext_IO_IAsyncBinaryReader_ReadTimeSpanAsync_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_String___System_Globalization_TimeSpanStyles_System_IFormatProvider_System_Threading_CancellationToken_" data-uid="DotNext.IO.SequenceBinaryReader.DotNext#IO#IAsyncBinaryReader#ReadTimeSpanAsync(DotNext.IO.StringLengthEncoding,DotNext.Text.DecodingContext,System.String[],System.Globalization.TimeSpanStyles,System.IFormatProvider,System.Threading.CancellationToken)">IAsyncBinaryReader.ReadTimeSpanAsync(StringLengthEncoding, DecodingContext, String[], TimeSpanStyles, IFormatProvider, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Parses <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timespan">TimeSpan</a> from its string representation encoded in the underlying stream.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -4859,38 +4117,32 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
       <tr>
         <td><a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a></td>
         <td><span class="parametername">lengthFormat</span></td>
-        <td><p>The format of the string length encoded in the stream.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
         <td><span class="parametername">context</span></td>
-        <td><p>The decoding context containing string characters encoding.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a>[]</td>
         <td><span class="parametername">formats</span></td>
-        <td><p>An array of allowable formats.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.globalization.timespanstyles">TimeSpanStyles</a></td>
         <td><span class="parametername">style</span></td>
-        <td><p>A bitwise combination of the enumeration values that indicates the style elements.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></td>
         <td><span class="parametername">provider</span></td>
-        <td><p>An object that supplies culture-specific formatting information.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -4905,34 +4157,7 @@ public ulong ReadUInt64(bool littleEndian)</code></pre>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timespan">TimeSpan</a>&gt;</td>
-        <td><p>The parsed value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.formatexception">FormatException</a></td>
-        <td><p>The time span is in incorrect format.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
