@@ -2,6 +2,10 @@
 using System.Buffers;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using static InlineIL.IL;
+using static InlineIL.IL.Emit;
+using static InlineIL.MethodRef;
+using static InlineIL.TypeRef;
 
 namespace DotNext.Buffers
 {
@@ -30,6 +34,25 @@ namespace DotNext.Buffers
             this.defaultBufferSize = Math.Min(defaultBufferSize, maxBufferSize);
             removeMemory = trackAllocations ? new Action<IUnmanagedMemoryOwner<T>>(RemoveTracking) : null;
         }
+
+        /// <summary>
+        /// Gets allocator of unmanaged memory.
+        /// </summary>
+        /// <param name="zeroMem"><see langword="true"/> to set all bits in the memory to zero; otherwise, <see langword="false"/>.</param>
+        /// <returns>The unmanaged memory allocator.</returns>
+        public static MemoryAllocator<T> GetAllocator(bool zeroMem)
+        {
+            Push(CreateProvider(zeroMem));
+            Ldftn(Method(Type<UnmanagedMemoryPool<T>>(), nameof(Allocate), Type<Func<int, IUnmanagedMemoryOwner<T>>>(), Type<int>()));
+            Newobj(Constructor(Type<MemoryAllocator<T>>(), Type<object>(), Type<IntPtr>()));
+            return Return<MemoryAllocator<T>>();
+
+            static Func<int, IUnmanagedMemoryOwner<T>> CreateProvider(bool zeroMem)
+                => new Func<int, IUnmanagedMemoryOwner<T>>(length => Allocate(length, zeroMem));
+        }
+
+        private static MemoryOwner<T> Allocate(Func<int, IUnmanagedMemoryOwner<T>> provider, int length)
+            => new MemoryOwner<T>(provider, length);
 
         [MethodImpl(MethodImplOptions.Synchronized)]
         private void RemoveTracking(IUnmanagedMemoryOwner<T> owner)

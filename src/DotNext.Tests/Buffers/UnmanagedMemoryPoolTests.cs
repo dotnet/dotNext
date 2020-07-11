@@ -57,6 +57,22 @@ namespace DotNext.Buffers
         }
 
         [Fact]
+        public static unsafe void UnmanagedMemoryAllocator()
+        {
+            using var owner = UnmanagedMemoryPool<ushort>.GetAllocator(false).Invoke(3, false);
+            Span<ushort> array = owner.Memory.Span;
+            array[0] = 10;
+            array[1] = 20;
+            array[2] = 30;
+
+            var dest = new ushort[array.Length];
+            array.CopyTo(dest);
+            Equal(10, dest[0]);
+            Equal(20, dest[1]);
+            Equal(30, dest[2]);
+        }
+
+        [Fact]
         public static void BitwiseOperationsTest()
         {
             using var owner1 = UnmanagedMemoryPool<ushort>.Allocate(3);
