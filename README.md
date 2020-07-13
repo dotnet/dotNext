@@ -45,10 +45,10 @@ Documentation for older versions:
 * [1.x](https://sakno.github.io/dotNext/versions/1.x/index.html)
 
 # What's new
-Release Date: 07-11-2020
+Release Date: 07-13-2020
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/2.7.0">DotNext.Unsafe 2.7.0</a>
-* `UnmanagedMemoryPool<T>.GetAllocator` public static method is added for compatibility with [MemoryAllocator&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.MemoryAllocator-1.html) delegate
+<a href="https://www.nuget.org/packages/dotnext.unsafe/2.7.1">DotNext.Unsafe 2.7.1</a>
+* Optimized `UnmanagedMemoryPool<T>.GetAllocator` method
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
