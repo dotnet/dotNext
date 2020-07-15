@@ -62,6 +62,7 @@ namespace DotNext.IO
 
             actual.Flush();
             Equal(expected.ToString(), writer.BuildString());
+            Equal(expected.ToString(), actual.ToString());
         }
 
         [Fact]
@@ -86,6 +87,7 @@ namespace DotNext.IO
 
             await actual.FlushAsync();
             Equal(expected.ToString(), writer.BuildString());
+            Equal(expected.ToString(), actual.ToString());
         }
     }
 }
