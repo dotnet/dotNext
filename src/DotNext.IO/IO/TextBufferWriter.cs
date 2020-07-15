@@ -9,6 +9,7 @@ using static System.Globalization.CultureInfo;
 namespace DotNext.IO
 {
     using static Buffers.BufferWriter;
+    using CharBufferWriter = Buffers.MemoryWriter<char>;
 
     internal sealed class TextBufferWriter<TWriter> : TextWriter
         where TWriter : class, IBufferWriter<char>
@@ -228,6 +229,19 @@ namespace DotNext.IO
             }
 
             return result;
+        }
+
+        public override string ToString()
+        {
+            switch (writer)
+            {
+                case CharBufferWriter buffer:
+                    return buffer.BuildString();
+                case ArrayBufferWriter<char> buffer:
+                    return buffer.BuildString();
+                default:
+                    return writer.ToString();
+            }
         }
     }
 }
