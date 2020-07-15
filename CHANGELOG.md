@@ -1,6 +1,10 @@
 Release Notes
 ====
 
+# 07-15-2020
+<a href="https://www.nuget.org/packages/dotnext.io/2.7.1">DotNext.IO 2.7.1</a>
+* Text writer constructed with `TextWriterSource.AsTextWriter` extension method can be converted to string containing all written characters
+
 # 07-13-2020
 <a href="https://www.nuget.org/packages/dotnext.unsafe/2.7.1">DotNext.Unsafe 2.7.1</a>
 * Optimized `UnmanagedMemoryPool<T>.GetAllocator` method
