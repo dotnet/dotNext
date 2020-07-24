@@ -1,6 +1,18 @@
 Release Notes
 ====
 
+# 07-24-2020
+<a href="https://www.nuget.org/packages/dotnext.io/2.7.2">DotNext.IO 2.7.2</a>
+* Added `BufferWriter.WriteLine` overloaded extension method that allows to specify `ReadOnlySpan<char>` as an input argument
+
+# 07-15-2020
+<a href="https://www.nuget.org/packages/dotnext.io/2.7.1">DotNext.IO 2.7.1</a>
+* Text writer constructed with `TextWriterSource.AsTextWriter` extension method can be converted to string containing all written characters
+
+# 07-13-2020
+<a href="https://www.nuget.org/packages/dotnext.unsafe/2.7.1">DotNext.Unsafe 2.7.1</a>
+* Optimized `UnmanagedMemoryPool<T>.GetAllocator` method
+
 # 07-11-2020
 <a href="https://www.nuget.org/packages/dotnext.unsafe/2.7.0">DotNext.Unsafe 2.7.0</a>
 * `UnmanagedMemoryPool<T>.GetAllocator` public static method is added for compatibility with [MemoryAllocator&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.MemoryAllocator-1.html) delegate
