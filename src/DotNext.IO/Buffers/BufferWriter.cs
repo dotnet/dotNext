@@ -662,6 +662,17 @@ namespace DotNext.Buffers
         public static void WriteLine(this IBufferWriter<char> writer)
             => writer.Write(Environment.NewLine);
 
+        /// <summary>
+        /// Writes a string to the buffer, followed by a line terminator.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="characters">The characters to write.</param>
+        public static void WriteLine(this IBufferWriter<char> writer, ReadOnlySpan<char> characters)
+        {
+            writer.Write(characters);
+            writer.Write(Environment.NewLine);
+        }
+
         private static void Write<T>(IBufferWriter<char> writer, T value, ReadOnlySpan<char> format, IFormatProvider? provider)
             where T : struct, ISpanFormattable
         {

@@ -1,6 +1,10 @@
 Release Notes
 ====
 
+# 07-24-2020
+<a href="https://www.nuget.org/packages/dotnext.io/2.7.2">DotNext.IO 2.7.2</a>
+* Added `BufferWriter.WriteLine` overloaded extension method that allows to specify `ReadOnlySpan<char>` as an input argument
+
 # 07-15-2020
 <a href="https://www.nuget.org/packages/dotnext.io/2.7.1">DotNext.IO 2.7.1</a>
 * Text writer constructed with `TextWriterSource.AsTextWriter` extension method can be converted to string containing all written characters

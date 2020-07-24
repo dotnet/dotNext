@@ -94,7 +94,7 @@ namespace DotNext.Buffers
             {
                 writer.Write("Hello, world");
                 writer.Write('!');
-                writer.WriteLine();
+                writer.WriteLine("!!");
                 writer.WriteInt32(42, provider: InvariantCulture);
                 writer.WriteUInt32(56U, provider: InvariantCulture);
                 writer.WriteByte(10, provider: InvariantCulture);
@@ -117,7 +117,7 @@ namespace DotNext.Buffers
                 writer.WriteSingle(32.2F, provider: InvariantCulture);
                 writer.WriteDouble(56.6D, provider: InvariantCulture);
 
-                Equal("Hello, world!" + Environment.NewLine + "4256102288997766" + guid + dt.ToString(InvariantCulture) + dto.ToString(InvariantCulture) + "42.532.256.6", writer.BuildString());
+                Equal("Hello, world!!!" + Environment.NewLine + "4256102288997766" + guid + dt.ToString(InvariantCulture) + dto.ToString(InvariantCulture) + "42.532.256.6", writer.BuildString());
             }
         }
 
