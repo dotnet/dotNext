@@ -1,8 +1,10 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 using static System.Globalization.CultureInfo;
 using static System.Runtime.CompilerServices.Unsafe;
 using NumberStyles = System.Globalization.NumberStyles;
@@ -579,5 +581,21 @@ namespace DotNext
 
             return result;
         }
+
+        internal static void CopyTo<T>(ReadOnlySpan<T> source, IBufferWriter<T> writer)
+        {
+            if (!source.IsEmpty)
+            {
+                var destination = writer.GetSpan(source.Length);
+                source.CopyTo(destination);
+                writer.Advance(source.Length);
+            }
+        }
+
+        internal static void CopyTo(ReadOnlySpan<char> source, StringBuilder builder)
+            => builder.Append(source);
+
+        internal static void CopyTo(ReadOnlySpan<char> source, TextWriter writer)
+            => writer.Write(source);
     }
 }
