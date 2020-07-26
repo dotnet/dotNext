@@ -19,10 +19,7 @@ namespace DotNext.Buffers
             internal readonly int Offset;
             internal Placeholder? Next;
 
-            internal Placeholder(int offset)
-            {
-                Offset = offset;
-            }
+            internal Placeholder(int offset) => Offset = offset;
         }
 
         private readonly ReadOnlyMemory<T> template;
