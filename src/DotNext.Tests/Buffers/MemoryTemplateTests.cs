@@ -112,7 +112,7 @@ namespace DotNext.Buffers
         [Fact]
         public static void LargePlaceholder()
         {
-            var template = new MemoryTemplate<char>("Hello, world!".AsMemory(), "{Very large placeholder}");
+            var template = "Hello, world!".AsTemplate("{Very large placeholder}");
             var writer = new ArrayBufferWriter<char>();
             template.Render(writer, Rewrite);
             Equal("Hello, world!", writer.BuildString());
