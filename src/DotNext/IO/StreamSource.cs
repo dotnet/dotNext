@@ -82,17 +82,7 @@ namespace DotNext.IO
             flush ??= IFlushable.TryReflectFlushMethod(writer);
             flushAsync ??= IFlushable.TryReflectAsyncFlushMethod(writer);
 
-            return AsStream(WriteToBuffer, writer, flush, flushAsync);
-
-            static void WriteToBuffer(ReadOnlySpan<byte> source, TWriter writer)
-            {
-                if (!source.IsEmpty)
-                {
-                    var destination = writer.GetSpan(source.Length);
-                    source.CopyTo(destination);
-                    writer.Advance(source.Length);
-                }
-            }
+            return AsStream(Span.CopyTo<byte>, writer, flush, flushAsync);
         }
 
         /// <summary>
