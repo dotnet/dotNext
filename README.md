@@ -45,7 +45,7 @@ Documentation for older versions:
 * [1.x](https://sakno.github.io/dotNext/versions/1.x/index.html)
 
 # What's new
-Release Date: 07-28-2020
+Release Date: 07-27-2020
 
 <a href="https://www.nuget.org/packages/dotnext/2.8.0">DotNext 2.8.0</a>
 * Added `MemoryTemplate<T>` value type that represents pre-compiled template with placeholders used for fast creation of `Memory<T>` and **string** objects
