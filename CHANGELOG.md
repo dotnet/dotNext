@@ -1,7 +1,7 @@
 Release Notes
 ====
 
-# 07-28-2020
+# 07-27-2020
 <a href="https://www.nuget.org/packages/dotnext/2.8.0">DotNext 2.8.0</a>
 * Added `MemoryTemplate<T>` value type that represents pre-compiled template with placeholders used for fast creation of `Memory<T>` and **string** objects
 
