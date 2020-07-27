@@ -9,6 +9,16 @@ namespace DotNext.Buffers
     /// <summary>
     /// Represents generic template for buffer rendering.
     /// </summary>
+    /// <remarks>
+    /// This type is aimed to fast replacement of the sequence of elements
+    /// called placeholder in the original sequence of elements.
+    /// In other words, it is an implementation of find-and-replace algorithm.
+    /// Pre-compiled template allows to reuse it when rendering with different
+    /// arguments is required. The rendering process is much faster
+    /// than <see cref="string.Format(string, object[])"/> especially for
+    /// large templates. However, the rendering process doesn't offer
+    /// formatting procedures.
+    /// </remarks>
     /// <typeparam name="T">The type of the elements in the memory.</typeparam>
     [StructLayout(LayoutKind.Auto)]
     public readonly struct MemoryTemplate<T>
