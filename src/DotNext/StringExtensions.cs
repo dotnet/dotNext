@@ -6,6 +6,7 @@ namespace DotNext
 {
     using CharBuffer = Buffers.MemoryRental<char>;
     using CharSequence = Buffers.ChunkSequence<char>;
+    using StringTemplate = Buffers.MemoryTemplate<char>;
 
     /// <summary>
     /// Represents various extension methods for type <see cref="string"/>.
@@ -94,5 +95,23 @@ namespace DotNext
             var (start, length) = range.GetOffsetAndLength(str.Length);
             return str.Substring(start, length);
         }
+
+        /// <summary>
+        /// Compiles string template.
+        /// </summary>
+        /// <param name="template">The string representing template with placeholders.</param>
+        /// <param name="placeholder">The placeholder in the template.</param>
+        /// <returns>The compiled template that can be used to replace all placeholders with their original values.</returns>
+        public static StringTemplate AsTemplate(this string template, string placeholder)
+            => new StringTemplate(template.AsMemory(), placeholder);
+
+        /// <summary>
+        /// Compiles string template.
+        /// </summary>
+        /// <param name="template">The string representing template with placeholders.</param>
+        /// <param name="placeholder">The placeholder in the template.</param>
+        /// <returns>The compiled template that can be used to replace all placeholders with their original values.</returns>
+        public static StringTemplate AsTemplate(this string template, char placeholder)
+            => new StringTemplate(template.AsMemory(), CreateReadOnlySpan(ref placeholder, 1));
     }
 }

@@ -1,6 +1,10 @@
 Release Notes
 ====
 
+# 07-27-2020
+<a href="https://www.nuget.org/packages/dotnext/2.8.0">DotNext 2.8.0</a>
+* Added `MemoryTemplate<T>` value type that represents pre-compiled template with placeholders used for fast creation of `Memory<T>` and **string** objects
+
 # 07-24-2020
 <a href="https://www.nuget.org/packages/dotnext.io/2.7.2">DotNext.IO 2.7.2</a>
 * Added `BufferWriter.WriteLine` overloaded extension method that allows to specify `ReadOnlySpan<char>` as an input argument
