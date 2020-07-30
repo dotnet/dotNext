@@ -68,7 +68,7 @@ namespace DotNext.IO
             }
             finally
             {
-                if (content.CanSeek)
+                if (IsReusable)
                     content.Seek(0, SeekOrigin.Begin);
             }
         }
@@ -84,7 +84,7 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public ValueTask<TResult> GetObjectDataAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token = default)
             where TDecoder : IDataTransferObject.IDecoder<TResult>
-            => IDataTransferObject.DecodeAsync<TResult, TDecoder>(content, parser, true, token);
+            => IDataTransferObject.DecodeAsync<TResult, TDecoder>(content, parser, IsReusable, token);
 
         /// <summary>
         /// Releases resources associated with this object.

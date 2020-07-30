@@ -1,6 +1,14 @@
 Release Notes
 ====
 
+# 07-30-2020
+<a href="https://www.nuget.org/packages/dotnext/2.9.0">DotNext 2.9.0</a>
+* Added `Sequence.ToAsyncEnumerable()` extension method that allows to convert arbitrary [IEnumerable&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1) to [IAsyncEnumerable&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.iasyncenumerable-1)
+* Added extension methods to `Sequence` class for working with [async streams][IAsyncEnumerable&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.iasyncenumerable-1)
+
+<a href="https://www.nuget.org/packages/dotnext.io/2.7.3">DotNext.IO 2.7.3</a>
+* Fixed behavior of `GetObjectDataAsync` method in [StreamTransferObject](https://sakno.github.io/dotNext/api/DotNext.IO.StreamTransferObject.html). Now it respects the value of `IsReusable` property.
+
 # 07-27-2020
 <a href="https://www.nuget.org/packages/dotnext/2.8.0">DotNext 2.8.0</a>
 * Added `MemoryTemplate<T>` value type that represents pre-compiled template with placeholders used for fast creation of `Memory<T>` and **string** objects

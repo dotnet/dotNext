@@ -1,115 +1,17 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DotNext
 {
     /// <summary>
     /// Various methods to work with classes implementing <see cref="IEnumerable{T}"/> interface.
     /// </summary>
-    public static class Sequence
+    public static partial class Sequence // TODO: Should be moved to DotNext.Collections.Generic namespace
     {
-        /// <summary>
-        /// Wrapped for the enumerator which is limited by count.
-        /// </summary>
-        /// <typeparam name="T">The type of elements returned by enumerator.</typeparam>
-        [StructLayout(LayoutKind.Auto)]
-        public struct LimitedEnumerator<T> : IEnumerator<T>
-        {
-            private readonly IEnumerator<T> enumerator;
-            private readonly bool disposeEnumerator;
-            private int count;
-
-            internal LimitedEnumerator(IEnumerator<T> enumerator, int limit, bool leaveOpen)
-            {
-                this.enumerator = enumerator;
-                disposeEnumerator = !leaveOpen;
-                count = limit;
-            }
-
-            /// <summary>
-            /// Advances the enumerator to the next element.
-            /// </summary>
-            /// <returns><see langword="true"/> if the enumerator was successfully advanced to the next element; <see langword="false"/> if
-            /// the enumerator has passed the end of the collection.</returns>
-            public bool MoveNext() => count-- > 0 && enumerator.MoveNext();
-
-            /// <summary>
-            /// Gets the element in the collection at the current position of the enumerator.
-            /// </summary>
-            public readonly T Current => enumerator.Current;
-
-            /// <inheritdoc/>
-            readonly object? IEnumerator.Current => Current;
-
-            /// <summary>
-            /// Sets the enumerator to its initial position.
-            /// </summary>
-            public readonly void Reset() => enumerator?.Reset();
-
-            /// <summary>
-            /// Releases all resources associated with this enumerator.
-            /// </summary>
-            public void Dispose()
-            {
-                if (disposeEnumerator)
-                    enumerator?.Dispose();
-                this = default;
-            }
-        }
-
-        private sealed class NotNullEnumerable<T> : IEnumerable<T>
-            where T : class
-        {
-            private sealed class Enumerator : IEnumerator<T>
-            {
-                private readonly IEnumerator<T?> enumerator;
-                private T? current;
-
-                internal Enumerator(IEnumerable<T?> enumerable)
-                    => enumerator = enumerable.GetEnumerator();
-
-                public T Current => current ?? throw new InvalidOperationException();
-
-                object IEnumerator.Current => Current;
-
-                public bool MoveNext()
-                {
-                    for (T? current; enumerator.MoveNext();)
-                    {
-                        current = enumerator.Current;
-                        if (current != null)
-                        {
-                            this.current = current;
-                            return true;
-                        }
-                    }
-
-                    return false;
-                }
-
-                public void Reset() => enumerator.Reset();
-
-                void IDisposable.Dispose()
-                {
-                    current = null;
-                    enumerator.Dispose();
-                }
-            }
-
-            private readonly IEnumerable<T?> enumerable;
-
-            internal NotNullEnumerable(IEnumerable<T?> enumerable)
-                => this.enumerable = enumerable;
-
-            public IEnumerator<T> GetEnumerator() => new Enumerator(enumerable);
-
-            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-        }
-
         private const int HashSalt = -1521134295;
 
         private static int GetHashCode(int hash, object? obj) => (hash * HashSalt) + obj?.GetHashCode() ?? 0;
@@ -130,7 +32,7 @@ namespace DotNext
             => first is null || second is null ? ReferenceEquals(first, second) : Enumerable.SequenceEqual(first, second);
 
         /// <summary>
-        /// Apply specified action to each collection element.
+        /// Applies specified action to each collection element.
         /// </summary>
         /// <typeparam name="T">Type of elements in the collection.</typeparam>
         /// <param name="collection">A collection to enumerate. Cannot be <see langword="null"/>.</param>
@@ -138,7 +40,7 @@ namespace DotNext
         public static void ForEach<T>(this IEnumerable<T> collection, Action<T> action) => ForEach(collection, new ValueAction<T>(action, true));
 
         /// <summary>
-        /// Apply specified action to each collection element.
+        /// Applies specified action to each collection element.
         /// </summary>
         /// <typeparam name="T">Type of elements in the collection.</typeparam>
         /// <param name="collection">A collection to enumerate. Cannot be <see langword="null"/>.</param>
@@ -147,6 +49,33 @@ namespace DotNext
         {
             foreach (var item in collection)
                 action.Invoke(item);
+        }
+
+        /// <summary>
+        /// Applies the specified asynchronous action to each collection element.
+        /// </summary>
+        /// <typeparam name="T">Type of elements in the collection.</typeparam>
+        /// <param name="collection">A collection to enumerate. Cannot be <see langword="null"/>.</param>
+        /// <param name="action">An action to applied for each element.</param>
+        /// <param name="token">The token that can be used to cancel the enumeration.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        /// <exception cref="OperationCanceledException">The enumeration has been canceled.</exception>
+        public static ValueTask ForEachAsync<T>(this IEnumerable<T> collection, Func<T, CancellationToken, ValueTask> action, CancellationToken token = default)
+            => ForEachAsync(collection, new ValueFunc<T, CancellationToken, ValueTask>(action, true), token);
+
+        /// <summary>
+        /// Applies the specified asynchronous action to each collection element.
+        /// </summary>
+        /// <typeparam name="T">Type of elements in the collection.</typeparam>
+        /// <param name="collection">A collection to enumerate. Cannot be <see langword="null"/>.</param>
+        /// <param name="action">An action to applied for each element.</param>
+        /// <param name="token">The token that can be used to cancel the enumeration.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        /// <exception cref="OperationCanceledException">The enumeration has been canceled.</exception>
+        public static async ValueTask ForEachAsync<T>(this IEnumerable<T> collection, ValueFunc<T, CancellationToken, ValueTask> action, CancellationToken token = default)
+        {
+            foreach (var item in collection)
+                await action.Invoke(item, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -184,6 +113,7 @@ namespace DotNext
         /// <param name="filter">A function to test each element for a condition.</param>
         /// <returns>The first element in the sequence that matches to the specified filter; or empty value.</returns>
         public static Optional<T> FirstOrEmpty<T>(this IEnumerable<T> seq, in ValueFunc<T, bool> filter)
+            where T : notnull
         {
             foreach (var item in seq)
             {
@@ -202,6 +132,7 @@ namespace DotNext
         /// <param name="filter">A function to test each element for a condition.</param>
         /// <returns>The first element in the sequence that matches to the specified filter; or empty value.</returns>
         public static Optional<T> FirstOrEmpty<T>(this IEnumerable<T> seq, Predicate<T> filter)
+            where T : notnull
             => FirstOrEmpty(seq, filter.AsValueFunc(true));
 
         /// <summary>
@@ -275,7 +206,7 @@ namespace DotNext
         }
 
         /// <summary>
-        /// Obtains elements at the specified index in the sequence.
+        /// Obtains element at the specified index in the sequence.
         /// </summary>
         /// <remarks>
         /// This method is optimized for types <see cref="IList{T}"/>
@@ -385,5 +316,24 @@ namespace DotNext
             for (var i = 0; i < memory.Length; i++)
                 yield return memory.Span[i];
         }
+
+        /// <summary>
+        /// Converts synchronous collection of elements to asynchronous.
+        /// </summary>
+        /// <param name="enumerable">The collection of elements.</param>
+        /// <typeparam name="T">The type of the elements in the collection.</typeparam>
+        /// <returns>The asynchronous wrapper over synchronous collection of elements.</returns>
+        public static IAsyncEnumerable<T> ToAsyncEnumerable<T>(this IEnumerable<T> enumerable)
+            => new AsyncEnumerable<T>(enumerable ?? throw new ArgumentNullException(nameof(enumerable)));
+
+        /// <summary>
+        /// Obtains asynchronous enumerator over the sequence of elements.
+        /// </summary>
+        /// <param name="enumerable">The collection of elements.</param>
+        /// <param name="token">The token that can be used by consumer to cancel the enumeration.</param>
+        /// <typeparam name="T">The type of the elements in the collection.</typeparam>
+        /// <returns>The asynchronous wrapper over synchronous enumerator.</returns>
+        public static IAsyncEnumerator<T> GetAsyncEnumerator<T>(this IEnumerable<T> enumerable, CancellationToken token = default)
+            => new AsyncEnumerable<T>.Enumerator(enumerable ?? throw new ArgumentNullException(nameof(enumerable)), token);
     }
 }
