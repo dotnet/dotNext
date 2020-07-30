@@ -32,6 +32,20 @@ namespace DotNext
         }
 
         [Fact]
+        public static async Task ForEachTestAsync()
+        {
+            var list = new List<int> { 1, 10, 20 }.ToAsyncEnumerable();
+            var counter = new Counter<int>();
+            await list.ForEachAsync(counter.Accept);
+            Equal(3, counter.value);
+            counter.value = 0;
+            
+            list = new int[] { 1, 2, 10, 11, 15 }.ToAsyncEnumerable();
+            await list.ForEachAsync(counter.Accept);
+            Equal(5, counter.value);
+        }
+
+        [Fact]
         public static void FirstOrNullTest()
         {
             var array = new long[0];
@@ -39,6 +53,17 @@ namespace DotNext
             Null(element);
             array = new long[] { 10, 20 };
             element = array.FirstOrNull();
+            Equal(10, element);
+        }
+
+        [Fact]
+        public static async Task FirstOrNullTestAsync()
+        {
+            var array = new long[0].ToAsyncEnumerable();
+            var element = await array.FirstOrNullAsync();
+            Null(element);
+            array = new long[] { 10, 20 }.ToAsyncEnumerable();
+            element = await array.FirstOrNullAsync();
             Equal(10, element);
         }
 
@@ -56,6 +81,19 @@ namespace DotNext
         }
 
         [Fact]
+        public static async Task ElementAtIndexAsync()
+        {
+            var list = new LinkedList<long>();
+            list.AddLast(10);
+            list.AddLast(40);
+            list.AddLast(100);
+
+            var asyncList = list.ToAsyncEnumerable();
+            Equal(100, await asyncList.ElementAtAsync(2));
+            Equal(10, await asyncList.ElementAtAsync(0));
+        }
+
+        [Fact]
         public static void SkipNullsTest()
         {
             var list = new LinkedList<string>();
@@ -65,6 +103,22 @@ namespace DotNext
             list.AddLast(default(string));
             Equal(4, list.Count);
             var array = list.SkipNulls().ToArray();
+            Equal(2, array.Length);
+            True(Array.Exists(array, "a".Equals));
+            True(Array.Exists(array, "b".Equals));
+        }
+
+        [Fact]
+        public static async Task SkipNullsTestAsync()
+        {
+            var list = new LinkedList<string>();
+            list.AddLast("a");
+            list.AddLast(default(string));
+            list.AddLast("b");
+            list.AddLast(default(string));
+            Equal(4, list.Count);
+
+            var array = await list.ToAsyncEnumerable().SkipNulls().ToArrayAsync();
             Equal(2, array.Length);
             True(Array.Exists(array, "a".Equals));
             True(Array.Exists(array, "b".Equals));
@@ -114,6 +168,19 @@ namespace DotNext
         }
 
         [Fact]
+        public static async Task SkipAsync()
+        {
+            var range = Enumerable.Range(0, 10);
+            await using var enumerator = range.GetAsyncEnumerator();
+            True(await enumerator.SkipAsync(8));
+            True(await enumerator.MoveNextAsync());
+            Equal(8, enumerator.Current);
+            True(await enumerator.MoveNextAsync());
+            Equal(9, enumerator.Current);
+            False(await enumerator.MoveNextAsync());
+        }
+
+        [Fact]
         public static void SkipValueEnumerator()
         {
             var list = new List<long> { 10L, 20L, 30L };
@@ -149,6 +216,19 @@ namespace DotNext
             Equal(42, collection.FirstOrNull());
             Equal(42, collection.FirstOrEmpty());
             Equal(42, collection.FirstOrEmpty(Predicate.True<int>()));
+        }
+
+        [Fact]
+        public static async Task IterationAsync()
+        {
+            var collection = Array.Empty<int>().ToAsyncEnumerable();
+            Null(await collection.FirstOrNullAsync());
+            Equal(Optional<int>.Empty, await collection.FirstOrEmptyAsync());
+            Equal(Optional<int>.Empty, await collection.FirstOrEmptyAsync(Predicate.True<int>()));
+            collection = new int[] { 42 }.ToAsyncEnumerable();
+            Equal(42, await collection.FirstOrNullAsync());
+            Equal(42, await collection.FirstOrEmptyAsync());
+            Equal(42, await collection.FirstOrEmptyAsync(Predicate.True<int>()));
         }
 
         [Fact]
