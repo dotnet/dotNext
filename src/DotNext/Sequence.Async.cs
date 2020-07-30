@@ -16,6 +16,7 @@ namespace DotNext
         /// <param name="collection">A collection to enumerate. Cannot be <see langword="null"/>.</param>
         /// <param name="action">An action to applied for each element.</param>
         /// <param name="token">The token that can be used to cancel the enumeration.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The enumeration has been canceled.</exception>
         public static async ValueTask ForEachAsync<T>(this IAsyncEnumerable<T> collection, ValueAction<T> action, CancellationToken token = default)
         {
@@ -30,6 +31,7 @@ namespace DotNext
         /// <param name="collection">A collection to enumerate. Cannot be <see langword="null"/>.</param>
         /// <param name="action">An action to applied for each element.</param>
         /// <param name="token">The token that can be used to cancel the enumeration.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The enumeration has been canceled.</exception>
         public static ValueTask ForEachAsync<T>(this IAsyncEnumerable<T> collection, Action<T> action, CancellationToken token = default)
             => ForEachAsync(collection, new ValueAction<T>(action, true), token);
@@ -41,6 +43,7 @@ namespace DotNext
         /// <param name="collection">A collection to enumerate. Cannot be <see langword="null"/>.</param>
         /// <param name="action">An action to applied for each element.</param>
         /// <param name="token">The token that can be used to cancel the enumeration.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The enumeration has been canceled.</exception>
         public static async ValueTask ForEachAsync<T>(this IAsyncEnumerable<T> collection, ValueFunc<T, CancellationToken, ValueTask> action, CancellationToken token = default)
         {
@@ -55,6 +58,7 @@ namespace DotNext
         /// <param name="collection">A collection to enumerate. Cannot be <see langword="null"/>.</param>
         /// <param name="action">An action to applied for each element.</param>
         /// <param name="token">The token that can be used to cancel the enumeration.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The enumeration has been canceled.</exception>
         public static ValueTask ForEachAsync<T>(this IAsyncEnumerable<T> collection, Func<T, CancellationToken, ValueTask> action, CancellationToken token = default)
             => ForEachAsync(collection, new ValueFunc<T, CancellationToken, ValueTask>(action, true), token);
@@ -188,7 +192,7 @@ namespace DotNext
         public static async Task<T[]> ToArrayAsync<T>(this IAsyncEnumerable<T> collection, int initialCapacity = 10, MemoryAllocator<T>? allocator = null, CancellationToken token = default)
         {
             using var buffer = new PooledBufferWriter<T>(allocator, initialCapacity);
-            
+
             await foreach (var item in collection.WithCancellation(token))
             {
                 buffer.Add(item);

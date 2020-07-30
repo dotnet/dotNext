@@ -6,11 +6,11 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace DotNext
-{   
+{
     /// <summary>
     /// Various methods to work with classes implementing <see cref="IEnumerable{T}"/> interface.
     /// </summary>
-    public static partial class Sequence    // TODO: Should be moved to DotNext.Collections.Generic namespace
+    public static partial class Sequence // TODO: Should be moved to DotNext.Collections.Generic namespace
     {
         private const int HashSalt = -1521134295;
 
@@ -58,6 +58,7 @@ namespace DotNext
         /// <param name="collection">A collection to enumerate. Cannot be <see langword="null"/>.</param>
         /// <param name="action">An action to applied for each element.</param>
         /// <param name="token">The token that can be used to cancel the enumeration.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The enumeration has been canceled.</exception>
         public static ValueTask ForEachAsync<T>(this IEnumerable<T> collection, Func<T, CancellationToken, ValueTask> action, CancellationToken token = default)
             => ForEachAsync(collection, new ValueFunc<T, CancellationToken, ValueTask>(action, true), token);
@@ -69,6 +70,7 @@ namespace DotNext
         /// <param name="collection">A collection to enumerate. Cannot be <see langword="null"/>.</param>
         /// <param name="action">An action to applied for each element.</param>
         /// <param name="token">The token that can be used to cancel the enumeration.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The enumeration has been canceled.</exception>
         public static async ValueTask ForEachAsync<T>(this IEnumerable<T> collection, ValueFunc<T, CancellationToken, ValueTask> action, CancellationToken token = default)
         {
