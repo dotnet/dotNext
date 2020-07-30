@@ -111,6 +111,7 @@ namespace DotNext
         /// <param name="filter">A function to test each element for a condition.</param>
         /// <returns>The first element in the sequence that matches to the specified filter; or empty value.</returns>
         public static Optional<T> FirstOrEmpty<T>(this IEnumerable<T> seq, in ValueFunc<T, bool> filter)
+            where T : notnull
         {
             foreach (var item in seq)
             {
@@ -129,6 +130,7 @@ namespace DotNext
         /// <param name="filter">A function to test each element for a condition.</param>
         /// <returns>The first element in the sequence that matches to the specified filter; or empty value.</returns>
         public static Optional<T> FirstOrEmpty<T>(this IEnumerable<T> seq, Predicate<T> filter)
+            where T : notnull
             => FirstOrEmpty(seq, filter.AsValueFunc(true));
 
         /// <summary>

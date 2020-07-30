@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 
 namespace DotNext
 {
+    using Buffers;
+
     public static partial class Sequence
     {
         /// <summary>
@@ -87,7 +89,41 @@ namespace DotNext
             await using var enumerator = seq.GetAsyncEnumerator(token);
             return await enumerator.MoveNextAsync().ConfigureAwait(false) ? enumerator.Current : Optional<T>.Empty;
         }
-    
+
+        /// <summary>
+        /// Returns the first element in a sequence that satisfies a specified condition.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
+        /// <param name="seq">A collection to return an element from.</param>
+        /// <param name="filter">A function to test each element for a condition.</param>
+        /// <param name="token">The token that can be used to cancel enumeration.</param>
+        /// <returns>The first element in the sequence that matches to the specified filter; or empty value.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static async ValueTask<Optional<T>> FirstOrEmptyAsync<T>(this IAsyncEnumerable<T> seq, ValueFunc<T, bool> filter, CancellationToken token = default)
+            where T : notnull
+        {
+            await foreach (var item in seq.WithCancellation(token))
+            {
+                if (filter.Invoke(item))
+                    return item;
+            }
+
+            return Optional<T>.Empty;
+        }
+
+        /// <summary>
+        /// Returns the first element in a sequence that satisfies a specified condition.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
+        /// <param name="seq">A collection to return an element from.</param>
+        /// <param name="filter">A function to test each element for a condition.</param>
+        /// <param name="token">The token that can be used to cancel enumeration.</param>
+        /// <returns>The first element in the sequence that matches to the specified filter; or empty value.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<Optional<T>> FirstOrEmptyAsync<T>(this IAsyncEnumerable<T> seq, Predicate<T> filter, CancellationToken token = default)
+            where T : notnull
+            => FirstOrEmptyAsync(seq, filter.AsValueFunc(true), token);
+
         /// <summary>
         /// Bypasses a specified number of elements in a sequence.
         /// </summary>
@@ -138,5 +174,27 @@ namespace DotNext
         public static IAsyncEnumerable<T> SkipNulls<T>(this IAsyncEnumerable<T?> collection)
             where T : class
             => new AsyncNotNullEnumerable<T>(collection);
+
+        /// <summary>
+        /// Converts asynchronous collection to the array.
+        /// </summary>
+        /// <param name="collection">The asynchronous collection.</param>
+        /// <param name="initialCapacity">The initial capacity of internal buffer.</param>
+        /// <param name="allocator">The memory allocator used by internal buffer.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <typeparam name="T">Type of elements in the collection.</typeparam>
+        /// <returns>The array representing all elements from the source collection.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static async Task<T[]> ToArrayAsync<T>(this IAsyncEnumerable<T> collection, int initialCapacity = 10, MemoryAllocator<T>? allocator = null, CancellationToken token = default)
+        {
+            using var buffer = new PooledBufferWriter<T>(allocator, initialCapacity);
+            
+            await foreach (var item in collection.WithCancellation(token))
+            {
+                buffer.Add(item);
+            }
+
+            return buffer.WrittenMemory.ToArray();
+        }
     }
 }
