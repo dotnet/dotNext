@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace DotNext
@@ -147,6 +149,59 @@ namespace DotNext
             Equal(42, collection.FirstOrNull());
             Equal(42, collection.FirstOrEmpty());
             Equal(42, collection.FirstOrEmpty(Predicate.True<int>()));
+        }
+
+        [Fact]
+        public static async Task ConversionToAsyncEnumerable()
+        {
+            int index = 0;
+            await foreach(var item in new int[] { 10, 20, 30}.ToAsyncEnumerable())
+            {
+                switch (index++)
+                {
+                    case 0:
+                        Equal(10, item);
+                        break;
+                    case 1:
+                        Equal(20, item);
+                        break;
+                    case 2:
+                        Equal(30, item);
+                        break;
+                    default:
+                        throw new Xunit.Sdk.XunitException();
+                }
+            }
+        }
+
+        [Fact]
+        public static async Task ConversionToAsyncEnumerator()
+        {
+            await using var enumerator = new int[] { 10, 20, 30}.GetAsyncEnumerator();
+            for (int index = 0; await enumerator.MoveNextAsync(); index++)
+            {
+                switch (index)
+                {
+                    case 0:
+                        Equal(10, enumerator.Current);
+                        break;
+                    case 1:
+                        Equal(20, enumerator.Current);
+                        break;
+                    case 2:
+                        Equal(30, enumerator.Current);
+                        break;
+                    default:
+                        throw new Xunit.Sdk.XunitException();
+                }
+            }
+        }
+
+        [Fact]
+        public static async Task CanceledAsyncEnumerator()
+        {
+            await using var enumerator = new int[] { 10, 20, 30}.GetAsyncEnumerator(new CancellationToken(true));
+            await ThrowsAsync<TaskCanceledException>(enumerator.MoveNextAsync().AsTask);
         }
     }
 }

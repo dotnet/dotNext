@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DotNext
-{
+{   
     /// <summary>
     /// Various methods to work with classes implementing <see cref="IEnumerable{T}"/> interface.
     /// </summary>
@@ -108,6 +110,55 @@ namespace DotNext
             public IEnumerator<T> GetEnumerator() => new Enumerator(enumerable);
 
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        }
+
+        private sealed class AsyncEnumerator<T> : Disposable, IAsyncEnumerator<T>
+        {
+            private readonly IEnumerator<T> enumerator;
+            private readonly CancellationToken token;
+
+            internal AsyncEnumerator(IEnumerable<T> enumerable, CancellationToken token)
+            {
+                enumerator = enumerable.GetEnumerator();
+                this.token = token;
+            }
+
+            public T Current => enumerator.Current;
+
+            public ValueTask<bool> MoveNextAsync()
+            {
+                if (token.IsCancellationRequested)
+                    return new ValueTask<bool>(Task.FromCanceled<bool>(token));
+
+                return new ValueTask<bool>(enumerator.MoveNext());
+            }
+
+            protected override void Dispose(bool disposing)
+            {
+                if (disposing)
+                {
+                    enumerator.Dispose();
+                }
+
+                base.Dispose(disposing);
+            }
+
+            public ValueTask DisposeAsync()
+            {
+                Dispose();
+                return new ValueTask();
+            }
+        }
+
+        private sealed class AsyncEnumerable<T> : IAsyncEnumerable<T>
+        {
+            private readonly IEnumerable<T> enumerable;
+
+            internal AsyncEnumerable(IEnumerable<T> enumerable)
+                => this.enumerable = enumerable;
+
+            public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken token)
+                => new AsyncEnumerator<T>(enumerable, token);
         }
 
         private const int HashSalt = -1521134295;
@@ -385,5 +436,24 @@ namespace DotNext
             for (var i = 0; i < memory.Length; i++)
                 yield return memory.Span[i];
         }
+
+        /// <summary>
+        /// Converts synchronous collection of elements to asynchronous.
+        /// </summary>
+        /// <param name="enumerable">The collection of elements.</param>
+        /// <typeparam name="T">The type of the elements in the collection.</typeparam>
+        /// <returns>The asynchronous wrapper over synchronous collection of elements.</returns>
+        public static IAsyncEnumerable<T> ToAsyncEnumerable<T>(this IEnumerable<T> enumerable)
+            => new AsyncEnumerable<T>(enumerable ?? throw new ArgumentNullException(nameof(enumerable)));
+
+        /// <summary>
+        /// Obtains asynchronous enumerator over the sequence of elements.
+        /// </summary>
+        /// <param name="enumerable">The collection of elements.</param>
+        /// <param name="token">The token that can be used by consumer to cancel the enumeration.</param>
+        /// <typeparam name="T">The type of the elements in the collection.</typeparam>
+        /// <returns>The asynchronous wrapper over synchronous enumerator.</returns>
+        public static IAsyncEnumerator<T> GetAsyncEnumerator<T>(this IEnumerable<T> enumerable, CancellationToken token = default)
+            => new AsyncEnumerator<T>(enumerable ?? throw new ArgumentNullException(nameof(enumerable)), token);
     }
 }
