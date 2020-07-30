@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 
 namespace DotNext.Buffers
 {
@@ -17,21 +18,21 @@ namespace DotNext.Buffers
         /// <param name="allocator">The allocator of internal buffer.</param>
         /// <param name="initialCapacity">The initial capacity of the writer.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="initialCapacity"/> is less than or equal to zero.</exception>
-        public PooledBufferWriter(MemoryAllocator<T> allocator, int initialCapacity)
+        public PooledBufferWriter(MemoryAllocator<T>? allocator, int initialCapacity)
         {
             if (initialCapacity <= 0)
                 throw new ArgumentOutOfRangeException(nameof(initialCapacity));
-            this.allocator = allocator;
-            buffer = allocator.Invoke(initialCapacity, false);
+            this.allocator = allocator ?? ArrayPool<T>.Shared.ToAllocator();
+            buffer = this.allocator.Invoke(initialCapacity, false);
         }
 
         /// <summary>
         /// Initializes a new writer with the default initial capacity.
         /// </summary>
         /// <param name="allocator">The allocator of internal buffer.</param>
-        public PooledBufferWriter(MemoryAllocator<T> allocator)
+        public PooledBufferWriter(MemoryAllocator<T>? allocator)
         {
-            this.allocator = allocator;
+            this.allocator = allocator ?? ArrayPool<T>.Shared.ToAllocator();
         }
 
         /// <summary>
