@@ -51,7 +51,7 @@ namespace DotNext
         protected Task DisposedTask => Task.FromException(new ObjectDisposedException(ObjectName));
 
         /// <summary>
-        /// Returns a task representing <see cref="ObjectDisposedException"/> exception. 
+        /// Returns a task representing <see cref="ObjectDisposedException"/> exception.
         /// </summary>
         /// <typeparam name="T">The type of the task.</typeparam>
         /// <returns>The task representing <see cref="ObjectDisposedException"/> exception.</returns>
