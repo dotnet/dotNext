@@ -211,6 +211,32 @@ namespace DotNext.Threading
            => WaitAsync(state, condition, InfiniteTimeSpan, token);
 
         /// <summary>
+        /// Signals to all suspended callers and waits for the signal.
+        /// </summary>
+        /// <param name="timeout">The time to wait for the signal.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns><see langword="true"/> if event is triggered in timely manner; <see langword="false"/> if timeout occurred.</returns>
+        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public Task<bool> SignalAndWaitAsync(TimeSpan timeout, CancellationToken token = default)
+        {
+            ThrowIfDisposed();
+            ResumePendingCallers();
+            return WaitAsync(timeout, token);
+        }
+
+        /// <summary>
+        /// Signals to all suspended callers and waits for the signal.
+        /// </summary>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public Task SignalAndWaitAsync(CancellationToken token = default)
+            => SignalAndWaitAsync(InfiniteTimeSpan, token);
+
+        /// <summary>
         /// Signals to all suspended callers and waits for the event that meets to the specified condition
         /// atomically.
         /// </summary>
@@ -240,7 +266,7 @@ namespace DotNext.Threading
         /// <param name="state">The state to be inspected by predicate.</param>
         /// <param name="condition">The condition to wait for.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns><see langword="true"/> if event is triggered in timely manner; <see langword="false"/> if timeout occurred.</returns>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public Task SignalAndWaitAsync<TState>(TState state, Predicate<TState> condition, CancellationToken token = default)
@@ -284,7 +310,7 @@ namespace DotNext.Threading
         /// <param name="args">The arguments to be passed to the action.</param>
         /// <param name="condition">The condition to wait for.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns><see langword="true"/> if event is triggered in timely manner; <see langword="false"/> if timeout occurred.</returns>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public Task SignalAndWaitAsync<TState, TArgs>(TState state, Action<TState, TArgs> mutator, TArgs args, Predicate<TState> condition, CancellationToken token = default)
@@ -324,7 +350,7 @@ namespace DotNext.Threading
         /// <param name="mutator">State mutation action.</param>
         /// <param name="condition">The condition to wait for.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns><see langword="true"/> if event is triggered in timely manner; <see langword="false"/> if timeout occurred.</returns>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public Task SignalAndWaitAsync<TState>(TState state, Action<TState> mutator, Predicate<TState> condition, CancellationToken token = default)
