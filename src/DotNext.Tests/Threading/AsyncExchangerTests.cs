@@ -14,7 +14,7 @@ namespace DotNext.Threading
         {
             using var source = new CancellationTokenSource();
             using var exchanger = new AsyncExchanger<int>();
-            var task = exchanger.ExchangeAsync(42, source.Token);
+            var task = exchanger.ExchangeAsync(42, DefaultTimeout, source.Token);
             False(task.IsCompleted);
             Equal(42, await exchanger.ExchangeAsync(52, source.Token));
             Equal(52, await task);
@@ -41,6 +41,18 @@ namespace DotNext.Threading
             await ThrowsAsync<ObjectDisposedException>(exchanger.ExchangeAsync(52).AsTask);
             await ThrowsAsync<ObjectDisposedException>(task.AsTask);
             True(disposeTask.IsCompletedSuccessfully);
+        }
+
+        [Fact]
+        public static async Task CheckCancellation()
+        {
+            await using var exchanger = new AsyncExchanger<int>();
+            var task = exchanger.ExchangeAsync(42, new CancellationToken(true));
+            await ThrowsAsync<TaskCanceledException>(task.AsTask);
+            task = exchanger.ExchangeAsync(42);
+            False(task.IsCompleted);
+            Equal(42, await exchanger.ExchangeAsync(56));
+            Equal(56, await task);
         }
     }
 }
