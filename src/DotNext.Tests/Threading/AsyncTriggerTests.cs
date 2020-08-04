@@ -69,5 +69,18 @@ namespace DotNext.Threading
             True(waitTask.IsCompletedSuccessfully);
             Equal(42, state.Value);
         }
+
+        [Fact]
+        public static void SignalAndWaitUnconditionally()
+        {
+            using var trigger = new AsyncTrigger();
+            var waitTask = trigger.SignalAndWaitAsync();
+            False(waitTask.IsCompleted);
+            var waitTask2 = trigger.SignalAndWaitAsync();
+            True(waitTask.IsCompletedSuccessfully);
+            False(waitTask2.IsCompleted);
+            trigger.Signal();
+            True(waitTask2.IsCompletedSuccessfully);
+        }
     }
 }
