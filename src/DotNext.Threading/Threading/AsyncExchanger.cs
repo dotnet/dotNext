@@ -55,6 +55,7 @@ namespace DotNext.Threading
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="TimeoutException">The timeout has occurred.</exception>
+        /// <exception cref="ObjectDisposedException">The object has been disposed.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
         public ValueTask<T> ExchangeAsync(T value, TimeSpan timeout, CancellationToken token = default)
         {
