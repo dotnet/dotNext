@@ -139,7 +139,8 @@ namespace DotNext.Threading
             where TNode : WaitNode
             where TManager : struct, ILockManager<TNode>
         {
-            ThrowIfDisposed();
+            if (IsDisposed)
+                return GetDisposedTask<bool>();
             if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
                 throw new ArgumentOutOfRangeException(nameof(timeout));
             if (token.IsCancellationRequested)
