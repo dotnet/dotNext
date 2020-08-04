@@ -53,6 +53,8 @@
       href: threading/barrier.md
     - name: Async Trigger
       href: threading/trigger.md
+    - name: Exchanger
+      href: threading/exchanger.md
     - name: Object Pool
       href: threading/objectpool.md
     - name: Interop with Other Asynchronous Patterns

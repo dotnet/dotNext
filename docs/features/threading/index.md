@@ -45,6 +45,7 @@ using(await asyncLock.AcquireAsync(CancellationToken.None))
 * [AsyncExclusiveLock](./exclusive.md)
 * [AsyncReaderWriterLock](./rwlock.md)
 * [AsyncSharedLock](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncExclusiveLock.html)
+* [AsyncExchanger](./exchanger.md)
 
 Details of graceful shutdown described in related articles.
 
