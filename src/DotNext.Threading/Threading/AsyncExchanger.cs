@@ -22,8 +22,8 @@ namespace DotNext.Threading
         {
             private readonly T producerResult;
 
-            internal ExchangePoint(T result, bool runContinuationsAsynchronously)
-                : base(runContinuationsAsynchronously ? TaskCreationOptions.RunContinuationsAsynchronously : TaskCreationOptions.None)
+            internal ExchangePoint(T result)
+                : base(TaskCreationOptions.RunContinuationsAsynchronously)
                 => producerResult = result;
 
             internal T Exchange(T value)
@@ -33,16 +33,8 @@ namespace DotNext.Threading
             }
         }
 
-        private readonly bool runContinuationsAsynchronously;
         private ExchangePoint? point;
         private bool disposeRequested;
-
-        /// <summary>
-        /// Initializes a new asynchronous exchanger.
-        /// </summary>
-        /// <param name="runContinuationsAsynchronously"><see langword="true"/> to run continuations asynchronously; otherwise, <see langword="false"/>.</param>
-        public AsyncExchanger(bool runContinuationsAsynchronously = true)
-            => this.runContinuationsAsynchronously = runContinuationsAsynchronously;
 
         /// <summary>
         /// Waits for another flow to arrive at this exchange point,
@@ -69,7 +61,7 @@ namespace DotNext.Threading
             }
             else if (point is null)
             {
-                point = new ExchangePoint(value, runContinuationsAsynchronously);
+                point = new ExchangePoint(value);
                 result = new ValueTask<T>(point.Task.ContinueWithTimeout(timeout, token));
             }
             else

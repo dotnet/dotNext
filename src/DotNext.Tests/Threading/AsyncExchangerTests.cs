@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,42 +10,36 @@ namespace DotNext.Threading
     public sealed class AsyncExchangerTests : Test
     {
         [Fact]
-        public static void ExchangeInts()
+        public static async Task ExchangeInts()
         {
             using var source = new CancellationTokenSource();
-            using var exchanger = new AsyncExchanger<int>(false);
+            using var exchanger = new AsyncExchanger<int>();
             var task = exchanger.ExchangeAsync(42, source.Token);
             False(task.IsCompleted);
-            var task2 = exchanger.ExchangeAsync(52, source.Token);
-            True(task2.IsCompletedSuccessfully);
-            Equal(42, task2.Result);
-            True(task.IsCompletedSuccessfully);
-            Equal(52, task.Result);
+            Equal(42, await exchanger.ExchangeAsync(52, source.Token));
+            Equal(52, await task);
         }
 
         [Fact]
-        public static void ExchangerGracefulShutdown()
+        public static async Task ExchangerGracefulShutdown()
         {
-            using var exchanger = new AsyncExchanger<int>(false);
+            using var exchanger = new AsyncExchanger<int>();
             var task = exchanger.ExchangeAsync(42);
             False(task.IsCompleted);
-            var task2 = exchanger.ExchangeAsync(52);
-            True(task2.IsCompletedSuccessfully);
-            Equal(42, task2.Result);
-            True(task.IsCompletedSuccessfully);
-            Equal(52, task.Result);
+            Equal(42, await exchanger.ExchangeAsync(52));
+            Equal(52, await task);
             True(exchanger.DisposeAsync().IsCompletedSuccessfully);
         }
 
         [Fact]
-        public static void ExchangerGracefulShutdown2()
+        public static async Task ExchangerGracefulShutdown2()
         {
-            using var exchanger = new AsyncExchanger<int>(false);
+            using var exchanger = new AsyncExchanger<int>();
             var task = exchanger.ExchangeAsync(42);
             var disposeTask = exchanger.DisposeAsync();
             False(disposeTask.IsCompleted);
-            task = exchanger.ExchangeAsync(52);
-            True(task.IsFaulted);
+            await ThrowsAsync<ObjectDisposedException>(exchanger.ExchangeAsync(52).AsTask);
+            await ThrowsAsync<ObjectDisposedException>(task.AsTask);
             True(disposeTask.IsCompletedSuccessfully);
         }
     }
