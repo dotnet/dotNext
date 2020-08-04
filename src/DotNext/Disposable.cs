@@ -59,6 +59,15 @@ namespace DotNext
             => Task.FromException<T>(new ObjectDisposedException(ObjectName));
 
         /// <summary>
+        /// Attempts to complete the task with <see cref="ObjectDisposedException"/> exception.
+        /// </summary>
+        /// <param name="source">The task completion source.</param>
+        /// <typeparam name="T">The type of the task.</typeparam>
+        /// <returns><see langword="true"/> if operation was successful; otherwise, <see langword="false"/>.</returns>
+        protected bool TrySetDisposedException<T>(TaskCompletionSource<T> source)
+            => source.TrySetException(new ObjectDisposedException(ObjectName));
+
+        /// <summary>
         /// Releases managed and unmanaged resources associated with this object.
         /// </summary>
         /// <param name="disposing"><see langword="true"/> if called from <see cref="Dispose()"/>; <see langword="false"/> if called from finalizer <see cref="Finalize()"/>.</param>
