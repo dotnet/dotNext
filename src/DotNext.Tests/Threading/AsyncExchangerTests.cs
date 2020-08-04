@@ -12,7 +12,7 @@ namespace DotNext.Threading
         public static void ExchangeInts()
         {
             using var source = new CancellationTokenSource();
-            using var exchanger = new AsyncExchanger<int>();
+            using var exchanger = new AsyncExchanger<int>(false);
             var task = exchanger.ExchangeAsync(42, source.Token);
             False(task.IsCompleted);
             var task2 = exchanger.ExchangeAsync(52, source.Token);
@@ -23,9 +23,9 @@ namespace DotNext.Threading
         }
 
         [Fact]
-        public static void ExhangerGracefulShutdown()
+        public static void ExchangerGracefulShutdown()
         {
-            using var exchanger = new AsyncExchanger<int>();
+            using var exchanger = new AsyncExchanger<int>(false);
             var task = exchanger.ExchangeAsync(42);
             False(task.IsCompleted);
             var task2 = exchanger.ExchangeAsync(52);
@@ -37,9 +37,9 @@ namespace DotNext.Threading
         }
 
         [Fact]
-        public static void ExhangerGracefulShutdown2()
+        public static void ExchangerGracefulShutdown2()
         {
-            using var exchanger = new AsyncExchanger<int>();
+            using var exchanger = new AsyncExchanger<int>(false);
             var task = exchanger.ExchangeAsync(42);
             var disposeTask = exchanger.DisposeAsync();
             False(disposeTask.IsCompleted);
