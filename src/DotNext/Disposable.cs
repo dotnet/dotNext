@@ -32,6 +32,8 @@ namespace DotNext
         /// </summary>
         protected bool IsDisposed => disposed;
 
+        private string ObjectName => GetType().Name;
+
         /// <summary>
         /// Throws exception if this object is disposed.
         /// </summary>
@@ -40,8 +42,21 @@ namespace DotNext
         protected void ThrowIfDisposed()
         {
             if (IsDisposed)
-                throw new ObjectDisposedException(GetType().Name);
+                throw new ObjectDisposedException(ObjectName);
         }
+
+        /// <summary>
+        /// Gets a task representing <see cref="ObjectDisposedException"/> exception.
+        /// </summary>
+        protected Task DisposedTask => Task.FromException(new ObjectDisposedException(ObjectName));
+
+        /// <summary>
+        /// Returns a task representing <see cref="ObjectDisposedException"/> exception. 
+        /// </summary>
+        /// <typeparam name="T">The type of the task.</typeparam>
+        /// <returns>The task representing <see cref="ObjectDisposedException"/> exception.</returns>
+        protected Task<T> GetDisposedTask<T>()
+            => Task.FromException<T>(new ObjectDisposedException(ObjectName));
 
         /// <summary>
         /// Releases managed and unmanaged resources associated with this object.
