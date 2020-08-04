@@ -236,7 +236,7 @@ namespace DotNext.Threading
                 if (lockStateChecker(synchronizer))
                     return new ValueTask(synchronizer.DisposeAsync());
 
-                Dispose();
+                synchronizer.Dispose();
                 return new ValueTask();
             }
         }
