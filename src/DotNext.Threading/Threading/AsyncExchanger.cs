@@ -156,11 +156,12 @@ namespace DotNext.Threading
         public void Terminate(Exception? exception = null)
         {
             ThrowIfDisposed();
-            if (this.termination != null)
+            if (termination != null)
                 throw new InvalidOperationException();
 
-            var termination = this.termination = new ExchangeTerminatedException(exception);
-            if (point?.TrySetException(termination) ?? false)
+            ExchangeTerminatedException tmp;
+            termination = tmp = new ExchangeTerminatedException(exception);
+            if (point?.TrySetException(tmp) ?? false)
             {
                 point.Dispose();
                 point = null;
