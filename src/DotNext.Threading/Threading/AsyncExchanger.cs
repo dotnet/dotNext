@@ -80,6 +80,7 @@ namespace DotNext.Threading
         [SuppressMessage("Usage", "CA2213", Justification = "The field is disposed after atomic exchange")]
         private ExchangePoint? point;
         private bool disposeRequested;
+        private volatile ExchangeTerminatedException? termination;
 
         /// <summary>
         /// Waits for another flow to arrive at this exchange point,
@@ -92,6 +93,7 @@ namespace DotNext.Threading
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled or timed out.</exception>
         /// <exception cref="ObjectDisposedException">The object has been disposed.</exception>
+        /// <exception cref="ExchangeTerminatedException">The exhange has been terminated.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
         public ValueTask<T> ExchangeAsync(T value, TimeSpan timeout, CancellationToken token = default)
         {
@@ -105,6 +107,10 @@ namespace DotNext.Threading
             {
                 Dispose();
                 result = new ValueTask<T>(GetDisposedTask<T>());
+            }
+            else if (termination != null)
+            {
+                result = new ValueTask<T>(Task.FromException<T>(termination));
             }
             else if (point is null)
             {
@@ -135,8 +141,44 @@ namespace DotNext.Threading
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The object provided by another async flow.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="ObjectDisposedException">The object has been disposed.</exception>
+        /// <exception cref="ExchangeTerminatedException">The exhange has been terminated.</exception>
         public ValueTask<T> ExchangeAsync(T value, CancellationToken token = default)
             => ExchangeAsync(value, InfiniteTimeSpan, token);
+
+        /// <summary>
+        /// Informs another participant that no more data will be exchanged with it.
+        /// </summary>
+        /// <param name="exception">The optional exception indicating termination reason.</param>
+        /// <exception cref="ObjectDisposedException">The object has been disposed.</exception>
+        /// <exception cref="InvalidOperationException">The exchange is already terminated.</exception>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public void Terminate(Exception? exception = null)
+        {
+            ThrowIfDisposed();
+            if (this.termination != null)
+                throw new InvalidOperationException();
+
+            var termination = this.termination = new ExchangeTerminatedException(exception);
+            if (point?.TrySetException(termination) ?? false)
+            {
+                point.Dispose();
+                point = null;
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this exchange has been terminated.
+        /// </summary>
+        /// <exception cref="ObjectDisposedException">The object has been disposed.</exception>
+        public bool IsTerminated
+        {
+            get
+            {
+                ThrowIfDisposed();
+                return termination != null;
+            }
+        }
 
         /// <inheritdoc />
         protected override void Dispose(bool disposing)
@@ -147,6 +189,7 @@ namespace DotNext.Threading
                 var point = Interlocked.Exchange(ref this.point, null);
                 if (point != null && TrySetDisposedException(point))
                     point.Dispose();
+                termination = null;
             }
 
             base.Dispose(disposing);

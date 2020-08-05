@@ -54,5 +54,18 @@ namespace DotNext.Threading
             Equal(42, await exchanger.ExchangeAsync(56));
             Equal(56, await task);
         }
+
+        [Fact]
+        public static async Task Termination()
+        {
+            await using var exchanger = new AsyncExchanger<int>();
+            var task = exchanger.ExchangeAsync(42);
+            exchanger.Terminate();
+            await ThrowsAsync<ExchangeTerminatedException>(task.AsTask);
+            True(exchanger.IsTerminated);
+            task = exchanger.ExchangeAsync(56);
+            True(task.IsFaulted);
+            await ThrowsAsync<ExchangeTerminatedException>(task.AsTask);
+        }
     }
 }
