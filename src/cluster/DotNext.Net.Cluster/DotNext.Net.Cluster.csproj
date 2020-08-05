@@ -55,7 +55,7 @@
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.0.0" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.5" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.6" />
     <PackageReference Include="System.Collections.Immutable" Version="1.7.1" />
   </ItemGroup>
 
@@ -71,6 +71,6 @@
 
   <ItemGroup>
     <AdditionalFiles Include="../../stylecop.json" />
-    <SourceRoot Include="$(MSBuildProjectDirectory)\..\..\..\"/>
+    <SourceRoot Include="$(MSBuildProjectDirectory)\..\..\..\" />
   </ItemGroup>
 </Project>
