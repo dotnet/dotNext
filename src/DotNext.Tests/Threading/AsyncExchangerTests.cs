@@ -40,7 +40,7 @@ namespace DotNext.Threading
             False(disposeTask.IsCompleted);
             await ThrowsAsync<ObjectDisposedException>(exchanger.ExchangeAsync(52).AsTask);
             await ThrowsAsync<ObjectDisposedException>(task.AsTask);
-            True(disposeTask.IsCompletedSuccessfully);
+            await disposeTask;
         }
 
         [Fact]
