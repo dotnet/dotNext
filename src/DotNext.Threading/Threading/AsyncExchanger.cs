@@ -26,22 +26,16 @@ namespace DotNext.Threading
             internal ExchangePoint(T result, TimeSpan timeout, CancellationToken token)
                 : base(TaskCreationOptions.RunContinuationsAsynchronously)
             {
-                if (timeout == InfiniteTimeSpan)
+                if (timeout > InfiniteTimeSpan)
                 {
-                    registration = token.CanBeCanceled ? token.Register(CancellationRequested) : default;
-                }
-                else if (token.CanBeCanceled)
-                {
-                    source = CancellationTokenSource.CreateLinkedTokenSource(token);
+                    source = token.CanBeCanceled ?
+                        CancellationTokenSource.CreateLinkedTokenSource(token) :
+                        new CancellationTokenSource();
                     source.CancelAfter(timeout);
-                    registration = token.Register(CancellationRequested);
-                }
-                else
-                {
-                    source = new CancellationTokenSource(timeout);
-                    registration = token.Register(CancellationRequested);
+                    token = source.Token;
                 }
 
+                registration = token.Register(CancellationRequested);
                 producerResult = result;
             }
 
