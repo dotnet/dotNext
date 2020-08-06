@@ -370,10 +370,158 @@ callers based on registered conditions.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncTrigger_SignalAndWaitAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncTrigger.SignalAndWaitAsync(System.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTrigger.cs/#L236">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncTrigger_SignalAndWaitAsync_" data-uid="DotNext.Threading.AsyncTrigger.SignalAndWaitAsync*"></a>
+  <h4 id="DotNext_Threading_AsyncTrigger_SignalAndWaitAsync_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncTrigger.SignalAndWaitAsync(System.Threading.CancellationToken)">SignalAndWaitAsync(CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Signals to all suspended callers and waits for the signal.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task SignalAndWaitAsync(CancellationToken token = default(CancellationToken))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td><p>The task representing asynchronous execution of this method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This trigger has been disposed.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncTrigger_SignalAndWaitAsync_System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncTrigger.SignalAndWaitAsync(System.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTrigger.cs/#L221">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncTrigger_SignalAndWaitAsync_" data-uid="DotNext.Threading.AsyncTrigger.SignalAndWaitAsync*"></a>
+  <h4 id="DotNext_Threading_AsyncTrigger_SignalAndWaitAsync_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncTrigger.SignalAndWaitAsync(System.TimeSpan,System.Threading.CancellationToken)">SignalAndWaitAsync(TimeSpan, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Signals to all suspended callers and waits for the signal.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;bool&gt; SignalAndWaitAsync(TimeSpan timeout, CancellationToken token = default(CancellationToken))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
+        <td><span class="parametername">timeout</span></td>
+        <td><p>The time to wait for the signal.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;</td>
+        <td><p><span class="xref">true</span> if event is triggered in timely manner; <span class="xref">false</span> if timeout occurred.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This trigger has been disposed.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncTrigger_SignalAndWaitAsync__1___0_System_Action___0__System_Predicate___0__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncTrigger.SignalAndWaitAsync%60%601(%60%600%2CSystem.Action%7B%60%600%7D%2CSystem.Predicate%7B%60%600%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTrigger.cs/#L330">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTrigger.cs/#L356">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncTrigger_SignalAndWaitAsync_" data-uid="DotNext.Threading.AsyncTrigger.SignalAndWaitAsync*"></a>
   <h4 id="DotNext_Threading_AsyncTrigger_SignalAndWaitAsync__1___0_System_Action___0__System_Predicate___0__System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncTrigger.SignalAndWaitAsync``1(``0,System.Action{``0},System.Predicate{``0},System.Threading.CancellationToken)">SignalAndWaitAsync&lt;TState&gt;(TState, Action&lt;TState&gt;, Predicate&lt;TState&gt;, CancellationToken)</h4>
@@ -434,7 +582,7 @@ atomically.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
-        <td><p><span class="xref">true</span> if event is triggered in timely manner; <span class="xref">false</span> if timeout occurred.</p>
+        <td><p>The task representing asynchronous execution of this method.</p>
 </td>
       </tr>
     </tbody>
@@ -481,7 +629,7 @@ atomically.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncTrigger_SignalAndWaitAsync__1___0_System_Action___0__System_Predicate___0__System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncTrigger.SignalAndWaitAsync%60%601(%60%600%2CSystem.Action%7B%60%600%7D%2CSystem.Predicate%7B%60%600%7D%2CSystem.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTrigger.cs/#L307">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTrigger.cs/#L333">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncTrigger_SignalAndWaitAsync_" data-uid="DotNext.Threading.AsyncTrigger.SignalAndWaitAsync*"></a>
   <h4 id="DotNext_Threading_AsyncTrigger_SignalAndWaitAsync__1___0_System_Action___0__System_Predicate___0__System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncTrigger.SignalAndWaitAsync``1(``0,System.Action{``0},System.Predicate{``0},System.TimeSpan,System.Threading.CancellationToken)">SignalAndWaitAsync&lt;TState&gt;(TState, Action&lt;TState&gt;, Predicate&lt;TState&gt;, TimeSpan, CancellationToken)</h4>
@@ -595,7 +743,7 @@ atomically.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncTrigger_SignalAndWaitAsync__1___0_System_Predicate___0__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncTrigger.SignalAndWaitAsync%60%601(%60%600%2CSystem.Predicate%7B%60%600%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTrigger.cs/#L246">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTrigger.cs/#L272">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncTrigger_SignalAndWaitAsync_" data-uid="DotNext.Threading.AsyncTrigger.SignalAndWaitAsync*"></a>
   <h4 id="DotNext_Threading_AsyncTrigger_SignalAndWaitAsync__1___0_System_Predicate___0__System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncTrigger.SignalAndWaitAsync``1(``0,System.Predicate{``0},System.Threading.CancellationToken)">SignalAndWaitAsync&lt;TState&gt;(TState, Predicate&lt;TState&gt;, CancellationToken)</h4>
@@ -650,7 +798,7 @@ atomically.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
-        <td><p><span class="xref">true</span> if event is triggered in timely manner; <span class="xref">false</span> if timeout occurred.</p>
+        <td><p>The task representing asynchronous execution of this method.</p>
 </td>
       </tr>
     </tbody>
@@ -697,7 +845,7 @@ atomically.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncTrigger_SignalAndWaitAsync__1___0_System_Predicate___0__System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncTrigger.SignalAndWaitAsync%60%601(%60%600%2CSystem.Predicate%7B%60%600%7D%2CSystem.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTrigger.cs/#L225">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTrigger.cs/#L251">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncTrigger_SignalAndWaitAsync_" data-uid="DotNext.Threading.AsyncTrigger.SignalAndWaitAsync*"></a>
   <h4 id="DotNext_Threading_AsyncTrigger_SignalAndWaitAsync__1___0_System_Predicate___0__System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncTrigger.SignalAndWaitAsync``1(``0,System.Predicate{``0},System.TimeSpan,System.Threading.CancellationToken)">SignalAndWaitAsync&lt;TState&gt;(TState, Predicate&lt;TState&gt;, TimeSpan, CancellationToken)</h4>
@@ -805,7 +953,7 @@ atomically.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncTrigger_SignalAndWaitAsync__2___0_System_Action___0___1____1_System_Predicate___0__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncTrigger.SignalAndWaitAsync%60%602(%60%600%2CSystem.Action%7B%60%600%2C%60%601%7D%2C%60%601%2CSystem.Predicate%7B%60%600%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTrigger.cs/#L290">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTrigger.cs/#L316">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncTrigger_SignalAndWaitAsync_" data-uid="DotNext.Threading.AsyncTrigger.SignalAndWaitAsync*"></a>
   <h4 id="DotNext_Threading_AsyncTrigger_SignalAndWaitAsync__2___0_System_Action___0___1____1_System_Predicate___0__System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncTrigger.SignalAndWaitAsync``2(``0,System.Action{``0,``1},``1,System.Predicate{``0},System.Threading.CancellationToken)">SignalAndWaitAsync&lt;TState, TArgs&gt;(TState, Action&lt;TState, TArgs&gt;, TArgs, Predicate&lt;TState&gt;, CancellationToken)</h4>
@@ -872,7 +1020,7 @@ atomically.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
-        <td><p><span class="xref">true</span> if event is triggered in timely manner; <span class="xref">false</span> if timeout occurred.</p>
+        <td><p>The task representing asynchronous execution of this method.</p>
 </td>
       </tr>
     </tbody>
@@ -924,7 +1072,7 @@ atomically.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncTrigger_SignalAndWaitAsync__2___0_System_Action___0___1____1_System_Predicate___0__System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncTrigger.SignalAndWaitAsync%60%602(%60%600%2CSystem.Action%7B%60%600%2C%60%601%7D%2C%60%601%2CSystem.Predicate%7B%60%600%7D%2CSystem.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTrigger.cs/#L265">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTrigger.cs/#L291">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncTrigger_SignalAndWaitAsync_" data-uid="DotNext.Threading.AsyncTrigger.SignalAndWaitAsync*"></a>
   <h4 id="DotNext_Threading_AsyncTrigger_SignalAndWaitAsync__2___0_System_Action___0___1____1_System_Predicate___0__System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncTrigger.SignalAndWaitAsync``2(``0,System.Action{``0,``1},``1,System.Predicate{``0},System.TimeSpan,System.Threading.CancellationToken)">SignalAndWaitAsync&lt;TState, TArgs&gt;(TState, Action&lt;TState, TArgs&gt;, TArgs, Predicate&lt;TState&gt;, TimeSpan, CancellationToken)</h4>
