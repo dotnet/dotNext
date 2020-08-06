@@ -39,7 +39,14 @@ namespace DotNext.Threading
                 producerResult = result;
             }
 
-            private void CancellationRequested() => TrySetCanceled(registration.Token);
+            private void CancellationRequested()
+            {
+                var token = registration.Token;
+                if (!token.IsCancellationRequested)
+                    token = new CancellationToken(true);
+
+                TrySetCanceled(token);
+            }
 
             internal bool TryExchange(T value, [MaybeNullWhen(false)] out T result)
             {
