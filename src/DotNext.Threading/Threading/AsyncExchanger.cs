@@ -19,6 +19,17 @@ namespace DotNext.Threading
     {
         private sealed class ExchangePoint : TaskCompletionSource<T>, IDisposable
         {
+            // cached callback to avoid extra memory allocation
+            private static readonly Action<object> CancellationCallback;
+
+            static ExchangePoint()
+            {
+                CancellationCallback = CancellationRequested;
+
+                static void CancellationRequested(object state)
+                    => Unsafe.As<ExchangePoint>(state).CancellationRequested();
+            }
+
             private readonly T producerResult;
             private readonly CancellationTokenRegistration registration;
             private readonly CancellationTokenSource? source;
@@ -35,10 +46,11 @@ namespace DotNext.Threading
                     token = source.Token;
                 }
 
-                registration = token.Register(CancellationRequested);
+                registration = token.Register(CancellationCallback, this);
                 producerResult = result;
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private void CancellationRequested()
             {
                 var token = registration.Token;
