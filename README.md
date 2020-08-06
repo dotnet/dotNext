@@ -45,14 +45,15 @@ Documentation for older versions:
 * [1.x](https://sakno.github.io/dotNext/versions/1.x/index.html)
 
 # What's new
-Release Date: 07-30-2020
+Release Date: 08-06-2020
 
-<a href="https://www.nuget.org/packages/dotnext/2.9.0">DotNext 2.9.0</a>
-* Added `Sequence.ToAsyncEnumerable()` extension method that allows to convert arbitrary [IEnumerable&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1) to [IAsyncEnumerable&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.iasyncenumerable-1)
-* Added extension methods to `Sequence` class for working with [async streams][IAsyncEnumerable&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.iasyncenumerable-1)
+<a href="https://www.nuget.org/packages/dotnext/2.9.1">DotNext 2.9.1</a>
+* Added `Continuation.ContinueWithTimeout<T>` extension method that allows to produce the task from the given task with attached timeout and, optionally, token
 
-<a href="https://www.nuget.org/packages/dotnext.io/2.7.3">DotNext.IO 2.7.3</a>
-* Fixed behavior of `GetObjectDataAsync` method in [StreamTransferObject](https://sakno.github.io/dotNext/api/DotNext.IO.StreamTransferObject.html). Now it respects the value of `IsReusable` property.
+<a href="https://www.nuget.org/packages/dotnext.threading/2.9.0">DotNext.Threading 2.9.0</a>
+* Fixed graceful shutdown for async locks if they are not in locked state
+* Added  [AsyncExchanger&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncExchanger-1.html) synchronization primitive that allows to organize pipelines
+* [AsyncTrigger](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncTrigger.html) now has additional `SignalAndWaitAsync` overloads
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 

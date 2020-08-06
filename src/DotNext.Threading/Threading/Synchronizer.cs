@@ -44,8 +44,13 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.Synchronized)]
         public Task<bool> WaitAsync(TimeSpan timeout, CancellationToken token)
         {
-            ThrowIfDisposed();
-            return node is null ? CompletedTask<bool, BooleanConst.True>.Task : node.Task.WaitAsync(timeout, token);
+            if (IsDisposed)
+                return GetDisposedTask<bool>();
+
+            if (node is null)
+                return CompletedTask<bool, BooleanConst.True>.Task;
+
+            return node.Task.WaitAsync(timeout, token);
         }
 
         /// <summary>
@@ -66,8 +71,13 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.Synchronized)]
         public Task<bool> WaitAsync<T>(Predicate<T> condition, T arg, TimeSpan timeout, CancellationToken token = default)
         {
-            ThrowIfDisposed();
-            return node is null || condition(arg) ? CompletedTask<bool, BooleanConst.True>.Task : node.Task.WaitAsync(timeout, token);
+            if (IsDisposed)
+                return GetDisposedTask<bool>();
+
+            if (node is null || condition(arg))
+                return CompletedTask<bool, BooleanConst.True>.Task;
+
+            return node.Task.WaitAsync(timeout, token);
         }
 
         /// <summary>
@@ -106,8 +116,13 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.Synchronized)]
         public Task<bool> WaitAsync<T1, T2>(Func<T1, T2, bool> condition, T1 arg1, T2 arg2, TimeSpan timeout, CancellationToken token = default)
         {
-            ThrowIfDisposed();
-            return node is null || condition(arg1, arg2) ? CompletedTask<bool, BooleanConst.True>.Task : node.Task.WaitAsync(timeout, token);
+            if (IsDisposed)
+                return GetDisposedTask<bool>();
+
+            if (node is null || condition(arg1, arg2))
+                return CompletedTask<bool, BooleanConst.True>.Task;
+
+            return node.Task.WaitAsync(timeout, token);
         }
 
         /// <summary>

@@ -200,7 +200,7 @@ namespace DotNext.Threading
         /// <param name="capacity">The maximum objects in the pool.</param>
         /// <param name="factory">The delegate instance that is used for lazy instantiation of objects in the pool.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="capacity"/> is less than zero.</exception>
-        /// <exception cref="ArgumentNullException"><paramref name="factory"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentException"><paramref name="factory"/> is empty.</exception>
         /// <seealso href="https://en.wikipedia.org/wiki/Shortest_job_next">Shortest Job First</seealso>
         [SuppressMessage("Reliability", "CA2000", Justification = "Rental object is reusable and should not be destroyed in ctor")]
         public ConcurrentObjectPool(int capacity, ValueFunc<T> factory)
@@ -246,7 +246,7 @@ namespace DotNext.Threading
         /// <exception cref="ArgumentNullException"><paramref name="factory"/> is <see langword="null"/>.</exception>
         /// <seealso href="https://en.wikipedia.org/wiki/Shortest_job_next">Shortest Job First</seealso>
         public ConcurrentObjectPool(int capacity, Func<T> factory)
-            : this(capacity, new ValueFunc<T>(factory))
+            : this(capacity, new ValueFunc<T>(factory, true))
         {
         }
 
