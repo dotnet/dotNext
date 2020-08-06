@@ -45,7 +45,7 @@ Documentation for older versions:
 * [1.x](https://sakno.github.io/dotNext/versions/1.x/index.html)
 
 # What's new
-Release Date: 08-04-2020
+Release Date: 08-06-2020
 
 <a href="https://www.nuget.org/packages/dotnext/2.9.1">DotNext 2.9.1</a>
 * Added `Continuation.ContinueWithTimeout<T>` extension method that allows to produce the task from the given task with attached timeout and, optionally, token

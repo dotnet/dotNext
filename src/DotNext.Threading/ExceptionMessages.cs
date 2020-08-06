@@ -24,5 +24,7 @@ namespace DotNext
         internal static string UnsupportedLockAcquisition => Resources.GetString("UnsupportedLockAcquisition");
 
         internal static string EmptyValueDelegate => Resources.GetString("EmptyValueDelegate");
+
+        internal static string TerminatedExchange => Resources.GetString("TerminatedExchange");
     }
 }
