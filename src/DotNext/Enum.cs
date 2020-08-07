@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
@@ -14,6 +15,7 @@ namespace DotNext
     /// <seealso href="https://github.com/dotnet/corefx/issues/34077">EnumMember API</seealso>
     [SuppressMessage("Design", "CA1036")]
     [Serializable]
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct Enum<TEnum> : IEquatable<TEnum>, IComparable<TEnum>, IFormattable, IEquatable<Enum<TEnum>>, ISerializable, IConvertible<TEnum>, ICustomAttributeProvider
         where TEnum : struct, Enum
     {
