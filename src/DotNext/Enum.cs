@@ -28,7 +28,7 @@ namespace DotNext
                 for (var i = 0L; i < rawValues.LongLength; i++)
                 {
                     var boxedValue = rawValues.GetValue(i);
-                    ref var value = ref Unsafe.Unbox<TEnum>(boxedValue);
+                    ref readonly var value = ref Unsafe.Unbox<TEnum>(boxedValue);
                     this[value] = Enum.GetName(enumType, boxedValue);
 
                     // detect min and max
