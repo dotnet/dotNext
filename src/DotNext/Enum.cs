@@ -20,18 +20,16 @@ namespace DotNext
     {
         private sealed class Mapping : Dictionary<TEnum, string>
         {
-            internal Mapping(out TEnum min, out TEnum max, out TEnum[] values)
+            internal Mapping(out TEnum min, out TEnum max, out Array values)
             {
                 min = max = default;
                 var enumType = typeof(TEnum);
-                Array rawValues = Enum.GetValues(enumType);
-                values = new TEnum[rawValues.LongLength];
-                for (var i = 0L; i < rawValues.LongLength; i++)
+                values = Enum.GetValues(enumType);
+                for (var i = 0L; i < values.LongLength; i++)
                 {
-                    var boxedValue = rawValues.GetValue(i);
+                    var boxedValue = values.GetValue(i);
                     var value = (TEnum)boxedValue;
                     this[value] = Enum.GetName(enumType, boxedValue);
-                    values[i] = value;
 
                     // detect min and max
                     min = value.CompareTo(min) < 0 ? value : min;
@@ -50,7 +48,7 @@ namespace DotNext
 
             MaxValue = new Enum<TEnum>(max);
             MinValue = new Enum<TEnum>(min);
-            Members = Array.ConvertAll(values, GetMember);
+            Members = Array.ConvertAll((TEnum[])values, GetMember);
         }
 
         /// <summary>
