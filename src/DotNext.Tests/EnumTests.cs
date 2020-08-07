@@ -8,6 +8,18 @@ namespace DotNext
     [ExcludeFromCodeCoverage]
     public sealed class EnumTests : Test
     {
+        private sealed class TestEnumValueAttribute : Attribute
+        {
+        }
+
+        private enum EnumWithAttributes
+        {
+            None = 0,
+
+            [TestEnumValue]
+            WithAttribute
+        }
+
         [Fact]
         public static void ValuesTest()
         {
@@ -123,6 +135,32 @@ namespace DotNext
             True(e.Equals(value));
             value = Enum<EnvironmentVariableTarget>.GetMember(EnvironmentVariableTarget.Process);
             False(e.Equals(value));
+        }
+
+        [Fact]
+        public static void CustomAttributeProvider()
+        {
+            ICustomAttributeProvider member = Enum<EnumWithAttributes>.GetMember(nameof(EnumWithAttributes.None));
+            False(member.IsDefined(typeof(TestEnumValueAttribute), false));
+            Empty(member.GetCustomAttributes(false));
+            Empty(member.GetCustomAttributes(typeof(TestEnumValueAttribute), false));
+
+            member = Enum<EnumWithAttributes>.GetMember(nameof(EnumWithAttributes.WithAttribute));
+            True(member.IsDefined(typeof(TestEnumValueAttribute), false));
+            NotEmpty(member.GetCustomAttributes(false));
+            NotEmpty(member.GetCustomAttributes(typeof(TestEnumValueAttribute), false));
+        }
+
+        [Fact]
+        public static void CustomAttributes()
+        {
+            var member = Enum<EnumWithAttributes>.GetMember(nameof(EnumWithAttributes.None));
+            Null(member.GetCustomAttribute<TestEnumValueAttribute>());
+            Empty(member.GetCustomAttributes<TestEnumValueAttribute>());
+
+            member = Enum<EnumWithAttributes>.GetMember(nameof(EnumWithAttributes.WithAttribute));
+            NotNull(member.GetCustomAttribute<TestEnumValueAttribute>());
+            NotEmpty(member.GetCustomAttributes<TestEnumValueAttribute>());
         }
     }
 }

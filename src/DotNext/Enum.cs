@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using System.Runtime.Serialization;
 
 namespace DotNext
@@ -12,7 +13,7 @@ namespace DotNext
     /// <seealso href="https://github.com/dotnet/corefx/issues/34077">EnumMember API</seealso>
     [SuppressMessage("Design", "CA1036")]
     [Serializable]
-    public readonly struct Enum<TEnum> : IEquatable<TEnum>, IComparable<TEnum>, IFormattable, IEquatable<Enum<TEnum>>, ISerializable, IConvertible<TEnum>
+    public readonly struct Enum<TEnum> : IEquatable<TEnum>, IComparable<TEnum>, IFormattable, IEquatable<Enum<TEnum>>, ISerializable, IConvertible<TEnum>, ICustomAttributeProvider
         where TEnum : struct, Enum
     {
         private readonly struct Tuple : IEquatable<Tuple>
@@ -183,6 +184,50 @@ namespace DotNext
             name = info.GetString(NameSerData);
             Value = (TEnum)info.GetValue(ValueSerData, typeof(TEnum));
         }
+
+        private FieldInfo? Field
+            => typeof(TEnum).GetField(Name, BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly);
+
+        /// <inheritdoc />
+        object[] ICustomAttributeProvider.GetCustomAttributes(bool inherit)
+            => Field?.GetCustomAttributes(inherit) ?? Array.Empty<object>();
+
+        /// <inheritdoc />
+        object[] ICustomAttributeProvider.GetCustomAttributes(Type attributeType, bool inherit)
+            => Field?.GetCustomAttributes(attributeType, inherit) ?? Array.Empty<object>();
+
+        /// <summary>
+        /// Retrieves a collection of custom attributes of a specified type
+        /// that are applied to this enum member.
+        /// </summary>
+        /// <typeparam name="T">The type of attribute to search for.</typeparam>
+        /// <returns>
+        /// A collection of the custom attributes that are applied to element and that match
+        /// <typeparamref name="T"/>, or an empty collection if no such attributes exist.
+        /// </returns>
+        public IEnumerable<T> GetCustomAttributes<T>()
+            where T : Attribute
+            => Field?.GetCustomAttributes<T>(false) ?? Array.Empty<T>();
+
+        /// <summary>
+        /// Retrieves a custom attribute of a specified type that is applied to this enum member.
+        /// </summary>
+        /// <typeparam name="T">The type of attribute to search for.</typeparam>
+        /// <returns>A custom attribute that matches <typeparamref name="T"/>, or <see langword="null"/> if no such attribute is found.</returns>
+        public T? GetCustomAttribute<T>()
+            where T : Attribute
+            => Field?.GetCustomAttribute<T>(false) ?? null;
+
+        /// <summary>
+        /// Indicates whether the one or more attributes of the specified type
+        /// or of its derived types is applied to this enum value.
+        /// </summary>
+        /// <param name="attributeType">The type of custom attribute to search for. The search includes derived types.</param>
+        /// <param name="inherit">
+        /// <see langword="true"/> to search this member's inheritance chain to find the attributes; otherwise, <see langword="false"/>.</param>
+        /// <returns><see langword="true"/> if one or more instances of attributeType or any of its derived types is applied to this member; otherwise, <see langword="false"/>.</returns>
+        public bool IsDefined(Type attributeType, bool inherit = false)
+            => Field?.IsDefined(attributeType, inherit) ?? false;
 
         /// <summary>
         /// Determines whether one or more bit fields associated
