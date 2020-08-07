@@ -4,7 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
-using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext
 {
@@ -30,8 +29,9 @@ namespace DotNext
                 for (var i = 0L; i < rawValues.LongLength; i++)
                 {
                     var boxedValue = rawValues.GetValue(i);
-                    ref readonly var value = ref Unsafe.Unbox<TEnum>(boxedValue);
+                    var value = (TEnum)boxedValue;
                     this[value] = Enum.GetName(enumType, boxedValue);
+                    values[i] = value;
 
                     // detect min and max
                     min = value.CompareTo(min) < 0 ? value : min;

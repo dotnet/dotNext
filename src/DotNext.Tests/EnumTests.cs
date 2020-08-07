@@ -88,6 +88,14 @@ namespace DotNext
         }
 
         [Fact]
+        public static void MemberOrder()
+        {
+            Equal(EnvironmentVariableTarget.Process, Enum<EnvironmentVariableTarget>.Members[0]);
+            Equal(EnvironmentVariableTarget.User, Enum<EnvironmentVariableTarget>.Members[1]);
+            Equal(EnvironmentVariableTarget.Machine, Enum<EnvironmentVariableTarget>.Members[2]);
+        }
+
+        [Fact]
         public static void HasFlag()
         {
             var flags = BindingFlags.CreateInstance | BindingFlags.Public;
