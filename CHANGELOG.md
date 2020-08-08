@@ -1,6 +1,10 @@
 Release Notes
 ====
 
+# 08-08-2020
+<a href="https://www.nuget.org/packages/dotnext/2.9.5">DotNext 2.9.5</a>
+* Added support of custom attributes to [Enum Member API](https://sakno.github.io/dotNext/features/core/enum.html)
+
 # 08-06-2020
 <a href="https://www.nuget.org/packages/dotnext/2.9.1">DotNext 2.9.1</a>
 * Added `Continuation.ContinueWithTimeout<T>` extension method that allows to produce the task from the given task with attached timeout and, optionally, token
