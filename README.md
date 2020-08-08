@@ -45,15 +45,10 @@ Documentation for older versions:
 * [1.x](https://sakno.github.io/dotNext/versions/1.x/index.html)
 
 # What's new
-Release Date: 08-06-2020
+Release Date: 08-08-2020
 
-<a href="https://www.nuget.org/packages/dotnext/2.9.1">DotNext 2.9.1</a>
-* Added `Continuation.ContinueWithTimeout<T>` extension method that allows to produce the task from the given task with attached timeout and, optionally, token
-
-<a href="https://www.nuget.org/packages/dotnext.threading/2.9.0">DotNext.Threading 2.9.0</a>
-* Fixed graceful shutdown for async locks if they are not in locked state
-* Added  [AsyncExchanger&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncExchanger-1.html) synchronization primitive that allows to organize pipelines
-* [AsyncTrigger](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncTrigger.html) now has additional `SignalAndWaitAsync` overloads
+<a href="https://www.nuget.org/packages/dotnext/2.9.5">DotNext 2.9.5</a>
+* Added support of custom attributes to [Enum Member API](https://sakno.github.io/dotNext/features/core/enum.html) 
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
