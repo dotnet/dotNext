@@ -65,8 +65,8 @@
   </ItemGroup>
   
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="DotNext.Threading" Version="[2.7.3, 3)" />
-    <PackageReference Include="DotNext.IO" Version="[2.9.0, 3)" />
+    <PackageReference Include="DotNext.Threading" Version="[2.7.5, 3)" />
+    <PackageReference Include="DotNext.IO" Version="[2.7.5, 3)" />
   </ItemGroup>
 
   <ItemGroup>
