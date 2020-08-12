@@ -50,7 +50,7 @@ namespace DotNext
         /// <param name="strA">String A. Can be <see langword="null"/>.</param>
         /// <param name="strB">String B. Can be <see langword="null"/>.</param>
         /// <returns><see langword="true"/>, if the first string is equal to the second string; otherwise, <see langword="false"/>.</returns>
-        public static bool IsEqualIgnoreCase(this string strA, string strB)
+        public static bool IsEqualIgnoreCase(this string? strA, string? strB)
             => string.Compare(strA, strB, StringComparison.OrdinalIgnoreCase) == 0;
 
         /// <summary>
