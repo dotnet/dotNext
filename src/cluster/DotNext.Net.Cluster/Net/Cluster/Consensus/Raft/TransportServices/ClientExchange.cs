@@ -67,7 +67,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         public sealed override ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint sender, CancellationToken token)
         {
-            Debug.Assert(headers.Control == FlowControl.Ack);
+            Debug.Assert(headers.Control == FlowControl.Ack, "Unexpected response", $"Message type {headers.Type} control {headers.Control}");
             TrySetResult(IExchange.ReadResult(payload.Span));
             return new ValueTask<bool>(false);
         }

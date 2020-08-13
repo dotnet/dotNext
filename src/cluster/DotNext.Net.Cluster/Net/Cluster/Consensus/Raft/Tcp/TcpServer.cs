@@ -45,34 +45,31 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             internal async Task<ExchangeResult> Exchange(IExchange exchange, Memory<byte> buffer, TimeSpan receiveTimeout, CancellationToken token)
             {
                 var result = ExchangeResult.Success;
-                CancellationTokenSource? timeoutTracker = null, combinedSource = null;
+                CancellationTokenSource? timeoutTracker = null;
                 try
                 {
                     var (headers, request) = await ReadPacket(buffer, token).ConfigureAwait(false);
-                    timeoutTracker = new CancellationTokenSource(receiveTimeout);
-                    combinedSource = CancellationTokenSource.CreateLinkedTokenSource(timeoutTracker.Token, token);
-                    token = combinedSource.Token;
-                    while (await exchange.ProcessInboundMessageAsync(headers, request, Socket.RemoteEndPoint, token).ConfigureAwait(false))
+                    timeoutTracker = CancellationTokenSource.CreateLinkedTokenSource(token);
+                    timeoutTracker.CancelAfter(receiveTimeout);
+                    while (await exchange.ProcessInboundMessageAsync(headers, request, Socket.RemoteEndPoint, timeoutTracker.Token).ConfigureAwait(false))
                     {
                         bool waitForInput;
                         int count;
-                        (headers, count, waitForInput) = await exchange.CreateOutboundMessageAsync(AdjustToPayload(buffer), token).ConfigureAwait(false);
+                        (headers, count, waitForInput) = await exchange.CreateOutboundMessageAsync(AdjustToPayload(buffer), timeoutTracker.Token).ConfigureAwait(false);
 
                         // transmit packet to the remote endpoint
-                        await WritePacket(headers, buffer, count, token).ConfigureAwait(false);
+                        await WritePacket(headers, buffer, count, timeoutTracker.Token).ConfigureAwait(false);
                         if (!waitForInput)
                             break;
 
                         // read response
-                        (headers, request) = await ReadPacket(buffer, token).ConfigureAwait(false);
+                        (headers, request) = await ReadPacket(buffer, timeoutTracker.Token).ConfigureAwait(false);
                     }
                 }
                 catch (OperationCanceledException e)
                 {
                     exchange.OnCanceled(e.CancellationToken);
-                    result = !(timeoutTracker is null) && timeoutTracker.IsCancellationRequested ?
-                        ExchangeResult.TimeOut :
-                        ExchangeResult.Stopped;
+                    result = timeoutTracker is null || token.IsCancellationRequested ? ExchangeResult.Stopped : ExchangeResult.TimeOut;
                 }
                 catch (Exception e) when (e is EndOfStreamException || e is SocketException || e.InnerException is SocketException)
                 {
@@ -85,7 +82,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 }
                 finally
                 {
-                    combinedSource?.Dispose();
                     timeoutTracker?.Dispose();
                 }
 
