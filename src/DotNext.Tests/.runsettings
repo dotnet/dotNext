@@ -1,17 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RunSettings>
+	<RunConfiguration>
+		<TestSessionTimeout>300000</TestSessionTimeout>
+	</RunConfiguration>
 	<DataCollectionRunSettings>
-		<DataCollector firendlyName="Code Coverage" uri="datacollector://Microsoft/CodeCoverage/2.0">
-			<Configuration>
-				<CodeCoverage>
-					<ModulePaths>
-						<Exclude>
-							<ModulePath>*xunit*</ModulePath>
-							<ModulePath>DotNext.Tests.dll</ModulePath>
-						</Exclude>
-					</ModulePaths>
-				</CodeCoverage>
-			</Configuration>
-		</DataCollector>
+		<DataCollectors>
+			<DataCollector firendlyName="Code сoverage" uri="datacollector://Microsoft/CodeCoverage/2.0">
+				<Configuration>
+					<CodeCoverage>
+						<ModulePaths>
+							<Exclude>
+								<ModulePath>*xunit*</ModulePath>
+								<ModulePath>DotNext.Tests.dll</ModulePath>
+							</Exclude>
+						</ModulePaths>
+					</CodeCoverage>
+				</Configuration>
+			</DataCollector>
+		</DataCollectors>
 	</DataCollectionRunSettings>
 </RunSettings>
