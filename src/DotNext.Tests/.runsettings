@@ -1,0 +1,11 @@
+﻿<DataCollector firendlyName="Code Coverage" uri="datacollector://Microsoft/CodeCoverage/2.0">
+	<Configuration>
+		<CodeCoverage>
+			<ModulePaths>
+				<Exclude>
+					<ModulePath>*xunit*, DotNext.Tests.dll</ModulePath>
+				</Exclude>
+			</ModulePaths>
+		</CodeCoverage>
+	</Configuration>
+</DataCollector>

@@ -17,6 +17,7 @@
 
   <PropertyGroup>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <RunSettingsFilePath>.runsettings</RunSettingsFilePath>
   </PropertyGroup>
 
   <ItemGroup>
