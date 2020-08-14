@@ -140,6 +140,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                     }
                 }
             }
+            catch (Exception e)
+            {
+                exchange.OnException(e);
+            }
             finally
             {
                 buffer.Dispose();
