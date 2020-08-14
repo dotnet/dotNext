@@ -5,12 +5,12 @@
 	</RunConfiguration>
 	<DataCollectionRunSettings>
 		<DataCollectors>
-			<DataCollector firendlyName="Code сoverage" uri="datacollector://Microsoft/CodeCoverage/2.0">
+			<DataCollector friendlyName="Code сoverage" uri="datacollector://Microsoft/CodeCoverage/2.0">
 				<Configuration>
 					<CodeCoverage>
 						<ModulePaths>
 							<Exclude>
-								<ModulePath>*xunit*</ModulePath>
+								<ModulePath>.*xunit.*</ModulePath>
 								<ModulePath>DotNext.Tests.dll</ModulePath>
 							</Exclude>
 						</ModulePaths>
