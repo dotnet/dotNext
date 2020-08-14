@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace DotNext.Threading
 {
+    [ExcludeFromCodeCoverage]
     public sealed class AsyncBarrierTests : Test
     {
         [Fact]

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using Xunit;
 
 namespace DotNext
 {
+    [ExcludeFromCodeCoverage]
     public sealed class ValueTypeTests : Test
     {
         [Fact]

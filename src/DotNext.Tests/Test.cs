@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -6,6 +7,7 @@ using Xunit;
 
 namespace DotNext
 {
+    [ExcludeFromCodeCoverage]
     [LogBeforeAfterTest]
     public abstract class Test : Assert
     {

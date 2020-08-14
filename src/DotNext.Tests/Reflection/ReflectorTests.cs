@@ -1,9 +1,11 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Xunit;
 using static System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Reflection
 {
+    [ExcludeFromCodeCoverage]
     public sealed class ReflectorTests : Test
     {
         [Fact]

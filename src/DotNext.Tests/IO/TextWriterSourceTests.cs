@@ -1,5 +1,6 @@
 using System;
 using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
@@ -9,6 +10,7 @@ namespace DotNext.IO
 {
     using Buffers;
 
+    [ExcludeFromCodeCoverage]
     public sealed class TextWriterSourceTests : Test
     {
         [Fact]

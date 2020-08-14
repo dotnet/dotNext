@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -8,6 +9,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using LogEntryList = IO.Log.LogEntryProducer<IRaftLogEntry>;
 
+    [ExcludeFromCodeCoverage]
     public sealed class ConsensusOnlyStateTests : Test
     {
         [Fact]

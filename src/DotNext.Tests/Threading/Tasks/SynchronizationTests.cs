@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -6,6 +7,7 @@ using Xunit;
 
 namespace DotNext.Threading.Tasks
 {
+    [ExcludeFromCodeCoverage]
     public sealed class SynchronizationTests : Test
     {
         [Fact]

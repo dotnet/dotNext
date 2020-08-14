@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Xunit.Sdk;
 
@@ -16,6 +17,7 @@ namespace DotNext
 
     //I need this attribute to track stuck tests
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
+    [ExcludeFromCodeCoverage]
     public sealed class LogBeforeAfterTestAttribute : BeforeAfterTestAttribute
     {
         private readonly TraceOutput output;

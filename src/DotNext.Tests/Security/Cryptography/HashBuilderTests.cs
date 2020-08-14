@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
 using Xunit;
 
@@ -6,6 +7,7 @@ namespace DotNext.Security.Cryptography
 {
     using Buffers;
 
+    [ExcludeFromCodeCoverage]
     public sealed class HashBuilderTests : Test
     {
         [Fact]

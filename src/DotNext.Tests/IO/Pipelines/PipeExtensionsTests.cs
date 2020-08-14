@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Pipelines;
 using System.Text;
@@ -8,6 +9,7 @@ using Xunit;
 
 namespace DotNext.IO.Pipelines
 {
+    [ExcludeFromCodeCoverage]
     public sealed class PipeExtensionsTests : Test
     {
         [Theory]

@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -5,6 +6,7 @@ using Xunit;
 
 namespace DotNext.Threading.Tasks
 {
+    [ExcludeFromCodeCoverage]
     public sealed class ValueTaskSynchronizerTests : Test
     {
         private sealed class SharedCounter

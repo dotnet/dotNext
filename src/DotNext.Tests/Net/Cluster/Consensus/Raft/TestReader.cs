@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -7,6 +8,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using IO.Log;
 
+    [ExcludeFromCodeCoverage]
     internal readonly struct TestReader : ILogEntryConsumer<IRaftLogEntry, DBNull>
     {
         private readonly Func<IReadOnlyList<IRaftLogEntry>, long?, ValueTask> reader;

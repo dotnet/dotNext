@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace DotNext
 {
+    [ExcludeFromCodeCoverage]
     public sealed class EqualityComparerBuilderTests : Test
     {
         private sealed unsafe class UnsafeClass

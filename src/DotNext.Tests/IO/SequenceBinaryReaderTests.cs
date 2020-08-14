@@ -1,5 +1,6 @@
 using System;
 using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Pipelines;
 using System.Text;
@@ -11,6 +12,7 @@ namespace DotNext.IO
     using Buffers;
     using static Pipelines.PipeExtensions;
 
+    [ExcludeFromCodeCoverage]
     public sealed class SequenceBinaryReaderTests : Test
     {
         [Fact]

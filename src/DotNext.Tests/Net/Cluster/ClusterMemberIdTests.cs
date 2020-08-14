@@ -1,8 +1,10 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace DotNext.Net.Cluster
 {
+    [ExcludeFromCodeCoverage]
     public sealed class ClusterMemberIdTests : Test
     {
         [Fact]

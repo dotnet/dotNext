@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using Xunit;
 
@@ -8,6 +9,7 @@ namespace DotNext.Metaprogramming
     using static CodeGenerator;
     using U = Linq.Expressions.UniversalExpression;
 
+    [ExcludeFromCodeCoverage]
     public sealed class LoopTests : Test
     {
         public struct CustomEnumerator

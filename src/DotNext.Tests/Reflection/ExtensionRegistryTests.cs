@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace DotNext.Reflection
 {
+    [ExcludeFromCodeCoverage]
     public sealed class ExtensionRegistryTest : Test
     {
         private delegate void ZeroMethod(ref int value);

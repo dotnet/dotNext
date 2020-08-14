@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace DotNext.IO
 {
+    [ExcludeFromCodeCoverage]
     public sealed class RentedMemoryStreamTests : Test
     {
         [Fact]

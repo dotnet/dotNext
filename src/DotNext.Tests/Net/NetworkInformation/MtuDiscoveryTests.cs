@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
@@ -5,6 +6,7 @@ using Xunit;
 
 namespace DotNext.Net.NetworkInformation
 {
+    [ExcludeFromCodeCoverage]
     public sealed class MtuDiscoveryTests : Test
     {
         private const int PingTimeout = 2000;

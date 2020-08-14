@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace DotNext
@@ -6,6 +7,7 @@ namespace DotNext
     using Concept = Runtime.CompilerServices.Concept;
     using ConstraintViolationException = Reflection.ConstraintViolationException;
 
+    [ExcludeFromCodeCoverage]
     public sealed class NumberConceptTests : Test
     {
         [Fact]

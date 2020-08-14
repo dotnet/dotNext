@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Xunit;
@@ -7,8 +8,10 @@ namespace DotNext.Metaprogramming
 {
     using Linq.Expressions;
     using static CodeGenerator;
+
     using U = Linq.Expressions.UniversalExpression;
 
+    [ExcludeFromCodeCoverage]
     public sealed class BlockTests : Test
     {
         private sealed class DisposableClass : Disposable

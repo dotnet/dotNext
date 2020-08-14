@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -7,6 +8,7 @@ namespace DotNext.Threading.Tasks
 {
     using Generic;
 
+    [ExcludeFromCodeCoverage]
     public sealed class ContinuationTest : Test
     {
         [Fact]

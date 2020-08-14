@@ -1,7 +1,9 @@
+using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    [ExcludeFromCodeCoverage]
     public sealed class ElectionTimeoutTests : Test
     {
         [Fact]

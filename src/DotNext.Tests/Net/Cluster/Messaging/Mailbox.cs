@@ -1,10 +1,12 @@
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using static Xunit.Assert;
 
 namespace DotNext.Net.Cluster.Messaging
 {
+    [ExcludeFromCodeCoverage]
     internal sealed class Mailbox : ConcurrentQueue<StreamMessage>, IInputChannel
     {
         async Task<IMessage> IInputChannel.ReceiveMessage(ISubscriber sender, IMessage message, object context, CancellationToken token)

@@ -1,6 +1,7 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ namespace DotNext.Buffers
     using IAsyncBinaryReader = IO.IAsyncBinaryReader;
     using StringLengthEncoding = IO.StringLengthEncoding;
 
+    [ExcludeFromCodeCoverage]
     public sealed class BufferWriterTests : Test
     {
         [Theory]
