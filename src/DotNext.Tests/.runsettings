@@ -11,7 +11,7 @@
 						<ModulePaths>
 							<Exclude>
 								<ModulePath>.*xunit.*</ModulePath>
-								<ModulePath>DotNext.Tests.dll</ModulePath>
+								<ModulePath>.*tests.*</ModulePath>
 							</Exclude>
 						</ModulePaths>
 					</CodeCoverage>
