@@ -1,11 +1,17 @@
-﻿<DataCollector firendlyName="Code Coverage" uri="datacollector://Microsoft/CodeCoverage/2.0">
-	<Configuration>
-		<CodeCoverage>
-			<ModulePaths>
-				<Exclude>
-					<ModulePath>*xunit*, DotNext.Tests.dll</ModulePath>
-				</Exclude>
-			</ModulePaths>
-		</CodeCoverage>
-	</Configuration>
-</DataCollector>
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+	<DataCollectionRunSettings>
+		<DataCollector firendlyName="Code Coverage" uri="datacollector://Microsoft/CodeCoverage/2.0">
+			<Configuration>
+				<CodeCoverage>
+					<ModulePaths>
+						<Exclude>
+							<ModulePath>*xunit*</ModulePath>
+							<ModulePath>DotNext.Tests.dll</ModulePath>
+						</Exclude>
+					</ModulePaths>
+				</CodeCoverage>
+			</Configuration>
+		</DataCollector>
+	</DataCollectionRunSettings>
+</RunSettings>
