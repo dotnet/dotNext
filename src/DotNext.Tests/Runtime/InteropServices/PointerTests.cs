@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -9,7 +8,6 @@ namespace DotNext.Runtime.InteropServices
 {
     using Threading;
 
-    [ExcludeFromCodeCoverage]
     public sealed class PointerTests : Test
     {
         [Fact]

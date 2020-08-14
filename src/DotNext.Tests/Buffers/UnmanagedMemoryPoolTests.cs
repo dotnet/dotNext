@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Buffers;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace DotNext.Buffers
 {
-    [ExcludeFromCodeCoverage]
     public sealed class UnmanagedMemoryPoolTests : Test
     {
         [Fact]

@@ -5,7 +5,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,7 +15,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
     using Messaging;
     using static DotNext.Hosting.HostBuilderExtensions;
 
-    [ExcludeFromCodeCoverage]
     public sealed class EmbeddedClusterSupportTests : Test
     {
         private sealed class LeaderChangedEvent : EventWaitHandle, IClusterMemberLifetime

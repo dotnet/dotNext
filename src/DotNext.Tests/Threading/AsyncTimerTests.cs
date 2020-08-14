@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -8,7 +7,6 @@ namespace DotNext.Threading
 {
     using TrueTask = Tasks.CompletedTask<bool, Generic.BooleanConst.True>;
 
-    [ExcludeFromCodeCoverage]
     public sealed class AsyncTimerTests : Test
     {
         private sealed class Counter : EventWaitHandle

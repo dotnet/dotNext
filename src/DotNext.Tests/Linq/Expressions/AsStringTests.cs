@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Xunit;
 
 namespace DotNext.Linq.Expressions
 {
-    [ExcludeFromCodeCoverage]
     public sealed class AsStringTests : Test
     {
         [Fact]

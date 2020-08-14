@@ -1,13 +1,11 @@
 using System;
 using System.Buffers;
-using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.IO;
 using Xunit;
 
 namespace DotNext.Buffers
 {
-    [ExcludeFromCodeCoverage]
     public sealed class MemoryTemplateTests : Test
     {
         private static void Rewrite(int index, ArrayBufferWriter<char> writer)

@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Runtime.InteropServices
 {
-    [ExcludeFromCodeCoverage]
     public sealed class UnmanagedFunctionTests : Test
     {
         [OSDependentFact(PlatformID.Win32NT, Skip = "Not yet supported by .NET Core")]

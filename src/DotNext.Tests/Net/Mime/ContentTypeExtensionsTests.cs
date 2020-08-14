@@ -1,11 +1,9 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Net.Mime;
+﻿using System.Net.Mime;
 using System.Text;
 using Xunit;
 
 namespace DotNext.Net.Mime
 {
-    [ExcludeFromCodeCoverage]
     public sealed class ContentTypeExtensionsTests : Test
     {
         [Fact]

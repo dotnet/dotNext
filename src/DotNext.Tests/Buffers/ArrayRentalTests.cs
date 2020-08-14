@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace DotNext.Buffers
 {
-    [ExcludeFromCodeCoverage]
     public sealed class ArrayRentalTests : Test
     {
         [Fact]

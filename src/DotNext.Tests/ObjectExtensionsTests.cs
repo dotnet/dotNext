@@ -1,10 +1,8 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace DotNext
 {
-    [ExcludeFromCodeCoverage]
     public sealed class ObjectExtensionsTests : Test
     {
         private sealed class UserDataSupport : UserDataStorage.IContainer

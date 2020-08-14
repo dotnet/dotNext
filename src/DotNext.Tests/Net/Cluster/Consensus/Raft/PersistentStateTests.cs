@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -14,7 +13,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     using IO;
     using LogEntryList = IO.Log.LogEntryProducer<IRaftLogEntry>;
 
-    [ExcludeFromCodeCoverage]
     public sealed class PersistentStateTests : Test
     {
         private sealed class ClusterMemberMock : IRaftClusterMember

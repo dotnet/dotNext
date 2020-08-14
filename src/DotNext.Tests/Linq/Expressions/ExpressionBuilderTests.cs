@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using Xunit;
 
 namespace DotNext.Linq.Expressions
 {
-    [ExcludeFromCodeCoverage]
     public sealed class ExpressionBuilderTests : Test
     {
         private static Predicate<T> MakeNullCheck<T>()

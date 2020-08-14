@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using Xunit;
 
 namespace DotNext.Runtime.CompilerServices
 {
-    [ExcludeFromCodeCoverage]
     public sealed class ValueTupleBuilderTests : Test
     {
         [Fact]

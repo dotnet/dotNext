@@ -1,13 +1,11 @@
 using System;
 using System.Buffers;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.MemoryMappedFiles;
 using Xunit;
 
 namespace DotNext.IO.MemoryMappedFiles
 {
-    [ExcludeFromCodeCoverage]
     public sealed class ReadOnlySequenceAccessorTests : Test
     {
         [Fact]

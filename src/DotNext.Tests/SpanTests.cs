@@ -1,14 +1,12 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace DotNext
 {
     using Buffers;
 
-    [ExcludeFromCodeCoverage]
     public sealed class SpanTests : Test
     {
         [Fact]

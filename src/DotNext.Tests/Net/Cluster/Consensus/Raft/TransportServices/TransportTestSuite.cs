@@ -2,7 +2,6 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,7 +13,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
     using IO;
     using IO.Log;
 
-    [ExcludeFromCodeCoverage]
     public abstract class TransportTestSuite : Test
     {
         private sealed class BufferedEntry : BinaryTransferObject, IRaftLogEntry

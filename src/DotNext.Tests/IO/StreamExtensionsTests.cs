@@ -1,20 +1,17 @@
 using System;
 using System.Buffers;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using static System.Globalization.CultureInfo;
 using DateTimeStyles = System.Globalization.DateTimeStyles;
-using TimeSpanStyles = System.Globalization.TimeSpanStyles;
 
 namespace DotNext.IO
 {
     using Buffers;
     using Text;
 
-    [ExcludeFromCodeCoverage]
     public sealed class StreamExtensionsTests : Test
     {
         private static void ReadStringUsingEncoding(string value, Encoding encoding, int bufferSize)

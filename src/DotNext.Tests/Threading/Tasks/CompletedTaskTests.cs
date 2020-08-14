@@ -1,12 +1,10 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Xunit;
 
 namespace DotNext.Threading.Tasks
 {
     using Generic;
 
-    [ExcludeFromCodeCoverage]
     public sealed class CompletedTaskTests : Test
     {
         [Fact]

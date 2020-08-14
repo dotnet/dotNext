@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Xunit;
 
 namespace DotNext.Threading
 {
-    [ExcludeFromCodeCoverage]
     public sealed class ConcurrentObjectPoolTests : Test
     {
         [Fact]

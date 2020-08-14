@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -14,7 +13,6 @@ namespace DotNext.Metaprogramming
     using static Threading.Tasks.Synchronization;
     using U = Linq.Expressions.UniversalExpression;
 
-    [ExcludeFromCodeCoverage]
     public sealed class LambdaTests : Test
     {
         private static long Fact(long value)

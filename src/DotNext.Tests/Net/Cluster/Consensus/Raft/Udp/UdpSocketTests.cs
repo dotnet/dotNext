@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Threading.Tasks;
 using Xunit;
@@ -9,7 +8,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 {
     using TransportServices;
 
-    [ExcludeFromCodeCoverage]
     public sealed class UdpSocketTests : TransportTestSuite
     {
         private static readonly IPEndPoint LocalHostRandomPort = new IPEndPoint(IPAddress.Loopback, 0);

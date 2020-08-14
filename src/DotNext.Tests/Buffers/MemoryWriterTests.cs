@@ -1,7 +1,6 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization.Formatters.Binary;
 using Xunit;
 using Enumerable = System.Linq.Enumerable;
@@ -10,7 +9,6 @@ namespace DotNext.Buffers
 {
     using StreamSource = IO.StreamSource;
 
-    [ExcludeFromCodeCoverage]
     public sealed class MemoryWriterTests : Test
     {
         private static void WriteReadUsingSpan(MemoryWriter<byte> writer)

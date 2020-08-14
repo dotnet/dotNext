@@ -1,7 +1,6 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
@@ -12,7 +11,6 @@ namespace DotNext.IO
 {
     using Buffers;
 
-    [ExcludeFromCodeCoverage]
     public sealed class StreamSourceTests : Test
     {
         private static readonly byte[] data = { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120 };

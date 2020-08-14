@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace DotNext
 {
-    [ExcludeFromCodeCoverage]
     public sealed class OptionalTest : Test
     {
         [Fact]

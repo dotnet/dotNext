@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Xunit;
 
 namespace DotNext.Diagnostics
 {
-    [ExcludeFromCodeCoverage]
     public sealed class TimestampTests : Test
     {
         [Fact]

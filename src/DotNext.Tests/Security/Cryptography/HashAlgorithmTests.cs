@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.IO.Pipelines;
 using System.Security.Cryptography;
 using System.Threading;
@@ -7,7 +6,6 @@ using Xunit;
 
 namespace DotNext.Security.Cryptography
 {
-    [ExcludeFromCodeCoverage]
     public sealed class HashAlgorithmTests : Test
     {
         [Fact]

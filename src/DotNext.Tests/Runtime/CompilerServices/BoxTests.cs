@@ -1,10 +1,8 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace DotNext.Runtime.CompilerServices
 {
-    [ExcludeFromCodeCoverage]
     public sealed class BoxTests : Test
     {
         [Fact]

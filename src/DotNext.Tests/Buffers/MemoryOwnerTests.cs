@@ -1,11 +1,9 @@
 using System;
 using System.Buffers;
-using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace DotNext.Buffers
 {
-    [ExcludeFromCodeCoverage]
     public sealed class MemoryOwnerTests : Test
     {
         [Fact]

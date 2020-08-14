@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,7 +9,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
 {
     using TransportServices;
 
-    [ExcludeFromCodeCoverage]
     public sealed class TcpTransportTests : TransportTestSuite
     {
         private sealed class LeaderChangedEvent : EventWaitHandle

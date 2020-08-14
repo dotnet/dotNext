@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
@@ -10,7 +9,6 @@ namespace DotNext.Threading
 {
     using AsyncDelegateFuture = Runtime.CompilerServices.AsyncDelegateFuture;
 
-    [ExcludeFromCodeCoverage]
     public sealed class AsyncDelegateTests : Test
     {
         private sealed class Accumulator

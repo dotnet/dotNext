@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
 using Xunit;
 
 namespace DotNext
 {
-    [ExcludeFromCodeCoverage]
     public sealed class StringExtensionsTests : Test
     {
         [Fact]

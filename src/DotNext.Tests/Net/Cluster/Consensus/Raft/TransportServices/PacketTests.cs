@@ -1,10 +1,8 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
-    [ExcludeFromCodeCoverage]
     public sealed class PacketTests : Test
     {
         [Fact]

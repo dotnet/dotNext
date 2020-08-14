@@ -1,7 +1,6 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Pipelines;
 using System.Text;
@@ -18,7 +17,6 @@ namespace DotNext.IO
     using ChunkSequence = Buffers.ChunkSequence<byte>;
     using static Buffers.MemoryAllocator;
 
-    [ExcludeFromCodeCoverage]
     public sealed class AsyncBinaryReaderWriterTests : Test
     {
         public interface IAsyncBinaryReaderWriterSource : IAsyncDisposable

@@ -1,9 +1,7 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Xunit;
+﻿using Xunit;
 
 namespace DotNext
 {
-    [ExcludeFromCodeCoverage]
     public sealed class ComparableTests : Test
     {
         [Fact]

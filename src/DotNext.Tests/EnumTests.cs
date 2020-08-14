@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Xunit;
 
 namespace DotNext
 {
-    [ExcludeFromCodeCoverage]
     public sealed class EnumTests : Test
     {
         private sealed class TestEnumValueAttribute : Attribute

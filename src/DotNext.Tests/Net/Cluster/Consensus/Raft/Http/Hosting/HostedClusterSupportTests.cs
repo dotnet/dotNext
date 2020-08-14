@@ -5,7 +5,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -15,7 +14,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
     using IReplicationCluster = Replication.IReplicationCluster;
     using static DotNext.Hosting.HostBuilderExtensions;
 
-    [ExcludeFromCodeCoverage]
     public sealed class HostedClusterSupportTests : Test
     {
         private static IHost CreateHost<TStartup>(int port, bool localhost, IDictionary<string, string> configuration, IClusterMemberLifetime configurator = null)

@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 using Xunit;
 
 namespace DotNext.Linq.Expressions
 {
-    [ExcludeFromCodeCoverage]
     public sealed class CountTests : Test
     {
         [Fact]

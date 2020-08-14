@@ -1,9 +1,7 @@
-using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace DotNext.Reflection
 {
-    [ExcludeFromCodeCoverage]
     public sealed class RefTests : Test
     {
         [Fact]

@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace DotNext.Reflection
 {
-    [ExcludeFromCodeCoverage]
     public sealed class TypeTests : Test
     {
         internal static event EventHandler StaticEvent;

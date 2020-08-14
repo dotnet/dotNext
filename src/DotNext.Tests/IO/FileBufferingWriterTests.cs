@@ -1,7 +1,6 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
@@ -10,7 +9,6 @@ using Xunit;
 
 namespace DotNext.IO
 {
-    [ExcludeFromCodeCoverage]
     public sealed class FileBufferingWriterTests : Test
     {
         [Theory]

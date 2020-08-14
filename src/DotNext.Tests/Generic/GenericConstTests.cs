@@ -1,11 +1,9 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Xunit;
+﻿using Xunit;
 
 namespace DotNext.Generic
 {
     using Threading.Tasks;
 
-    [ExcludeFromCodeCoverage]
     public sealed class GenericConstTests : Test
     {
         [Fact]

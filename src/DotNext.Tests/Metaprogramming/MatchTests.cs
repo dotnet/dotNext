@@ -1,14 +1,11 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace DotNext.Metaprogramming
 {
     using Linq.Expressions;
-
     using static CodeGenerator;
 
-    [ExcludeFromCodeCoverage]
     public sealed class MatchTests : Test
     {
         [Fact]

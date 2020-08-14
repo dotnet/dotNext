@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace DotNext.Metaprogramming
@@ -7,7 +6,6 @@ namespace DotNext.Metaprogramming
     using Linq.Expressions;
     using static CodeGenerator;
 
-    [ExcludeFromCodeCoverage]
     public sealed class SwitchTests : Test
     {
         [Fact]

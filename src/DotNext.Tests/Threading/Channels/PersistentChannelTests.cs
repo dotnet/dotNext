@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -10,7 +9,6 @@ using Xunit;
 
 namespace DotNext.Threading.Channels
 {
-    [ExcludeFromCodeCoverage]
     public sealed class PersistentChannelTests : Test
     {
         private sealed class SerializationChannel<T> : PersistentChannel<T, T>

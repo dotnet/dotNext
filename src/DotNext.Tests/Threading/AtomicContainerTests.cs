@@ -1,11 +1,9 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using Xunit;
 
 namespace DotNext.Threading
 {
-    [ExcludeFromCodeCoverage]
     public sealed class AtomicContainerTests : Test
     {
         [Fact]

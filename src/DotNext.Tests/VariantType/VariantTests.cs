@@ -1,10 +1,8 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace DotNext.VariantType
 {
-    [ExcludeFromCodeCoverage]
     public sealed class VariantTests : Test
     {
         [Fact]
