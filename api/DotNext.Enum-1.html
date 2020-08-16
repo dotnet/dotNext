@@ -84,6 +84,7 @@
     <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="DotNext.Enum-1.html">Enum</a>&lt;TEnum&gt;&gt;</div>
     <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.runtime.serialization.iserializable">ISerializable</a></div>
     <div><a class="xref" href="DotNext.IConvertible-1.html">IConvertible</a>&lt;TEnum&gt;</div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.icustomattributeprovider">ICustomAttributeProvider</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -102,7 +103,7 @@
   <h5 id="DotNext_Enum_1_syntax">Syntax</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[Serializable]
-public struct Enum&lt;TEnum&gt; : IEquatable&lt;TEnum&gt;, IComparable&lt;TEnum&gt;, IFormattable, IEquatable&lt;Enum&lt;TEnum&gt;&gt;, ISerializable, IConvertible&lt;TEnum&gt; where TEnum : struct, Enum</code></pre>
+public struct Enum&lt;TEnum&gt; : IEquatable&lt;TEnum&gt;, IComparable&lt;TEnum&gt;, IFormattable, IEquatable&lt;Enum&lt;TEnum&gt;&gt;, ISerializable, IConvertible&lt;TEnum&gt;, ICustomAttributeProvider where TEnum : struct, Enum</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -127,7 +128,7 @@ public struct Enum&lt;TEnum&gt; : IEquatable&lt;TEnum&gt;, IComparable&lt;TEnum&
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_MaxValue.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.MaxValue%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L91">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L57">View Source</a>
   </span>
   <h4 id="DotNext_Enum_1_MaxValue" data-uid="DotNext.Enum`1.MaxValue">MaxValue</h4>
   <div class="markdown level1 summary"><p>Maximum enum value.</p>
@@ -157,7 +158,7 @@ public struct Enum&lt;TEnum&gt; : IEquatable&lt;TEnum&gt;, IComparable&lt;TEnum&
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_MinValue.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.MinValue%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L96">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L62">View Source</a>
   </span>
   <h4 id="DotNext_Enum_1_MinValue" data-uid="DotNext.Enum`1.MinValue">MinValue</h4>
   <div class="markdown level1 summary"><p>Minimum enum value.</p>
@@ -189,7 +190,7 @@ public struct Enum&lt;TEnum&gt; : IEquatable&lt;TEnum&gt;, IComparable&lt;TEnum&
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_Members.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.Members%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L158">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L136">View Source</a>
   </span>
   <a id="DotNext_Enum_1_Members_" data-uid="DotNext.Enum`1.Members*"></a>
   <h4 id="DotNext_Enum_1_Members" data-uid="DotNext.Enum`1.Members">Members</h4>
@@ -220,7 +221,7 @@ public struct Enum&lt;TEnum&gt; : IEquatable&lt;TEnum&gt;, IComparable&lt;TEnum&
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_Name.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.Name%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L206">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L219">View Source</a>
   </span>
   <a id="DotNext_Enum_1_Name_" data-uid="DotNext.Enum`1.Name*"></a>
   <h4 id="DotNext_Enum_1_Name" data-uid="DotNext.Enum`1.Name">Name</h4>
@@ -251,7 +252,7 @@ public struct Enum&lt;TEnum&gt; : IEquatable&lt;TEnum&gt;, IComparable&lt;TEnum&
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_UnderlyingType.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.UnderlyingType%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L163">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L141">View Source</a>
   </span>
   <a id="DotNext_Enum_1_UnderlyingType_" data-uid="DotNext.Enum`1.UnderlyingType*"></a>
   <h4 id="DotNext_Enum_1_UnderlyingType" data-uid="DotNext.Enum`1.UnderlyingType">UnderlyingType</h4>
@@ -282,7 +283,7 @@ public struct Enum&lt;TEnum&gt; : IEquatable&lt;TEnum&gt;, IComparable&lt;TEnum&
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_UnderlyingTypeCode.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.UnderlyingTypeCode%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L168">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L146">View Source</a>
   </span>
   <a id="DotNext_Enum_1_UnderlyingTypeCode_" data-uid="DotNext.Enum`1.UnderlyingTypeCode*"></a>
   <h4 id="DotNext_Enum_1_UnderlyingTypeCode" data-uid="DotNext.Enum`1.UnderlyingTypeCode">UnderlyingTypeCode</h4>
@@ -313,7 +314,7 @@ public struct Enum&lt;TEnum&gt; : IEquatable&lt;TEnum&gt;, IComparable&lt;TEnum&
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_Value.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.Value%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L198">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L211">View Source</a>
   </span>
   <a id="DotNext_Enum_1_Value_" data-uid="DotNext.Enum`1.Value*"></a>
   <h4 id="DotNext_Enum_1_Value" data-uid="DotNext.Enum`1.Value">Value</h4>
@@ -346,7 +347,7 @@ public struct Enum&lt;TEnum&gt; : IEquatable&lt;TEnum&gt;, IComparable&lt;TEnum&
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_CompareTo__0_.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.CompareTo(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L219">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L232">View Source</a>
   </span>
   <a id="DotNext_Enum_1_CompareTo_" data-uid="DotNext.Enum`1.CompareTo*"></a>
   <h4 id="DotNext_Enum_1_CompareTo__0_" data-uid="DotNext.Enum`1.CompareTo(`0)">CompareTo(TEnum)</h4>
@@ -396,7 +397,7 @@ public struct Enum&lt;TEnum&gt; : IEquatable&lt;TEnum&gt;, IComparable&lt;TEnum&
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_Equals__0_.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.Equals(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L226">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L239">View Source</a>
   </span>
   <a id="DotNext_Enum_1_Equals_" data-uid="DotNext.Enum`1.Equals*"></a>
   <h4 id="DotNext_Enum_1_Equals__0_" data-uid="DotNext.Enum`1.Equals(`0)">Equals(TEnum)</h4>
@@ -446,7 +447,7 @@ public struct Enum&lt;TEnum&gt; : IEquatable&lt;TEnum&gt;, IComparable&lt;TEnum&
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_Equals_DotNext_Enum__0__.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.Equals(DotNext.Enum%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L233">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L246">View Source</a>
   </span>
   <a id="DotNext_Enum_1_Equals_" data-uid="DotNext.Enum`1.Equals*"></a>
   <h4 id="DotNext_Enum_1_Equals_DotNext_Enum__0__" data-uid="DotNext.Enum`1.Equals(DotNext.Enum{`0})">Equals(Enum&lt;TEnum&gt;)</h4>
@@ -496,7 +497,7 @@ public struct Enum&lt;TEnum&gt; : IEquatable&lt;TEnum&gt;, IComparable&lt;TEnum&
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_Equals_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.Equals(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L240">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L253">View Source</a>
   </span>
   <a id="DotNext_Enum_1_Equals_" data-uid="DotNext.Enum`1.Equals*"></a>
   <h4 id="DotNext_Enum_1_Equals_System_Object_" data-uid="DotNext.Enum`1.Equals(System.Object)">Equals(Object)</h4>
@@ -545,10 +546,112 @@ public struct Enum&lt;TEnum&gt; : IEquatable&lt;TEnum&gt;, IComparable&lt;TEnum&
   <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.equals#System_ValueType_Equals_System_Object_">ValueType.Equals(Object)</a></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_GetCustomAttribute__1.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.GetCustomAttribute%60%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L185">View Source</a>
+  </span>
+  <a id="DotNext_Enum_1_GetCustomAttribute_" data-uid="DotNext.Enum`1.GetCustomAttribute*"></a>
+  <h4 id="DotNext_Enum_1_GetCustomAttribute__1" data-uid="DotNext.Enum`1.GetCustomAttribute``1">GetCustomAttribute&lt;T&gt;()</h4>
+  <div class="markdown level1 summary"><p>Retrieves a custom attribute of a specified type that is applied to this enum member.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public T GetCustomAttribute&lt;T&gt;()
+
+    where T : Attribute</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><p>A custom attribute that matches <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>, or <span class="xref">null</span> if no such attribute is found.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of attribute to search for.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_GetCustomAttributes__1.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.GetCustomAttributes%60%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L176">View Source</a>
+  </span>
+  <a id="DotNext_Enum_1_GetCustomAttributes_" data-uid="DotNext.Enum`1.GetCustomAttributes*"></a>
+  <h4 id="DotNext_Enum_1_GetCustomAttributes__1" data-uid="DotNext.Enum`1.GetCustomAttributes``1">GetCustomAttributes&lt;T&gt;()</h4>
+  <div class="markdown level1 summary"><p>Retrieves a collection of custom attributes of a specified type
+that are applied to this enum member.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IEnumerable&lt;T&gt; GetCustomAttributes&lt;T&gt;()
+
+    where T : Attribute</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;T&gt;</td>
+        <td><p>A collection of the custom attributes that are applied to element and that match
+<code data-dev-comment-type="typeparamref" class="typeparamref">T</code>, or an empty collection if no such attributes exist.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of attribute to search for.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.GetHashCode%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L251">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L264">View Source</a>
   </span>
   <a id="DotNext_Enum_1_GetHashCode_" data-uid="DotNext.Enum`1.GetHashCode*"></a>
   <h4 id="DotNext_Enum_1_GetHashCode" data-uid="DotNext.Enum`1.GetHashCode">GetHashCode()</h4>
@@ -582,7 +685,7 @@ public struct Enum&lt;TEnum&gt; : IEquatable&lt;TEnum&gt;, IComparable&lt;TEnum&
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_GetMember__0_.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.GetMember(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L117">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L86">View Source</a>
   </span>
   <a id="DotNext_Enum_1_GetMember_" data-uid="DotNext.Enum`1.GetMember*"></a>
   <h4 id="DotNext_Enum_1_GetMember__0_" data-uid="DotNext.Enum`1.GetMember(`0)">GetMember(TEnum)</h4>
@@ -632,7 +735,7 @@ public struct Enum&lt;TEnum&gt; : IEquatable&lt;TEnum&gt;, IComparable&lt;TEnum&
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_GetMember_System_String_.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.GetMember(System.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L153">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L130">View Source</a>
   </span>
   <a id="DotNext_Enum_1_GetMember_" data-uid="DotNext.Enum`1.GetMember*"></a>
   <h4 id="DotNext_Enum_1_GetMember_System_String_" data-uid="DotNext.Enum`1.GetMember(System.String)">GetMember(String)</h4>
@@ -698,7 +801,7 @@ public struct Enum&lt;TEnum&gt; : IEquatable&lt;TEnum&gt;, IComparable&lt;TEnum&
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_IsDefined__0_.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.IsDefined(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L103">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L69">View Source</a>
   </span>
   <a id="DotNext_Enum_1_IsDefined_" data-uid="DotNext.Enum`1.IsDefined*"></a>
   <h4 id="DotNext_Enum_1_IsDefined__0_" data-uid="DotNext.Enum`1.IsDefined(`0)">IsDefined(TEnum)</h4>
@@ -748,7 +851,7 @@ public struct Enum&lt;TEnum&gt; : IEquatable&lt;TEnum&gt;, IComparable&lt;TEnum&
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_IsDefined_System_String_.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.IsDefined(System.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L110">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L79">View Source</a>
   </span>
   <a id="DotNext_Enum_1_IsDefined_" data-uid="DotNext.Enum`1.IsDefined*"></a>
   <h4 id="DotNext_Enum_1_IsDefined_System_String_" data-uid="DotNext.Enum`1.IsDefined(System.String)">IsDefined(String)</h4>
@@ -795,10 +898,67 @@ public struct Enum&lt;TEnum&gt; : IEquatable&lt;TEnum&gt;, IComparable&lt;TEnum&
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_IsDefined_System_Type_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.IsDefined(System.Type%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L197">View Source</a>
+  </span>
+  <a id="DotNext_Enum_1_IsDefined_" data-uid="DotNext.Enum`1.IsDefined*"></a>
+  <h4 id="DotNext_Enum_1_IsDefined_System_Type_System_Boolean_" data-uid="DotNext.Enum`1.IsDefined(System.Type,System.Boolean)">IsDefined(Type, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Indicates whether the one or more attributes of the specified type
+or of its derived types is applied to this enum value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsDefined(Type attributeType, bool inherit = false)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.type">Type</a></td>
+        <td><span class="parametername">attributeType</span></td>
+        <td><p>The type of custom attribute to search for. The search includes derived types.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">inherit</span></td>
+        <td><p><span class="xref">true</span> to search this member's inheritance chain to find the attributes; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if one or more instances of attributeType or any of its derived types is applied to this member; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_IsFlag__0_.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.IsFlag(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L193">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L206">View Source</a>
   </span>
   <a id="DotNext_Enum_1_IsFlag_" data-uid="DotNext.Enum`1.IsFlag*"></a>
   <h4 id="DotNext_Enum_1_IsFlag__0_" data-uid="DotNext.Enum`1.IsFlag(`0)">IsFlag(TEnum)</h4>
@@ -849,7 +1009,7 @@ with the current instance are set in the given value.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_ToString.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L257">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L270">View Source</a>
   </span>
   <a id="DotNext_Enum_1_ToString_" data-uid="DotNext.Enum`1.ToString*"></a>
   <h4 id="DotNext_Enum_1_ToString" data-uid="DotNext.Enum`1.ToString">ToString()</h4>
@@ -883,7 +1043,7 @@ with the current instance are set in the given value.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_TryGetMember__0_DotNext_Enum__0___.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.TryGetMember(%600%2CDotNext.Enum%7B%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L125">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L94">View Source</a>
   </span>
   <a id="DotNext_Enum_1_TryGetMember_" data-uid="DotNext.Enum`1.TryGetMember*"></a>
   <h4 id="DotNext_Enum_1_TryGetMember__0_DotNext_Enum__0___" data-uid="DotNext.Enum`1.TryGetMember(`0,DotNext.Enum{`0}@)">TryGetMember(TEnum, out Enum&lt;TEnum&gt;)</h4>
@@ -939,7 +1099,7 @@ with the current instance are set in the given value.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_TryGetMember_System_String_DotNext_Enum__0___.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.TryGetMember(System.String%2CDotNext.Enum%7B%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L133">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L112">View Source</a>
   </span>
   <a id="DotNext_Enum_1_TryGetMember_" data-uid="DotNext.Enum`1.TryGetMember*"></a>
   <h4 id="DotNext_Enum_1_TryGetMember_System_String_DotNext_Enum__0___" data-uid="DotNext.Enum`1.TryGetMember(System.String,DotNext.Enum{`0}@)">TryGetMember(String, out Enum&lt;TEnum&gt;)</h4>
@@ -997,7 +1157,7 @@ with the current instance are set in the given value.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_op_Equality_DotNext_Enum__0__DotNext_Enum__0__.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.op_Equality(DotNext.Enum%7B%600%7D%2CDotNext.Enum%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L268">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L281">View Source</a>
   </span>
   <a id="DotNext_Enum_1_op_Equality_" data-uid="DotNext.Enum`1.op_Equality*"></a>
   <h4 id="DotNext_Enum_1_op_Equality_DotNext_Enum__0__DotNext_Enum__0__" data-uid="DotNext.Enum`1.op_Equality(DotNext.Enum{`0},DotNext.Enum{`0})">Equality(Enum&lt;TEnum&gt;, Enum&lt;TEnum&gt;)</h4>
@@ -1053,7 +1213,7 @@ with the current instance are set in the given value.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_op_Implicit_DotNext_Enum__0_____0.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.op_Implicit(DotNext.Enum%7B%600%7D%40)~%600%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L212">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L225">View Source</a>
   </span>
   <a id="DotNext_Enum_1_op_Implicit_" data-uid="DotNext.Enum`1.op_Implicit*"></a>
   <h4 id="DotNext_Enum_1_op_Implicit_DotNext_Enum__0_____0" data-uid="DotNext.Enum`1.op_Implicit(DotNext.Enum{`0}@)~`0">Implicit(Enum&lt;TEnum&gt; to TEnum)</h4>
@@ -1102,7 +1262,7 @@ with the current instance are set in the given value.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_op_Inequality_DotNext_Enum__0__DotNext_Enum__0__.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.op_Inequality(DotNext.Enum%7B%600%7D%2CDotNext.Enum%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L276">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L289">View Source</a>
   </span>
   <a id="DotNext_Enum_1_op_Inequality_" data-uid="DotNext.Enum`1.op_Inequality*"></a>
   <h4 id="DotNext_Enum_1_op_Inequality_DotNext_Enum__0__DotNext_Enum__0__" data-uid="DotNext.Enum`1.op_Inequality(DotNext.Enum{`0},DotNext.Enum{`0})">Inequality(Enum&lt;TEnum&gt;, Enum&lt;TEnum&gt;)</h4>
@@ -1160,7 +1320,7 @@ with the current instance are set in the given value.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_DotNext_IConvertible_TEnum__Convert.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.DotNext%23IConvertible%7BTEnum%7D%23Convert%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L201">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L214">View Source</a>
   </span>
   <a id="DotNext_Enum_1_DotNext_IConvertible_TEnum__Convert_" data-uid="DotNext.Enum`1.DotNext#IConvertible{TEnum}#Convert*"></a>
   <h4 id="DotNext_Enum_1_DotNext_IConvertible_TEnum__Convert" data-uid="DotNext.Enum`1.DotNext#IConvertible{TEnum}#Convert">IConvertible&lt;TEnum&gt;.Convert()</h4>
@@ -1190,7 +1350,7 @@ with the current instance are set in the given value.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_System_IFormattable_ToString_System_String_System_IFormatProvider_.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.System%23IFormattable%23ToString(System.String%2CSystem.IFormatProvider)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L260">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L273">View Source</a>
   </span>
   <a id="DotNext_Enum_1_System_IFormattable_ToString_" data-uid="DotNext.Enum`1.System#IFormattable#ToString*"></a>
   <h4 id="DotNext_Enum_1_System_IFormattable_ToString_System_String_System_IFormatProvider_" data-uid="DotNext.Enum`1.System#IFormattable#ToString(System.String,System.IFormatProvider)">IFormattable.ToString(String, IFormatProvider)</h4>
@@ -1239,10 +1399,109 @@ with the current instance are set in the given value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_System_Reflection_ICustomAttributeProvider_GetCustomAttributes_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.System%23Reflection%23ICustomAttributeProvider%23GetCustomAttributes(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L160">View Source</a>
+  </span>
+  <a id="DotNext_Enum_1_System_Reflection_ICustomAttributeProvider_GetCustomAttributes_" data-uid="DotNext.Enum`1.System#Reflection#ICustomAttributeProvider#GetCustomAttributes*"></a>
+  <h4 id="DotNext_Enum_1_System_Reflection_ICustomAttributeProvider_GetCustomAttributes_System_Boolean_" data-uid="DotNext.Enum`1.System#Reflection#ICustomAttributeProvider#GetCustomAttributes(System.Boolean)">ICustomAttributeProvider.GetCustomAttributes(Boolean)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">object[] ICustomAttributeProvider.GetCustomAttributes(bool inherit)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">inherit</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a>[]</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_System_Reflection_ICustomAttributeProvider_GetCustomAttributes_System_Type_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.System%23Reflection%23ICustomAttributeProvider%23GetCustomAttributes(System.Type%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L164">View Source</a>
+  </span>
+  <a id="DotNext_Enum_1_System_Reflection_ICustomAttributeProvider_GetCustomAttributes_" data-uid="DotNext.Enum`1.System#Reflection#ICustomAttributeProvider#GetCustomAttributes*"></a>
+  <h4 id="DotNext_Enum_1_System_Reflection_ICustomAttributeProvider_GetCustomAttributes_System_Type_System_Boolean_" data-uid="DotNext.Enum`1.System#Reflection#ICustomAttributeProvider#GetCustomAttributes(System.Type,System.Boolean)">ICustomAttributeProvider.GetCustomAttributes(Type, Boolean)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">object[] ICustomAttributeProvider.GetCustomAttributes(Type attributeType, bool inherit)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.type">Type</a></td>
+        <td><span class="parametername">attributeType</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">inherit</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a>[]</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_System_Runtime_Serialization_ISerializable_GetObjectData_System_Runtime_Serialization_SerializationInfo_System_Runtime_Serialization_StreamingContext_.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.System%23Runtime%23Serialization%23ISerializable%23GetObjectData(System.Runtime.Serialization.SerializationInfo%2CSystem.Runtime.Serialization.StreamingContext)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L279">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L292">View Source</a>
   </span>
   <a id="DotNext_Enum_1_System_Runtime_Serialization_ISerializable_GetObjectData_" data-uid="DotNext.Enum`1.System#Runtime#Serialization#ISerializable#GetObjectData*"></a>
   <h4 id="DotNext_Enum_1_System_Runtime_Serialization_ISerializable_GetObjectData_System_Runtime_Serialization_SerializationInfo_System_Runtime_Serialization_StreamingContext_" data-uid="DotNext.Enum`1.System#Runtime#Serialization#ISerializable#GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">ISerializable.GetObjectData(SerializationInfo, StreamingContext)</h4>
@@ -1293,6 +1552,9 @@ with the current instance are set in the given value.</p>
   <div>
       <a class="xref" href="DotNext.IConvertible-1.html">IConvertible&lt;T&gt;</a>
   </div>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.icustomattributeprovider">System.Reflection.ICustomAttributeProvider</a>
+  </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_Skip__2___0__System_Int32_">Sequence.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, Int32)</a>
@@ -1302,6 +1564,9 @@ with the current instance are set in the given value.</p>
   </div>
   <div>
       <a class="xref" href="DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_IsOneOf__1___0___0___">ValueTypeExtensions.IsOneOf&lt;T&gt;(T, T[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Reflection.CustomAttribute.html#DotNext_Reflection_CustomAttribute_IsDefined__1_System_Reflection_ICustomAttributeProvider_System_Boolean_">CustomAttribute.IsDefined&lt;TAttribute&gt;(ICustomAttributeProvider, Boolean)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
@@ -1321,7 +1586,7 @@ with the current instance are set in the given value.</p>
                     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1.md&amp;value=---%0Auid%3A%20DotNext.Enum%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L13" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L15" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

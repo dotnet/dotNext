@@ -114,9 +114,28 @@ white == Color.White;   //true
 <p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.enum">System.Enum</a> class has public instance method <code>HasFlag</code> that allows to check whether the one or more bits are set in the enumeration. However, it causes boxing of the argument. There is no generic version of this method in standard library to avoid boxing.</p>
 <p>.NEXT library offers generic and fast version of <code>HasFlag</code> method that prevents boxing:</p>
 <ul>
-<li>Instance method <code>IsFlag</code> of <a href="https://sakno.github.io/dotNext/api/DotNext.Enum-1.html">Enum&lt;T&gt;</a> class</li>
+<li>Instance method <code>IsFlag</code> of <a href="https://sakno.github.io/dotNext/api/DotNext.Enum-1.html">Enum&lt;T&gt;</a> value type</li>
 <li>Static method <code>HasFlag</code> of <a href="https://sakno.github.io/dotNext/api/DotNext.Runtime.Intrinsics.html">Intrinsics</a> class</li>
 </ul>
+<h1 id="attributes">Attributes</h1>
+<p><a href="https://sakno.github.io/dotNext/api/DotNext.Enum-1.html">Enum&lt;T&gt;</a> value type exposes access to custom attributes attached to the enum member. The attributes can be requested using methods of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.reflection.icustomattributeprovider">ICustomAttributeProvider</a> interface which is implemented by the value type. For convenience, there are extra methods available with the support of generic parameters:</p>
+<pre><code class="lang-csharp">using DotNext;
+
+sealed class EnumMemberAttribute : Attribute
+{
+}
+
+enum MyEnum
+{
+    None = 0,
+
+    [EnumMember]
+    WithAttribute = 1,
+}
+
+Enum&lt;MyEnum&gt; enumMember = Enum&lt;MyEnum&gt;.GetMember(MyEnum.WithAttribute);
+EnumMemberAttribute attr = enumMember.GetCustomAttribute&lt;EnumMemberAttribute&gt;();
+</code></pre>
 </article>
           </div>
           
