@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>DotNext</RootNamespace>
     <Nullable>enable</Nullable>
-    <Version>2.6.5</Version>
+    <Version>2.6.6</Version>
     <Authors>Roman Sakno</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>Framework for fault-tolerant clustered microservices based on ASP.NET Core</Description>
@@ -67,7 +67,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="DotNext.Net.Cluster" Version="[2.6.5, 3)" />
+    <PackageReference Include="DotNext.Net.Cluster" Version="[2.6.6, 3)" />
   </ItemGroup>
 
   <ItemGroup>
