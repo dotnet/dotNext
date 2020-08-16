@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -140,9 +141,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             }
             catch (OperationCanceledException e)
             {
+                Interlocked.Exchange(ref this.stream, null)?.Dispose();
                 exchange.OnCanceled(e.CancellationToken);
             }
-            catch (Exception e) when (e is SocketException || e.InnerException is SocketException)
+            catch (Exception e) when (e is SocketException || e.InnerException is SocketException || e is EndOfStreamException)
             {
                 // broken socket detected
                 Interlocked.Exchange(ref this.stream, null)?.Dispose();
@@ -150,6 +152,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             }
             catch (Exception e)
             {
+                Interlocked.Exchange(ref this.stream, null)?.Dispose();
                 exchange.OnException(e);
             }
             finally

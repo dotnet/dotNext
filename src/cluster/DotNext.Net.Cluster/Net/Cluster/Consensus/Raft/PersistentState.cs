@@ -646,7 +646,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             // 4. Persist snapshot
             await snapshot.WriteAsync(sessionManager.WriteSession, builder, snapshotIndex, token).ConfigureAwait(false);
-            await snapshot.FlushAsync().ConfigureAwait(false);
+            await snapshot.FlushAsync(token).ConfigureAwait(false);
 
             // 5. Remove snapshotted partitions
             RemovePartitions(compactionScope);

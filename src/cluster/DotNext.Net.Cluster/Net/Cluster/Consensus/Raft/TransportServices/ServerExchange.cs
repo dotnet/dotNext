@@ -28,7 +28,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         private readonly ILocalMember server;
         private Task? task;
-        private State state;
+        private volatile State state;
 
         internal ServerExchange(ILocalMember server, PipeOptions? options = null)
             : base(options) => this.server = server;

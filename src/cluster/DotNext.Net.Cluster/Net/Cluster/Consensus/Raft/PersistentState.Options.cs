@@ -35,7 +35,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <summary>
             /// Gets or sets the initial size of the file that holds the partition with log entries.
             /// </summary>
-            public long InitialPartitionSize { get; set; } = 0;
+            public long InitialPartitionSize { get; set; }
 
             /// <summary>
             /// Enables or disables in-memory cache.

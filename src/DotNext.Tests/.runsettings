@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+	<RunConfiguration>
+		<TestSessionTimeout>300000</TestSessionTimeout>
+	</RunConfiguration>
+	<DataCollectionRunSettings>
+		<DataCollectors>
+			<DataCollector friendlyName="Code сoverage" uri="datacollector://Microsoft/CodeCoverage/2.0">
+				<Configuration>
+					<CodeCoverage>
+						<ModulePaths>
+							<Exclude>
+								<ModulePath>.*xunit.*</ModulePath>
+							</Exclude>
+						</ModulePaths>
+					</CodeCoverage>
+				</Configuration>
+			</DataCollector>
+		</DataCollectors>
+	</DataCollectionRunSettings>
+</RunSettings>
