@@ -7,6 +7,5 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         Fragment = 0B_0010_0000, // sequence packet
         StreamEnd = 0B_0011_0000,   // the end of the stream transfer
         Ack = 0B_0101_0000,         // confirmation that datagram has been received
-        Cancel = 0B_0110_0000,    // remote peer cancels the request
     }
 }

@@ -70,10 +70,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             if (channels.TryGetValue(correlationId, out var channel))
             {
                 var headers = new PacketHeaders(ref datagram);
-                if (headers.Control == FlowControl.Cancel)
-                    ProcessCancellation(cancellationInvoker, ref channel, correlationId, args);
-                else
-                    ProcessDatagram(channels, channel, correlationId, headers, datagram, args);
+                ProcessDatagram(channels, channel, correlationId, headers, datagram, args);
             }
             else
             {

@@ -11,6 +11,10 @@ jobs:
       pool:
         vmImage: windows-2019
       steps:
+        - task: UseDotNet@2
+          inputs:
+            packageType: 'sdk'
+            version: '3.1.401'
         - task: DotNetCoreCLI@2
           inputs:
             command: 'restore'
@@ -23,7 +27,7 @@ jobs:
           inputs:
             command: test
             projects: $(TestProject)
-            arguments: --configuration Debug --collect "Code coverage" -- RunConfiguration.TestSessionTimeout=300000
+            arguments: --configuration Debug --collect "Code coverage"
             nobuild: false
             testRunTitle: 'Debug on Windows'
             publishTestResults: true
@@ -32,6 +36,10 @@ jobs:
       pool:
         vmImage: ubuntu-18.04
       steps:
+        - task: UseDotNet@2
+          inputs:
+            packageType: 'sdk'
+            version: '3.1.401'
         - task: DotNetCoreCLI@2
           inputs:
             command: 'restore'
@@ -44,7 +52,7 @@ jobs:
           inputs:
             command: test
             projects: $(TestProject)
-            arguments: --configuration Debug --collect "Code coverage" -- RunConfiguration.TestSessionTimeout=300000
+            arguments: --configuration Debug --collect "Code coverage"
             nobuild: false
             testRunTitle: 'Debug on Linux'
             publishTestResults: true
