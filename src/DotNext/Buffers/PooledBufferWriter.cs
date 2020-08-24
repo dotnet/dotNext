@@ -1,5 +1,6 @@
 using System;
 using System.Buffers;
+using System.Runtime.CompilerServices;
 
 namespace DotNext.Buffers
 {
@@ -80,6 +81,10 @@ namespace DotNext.Buffers
             {
                 buffer.Dispose();
                 buffer = default;
+            }
+            else if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+            {
+                buffer.Memory.Span.Clear();
             }
 
             position = 0;
