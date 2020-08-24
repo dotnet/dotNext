@@ -241,6 +241,17 @@ namespace DotNext.Buffers
                 ReleaseBuffer();
                 buffer = Array.Empty<T>();
             }
+            else if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+            {
+                if (buffer.Length <= int.MaxValue)
+                {
+                    Array.Clear(buffer, 0, buffer.Length);
+                }
+                else
+                {
+                    Array.Fill(buffer, default!);
+                }
+            }
 
             position = 0;
         }
