@@ -347,5 +347,35 @@ namespace DotNext.Buffers
                 writer.Write(new byte[] { 1, 2, 3 });
             True(counter.Value >= 3);
         }
+
+        [Fact]
+        public static void RemoveTailElements()
+        {
+            using var writer = new PooledArrayBufferWriter<string>();
+            writer.Add("a");
+            writer.Add("b");
+            writer.Add("c");
+            writer.RemoveLast(2);
+            Equal(1, writer.WrittenCount);
+            Equal("a", writer[0]);
+            writer.RemoveLast(1);
+            Equal(0, writer.WrittenCount);
+            Throws<ArgumentOutOfRangeException>(() => writer.RemoveLast(-1));
+        }
+
+        [Fact]
+        public static void RemoveHeadElements()
+        {
+            using var writer = new PooledArrayBufferWriter<string>();
+            writer.Add("a");
+            writer.Add("b");
+            writer.Add("c");
+            writer.RemoveFirst(2);
+            Equal(1, writer.WrittenCount);
+            Equal("c", writer[0]);
+            writer.RemoveFirst(1);
+            Equal(0, writer.WrittenCount);
+            Throws<ArgumentOutOfRangeException>(() => writer.RemoveFirst(-1));
+        }
     }
 }
