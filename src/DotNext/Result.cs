@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
@@ -108,6 +109,10 @@ namespace DotNext
             exception = e is null ? null : new Action(ExceptionDispatchInfo.Capture(e).Throw);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static Exception? GetSourceException(Action? dispatchInfo)
+            => (dispatchInfo?.Target as ExceptionDispatchInfo)?.SourceException;
+
         /// <summary>
         /// Indicates that the result is successful.
         /// </summary>
@@ -120,7 +125,7 @@ namespace DotNext
         /// <value><see langword="true"/> if this result is undefined; otherwise, <see langword="false"/>.</value>
         /// <seealso cref="Undefined"/>
         public bool IsUndefined
-            => ReferenceEquals(exception, UndefinedResultException.ThrowAction) || (exception?.Target as ExceptionDispatchInfo)?.SourceException is UndefinedResultException;
+            => ReferenceEquals(exception, UndefinedResultException.ThrowAction) || GetSourceException(exception) is UndefinedResultException;
 
         /// <summary>
         /// Extracts actual result.
@@ -233,7 +238,7 @@ namespace DotNext
         /// <summary>
         /// Gets exception associated with this result.
         /// </summary>
-        public Exception? Error => ReferenceEquals(exception, UndefinedResultException.ThrowAction) ? new UndefinedResultException() : (exception?.Target as ExceptionDispatchInfo)?.SourceException;
+        public Exception? Error => ReferenceEquals(exception, UndefinedResultException.ThrowAction) ? new UndefinedResultException() : GetSourceException(exception);
 
         /// <summary>
         /// Gets boxed representation of the result.
@@ -303,7 +308,7 @@ namespace DotNext
         public override string ToString()
         {
             Exception? error;
-            if (ReferenceEquals(exception, UndefinedResultException.ThrowAction) || (error = (exception?.Target as ExceptionDispatchInfo)?.SourceException) is UndefinedResultException)
+            if (ReferenceEquals(exception, UndefinedResultException.ThrowAction) || (error = GetSourceException(exception)) is UndefinedResultException)
                 return "<Undefined>";
 
             return error?.ToString() ?? value?.ToString() ?? "<Null>";
