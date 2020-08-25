@@ -160,6 +160,7 @@ namespace DotNext
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static async ValueTask<Optional<T>> ElementAtAsync<T>(this IAsyncEnumerable<T> collection, int index, CancellationToken token = default)
         {
+            // TODO: Replace Optional with Result because element can be null
             await using (var enumerator = collection.GetAsyncEnumerator(token))
             {
                 await enumerator.SkipAsync(index).ConfigureAwait(false);
