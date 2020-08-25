@@ -23,7 +23,7 @@ Elimination of duplicate commands received from clients should be implemented ma
 * TCP transport
 * UDP transport
 
-TCP and UDP network transports shipped with `DotNext.Net.Cluster` library without heavyweight dependencies such as ASP.NET Core or DotNetty. The library provides specialized [application protocol](https://en.wikipedia.org/wiki/Application_layer) on top of these transports which is binary protocol, highly optimized for Raft purposes and provide maximum bandwidth in contrast to HTTP. However, additional features for cluster programming is limited:
+TCP and UDP network transports shipped with `DotNext.Net.Cluster` library without heavyweight dependencies such as ASP.NET Core or DotNetty. The library provides specialized [application protocol](https://en.wikipedia.org/wiki/Application_layer) on top of these transports which is binary protocol, highly optimized for Raft purposes and provide maximum bandwidth in contrast to HTTP. However, additional features for cluster programming are limited:
 * General-purpose messaging between nodes is not supported via [IMessageBus](../../api/DotNext.Net.Cluster.Messaging.IMessageBus.yml) interface
 * [IExpandableCluster](../../api/DotNext.Net.Cluster.IExpandableCluster.yml) interface is not implemented by default. However, the library consumer can implement it easily because entry point in the form of [RaftCluster](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster.html) class inherits from the core [RaftCluster&lt;TMember&gt;](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html) class.
 
