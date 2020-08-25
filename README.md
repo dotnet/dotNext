@@ -45,37 +45,12 @@ Documentation for older versions:
 * [1.x](https://sakno.github.io/dotNext/versions/1.x/index.html)
 
 # What's new
-Release Date: 08-16-2020
+Release Date: MM-DD-2020
 
-<a href="https://www.nuget.org/packages/dotnext/2.9.6">DotNext 2.9.6</a>
-* Improved performance of [Enum Member API](https://sakno.github.io/dotNext/features/core/enum.html)
-
-<a href="https://www.nuget.org/packages/dotnext.io/2.7.6">DotNext.IO 2.7.6</a>
-* Fixed compiler warnings
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.6.6">DotNext.Metaprogramming 2.6.6</a>
-* Fixed compiler warnings
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.reflection/2.6.6">DotNext.Reflection 2.6.6</a>
-* Fixed compiler warnings
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.threading/2.9.6">DotNext.Threading 2.9.6</a>
-* Fixed compiler warnings
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.unsafe/2.7.6">DotNext.Unsafe 2.7.6</a>
-* Fixed compiler warnings
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/2.6.6">DotNext.Net.Cluster 2.6.6</a>
-* Fixed unstable behavior of Raft TCP transport on Windows. See issue [#10](https://github.com/sakno/dotNext/issues/10) for more info.
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/2.6.6">DotNext.AspNetCore.Cluster 2.6.6</a>
-* Updated dependencies
+<a href="https://www.nuget.org/packages/dotnext/2.10.0">DotNext 2.10.0</a>
+* Fixed correctness of `Clear(bool)` method overridden by `PooledArrayBufferWriter<T>` and `PooledBufferWriter<T>` classes
+* Added `RemoveLast` and `RemoveFirst` methods to `PooledArrayBufferWriter<T>` class
+* Added `Result<T>.Undefined` property that allows to return undefined result from the operation which is explicitly distinguishable from **null**
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
