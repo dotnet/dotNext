@@ -118,15 +118,15 @@ namespace DotNext
         /// Indicates that the result is undefined.
         /// </summary>
         /// <value><see langword="true"/> if this result is undefined; otherwise, <see langword="false"/>.</value>
+        /// <seealso cref="Undefined"/>
         public bool IsUndefined
-            => ReferenceEquals(exception, UndefinedResultException.ThrowAction) || exception?.Target is UndefinedResultException;
+            => ReferenceEquals(exception, UndefinedResultException.ThrowAction) || (exception?.Target as ExceptionDispatchInfo)?.SourceException is UndefinedResultException;
 
         /// <summary>
         /// Extracts actual result.
         /// </summary>
         /// <exception cref="Exception">This result is not successful.</exception>
         /// <exception cref="UndefinedResultException">This result is undefined.</exception>
-        /// <seealso cref="Undefined"/>
         public T Value
         {
             get
