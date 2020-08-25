@@ -13,6 +13,7 @@ namespace DotNext
             var r = default(Result<int>);
             Null(r.Error);
             True(r.IsSuccessful);
+            False(r.IsUndefined);
             Equal(0, r.Value);
             Equal(default, r);
             True(r.TryGet(out _));
@@ -40,6 +41,7 @@ namespace DotNext
         public static void RaiseError()
         {
             var r = new Result<decimal>(new ArithmeticException());
+            False(r.IsUndefined);
             Throws<ArithmeticException>(() => r.Value);
             NotNull(r.Error);
             Equal(20M, r.Or(20M));
@@ -79,6 +81,17 @@ namespace DotNext
             Equal("Hello", new Result<string>("Hello").Box());
             Null(new Result<string>(default(string)).Box().Value);
             IsType<ArithmeticException>(new Result<int>(new ArithmeticException()).Box().Error);
+        }
+
+        [Fact]
+        public static void UndefinedResult()
+        {
+            var result = Result<int>.Undefined;
+            False(result.IsSuccessful);
+            True(result.IsUndefined);
+            IsType<UndefinedResultException>(result.Error);
+            Throws<UndefinedResultException>(() => result.Value);
+            Equal("<Undefined>", result.ToString());
         }
     }
 }
