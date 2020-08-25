@@ -89,7 +89,7 @@
 <li>TCP transport</li>
 <li>UDP transport</li>
 </ul>
-<p>TCP and UDP network transports shipped with <code>DotNext.Net.Cluster</code> library without heavyweight dependencies such as ASP.NET Core or DotNetty. The library provides specialized <a href="https://en.wikipedia.org/wiki/Application_layer">application protocol</a> on top of these transports which is binary protocol, highly optimized for Raft purposes and provide maximum bandwidth in contrast to HTTP. However, additional features for cluster programming is limited:</p>
+<p>TCP and UDP network transports shipped with <code>DotNext.Net.Cluster</code> library without heavyweight dependencies such as ASP.NET Core or DotNetty. The library provides specialized <a href="https://en.wikipedia.org/wiki/Application_layer">application protocol</a> on top of these transports which is binary protocol, highly optimized for Raft purposes and provide maximum bandwidth in contrast to HTTP. However, additional features for cluster programming are limited:</p>
 <ul>
 <li>General-purpose messaging between nodes is not supported via <a href="../../api/DotNext.Net.Cluster.Messaging.IMessageBus.html">IMessageBus</a> interface</li>
 <li><a href="../../api/DotNext.Net.Cluster.IExpandableCluster.html">IExpandableCluster</a> interface is not implemented by default. However, the library consumer can implement it easily because entry point in the form of <a href="https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster.html">RaftCluster</a> class inherits from the core <a href="https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html">RaftCluster&lt;TMember&gt;</a> class.</li>
