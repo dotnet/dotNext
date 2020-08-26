@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -152,11 +153,15 @@ namespace DotNext
     [StructLayout(LayoutKind.Auto)]
     public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, IStructuralEquatable, ISerializable
     {
-        private const string IsPresentSerData = "IsPresent";
+        private const string KindSerData = "Kind";
         private const string ValueSerData = "Value";
         private const byte ReferenceType = 0;
         private const byte ValueType = 1;
         private const byte NullableType = 2;
+
+        private const byte UndefinedValue = 0;
+        private const byte NullValue = 1;
+        private const byte NotEmptyValue = 3;
 
         private static readonly byte Type;
 
@@ -173,20 +178,26 @@ namespace DotNext
 
         [AllowNull]
         private readonly T value;
+        private readonly byte kind;
 
         /// <summary>
         /// Constructs non-empty container.
         /// </summary>
         /// <param name="value">A value to be placed into container.</param>
+        /// <remarks>
+        /// The property <see langword="IsNull"/> of the constructed object may be <see langword="true"/>
+        /// if <paramref name="value"/> is <see langword="null"/>.
+        /// The property <see langword="IsUndefined"/> of the constructed object is always <see langword="false"/>.
+        /// </remarks>
         public Optional([AllowNull]T value)
         {
             this.value = value;
-            HasValue = Type switch
+            kind = Type switch
             {
-                ReferenceType => value != null,
-                ValueType => true,
-                NullableType => !value!.Equals(null),
-                _ => false,
+                ReferenceType => value is null ? NullValue : NotEmptyValue,
+                ValueType => NotEmptyValue,
+                NullableType => value!.Equals(null) ? NullValue : NotEmptyValue,
+                _ => UndefinedValue,
             };
         }
 
@@ -194,18 +205,40 @@ namespace DotNext
         private Optional(SerializationInfo info, StreamingContext context)
         {
             value = (T)info.GetValue(ValueSerData, typeof(T));
-            HasValue = info.GetBoolean(IsPresentSerData);
+            kind = info.GetByte(KindSerData);
         }
 
         /// <summary>
         /// Represents optional container without value.
         /// </summary>
+        /// <remarks>
+        /// The property <see cref="IsUndefined"/> of returned object is always <see langword="true"/>.
+        /// </remarks>
         public static Optional<T> Empty => default;
 
         /// <summary>
         /// Indicates whether the value is present.
         /// </summary>
-        public bool HasValue { get; }
+        /// <remarks>
+        /// If this property is <see langword="true"/> then <see cref="IsUndefined"/> and <see cref="IsNull"/>
+        /// equal to <see langword="false"/>.
+        /// </remarks>
+        public bool HasValue => kind == NotEmptyValue;
+
+        /// <summary>
+        /// Indicates that the value is undefined.
+        /// </summary>
+        /// <seealso cref="Empty"/>
+        public bool IsUndefined => kind == UndefinedValue;
+
+        /// <summary>
+        /// Indicates that the value is <see langword="null"/>.
+        /// </summary>
+        /// <remarks>
+        /// This property returns <see langword="true"/> only if this instance
+        /// was constructed using <see cref="Optional{T}(T)"/> with <see langword="null"/> argument.
+        /// </remarks>
+        public bool IsNull => kind == NullValue;
 
         /// <summary>
         /// Boxes value encapsulated by this object.
@@ -289,7 +322,25 @@ namespace DotNext
         /// </summary>
         /// <exception cref="InvalidOperationException">No value is present.</exception>
         [DisallowNull]
-        public T Value => HasValue ? value : throw new InvalidOperationException(ExceptionMessages.OptionalNoValue);
+        public T Value
+        {
+            get
+            {
+                string msg;
+                switch (kind)
+                {
+                    default:
+                        return value;
+                    case UndefinedValue:
+                        msg = ExceptionMessages.OptionalNoValue;
+                        break;
+                    case NullValue:
+                        msg = ExceptionMessages.OptionalNullValue;
+                        break;
+                }
+                throw new InvalidOperationException(msg);
+            }
+        }
 
         /// <summary>
         /// If a value is present, apply the provided mapping function to it, and if the result is
@@ -347,7 +398,12 @@ namespace DotNext
         /// Returns textual representation of this object.
         /// </summary>
         /// <returns>The textual representation of this object.</returns>
-        public override string ToString() => HasValue ? value!.ToString() : "<EMPTY>";
+        public override string ToString() => kind switch
+        {
+            UndefinedValue => "<Undefined>",
+            NullValue => "<Null>",
+            _ => value!.ToString()
+        };
 
         /// <summary>
         /// Computes hash code of the stored value.
@@ -357,7 +413,7 @@ namespace DotNext
         /// This method calls <see cref="object.GetHashCode()"/>
         /// for the object <see cref="Value"/>.
         /// </remarks>
-        public override int GetHashCode() => HasValue ? value!.GetHashCode() : 0;
+        public override int GetHashCode() => HasValue ? EqualityComparer<T>.Default.GetHashCode(value) : 0;
 
         /// <summary>
         /// Determines whether this container stored the same
@@ -367,18 +423,27 @@ namespace DotNext
         /// <returns><see langword="true"/> if <see cref="Value"/> is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
         public bool Equals(T other) => HasValue && value!.Equals(other);
 
+        private bool Equals(in Optional<T> other)
+        {
+            switch (kind + other.kind)
+            {
+                default:
+                    return true;
+                case NotEmptyValue:
+                case NotEmptyValue + NullValue:
+                    return false;
+                case NotEmptyValue + NotEmptyValue:
+                    return EqualityComparer<T>.Default.Equals(value, other.value);
+            }
+        }
+
         /// <summary>
         /// Determines whether this container stores
         /// the same value as other.
         /// </summary>
         /// <param name="other">Other container to compare.</param>
         /// <returns><see langword="true"/> if this container stores the same value as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(Optional<T> other) => (HasValue.ToInt32() + other.HasValue.ToInt32()) switch
-        {
-            1 => false,
-            2 => value!.Equals(other.value),
-            _ => true,
-        };
+        public bool Equals(Optional<T> other) => Equals(in other);
 
         /// <summary>
         /// Determines whether this container stores
@@ -388,8 +453,8 @@ namespace DotNext
         /// <returns><see langword="true"/> if this container stores the same value as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object? other) => other switch
         {
-            null => HasValue == false,
-            Optional<T> optional => Equals(optional),
+            null => kind != NotEmptyValue,
+            Optional<T> optional => Equals(in optional),
             T value => Equals(value),
             _ => false,
         };
@@ -433,12 +498,8 @@ namespace DotNext
         /// <param name="first">The first container to compare.</param>
         /// <param name="second">The second container to compare.</param>
         /// <returns><see langword="true"/>, if both containers store the same value; otherwise, <see langword="false"/>.</returns>
-        public static bool operator ==(in Optional<T> first, in Optional<T> second) => (first.HasValue.ToInt32() + second.HasValue.ToInt32()) switch
-        {
-            1 => false,
-            2 => first.value!.Equals(second.value),
-            _ => true,
-        };
+        public static bool operator ==(in Optional<T> first, in Optional<T> second)
+            => first.Equals(in second);
 
         /// <summary>
         /// Determines whether two containers store the different values.
@@ -446,12 +507,8 @@ namespace DotNext
         /// <param name="first">The first container to compare.</param>
         /// <param name="second">The second container to compare.</param>
         /// <returns><see langword="true"/>, if both containers store the different values; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(in Optional<T> first, in Optional<T> second) => (first.HasValue.ToInt32() + second.HasValue.ToInt32()) switch
-        {
-            1 => true,
-            2 => !first.value!.Equals(second.value),
-            _ => false,
-        };
+        public static bool operator !=(in Optional<T> first, in Optional<T> second)
+            => !first.Equals(in second);
 
         /// <summary>
         /// Returns non-empty container.
@@ -469,12 +526,22 @@ namespace DotNext
         /// <param name="first">The first container.</param>
         /// <param name="second">The second container.</param>
         /// <returns><see langword="true"/>, if both containers are empty or have values; otherwise, <see langword="false"/>.</returns>
-        public static Optional<T> operator ^(in Optional<T> first, in Optional<T> second) => (first.HasValue.ToInt32() - second.HasValue.ToInt32()) switch
+        public static Optional<T> operator ^(in Optional<T> first, in Optional<T> second)
         {
-            -1 => second,
-            1 => first,
-            _ => Empty,
-        };
+            switch (first.kind - second.kind)
+            {
+                default:
+                    return default;
+                case UndefinedValue - NullValue:
+                case NullValue - NotEmptyValue:
+                case UndefinedValue - NotEmptyValue:
+                    return second;
+                case NotEmptyValue - UndefinedValue:
+                case NotEmptyValue - NullValue:
+                case NullValue - UndefinedValue:
+                    return first;
+            }
+        }
 
         /// <summary>
         /// Checks whether the container has value.
@@ -490,13 +557,13 @@ namespace DotNext
         /// <param name="optional">The container to check.</param>
         /// <returns><see langword="true"/> if this container has no value; otherwise, <see langword="false"/>.</returns>
         /// <see cref="HasValue"/>
-        public static bool operator false(in Optional<T> optional) => !optional.HasValue;
+        public static bool operator false(in Optional<T> optional) => optional.kind < NotEmptyValue;
 
         /// <inheritdoc/>
         void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            info.AddValue(IsPresentSerData, HasValue);
             info.AddValue(ValueSerData, value, typeof(T));
+            info.AddValue(KindSerData, kind);
         }
     }
 }
