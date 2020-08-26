@@ -11,9 +11,6 @@ using System.Threading.Tasks;
 
 namespace DotNext
 {
-    using static Reflection.TypeExtensions;
-    using static Runtime.Intrinsics;
-
     /// <summary>
     /// Various extension and factory methods for constructing optional value.
     /// </summary>
@@ -109,7 +106,7 @@ namespace DotNext
         /// </summary>
         /// <param name="optionalType">The type to check.</param>
         /// <returns><see langword="true"/>, if specified type is optional type; otherwise, <see langword="false"/>.</returns>
-        public static bool IsOptional(this Type optionalType) => optionalType.IsGenericInstanceOf(typeof(Optional<>));
+        public static bool IsOptional(this Type optionalType) => optionalType.IsConstructedGenericType && optionalType.GetGenericTypeDefinition() == typeof(Optional<>);
 
         /// <summary>
         /// Returns the underlying type argument of the specified optional type.
