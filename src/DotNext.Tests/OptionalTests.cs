@@ -68,8 +68,6 @@ namespace DotNext
         [Fact]
         public static void StructTest()
         {
-            False(new Optional<ValueTuple>(default).HasValue);
-            True(new Optional<ValueTuple>(default).IsUndefined);
             True(new Optional<long>(default).HasValue);
             True(new Optional<Base64FormattingOptions>(Base64FormattingOptions.InsertLineBreaks).HasValue);
         }
