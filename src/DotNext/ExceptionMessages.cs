@@ -13,6 +13,8 @@ namespace DotNext
 
         internal static string OptionalNoValue => Resources.GetString("OptionalNoValue");
 
+        internal static string OptionalNullValue => Resources.GetString("OptionalNullValue");
+
         internal static string InvalidUserDataSlot => Resources.GetString("InvalidUserDataSlot");
 
         internal static string IndexShouldBeZero => Resources.GetString("IndexShouldBeZero");

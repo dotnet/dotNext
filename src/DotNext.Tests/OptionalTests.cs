@@ -17,10 +17,31 @@ namespace DotNext
         }
 
         [Fact]
+        public static void UndefinedOrNull()
+        {
+            Optional<int?> value = default;
+            False(value.HasValue);
+            True(value.IsUndefined);
+            False(value.IsNull);
+
+            value = Optional<int?>.Empty;
+            False(value.HasValue);
+            True(value.IsUndefined);
+            False(value.IsNull);
+
+            value = new Optional<int?>(null);
+            False(value.HasValue);
+            False(value.IsUndefined);
+            True(value.IsNull);
+        }
+
+        [Fact]
         public static void OptionalTypeTest()
         {
             var intOptional = new int?(10).ToOptional();
             True(intOptional.HasValue);
+            False(intOptional.IsUndefined);
+            False(intOptional.IsNull);
             Equal(10, (int)intOptional);
             Equal(10, intOptional.Or(20));
             Equal(10, intOptional.Value);
@@ -48,6 +69,7 @@ namespace DotNext
         public static void StructTest()
         {
             False(new Optional<ValueTuple>(default).HasValue);
+            True(new Optional<ValueTuple>(default).IsUndefined);
             True(new Optional<long>(default).HasValue);
             True(new Optional<Base64FormattingOptions>(Base64FormattingOptions.InsertLineBreaks).HasValue);
         }
@@ -58,6 +80,7 @@ namespace DotNext
             True(new Optional<Optional<string>>("").HasValue);
             False(new Optional<Optional<string>>(null).HasValue);
             False(new Optional<string>(default).HasValue);
+            True(new Optional<string>(default).IsNull);
             True(new Optional<string>("").HasValue);
             False(new Optional<Delegate>(default).HasValue);
             True(new Optional<EventHandler>((sender, args) => { }).HasValue);
@@ -95,7 +118,17 @@ namespace DotNext
         public static void Serialization()
         {
             Optional<string> opt = default;
-            False(SerializeDeserialize(opt).HasValue);
+            opt = SerializeDeserialize(opt);
+            False(opt.HasValue);
+            True(opt.IsUndefined);
+            False(opt.IsNull);
+
+            opt = new Optional<string>(null);
+            opt = SerializeDeserialize(opt);
+            False(opt.HasValue);
+            False(opt.IsUndefined);
+            True(opt.IsNull);
+
             opt = "Hello";
             Equal("Hello", SerializeDeserialize(opt).Value);
         }
@@ -147,6 +180,50 @@ namespace DotNext
             Equal("123", new Optional<string>("123").Box());
             Equal(42, new Optional<int>(42).Box());
             Equal(42, new Optional<int?>(42).Box());
+        }
+
+        [Fact]
+        public static void EqualityOperators()
+        {
+            Optional<string> first = default, second = default;
+            True(first == second);
+            True(first.Equals(second));
+            False(first != second);
+
+            first = new Optional<string>(null);
+            True(first == second);
+            False(first != second);
+
+            first = "Hello, world!";
+            False(first == second);
+            False(first.Equals(second));
+            True(first != second);
+        }
+
+        [Fact]
+        public static void MutualExclusion()
+        {
+            Optional<string> first = default, second = default, result;
+            result = first ^ second;
+            True(result.IsUndefined);
+
+            first = new Optional<string>(null);
+            result = first ^ second;
+            False(result.IsUndefined);
+            True(result.IsNull);
+
+            second = new Optional<string>(null);
+            result = first ^ second;
+            True(result.IsUndefined);
+
+            second = default;
+            first = "Hello, world!";
+            result = first ^ second;
+            Equal("Hello, world!", result.Value);
+
+            second = "abc";
+            result = first ^ second;
+            True(result.IsUndefined);
         }
     }
 }

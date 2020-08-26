@@ -1,4 +1,5 @@
-OptionalNoValue=Container has no value
+OptionalNoValue=The underlying value is undefined
+OptionalNullValue=The underlying value is null
 ReleasedLock=The lock is already released
 InvalidUserDataSlot=Slot was not created using Allocate method
 IndexShouldBeZero=List index should be equal to 0
