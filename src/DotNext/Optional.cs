@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
@@ -10,6 +12,7 @@ using System.Threading.Tasks;
 namespace DotNext
 {
     using static Reflection.TypeExtensions;
+    using static Runtime.Intrinsics;
 
     /// <summary>
     /// Various extension and factory methods for constructing optional value.
@@ -155,25 +158,17 @@ namespace DotNext
     {
         private const string KindSerData = "Kind";
         private const string ValueSerData = "Value";
-        private const byte ReferenceType = 0;
-        private const byte ValueType = 1;
-        private const byte NullableType = 2;
 
         private const byte UndefinedValue = 0;
         private const byte NullValue = 1;
         private const byte NotEmptyValue = 3;
 
-        private static readonly byte Type;
+        private static readonly bool IsOptional;
 
         static Optional()
         {
-            var targetType = typeof(T);
-            if (targetType.IsOneOf(typeof(void), typeof(ValueTuple), typeof(DBNull)))
-                Type = byte.MaxValue;
-            else if (targetType.IsValueType)
-                Type = targetType.IsGenericInstanceOf(typeof(Nullable<>)) || targetType.IsOptional() ? NullableType : ValueType;
-            else
-                Type = ReferenceType;
+            var type = typeof(T);
+            IsOptional = type.IsConstructedGenericType && type.GetGenericTypeDefinition() == typeof(Optional<>);
         }
 
         [AllowNull]
@@ -192,13 +187,25 @@ namespace DotNext
         public Optional([AllowNull]T value)
         {
             this.value = value;
-            kind = Type switch
-            {
-                ReferenceType => value is null ? NullValue : NotEmptyValue,
-                ValueType => NotEmptyValue,
-                NullableType => value!.Equals(null) ? NullValue : NotEmptyValue,
-                _ => UndefinedValue,
-            };
+            if (value is null)
+                kind = NullValue;
+            else if (IsOptional)
+                kind = GetKindUnsafe(ref value!);
+            else
+                kind = NotEmptyValue;
+        }
+
+        //TODO: Convert to local function in C# 9
+        private static byte GetKindUnsafe([DisallowNull] ref T optionalValue)
+        {
+            Debug.Assert(typeof(T).IsOptional());
+            if (optionalValue.Equals(null))
+                return NullValue;
+
+            if (optionalValue.Equals(Missing.Value))
+                return UndefinedValue;
+
+            return NotEmptyValue;
         }
 
         [SuppressMessage("Usage", "CA1801", Justification = "context is required by .NET serialization framework")]
@@ -421,7 +428,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">Other value to compare.</param>
         /// <returns><see langword="true"/> if <see cref="Value"/> is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(T other) => HasValue && value!.Equals(other);
+        public bool Equals(T other) => HasValue && EqualityComparer<T>.Default.Equals(value, other);
 
         private bool Equals(in Optional<T> other)
         {
@@ -451,13 +458,22 @@ namespace DotNext
         /// </summary>
         /// <param name="other">Other container to compare.</param>
         /// <returns><see langword="true"/> if this container stores the same value as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object? other) => other switch
+        public override bool Equals(object? other)
         {
-            null => kind != NotEmptyValue,
-            Optional<T> optional => Equals(in optional),
-            T value => Equals(value),
-            _ => false,
-        };
+            if (other is null)
+                return kind == NullValue;
+
+            if (other is Optional<T> optional)
+                return Equals(in optional);
+
+            if (other is T value)
+                return Equals(value);
+
+            if (ReferenceEquals(other, Missing.Value))
+                return kind == UndefinedValue;
+
+            return false;
+        }
 
         /// <summary>
         /// Performs equality check between stored value
