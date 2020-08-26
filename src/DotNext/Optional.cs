@@ -195,7 +195,7 @@ namespace DotNext
         //TODO: Convert to local function in C# 9
         private static byte GetKindUnsafe([DisallowNull] ref T optionalValue)
         {
-            Debug.Assert(typeof(T).IsOptional());
+            Debug.Assert(IsOptional);
             if (optionalValue.Equals(null))
                 return NullValue;
 
