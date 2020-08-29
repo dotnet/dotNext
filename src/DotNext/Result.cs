@@ -68,16 +68,8 @@ namespace DotNext
         /// <param name="value">The value to be stored as result.</param>
         public Result(T value)
         {
-            if (value is Exception e)
-            {
-                exception = ExceptionDispatchInfo.Capture(e);
-                this.value = default;
-            }
-            else
-            {
-                this.value = value;
-                exception = null;
-            }
+            this.value = value;
+            exception = null;
         }
 
         /// <summary>
