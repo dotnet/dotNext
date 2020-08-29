@@ -1,12 +1,13 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
 namespace DotNext
 {
+    using static Reflection.TypeExtensions;
+
     /// <summary>
     /// Represents extension methods for type <see cref="Result{T}"/>.
     /// </summary>
@@ -36,7 +37,7 @@ namespace DotNext
         /// </summary>
         /// <param name="resultType">The type of <see cref="Result{T}"/>.</param>
         /// <returns><see langword="true"/>, if specified type is result type; otherwise, <see langword="false"/>.</returns>
-        public static bool IsResult(this Type resultType) => resultType.IsConstructedGenericType && resultType.GetGenericTypeDefinition() == typeof(Result<>);
+        public static bool IsResult(this Type resultType) => resultType.IsGenericInstanceOf(typeof(Result<>));
 
         /// <summary>
         /// Returns the underlying type argument of the specified result type.
@@ -59,20 +60,7 @@ namespace DotNext
 
         [AllowNull]
         private readonly T value;
-        private readonly Action? exception;
-
-        /// <summary>
-        /// Gets undefined result.
-        /// </summary>
-        /// <remarks>
-        /// <see cref="Result{T}"/> in constrast to <see cref="Optional{T}"/>
-        /// interprets <see langword="null"/> as a normal value.
-        /// Undefined result indicates that <see cref="Value"/> is not available at all.
-        /// <see cref="IsUndefined"/> property of the object returned by this property
-        /// is always <see langword="true"/>.
-        /// </remarks>
-        /// <value>The undefined result.</value>
-        public static Result<T> Undefined => new Result<T>(UndefinedResultException.ThrowAction);
+        private readonly ExceptionDispatchInfo? exception;
 
         /// <summary>
         /// Initializes a new successful result.
@@ -80,8 +68,16 @@ namespace DotNext
         /// <param name="value">The value to be stored as result.</param>
         public Result(T value)
         {
-            this.value = value;
-            exception = null;
+            if (value is Exception e)
+            {
+                exception = ExceptionDispatchInfo.Capture(e);
+                this.value = default;
+            }
+            else
+            {
+                this.value = value;
+                exception = null;
+            }
         }
 
         /// <summary>
@@ -89,27 +85,25 @@ namespace DotNext
         /// </summary>
         /// <param name="error">The exception representing error. Cannot be <see langword="null"/>.</param>
         public Result(Exception error)
-            : this(ExceptionDispatchInfo.Capture(error).Throw)
         {
+            exception = ExceptionDispatchInfo.Capture(error);
+            value = default;
         }
 
-        private Result(Action? error)
+        private Result(ExceptionDispatchInfo dispatchInfo)
         {
-            exception = error;
             value = default;
+            exception = dispatchInfo;
         }
 
         [SuppressMessage("Usage", "CA1801", Justification = "context is required by .NET serialization framework")]
         private Result(SerializationInfo info, StreamingContext context)
         {
             value = (T)info.GetValue(ValueSerData, typeof(T));
-            var e = (info.GetValue(ExceptionSerData, typeof(Exception)) as Exception);
-            exception = e is null ? null : new Action(ExceptionDispatchInfo.Capture(e).Throw);
+            exception = info.GetValue(ExceptionSerData, typeof(Exception)) is Exception e ?
+                ExceptionDispatchInfo.Capture(e) :
+                null;
         }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static Exception? GetSourceException(Action? dispatchInfo)
-            => (dispatchInfo?.Target as ExceptionDispatchInfo)?.SourceException;
 
         /// <summary>
         /// Indicates that the result is successful.
@@ -118,23 +112,14 @@ namespace DotNext
         public bool IsSuccessful => exception is null;
 
         /// <summary>
-        /// Indicates that the result is undefined.
-        /// </summary>
-        /// <value><see langword="true"/> if this result is undefined; otherwise, <see langword="false"/>.</value>
-        /// <seealso cref="Undefined"/>
-        public bool IsUndefined
-            => ReferenceEquals(exception, UndefinedResultException.ThrowAction) || GetSourceException(exception) is UndefinedResultException;
-
-        /// <summary>
         /// Extracts actual result.
         /// </summary>
         /// <exception cref="Exception">This result is not successful.</exception>
-        /// <exception cref="UndefinedResultException">This result is undefined.</exception>
         public T Value
         {
             get
             {
-                exception?.Invoke();
+                exception?.Throw();
                 return value;
             }
         }
@@ -220,11 +205,7 @@ namespace DotNext
         /// </summary>
         /// <param name="defaultFunc">A delegate to be invoked if value is not present.</param>
         /// <returns>The value, if present, otherwise returned from delegate.</returns>
-        public T OrInvoke(in ValueFunc<Exception, T> defaultFunc)
-        {
-            var e = Error;
-            return e is null ? value : defaultFunc.Invoke(e);
-        }
+        public T OrInvoke(in ValueFunc<Exception, T> defaultFunc) => exception is null ? value : defaultFunc.Invoke(exception.SourceException);
 
         /// <summary>
         /// Returns the value if present; otherwise invoke delegate.
@@ -236,7 +217,7 @@ namespace DotNext
         /// <summary>
         /// Gets exception associated with this result.
         /// </summary>
-        public Exception? Error => ReferenceEquals(exception, UndefinedResultException.ThrowAction) ? new UndefinedResultException() : GetSourceException(exception);
+        public Exception? Error => exception?.SourceException;
 
         /// <summary>
         /// Gets boxed representation of the result.
@@ -294,7 +275,7 @@ namespace DotNext
         /// <inheritdoc/>
         void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            var exception = Error;
+            var exception = this.exception?.SourceException;
             info.AddValue(ExceptionSerData, exception, exception?.GetType() ?? typeof(Exception));
             info.AddValue(ValueSerData, value, typeof(T));
         }
@@ -303,13 +284,6 @@ namespace DotNext
         /// Returns textual representation of this object.
         /// </summary>
         /// <returns>The textual representation of this object.</returns>
-        public override string ToString()
-        {
-            Exception? error;
-            if (ReferenceEquals(exception, UndefinedResultException.ThrowAction) || (error = GetSourceException(exception)) is UndefinedResultException)
-                return "<Undefined>";
-
-            return error?.ToString() ?? value?.ToString() ?? "<Null>";
-        }
+        public override string ToString() => exception?.SourceException.ToString() ?? value?.ToString() ?? "<NULL>";
     }
 }

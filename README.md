@@ -50,8 +50,7 @@ Release Date: MM-DD-2020
 <a href="https://www.nuget.org/packages/dotnext/2.10.0">DotNext 2.10.0</a>
 * Fixed correctness of `Clear(bool)` method overridden by `PooledArrayBufferWriter<T>` and `PooledBufferWriter<T>` classes
 * Added `RemoveLast` and `RemoveFirst` methods to `PooledArrayBufferWriter<T>` class
-* Added `Result<T>.Undefined` property that allows to return undefined result from the operation which is explicitly distinguishable from **null**
-* `Optional<T>` now can distinguish **null** and undefined value
+* `Optional<T>` type distinguishes **null** and undefined value
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
