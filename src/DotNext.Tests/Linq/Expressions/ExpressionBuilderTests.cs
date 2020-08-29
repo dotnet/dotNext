@@ -499,5 +499,37 @@ namespace DotNext.Linq.Expressions
             lambda(provider);
             Equal("Hello, world!", array[0]);
         }
+
+        [Fact]
+        public static void ConvertToNullable()
+        {
+            var lambda = Expression.Lambda<Func<int?>>(2.Const().AsNullable()).Compile();
+            Equal(2, lambda());
+
+            var lambda2 = Expression.Lambda<Func<int?>>(2.Const().AsNullable()).Compile();
+            Equal(2, lambda());
+
+            var lambda3 = Expression.Lambda<Func<string>>("Hello, world!".Const().AsNullable()).Compile();
+            Equal("Hello, world!", lambda3());
+        }
+
+        [Fact]
+        public static void ConvertToOptional()
+        {
+            var lamdba = Expression.Lambda<Func<Optional<int>>>(2.Const().AsOptional()).Compile();
+            Equal(2, lamdba());
+        }
+
+        [Fact]
+        public static void ConvertToResult()
+        {
+            var parameter = Expression.Parameter(typeof(string));
+            var methodCall = Expression.Call(typeof(int), nameof(int.Parse), Type.EmptyTypes, parameter);
+            var lambda = Expression.Lambda<Func<string, Result<int>>>(methodCall.AsResult(), parameter).Compile();
+
+            Equal(42, lambda("42"));
+            False(lambda("ab").IsSuccessful);
+            Throws<FormatException>(() => lambda("ab").Value);
+        }
     }
 }
