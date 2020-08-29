@@ -90,6 +90,29 @@ namespace DotNext
             value = default;
         }
 
+        /// <summary>
+        /// Creates a result from <see cref="Optional{T}"/> instance.
+        /// </summary>
+        /// <param name="optional">The optional value.</param>
+        public Result(in Optional<T> optional)
+        {
+            if (optional.HasValue)
+            {
+                value = optional.OrDefault();
+                exception = null;
+            }
+            else if (optional.IsNull)
+            {
+                value = default;
+                exception = null;
+            }
+            else
+            {
+                value = default;
+                exception = ExceptionDispatchInfo.Capture(new InvalidOperationException(ExceptionMessages.OptionalNoValue));
+            }
+        }
+
         private Result(ExceptionDispatchInfo dispatchInfo)
         {
             value = default;
@@ -248,7 +271,15 @@ namespace DotNext
         /// Converts value into the result.
         /// </summary>
         /// <param name="result">The result to be converted.</param>
+        /// <returns>The result representing <paramref name="result"/> value.</returns>
         public static implicit operator Result<T>(T result) => new Result<T>(result);
+
+        /// <summary>
+        /// Converts <see cref="Optional{T}"/> to <see cref="Result{T}"/>.
+        /// </summary>
+        /// <param name="optional">The optional value.</param>
+        /// <returns>The result representing optional value.</returns>
+        public static explicit operator Result<T>(in Optional<T> optional) => new Result<T>(in optional);
 
         /// <summary>
         /// Indicates that both results are successful.
