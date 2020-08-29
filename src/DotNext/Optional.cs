@@ -192,7 +192,7 @@ namespace DotNext
                 kind = NotEmptyValue;
         }
 
-        //TODO: Convert to local function in C# 9
+        // TODO: Convert to local function in C# 9
         private static byte GetKindUnsafe([DisallowNull] ref T optionalValue)
         {
             Debug.Assert(IsOptional);
@@ -342,6 +342,7 @@ namespace DotNext
                         msg = ExceptionMessages.OptionalNullValue;
                         break;
                 }
+
                 throw new InvalidOperationException(msg);
             }
         }
