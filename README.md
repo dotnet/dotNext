@@ -52,6 +52,9 @@ Release Date: MM-DD-2020
 * Added `RemoveLast` and `RemoveFirst` methods to `PooledArrayBufferWriter<T>` class
 * `Optional<T>` type distinguishes **null** and undefined value
 
+<a href="https://www.nuget.org/packages/dotnext/2.7.0">DotNext.Metaprogramming 2.7.0</a>
+* Added extension methods of [ExpressionBuilder](https://sakno.github.io/dotNext/api/DotNext.Linq.Expressions.ExpressionBuilder.html) class for constructing expressions of type [Optional&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Optional-1.html), [Result&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Result-1.html) or [Nullable&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.nullable-1).
+
 Changelog for previous versions located [here](./CHANGELOG.md).
 
 # Release Policy
