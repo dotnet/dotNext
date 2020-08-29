@@ -82,29 +82,6 @@ namespace DotNext
             value = default;
         }
 
-        /// <summary>
-        /// Creates a result from <see cref="Optional{T}"/> instance.
-        /// </summary>
-        /// <param name="optional">The optional value.</param>
-        public Result(in Optional<T> optional)
-        {
-            if (optional.HasValue)
-            {
-                value = optional.OrDefault();
-                exception = null;
-            }
-            else if (optional.IsNull)
-            {
-                value = default;
-                exception = null;
-            }
-            else
-            {
-                value = default;
-                exception = ExceptionDispatchInfo.Capture(new InvalidOperationException(ExceptionMessages.OptionalNoValue));
-            }
-        }
-
         private Result(ExceptionDispatchInfo dispatchInfo)
         {
             value = default;
@@ -118,6 +95,24 @@ namespace DotNext
             exception = info.GetValue(ExceptionSerData, typeof(Exception)) is Exception e ?
                 ExceptionDispatchInfo.Capture(e) :
                 null;
+        }
+
+        /// <summary>
+        /// Creates <see cref="Result{T}"/> from <see cref="Optional{T}"/> instance.
+        /// </summary>
+        /// <param name="optional">The optional value.</param>
+        /// <returns>The converted optional value.</returns>
+        public static Result<T> FromOptional(in Optional<T> optional)
+        {
+            Result<T> result;
+            if (optional.HasValue)
+                result = new Result<T>(optional.OrDefault());
+            else if (optional.IsNull)
+                result = default;
+            else
+                result = new Result<T>(new InvalidOperationException(ExceptionMessages.OptionalNoValue));
+
+            return result;
         }
 
         /// <summary>
@@ -271,7 +266,7 @@ namespace DotNext
         /// </summary>
         /// <param name="optional">The optional value.</param>
         /// <returns>The result representing optional value.</returns>
-        public static explicit operator Result<T>(in Optional<T> optional) => new Result<T>(in optional);
+        public static explicit operator Result<T>(in Optional<T> optional) => FromOptional(in optional);
 
         /// <summary>
         /// Indicates that both results are successful.
