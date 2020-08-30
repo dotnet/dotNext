@@ -7,6 +7,8 @@ using static System.Threading.Timeout;
 
 namespace DotNext.Threading
 {
+    using Tasks;
+
     /// <summary>
     /// A synchronization point at which two async flows can cooperate and swap elements
     /// within pairs.
@@ -17,48 +19,13 @@ namespace DotNext.Threading
     /// <typeparam name="T">The type of objects that may be exchanged.</typeparam>
     public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     {
-        private sealed class ExchangePoint : TaskCompletionSource<T>, IDisposable
+        private sealed class ExchangePoint : CancelableCompletionSource<T>
         {
-            // cached callback to avoid extra memory allocation
-            private static readonly Action<object> CancellationCallback;
-
-            static ExchangePoint()
-            {
-                CancellationCallback = CancellationRequested;
-
-                static void CancellationRequested(object state)
-                    => Unsafe.As<ExchangePoint>(state).CancellationRequested();
-            }
-
             private readonly T producerResult;
-            private readonly CancellationTokenRegistration registration;
-            private readonly CancellationTokenSource? source;
 
             internal ExchangePoint(T result, TimeSpan timeout, CancellationToken token)
-                : base(TaskCreationOptions.RunContinuationsAsynchronously)
-            {
-                if (timeout > InfiniteTimeSpan)
-                {
-                    source = token.CanBeCanceled ?
-                        CancellationTokenSource.CreateLinkedTokenSource(token) :
-                        new CancellationTokenSource();
-                    source.CancelAfter(timeout);
-                    token = source.Token;
-                }
-
-                registration = token.Register(CancellationCallback, this);
-                producerResult = result;
-            }
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void CancellationRequested()
-            {
-                var token = registration.Token;
-                if (!token.IsCancellationRequested)
-                    token = new CancellationToken(true);
-
-                TrySetCanceled(token);
-            }
+                : base(TaskCreationOptions.RunContinuationsAsynchronously, timeout, token)
+                => producerResult = result;
 
             internal bool TryExchange(T value, [MaybeNullWhen(false)] out T result)
             {
@@ -71,23 +38,6 @@ namespace DotNext.Threading
                 result = default;
                 return false;
             }
-
-            private void Dispose(bool disposing)
-            {
-                if (disposing)
-                {
-                    registration.Dispose();
-                    source?.Dispose();
-                }
-            }
-
-            public void Dispose()
-            {
-                Dispose(true);
-                GC.SuppressFinalize(this);
-            }
-
-            ~ExchangePoint() => Dispose(false);
         }
 
         [SuppressMessage("Usage", "CA2213", Justification = "The field is disposed after atomic exchange")]
@@ -162,11 +112,15 @@ namespace DotNext.Threading
         /// <summary>
         /// Attempts to transfer the object to another flow synchronously.
         /// </summary>
+        /// <remarks>
+        /// <paramref name="value"/> remains unchanged if return value is <see langword="false"/>.
+        /// </remarks>
+        /// <param name="value">The object to exchange.</param>
         /// <returns><see langword="true"/> if another flow is ready for exchange; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ObjectDisposedException">The object has been disposed.</exception>
         /// <exception cref="ExchangeTerminatedException">The exhange has been terminated.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public bool TryExchange([MaybeNullWhen(false)] ref T value)
+        public bool TryExchange(ref T value)
         {
             ThrowIfDisposed();
 
@@ -186,7 +140,7 @@ namespace DotNext.Threading
             }
             else if (result = point.TryExchange(value, out var copy))
             {
-                value = copy;
+                value = copy!;
             }
 
             return result;
