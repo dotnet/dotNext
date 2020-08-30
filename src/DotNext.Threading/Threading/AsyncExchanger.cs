@@ -91,7 +91,7 @@ namespace DotNext.Threading
         }
 
         [SuppressMessage("Usage", "CA2213", Justification = "The field is disposed after atomic exchange")]
-        private ExchangePoint? point;
+        private volatile ExchangePoint? point;
         private bool disposeRequested;
         private volatile ExchangeTerminatedException? termination;
 
@@ -158,6 +158,39 @@ namespace DotNext.Threading
         /// <exception cref="ExchangeTerminatedException">The exhange has been terminated.</exception>
         public ValueTask<T> ExchangeAsync(T value, CancellationToken token = default)
             => ExchangeAsync(value, InfiniteTimeSpan, token);
+
+        /// <summary>
+        /// Attempts to transfer the object to another flow synchronously.
+        /// </summary>
+        /// <returns><see langword="true"/> if another flow is ready for exchange; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="ObjectDisposedException">The object has been disposed.</exception>
+        /// <exception cref="ExchangeTerminatedException">The exhange has been terminated.</exception>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public bool TryExchange([MaybeNullWhen(false)] ref T value)
+        {
+            ThrowIfDisposed();
+
+            bool result;
+            if (disposeRequested)
+            {
+                Dispose();
+                result = false;
+            }
+            else if (termination != null)
+            {
+                throw termination;
+            }
+            else if (point is null)
+            {
+                result = false;
+            }
+            else if (result = point.TryExchange(value, out var copy))
+            {
+                value = copy;
+            }
+
+            return result;
+        }
 
         /// <summary>
         /// Informs another participant that no more data will be exchanged with it.
