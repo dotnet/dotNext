@@ -10,7 +10,7 @@ namespace DotNext.Threading
     using Tasks;
 
     /// <summary>
-    /// A synchronization point at which two async flows can cooperate and swap elements
+    /// Represents a synchronization point at which two async flows can cooperate and swap elements
     /// within pairs.
     /// </summary>
     /// <remarks>
