@@ -27,15 +27,14 @@ namespace DotNext.Threading
                 : base(TaskCreationOptions.RunContinuationsAsynchronously, timeout, token)
                 => producerResult = result;
 
-            internal bool TryExchange(T value, [MaybeNullWhen(false)] out T result)
+            internal bool TryExchange(ref T value)
             {
                 if (TrySetResult(value))
                 {
-                    result = producerResult;
+                    value = producerResult;
                     return true;
                 }
 
-                result = default;
                 return false;
             }
         }
@@ -80,11 +79,11 @@ namespace DotNext.Threading
                 point = new ExchangePoint(value, timeout, token);
                 result = new ValueTask<T>(point.Task);
             }
-            else if (point.TryExchange(value, out var arrivedValue))
+            else if (point.TryExchange(ref value))
             {
                 point.Dispose();
                 point = null;
-                result = new ValueTask<T>(arrivedValue);
+                result = new ValueTask<T>(value);
             }
             else
             {
@@ -138,9 +137,11 @@ namespace DotNext.Threading
             {
                 result = false;
             }
-            else if (result = point.TryExchange(value, out var copy))
+            else
             {
-                value = copy!;
+                result = point.TryExchange(ref value);
+                point.Dispose();
+                point = null;
             }
 
             return result;
