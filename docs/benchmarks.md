@@ -6,8 +6,8 @@ The configuration of all benchmarks:
 
 | Parameter | Configuration |
 | ---- | ---- |
-| Host | .NET Core 3.1.5 (CoreCLR 4.700.20.26901, CoreFX 4.700.20.27001), X64 RyuJIT |
-| Job | .NET Core 3.1.5 (CoreCLR 4.700.20.26901, CoreFX 4.700.20.27001), X64 RyuJIT |
+| Host | .NET Core 3.1.7 (CoreCLR 4.700.20.36602, CoreFX 4.700.20.37001), X64 RyuJIT |
+| Job | .NET Core 3.1.7 (CoreCLR 4.700.20.36602, CoreFX 4.700.20.37001), X64 RyuJIT |
 | LaunchCount | 1 |
 | RunStrategy | Throughput |
 | OS | Ubuntu 18.04.4 |
@@ -94,9 +94,9 @@ The next series of benchmarks demonstrate performance of strongly typed reflecti
 | Direct call | 11.41 ns | 0.080 ns | 0.067 ns | 11.42 ns |
 | Reflection with DotNext using delegate type `MemberGetter<IndexOfCalculator, int>` | 12.71 ns | 0.196 ns | 0.184 ns | 12.64 ns |
 | Reflection with DotNext using `DynamicInvoker` | 21.99 ns | 0.046 ns | 0.043 ns | 21.98 ns |
-| Reflection with DotNext using delegate type `Function<object, ValueTuple, object>` | 21.98 ns | 0.072 ns | 0.060 ns | 21.97 ns |
+| Reflection with DotNext using delegate type `Function<object, ValueTuple, object>` | 24.55 ns | 0.143 ns | 0.111 ns | 23.05 ns |
 | `ObjectAccess` class from _FastMember_ library | 52.67 ns | 0.120 ns | 0.112 ns | 52.67 ns |
-| .NET reflection | 52.67 ns | 0.120 ns | 0.112 ns | 52.67 ns |
+| .NET reflection | 163.74 ns | 0.502 ns | 0.419 ns | 162.01 ns |
 
 Strongly typed reflection provided by DotNext Reflection library has the same performance as direct call.
 
