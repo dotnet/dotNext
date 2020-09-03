@@ -10,7 +10,7 @@ The configuration of all benchmarks:
 | Job | .NET Core 3.1.7 (CoreCLR 4.700.20.36602, CoreFX 4.700.20.37001), X64 RyuJIT |
 | LaunchCount | 1 |
 | RunStrategy | Throughput |
-| OS | Ubuntu 18.04.4 |
+| OS | Ubuntu 18.04.5 |
 | CPU | Intel Core i7-6700HQ CPU 2.60GHz (Skylake) |
 | Number of CPUs | 1 |
 | Physical Cores | 4 |
