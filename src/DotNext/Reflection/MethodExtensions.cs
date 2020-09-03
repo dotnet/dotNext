@@ -59,7 +59,7 @@ namespace DotNext.Reflection
         /// <returns><see langword="true"/>, if both methods have the same number of formal parameters, parameters are equal by type and return types are equal; otherwise, <see langword="false"/>.</returns>
         public static bool SignatureEquals(this MethodInfo method, MethodInfo other, bool respectCallingConvention = false)
             => SignatureEquals(method.As<MethodBase>(), other, respectCallingConvention) && method.ReturnType == other.ReturnType;
-    
+
         /// <summary>
         /// Invokes the method or constructor represented by the current instance, using the specified arguments.
         /// </summary>
