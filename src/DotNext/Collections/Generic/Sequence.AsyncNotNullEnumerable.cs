@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace DotNext
+namespace DotNext.Collections.Generic
 {
     public static partial class Sequence
     {

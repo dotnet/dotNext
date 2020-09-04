@@ -1,9 +1,8 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-namespace DotNext
+namespace DotNext.Collections.Generic
 {
     public static partial class Sequence
     {
@@ -12,20 +11,25 @@ namespace DotNext
         /// </summary>
         /// <typeparam name="T">The type of elements returned by enumerator.</typeparam>
         [StructLayout(LayoutKind.Auto)]
-        [Obsolete("Use DotNext.Collections.Generic.Sequence.LimitedEnumerator<T> instead")]
         public struct LimitedEnumerator<T> : IEnumerator<T>
         {
-            private Collections.Generic.Sequence.LimitedEnumerator<T> enumerator;
+            private readonly IEnumerator<T> enumerator;
+            private readonly bool disposeEnumerator;
+            private int count;
 
             internal LimitedEnumerator(IEnumerator<T> enumerator, int limit, bool leaveOpen)
-                => this.enumerator = new Collections.Generic.Sequence.LimitedEnumerator<T>(enumerator, limit, leaveOpen);
+            {
+                this.enumerator = enumerator;
+                disposeEnumerator = !leaveOpen;
+                count = limit;
+            }
 
             /// <summary>
             /// Advances the enumerator to the next element.
             /// </summary>
             /// <returns><see langword="true"/> if the enumerator was successfully advanced to the next element; <see langword="false"/> if
             /// the enumerator has passed the end of the collection.</returns>
-            public bool MoveNext() => enumerator.MoveNext();
+            public bool MoveNext() => count-- > 0 && enumerator.MoveNext();
 
             /// <summary>
             /// Gets the element in the collection at the current position of the enumerator.
@@ -38,12 +42,17 @@ namespace DotNext
             /// <summary>
             /// Sets the enumerator to its initial position.
             /// </summary>
-            public readonly void Reset() => enumerator.Reset();
+            public readonly void Reset() => enumerator?.Reset();
 
             /// <summary>
             /// Releases all resources associated with this enumerator.
             /// </summary>
-            public void Dispose() => enumerator.Dispose();
+            public void Dispose()
+            {
+                if (disposeEnumerator)
+                    enumerator?.Dispose();
+                this = default;
+            }
         }
     }
 }
