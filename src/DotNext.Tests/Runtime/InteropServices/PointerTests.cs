@@ -468,32 +468,5 @@ namespace DotNext.Runtime.InteropServices
             Equal(12, memory[0]);
             Equal(24, memory[1]);
         }
-
-        [Fact]
-        public static unsafe void CopyToDestination()
-        {
-            Pointer<int> ptr = stackalloc int[1];
-            ptr.Value = 42;
-            ptr.CopyTo(out var destination);
-            Equal(42, destination);
-            destination = 0;
-            ptr.CopyTo(new Pointer<int>(&destination));
-            Equal(42, destination);
-        }
-
-        [Fact]
-        public static unsafe void CoptFromSource()
-        {
-            Pointer<int> destination = stackalloc int[1];
-            destination.Value = 0;
-            var source = 42;
-            destination.CopyFrom(in source);
-            Equal(42, destination.Value);
-            destination.Clear();
-            Equal(0, destination.Value);
-
-            destination.CopyFrom(new Pointer<int>(&source));
-            Equal(42, destination.Value);
-        }
     }
 }
