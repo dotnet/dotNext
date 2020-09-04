@@ -443,6 +443,24 @@ namespace DotNext.Runtime
         }
 
         /// <summary>
+        /// Copies one value into another respecting volatile semantics.
+        /// </summary>
+        /// <typeparam name="T">The value type to copy.</typeparam>
+        /// <param name="input">The reference to the source location.</param>
+        /// <param name="output">The reference to the destination location.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void VolatileCopy<T>(in T input, out T output)
+            where T : struct
+        {
+            PushOutRef(out output);
+            PushInRef(in input);
+            Volatile();
+            Cpobj<T>();
+            Ret();
+            throw Unreachable();    // need here because output var should be assigned
+        }
+
+        /// <summary>
         /// Copies one value into another assuming unaligned memory access.
         /// </summary>
         /// <typeparam name="T">The value type to copy.</typeparam>
@@ -471,6 +489,18 @@ namespace DotNext.Runtime
         public static unsafe void Copy<T>(T* input, T* output)
             where T : unmanaged
             => Copy(in input[0], out output[0]);
+
+        /// <summary>
+        /// Copies one value into another respecting volatile semantics.
+        /// </summary>
+        /// <typeparam name="T">The value type to copy.</typeparam>
+        /// <param name="input">The reference to the source location.</param>
+        /// <param name="output">The reference to the destination location.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static unsafe void VolatileCopy<T>(T* input, T* output)
+            where T : unmanaged
+            => VolatileCopy(in input[0], out output[0]);
 
         private static void Copy([In] ref byte source, [In] ref byte destination, long length)
         {
