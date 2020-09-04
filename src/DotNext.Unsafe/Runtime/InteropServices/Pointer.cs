@@ -222,6 +222,40 @@ namespace DotNext.Runtime.InteropServices
         }
 
         /// <summary>
+        /// Sets value at the address represented by this pointer to the default value of <typeparamref name="T"/>.
+        /// </summary>
+        /// <exception cref="NullPointerException">This pointer is equal to zero.</exception>
+        public unsafe void Clear() => Value = default;
+
+        /// <summary>
+        /// Copies the value referenced by this pointer to the another address.
+        /// </summary>
+        /// <param name="destination">The managed pointer to the destination.</param>
+        /// <exception cref="NullPointerException">This pointer is equal to zero.</exception>
+        public void CopyTo(out T destination) => Intrinsics.Copy(in Value, out destination);
+
+        /// <summary>
+        /// Copies the value referenced by this pointer to the another address.
+        /// </summary>
+        /// <param name="destination">The managed pointer to the destination.</param>
+        /// <exception cref="NullPointerException">This pointer or <paramref name="destination"/> is equal to zero.</exception>
+        public void CopyTo(Pointer<T> destination) => CopyTo(out destination.Value);
+
+        /// <summary>
+        /// Copies the value to the location in the memory represented by this pointer.
+        /// </summary>
+        /// <param name="source">The source value.</param>
+        /// <exception cref="NullPointerException">This pointer is equal to zero.</exception>
+        public void CopyFrom(in T source) => Intrinsics.Copy(in source, out Value);
+
+        /// <summary>
+        /// Copies the value to the location in the memory represented by this pointer.
+        /// </summary>
+        /// <param name="source">The source address of the value to be copied.</param>
+        /// <exception cref="NullPointerException">This pointer or <paramref name="source"/> is equal to zero.</exception>
+        public void CopyFrom(Pointer<T> source) => CopyFrom(in source.Value);
+
+        /// <summary>
         /// Copies block of memory from the source address to the destination address.
         /// </summary>
         /// <param name="destination">Destination address.</param>
