@@ -10,7 +10,7 @@ namespace DotNext.Runtime.CompilerServices
     /// </summary>
     /// <typeparam name="T">The value type to be boxed.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct Box<T> : IEquatable<Box<T>>  // TODO: Move to Runtime namespace
+    public readonly struct Box<T> : IEquatable<Box<T>> // TODO: Move to Runtime namespace
         where T : struct
     {
         private readonly object value;
