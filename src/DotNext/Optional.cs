@@ -262,6 +262,30 @@ namespace DotNext
         }
 
         /// <summary>
+        /// Attempts to extract value from container if it is present.
+        /// </summary>
+        /// <param name="value">Extracted value.</param>
+        /// <param name="isNull"><see langword="true"/> if underlying value is <see langword="null"/>; otherwise, <see langword="false"/>.</param>
+        /// <returns><see langword="true"/> if value is present; otherwise, <see langword="false"/>.</returns>
+        public bool TryGet([NotNullWhen(true)]out T value, out bool isNull)
+        {
+            value = this.value;
+            switch (kind)
+            {
+                default:
+                    isNull = false;
+                    return false;
+                case NullValue:
+                    isNull = true;
+                    return false;
+                case NotEmptyValue:
+                    Debug.Assert(value != null);
+                    isNull = false;
+                    return true;
+            }
+        }
+
+        /// <summary>
         /// Returns the value if present; otherwise return default value.
         /// </summary>
         /// <param name="defaultValue">The value to be returned if there is no value present.</param>

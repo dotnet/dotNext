@@ -23,16 +23,22 @@ namespace DotNext
             False(value.HasValue);
             True(value.IsUndefined);
             False(value.IsNull);
+            False(value.TryGet(out var result, out var isNull));
+            False(isNull);
 
             value = Optional<int?>.Empty;
             False(value.HasValue);
             True(value.IsUndefined);
             False(value.IsNull);
+            False(value.TryGet(out result, out isNull));
+            False(isNull);
 
             value = new Optional<int?>(null);
             False(value.HasValue);
             False(value.IsUndefined);
             True(value.IsNull);
+            False(value.TryGet(out result, out isNull));
+            True(isNull);
         }
 
         [Fact]
@@ -70,6 +76,9 @@ namespace DotNext
         {
             True(new Optional<long>(default).HasValue);
             True(new Optional<Base64FormattingOptions>(Base64FormattingOptions.InsertLineBreaks).HasValue);
+            True(new Optional<long>(42L).TryGet(out var result, out var isNull));
+            Equal(42L, result);
+            False(isNull);
         }
 
         [Fact]
