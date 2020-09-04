@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 namespace DotNext.Metaprogramming
 {
     using static Reflection.DelegateType;
+    using Seq = Collections.Generic.Sequence;
 
     /// <summary>
     /// Represents lambda function builder.
@@ -113,7 +114,7 @@ namespace DotNext.Metaprogramming
             if (!(recursion is null))
             {
                 body = Expression.Block(
-                    Sequence.Singleton(recursion),
+                    Seq.Singleton(recursion),
                     Expression.Assign(recursion, Expression.Lambda<TDelegate>(body, tailCall, Parameters)),
                     Expression.Invoke(recursion, Parameters));
             }

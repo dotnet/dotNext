@@ -6,6 +6,7 @@ namespace DotNext.Linq.Expressions
 {
     using static Reflection.CollectionType;
     using static Reflection.DisposableType;
+    using Seq = Collections.Generic.Sequence;
 
     /// <summary>
     /// Represents iteration over collection elements as expression.
@@ -137,7 +138,7 @@ namespace DotNext.Linq.Expressions
                     (Expression)Assign(enumeratorVar, Default(enumeratorVar.Type)) :
                     Block(Call(enumeratorVar, disposeMethod), Assign(enumeratorVar, Default(enumeratorVar.Type)));
             loopBody = TryFinally(loopBody, @finally);
-            return Block(typeof(void), Sequence.Singleton(enumeratorVar), enumeratorAssignment, loopBody);
+            return Block(typeof(void), Seq.Singleton(enumeratorVar), enumeratorAssignment, loopBody);
         }
     }
 }

@@ -5,6 +5,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Collections.Specialized
 {
+    using Seq = Collections.Generic.Sequence;
+
     [StructLayout(LayoutKind.Auto)]
     internal readonly struct InMemoryList<T> : IReadOnlyList<T>
     {
@@ -16,7 +18,7 @@ namespace DotNext.Collections.Specialized
 
         public int Count => memory.Length;
 
-        public IEnumerator<T> GetEnumerator() => Sequence.ToEnumerator(memory);
+        public IEnumerator<T> GetEnumerator() => Seq.ToEnumerator(memory);
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 

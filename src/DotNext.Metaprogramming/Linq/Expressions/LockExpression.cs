@@ -4,6 +4,8 @@ using System.Threading;
 
 namespace DotNext.Linq.Expressions
 {
+    using Seq = Collections.Generic.Sequence;
+
     /// <summary>
     /// Represents synchronized block of code.
     /// </summary>
@@ -109,7 +111,7 @@ namespace DotNext.Linq.Expressions
             var body = TryFinally(Body, Call(monitorExit, SyncRoot));
             return assignment is null ?
                     Block(Call(monitorEnter, SyncRoot), body) :
-                    Block(Sequence.Singleton(SyncRoot), assignment, Call(monitorEnter, SyncRoot), body);
+                    Block(Seq.Singleton(SyncRoot), assignment, Call(monitorEnter, SyncRoot), body);
         }
     }
 }

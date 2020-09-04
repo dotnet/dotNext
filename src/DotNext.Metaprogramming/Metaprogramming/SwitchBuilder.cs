@@ -4,6 +4,8 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
+    using Seq = Collections.Generic.Sequence;
+
     /// <summary>
     /// Represents selection statement that chooses a single section to execute from a
     /// list of candidates based on a pattern matching.
@@ -77,7 +79,7 @@ namespace DotNext.Metaprogramming
         /// <param name="test">Single test value.</param>
         /// <param name="body">The expression to be returned from selection statement.</param>
         /// <returns><c>this</c> builder.</returns>
-        public SwitchBuilder Case(Expression test, Expression body) => Case(Sequence.Singleton(test), body);
+        public SwitchBuilder Case(Expression test, Expression body) => Case(Seq.Singleton(test), body);
 
         /// <summary>
         /// Specifies the switch section to execute if the match expression

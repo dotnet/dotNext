@@ -7,6 +7,8 @@ using System.Reflection;
 
 namespace DotNext.Reflection
 {
+    using Seq = Collections.Generic.Sequence;
+
     /// <summary>
     /// Represents registry of extension methods that can be registered
     /// for the specified type and be available using strongly typed reflection via <see cref="Type{T}"/>.
@@ -33,15 +35,15 @@ namespace DotNext.Reflection
         }
 
         private static IEnumerable<MethodInfo> GetStaticMethods(Type target)
-            => GetMethods(Sequence.Singleton(target.NonRefType()), StaticMethods);
+            => GetMethods(Seq.Singleton(target.NonRefType()), StaticMethods);
 
         private static IEnumerable<MethodInfo> GetInstanceMethods(Type target)
         {
             IEnumerable<Type> types;
             if (target.IsValueType)
-                types = Sequence.Singleton(target);
+                types = Seq.Singleton(target);
             else if (target.IsByRef)
-                types = Sequence.Singleton(target.GetElementType());
+                types = Seq.Singleton(target.GetElementType());
             else
                 types = target.GetBaseTypes(includeTopLevel: true, includeInterfaces: true);
             return GetMethods(types, InstanceMethods);
