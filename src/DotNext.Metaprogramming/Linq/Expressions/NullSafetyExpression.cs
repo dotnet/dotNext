@@ -3,6 +3,8 @@ using System.Linq.Expressions;
 
 namespace DotNext.Linq.Expressions
 {
+    using Seq = Collections.Generic.Sequence;
+
     /// <summary>
     /// Represents expression that is protected by null check, e.g. safe navigation operator (?. in C#).
     /// </summary>
@@ -105,7 +107,7 @@ namespace DotNext.Linq.Expressions
             Expression conditional = Condition(Target.IsNotNull(), body, Default(body.Type));
             return assignment is null ?
                 conditional :
-                Block(body.Type, Sequence.Singleton(Target), assignment, conditional);
+                Block(body.Type, Seq.Singleton(Target), assignment, conditional);
         }
     }
 }

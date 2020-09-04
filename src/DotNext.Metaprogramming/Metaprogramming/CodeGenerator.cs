@@ -7,6 +7,7 @@ using System.Reflection;
 namespace DotNext.Metaprogramming
 {
     using Linq.Expressions;
+    using Seq = Collections.Generic.Sequence;
 
     /// <summary>
     /// Represents code generator.
@@ -968,7 +969,7 @@ namespace DotNext.Metaprogramming
         /// <returns>Modified selection builder.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static SwitchBuilder Case(this SwitchBuilder builder, Expression test, Action body)
-            => Case(builder, Sequence.Singleton(test), body);
+            => Case(builder, Seq.Singleton(test), body);
 
         /// <summary>
         /// Specifies the switch section to execute if the match expression

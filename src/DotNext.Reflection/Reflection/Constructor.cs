@@ -8,6 +8,8 @@ using System.Reflection;
 
 namespace DotNext.Reflection
 {
+    using Seq = Collections.Generic.Sequence;
+
     /// <summary>
     /// Provides constructor definition based on delegate signature.
     /// </summary>
@@ -292,8 +294,8 @@ namespace DotNext.Reflection
             ConstructorInfo? ctor = declaringType.GetConstructor(nonPublic ? NonPublicFlags : PublicFlags, Type.DefaultBinder, parameters, Array.Empty<ParameterModifier>());
 
             if (ctor is null)
-                return declaringType.IsValueType && parameters.Length == 0 ? new Constructor<TSignature>(declaringType, Sequence.Singleton(input)) : null;
-            return new Constructor<TSignature>(ctor, arglist, Sequence.Singleton(input));
+                return declaringType.IsValueType && parameters.Length == 0 ? new Constructor<TSignature>(declaringType, Seq.Singleton(input)) : null;
+            return new Constructor<TSignature>(ctor, arglist, Seq.Singleton(input));
         }
 
         private static Constructor<TSignature>? Reflect(bool nonPublic)

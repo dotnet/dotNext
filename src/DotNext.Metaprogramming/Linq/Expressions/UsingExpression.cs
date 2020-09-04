@@ -5,6 +5,7 @@ using System.Reflection;
 namespace DotNext.Linq.Expressions
 {
     using static Reflection.DisposableType;
+    using Seq = Collections.Generic.Sequence;
 
     /// <summary>
     /// Represents <c>using</c> expression.
@@ -111,7 +112,7 @@ namespace DotNext.Linq.Expressions
             if (assignment is null)
                 return TryFinally(Body, Block(typeof(void), Call(Resource, disposeMethod), Assign(Resource, Default(Resource.Type))));
             else
-                return Block(Sequence.Singleton(Resource), assignment, TryFinally(Body, Call(Resource, disposeMethod)));
+                return Block(Seq.Singleton(Resource), assignment, TryFinally(Body, Call(Resource, disposeMethod)));
         }
     }
 }

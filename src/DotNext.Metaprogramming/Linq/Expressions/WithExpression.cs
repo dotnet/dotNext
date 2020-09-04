@@ -3,6 +3,8 @@ using System.Linq.Expressions;
 
 namespace DotNext.Linq.Expressions
 {
+    using Seq = Collections.Generic.Sequence;
+
     /// <summary>
     /// Provides an expression refer to a single object or structure so
     /// that body can use a simplified syntax when accessing member of the object
@@ -99,6 +101,6 @@ namespace DotNext.Linq.Expressions
         /// </summary>
         /// <returns>Translated expression.</returns>
         public override Expression Reduce()
-            => assignment is null ? Body : Block(Sequence.Singleton(Variable), assignment, Body);
+            => assignment is null ? Body : Block(Seq.Singleton(Variable), assignment, Body);
     }
 }
