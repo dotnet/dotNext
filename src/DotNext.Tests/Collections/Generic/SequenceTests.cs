@@ -6,10 +6,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace DotNext
+namespace DotNext.Collections.Generic
 {
     [ExcludeFromCodeCoverage]
-    [Obsolete("This is a set of tests for obsolete Sequence class")]
     public sealed class SequenceTests : Test
     {
         private sealed class Counter<T>
