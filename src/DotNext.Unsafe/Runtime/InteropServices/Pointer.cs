@@ -24,7 +24,7 @@ namespace DotNext.Runtime.InteropServices
     /// Null-pointer is the only check performed by methods.
     /// </remarks>
     [StructLayout(LayoutKind.Sequential)]
-    public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IStrongBox, IConvertible<IntPtr>, IConvertible<UIntPtr>
+    public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IStrongBox, IConvertible<IntPtr>, IConvertible<UIntPtr>, IPinnable
         where T : unmanaged
     {
         /// <summary>
@@ -203,8 +203,16 @@ namespace DotNext.Runtime.InteropServices
             set => *this.value = (T)value;
         }
 
-        internal unsafe MemoryHandle GetHandle(int elementIndex)
+        internal unsafe MemoryHandle Pin(long elementIndex)
             => new MemoryHandle(value + elementIndex);
+
+        /// <inheritdoc />
+        MemoryHandle IPinnable.Pin(int elementIndex) => Pin(elementIndex);
+
+        /// <inheritdoc />
+        void IPinnable.Unpin()
+        {
+        }
 
         /// <summary>
         /// Fill memory with zero bytes.
