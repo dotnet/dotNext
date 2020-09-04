@@ -24,25 +24,25 @@ namespace DotNext
         {
             IList<int> list = new List<int> { 1, 10, 20 };
             var counter = new Counter<int>();
-            list.ForEach(counter.Accept);
+            Sequence.ForEach(list, counter.Accept);
             Equal(3, counter.value);
             counter.value = 0;
             var array2 = new int[] { 1, 2, 10, 11, 15 };
-            array2.ForEach(counter.Accept);
+            Sequence.ForEach(array2, counter.Accept);
             Equal(5, counter.value);
         }
 
         [Fact]
         public static async Task ForEachTestAsync()
         {
-            var list = new List<int> { 1, 10, 20 }.ToAsyncEnumerable();
+            var list = Sequence.ToAsyncEnumerable(new List<int> { 1, 10, 20 });
             var counter = new Counter<int>();
-            await list.ForEachAsync(counter.Accept);
+            await Sequence.ForEachAsync(list, counter.Accept);
             Equal(3, counter.value);
             counter.value = 0;
             
-            list = new int[] { 1, 2, 10, 11, 15 }.ToAsyncEnumerable();
-            await list.ForEachAsync(counter.Accept);
+            list = Sequence.ToAsyncEnumerable(new int[] { 1, 2, 10, 11, 15 });
+            await Sequence.ForEachAsync(list, counter.Accept);
             Equal(5, counter.value);
         }
 
@@ -50,21 +50,21 @@ namespace DotNext
         public static void FirstOrNullTest()
         {
             var array = new long[0];
-            var element = array.FirstOrNull();
+            var element = Sequence.FirstOrNull(array);
             Null(element);
             array = new long[] { 10, 20 };
-            element = array.FirstOrNull();
+            element = Sequence.FirstOrNull(array);
             Equal(10, element);
         }
 
         [Fact]
         public static async Task FirstOrNullTestAsync()
         {
-            var array = new long[0].ToAsyncEnumerable();
-            var element = await array.FirstOrNullAsync();
+            var array = Sequence.ToAsyncEnumerable(new long[0]);
+            var element = await Sequence.FirstOrNullAsync(array);
             Null(element);
-            array = new long[] { 10, 20 }.ToAsyncEnumerable();
-            element = await array.FirstOrNullAsync();
+            array = Sequence.ToAsyncEnumerable(new long[] { 10, 20 });
+            element = await Sequence.FirstOrNullAsync(array);
             Equal(10, element);
         }
 
@@ -75,9 +75,9 @@ namespace DotNext
             list.AddLast(10);
             list.AddLast(40);
             list.AddLast(100);
-            list.ElementAt(2, out var element);
+            Sequence.ElementAt(list, 2, out var element);
             Equal(100, element);
-            list.ElementAt(0, out element);
+            Sequence.ElementAt(list, 0, out element);
             Equal(10, element);
         }
 
@@ -89,9 +89,9 @@ namespace DotNext
             list.AddLast(40);
             list.AddLast(100);
 
-            var asyncList = list.ToAsyncEnumerable();
-            Equal(100, await asyncList.ElementAtAsync(2));
-            Equal(10, await asyncList.ElementAtAsync(0));
+            var asyncList = Sequence.ToAsyncEnumerable(list);
+            Equal(100, await Sequence.ElementAtAsync(asyncList, 2));
+            Equal(10, await Sequence.ElementAtAsync(asyncList, 0));
         }
 
         [Fact]
@@ -103,7 +103,7 @@ namespace DotNext
             list.AddLast("b");
             list.AddLast(default(string));
             Equal(4, list.Count);
-            var array = list.SkipNulls().ToArray();
+            var array = Sequence.SkipNulls(list).ToArray();
             Equal(2, array.Length);
             True(Array.Exists(array, "a".Equals));
             True(Array.Exists(array, "b".Equals));
@@ -119,7 +119,7 @@ namespace DotNext
             list.AddLast(default(string));
             Equal(4, list.Count);
 
-            var array = await list.ToAsyncEnumerable().SkipNulls().ToArrayAsync();
+            var array = await Sequence.ToArrayAsync(Sequence.SkipNulls(Sequence.ToAsyncEnumerable(list)));
             Equal(2, array.Length);
             True(Array.Exists(array, "a".Equals));
             True(Array.Exists(array, "b".Equals));
@@ -129,7 +129,7 @@ namespace DotNext
         public static void ToStringTest()
         {
             var array = new int[] { 10, 20, 30 };
-            var str = array.ToString(":");
+            var str = Sequence.ToString(array, ":");
             Equal("10:20:30", str);
         }
 
@@ -148,7 +148,7 @@ namespace DotNext
         public static void Append()
         {
             IEnumerable<string> items = new[] { "One", "Two" };
-            items = items.Append("Three", "Four");
+            items = Sequence.Append(items, "Three", "Four");
             NotEmpty(items);
             Equal(4, items.Count());
             Equal("One", items.First());
@@ -160,7 +160,7 @@ namespace DotNext
         {
             var range = Enumerable.Range(0, 10);
             using var enumerator = range.GetEnumerator();
-            True(enumerator.Skip(8));
+            True(Sequence.Skip(enumerator, 8));
             True(enumerator.MoveNext());
             Equal(8, enumerator.Current);
             True(enumerator.MoveNext());
@@ -172,8 +172,8 @@ namespace DotNext
         public static async Task SkipAsync()
         {
             var range = Enumerable.Range(0, 10);
-            await using var enumerator = range.GetAsyncEnumerator();
-            True(await enumerator.SkipAsync(8));
+            await using var enumerator = Sequence.GetAsyncEnumerator(range);
+            True(await Sequence.SkipAsync(enumerator, 8));
             True(await enumerator.MoveNextAsync());
             Equal(8, enumerator.Current);
             True(await enumerator.MoveNextAsync());
@@ -186,7 +186,7 @@ namespace DotNext
         {
             var list = new List<long> { 10L, 20L, 30L };
             var enumerator = list.GetEnumerator();
-            True(enumerator.Skip<List<long>.Enumerator, long>(2));
+            True(Sequence.Skip<List<long>.Enumerator, long>(ref enumerator, 2));
             True(enumerator.MoveNext());
             Equal(30L, enumerator.Current);
             enumerator.Dispose();
@@ -196,7 +196,7 @@ namespace DotNext
         public static void LimitedSequence()
         {
             var range = Enumerable.Range(0, 10);
-            using var enumerator = range.GetEnumerator().Limit(3);
+            using var enumerator = Sequence.Limit(range.GetEnumerator(), 3);
             True(enumerator.MoveNext());
             Equal(0, enumerator.Current);
             True(enumerator.MoveNext());
@@ -210,33 +210,33 @@ namespace DotNext
         public static void Iteration()
         {
             IEnumerable<int> collection = Array.Empty<int>();
-            Null(collection.FirstOrNull());
-            Equal(Optional<int>.Empty, collection.FirstOrEmpty());
-            Equal(Optional<int>.Empty, collection.FirstOrEmpty(Predicate.True<int>()));
+            Null(Sequence.FirstOrNull(collection));
+            Equal(Optional<int>.Empty, Sequence.FirstOrEmpty(collection));
+            Equal(Optional<int>.Empty, Sequence.FirstOrEmpty(collection, Predicate.True<int>()));
             collection = new int[] { 42 };
-            Equal(42, collection.FirstOrNull());
-            Equal(42, collection.FirstOrEmpty());
-            Equal(42, collection.FirstOrEmpty(Predicate.True<int>()));
+            Equal(42, Sequence.FirstOrNull(collection));
+            Equal(42, Sequence.FirstOrEmpty(collection));
+            Equal(42, Sequence.FirstOrEmpty(collection, Predicate.True<int>()));
         }
 
         [Fact]
         public static async Task IterationAsync()
         {
-            var collection = Array.Empty<int>().ToAsyncEnumerable();
-            Null(await collection.FirstOrNullAsync());
-            Equal(Optional<int>.Empty, await collection.FirstOrEmptyAsync());
-            Equal(Optional<int>.Empty, await collection.FirstOrEmptyAsync(Predicate.True<int>()));
-            collection = new int[] { 42 }.ToAsyncEnumerable();
-            Equal(42, await collection.FirstOrNullAsync());
-            Equal(42, await collection.FirstOrEmptyAsync());
-            Equal(42, await collection.FirstOrEmptyAsync(Predicate.True<int>()));
+            var collection = Sequence.ToAsyncEnumerable(Array.Empty<int>());
+            Null(await Sequence.FirstOrNullAsync(collection));
+            Equal(Optional<int>.Empty, await Sequence.FirstOrEmptyAsync(collection));
+            Equal(Optional<int>.Empty, await Sequence.FirstOrEmptyAsync(collection, Predicate.True<int>()));
+            collection = Sequence.ToAsyncEnumerable(new int[] { 42 });
+            Equal(42, await Sequence.FirstOrNullAsync(collection));
+            Equal(42, await Sequence.FirstOrEmptyAsync(collection));
+            Equal(42, await Sequence.FirstOrEmptyAsync(collection, Predicate.True<int>()));
         }
 
         [Fact]
         public static async Task ConversionToAsyncEnumerable()
         {
             int index = 0;
-            await foreach(var item in new int[] { 10, 20, 30}.ToAsyncEnumerable())
+            await foreach(var item in Sequence.ToAsyncEnumerable(new int[] { 10, 20, 30}))
             {
                 switch (index++)
                 {
@@ -258,7 +258,7 @@ namespace DotNext
         [Fact]
         public static async Task ConversionToAsyncEnumerator()
         {
-            await using var enumerator = new int[] { 10, 20, 30}.GetAsyncEnumerator();
+            await using var enumerator = Sequence.GetAsyncEnumerator(new int[] { 10, 20, 30});
             for (int index = 0; await enumerator.MoveNextAsync(); index++)
             {
                 switch (index)
@@ -281,7 +281,7 @@ namespace DotNext
         [Fact]
         public static async Task CanceledAsyncEnumerator()
         {
-            await using var enumerator = new int[] { 10, 20, 30}.GetAsyncEnumerator(new CancellationToken(true));
+            await using var enumerator = Sequence.GetAsyncEnumerator(new int[] { 10, 20, 30});
             await ThrowsAsync<TaskCanceledException>(enumerator.MoveNextAsync().AsTask);
         }
     }
