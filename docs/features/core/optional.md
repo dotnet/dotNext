@@ -5,6 +5,7 @@ Optional Type
 The following example demonstrates usage of this type:
 ```csharp
 using DotNext;
+using DotNext.Collections.Generic;
 
 IEnumerable<int> array = new int[] { 1, 2, 3 };
 Optional<int> i = array.FirstOrEmpty(); //extension method from Sequence class

@@ -46,5 +46,5 @@ Automatically generated implementation of hash code function follows the similar
 * For field of primite type, conversion to `int` is performed
 * [Object.GetHashCode](https://docs.microsoft.com/en-us/dotnet/api/system.object.gethashcode) is used for field of reference type
 * Bitwise hash code located in [BitwiseComparer&lt;T&gt;](../../api/DotNext.BitwiseComparer-1.yml) class is performed for field of value type
-* Bitwise hash code located in [OneDimensionalArray](../../api/DotNext.OneDimensionalArray.yml) is performed for field of array type whose elements are of value type
-* Sequence hash code located in [Sequence](../../api/DotNext.Sequence.yml) is performed for field of array type whose elements are of reference type
+* Bitwise hash code located in [OneDimensionalArray](../../api/DotNext.OneDimensionalArray.yml) class is performed for field of array type whose elements are of value type
+* Sequence hash code located in [Sequence](../../api/DotNext.Collections.Generic.Sequence.yml) class is performed for field of array type whose elements are of reference type

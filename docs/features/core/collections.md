@@ -68,10 +68,10 @@ stack = Stack.Clone(stack);
 ```
 
 # Collection items concatenation
-Extension method _ToString_ from class [Sequence](../../api/DotNext.Sequence.yml) allows to convert collection items into single plain string. Each item is separated by the specified delimiter.
+Extension method _ToString_ from class [Sequence](../../api/DotNext.Collections.Generic.Sequence.yml) allows to convert collection items into single plain string. Each item is separated by the specified delimiter.
 
 ```csharp
-using DotNext;
+using DotNext.Collections.Generic;
 
 var array = new int[] {1, 2, 3};
 var str = array.ToString(",");  //str is 1,2,3
