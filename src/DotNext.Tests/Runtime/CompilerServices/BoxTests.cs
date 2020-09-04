@@ -39,5 +39,15 @@ namespace DotNext.Runtime.CompilerServices
             True(box1 != box2);
             NotEqual(box1, box2);
         }
+
+        [Fact]
+        public static unsafe void MemoryPinning()
+        {
+            var box = new Box<int>(42);
+            fixed (int* ptr = box)
+            {
+                Equal(42, *ptr);
+            }
+        }
     }
 }
