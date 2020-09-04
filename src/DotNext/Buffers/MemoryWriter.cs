@@ -7,6 +7,8 @@ using System.Diagnostics.Tracing;
 
 namespace DotNext.Buffers
 {
+    using NewSequence = Collections.Generic.Sequence;
+
     /// <summary>
     /// Represents memory-backed output sink which <typeparamref name="T"/> data can be written.
     /// </summary>
@@ -239,7 +241,7 @@ namespace DotNext.Buffers
         /// Gets enumerator over all written elements.
         /// </summary>
         /// <returns>The enumerator over all written elements.</returns>
-        public IEnumerator<T> GetEnumerator() => Sequence.ToEnumerator(WrittenMemory);
+        public IEnumerator<T> GetEnumerator() => NewSequence.ToEnumerator(WrittenMemory);
 
         /// <inheritdoc/>
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

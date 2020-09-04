@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace DotNext
+namespace DotNext.Collections.Generic
 {
     public static partial class Sequence
     {
