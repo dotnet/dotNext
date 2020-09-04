@@ -131,7 +131,5 @@ namespace DotNext
             Equal(Array.Empty<long>(), array.RemoveFirst(3));
             Equal(Array.Empty<long>(), array.RemoveLast(3));
         }
-
-
     }
 }
