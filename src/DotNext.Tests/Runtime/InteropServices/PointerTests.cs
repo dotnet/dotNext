@@ -381,6 +381,7 @@ namespace DotNext.Runtime.InteropServices
             Empty(ptr.ToByteArray(10));
             True(ptr.Bytes.IsEmpty);
             Equal(Pointer<int>.Null, ptr);
+            True(Pointer<int>.Null.IsNull);
         }
 
         [Fact]
