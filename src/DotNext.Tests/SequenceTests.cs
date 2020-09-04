@@ -281,7 +281,7 @@ namespace DotNext
         [Fact]
         public static async Task CanceledAsyncEnumerator()
         {
-            await using var enumerator = Sequence.GetAsyncEnumerator(new int[] { 10, 20, 30});
+            await using var enumerator = Sequence.GetAsyncEnumerator(new int[] { 10, 20, 30}, new CancellationToken(true));
             await ThrowsAsync<TaskCanceledException>(enumerator.MoveNextAsync().AsTask);
         }
     }
