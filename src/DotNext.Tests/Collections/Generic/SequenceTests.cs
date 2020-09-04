@@ -283,5 +283,49 @@ namespace DotNext.Collections.Generic
             await using var enumerator = new int[] { 10, 20, 30}.GetAsyncEnumerator(new CancellationToken(true));
             await ThrowsAsync<TaskCanceledException>(enumerator.MoveNextAsync().AsTask);
         }
+
+        [Fact]
+        public static void GeneratorMethod()
+        {
+            int i = 0;
+            Func<Optional<int>> generator = () => i < 3 ? i++ : Optional<int>.Empty;
+            var list = new List<int>();
+            foreach (var item in generator.ToEnumerable())
+                list.Add(item);
+
+            NotEmpty(list);
+            Equal(3, list.Count);
+            Equal(0, list[0]);
+            Equal(1, list[1]);
+            Equal(2, list[2]);
+
+            list.Clear();
+            foreach (var item in new Sequence.Generator<int>())
+                list.Add(item);
+
+            Empty(list);
+        }
+
+        [Fact]
+        public static async Task AsyncGeneratorMethod()
+        {
+            int i = 0;
+            Func<CancellationToken, ValueTask<Optional<int>>> generator = token => new ValueTask<Optional<int>>(i < 3 ? i++ : Optional<int>.Empty);
+            var list = new List<int>();
+            await foreach (var item in generator.ToAsyncEnumerable())
+                list.Add(item);
+
+            NotEmpty(list);
+            Equal(3, list.Count);
+            Equal(0, list[0]);
+            Equal(1, list[1]);
+            Equal(2, list[2]);
+
+            list.Clear();
+            await foreach (var item in new Sequence.AsyncGenerator<int>())
+                list.Add(item);
+
+            Empty(list);
+        }
     }
 }
