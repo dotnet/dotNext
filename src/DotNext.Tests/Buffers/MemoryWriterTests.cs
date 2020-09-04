@@ -157,7 +157,7 @@ namespace DotNext.Buffers
             var span = writer.GetSpan(10);
             new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }.AsSpan().CopyTo(span);
             writer.Advance(10);
-            using var stream = writer.GetWrittenBytesAsStream();
+            using var stream = PooledArrayBufferWriter.GetWrittenBytesAsStream(writer);
             True(stream.CanRead);
             False(stream.CanWrite);
             Equal(0, stream.Position);

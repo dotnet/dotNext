@@ -12,7 +12,7 @@ namespace DotNext
         /// </summary>
         /// <typeparam name="T">The type of elements returned by enumerator.</typeparam>
         [StructLayout(LayoutKind.Auto)]
-        [Obsolete("Use DotNext.Collections.Generic.Sequence.LimitedEnumerator<T> instead")]
+        [Obsolete("Use DotNext.Collections.Generic.Sequence.LimitedEnumerator<T> instead", true)]
         public struct LimitedEnumerator<T> : IEnumerator<T>
         {
             private Collections.Generic.Sequence.LimitedEnumerator<T> enumerator;

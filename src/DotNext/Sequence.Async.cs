@@ -19,7 +19,7 @@ namespace DotNext
         /// <param name="token">The token that can be used to cancel the enumeration.</param>
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The enumeration has been canceled.</exception>
-        public static ValueTask ForEachAsync<T>(this IAsyncEnumerable<T> collection, ValueAction<T> action, CancellationToken token = default)
+        public static ValueTask ForEachAsync<T>(IAsyncEnumerable<T> collection, ValueAction<T> action, CancellationToken token = default)
             => NewSequence.ForEachAsync(collection, action, token);
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace DotNext
         /// <param name="token">The token that can be used to cancel the enumeration.</param>
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The enumeration has been canceled.</exception>
-        public static ValueTask ForEachAsync<T>(this IAsyncEnumerable<T> collection, Action<T> action, CancellationToken token = default)
+        public static ValueTask ForEachAsync<T>(IAsyncEnumerable<T> collection, Action<T> action, CancellationToken token = default)
             => NewSequence.ForEachAsync(collection, action, token);
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace DotNext
         /// <param name="token">The token that can be used to cancel the enumeration.</param>
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The enumeration has been canceled.</exception>
-        public static ValueTask ForEachAsync<T>(this IAsyncEnumerable<T> collection, ValueFunc<T, CancellationToken, ValueTask> action, CancellationToken token = default)
+        public static ValueTask ForEachAsync<T>(IAsyncEnumerable<T> collection, ValueFunc<T, CancellationToken, ValueTask> action, CancellationToken token = default)
             => NewSequence.ForEachAsync(collection, action, token);
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace DotNext
         /// <param name="token">The token that can be used to cancel the enumeration.</param>
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The enumeration has been canceled.</exception>
-        public static ValueTask ForEachAsync<T>(this IAsyncEnumerable<T> collection, Func<T, CancellationToken, ValueTask> action, CancellationToken token = default)
+        public static ValueTask ForEachAsync<T>(IAsyncEnumerable<T> collection, Func<T, CancellationToken, ValueTask> action, CancellationToken token = default)
             => NewSequence.ForEachAsync(collection, action, token);
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace DotNext
         /// <param name="token">The token that can be used to cancel enumeration.</param>
         /// <returns>First element in the sequence; or <see langword="null"/> if sequence is empty. </returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<T?> FirstOrNullAsync<T>(this IAsyncEnumerable<T> seq, CancellationToken token = default)
+        public static ValueTask<T?> FirstOrNullAsync<T>(IAsyncEnumerable<T> seq, CancellationToken token = default)
             where T : struct
             => NewSequence.FirstOrNullAsync(seq, token);
 
@@ -80,7 +80,7 @@ namespace DotNext
         /// <param name="token">The token that can be used to cancel enumeration.</param>
         /// <returns>The first element in the sequence; or <see cref="Optional{T}.Empty"/> if sequence is empty. </returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<Optional<T>> FirstOrEmptyAsync<T>(this IAsyncEnumerable<T> seq, CancellationToken token = default)
+        public static ValueTask<Optional<T>> FirstOrEmptyAsync<T>(IAsyncEnumerable<T> seq, CancellationToken token = default)
             => NewSequence.FirstOrEmptyAsync(seq, token);
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace DotNext
         /// <param name="token">The token that can be used to cancel enumeration.</param>
         /// <returns>The first element in the sequence that matches to the specified filter; or empty value.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<Optional<T>> FirstOrEmptyAsync<T>(this IAsyncEnumerable<T> seq, ValueFunc<T, bool> filter, CancellationToken token = default)
+        public static ValueTask<Optional<T>> FirstOrEmptyAsync<T>(IAsyncEnumerable<T> seq, ValueFunc<T, bool> filter, CancellationToken token = default)
             where T : notnull
             => NewSequence.FirstOrEmptyAsync(seq, filter, token);
 
@@ -105,7 +105,7 @@ namespace DotNext
         /// <param name="token">The token that can be used to cancel enumeration.</param>
         /// <returns>The first element in the sequence that matches to the specified filter; or empty value.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<Optional<T>> FirstOrEmptyAsync<T>(this IAsyncEnumerable<T> seq, Predicate<T> filter, CancellationToken token = default)
+        public static ValueTask<Optional<T>> FirstOrEmptyAsync<T>(IAsyncEnumerable<T> seq, Predicate<T> filter, CancellationToken token = default)
             where T : notnull
             => NewSequence.FirstOrEmptyAsync(seq, filter, token);
 
@@ -117,7 +117,7 @@ namespace DotNext
         /// <param name="count">The number of elements to skip.</param>
         /// <returns><see langword="true"/>, if current element is available; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<bool> SkipAsync<T>(this IAsyncEnumerator<T> enumerator, int count)
+        public static ValueTask<bool> SkipAsync<T>(IAsyncEnumerator<T> enumerator, int count)
             => NewSequence.SkipAsync(enumerator, count);
 
         /// <summary>
@@ -129,7 +129,7 @@ namespace DotNext
         /// <param name="token">The token that can be used to cancel enumeration.</param>
         /// <returns>The requested element; or <see cref="Optional{T}.Empty"/> if index is out of range.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<Optional<T>> ElementAtAsync<T>(this IAsyncEnumerable<T> collection, int index, CancellationToken token = default)
+        public static ValueTask<Optional<T>> ElementAtAsync<T>(IAsyncEnumerable<T> collection, int index, CancellationToken token = default)
             => NewSequence.ElementAtAsync(collection, index, token);
 
         /// <summary>
@@ -138,7 +138,7 @@ namespace DotNext
         /// <typeparam name="T">Type of elements in the collection.</typeparam>
         /// <param name="collection">A collection to check. Cannot be <see langword="null"/>.</param>
         /// <returns>Modified lazy collection without <see langword="null"/> values.</returns>
-        public static IAsyncEnumerable<T> SkipNulls<T>(this IAsyncEnumerable<T?> collection)
+        public static IAsyncEnumerable<T> SkipNulls<T>(IAsyncEnumerable<T?> collection)
             where T : class
             => NewSequence.SkipNulls(collection);
 
@@ -152,7 +152,7 @@ namespace DotNext
         /// <typeparam name="T">Type of elements in the collection.</typeparam>
         /// <returns>The array representing all elements from the source collection.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static Task<T[]> ToArrayAsync<T>(this IAsyncEnumerable<T> collection, int initialCapacity = 10, MemoryAllocator<T>? allocator = null, CancellationToken token = default)
+        public static Task<T[]> ToArrayAsync<T>(IAsyncEnumerable<T> collection, int initialCapacity = 10, MemoryAllocator<T>? allocator = null, CancellationToken token = default)
             => NewSequence.ToArrayAsync(collection, initialCapacity, allocator, token);
     }
 }

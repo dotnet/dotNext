@@ -6,6 +6,8 @@ using System.Resources;
 
 namespace DotNext
 {
+    using static Collections.Generic.Sequence;
+
     [SuppressMessage("Globalization", "CA1304", Justification = "This is culture-specific resource strings")]
     [SuppressMessage("Globalization", "CA1305", Justification = "This is culture-specific resource strings")]
     [ExcludeFromCodeCoverage]

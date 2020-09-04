@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.Runtime.CompilerServices
 {
+    using static Collections.Generic.Sequence;
     using static Threading.AtomicInt64;
     using static Threading.AtomicReference;
 

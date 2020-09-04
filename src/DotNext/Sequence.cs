@@ -20,7 +20,7 @@ namespace DotNext
         /// <param name="sequence">The sequence of elements.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>The hash code computed from each element in the sequence.</returns>
-        public static int SequenceHashCode(this IEnumerable<object?> sequence, bool salted = true)
+        public static int SequenceHashCode(IEnumerable<object?> sequence, bool salted = true)
             => NewSequence.SequenceHashCode(sequence, salted);
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace DotNext
         /// <typeparam name="T">Type of elements in the collection.</typeparam>
         /// <param name="collection">A collection to enumerate. Cannot be <see langword="null"/>.</param>
         /// <param name="action">An action to applied for each element.</param>
-        public static void ForEach<T>(this IEnumerable<T> collection, Action<T> action)
+        public static void ForEach<T>(IEnumerable<T> collection, Action<T> action)
             => NewSequence.ForEach(collection, action);
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace DotNext
         /// <typeparam name="T">Type of elements in the collection.</typeparam>
         /// <param name="collection">A collection to enumerate. Cannot be <see langword="null"/>.</param>
         /// <param name="action">An action to applied for each element.</param>
-        public static void ForEach<T>(this IEnumerable<T> collection, in ValueAction<T> action)
+        public static void ForEach<T>(IEnumerable<T> collection, in ValueAction<T> action)
             => NewSequence.ForEach(collection, in action);
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace DotNext
         /// <param name="token">The token that can be used to cancel the enumeration.</param>
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The enumeration has been canceled.</exception>
-        public static ValueTask ForEachAsync<T>(this IEnumerable<T> collection, Func<T, CancellationToken, ValueTask> action, CancellationToken token = default)
+        public static ValueTask ForEachAsync<T>(IEnumerable<T> collection, Func<T, CancellationToken, ValueTask> action, CancellationToken token = default)
             => NewSequence.ForEachAsync(collection, action, token);
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace DotNext
         /// <param name="token">The token that can be used to cancel the enumeration.</param>
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The enumeration has been canceled.</exception>
-        public static ValueTask ForEachAsync<T>(this IEnumerable<T> collection, ValueFunc<T, CancellationToken, ValueTask> action, CancellationToken token = default)
+        public static ValueTask ForEachAsync<T>(IEnumerable<T> collection, ValueFunc<T, CancellationToken, ValueTask> action, CancellationToken token = default)
             => NewSequence.ForEachAsync(collection, action, token);
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace DotNext
         /// <typeparam name="T">Type of elements in the sequence.</typeparam>
         /// <param name="seq">A sequence to check. Cannot be <see langword="null"/>.</param>
         /// <returns>First element in the sequence; or <see langword="null"/> if sequence is empty. </returns>
-        public static T? FirstOrNull<T>(this IEnumerable<T> seq)
+        public static T? FirstOrNull<T>(IEnumerable<T> seq)
             where T : struct
             => NewSequence.FirstOrNull(seq);
 
@@ -83,7 +83,7 @@ namespace DotNext
         /// <typeparam name="T">Type of elements in the sequence.</typeparam>
         /// <param name="seq">A sequence to check. Cannot be <see langword="null"/>.</param>
         /// <returns>The first element in the sequence; or <see cref="Optional{T}.Empty"/> if sequence is empty. </returns>
-        public static Optional<T> FirstOrEmpty<T>(this IEnumerable<T> seq)
+        public static Optional<T> FirstOrEmpty<T>(IEnumerable<T> seq)
             => NewSequence.FirstOrEmpty(seq);
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace DotNext
         /// <param name="seq">A collection to return an element from.</param>
         /// <param name="filter">A function to test each element for a condition.</param>
         /// <returns>The first element in the sequence that matches to the specified filter; or empty value.</returns>
-        public static Optional<T> FirstOrEmpty<T>(this IEnumerable<T> seq, in ValueFunc<T, bool> filter)
+        public static Optional<T> FirstOrEmpty<T>(IEnumerable<T> seq, in ValueFunc<T, bool> filter)
             where T : notnull
             => NewSequence.FirstOrEmpty(seq, in filter);
 
@@ -104,7 +104,7 @@ namespace DotNext
         /// <param name="seq">A collection to return an element from.</param>
         /// <param name="filter">A function to test each element for a condition.</param>
         /// <returns>The first element in the sequence that matches to the specified filter; or empty value.</returns>
-        public static Optional<T> FirstOrEmpty<T>(this IEnumerable<T> seq, Predicate<T> filter)
+        public static Optional<T> FirstOrEmpty<T>(IEnumerable<T> seq, Predicate<T> filter)
             where T : notnull
             => NewSequence.FirstOrEmpty(seq, filter);
 
@@ -115,7 +115,7 @@ namespace DotNext
         /// <param name="enumerator">Enumerator to modify. Cannot be <see langword="null"/>.</param>
         /// <param name="count">The number of elements to skip.</param>
         /// <returns><see langword="true"/>, if current element is available; otherwise, <see langword="false"/>.</returns>
-        public static bool Skip<T>(this IEnumerator<T> enumerator, int count)
+        public static bool Skip<T>(IEnumerator<T> enumerator, int count)
             => NewSequence.Skip(enumerator, count);
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace DotNext
         /// <param name="enumerator">Enumerator to modify.</param>
         /// <param name="count">The number of elements to skip.</param>
         /// <returns><see langword="true"/>, if current element is available; otherwise, <see langword="false"/>.</returns>
-        public static bool Skip<TEnumerator, T>(this ref TEnumerator enumerator, int count)
+        public static bool Skip<TEnumerator, T>(ref TEnumerator enumerator, int count)
             where TEnumerator : struct, IEnumerator<T>
             => NewSequence.Skip<TEnumerator, T>(ref enumerator, count);
 
@@ -142,7 +142,7 @@ namespace DotNext
         /// <param name="index">Index of the element to read.</param>
         /// <param name="element">Obtained element.</param>
         /// <returns><see langword="true"/>, if element is available in the collection and obtained successfully; otherwise, <see langword="false"/>.</returns>
-        public static bool ElementAt<T>(this IEnumerable<T> collection, int index, [MaybeNullWhen(false)]out T element)
+        public static bool ElementAt<T>(IEnumerable<T> collection, int index, [MaybeNullWhen(false)]out T element)
             => NewSequence.ElementAt(collection, index, out element);
 
         /// <summary>
@@ -151,7 +151,7 @@ namespace DotNext
         /// <typeparam name="T">Type of elements in the collection.</typeparam>
         /// <param name="collection">A collection to check. Cannot be <see langword="null"/>.</param>
         /// <returns>Modified lazy collection without <see langword="null"/> values.</returns>
-        public static IEnumerable<T> SkipNulls<T>(this IEnumerable<T?> collection)
+        public static IEnumerable<T> SkipNulls<T>(IEnumerable<T?> collection)
             where T : class
             => NewSequence.SkipNulls(collection);
 
@@ -163,7 +163,7 @@ namespace DotNext
         /// <param name="delimiter">Delimiter between elements in the final string.</param>
         /// <param name="ifEmpty">A string to be returned if collection has no elements.</param>
         /// <returns>Converted collection into string.</returns>
-        public static string ToString<T>(this IEnumerable<T> collection, string delimiter, string ifEmpty = "")
+        public static string ToString<T>(IEnumerable<T> collection, string delimiter, string ifEmpty = "")
             => NewSequence.ToString(collection, delimiter, ifEmpty);
 
         /// <summary>
@@ -182,7 +182,7 @@ namespace DotNext
         /// <param name="collection">The collection to be concatenated with the items.</param>
         /// <param name="items">The items to be added to the beginning of the collection.</param>
         /// <returns>The concatenated collection.</returns>
-        public static IEnumerable<T> Prepend<T>(this IEnumerable<T> collection, params T[] items)
+        public static IEnumerable<T> Prepend<T>(IEnumerable<T> collection, params T[] items)
             => NewSequence.Prepend(collection, items);
 
         /// <summary>
@@ -192,7 +192,7 @@ namespace DotNext
         /// <param name="collection">The collection to be concatenated with the items.</param>
         /// <param name="items">The items to be added to the end of the collection.</param>
         /// <returns>The concatenated collection.</returns>
-        public static IEnumerable<T> Append<T>(this IEnumerable<T> collection, params T[] items)
+        public static IEnumerable<T> Append<T>(IEnumerable<T> collection, params T[] items)
             => NewSequence.Append(collection, items);
 
         /// <summary>
@@ -203,7 +203,7 @@ namespace DotNext
         /// <param name="count">The maximum number of the elements in the returned sequence.</param>
         /// <param name="leaveOpen"><see langword="false"/> to dispose <paramref name="enumerator"/>; otherwise, <see langword="true"/>.</param>
         /// <returns>The enumerator which is limited by count.</returns>
-        public static LimitedEnumerator<T> Limit<T>(this IEnumerator<T> enumerator, int count, bool leaveOpen = false)
+        public static LimitedEnumerator<T> Limit<T>(IEnumerator<T> enumerator, int count, bool leaveOpen = false)
             => new LimitedEnumerator<T>(enumerator, count, leaveOpen);
 
         /// <summary>
@@ -222,7 +222,7 @@ namespace DotNext
         /// <param name="enumerable">The collection of elements.</param>
         /// <typeparam name="T">The type of the elements in the collection.</typeparam>
         /// <returns>The asynchronous wrapper over synchronous collection of elements.</returns>
-        public static IAsyncEnumerable<T> ToAsyncEnumerable<T>(this IEnumerable<T> enumerable)
+        public static IAsyncEnumerable<T> ToAsyncEnumerable<T>(IEnumerable<T> enumerable)
             => NewSequence.ToAsyncEnumerable(enumerable);
 
         /// <summary>
@@ -232,7 +232,7 @@ namespace DotNext
         /// <param name="token">The token that can be used by consumer to cancel the enumeration.</param>
         /// <typeparam name="T">The type of the elements in the collection.</typeparam>
         /// <returns>The asynchronous wrapper over synchronous enumerator.</returns>
-        public static IAsyncEnumerator<T> GetAsyncEnumerator<T>(this IEnumerable<T> enumerable, CancellationToken token = default)
+        public static IAsyncEnumerator<T> GetAsyncEnumerator<T>(IEnumerable<T> enumerable, CancellationToken token = default)
             => NewSequence.GetAsyncEnumerator(enumerable, token);
     }
 }

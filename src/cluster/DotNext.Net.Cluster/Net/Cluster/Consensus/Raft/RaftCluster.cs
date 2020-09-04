@@ -14,6 +14,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using IO.Log;
     using Threading;
+    using static Collections.Generic.Sequence;
     using static Threading.Tasks.ValueTaskSynchronization;
 
     /// <summary>
