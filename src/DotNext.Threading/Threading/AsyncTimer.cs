@@ -30,7 +30,7 @@ namespace DotNext.Threading
 
             // state management
             private readonly Action continuation;
-            private volatile byte state;
+            private byte state;
             private ConfiguredTaskAwaitable.ConfiguredTaskAwaiter voidAwaiter;
             private ConfiguredTaskAwaitable<bool>.ConfiguredTaskAwaiter boolAwaiter;
 
