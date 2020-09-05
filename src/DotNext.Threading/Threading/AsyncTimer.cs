@@ -14,7 +14,7 @@ namespace DotNext.Threading
     /// <remarks>
     /// This timer provides guarantees than two executions of timer callback cannot be overlapped, i.e. executed twice or more concurrently at the same time.
     /// </remarks>
-    public class AsyncTimer : Disposable
+    public class AsyncTimer : Disposable, IAsyncDisposable
     {
         private sealed class TimerCompletionSource : TaskCompletionSource<bool>, IDisposable
         {
@@ -54,6 +54,7 @@ namespace DotNext.Threading
         private readonly ValueFunc<CancellationToken, Task<bool>> callback;
         [SuppressMessage("Usage", "CA2213", Justification = "It is disposed in Dispose method")]
         private volatile TimerCompletionSource? timerTask;
+        private bool disposeRequested;
 
         /// <summary>
         /// Initializes a new timer.
@@ -97,11 +98,14 @@ namespace DotNext.Threading
         /// <param name="period">The time interval between invocations of the timer callback.</param>
         /// <param name="token">The token that can be used to stop execution of the timer.</param>
         /// <returns><see langword="true"/> if timer was in stopped state; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="ObjectDisposedException">The timer has been disposed.</exception>
+        /// <exception cref="OperationCanceledException"><paramref name="token"/> is in canceled state.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
         public bool Start(TimeSpan dueTime, TimeSpan period, CancellationToken token = default)
         {
+            ThrowIfDisposed();
             token.ThrowIfCancellationRequested();
-            if (timerTask is null || timerTask.Task.IsCompleted)
+            if ((timerTask is null || timerTask.Task.IsCompleted) && !disposeRequested)
             {
                 var source = new TimerCompletionSource(token);
                 source.Execute(dueTime, period, callback);
@@ -125,11 +129,15 @@ namespace DotNext.Threading
         /// Stops timer execution.
         /// </summary>
         /// <returns><see langword="true"/> if timer shutdown was initiated by the callback; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="ObjectDisposedException">The timer has been disposed.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
         public Task<bool> StopAsync()
         {
+            if (IsDisposed)
+                return GetDisposedTask<bool>();
+
             var result = timerTask;
-            if (result is null)
+            if (result is null || result.Task.IsCompleted)
                 return FalseTask.Task;
             result.RequestCancellation();
             return result.Task;
@@ -141,12 +149,52 @@ namespace DotNext.Threading
         /// <param name="disposing"><see langword="true"/> if called from <see cref="Disposable.Dispose()"/>; <see langword="false"/> if called from finalizer <see cref="Disposable.Finalize()"/>.</param>
         protected override void Dispose(bool disposing)
         {
+            disposeRequested = true;
             if (disposing)
             {
-                Interlocked.Exchange(ref timerTask, null)?.Dispose();
+                var timerTask = Interlocked.Exchange(ref this.timerTask, null);
+                if (timerTask != null)
+                {
+                    TrySetDisposedException(timerTask);
+                    timerTask.Dispose();
+                }
             }
 
             base.Dispose(disposing);
         }
+
+        private void Dispose(Task parent, object state)
+        {
+            (state as IDisposable)?.Dispose();
+            Dispose();
+        }
+
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        private Task DisposeAsyncImpl()
+        {
+            var result = Interlocked.Exchange(ref timerTask, null);
+            if (result is null || disposeRequested)
+            {
+                Dispose();
+                return Task.CompletedTask;
+            }
+
+            if (result.Task.IsCompleted)
+            {
+                result.Dispose();
+                Dispose();
+                return Task.CompletedTask;
+            }
+
+            disposeRequested = true;
+            result.RequestCancellation();
+            return result.Task.ContinueWith(Dispose, result, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
+        }
+
+        /// <summary>
+        /// Terminates timer gracefully.
+        /// </summary>
+        /// <returns>The task representing graceful shutdown.</returns>
+        public ValueTask DisposeAsync() => new ValueTask(IsDisposed ? Task.CompletedTask : DisposeAsyncImpl());
     }
 }
