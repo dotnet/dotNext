@@ -47,7 +47,6 @@ namespace DotNext.Threading
 
             private void Execute()
             {
-                var completed = false;
                 try
                 {
                     switch (state)
@@ -76,7 +75,6 @@ namespace DotNext.Threading
                             if (success)
                                 goto case BeginDelayState;
                             TrySetResult(true);
-                            completed = true;
                             break;
                         case BeginDelayState:
                             voidAwaiter = System.Threading.Tasks.Task.Delay(period, cancellation.Token).ConfigureAwait(false).GetAwaiter();
@@ -94,15 +92,13 @@ namespace DotNext.Threading
                 catch (OperationCanceledException)
                 {
                     TrySetResult(false);
-                    completed = true;
                 }
                 catch (Exception e)
                 {
                     TrySetException(e);
-                    completed = true;
                 }
 
-                if (completed)
+                if (Task.IsCompleted)
                     cancellation.Dispose();
             }
 
