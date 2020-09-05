@@ -18,34 +18,99 @@ namespace DotNext.Threading
     {
         private sealed class TimerCompletionSource : TaskCompletionSource<bool>, IDisposable
         {
+            private const byte BeginInitState = 0;
+            private const byte EndInitState = 1;
+            private const byte BeginLoopState = 2;
+            private const byte EndLoopState = 3;
+            private const byte BeginDelayState = 4;
+            private const byte EndDelayState = 5;
             private readonly CancellationTokenSource cancellation;
+            private readonly TimeSpan dueTime, period;
+            private readonly ValueFunc<CancellationToken, Task<bool>> callback;
 
-            internal TimerCompletionSource(CancellationToken token)
-                => cancellation = CancellationTokenSource.CreateLinkedTokenSource(token);
+            // state management
+            private readonly Action continuation;
+            private volatile byte state;
+            private ConfiguredTaskAwaitable.ConfiguredTaskAwaiter voidAwaiter;
+            private ConfiguredTaskAwaitable<bool>.ConfiguredTaskAwaiter boolAwaiter;
+
+            internal TimerCompletionSource(TimeSpan dueTime, TimeSpan period, ValueFunc<CancellationToken, Task<bool>> callback, CancellationToken token)
+            {
+                cancellation = CancellationTokenSource.CreateLinkedTokenSource(token);
+                this.dueTime = dueTime;
+                this.period = period;
+                this.callback = callback;
+                continuation = Execute;
+            }
 
             internal void RequestCancellation() => cancellation.Cancel();
 
-            internal async void Execute(TimeSpan dueTime, TimeSpan period, ValueFunc<CancellationToken, Task<bool>> callback)
+            private void Execute()
             {
+                var completed = false;
                 try
                 {
-                    await System.Threading.Tasks.Task.Delay(dueTime, cancellation.Token).ConfigureAwait(false);
-                    while (await callback.Invoke(cancellation.Token).ConfigureAwait(false))
-                        await System.Threading.Tasks.Task.Delay(period, cancellation.Token).ConfigureAwait(false);
-                    TrySetResult(true);
+                    switch (state)
+                    {
+                        case BeginInitState:
+                            voidAwaiter = System.Threading.Tasks.Task.Delay(dueTime, cancellation.Token).ConfigureAwait(false).GetAwaiter();
+                            if (voidAwaiter.IsCompleted)
+                                goto case EndInitState;
+                            state = EndInitState;
+                            voidAwaiter.OnCompleted(continuation);
+                            break;
+                        case EndInitState:
+                            voidAwaiter.GetResult();
+                            voidAwaiter = default;
+                            goto case BeginLoopState;
+                        case BeginLoopState:
+                            boolAwaiter = callback.Invoke(cancellation.Token).ConfigureAwait(false).GetAwaiter();
+                            if (boolAwaiter.IsCompleted)
+                                goto case EndLoopState;
+                            state = EndLoopState;
+                            boolAwaiter.OnCompleted(continuation);
+                            break;
+                        case EndLoopState:
+                            var success = boolAwaiter.GetResult();
+                            boolAwaiter = default;
+                            if (success)
+                                goto case BeginDelayState;
+                            TrySetResult(true);
+                            completed = true;
+                            break;
+                        case BeginDelayState:
+                            voidAwaiter = System.Threading.Tasks.Task.Delay(period, cancellation.Token).ConfigureAwait(false).GetAwaiter();
+                            if (voidAwaiter.IsCompleted)
+                                goto case EndDelayState;
+                            state = EndDelayState;
+                            voidAwaiter.OnCompleted(continuation);
+                            break;
+                        case EndDelayState:
+                            voidAwaiter.GetResult();
+                            voidAwaiter = default;
+                            goto case BeginLoopState;
+                    }
                 }
                 catch (OperationCanceledException)
                 {
                     TrySetResult(false);
+                    completed = true;
                 }
                 catch (Exception e)
                 {
                     TrySetException(e);
+                    completed = true;
                 }
-                finally
-                {
+
+                if (completed)
                     cancellation.Dispose();
-                }
+            }
+
+            internal void Start()
+            {
+                ThreadPool.QueueUserWorkItem(Start, this, false);
+
+                static void Start(TimerCompletionSource source) => source.Execute();
             }
 
             private void Dispose(bool disposing)
@@ -53,6 +118,8 @@ namespace DotNext.Threading
                 if (disposing)
                 {
                     cancellation.Dispose();
+                    voidAwaiter = default;
+                    boolAwaiter = default;
                 }
             }
 
@@ -121,8 +188,8 @@ namespace DotNext.Threading
             token.ThrowIfCancellationRequested();
             if ((timerTask is null || timerTask.Task.IsCompleted) && !disposeRequested)
             {
-                var source = new TimerCompletionSource(token);
-                source.Execute(dueTime, period, callback);
+                var source = new TimerCompletionSource(dueTime, period, callback, token);
+                source.Start();
                 timerTask = source;
                 return true;
             }
