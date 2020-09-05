@@ -173,22 +173,22 @@ namespace DotNext.Threading
         private Task DisposeAsyncImpl()
         {
             var result = Interlocked.Exchange(ref timerTask, null);
-            if (result is null || disposeRequested)
+            if (result is null)
             {
-                Dispose();
-                return Task.CompletedTask;
             }
-
-            if (result.Task.IsCompleted)
+            else if (result.Task.IsCompleted)
             {
                 result.Dispose();
-                Dispose();
-                return Task.CompletedTask;
+            }
+            else
+            {
+                disposeRequested = true;
+                result.RequestCancellation();
+                return result.Task.ContinueWith(Dispose, result, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
             }
 
-            disposeRequested = true;
-            result.RequestCancellation();
-            return result.Task.ContinueWith(Dispose, result, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
+            Dispose();
+            return Task.CompletedTask;
         }
 
         /// <summary>
