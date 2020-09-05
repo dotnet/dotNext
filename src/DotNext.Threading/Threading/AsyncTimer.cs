@@ -48,7 +48,21 @@ namespace DotNext.Threading
                 }
             }
 
-            public void Dispose() => cancellation.Dispose();
+            private void Dispose(bool disposing)
+            {
+                if (disposing)
+                {
+                    cancellation.Dispose();
+                }
+            }
+
+            public void Dispose()
+            {
+                Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+
+            ~TimerCompletionSource() => Dispose(false);
         }
 
         private readonly ValueFunc<CancellationToken, Task<bool>> callback;
