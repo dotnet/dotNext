@@ -51,16 +51,6 @@ var str = "abc".TrimLength(2);  //str is "ab"
 str = "abc".TrimLength(4);  //str is "abc"
 ```
 
-## Raw Data
-Extension method _GetRawData_ allows to obtain managed pointer to the underlying char buffer referenced by the string instance. This method can be used in performance-critical paths in your code
-```csharp
-using DotNext;
-
-ref readonly char ch = ref "str".GetRawData();  //now ch points to the first string character of 's'
-```
-
-Returned managed pointer is immutable because instantiated string cannot be modified at runtime.
-
 # Delegates
 Related classes: [DelegateHelpers](../../api/DotNext.StringExtensions.yml), [Func](../../api/DotNext.Func.yml), [Converter](../../api/DotNext.Converter.yml), [Predicate](../../api/DotNext.Predicate.yml).
 
