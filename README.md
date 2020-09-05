@@ -51,12 +51,14 @@ Release Date: MM-DD-2020
 * Fixed correctness of `Clear(bool)` method overridden by `PooledArrayBufferWriter<T>` and `PooledBufferWriter<T>` classes
 * Added `RemoveLast` and `RemoveFirst` methods to `PooledArrayBufferWriter<T>` class
 * `Optional<T>` type distinguishes **null** and undefined value
+* [DotNext.Sequence](https://sakno.github.io/dotNext/api/DotNext.Sequence.html) class is now deprecated and replaced with [DotNext.Collections.Generic.Sequence](https://sakno.github.io/dotNext/api/DotNext.Collections.Generic.Sequence.html) class. It's binary compatible but source incompatible change. 
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.7.0">DotNext.Metaprogramming 2.7.0</a>
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.10.0">DotNext.Metaprogramming 2.10.0</a>
 * Added extension methods of [ExpressionBuilder](https://sakno.github.io/dotNext/api/DotNext.Linq.Expressions.ExpressionBuilder.html) class for constructing expressions of type [Optional&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Optional-1.html), [Result&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Result-1.html) or [Nullable&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.nullable-1)
 
 <a href="https://www.nuget.org/packages/dotnext.threading/2.10.0">DotNext.Threading 2.10.0</a>
 * [AsyncExchanger&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncExchanger-1.html) class now has a method for fast synchronous exchange
+* [AsyncTimer](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncTimer.html) implements [IAsyncDisposable](https://docs.microsoft.com/en-us/dotnet/api/system.iasyncdisposable) for graceful shutdown
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
