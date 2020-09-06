@@ -11,7 +11,7 @@ namespace DotNext.Linq.Expressions
     /// or structure.
     /// </summary>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/visual-basic/language-reference/statements/with-end-with-statement">With..End Statement</seealso>
-    public sealed class WithExpression : Expression
+    public sealed class WithExpression : CustomExpression
     {
         /// <summary>
         /// Represents constructor of the expression body.
@@ -71,17 +71,6 @@ namespace DotNext.Linq.Expressions
             get => body ?? Empty();
             internal set => body = value;
         }
-
-        /// <summary>
-        /// Always returns <see langword="true"/> because
-        /// this expression is <see cref="ExpressionType.Extension"/>.
-        /// </summary>
-        public override bool CanReduce => true;
-
-        /// <summary>
-        /// Always returns <see cref="ExpressionType.Extension"/>.
-        /// </summary>
-        public override ExpressionType NodeType => ExpressionType.Extension;
 
         /// <summary>
         /// Gets type of this expression.

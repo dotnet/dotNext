@@ -9,7 +9,7 @@ namespace DotNext.Linq.Expressions
     /// Represents expression that is equivalent to <c>__refvalue</c> C# undocumented keyword
     /// or <c>refanyval</c> IL instruction.
     /// </summary>
-    public sealed class RefAnyValExpression : Expression
+    public sealed class RefAnyValExpression : CustomExpression
     {
         /// <summary>
         /// Initializes a new expression.
@@ -37,17 +37,6 @@ namespace DotNext.Linq.Expressions
         /// Gets the type of this expression.
         /// </summary>
         public override Type Type => ReferenceType.MakeByRefType();
-
-        /// <summary>
-        /// Always returns <see langword="true"/> because
-        /// this expression is <see cref="ExpressionType.Extension"/>.
-        /// </summary>
-        public override bool CanReduce => true;
-
-        /// <summary>
-        /// Always returns <see cref="ExpressionType.Extension"/>.
-        /// </summary>
-        public override ExpressionType NodeType => ExpressionType.Extension;
 
         /// <summary>
         /// Translates this expression into predefined set of expressions

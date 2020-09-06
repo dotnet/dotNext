@@ -12,7 +12,7 @@ namespace DotNext.Linq.Expressions
     /// Represents iteration over collection elements as expression.
     /// </summary>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/foreach-in">foreach Statement</seealso>
-    public sealed class ForEachExpression : Expression, ILoopLabels
+    public sealed class ForEachExpression : CustomExpression, ILoopLabels
     {
         /// <summary>
         /// Represents constructor of iteration over collection elements.
@@ -109,20 +109,9 @@ namespace DotNext.Linq.Expressions
         public MemberExpression Element { get; }
 
         /// <summary>
-        /// Always returns <see cref="ExpressionType.Extension"/>.
-        /// </summary>
-        public override ExpressionType NodeType => ExpressionType.Extension;
-
-        /// <summary>
         /// Always returns <see cref="void"/>.
         /// </summary>
         public override Type Type => typeof(void);
-
-        /// <summary>
-        /// Always returns <see langword="true"/> because
-        /// this expression is <see cref="ExpressionType.Extension"/>.
-        /// </summary>
-        public override bool CanReduce => true;
 
         /// <summary>
         /// Translates this expression into predefined set of expressions

@@ -12,7 +12,7 @@ namespace DotNext.Linq.Expressions
     /// <summary>
     /// Represents slice of collection using range.
     /// </summary>
-    public sealed class SliceExpression : Expression
+    public sealed class SliceExpression : CustomExpression
     {
         private readonly MethodInfo? slice; // if null then array
         private readonly PropertyInfo? count;   // if null then object supports Slice method with Range parameter
@@ -88,17 +88,6 @@ namespace DotNext.Linq.Expressions
         /// Gets result type of asynchronous operation.
         /// </summary>
         public override Type Type => slice?.ReturnType ?? Collection.Type;
-
-        /// <summary>
-        /// Always return <see langword="true"/>.
-        /// </summary>
-        public override bool CanReduce => true;
-
-        /// <summary>
-        /// Gets expression node type.
-        /// </summary>
-        /// <see cref="ExpressionType.Extension"/>
-        public override ExpressionType NodeType => ExpressionType.Extension;
 
         /// <summary>
         /// Gets collection.

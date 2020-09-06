@@ -10,7 +10,7 @@ namespace DotNext.Linq.Expressions
     /// Represents synchronized block of code.
     /// </summary>
     /// <see href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/lock-statement">lock Statement.</see>
-    public sealed class LockExpression : Expression
+    public sealed class LockExpression : CustomExpression
     {
         /// <summary>
         /// Represents constructor of synchronized block of code.
@@ -70,17 +70,6 @@ namespace DotNext.Linq.Expressions
             get => body ?? Empty();
             internal set => body = value;
         }
-
-        /// <summary>
-        /// Always returns <see langword="true"/> because
-        /// this expression is <see cref="ExpressionType.Extension"/>.
-        /// </summary>
-        public override bool CanReduce => true;
-
-        /// <summary>
-        /// Always returns <see cref="ExpressionType.Extension"/>.
-        /// </summary>
-        public override ExpressionType NodeType => ExpressionType.Extension;
 
         /// <summary>
         /// Gets type of this expression.

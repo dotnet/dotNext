@@ -8,7 +8,7 @@ namespace DotNext.Linq.Expressions
     /// <summary>
     /// Represents expression that is protected by null check, e.g. safe navigation operator (?. in C#).
     /// </summary>
-    public sealed class NullSafetyExpression : Expression
+    public sealed class NullSafetyExpression : CustomExpression
     {
         private readonly BinaryExpression? assignment;
         private readonly bool alwaysNotNull;
@@ -59,17 +59,6 @@ namespace DotNext.Linq.Expressions
             get => body ?? Empty();
             internal set => body = value;
         }
-
-        /// <summary>
-        /// Always returns <see langword="true"/> because
-        /// this expression is <see cref="ExpressionType.Extension"/>.
-        /// </summary>
-        public override bool CanReduce => true;
-
-        /// <summary>
-        /// Always returns <see cref="ExpressionType.Extension"/>.
-        /// </summary>
-        public override ExpressionType NodeType => ExpressionType.Extension;
 
         /// <summary>
         /// Gets type of this expression.
