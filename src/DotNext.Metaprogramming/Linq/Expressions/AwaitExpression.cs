@@ -12,7 +12,7 @@ namespace DotNext.Linq.Expressions
     /// Represents suspension point in the execution of the lambda function until the awaited task completes.
     /// </summary>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/await">Await expression</seealso>
-    public sealed class AwaitExpression : Expression
+    public sealed class AwaitExpression : CustomExpression
     {
         private static readonly UserDataSlot<bool> IsAwaiterVarSlot = UserDataSlot<bool>.Allocate();
 
@@ -60,17 +60,6 @@ namespace DotNext.Linq.Expressions
         /// Gets result type of asynchronous operation.
         /// </summary>
         public override Type Type => GetResultMethod.ReturnType;
-
-        /// <summary>
-        /// Always return <see langword="true"/>.
-        /// </summary>
-        public override bool CanReduce => true;
-
-        /// <summary>
-        /// Gets expression node type.
-        /// </summary>
-        /// <see cref="ExpressionType.Extension"/>
-        public override ExpressionType NodeType => ExpressionType.Extension;
 
         /// <summary>
         /// Translates this expression into predefined set of expressions

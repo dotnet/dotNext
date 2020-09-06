@@ -8,7 +8,7 @@ namespace DotNext.Linq.Expressions
     /// <summary>
     /// Expresses construction of <see cref="Index"/> value.
     /// </summary>
-    public sealed class ItemIndexExpression : Expression
+    public sealed class ItemIndexExpression : CustomExpression
     {
         /// <summary>
         /// The index of the first item in the collection.
@@ -72,17 +72,6 @@ namespace DotNext.Linq.Expressions
         /// Gets result type of asynchronous operation.
         /// </summary>
         public override Type Type => typeof(Index);
-
-        /// <summary>
-        /// Always return <see langword="true"/>.
-        /// </summary>
-        public override bool CanReduce => true;
-
-        /// <summary>
-        /// Gets expression node type.
-        /// </summary>
-        /// <see cref="ExpressionType.Extension"/>
-        public override ExpressionType NodeType => ExpressionType.Extension;
 
         internal static Expression GetOffset(Expression index, Expression count)
             => index is ItemIndexExpression itemIndex && !itemIndex.IsFromEnd ? itemIndex.Value : Call(index, nameof(Index.GetOffset), null, count);

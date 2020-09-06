@@ -8,7 +8,7 @@ namespace DotNext.Linq.Expressions
     /// <summary>
     /// Expresses construction of <see cref="Range"/>.
     /// </summary>
-    public sealed class RangeExpression : Expression
+    public sealed class RangeExpression : CustomExpression
     {
         /// <summary>
         /// Initializes a new range with the specified starting and ending indexes.
@@ -37,17 +37,6 @@ namespace DotNext.Linq.Expressions
         /// Gets result type of asynchronous operation.
         /// </summary>
         public override Type Type => typeof(Range);
-
-        /// <summary>
-        /// Always return <see langword="true"/>.
-        /// </summary>
-        public override bool CanReduce => true;
-
-        /// <summary>
-        /// Gets expression node type.
-        /// </summary>
-        /// <see cref="ExpressionType.Extension"/>
-        public override ExpressionType NodeType => ExpressionType.Extension;
 
         private static Expression GetOffsetAndLength(Expression range, Expression length)
             => Call(range, nameof(Range.GetOffsetAndLength), null, length);

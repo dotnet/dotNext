@@ -11,7 +11,7 @@ namespace DotNext.Linq.Expressions
     /// Represents <c>using</c> expression.
     /// </summary>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/using-statement">USING statement</seealso>
-    public sealed class UsingExpression : Expression
+    public sealed class UsingExpression : CustomExpression
     {
         /// <summary>
         /// Represents constructor of <c>using</c> expression.
@@ -75,20 +75,9 @@ namespace DotNext.Linq.Expressions
         public ParameterExpression Resource { get; }
 
         /// <summary>
-        /// Always returns <see cref="ExpressionType.Extension"/>.
-        /// </summary>
-        public override ExpressionType NodeType => ExpressionType.Extension;
-
-        /// <summary>
         /// Gets the type of this expression.
         /// </summary>
         public override Type Type => Body.Type;
-
-        /// <summary>
-        /// Always returns <see langword="true"/> because
-        /// this expression is <see cref="ExpressionType.Extension"/>.
-        /// </summary>
-        public override bool CanReduce => true;
 
         /// <summary>
         /// Reconstructs expression with a new body.

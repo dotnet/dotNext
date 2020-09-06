@@ -7,7 +7,7 @@ namespace DotNext.Linq.Expressions
     /// Represents null-coalescing assignment operator.
     /// </summary>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/proposals/csharp-8.0/null-coalescing-assignment">Null-coalescing assignment.</seealso>
-    public sealed class NullCoalescingAssignmentExpression : Expression
+    public sealed class NullCoalescingAssignmentExpression : CustomExpression
     {
         internal NullCoalescingAssignmentExpression(Expression left, Expression right)
         {
@@ -69,17 +69,6 @@ namespace DotNext.Linq.Expressions
         /// Gets result type of asynchronous operation.
         /// </summary>
         public override Type Type => Left.Type;
-
-        /// <summary>
-        /// Always return <see langword="true"/>.
-        /// </summary>
-        public override bool CanReduce => true;
-
-        /// <summary>
-        /// Gets expression node type.
-        /// </summary>
-        /// <see cref="ExpressionType.Extension"/>
-        public override ExpressionType NodeType => ExpressionType.Extension;
 
         /// <summary>
         /// Translates this expression into predefined set of expressions

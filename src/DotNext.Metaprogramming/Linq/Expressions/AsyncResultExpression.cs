@@ -14,7 +14,7 @@ namespace DotNext.Linq.Expressions
     /// This expression turns async state machine into final state.
     /// </remarks>
     /// <seealso cref="Metaprogramming.CodeGenerator.AsyncLambda{D}(Action{Metaprogramming.LambdaContext})"/>
-    public sealed class AsyncResultExpression : Expression
+    public sealed class AsyncResultExpression : CustomExpression
     {
         private readonly TaskType taskType;
 
@@ -61,16 +61,6 @@ namespace DotNext.Linq.Expressions
         /// The type of this expression is <see cref="Task"/>, <see cref="Task{TResult}"/>, <see cref="ValueTask"/> or <see cref="ValueTask{TResult}"/>.
         /// </remarks>
         public override Type Type => taskType;
-
-        /// <summary>
-        /// Expression type. Always returns <see cref="ExpressionType.Extension"/>.
-        /// </summary>
-        public override ExpressionType NodeType => ExpressionType.Extension;
-
-        /// <summary>
-        /// Indicates that this expression can be reduced to well-known LINQ expression.
-        /// </summary>
-        public override bool CanReduce => true;
 
         /// <summary>
         /// Translates this expression into predefined set of expressions

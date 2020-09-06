@@ -8,7 +8,7 @@ namespace DotNext.Linq.Expressions
     /// </summary>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/while">while Statement</seealso>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/do">do-while Statement</seealso>
-    public sealed class WhileExpression : Expression, ILoopLabels
+    public sealed class WhileExpression : CustomExpression, ILoopLabels
     {
         /// <summary>
         /// Represents constructor of the loop body.
@@ -88,20 +88,9 @@ namespace DotNext.Linq.Expressions
         }
 
         /// <summary>
-        /// Always returns <see cref="ExpressionType.Extension"/>.
-        /// </summary>
-        public override ExpressionType NodeType => ExpressionType.Extension;
-
-        /// <summary>
         /// Always returns <see cref="void"/>.
         /// </summary>
         public override Type Type => typeof(void);
-
-        /// <summary>
-        /// Always returns <see langword="true"/> because
-        /// this expression is <see cref="ExpressionType.Extension"/>.
-        /// </summary>
-        public override bool CanReduce => true;
 
         /// <summary>
         /// Reconstructs loop expression with a new body.
