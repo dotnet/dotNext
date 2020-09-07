@@ -48,9 +48,9 @@ namespace DotNext
         public static void StringRawData()
         {
             var str = "Hello, world!";
-            ref readonly var ch = ref str.GetRawData();
+            ref readonly var ch = ref StringExtensions.GetRawData(str);
             Equal('H', ch);
-            Throws<NullReferenceException>(() => default(string).GetRawData());
+            Throws<NullReferenceException>(() => StringExtensions.GetRawData(default(string)));
         }
 
         [Fact]

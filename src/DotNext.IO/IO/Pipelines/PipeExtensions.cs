@@ -648,7 +648,7 @@ namespace DotNext.IO.Pipelines
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="EndOfStreamException">Reader doesn't have enough data.</exception>
         [Obsolete("Use ReadBlockAsync extension method instead")]
-        public static ValueTask ReadAsync(this PipeReader reader, Memory<byte> output, CancellationToken token = default)
+        public static ValueTask ReadAsync(PipeReader reader, Memory<byte> output, CancellationToken token = default)
             => ReadBlockAsync(reader, output, token);
 
         /// <summary>

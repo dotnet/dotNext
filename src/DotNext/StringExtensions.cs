@@ -78,7 +78,7 @@ namespace DotNext
         /// <param name="str">The string data.</param>
         /// <returns>The managed pointer to the first character in the string.</returns>
         [Obsolete("Use String.GetPinnableReference method instead")]
-        public static ref readonly char GetRawData(this string str)
+        public static ref readonly char GetRawData(string str)
             => ref GetReference(str.AsSpan());
 
         /// <summary>

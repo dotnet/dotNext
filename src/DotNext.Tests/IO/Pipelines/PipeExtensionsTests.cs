@@ -54,8 +54,8 @@ namespace DotNext.IO.Pipelines
             WriteValueAsync(new byte[] { 1, 5, 8, 9, 10 }, pipe.Writer);
             var portion1 = new byte[3];
             var portion2 = new byte[2];
-            await pipe.Reader.ReadAsync(portion1);
-            await pipe.Reader.ReadAsync(portion2);
+            await PipeExtensions.ReadAsync(pipe.Reader, portion1);
+            await PipeExtensions.ReadAsync(pipe.Reader, portion2);
             Equal(1, portion1[0]);
             Equal(5, portion1[1]);
             Equal(8, portion1[2]);
