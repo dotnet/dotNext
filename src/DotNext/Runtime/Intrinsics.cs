@@ -372,7 +372,7 @@ namespace DotNext.Runtime
         /// <seealso cref="GetReadonlyRef{I, O}(I[], long)"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [Obsolete("Use overloaded method that allows to specify return type explicitly")]
-        public static ref readonly T GetReadonlyRef<T>(this T[] array, long index) => ref array[index];
+        public static ref readonly T GetReadonlyRef<T>(T[] array, long index) => ref array[index];
 
         /// <summary>
         /// Allows to reinterpret managed pointer to array element.

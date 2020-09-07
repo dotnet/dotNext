@@ -137,7 +137,7 @@ namespace DotNext.Runtime
         public static void ReadonlyRef()
         {
             var array = new[] { "a", "b", "c" };
-            ref readonly var element = ref array.GetReadonlyRef(2);
+            ref readonly var element = ref Intrinsics.GetReadonlyRef(array, 2);
             Equal("c", element);
         }
 

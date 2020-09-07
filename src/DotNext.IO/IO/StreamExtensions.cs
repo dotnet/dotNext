@@ -2338,7 +2338,7 @@ namespace DotNext.IO
         /// <param name="output">A region of memory. When this method returns, the contents of this region are replaced by the bytes read from the current source.</param>
         /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
         [Obsolete("Use ReadBlock extension method instead")]
-        public static void ReadBytes(this Stream stream, Span<byte> output)
+        public static void ReadBytes(Stream stream, Span<byte> output)
             => ReadBlock(stream, output);
 
         /// <summary>
@@ -2385,7 +2385,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         [Obsolete("Use ReadBlockAsync extension method instead")]
-        public static ValueTask ReadBytesAsync(this Stream stream, Memory<byte> output, CancellationToken token = default)
+        public static ValueTask ReadBytesAsync(Stream stream, Memory<byte> output, CancellationToken token = default)
             => ReadBlockAsync(stream, output, token);
 
         /// <summary>
