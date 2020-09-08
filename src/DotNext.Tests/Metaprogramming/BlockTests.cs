@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Xunit;
@@ -8,8 +9,6 @@ namespace DotNext.Metaprogramming
 {
     using Linq.Expressions;
     using static CodeGenerator;
-
-    using U = Linq.Expressions.UniversalExpression;
 
     [ExcludeFromCodeCoverage]
     public sealed class BlockTests : Test
@@ -72,9 +71,9 @@ namespace DotNext.Metaprogramming
         {
             var lambda = Lambda<Func<int, int>>(fun =>
             {
-                With((U)fun[0] + 10, scopeVar =>
+                With((Expression)(fun[0].AsDynamic() + 10), scopeVar =>
                 {
-                    Assign(scopeVar, (U)scopeVar * 2);
+                    Assign(scopeVar, scopeVar.AsDynamic() * 2);
                 });
             })
             .Compile();
