@@ -429,10 +429,6 @@ namespace DotNext.Linq.Expressions
 
             lambda = Expression.Lambda<Func<string, string>>(parameter.Slice(typeof(Range).New(1.Index(false), 1.Index(true))), parameter).Compile();
             Equal("abcd"[1..^1], lambda("abcd"));
-
-            var uParam = (UniversalExpression)parameter;
-            lambda = Expression.Lambda<Func<string, string>>(uParam.Slice(typeof(Range).New(1.Index(false), 1.Index(true))), parameter).Compile();
-            Equal("abcd"[1..^1], lambda("abcd"));
         }
 
         [Fact]
@@ -530,6 +526,16 @@ namespace DotNext.Linq.Expressions
             Equal(42, lambda("42"));
             False(lambda("ab").IsSuccessful);
             Throws<FormatException>(() => lambda("ab").Value);
+        }
+
+        [Fact]
+        public static void CachedBindingRegression()
+        {
+            BinaryExpression expr1 = 42.Const().AsDynamic() > 2;
+            BinaryExpression expr2 = 43.Const().AsDynamic() > 3;
+            BinaryExpression expr3 = 43L.Const().AsDynamic() > 3L;
+            NotEqual(expr1.Right, expr2.Right);
+            NotEqual(expr2, expr3);
         }
     }
 }

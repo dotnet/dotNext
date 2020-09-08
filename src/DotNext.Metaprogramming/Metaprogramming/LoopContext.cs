@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq.Expressions;
-using System.Runtime.InteropServices;
 
 namespace DotNext.Metaprogramming
 {
@@ -13,13 +12,13 @@ namespace DotNext.Metaprogramming
     /// This type can be used to transfer control between outer and inner loops.
     /// The context lifetime is limited by surrounding lexical scope of the loop.
     /// </remarks>
-    public struct LoopContext : IDisposable
+    public readonly struct LoopContext : IDisposable
     {
-        private GCHandle loop;
+        private readonly WeakReference? loop;
 
-        internal LoopContext(ILoopLabels loop) => this.loop = GCHandle.Alloc(loop, GCHandleType.Weak);
+        internal LoopContext(ILoopLabels loop) => this.loop = new WeakReference(loop);
 
-        private ILoopLabels Labels => loop.Target is ILoopLabels result ? result : throw new ObjectDisposedException(nameof(LoopContext));
+        private ILoopLabels Labels => loop?.Target is ILoopLabels result ? result : throw new ObjectDisposedException(nameof(LoopContext));
 
         internal LabelTarget ContinueLabel => Labels.ContinueLabel;
 
@@ -28,8 +27,10 @@ namespace DotNext.Metaprogramming
         /// <inheritdoc/>
         void IDisposable.Dispose()
         {
-            loop.Free();
-            this = default;
+            if (!(loop is null))
+            {
+                loop.Target = null;
+            }
         }
     }
 }
