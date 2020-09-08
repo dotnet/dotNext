@@ -18,7 +18,7 @@ Metaprogramming library extends LINQ Expression with the following features:
 * [Ranges and Indicies](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/proposals/csharp-8.0/ranges)
 * Pattern matching
 * Extension methods for easy construction of compound expressions and statements
-* Universal expression which allows to use standard operators provided by programming language
+* Building expression trees using **dynamic** keyword in C#
 
 All these extensions are compatible with [Expression](https://docs.microsoft.com/en-us/dotnet/api/system.linq.expressions.expression) class.
 
@@ -29,7 +29,7 @@ Additionally, .NEXT Metaprogramming library replaces limit of [C# Expression Tre
 
 # Concept
 The code construction based on the following concepts:
-* [Universal Expression](universal.md)
+* [Dynamic Construction of Expressions](dynamic.md)
 * [Code Generator](../../api/DotNext.Metaprogramming.CodeGenerator.yml) provides methods for adding statement such as method calls, assignment, loops, if-then-else statement etc.
 * [Expression Builder](../../api/DotNext.Linq.Expressions.ExpressionBuilder.yml) provides extension methods for constructing expressions
 
@@ -49,22 +49,22 @@ The lexical scope is enclosed by multi-line lambda function. The body of such fu
 ```csharp
 using DotNext.Linq.Expressions;
 using System;
+using System.Linq.Expressions;
 using static DotNext.Metaprogramming.CodeGenerator;
-using U = DotNext.Linq.Expression.UniversalExpression;
 
 Func<long, long> fact = Lambda<Func<long, long>>(fun => 
 {
-    var arg = (U)fun[0];    //convert parameter into universal expression
+    var arg = fun[0];    //declares access to lambda parameter
     //if-then-else expression
-    If(arg > 1L)
-        .Then(arg * fun.Invoke(arg - 1L))  //recursive invocation of the current lambda function
+    If((Expression)(arg.AsDynamic() > 1L))
+        .Then(arg.AsDynamic() * fun.Invoke(arg.AsDynamic() - 1L))  //recursive invocation of the current lambda function
         .Else(arg)  //else branch
         .OfType<long>()
     .End();
     //declare local variable of type long
     var local = DeclareVariable<long>("local");
     //assignment
-    Assign(local, -arg);  //equivalent is the assignment statement local = -arg
+    Assign(local, -arg.AsDynamic());  //equivalent is the assignment statement local = -arg
     //try-catch
     Try(() => 
     {

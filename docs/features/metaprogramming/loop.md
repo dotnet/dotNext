@@ -35,16 +35,17 @@ new Action<string>(str =>
 
 ```csharp
 using System;
+using System.Linq.Expressions;
 using static DotNext.Metaprogramming.CodeGenerator;
-using U = DotNext.Linq.Expressions.UniversalExpression;
+using static DotNext.Linq.Expressions.ExpressionBuilder;
 
 Lambda<Fun<long, long>>((fun, result) => 
 {
-    var arg = (U)fun[0];
+    var arg = fun[0];
     Assign(result, 1L);  //result = 1L;
-    While(arg > 1L, () => 
+    While((Expression)(arg.AsDynamic() > 1L), () => 
 	{
-        Assign(result, arg-- * fun.Result);  //result *= arg--;
+        Assign(result, arg.AsDynamic()-- * fun.Result);  //result *= arg--;
     });
 });
 
@@ -67,14 +68,14 @@ new Func<long, long>(arg =>
 ```csharp
 using System;
 using static DotNext.Metaprogramming.CodeGenerator;
-using U = DotNext.Linq.Expressions.UniversalExpression;
+using static DotNext.Linq.Expressions.ExpressionBuilder;
 
 Lambda<Fun<long, long>>((fun, result) => 
 {
     Assign(result, 1L);  //result = 1L;
-    For(fun[0], i => (U)i > 1L, i => PostDecrementAssign(i), i => 
+    For(fun[0], i => i.AsDynamic() > 1L, i => PostDecrementAssign(i), i => 
     {
-        Assign(result, (U)i * result);    //result *= i;
+        Assign(result, i.AsDynamic() * result);    //result *= i;
     });
 });
 
@@ -95,16 +96,16 @@ Plain loop is similar to `while(true)` loop and doesn't have built-in loop contr
 ```csharp
 using System;
 using static DotNext.Metaprogramming.CodeGenerator;
-using U = DotNext.Linq.Expressions.UniversalExpression;
+using static DotNext.Linq.Expressions.ExpressionBuilder;
 
 Lambda<Fun<long, long>>((fun, result) => 
 {
-    var arg = (U)fun[0];
+    var arg = fun[0];
     Assign(result, 1L);  //result = 1L;
     Loop(() => 
     {
-        If(arg > 1L)
-            .Then(() => Assign(result, arg-- * result))
+        If((Expression)(arg.AsDynamic() > 1L))
+            .Then(() => Assign(result, arg.AsDynamic()-- * result))
             .Else(Break)  //break;
         .End();
     });

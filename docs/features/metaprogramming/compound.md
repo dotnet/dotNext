@@ -24,7 +24,7 @@ Compound expression can be constructed with **dynamic** type:
 using System;
 using DotNext.Metaprogramming;
 
-dynamic expr = (UniversalExpression)42;
+dynamic expr = 42.Const().AsDynamic();
 expr = -expr + 1;
 Expression tree = expr; //tree is -42 + 1
 ```

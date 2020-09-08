@@ -6,14 +6,15 @@ The following example shows how to generate lambda function which performs facto
 
 ```csharp
 using System;
+using System.Linq.Expressions;
 using static DotNext.Metaprogramming.CodeGenerator;
-using U = DotNext.Linq.Expressions.UniversalExpression;
+using static DotNext.Linq.Expressions.ExpressionBuilder;
 
 Func<long, long> fact = Lambda<Func<long, long>>(fun => 
 {
-    var arg = (U)fun[0];
-    If(arg > 1L)
-        .Then(arg * fun.Invoke(arg - 1L))
+    var arg = fun[0];
+    If((Expression)(arg.AsDynamic() > 1L))
+        .Then(arg.AsDynamic() * fun.Invoke(arg.AsDynamic() - 1L))
         .Else(arg)
 		.OfType<long>()
     .End();
@@ -21,18 +22,18 @@ Func<long, long> fact = Lambda<Func<long, long>>(fun =>
 fact(3);    // == 6
 ```
 
-`fun` parameter is of type [LambdaContext](../../api/DotNext.Metaprogramming.LambdaContext.yml) and provide access to the function parameters. `arg` local variable is just a conversion of the lambda function parameter into [Universal Expression](universal.md). `If` starts construction of _if-then-else_ expression. `fun.Invoke` method allows to invoke lambda function recursively. `OfType` describes type of conditional expression that was started by `If` call. `End` method call represents end of conditional expression.
+`fun` parameter is of type [LambdaContext](../../api/DotNext.Metaprogramming.LambdaContext.yml) and provide access to the function parameters. `arg` is the lambda function parameter. `If` starts construction of _if-then-else_ expression. `fun.Invoke` method allows to invoke lambda function recursively. `OfType` describes type of conditional expression that was started by `If` call. `End` method call represents end of conditional expression. `AsDynamic` extension method allows to convert expression node to it's dynamically-typed representation that allows to use dynamic features of C# for building expression trees.
 
 `LambdaContext` type supports decomposition so it is possible to use convenient syntax to obtain function parameters:
 ```csharp
 using System;
 using static DotNext.Metaprogramming.CodeGenerator;
-using U = DotNext.Linq.Expressions.UniversalExpression;
+using static DotNext.Linq.Expressions.ExpressionBuilder;
 
 Lambda<Func<int, int, int>>(fun => 
 {
   var (x, y) = fun;
-  Return((U)x + y);
+  Return(x.AsDynamic() + y);
 });
 ```
 
@@ -40,13 +41,14 @@ The last expression inside of lamda function is interpreted as return value. How
 
 ```csharp
 using System;
+using System.Linq.Expressions;
 using static DotNext.Metaprogramming.CodeGenerator;
-using U = DotNext.Linq.Expressions.UniversalExpression;
+using static DotNext.Linq.Expressions.ExpressionBuilder;
 
 Func<long, bool> isZero = Lambda<Func<long, bool>>(fun => 
 {
-    var arg = (U)fun[0];
-    If(arg != 0L)
+    var arg = fun[0];
+    If((Expression)(arg.AsDynamic() != 0L))
         .Then(() => Return(true))
         .Else(() => Return(false))
     .End();
