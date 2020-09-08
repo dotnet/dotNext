@@ -55,6 +55,8 @@ Release Date: MM-DD-2020
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.10.0">DotNext.Metaprogramming 2.10.0</a>
 * Added extension methods of [ExpressionBuilder](https://sakno.github.io/dotNext/api/DotNext.Linq.Expressions.ExpressionBuilder.html) class for constructing expressions of type [Optional&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Optional-1.html), [Result&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Result-1.html) or [Nullable&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.nullable-1)
+* Fixed bug with expression building using **dynamic** keyword
+* Deprecated [UniversalExpression](https://sakno.github.io/dotNext/api/DotNext.Linq.Expressions.UniversalExpression.html) type
 
 <a href="https://www.nuget.org/packages/dotnext.threading/2.10.0">DotNext.Threading 2.10.0</a>
 * [AsyncExchanger&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncExchanger-1.html) class now has a method for fast synchronous exchange
