@@ -13,7 +13,7 @@ namespace DotNext.Linq.Expressions
     /// <summary>
     /// Provides extension methods to simplify construction of complex expressions.
     /// </summary>
-    public static class ExpressionBuilder
+    public static partial class ExpressionBuilder
     {
         /// <summary>
         /// Constructs unary plus expression.
