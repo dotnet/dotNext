@@ -3,11 +3,14 @@ using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Linq.Expressions
 {
     internal sealed class MetaExpression : DynamicMetaObject
     {
+        private static readonly MethodInfo ReinterpretReferenceMethod = new Func<object, IExpressionBuilder<Expression>>(Unsafe.As<IExpressionBuilder<Expression>>).Method;
+        private static readonly MethodInfo BuildMethod = typeof(IExpressionBuilder<Expression>).GetMethod(nameof(IExpressionBuilder<Expression>.Build), BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
         private static readonly MethodInfo MakeUnaryMethod = typeof(Expression).GetMethod(nameof(Expression.MakeUnary), new[] { typeof(ExpressionType), typeof(Expression), typeof(Type) });
         private static readonly MethodInfo MakeBinaryMethod = typeof(Expression).GetMethod(nameof(Expression.MakeBinary), new[] { typeof(ExpressionType), typeof(Expression), typeof(Expression) });
         private static readonly MethodInfo PropertyOrFieldMethod = typeof(Expression).GetMethod(nameof(Expression.PropertyOrField), new[] { typeof(Expression), typeof(string) });
@@ -42,7 +45,9 @@ namespace DotNext.Linq.Expressions
         }
 
         private Expression PrepareExpression()
-            => Value is IExpressionBuilder<Expression> ? Expression.Convert<IExpressionBuilder<Expression>>().Call(nameof(IExpressionBuilder<Expression>.Build)) : Expression;
+            => Value is IExpressionBuilder<Expression> ?
+                Expression.Call(Expression.Call(null, ReinterpretReferenceMethod, Expression), BuildMethod) :
+                Expression;
 
         public override DynamicMetaObject BindUnaryOperation(UnaryOperationBinder binder)
         {
