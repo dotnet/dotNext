@@ -7,7 +7,6 @@ namespace DotNext.Metaprogramming
 {
     using Linq.Expressions;
     using static CodeGenerator;
-    using U = Linq.Expressions.UniversalExpression;
 
     [ExcludeFromCodeCoverage]
     public sealed class LoopTests : Test
@@ -42,7 +41,7 @@ namespace DotNext.Metaprogramming
             {
                 ForEach(fun[0], item =>
                 {
-                    Assign(result, (U)result + item);
+                    Assign(result, result.AsDynamic() + item);
                 });
             })
             .Compile();
@@ -56,7 +55,7 @@ namespace DotNext.Metaprogramming
             {
                 ForEach(fun[0], item =>
                 {
-                    Assign(result, (U)result + item);
+                    Assign(result, result.AsDynamic() + item);
                 });
             })
             .Compile();
@@ -68,11 +67,11 @@ namespace DotNext.Metaprogramming
         {
             var sum = Lambda<Func<long, long>>((fun, result) =>
             {
-                var arg = (U)fun[0];
-                DoWhile(arg > 0L, () =>
+                var arg = fun[0];
+                DoWhile((Expression)(arg.AsDynamic() > 0L), () =>
                 {
-                    Assign(result, arg + result);
-                    Assign((ParameterExpression)arg, arg - 1L);
+                    Assign(result, arg.AsDynamic() + result);
+                    Assign((ParameterExpression)arg, arg.AsDynamic() - 1L);
                 });
             })
             .Compile();
@@ -84,10 +83,10 @@ namespace DotNext.Metaprogramming
         {
             var sum = Lambda<Func<long, long>>((fun, result) =>
             {
-                var arg = (U)fun[0];
-                For(0L.Const(), i => (U)i < arg, PostIncrementAssign, loopVar =>
+                var arg = fun[0];
+                For(0L.Const(), i => i.AsDynamic() < arg, PostIncrementAssign, loopVar =>
                 {
-                    Assign(result, (U)result + loopVar);
+                    Assign(result, result.AsDynamic() + loopVar);
                 });
             })
             .Compile();
@@ -99,12 +98,12 @@ namespace DotNext.Metaprogramming
         {
             var factorial = Lambda<Func<long, long>>((fun, result) =>
             {
-                var arg = (U)fun[0];
+                var arg = fun[0];
                 Assign(result, 1L.Const());
-                While(arg > 1L, () =>
+                While((Expression)(arg.AsDynamic() > 1L), () =>
                 {
-                    Assign(result, (U)result * arg);
-                    Assign((ParameterExpression)arg, arg - 1L);
+                    Assign(result, result.AsDynamic() * arg);
+                    Assign((ParameterExpression)arg, arg.AsDynamic() - 1L);
                 });
             })
             .Compile();
@@ -116,15 +115,15 @@ namespace DotNext.Metaprogramming
         {
             var factorial = Lambda<Func<long, long>>((fun, result) =>
             {
-                var arg = (U)fun[0];
+                var arg = fun[0];
                 Assign(result, 1L.Const());
                 Loop(() =>
                 {
-                    If(arg > 1L)
+                    If((Expression)(arg.AsDynamic() > 1L))
                         .Then(() =>
                         {
-                            Assign(result, (U)result * arg);
-                            Assign((ParameterExpression)arg, arg - 1L);
+                            Assign(result, result.AsDynamic() * arg);
+                            Assign((ParameterExpression)arg, arg.AsDynamic() - 1L);
                         })
                         .Else(Break)
                         .End();
