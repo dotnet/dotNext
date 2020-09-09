@@ -37,7 +37,7 @@ namespace DotNext
         /// </summary>
         /// <param name="resultType">The type of <see cref="Result{T}"/>.</param>
         /// <returns><see langword="true"/>, if specified type is result type; otherwise, <see langword="false"/>.</returns>
-        public static bool IsResult(this Type resultType) => resultType.IsGenericInstanceOf(typeof(Result<>));
+        public static bool IsResult(this Type resultType) => resultType.IsConstructedGenericType && resultType.GetGenericTypeDefinition() == typeof(Result<>);
 
         /// <summary>
         /// Returns the underlying type argument of the specified result type.
