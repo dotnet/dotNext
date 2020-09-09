@@ -143,6 +143,30 @@ namespace DotNext
         /// <typeparam name="T">Type of value.</typeparam>
         /// <returns>The second value if the first is empty; otherwise, the first value.</returns>
         public static ref readonly Optional<T> Coalesce<T>(this in Optional<T> first, in Optional<T> second) => ref first.HasValue ? ref first : ref second;
+
+        /// <summary>
+        /// Returns empty value.
+        /// </summary>
+        /// <typeparam name="T">The type of empty result.</typeparam>
+        /// <returns>The empty value.</returns>
+        public static Optional<T> None<T>() => Optional<T>.None;
+
+        /// <summary>
+        /// Wraps the value to <see cref="Optional{T}"/> container.
+        /// </summary>
+        /// <param name="value">The value to be wrapped.</param>
+        /// <typeparam name="T">The type of the value.</typeparam>
+        /// <returns>The optional container.</returns>
+        public static Optional<T> Some<T>(T value) => new Optional<T>(value);
+
+        /// <summary>
+        /// Wraps <see langword="null"/> value to <see cref="Optional{T}"/> container.
+        /// </summary>
+        /// <typeparam name="T">The reference type.</typeparam>
+        /// <returns>The <see cref="Optional{T}"/> instance representing <see langword="null"/> value.</returns>
+        public static Optional<T?> Null<T>()
+            where T : class
+            => Some<T?>(null);
     }
 
     /// <summary>
