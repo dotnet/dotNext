@@ -26,7 +26,7 @@ namespace DotNext
             False(value.TryGet(out var result, out var isNull));
             False(isNull);
 
-            value = Optional<int?>.Empty;
+            value = Optional<int?>.None;
             False(value.HasValue);
             True(value.IsUndefined);
             False(value.IsNull);
@@ -96,11 +96,11 @@ namespace DotNext
         [Fact]
         public static void OrElse()
         {
-            var result = new Optional<int>(10) || Optional<int>.Empty;
+            var result = new Optional<int>(10) || Optional<int>.None;
             True(result.HasValue);
             Equal(10, result.Value);
 
-            result = Optional<int>.Empty || new Optional<int>(20);
+            result = Optional<int>.None || new Optional<int>(20);
             True(result.HasValue);
             Equal(20, result.Value);
         }
@@ -181,9 +181,9 @@ namespace DotNext
         [Fact]
         public static void Boxing()
         {
-            False(Optional<string>.Empty.Box().HasValue);
-            False(Optional<int>.Empty.Box().HasValue);
-            False(Optional<int?>.Empty.Box().HasValue);
+            False(Optional<string>.None.Box().HasValue);
+            False(Optional<int>.None.Box().HasValue);
+            False(Optional<int?>.None.Box().HasValue);
             Equal("123", new Optional<string>("123").Box());
             Equal(42, new Optional<int>(42).Box());
             Equal(42, new Optional<int?>(42).Box());

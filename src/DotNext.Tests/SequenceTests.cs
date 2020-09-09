@@ -211,8 +211,8 @@ namespace DotNext
         {
             IEnumerable<int> collection = Array.Empty<int>();
             Null(Sequence.FirstOrNull(collection));
-            Equal(Optional<int>.Empty, Sequence.FirstOrEmpty(collection));
-            Equal(Optional<int>.Empty, Sequence.FirstOrEmpty(collection, Predicate.True<int>()));
+            Equal(Optional<int>.None, Sequence.FirstOrEmpty(collection));
+            Equal(Optional<int>.None, Sequence.FirstOrEmpty(collection, Predicate.True<int>()));
             collection = new int[] { 42 };
             Equal(42, Sequence.FirstOrNull(collection));
             Equal(42, Sequence.FirstOrEmpty(collection));
@@ -224,8 +224,8 @@ namespace DotNext
         {
             var collection = Sequence.ToAsyncEnumerable(Array.Empty<int>());
             Null(await Sequence.FirstOrNullAsync(collection));
-            Equal(Optional<int>.Empty, await Sequence.FirstOrEmptyAsync(collection));
-            Equal(Optional<int>.Empty, await Sequence.FirstOrEmptyAsync(collection, Predicate.True<int>()));
+            Equal(Optional<int>.None, await Sequence.FirstOrEmptyAsync(collection));
+            Equal(Optional<int>.None, await Sequence.FirstOrEmptyAsync(collection, Predicate.True<int>()));
             collection = Sequence.ToAsyncEnumerable(new int[] { 42 });
             Equal(42, await Sequence.FirstOrNullAsync(collection));
             Equal(42, await Sequence.FirstOrEmptyAsync(collection));

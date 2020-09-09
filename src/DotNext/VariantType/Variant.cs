@@ -59,12 +59,12 @@ namespace DotNext.VariantType
         /// <typeparam name="TResult">The type of conversion result.</typeparam>
         /// <param name="mapper1">The converter for the first possible type.</param>
         /// <param name="mapper2">The converter for the second possible type.</param>
-        /// <returns>Conversion result; or <see cref="Optional{T}.Empty"/> if stored value is <see langword="null"/>.</returns>
+        /// <returns>Conversion result; or <see cref="Optional{T}.None"/> if stored value is <see langword="null"/>.</returns>
         public Optional<TResult> Convert<TResult>(in ValueFunc<T1, TResult> mapper1, in ValueFunc<T2, TResult> mapper2) => value switch
         {
             T1 first => mapper1.Invoke(first),
             T2 second => mapper2.Invoke(second),
-            _ => Optional<TResult>.Empty,
+            _ => Optional<TResult>.None,
         };
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace DotNext.VariantType
         /// <typeparam name="TResult">The type of conversion result.</typeparam>
         /// <param name="mapper1">The converter for the first possible type.</param>
         /// <param name="mapper2">The converter for the second possible type.</param>
-        /// <returns>Conversion result; or <see cref="Optional{T}.Empty"/> if stored value is <see langword="null"/>.</returns>
+        /// <returns>Conversion result; or <see cref="Optional{T}.None"/> if stored value is <see langword="null"/>.</returns>
         public Optional<TResult> Convert<TResult>(Converter<T1, TResult> mapper1, Converter<T2, TResult> mapper2)
             => Convert(mapper1.AsValueFunc(true), mapper2.AsValueFunc(true));
 

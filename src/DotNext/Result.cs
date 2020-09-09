@@ -246,7 +246,7 @@ namespace DotNext
         /// Converts the result into <see cref="Optional{T}"/>.
         /// </summary>
         /// <returns>Option monad representing value in this monad.</returns>
-        public Optional<T> TryGet() => exception is null ? new Optional<T>(value) : Optional<T>.Empty;
+        public Optional<T> TryGet() => exception is null ? new Optional<T>(value) : Optional<T>.None;
 
         /// <summary>
         /// Converts the result into <see cref="Optional{T}"/>.

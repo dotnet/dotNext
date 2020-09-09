@@ -93,16 +93,16 @@ namespace DotNext.Collections.Generic
         }
 
         /// <summary>
-        /// Obtains first value in the sequence; or <see cref="Optional{T}.Empty"/>
+        /// Obtains first value in the sequence; or <see cref="Optional{T}.None"/>
         /// if sequence is empty.
         /// </summary>
         /// <typeparam name="T">Type of elements in the sequence.</typeparam>
         /// <param name="seq">A sequence to check. Cannot be <see langword="null"/>.</param>
-        /// <returns>The first element in the sequence; or <see cref="Optional{T}.Empty"/> if sequence is empty. </returns>
+        /// <returns>The first element in the sequence; or <see cref="Optional{T}.None"/> if sequence is empty. </returns>
         public static Optional<T> FirstOrEmpty<T>(this IEnumerable<T> seq)
         {
             using var enumerator = seq.GetEnumerator();
-            return enumerator.MoveNext() ? enumerator.Current : Optional<T>.Empty;
+            return enumerator.MoveNext() ? enumerator.Current : Optional<T>.None;
         }
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace DotNext.Collections.Generic
                     return item;
             }
 
-            return Optional<T>.Empty;
+            return Optional<T>.None;
         }
 
         /// <summary>

@@ -319,7 +319,7 @@ namespace DotNext.Collections.Generic
         /// <typeparam name="TValue">Type of dictionary values.</typeparam>
         /// <returns>The optional value associated with the key.</returns>
         public static Optional<TValue> TryGetValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
-            => dictionary.TryGetValue(key, out var value) ? new Optional<TValue>(value) : Optional<TValue>.Empty;
+            => dictionary.TryGetValue(key, out var value) ? new Optional<TValue>(value) : Optional<TValue>.None;
 
         /// <summary>
         /// Removes the value with the specified key and return the removed value.
@@ -330,7 +330,7 @@ namespace DotNext.Collections.Generic
         /// <typeparam name="TValue">Type of dictionary values.</typeparam>
         /// <returns>The removed value.</returns>
         public static Optional<TValue> TryRemove<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
-            => dictionary.TryGetValue(key, out var value) && dictionary.Remove(key) ? new Optional<TValue>(value) : Optional<TValue>.Empty;
+            => dictionary.TryGetValue(key, out var value) && dictionary.Remove(key) ? new Optional<TValue>(value) : Optional<TValue>.None;
 
         /// <summary>
         /// Gets the value associated with the specified key.
@@ -341,7 +341,7 @@ namespace DotNext.Collections.Generic
         /// <typeparam name="TValue">Type of dictionary values.</typeparam>
         /// <returns>The optional value associated with the key.</returns>
         public static Optional<TValue> TryGetValue<TKey, TValue>(IReadOnlyDictionary<TKey, TValue> dictionary, TKey key)
-            => dictionary.TryGetValue(key, out var value) ? new Optional<TValue>(value) : Optional<TValue>.Empty;
+            => dictionary.TryGetValue(key, out var value) ? new Optional<TValue>(value) : Optional<TValue>.None;
 
         /// <summary>
         /// Applies lazy conversion for each dictionary value.
