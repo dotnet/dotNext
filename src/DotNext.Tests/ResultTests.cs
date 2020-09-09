@@ -96,5 +96,16 @@ namespace DotNext
             True(result.IsSuccessful);
             Equal("Hello, world!", result.Value);
         }
+
+        [Fact]
+        public static void UnderlyingType()
+        {
+            var type = Result.GetUnderlyingType(typeof(Result<>));
+            Null(type);
+            type = Result.GetUnderlyingType(typeof(int));
+            Null(type);
+            type = Result.GetUnderlyingType(typeof(Result<string>));
+            Equal(typeof(string), type);
+        }
     }
 }
