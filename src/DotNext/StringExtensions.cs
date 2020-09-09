@@ -26,6 +26,7 @@ namespace DotNext
         /// <param name="str">A string to check.</param>
         /// <param name="alt">Alternative string to be returned if original string is <see langword="null"/> or empty.</param>
         /// <returns>Original or alternative string.</returns>
+        [return: NotNullIfNotNull("str")]
         public static string IfNullOrEmpty(this string? str, string alt)
             => string.IsNullOrEmpty(str) ? alt : str;
 
