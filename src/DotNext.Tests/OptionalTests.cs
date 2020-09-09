@@ -232,5 +232,13 @@ namespace DotNext
             result = first ^ second;
             True(result.IsUndefined);
         }
+
+        [Fact]
+        public static void NoneSomeNull()
+        {
+            Equal(Optional<int>.None, Optional.None<int>());
+            Equal(new Optional<int>(20), Optional.Some<int>(20));
+            Equal(new Optional<string>(null), Optional.Null<string>());
+        }
     }
 }
