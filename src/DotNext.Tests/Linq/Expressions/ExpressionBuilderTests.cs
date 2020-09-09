@@ -55,7 +55,7 @@ namespace DotNext.Linq.Expressions
             False(nullablePred(0));
 
             var optionalPred = MakeNullCheck<Optional<string>>();
-            True(optionalPred(Optional<string>.Empty));
+            True(optionalPred(Optional<string>.None));
             False(optionalPred(""));
         }
 
@@ -74,7 +74,7 @@ namespace DotNext.Linq.Expressions
             True(nullablePred(0));
 
             var optionalPred = MakeNotNullCheck<Optional<string>>();
-            False(optionalPred(Optional<string>.Empty));
+            False(optionalPred(Optional<string>.None));
             True(optionalPred(""));
         }
 
@@ -90,7 +90,7 @@ namespace DotNext.Linq.Expressions
 
             var optionalToString = MakeToString<Optional<int>>();
             Equal("42", optionalToString(42));
-            Null(optionalToString(Optional<int>.Empty));
+            Null(optionalToString(Optional<int>.None));
         }
 
         [Fact]
@@ -105,7 +105,7 @@ namespace DotNext.Linq.Expressions
 
             var optionalHash = MakeGetHashCode<Optional<string>>();
             NotNull(optionalHash(""));
-            Null(optionalHash(Optional<string>.Empty));
+            Null(optionalHash(Optional<string>.None));
         }
 
         private delegate ref int RefIntDelegate(TypedReference typedref);

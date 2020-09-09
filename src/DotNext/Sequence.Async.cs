@@ -72,13 +72,13 @@ namespace DotNext
             => NewSequence.FirstOrNullAsync(seq, token);
 
         /// <summary>
-        /// Obtains first value in the sequence; or <see cref="Optional{T}.Empty"/>
+        /// Obtains first value in the sequence; or <see cref="Optional{T}.None"/>
         /// if sequence is empty.
         /// </summary>
         /// <typeparam name="T">Type of elements in the sequence.</typeparam>
         /// <param name="seq">A sequence to check. Cannot be <see langword="null"/>.</param>
         /// <param name="token">The token that can be used to cancel enumeration.</param>
-        /// <returns>The first element in the sequence; or <see cref="Optional{T}.Empty"/> if sequence is empty. </returns>
+        /// <returns>The first element in the sequence; or <see cref="Optional{T}.None"/> if sequence is empty. </returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static ValueTask<Optional<T>> FirstOrEmptyAsync<T>(IAsyncEnumerable<T> seq, CancellationToken token = default)
             => NewSequence.FirstOrEmptyAsync(seq, token);
@@ -127,7 +127,7 @@ namespace DotNext
         /// <param name="collection">Source collection.</param>
         /// <param name="index">Index of the element to read.</param>
         /// <param name="token">The token that can be used to cancel enumeration.</param>
-        /// <returns>The requested element; or <see cref="Optional{T}.Empty"/> if index is out of range.</returns>
+        /// <returns>The requested element; or <see cref="Optional{T}.None"/> if index is out of range.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static ValueTask<Optional<T>> ElementAtAsync<T>(IAsyncEnumerable<T> collection, int index, CancellationToken token = default)
             => NewSequence.ElementAtAsync(collection, index, token);

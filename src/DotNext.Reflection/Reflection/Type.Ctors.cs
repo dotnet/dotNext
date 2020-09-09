@@ -92,7 +92,7 @@ namespace DotNext.Reflection
             public static Optional<T> TryInvoke(bool nonPublic = false)
             {
                 Func<T>? ctor = Get(nonPublic);
-                return ctor is null ? Optional<T>.Empty : ctor();
+                return ctor is null ? Optional<T>.None : ctor();
             }
 
             /// <summary>
@@ -137,7 +137,7 @@ namespace DotNext.Reflection
             public static Optional<T> TryInvoke(TParam arg, bool nonPublic = false)
             {
                 Func<TParam, T>? ctor = Get(nonPublic);
-                return ctor is null ? Optional<T>.Empty : ctor(arg);
+                return ctor is null ? Optional<T>.None : ctor(arg);
             }
 
             /// <summary>
@@ -187,7 +187,7 @@ namespace DotNext.Reflection
             public static Optional<T> TryInvoke(T1 arg1, T2 arg2, bool nonPublic = false)
             {
                 Func<T1, T2, T>? ctor = Get(nonPublic);
-                return ctor is null ? Optional<T>.Empty : ctor(arg1, arg2);
+                return ctor is null ? Optional<T>.None : ctor(arg1, arg2);
             }
 
             /// <summary>
@@ -240,7 +240,7 @@ namespace DotNext.Reflection
             public static Optional<T> TryInvoke(T1 arg1, T2 arg2, T3 arg3, bool nonPublic = false)
             {
                 Func<T1, T2, T3, T>? ctor = Get(nonPublic);
-                return ctor is null ? Optional<T>.Empty : ctor(arg1, arg2, arg3);
+                return ctor is null ? Optional<T>.None : ctor(arg1, arg2, arg3);
             }
 
             /// <summary>
@@ -296,7 +296,7 @@ namespace DotNext.Reflection
             public static Optional<T> TryInvoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, bool nonPublic = false)
             {
                 Func<T1, T2, T3, T4, T>? ctor = Get(nonPublic);
-                return ctor is null ? Optional<T>.Empty : ctor(arg1, arg2, arg3, arg4);
+                return ctor is null ? Optional<T>.None : ctor(arg1, arg2, arg3, arg4);
             }
 
             /// <summary>
@@ -357,7 +357,7 @@ namespace DotNext.Reflection
             public static Optional<T> TryInvoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, bool nonPublic = false)
             {
                 Func<T1, T2, T3, T4, T5, T>? ctor = Get(nonPublic);
-                return ctor is null ? Optional<T>.Empty : ctor(arg1, arg2, arg3, arg4, arg5);
+                return ctor is null ? Optional<T>.None : ctor(arg1, arg2, arg3, arg4, arg5);
             }
 
             /// <summary>
@@ -418,7 +418,7 @@ namespace DotNext.Reflection
             public static Optional<T> TryInvoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, bool nonPublic = false)
             {
                 Func<T1, T2, T3, T4, T5, T6, T>? ctor = Get(nonPublic);
-                return ctor is null ? Optional<T>.Empty : ctor(arg1, arg2, arg3, arg4, arg5, arg6);
+                return ctor is null ? Optional<T>.None : ctor(arg1, arg2, arg3, arg4, arg5, arg6);
             }
 
             /// <summary>
@@ -482,7 +482,7 @@ namespace DotNext.Reflection
             public static Optional<T> TryInvoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, bool nonPublic = false)
             {
                 Func<T1, T2, T3, T4, T5, T6, T7, T>? ctor = Get(nonPublic);
-                return ctor is null ? Optional<T>.Empty : ctor(arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+                return ctor is null ? Optional<T>.None : ctor(arg1, arg2, arg3, arg4, arg5, arg6, arg7);
             }
 
             /// <summary>
@@ -549,7 +549,7 @@ namespace DotNext.Reflection
             public static Optional<T> TryInvoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, bool nonPublic = false)
             {
                 Func<T1, T2, T3, T4, T5, T6, T7, T8, T>? ctor = Get(nonPublic);
-                return ctor is null ? Optional<T>.Empty : ctor(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+                return ctor is null ? Optional<T>.None : ctor(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
             }
 
             /// <summary>
@@ -619,7 +619,7 @@ namespace DotNext.Reflection
             public static Optional<T> TryInvoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, bool nonPublic = false)
             {
                 Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T>? ctor = Get(nonPublic);
-                return ctor is null ? Optional<T>.Empty : ctor(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
+                return ctor is null ? Optional<T>.None : ctor(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
             }
 
             /// <summary>
@@ -692,7 +692,7 @@ namespace DotNext.Reflection
             public static Optional<T> TryInvoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, bool nonPublic = false)
             {
                 Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T>? ctor = Get(nonPublic);
-                return ctor is null ? Optional<T>.Empty : ctor(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
+                return ctor is null ? Optional<T>.None : ctor(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
             }
 
             /// <summary>

@@ -210,8 +210,8 @@ namespace DotNext.Collections.Generic
         {
             IEnumerable<int> collection = Array.Empty<int>();
             Null(collection.FirstOrNull());
-            Equal(Optional<int>.Empty, collection.FirstOrEmpty());
-            Equal(Optional<int>.Empty, collection.FirstOrEmpty(Predicate.True<int>()));
+            Equal(Optional<int>.None, collection.FirstOrEmpty());
+            Equal(Optional<int>.None, collection.FirstOrEmpty(Predicate.True<int>()));
             collection = new int[] { 42 };
             Equal(42, collection.FirstOrNull());
             Equal(42, collection.FirstOrEmpty());
@@ -223,8 +223,8 @@ namespace DotNext.Collections.Generic
         {
             var collection = Array.Empty<int>().ToAsyncEnumerable();
             Null(await collection.FirstOrNullAsync());
-            Equal(Optional<int>.Empty, await collection.FirstOrEmptyAsync());
-            Equal(Optional<int>.Empty, await collection.FirstOrEmptyAsync(Predicate.True<int>()));
+            Equal(Optional<int>.None, await collection.FirstOrEmptyAsync());
+            Equal(Optional<int>.None, await collection.FirstOrEmptyAsync(Predicate.True<int>()));
             collection = new int[] { 42 }.ToAsyncEnumerable();
             Equal(42, await collection.FirstOrNullAsync());
             Equal(42, await collection.FirstOrEmptyAsync());
@@ -288,7 +288,7 @@ namespace DotNext.Collections.Generic
         public static void GeneratorMethod()
         {
             int i = 0;
-            Func<Optional<int>> generator = () => i < 3 ? i++ : Optional<int>.Empty;
+            Func<Optional<int>> generator = () => i < 3 ? i++ : Optional<int>.None;
             var list = new List<int>();
             foreach (var item in generator.ToEnumerable())
                 list.Add(item);
@@ -310,7 +310,7 @@ namespace DotNext.Collections.Generic
         public static async Task AsyncGeneratorMethod()
         {
             int i = 0;
-            Func<CancellationToken, ValueTask<Optional<int>>> generator = token => new ValueTask<Optional<int>>(i < 3 ? i++ : Optional<int>.Empty);
+            Func<CancellationToken, ValueTask<Optional<int>>> generator = token => new ValueTask<Optional<int>>(i < 3 ? i++ : Optional<int>.None);
             var list = new List<int>();
             await foreach (var item in generator.ToAsyncEnumerable())
                 list.Add(item);

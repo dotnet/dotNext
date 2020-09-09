@@ -24,7 +24,7 @@ namespace DotNext.Collections.Generic
                 internal Enumerator(Func<Optional<T>>? generator)
                 {
                     this.generator = generator;
-                    current = Optional<T>.Empty;
+                    current = Optional<T>.None;
                 }
 
                 /// <summary>

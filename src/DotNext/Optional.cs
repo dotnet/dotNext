@@ -38,13 +38,13 @@ namespace DotNext
 
         /// <summary>
         /// If a value is present, apply the provided mapping function to it, and if the result is
-        /// non-null, return an Optional describing the result. Otherwise returns <see cref="Optional{T}.Empty"/>.
+        /// non-null, return an Optional describing the result. Otherwise returns <see cref="Optional{T}.None"/>.
         /// </summary>
         /// <typeparam name="TInput">The type of stored in the Optional container.</typeparam>
         /// <typeparam name="TOutput">The type of the result of the mapping function.</typeparam>
         /// <param name="task">The task containing Optional value.</param>
         /// <param name="converter">A mapping function to be applied to the value, if present.</param>
-        /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="Optional{T}.Empty"/>.</returns>
+        /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="Optional{T}.None"/>.</returns>
         public static async Task<Optional<TOutput>> Convert<TInput, TOutput>(this Task<Optional<TInput>> task, Converter<TInput, TOutput> converter)
             => (await task.ConfigureAwait(false)).Convert(converter);
 
@@ -123,7 +123,7 @@ namespace DotNext
         /// <returns>The value wrapped into Optional container.</returns>
         public static Optional<T> ToOptional<T>(this in T? value)
             where T : struct
-            => value ?? Optional<T>.Empty;
+            => value ?? Optional<T>.None;
 
         /// <summary>
         /// If a value is present, returns the value, otherwise <see langword="null"/>.
@@ -218,7 +218,16 @@ namespace DotNext
         /// <remarks>
         /// The property <see cref="IsUndefined"/> of returned object is always <see langword="true"/>.
         /// </remarks>
-        public static Optional<T> Empty => default;
+        [Obsolete("Use None static property instead")]
+        public static Optional<T> Empty => None;
+
+        /// <summary>
+        /// Represents optional container without value.
+        /// </summary>
+        /// <remarks>
+        /// The property <see cref="IsUndefined"/> of returned object is always <see langword="true"/>.
+        /// </remarks>
+        public static Optional<T> None => default;
 
         /// <summary>
         /// Indicates whether the value is present.
@@ -232,7 +241,7 @@ namespace DotNext
         /// <summary>
         /// Indicates that the value is undefined.
         /// </summary>
-        /// <seealso cref="Empty"/>
+        /// <seealso cref="None"/>
         public bool IsUndefined => kind == UndefinedValue;
 
         /// <summary>
@@ -373,38 +382,38 @@ namespace DotNext
 
         /// <summary>
         /// If a value is present, apply the provided mapping function to it, and if the result is
-        /// non-null, return an Optional describing the result. Otherwise returns <see cref="Empty"/>.
+        /// non-null, return an Optional describing the result. Otherwise returns <see cref="None"/>.
         /// </summary>
         /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
         /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
-        /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="Empty"/>.</returns>
-        public Optional<TResult> Convert<TResult>(in ValueFunc<T, TResult> mapper) => HasValue ? mapper.Invoke(value) : Optional<TResult>.Empty;
+        /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="None"/>.</returns>
+        public Optional<TResult> Convert<TResult>(in ValueFunc<T, TResult> mapper) => HasValue ? mapper.Invoke(value) : Optional<TResult>.None;
 
         /// <summary>
         /// If a value is present, apply the provided mapping function to it, and if the result is
-        /// non-null, return an Optional describing the result. Otherwise returns <see cref="Empty"/>.
+        /// non-null, return an Optional describing the result. Otherwise returns <see cref="None"/>.
         /// </summary>
         /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
         /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
-        /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="Empty"/>.</returns>
+        /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="None"/>.</returns>
         public Optional<TResult> Convert<TResult>(Converter<T, TResult> mapper) => Convert(mapper.AsValueFunc(true));
 
         /// <summary>
         /// If a value is present, apply the provided mapping function to it, and if the result is
-        /// non-null, return an Optional describing the result. Otherwise returns <see cref="Empty"/>.
+        /// non-null, return an Optional describing the result. Otherwise returns <see cref="None"/>.
         /// </summary>
         /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
         /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
-        /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="Empty"/>.</returns>
-        public Optional<TResult> Convert<TResult>(in ValueFunc<T, Optional<TResult>> mapper) => HasValue ? mapper.Invoke(value) : Optional<TResult>.Empty;
+        /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="None"/>.</returns>
+        public Optional<TResult> Convert<TResult>(in ValueFunc<T, Optional<TResult>> mapper) => HasValue ? mapper.Invoke(value) : Optional<TResult>.None;
 
         /// <summary>
         /// If a value is present, apply the provided mapping function to it, and if the result is
-        /// non-null, return an Optional describing the result. Otherwise returns <see cref="Empty"/>.
+        /// non-null, return an Optional describing the result. Otherwise returns <see cref="None"/>.
         /// </summary>
         /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
         /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
-        /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="Empty"/>.</returns>
+        /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="None"/>.</returns>
         public Optional<TResult> Convert<TResult>(Converter<T, Optional<TResult>> mapper) => Convert(mapper.AsValueFunc(true));
 
         /// <summary>
@@ -413,7 +422,7 @@ namespace DotNext
         /// </summary>
         /// <param name="condition">A predicate to apply to the value, if present.</param>
         /// <returns>An Optional describing the value of this Optional if a value is present and the value matches the given predicate, otherwise an empty Optional.</returns>
-        public Optional<T> If(in ValueFunc<T, bool> condition) => HasValue && condition.Invoke(value) ? this : Empty;
+        public Optional<T> If(in ValueFunc<T, bool> condition) => HasValue && condition.Invoke(value) ? this : None;
 
         /// <summary>
         /// If a value is present, and the value matches the given predicate,

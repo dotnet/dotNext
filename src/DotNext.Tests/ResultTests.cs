@@ -84,7 +84,7 @@ namespace DotNext
         [Fact]
         public static void OptionalInterop()
         {
-            var result = (Result<string>)Optional<string>.Empty;
+            var result = (Result<string>)Optional<string>.None;
             False(result.IsSuccessful);
             Throws<InvalidOperationException>(() => result.Value);
             
