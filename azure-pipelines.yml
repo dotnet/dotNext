@@ -14,7 +14,7 @@ jobs:
         - task: UseDotNet@2
           inputs:
             packageType: 'sdk'
-            version: '3.1.401'
+            version: '3.1.402'
         - task: DotNetCoreCLI@2
           inputs:
             command: 'restore'
@@ -39,7 +39,7 @@ jobs:
         - task: UseDotNet@2
           inputs:
             packageType: 'sdk'
-            version: '3.1.401'
+            version: '3.1.402'
         - task: DotNetCoreCLI@2
           inputs:
             command: 'restore'
