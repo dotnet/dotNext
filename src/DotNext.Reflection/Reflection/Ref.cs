@@ -11,7 +11,7 @@ namespace DotNext.Reflection
 
     internal static class Ref
     {
-        private static bool Is(Type type) => type.IsGenericInstanceOf(typeof(Ref<>));
+        private static bool Is(Type type) => type.IsConstructedGenericType && type.GetGenericTypeDefinition() == typeof(Ref<>);
 
         internal static bool Reflect(Type byRefType, [NotNullWhen(true)]out Type? underlyingType, [NotNullWhen(true)]out FieldInfo? valueField)
         {

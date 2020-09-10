@@ -136,7 +136,13 @@ namespace DotNext.Reflection
         internal static Type? FindGenericInstance(this Type type, Type genericDefinition)
         {
             bool IsGenericInstanceOf(Type candidate)
-                => candidate.IsGenericType && !candidate.IsGenericTypeDefinition && candidate.GetGenericTypeDefinition() == genericDefinition;
+                => candidate.IsConstructedGenericType && candidate.GetGenericTypeDefinition() == genericDefinition;
+
+            if (type.IsGenericTypeDefinition || !genericDefinition.IsGenericTypeDefinition)
+                return null;
+
+            if (genericDefinition.IsSealed)
+                return IsGenericInstanceOf(type) ? type : null;
 
             if (genericDefinition.IsInterface)
             {
