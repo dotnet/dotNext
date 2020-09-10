@@ -26,7 +26,7 @@ namespace DotNext.Linq.Expressions
         private static readonly ConstantExpression ConvertOperator = ExpressionType.Convert.Const();
 
         internal MetaExpression(Expression binding, IExpressionBuilder<Expression> builder)
-            : base(binding, BindingRestrictions.GetTypeRestriction(binding, builder.GetType()), builder)
+            : base(binding, BindingRestrictions.GetExpressionRestriction(Expression.TypeIs(binding, typeof(IExpressionBuilder<Expression>))), builder)
         {
         }
 
