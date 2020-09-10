@@ -8,7 +8,6 @@ using static InlineIL.IL;
 using static InlineIL.IL.Emit;
 using static InlineIL.MethodRef;
 using static InlineIL.TypeRef;
-using Debug = System.Diagnostics.Debug;
 using Var = InlineIL.LocalVar;
 
 namespace DotNext.Runtime
