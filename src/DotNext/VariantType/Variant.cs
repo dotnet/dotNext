@@ -1,7 +1,5 @@
 using System;
-using System.Dynamic;
 using System.Runtime.InteropServices;
-using Expression = System.Linq.Expressions.Expression;
 
 namespace DotNext.VariantType
 {
@@ -231,10 +229,6 @@ namespace DotNext.VariantType
         /// <returns><see langword="true"/>, if stored value is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object? other)
             => other is IVariant variant ? Equals(value, variant.Value) : Equals(value, other);
-
-        /// <inheritdoc/>
-        DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter)
-            => new VariantImmutableMetaObject(parameter, this);
     }
 
     /// <summary>
@@ -432,10 +426,6 @@ namespace DotNext.VariantType
         /// <returns><see langword="true"/>, if stored value is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object? other)
             => other is IVariant variant ? Equals(value, variant.Value) : Equals(value, other);
-
-        /// <inheritdoc/>
-        DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter)
-            => new VariantImmutableMetaObject(parameter, this);
     }
 
     /// <summary>
@@ -663,9 +653,5 @@ namespace DotNext.VariantType
         /// <returns><see langword="true"/>, if stored value is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object? other)
             => other is IVariant variant ? Equals(value, variant.Value) : Equals(value, other);
-
-        /// <inheritdoc/>
-        DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter)
-            => new VariantImmutableMetaObject(parameter, this);
     }
 }

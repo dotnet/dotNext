@@ -1,4 +1,5 @@
 using System.Dynamic;
+using Expression = System.Linq.Expressions.Expression;
 
 namespace DotNext.VariantType
 {
@@ -26,5 +27,9 @@ namespace DotNext.VariantType
         /// </returns>
         bool Equals<TVariant>(TVariant other)
             where TVariant : IVariant;
+
+        /// <inheritdoc/>
+        DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter)
+            => new VariantImmutableMetaObject(parameter, this);
     }
 }
