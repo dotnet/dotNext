@@ -18,7 +18,7 @@ namespace DotNext.Reflection
             if (Is(byRefType))
             {
                 underlyingType = byRefType.GetGenericArguments()[0];
-                valueField = byRefType.GetField("Value", BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Instance);
+                valueField = byRefType.GetField(nameof(Ref<Missing>.Value), BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Instance);
                 return true;
             }
             else
