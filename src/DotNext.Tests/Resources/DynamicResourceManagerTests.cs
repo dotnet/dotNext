@@ -15,6 +15,7 @@ namespace DotNext.Resources
             Equal("Hello, world!", manager.StringTemplate("world"));
             Equal("Hello, Henry!", manager.StringTemplate("Henry"));
             Equal("Hello, world!", manager["TestStringResource"]);
+            Null(manager.InvalidResource);
         }
 
         [Fact]
