@@ -12,6 +12,9 @@ using static InlineIL.TypeRef;
 
 namespace DotNext.Resources
 {
+    using RuntimeFeaturesAttribute = Runtime.CompilerServices.RuntimeFeaturesAttribute;
+
+    [RuntimeFeaturesAttribute(DynamicCodeCompilation = true)]
     internal sealed class ResourceManagerMetaObject : DynamicMetaObject
     {
         internal ResourceManagerMetaObject(Expression parameter, ResourceManager manager)
