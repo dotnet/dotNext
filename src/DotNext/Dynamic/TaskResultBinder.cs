@@ -5,8 +5,10 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
-namespace DotNext.Runtime.CompilerServices
+namespace DotNext.Dynamic
 {
+    using RuntimeFeaturesAttribute = Runtime.CompilerServices.RuntimeFeaturesAttribute;
+
     [RuntimeFeatures(DynamicCodeCompilation = true, RuntimeGenericInstantiation = true)]
     internal sealed class TaskResultBinder : CallSiteBinder
     {
