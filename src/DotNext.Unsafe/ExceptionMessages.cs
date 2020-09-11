@@ -20,23 +20,9 @@ namespace DotNext
 
         internal static string NullPtr => Resources.GetString("NullPtr");
 
-        internal static string HandleClosed => Resources.GetString("HandleClosed");
-
-        internal static string ArrayNegativeLength => Resources.GetString("ArrayNegativeLength");
-
-        internal static string InvalidIndexValue(long length) => string.Format(Resources.GetString("InvalidIndexValue"), length);
-
-        internal static string InvalidOffsetValue(long size) => string.Format(Resources.GetString("InvalidOffsetValue"), size);
-
-        internal static string TargetSizeMustBeMultipleOf => Resources.GetString("TargetSizeMustBeMultipleOf");
-
-        internal static string ExpectedType(Type t) => string.Format(Resources.GetString("ExpectedType"), t.FullName);
-
         internal static string StreamNotReadable => Resources.GetString("StreamNotReadable");
 
         internal static string StreamNotWritable => Resources.GetString("StreamNotWritable");
-
-        internal static string ArrayTooLong => Resources.GetString("ArrayTooLong");
 
         internal static string SegmentVeryLarge => Resources.GetString("SegmentVeryLarge");
     }
