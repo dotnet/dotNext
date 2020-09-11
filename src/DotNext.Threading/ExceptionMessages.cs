@@ -4,27 +4,27 @@ using Assembly = System.Reflection.Assembly;
 
 namespace DotNext
 {
-    [SuppressMessage("Globalization", "CA1304", Justification = "This is culture-specific resource strings")]
-    [SuppressMessage("Globalization", "CA1305", Justification = "This is culture-specific resource strings")]
+    using static Resources.ResourceManagerExtensions;
+
     [ExcludeFromCodeCoverage]
     internal static class ExceptionMessages
     {
         private static readonly ResourceManager Resources = new ResourceManager("DotNext.ExceptionMessages", Assembly.GetExecutingAssembly());
 
-        internal static string CollectionIsEmpty => Resources.GetString("CollectionIsEmpty");
+        internal static string CollectionIsEmpty => (string)Resources.Get();
 
-        internal static string NotInWriteLock => Resources.GetString("NotInWriteLock");
+        internal static string NotInWriteLock => (string)Resources.Get();
 
-        internal static string NotInReadLock => Resources.GetString("NotInReadLock");
+        internal static string NotInReadLock => (string)Resources.Get();
 
-        internal static string NotInUpgradeableReadLock => Resources.GetString("NotInUpgradeableReadLock");
+        internal static string NotInUpgradeableReadLock => (string)Resources.Get();
 
-        internal static string TokenNotCancelable => Resources.GetString("TokenNotCancelable");
+        internal static string TokenNotCancelable => (string)Resources.Get();
 
-        internal static string UnsupportedLockAcquisition => Resources.GetString("UnsupportedLockAcquisition");
+        internal static string UnsupportedLockAcquisition => (string)Resources.Get();
 
-        internal static string EmptyValueDelegate => Resources.GetString("EmptyValueDelegate");
+        internal static string EmptyValueDelegate => (string)Resources.Get();
 
-        internal static string TerminatedExchange => Resources.GetString("TerminatedExchange");
+        internal static string TerminatedExchange => (string)Resources.Get();
     }
 }

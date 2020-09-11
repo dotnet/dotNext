@@ -7,55 +7,67 @@ using System.Resources;
 namespace DotNext
 {
     using static Collections.Generic.Sequence;
+    using static Resources.ResourceManagerExtensions;
 
-    [SuppressMessage("Globalization", "CA1304", Justification = "This is culture-specific resource strings")]
-    [SuppressMessage("Globalization", "CA1305", Justification = "This is culture-specific resource strings")]
     [ExcludeFromCodeCoverage]
     internal static class ExceptionMessages
     {
         private static readonly ResourceManager Resources = new ResourceManager("DotNext.ExceptionMessages", Assembly.GetExecutingAssembly());
 
-        internal static string AbstractDelegate => Resources.GetString("AbstractDelegate");
+        internal static string AbstractDelegate => (string)Resources.Get();
 
-        internal static string ObjectOfTypeExpected(object? obj, Type t) => string.Format(Resources.GetString("ObjectOfTypeExpected"), obj, t.FullName);
+        internal static string ObjectOfTypeExpected(object? obj, Type t)
+            => Resources.Get().Format(obj, t.FullName);
 
-        internal static string ReadOnlyField(string fieldName) => string.Format(Resources.GetString("ReadOnlyField"), fieldName);
+        internal static string ReadOnlyField(string fieldName)
+            => Resources.Get().Format(fieldName);
 
-        internal static string NullFieldValue => Resources.GetString("NullFieldValue");
+        internal static string NullFieldValue => (string)Resources.Get();
 
-        internal static string PropertyWithoutGetter(string propertyName) => string.Format(Resources.GetString("PropertyWithoutGetter"), propertyName);
+        internal static string PropertyWithoutGetter(string propertyName)
+            => Resources.Get().Format(propertyName);
 
-        internal static string PropertyWithoutSetter(string propertyName) => string.Format(Resources.GetString("PropertyWithoutSetter"), propertyName);
+        internal static string PropertyWithoutSetter(string propertyName)
+            => Resources.Get().Format(propertyName);
 
-        internal static string ThisParamExpected => Resources.GetString("ThisParamExpected");
+        internal static string ThisParamExpected => (string)Resources.Get();
 
         internal static string MissingOperator<TEnum>(TEnum op)
             where TEnum : struct, Enum
-            => string.Format(Resources.GetString("MissingOperator"), op);
+            => Resources.Get().Format(op);
 
-        internal static string MissingAttribute(Type attribute, Type target) => string.Format(Resources.GetString("MissingAttribute"), attribute.FullName, target.FullName);
+        internal static string MissingAttribute(Type attribute, Type target)
+            => Resources.Get().Format(attribute.FullName, target.FullName);
 
-        internal static string MissingCtor(Type target, IEnumerable<Type> parameters) => string.Format(Resources.GetString("MissingCtor"), target.FullName, parameters.ToString(","));
+        internal static string MissingCtor(Type target, IEnumerable<Type> parameters)
+            => Resources.Get().Format(target.FullName, parameters.ToString(","));
 
-        internal static string MissingEvent(string eventName, Type handlerType, Type declaringType) => string.Format(Resources.GetString("MissingEvent"), eventName, handlerType.FullName, declaringType.FullName);
+        internal static string MissingEvent(string eventName, Type handlerType, Type declaringType)
+            => Resources.Get().Format(eventName, handlerType.FullName, declaringType.FullName);
 
-        internal static string MissingField(string fieldName, Type fieldType, Type declaringType) => string.Format(Resources.GetString("MissingField"), fieldName, fieldType.FullName, declaringType.FullName);
+        internal static string MissingField(string fieldName, Type fieldType, Type declaringType)
+            => Resources.Get().Format(fieldName, fieldType.FullName, declaringType.FullName);
 
-        internal static string MissingMethod(string methodName, IEnumerable<Type> parameters, Type returnType, Type declaringType) => string.Format(Resources.GetString("MissingMethod"), methodName, parameters.ToString(","), returnType, declaringType);
+        internal static string MissingMethod(string methodName, IEnumerable<Type> parameters, Type returnType, Type declaringType)
+            => Resources.Get().Format(methodName, parameters.ToString(","), returnType, declaringType);
 
-        internal static string MissingProperty(string propertyName, Type propertyType, Type declaringType) => string.Format(Resources.GetString("MissingProperty"), propertyName, propertyType.FullName, declaringType.FullName);
+        internal static string MissingProperty(string propertyName, Type propertyType, Type declaringType)
+            => Resources.Get().Format(propertyName, propertyType.FullName, declaringType.FullName);
 
-        internal static string ExtensionMethodExpected(MethodBase method) => string.Format(Resources.GetString("ExtensionMethodExpected"), method.Name);
+        internal static string ExtensionMethodExpected(MethodBase method)
+            => Resources.Get().Format(method.Name);
 
         internal static string ConceptTypeInvalidAttribution<TAttribute>(Type conceptType)
-            where TAttribute : Attribute => string.Format(Resources.GetString("ConceptTypeInvalidAttribution"), conceptType.FullName, typeof(TAttribute).FullName);
+            where TAttribute : Attribute
+            => Resources.Get().Format(conceptType.FullName, typeof(TAttribute).FullName);
 
-        internal static string StaticCtorDetected => Resources.GetString("StaticCtorDetected");
+        internal static string StaticCtorDetected => (string)Resources.Get();
 
-        internal static string ModuleMemberDetected(MemberInfo member) => string.Format(Resources.GetString("ModuleMemberDetected"), member.Name);
+        internal static string ModuleMemberDetected(MemberInfo member)
+            => Resources.Get().Format(member.Name);
 
-        internal static string StaticFieldExpected => Resources.GetString("StaticFieldExpected");
+        internal static string StaticFieldExpected => (string)Resources.Get();
 
-        internal static string InstanceFieldExpected => Resources.GetString("InstanceFieldExpected");
+        internal static string InstanceFieldExpected => (string)Resources.Get();
     }
 }

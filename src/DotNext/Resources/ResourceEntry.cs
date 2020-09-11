@@ -44,7 +44,7 @@ namespace DotNext.Resources
         /// </summary>
         /// <param name="args">The formatting arguments.</param>
         /// <returns>The formatter resource string.</returns>
-        public string Format(params object[] args)
+        public string Format(params object?[] args)
         {
             var culture = CultureInfo.CurrentUICulture;
             return string.Format(culture, AsString(culture), args);
