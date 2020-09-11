@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Xunit;
 using static System.Globalization.CultureInfo;
 using DateTimeStyles = System.Globalization.DateTimeStyles;
-using TimeSpanStyles = System.Globalization.TimeSpanStyles;
 
 namespace DotNext.IO
 {
