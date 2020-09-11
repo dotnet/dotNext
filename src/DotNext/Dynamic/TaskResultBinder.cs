@@ -12,7 +12,7 @@ namespace DotNext.Dynamic
     [RuntimeFeatures(DynamicCodeCompilation = true, RuntimeGenericInstantiation = true)]
     internal sealed class TaskResultBinder : CallSiteBinder
     {
-        private const string PropertyName = nameof(Task<int>.Result);
+        private const string PropertyName = nameof(Task<Missing>.Result);
         private const BindingFlags PropertyFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy;
 
         private static Expression BindMissingProperty(Expression target, out Expression restrictions)
