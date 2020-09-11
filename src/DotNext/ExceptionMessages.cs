@@ -23,10 +23,6 @@ namespace DotNext
 
         internal static string UnsupportedLockAcquisition => Resources.GetString("UnsupportedLockAcquisition");
 
-        internal static string InvalidMethodSignature => Resources.GetString("CannotMakeMethodPointer");
-
-        internal static string UnsupportedMethodPointerType => Resources.GetString("UnsupportedMethodPointerType");
-
         internal static string UnreachableCodeDetected => Resources.GetString("UnreachableCodeDetected");
 
         internal static string ConcreteDelegateExpected => Resources.GetString("ConcreteDelegateExpected");
