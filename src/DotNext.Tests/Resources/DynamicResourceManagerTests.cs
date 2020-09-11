@@ -1,3 +1,5 @@
+using System;
+using System.Resources;
 using Xunit;
 
 namespace DotNext.Resources
@@ -7,23 +9,42 @@ namespace DotNext.Resources
         private const string ResourceFileName = "DotNext.TestResources";
 
         [Fact]
-        public static void ResourceStrings()
+        public static void TestStringResource()
         {
-            dynamic manager = new DynamicResourceManager(ResourceFileName, typeof(Test).Assembly);
-            Equal("Hello, world!", manager.TestStringResource);
-            Equal("123", manager.TestStringResource2);
-            Equal("Hello, world!", manager.StringTemplate("world"));
-            Equal("Hello, Henry!", manager.StringTemplate("Henry"));
-            Equal("Hello, world!", manager["TestStringResource"]);
-            Null(manager.InvalidResource);
+            var manager = new ResourceManager(ResourceFileName, typeof(Test).Assembly);
+            Equal("Hello, world!", (string)manager.Get());
+        }
+
+        [Fact]
+        public static void TestStringResource2()
+        {
+            var manager = new ResourceManager(ResourceFileName, typeof(Test).Assembly);
+            Equal("123", (string)manager.Get());
+        }
+
+        [Fact]
+        public static void StringTemplate()
+        {
+            var manager = new ResourceManager(ResourceFileName, typeof(Test).Assembly);
+            Equal("Hello, world!", manager.Get().Format("world"));
+            Equal("Hello, Henry!", manager.Get().Format("Henry"));
         }
 
         [Fact]
         public static void ResourceObjects()
         {
-            dynamic manager = new DynamicResourceManager(ResourceFileName, typeof(Test).Assembly);
-            Equal(42, manager.IntegerValue);
-            Equal(42L, manager.LongValue);
+            var manager = new ResourceManager(ResourceFileName, typeof(Test).Assembly);
+            Equal(42, manager.Get("IntegerValue").As<int>());
+            Equal(42L, manager.Get("LongValue").As<long>());
+        }
+
+        [Fact]
+        public static void NullResourceString()
+        {
+            var manager = new ResourceManager(ResourceFileName, typeof(Test).Assembly);
+            Throws<InvalidOperationException>(() => manager.Get().AsString());
+            Throws<InvalidOperationException>(() => manager.Get().AsStream());
+            Throws<InvalidOperationException>(() => manager.Get().As<int>());
         }
     }
 }

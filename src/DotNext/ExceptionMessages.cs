@@ -40,5 +40,8 @@ namespace DotNext
         internal static string BoxedValueTypeExpected<T>()
             where T : struct
             => string.Format(Resources.GetString("BoxedValueTypeExpected"), typeof(T));
+
+        internal static string ResourceEntryIsNull(string name)
+            => string.Format(Resources.GetString("ResourceEntryIsNull"), name);
     }
 }
