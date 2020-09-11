@@ -22,8 +22,6 @@ namespace DotNext
 
         internal static string UnresolvedLocalMember => Resources.GetString("UnresolvedLocalMember");
 
-        internal static string MessagingNotSupported => Resources.GetString("MessagingNotSupported");
-
         internal static string UnavailableMember => Resources.GetString("UnavailableMember");
 
         internal static string LeaderIsUnavailable => Resources.GetString("LeaderIsUnavailable");

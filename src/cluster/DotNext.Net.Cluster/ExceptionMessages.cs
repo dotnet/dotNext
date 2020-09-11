@@ -11,11 +11,7 @@ namespace DotNext
     {
         private static readonly ResourceManager Resources = new ResourceManager("DotNext.ExceptionMessages", Assembly.GetExecutingAssembly());
 
-        internal static string NoConsensus => Resources.GetString("NoConsensus");
-
         internal static string CannotRemoveLocalNode => Resources.GetString("CannotRemoveLocalNode");
-
-        internal static string ReplicationRejected => Resources.GetString("ReplicationRejected");
 
         internal static string EntrySetIsEmpty => Resources.GetString("EntrySetIsEmpty");
 

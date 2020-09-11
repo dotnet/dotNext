@@ -16,6 +16,5 @@ ExtensionMethodExpected=Method {0} should be an extension method
 ConceptTypeInvalidAttribution=Concept type {0} should be marked with {1}
 StaticCtorDetected=Unable to reflect static constructor of type or module
 ModuleMemberDetected=Unable to reflect module member {0}
-InvalidFieldType=The field type doesn't match to actual generic type
 StaticFieldExpected=Static field expected
 InstanceFieldExpected=Instance field expected
