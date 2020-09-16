@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Xunit;
@@ -468,6 +470,27 @@ namespace DotNext.Runtime.InteropServices
             Equal(2, memory.Length);
             Equal(12, memory[0]);
             Equal(24, memory[1]);
+        }
+
+        [Fact]
+        public static unsafe void PinnablePointer()
+        {
+            Pointer<int> ptr = stackalloc int[1];
+            ptr.Value = 42;
+            IPinnable pinnable = ptr;
+            using var handle = pinnable.Pin(0);
+            Equal(42, ((int*)handle.Pointer)[0]);
+            pinnable.Unpin();
+        }
+
+        [Fact]
+        public static unsafe void PointerReflection()
+        {
+            Pointer<int> ptr = stackalloc int[1];
+            ptr.Value = 42;
+            var obj = ptr.GetBoxedPointer();
+            IsType<Pointer>(obj);
+            Equal(ptr.Address, new IntPtr(Pointer.Unbox(obj)));
         }
     }
 }
