@@ -62,6 +62,10 @@ Release Date: MM-DD-2020
 * [AsyncExchanger&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncExchanger-1.html) class now has a method for fast synchronous exchange
 * [AsyncTimer](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncTimer.html) implements [IAsyncDisposable](https://docs.microsoft.com/en-us/dotnet/api/system.iasyncdisposable) for graceful shutdown
 
+<a href="https://www.nuget.org/packages/dotnext.unsafe/2.10.0">DotNext.Unsafe 2.10.0</a>
+* [https://sakno.github.io/dotNext/api/DotNext.Runtime.InteropServices.Pointer-1.html] value type now implements [IPinnable](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ipinnable) interface
+* Added interop between [https://sakno.github.io/dotNext/api/DotNext.Runtime.InteropServices.Pointer-1.html] and [System.Reflection.Pointer](https://docs.microsoft.com/en-us/dotnet/api/system.reflection.pointer)
+
 Changelog for previous versions located [here](./CHANGELOG.md).
 
 # Release Policy
