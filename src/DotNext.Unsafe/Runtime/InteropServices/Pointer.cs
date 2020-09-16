@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using CancellationToken = System.Threading.CancellationToken;
 using MemoryHandle = System.Buffers.MemoryHandle;
+using Pointer = System.Reflection.Pointer;
 
 namespace DotNext.Runtime.InteropServices
 {
@@ -114,6 +115,14 @@ namespace DotNext.Runtime.InteropServices
             : this((T*)ptr)
         {
         }
+
+        /// <summary>
+        /// Gets boxed pointer.
+        /// </summary>
+        /// <returns>The boxed pointer.</returns>
+        /// <seealso cref="Pointer"/>
+        [CLSCompliant(false)]
+        public unsafe object GetBoxedPointer() => Pointer.Box(value, typeof(T*));
 
         /// <summary>
         /// Determines whether this pointer is aligned
