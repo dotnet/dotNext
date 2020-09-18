@@ -192,14 +192,8 @@ namespace DotNext.Runtime
         {
             if (index < 0 || index >= tuple.Length)
                 throw new ArgumentOutOfRangeException(nameof(index));
-            Push(ref tuple);
-            Sizeof<TItem>();
-            Push(index);
-            Conv_U4();
-            Mul_Ovf_Un();
-            Add();
-            Ldobj<TItem>();
-            return Return<TItem>();
+
+            return Unsafe.Add(ref Unsafe.As<T, TItem>(ref tuple), index);
         }
 
         /// <summary>
