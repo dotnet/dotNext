@@ -136,6 +136,14 @@ namespace DotNext
         }
 
         [Fact]
+        public static void IntToBoolConversion()
+        {
+            True(1.ToBoolean());
+            True(42.ToBoolean());
+            False(0.ToBoolean());
+        }
+
+        [Fact]
         public static void BitwiseEqualityCheck()
         {
             var value1 = Guid.NewGuid();
