@@ -57,7 +57,15 @@ namespace DotNext
         /// <returns><see langword="true"/>, if <paramref name="value"/> is equal to one of <paramref name="values"/>.</returns>
         public static bool IsOneOf<T>(this T value, params T[] values)
             where T : struct, IEquatable<T>
-            => value.IsOneOf(values.As<IEnumerable<T>>());
+        {
+            for (var i = 0L; i < values.LongLength; i++)
+            {
+                if (values[i].Equals(value))
+                    return true;
+            }
+
+            return false;
+        }
 
         /// <summary>
         /// Attempts to get value from nullable container.

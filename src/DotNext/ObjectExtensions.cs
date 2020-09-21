@@ -70,7 +70,15 @@ namespace DotNext
         /// <returns><see langword="true"/>, if <paramref name="value"/> is equal to one of <paramref name="values"/>.</returns>
         public static bool IsOneOf<T>(this T value, params T?[] values)
             where T : class
-            => value.IsOneOf(values.As<IEnumerable<T?>>());
+        {
+            for (var i = 0L; i < values.LongLength; i++)
+            {
+                if (Equals(values[i], value))
+                    return true;
+            }
+
+            return false;
+        }
 
         /// <summary>
         /// Performs decomposition of object into two values.
