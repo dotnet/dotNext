@@ -78,8 +78,8 @@ namespace DotNext.Threading
             {
                 if (this.timeout.TryGetValue(out var timeout))
                 {
-                    var remaining = timeout - created.Elapsed;
-                    return remaining >= TimeSpan.Zero ? new TimeSpan?(remaining) : null;
+                    timeout -= created.Elapsed;
+                    return timeout >= TimeSpan.Zero ? new TimeSpan?(timeout) : null;
                 }
 
                 return InfiniteTimeSpan;
