@@ -61,6 +61,7 @@ namespace DotNext
             value = new IntPtr(long.MinValue);
             Throws<OverflowException>(() => value.SubtractChecked(new IntPtr(1)));
             Equal(new IntPtr(long.MaxValue), value.Subtract(new IntPtr(1)));
+            Throws<OverflowException>(() => value.ToUIntPtrChecked());
         }
 
         [Require64BitProcess]
@@ -68,6 +69,7 @@ namespace DotNext
         {
             var value = new UIntPtr(ulong.MaxValue);
             Throws<OverflowException>(() => value.AddChecked(new UIntPtr(1U)));
+            Throws<OverflowException>(() => value.ToIntPtrChecked());
             value = new UIntPtr(0U);
             Throws<OverflowException>(() => value.SubtractChecked(new UIntPtr(1U)));
             Equal(new UIntPtr(ulong.MaxValue), value.Subtract(new UIntPtr(1U)));
@@ -82,6 +84,8 @@ namespace DotNext
             Equal(new IntPtr(1), new IntPtr(1).Xor(default));
             Equal(default, new IntPtr().Xor(default));
             Equal(default, new IntPtr(1).Xor(new IntPtr(1)));
+            Equal(new IntPtr(4), new IntPtr(2).LeftShift(1));
+            Equal(new IntPtr(2), new IntPtr(4).RightShift(1));
         }
 
         [Fact]
@@ -93,6 +97,8 @@ namespace DotNext
             Equal(new UIntPtr(1U), new UIntPtr(1U).Xor(default));
             Equal(default, new UIntPtr().Xor(default));
             Equal(default, new UIntPtr(1U).Xor(new UIntPtr(1U)));
+            Equal(new UIntPtr(4), new UIntPtr(2).LeftShift(1));
+            Equal(new UIntPtr(2), new UIntPtr(4).RightShift(1));
         }
 
         [Fact]
