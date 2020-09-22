@@ -145,20 +145,21 @@ namespace DotNext.Buffers
             => allocator?.Invoke(size, false) ?? new MemoryOwner<T>(ArrayPool<T>.Shared, size, false);
 
         /// <summary>
-        /// Writes elements to this builder.
+        /// Writes elements to this buffer.
         /// </summary>
         /// <param name="input">The span of elements to be written.</param>
-        /// <returns><see langword="false"/> if this builder is not growable and pre-allocated initial buffer is full; otherwise, <see langword="true"/>.</returns>
-        public bool TryWrite(ReadOnlySpan<T> input)
+        /// <exception cref="InsufficientMemoryException">Pre-allocated initial buffer size is not enough to place <paramref name="input"/> elements to it and this builder is not growable.</exception>
+        /// <exception cref="OverflowException">The size of the internal buffer becomes greater than <see cref="int.MaxValue"/>.</exception>
+        public void Write(ReadOnlySpan<T> input)
         {
-            var newSize = position + input.Length;
+            var newSize = checked(position + input.Length);
             Span<T> output;
             int offset;
 
             switch (mode)
             {
                 default:
-                    return false;
+                    throw new InsufficientMemoryException();
                 case FixedSizeMode:
                     if (newSize > initialBuffer.Length)
                         goto default;
@@ -223,18 +224,6 @@ namespace DotNext.Buffers
 
             input.CopyTo(output.Slice(offset));
             position = newSize;
-            return true;
-        }
-
-        /// <summary>
-        /// Writes elements to this buffer.
-        /// </summary>
-        /// <param name="input">The span of elements to be written.</param>
-        /// <exception cref="InsufficientMemoryException">Pre-allocated initial buffer size is not enough to place <paramref name="input"/> elements to it and this builder is not growable.</exception>
-        public void Write(ReadOnlySpan<T> input)
-        {
-            if (!TryWrite(input))
-                throw new InsufficientMemoryException();
         }
 
         /// <summary>
