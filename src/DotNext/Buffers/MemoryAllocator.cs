@@ -1,5 +1,6 @@
 using System;
 using System.Buffers;
+using System.Runtime.CompilerServices;
 
 namespace DotNext.Buffers
 {
@@ -64,6 +65,7 @@ namespace DotNext.Buffers
         /// </param>
         /// <typeparam name="T">The type of the items in the memory pool.</typeparam>
         /// <returns>The allocated memory.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static MemoryOwner<T> Invoke<T>(this MemoryAllocator<T>? allocator, int length, bool exactSize)
         {
             MemoryOwner<T> result;
