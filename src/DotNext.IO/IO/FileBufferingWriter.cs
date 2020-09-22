@@ -151,7 +151,7 @@ namespace DotNext.IO
 
         private readonly int memoryThreshold;
         private readonly string tempDir;
-        private readonly MemoryAllocator<byte> allocator;
+        private readonly MemoryAllocator<byte>? allocator;
         private readonly FileOptions options;
         private MemoryOwner<byte> buffer;
         private int position;
@@ -184,11 +184,11 @@ namespace DotNext.IO
                 tempDir = Environment.GetEnvironmentVariable("ASPNETCORE_TEMP").IfNullOrEmpty(Path.GetTempPath());
             if (!Directory.Exists(tempDir))
                 throw new DirectoryNotFoundException(ExceptionMessages.DirectoryNotFound(tempDir));
-            this.allocator = allocator ?? ArrayPool<byte>.Shared.ToAllocator();
+            this.allocator = allocator;
             this.tempDir = tempDir;
             if (initialCapacity > 0)
             {
-                buffer = this.allocator.Invoke(initialCapacity, false);
+                buffer = allocator.Invoke(initialCapacity, false);
                 if (buffer.Length > memoryThreshold)
                     memoryThreshold = buffer.Length < int.MaxValue ? buffer.Length + 1 : int.MaxValue;
             }

@@ -141,9 +141,6 @@ namespace DotNext.Buffers
             }
         }
 
-        private readonly MemoryOwner<T> Allocate(int size)
-            => allocator?.Invoke(size, false) ?? new MemoryOwner<T>(ArrayPool<T>.Shared, size, false);
-
         /// <summary>
         /// Writes elements to this buffer.
         /// </summary>
@@ -172,7 +169,7 @@ namespace DotNext.Buffers
                     // grow if needed
                     if (newSize > initialBuffer.Length && newSize - initialBuffer.Length > extraBuffer.Length)
                     {
-                        newBuffer = Allocate(newSize);
+                        newBuffer = allocator.Invoke(newSize, false);
                         extraBuffer.Memory.CopyTo(newBuffer.Memory);
                         extraBuffer.Dispose();
                         extraBuffer = newBuffer;
@@ -199,13 +196,13 @@ namespace DotNext.Buffers
                     {
                         if (extraBuffer.IsEmpty)
                         {
-                            extraBuffer = Allocate(newSize);
+                            extraBuffer = allocator.Invoke(newSize, false);
                             initialBuffer.CopyTo(extraBuffer.Memory.Span);
                             initialBuffer.Clear();
                         }
                         else if (newSize > extraBuffer.Length)
                         {
-                            newBuffer = Allocate(newSize);
+                            newBuffer = allocator.Invoke(newSize, false);
                             extraBuffer.Memory.CopyTo(newBuffer.Memory);
                             extraBuffer.Dispose();
                             extraBuffer = newBuffer;

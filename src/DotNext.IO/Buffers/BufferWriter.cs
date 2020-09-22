@@ -15,7 +15,7 @@ namespace DotNext.Buffers
     public static class BufferWriter
     {
         private const int MaxBufferSize = int.MaxValue / 2;
-        internal static readonly MemoryAllocator<char> DefaultAllocator = ArrayPool<char>.Shared.ToAllocator();
+        internal const MemoryAllocator<char>? DefaultAllocator = null;
 
         // TODO: Replace with function pointers in C# 9
         internal interface ISpanFormattable

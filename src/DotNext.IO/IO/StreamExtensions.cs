@@ -2530,14 +2530,12 @@ namespace DotNext.IO
         /// <param name="output">The stream to convert.</param>
         /// <param name="allocator">The allocator of the buffer.</param>
         /// <returns>The buffered stream writer.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="output"/> or <paramref name="allocator"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="output"/> is <see langword="null"/>.</exception>
         /// <exception cref="ArgumentException"><paramref name="output"/> is not writable stream.</exception>
-        public static IFlushableBufferWriter<byte> AsBufferWriter(this Stream output, MemoryAllocator<byte> allocator)
+        public static IFlushableBufferWriter<byte> AsBufferWriter(this Stream output, MemoryAllocator<byte>? allocator = null)
         {
             if (output is null)
                 throw new ArgumentNullException(nameof(output));
-            if (allocator is null)
-                throw new ArgumentNullException(nameof(allocator));
             if (!output.CanWrite)
                 throw new ArgumentException(ExceptionMessages.StreamNotWritable, nameof(output));
 
