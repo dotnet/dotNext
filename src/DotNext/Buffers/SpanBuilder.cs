@@ -46,7 +46,7 @@ namespace DotNext.Buffers
         /// requested using <paramref name="allocator"/> while <paramref name="buffer"/> space is sufficient.
         /// If <paramref name="allocator"/> is <see langword="null"/> then <see cref="ArrayPool{T}.Shared"/>
         /// is used for memory pooling.
-        /// <see cref="Span"/> property is supported only if <paramref name="copyOnOverflow"/> is <see langword="true"/>.
+        /// <see cref="WrittenSpan"/> property is supported only if <paramref name="copyOnOverflow"/> is <see langword="true"/>.
         /// Otherwise, it's not possible to represent written content as contiguous memory block.
         /// </remarks>
         public SpanBuilder(Span<T> buffer, bool copyOnOverflow, MemoryAllocator<T>? allocator = null)
@@ -116,7 +116,7 @@ namespace DotNext.Buffers
         /// If this builder was constructed using <see cref="SpanBuilder{T}(Span{T}, bool, MemoryAllocator{T})"/>
         /// constructor and <c>copyOnOverflow</c> parameter is <see langword="false"/>.
         /// </exception>
-        public readonly Span<T> Span
+        public readonly ReadOnlySpan<T> WrittenSpan
         {
             get
             {
@@ -128,6 +128,10 @@ namespace DotNext.Buffers
                     case FixedSizeMode:
                         result = initialBuffer;
                         break;
+                    case GrowableMode:
+                        if (extraBuffer.IsEmpty)
+                            goto case FixedSizeMode;
+                        goto default;
                     case GrowableContiguousMode:
                         result = position < initialBuffer.Length ? initialBuffer : extraBuffer.Memory.Span;
                         break;
@@ -135,6 +139,30 @@ namespace DotNext.Buffers
 
                 return result.Slice(0, position);
             }
+        }
+
+        public bool TryGetSpan(out ReadOnlySpan<T> output)
+        {
+            Span<T> result;
+            switch (mode)
+            {
+                default:
+                    output = default;
+                    return false;
+                case FixedSizeMode:
+                    result = initialBuffer;
+                    break;
+                case GrowableMode:
+                    if (extraBuffer.IsEmpty)
+                        goto case FixedSizeMode;
+                    goto default;
+                case GrowableContiguousMode:
+                    result = position < initialBuffer.Length ? initialBuffer : extraBuffer.Memory.Span;
+                    break;
+            }
+
+            output = result.Slice(0, position);
+            return true;
         }
 
         private readonly MemoryOwner<T> Allocate(int size)

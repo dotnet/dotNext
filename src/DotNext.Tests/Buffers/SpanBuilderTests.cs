@@ -24,7 +24,7 @@ namespace DotNext.Buffers
             Equal(4, builder.Capacity);
             Equal(2, builder.FreeCapacity);
 
-            Equal(new int[] { 10, 20 }, builder.Span.ToArray());
+            Equal(new int[] { 10, 20 }, builder.WrittenSpan.ToArray());
 
             builder.Add(30);
             builder.Add(40);
@@ -32,7 +32,7 @@ namespace DotNext.Buffers
             Equal(4, builder.Capacity);
             Equal(0, builder.FreeCapacity);
 
-            Equal(new int[] { 10, 20, 30, 40 }, builder.Span.ToArray());
+            Equal(new int[] { 10, 20, 30, 40 }, builder.WrittenSpan.ToArray());
             
             var exceptionThrown = false;
             try
