@@ -67,6 +67,7 @@ namespace DotNext.Buffers
 
             Equal(10, builder[0]);
             Equal(20, builder[1]);
+            Equal(new int[] { 10, 20 }, builder.WrittenSpan.ToArray());
 
             builder.Write(new int[] { 30, 40 });
             Equal(4, builder.WrittenCount);
@@ -76,6 +77,18 @@ namespace DotNext.Buffers
             Span<int> result = stackalloc int[5];
             builder.DrainTo(result);
             Equal(new int[] { 10, 20, 30, 40, 0 }, result.ToArray());
+
+            var exceptionThrown = false;
+            try
+            {
+                builder.WrittenSpan.ToArray();
+            }
+            catch (NotSupportedException)
+            {
+                exceptionThrown = true;
+            }
+
+            True(exceptionThrown);
 
             builder.Clear(true);
             Equal(0, builder.WrittenCount);
