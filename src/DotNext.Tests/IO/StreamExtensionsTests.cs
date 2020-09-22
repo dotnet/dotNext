@@ -368,7 +368,6 @@ namespace DotNext.IO
         public static void BufferWriterOverStreamExceptions()
         {
             Throws<ArgumentNullException>(() => StreamExtensions.AsBufferWriter(null, ArrayPool<byte>.Shared.ToAllocator()));
-            Throws<ArgumentNullException>(() => Stream.Null.AsBufferWriter(null));
             using var ms = new MemoryStream(new byte[12], false);
             Throws<ArgumentException>(() => ms.AsBufferWriter(ArrayPool<byte>.Shared.ToAllocator()));
         }
