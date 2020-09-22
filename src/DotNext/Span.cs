@@ -597,5 +597,8 @@ namespace DotNext
 
         internal static void CopyTo(ReadOnlySpan<char> source, TextWriter writer)
             => writer.Write(source);
+
+        internal static void CopyTo(ReadOnlySpan<byte> source, Stream stream)
+            => stream.Write(source);
     }
 }

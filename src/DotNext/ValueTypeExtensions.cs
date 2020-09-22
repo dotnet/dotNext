@@ -57,7 +57,15 @@ namespace DotNext
         /// <returns><see langword="true"/>, if <paramref name="value"/> is equal to one of <paramref name="values"/>.</returns>
         public static bool IsOneOf<T>(this T value, params T[] values)
             where T : struct, IEquatable<T>
-            => value.IsOneOf(values.As<IEnumerable<T>>());
+        {
+            for (var i = 0L; i < values.LongLength; i++)
+            {
+                if (values[i].Equals(value))
+                    return true;
+            }
+
+            return false;
+        }
 
         /// <summary>
         /// Attempts to get value from nullable container.
@@ -73,28 +81,6 @@ namespace DotNext
             return nullable.HasValue;
         }
 
-        // use this method carefully because it doesn't
-        // control overflow
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static char Add(this char x, char y)
-        {
-            Push(x);
-            Push(y);
-            Emit.Add();
-            return Return<char>();
-        }
-
-        // use this method carefully because it doesn't
-        // control overflow
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static char Subtract(this char x, char y)
-        {
-            Push(x);
-            Push(y);
-            Sub();
-            return Return<char>();
-        }
-
         /// <summary>
         /// Converts <see cref="IntPtr"/> into <see cref="UIntPtr"/>.
         /// </summary>
@@ -106,6 +92,22 @@ namespace DotNext
         {
             Push(value);
             Conv_U();
+            return Return<UIntPtr>();
+        }
+
+        /// <summary>
+        /// Converts <see cref="UIntPtr"/> into <see cref="IntPtr"/>
+        /// respecting overflow.
+        /// </summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns>The converted <paramref name="value"/>.</returns>
+        /// <exception cref="OverflowException"><paramref name="value"/> is less than zero.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static UIntPtr ToUIntPtrChecked(this IntPtr value)
+        {
+            Push(value);
+            Conv_Ovf_U();
             return Return<UIntPtr>();
         }
 
@@ -153,6 +155,22 @@ namespace DotNext
         {
             Push(value);
             Conv_I();
+            return Return<IntPtr>();
+        }
+
+        /// <summary>
+        /// Converts <see cref="UIntPtr"/> into <see cref="IntPtr"/>
+        /// respecting overflow.
+        /// </summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns>The converted <paramref name="value"/>.</returns>
+        /// <exception cref="OverflowException"><paramref name="value"/> is greater than the maximum positive signed native integer.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static IntPtr ToIntPtrChecked(this UIntPtr value)
+        {
+            Push(value);
+            Conv_Ovf_I_Un();
             return Return<IntPtr>();
         }
 
@@ -677,6 +695,110 @@ namespace DotNext
             Not();
             return Return<UIntPtr>();
         }
+
+        /// <summary>
+        /// Shifts native integer value to the left by a specified number of bits.
+        /// </summary>
+        /// <param name="value">The value to shift.</param>
+        /// <param name="bits">The numbers of bits to shift.</param>
+        /// <returns>The modified value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IntPtr LeftShift(this IntPtr value, IntPtr bits)
+        {
+            Push(value);
+            Push(bits);
+            Shl();
+            return Return<IntPtr>();
+        }
+
+        /// <summary>
+        /// Shifts native integer value to the left by a specified number of bits.
+        /// </summary>
+        /// <param name="value">The value to shift.</param>
+        /// <param name="bits">The numbers of bits to shift.</param>
+        /// <returns>The modified value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IntPtr LeftShift(this IntPtr value, int bits)
+            => LeftShift(value, new IntPtr(bits));
+
+        /// <summary>
+        /// Shifts native integer value to the right by a specified number of bits.
+        /// </summary>
+        /// <param name="value">The value to shift.</param>
+        /// <param name="bits">The numbers of bits to shift.</param>
+        /// <returns>The modified value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IntPtr RightShift(this IntPtr value, IntPtr bits)
+        {
+            Push(value);
+            Push(bits);
+            Shr();
+            return Return<IntPtr>();
+        }
+
+        /// <summary>
+        /// Shifts native integer value to the right by a specified number of bits.
+        /// </summary>
+        /// <param name="value">The value to shift.</param>
+        /// <param name="bits">The numbers of bits to shift.</param>
+        /// <returns>The modified value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IntPtr RightShift(this IntPtr value, int bits)
+            => RightShift(value, new IntPtr(bits));
+
+        /// <summary>
+        /// Shifts native integer value to the left by a specified number of bits.
+        /// </summary>
+        /// <param name="value">The value to shift.</param>
+        /// <param name="bits">The numbers of bits to shift.</param>
+        /// <returns>The modified value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static UIntPtr LeftShift(this UIntPtr value, IntPtr bits)
+        {
+            Push(value);
+            Push(bits);
+            Shl();
+            return Return<UIntPtr>();
+        }
+
+        /// <summary>
+        /// Shifts native integer value to the left by a specified number of bits.
+        /// </summary>
+        /// <param name="value">The value to shift.</param>
+        /// <param name="bits">The numbers of bits to shift.</param>
+        /// <returns>The modified value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static UIntPtr LeftShift(this UIntPtr value, int bits)
+            => LeftShift(value, new IntPtr(bits));
+
+        /// <summary>
+        /// Shifts native integer value to the right by a specified number of bits.
+        /// </summary>
+        /// <param name="value">The value to shift.</param>
+        /// <param name="bits">The numbers of bits to shift.</param>
+        /// <returns>The modified value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static UIntPtr RightShift(this UIntPtr value, IntPtr bits)
+        {
+            Push(value);
+            Push(bits);
+            Shr();
+            return Return<UIntPtr>();
+        }
+
+        /// <summary>
+        /// Shifts native integer value to the right by a specified number of bits.
+        /// </summary>
+        /// <param name="value">The value to shift.</param>
+        /// <param name="bits">The numbers of bits to shift.</param>
+        /// <returns>The modified value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static UIntPtr RightShift(this UIntPtr value, int bits)
+            => RightShift(value, new IntPtr(bits));
 
         /// <summary>
         /// Increments native integer by 1.

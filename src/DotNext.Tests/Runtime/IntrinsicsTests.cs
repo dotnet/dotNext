@@ -322,5 +322,32 @@ namespace DotNext.Runtime
             NotEqual(obj.str, obj2.str);
             NotSame(obj, obj2);
         }
+
+        [Fact]
+        public static void ArrayLength()
+        {
+            int[] array = { 42 };
+            Equal(new UIntPtr(1), Intrinsics.GetLength(array));
+            array = Array.Empty<int>();
+            Equal(default, Intrinsics.GetLength(array));
+            Equal(new UIntPtr(4), Intrinsics.GetLength(new int[2, 2]));
+        }
+
+        [Fact]
+        public static void ArrayElement()
+        {
+            string[] array = { "42" };
+            var element = Intrinsics.GetElement<IEquatable<string>>(array, IntPtr.Zero);
+            True(element.Equals("42"));
+
+            Intrinsics.GetElementReference(array, IntPtr.Zero) = "43";
+            Equal("43", array[0]);
+
+            element = Intrinsics.GetElement<IEquatable<string>>(array, UIntPtr.Zero);
+            True(element.Equals("43"));
+
+            Intrinsics.GetElementReference(array, UIntPtr.Zero) = "44";
+            Equal("44", array[0]);
+        }
     }
 }

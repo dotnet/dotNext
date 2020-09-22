@@ -219,7 +219,7 @@ namespace DotNext.Buffers
                 {
                     newSize = currentLength + sizeHint;
                     if ((uint)newSize > int.MaxValue)
-                        throw new OutOfMemoryException();
+                        throw new InsufficientMemoryException();
                 }
 
                 Resize(newSize);

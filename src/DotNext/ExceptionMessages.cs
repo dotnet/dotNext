@@ -39,5 +39,7 @@ namespace DotNext
 
         internal static string ResourceEntryIsNull(string name)
             => string.Format(Resources.GetString("ResourceEntryIsNull"), name);
+
+        internal static string EmptyBuffer => Resources.GetString("EmptyBuffer");
     }
 }

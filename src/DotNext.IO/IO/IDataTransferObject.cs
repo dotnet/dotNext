@@ -118,7 +118,7 @@ namespace DotNext.IO
             ByteBufferWriter writer;
             if (Length.TryGetValue(out var length))
             {
-                writer = length <= int.MaxValue ? new ByteBufferWriter((int)length) : throw new OutOfMemoryException();
+                writer = length <= int.MaxValue ? new ByteBufferWriter((int)length) : throw new InsufficientMemoryException();
             }
             else
             {

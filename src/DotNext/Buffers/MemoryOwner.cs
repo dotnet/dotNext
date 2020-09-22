@@ -24,16 +24,21 @@ namespace DotNext.Buffers
             this.length = length;
         }
 
+        internal MemoryOwner(ArrayPool<T> pool, int length, bool exactSize)
+        {
+            array = pool.Rent(length);
+            owner = pool;
+            this.length = exactSize ? length : array.Length;
+        }
+
         /// <summary>
         /// Rents the array from the pool.
         /// </summary>
         /// <param name="pool">The array pool.</param>
         /// <param name="length">The length of the array.</param>
         public MemoryOwner(ArrayPool<T> pool, int length)
+            : this(pool, length, true)
         {
-            array = pool.Rent(length);
-            owner = pool;
-            this.length = length;
         }
 
         /// <summary>

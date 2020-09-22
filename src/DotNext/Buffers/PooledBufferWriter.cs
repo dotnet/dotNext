@@ -10,7 +10,7 @@ namespace DotNext.Buffers
     /// <typeparam name="T">The data type that can be written.</typeparam>
     public sealed class PooledBufferWriter<T> : MemoryWriter<T>
     {
-        private readonly MemoryAllocator<T> allocator;
+        private readonly MemoryAllocator<T>? allocator;
         private MemoryOwner<T> buffer;
 
         /// <summary>
@@ -23,7 +23,7 @@ namespace DotNext.Buffers
         {
             if (initialCapacity <= 0)
                 throw new ArgumentOutOfRangeException(nameof(initialCapacity));
-            this.allocator = allocator ?? ArrayPool<T>.Shared.ToAllocator();
+            this.allocator = allocator;
             buffer = this.allocator.Invoke(initialCapacity, false);
         }
 
@@ -33,7 +33,7 @@ namespace DotNext.Buffers
         /// <param name="allocator">The allocator of internal buffer.</param>
         public PooledBufferWriter(MemoryAllocator<T>? allocator)
         {
-            this.allocator = allocator ?? ArrayPool<T>.Shared.ToAllocator();
+            this.allocator = allocator;
         }
 
         /// <summary>
