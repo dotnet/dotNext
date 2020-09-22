@@ -213,7 +213,7 @@ namespace DotNext.IO
             Span<char> charBuffer = stackalloc char[InitialCharBufferSize];
             if (!WriteString(stream, value, charBuffer, lengthFormat, encoding, format, provider))
             {
-                for (var charBufferSize = InitialCharBufferSize * 2; ; charBufferSize = charBufferSize <= MaxBufferSize ? charBufferSize * 2 : throw new OutOfMemoryException())
+                for (var charBufferSize = InitialCharBufferSize * 2; ; charBufferSize = charBufferSize <= MaxBufferSize ? charBufferSize * 2 : throw new InsufficientMemoryException())
                 {
                     using var owner = DefaultAllocator.Invoke(charBufferSize, false);
                     if (WriteString(stream, value, charBuffer, lengthFormat, encoding, format, provider))
@@ -512,7 +512,7 @@ namespace DotNext.IO
         private static async ValueTask WriteAsync<T>(Stream stream, T value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format, IFormatProvider? provider, CancellationToken token)
             where T : struct, ISpanFormattable
         {
-            for (var charBufferSize = InitialCharBufferSize; ; charBufferSize = charBufferSize <= MaxBufferSize ? charBufferSize * 2 : throw new OutOfMemoryException())
+            for (var charBufferSize = InitialCharBufferSize; ; charBufferSize = charBufferSize <= MaxBufferSize ? charBufferSize * 2 : throw new InsufficientMemoryException())
             {
                 using var owner = DefaultAllocator.Invoke(charBufferSize, false);
 

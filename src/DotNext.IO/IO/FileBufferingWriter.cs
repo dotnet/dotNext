@@ -279,7 +279,7 @@ namespace DotNext.IO
                     result = buffer.Memory.Slice(0, sizeHint);
                     break;
                 default:
-                    throw new OutOfMemoryException();
+                    throw new InsufficientMemoryException();
             }
 
             return result;
@@ -631,7 +631,7 @@ namespace DotNext.IO
             if (length == 0L && offset == 0L)
                 return new MemoryManager();
             if (length > int.MaxValue)
-                throw new OutOfMemoryException();
+                throw new InsufficientMemoryException();
             return new MemoryMappedFileManager(this, offset, length);
         }
 
@@ -672,7 +672,7 @@ namespace DotNext.IO
             if (length == 0L && offset == 0L)
                 return new MemoryManager();
             if (length > int.MaxValue)
-                throw new OutOfMemoryException();
+                throw new InsufficientMemoryException();
             return new MemoryMappedFileManager(this, offset, length);
         }
 
