@@ -294,8 +294,8 @@ namespace DotNext.Buffers
         /// Copies written content to the specified buffer writer.
         /// </summary>
         /// <param name="output">The buffer writer.</param>
-        public readonly void DrainTo(IBufferWriter<T> output)
-            => DrainTo(DotNext.Span.CopyTo, output); // TODO: Must be rewritten using function pointer
+        public readonly void CopyTo(IBufferWriter<T> output)
+            => CopyTo(DotNext.Span.CopyTo, output); // TODO: Must be rewritten using function pointer
 
         /// <summary>
         /// Transfers written content to the specified callback.
@@ -303,7 +303,7 @@ namespace DotNext.Buffers
         /// <typeparam name="TArg">The type of the argument to be passed to the callback.</typeparam>
         /// <param name="action">The callback accepting written content. Can be called more than once.</param>
         /// <param name="arg">The argument to be passed to the callback.</param>
-        public readonly void DrainTo<TArg>(ReadOnlySpanAction<T, TArg> action, TArg arg)
+        public readonly void CopyTo<TArg>(ReadOnlySpanAction<T, TArg> action, TArg arg)
         {
             Span<T> result;
             var count = position;
@@ -338,7 +338,7 @@ namespace DotNext.Buffers
         /// The output span can be larger or smaller than <see cref="WrittenCount"/>.
         /// </remarks>
         /// <param name="output">The span of elemenents to modify.</param>
-        public readonly void DrainTo(Span<T> output)
+        public readonly void CopyTo(Span<T> output)
         {
             if (output.Length < position)
                 throw new ArgumentException(ExceptionMessages.NotEnoughMemory, nameof(output));
@@ -391,23 +391,23 @@ namespace DotNext.Buffers
         /// </summary>
         /// <param name="builder">The buffer builder.</param>
         /// <param name="output">The output stream.</param>
-        public static void DrainTo(this in SpanBuilder<byte> builder, Stream output)
-            => builder.DrainTo(Span.CopyTo, output);
+        public static void CopyTo(this in SpanBuilder<byte> builder, Stream output)
+            => builder.CopyTo(Span.CopyTo, output);
 
         /// <summary>
         /// Copies written characters to the text stream.
         /// </summary>
         /// <param name="builder">The buffer builder.</param>
         /// <param name="output">The output stream.</param>
-        public static void DrainTo(this in SpanBuilder<char> builder, TextWriter output)
-            => builder.DrainTo(Span.CopyTo, output);
+        public static void CopyTo(this in SpanBuilder<char> builder, TextWriter output)
+            => builder.CopyTo(Span.CopyTo, output);
 
         /// <summary>
         /// Copies written characters to string builder.
         /// </summary>
         /// <param name="builder">The buffer builder.</param>
         /// <param name="output">The string builder.</param>
-        public static void DrainTo(this in SpanBuilder<char> builder, StringBuilder output)
-            => builder.DrainTo(Span.CopyTo, output);
+        public static void CopyTo(this in SpanBuilder<char> builder, StringBuilder output)
+            => builder.CopyTo(Span.CopyTo, output);
     }
 }

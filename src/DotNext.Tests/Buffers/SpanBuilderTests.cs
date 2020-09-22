@@ -47,7 +47,7 @@ namespace DotNext.Buffers
             True(exceptionThrown);
 
             Span<int> result = stackalloc int[4];
-            builder.DrainTo(result);
+            builder.CopyTo(result);
             Equal(new int[] { 10, 20, 30, 40 }, result.ToArray());
         }
 
@@ -75,7 +75,7 @@ namespace DotNext.Buffers
             Equal(30, builder[2]);
             Equal(40, builder[3]);
             Span<int> result = stackalloc int[5];
-            builder.DrainTo(result);
+            builder.CopyTo(result);
             Equal(new int[] { 10, 20, 30, 40, 0 }, result.ToArray());
 
             var exceptionThrown = false;
@@ -134,7 +134,7 @@ namespace DotNext.Buffers
             Equal(30, builder[2]);
             Equal(40, builder[3]);
             Span<int> result = stackalloc int[5];
-            builder.DrainTo(result);
+            builder.CopyTo(result);
             Equal(new int[] { 10, 20, 30, 40, 0 }, result.ToArray());
 
             builder.Clear(true);
@@ -198,7 +198,7 @@ namespace DotNext.Buffers
             builder.Write(expected);
 
             using var ms = new MemoryStream(8);
-            builder.DrainTo(ms);
+            builder.CopyTo(ms);
             Equal(8, ms.Length);
             Equal(expected, ms.ToArray());
         }
@@ -211,7 +211,7 @@ namespace DotNext.Buffers
             builder.Write(expected);
 
             var writer = new ArrayBufferWriter<byte>();
-            builder.DrainTo(writer);
+            builder.CopyTo(writer);
             Equal(8, writer.WrittenCount);
             Equal(expected, writer.WrittenSpan.ToArray());
         }
@@ -224,7 +224,7 @@ namespace DotNext.Buffers
             builder.Write(expected);
 
             var sb = new StringBuilder();
-            builder.DrainTo(sb);
+            builder.CopyTo(sb);
 
             Equal(expected, sb.ToString());
         }
@@ -237,7 +237,7 @@ namespace DotNext.Buffers
             builder.Write(expected);
 
             var sb = new StringWriter();
-            builder.DrainTo(sb);
+            builder.CopyTo(sb);
 
             Equal(expected, sb.ToString());
         }
