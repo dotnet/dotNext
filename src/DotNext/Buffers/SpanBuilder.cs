@@ -141,30 +141,6 @@ namespace DotNext.Buffers
             }
         }
 
-        public bool TryGetSpan(out ReadOnlySpan<T> output)
-        {
-            Span<T> result;
-            switch (mode)
-            {
-                default:
-                    output = default;
-                    return false;
-                case FixedSizeMode:
-                    result = initialBuffer;
-                    break;
-                case GrowableMode:
-                    if (extraBuffer.IsEmpty)
-                        goto case FixedSizeMode;
-                    goto default;
-                case GrowableContiguousMode:
-                    result = position < initialBuffer.Length ? initialBuffer : extraBuffer.Memory.Span;
-                    break;
-            }
-
-            output = result.Slice(0, position);
-            return true;
-        }
-
         private readonly MemoryOwner<T> Allocate(int size)
             => allocator?.Invoke(size, false) ?? new MemoryOwner<T>(ArrayPool<T>.Shared, size, false);
 
