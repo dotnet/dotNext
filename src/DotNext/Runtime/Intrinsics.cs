@@ -929,7 +929,7 @@ namespace DotNext.Runtime
         /// Gets the address of the array element.
         /// </summary>
         /// <param name="array">The one-dimensional array.</param>
-        /// <param name="index"></param>
+        /// <param name="index">The index of the array element.</param>
         /// <typeparam name="T">The type of the elements in the array.</typeparam>
         /// <returns>The reference to the array element.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -963,7 +963,7 @@ namespace DotNext.Runtime
         /// Gets the address of the array element.
         /// </summary>
         /// <param name="array">The one-dimensional array.</param>
-        /// <param name="index"></param>
+        /// <param name="index">The index of the array element.</param>
         /// <typeparam name="T">The type of the elements in the array.</typeparam>
         /// <returns>The reference to the array element.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
