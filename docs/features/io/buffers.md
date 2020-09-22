@@ -77,3 +77,37 @@ writer.Write(4);
 
 string result = buffer.BuildString();
 ```
+
+# Span Builder
+[SpanBuilder&lt;T&gt;](../../api/DotNext.Buffers.SpanBuilder-1.yml) is a lightweight version of [PooledBufferWriter&lt;T&gt;](../../api/DotNext.Buffers.PooledBufferWriter-1.yml) class with its own unique features. The instance of builder always allocated on the stack because the type is declared as ref-like value type. Additionally, the builder allows to use stack-allocated memory for placing new elements.
+
+The type supports the following modes:
+* **Fixed-size** builder doesn't support growing and rely on the buffer that is allocated by the caller
+* **Growable** mode utilizes pooled memory to place new elements if capacity of pre-allocated buffer exceeded. However, added elements are placed to non-contiguous memory (i.e. divided pre-allocated buffer and pooled memory). In other words, the head of the list of added elements is always in pre-allocated buffer.
+* **Growable with contiguous allocation** mode is the same as **growable** mode but ensures that all elements are placed in contiguous memory, thus can be obtained as [Span&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.span-1). The builder trying to place new elements to pre-allocated buffer. If it's capacity exceeded then the whole content of such buffer moving to pooled memory. Therefore, head and tail are not divided by two buffers.
+
+Fixed-size mode is useful if you're absolute sure that the size of dynamically growing buffer will not be greater than some constant value.
+```csharp
+using DotNext.Buffers;
+
+using var builder = new SpanBuilder<byte>(stackalloc byte[128]);    // capacity cannot be changed dynamically
+builder.Write(new byte[] { 1, 2, 3 });
+// ...
+builder.Add(4); // can potentially throw InsufficientMemoryException on overflow
+ReadOnlySpan<byte> result = builder.WrittenSpan;
+```
+
+Growable mode trying to save the amount of memory rented from the pool. However, it's not possible to obtain the buffer as [Span&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.span-1).
+```csharp
+using DotNext.Buffers;
+
+using var builder = new SpanBuilder<byte>(stackalloc byte[128], false); // capacity can be changed at runtime
+builder.Write(new byte[] { 1, 2, 3 });
+ReadOnlySpan<byte> result = builder.WrittenSpan;    // may throw NotSupportedException if the content is in non-contiguous memory
+```
+
+To enable usage of contiguous memory, just pass **true** to constructor in the example above instead of **false** constant.
+
+This type has the following limitations:
+* Incompatible with async methods
+* Focused on [Span&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.span-1) data type, there is no interop with types from [System.Collections.Generic](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic) namespace
