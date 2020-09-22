@@ -64,11 +64,20 @@ namespace DotNext.Buffers
         /// </param>
         /// <typeparam name="T">The type of the items in the memory pool.</typeparam>
         /// <returns>The allocated memory.</returns>
-        public static MemoryOwner<T> Invoke<T>(this MemoryAllocator<T> allocator, int length, bool exactSize)
+        public static MemoryOwner<T> Invoke<T>(this MemoryAllocator<T>? allocator, int length, bool exactSize)
         {
-            var result = allocator(length);
-            if (!exactSize)
-                result.Expand();
+            MemoryOwner<T> result;
+            if (allocator is null)
+            {
+                result = new MemoryOwner<T>(ArrayPool<T>.Shared, length, exactSize);
+            }
+            else
+            {
+                result = allocator(length);
+                if (!exactSize)
+                    result.Expand();
+            }
+
             return result;
         }
 
