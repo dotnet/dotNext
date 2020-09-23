@@ -8,7 +8,7 @@ namespace DotNext.Buffers
 {
     [SimpleJob(runStrategy: RunStrategy.Throughput, launchCount: 1)]
     [Orderer(SummaryOrderPolicy.FastestToSlowest)]
-    public class SpanBuilderBenchmark
+    public class SpanWriterBenchmark
     {
         private readonly int[] inputArray = new int[] { 10, 20, 30, 40, 50, 60, 70, 80 };
 
@@ -21,16 +21,23 @@ namespace DotNext.Buffers
         }
 
         [Benchmark]
-        public void AddRangeToSpanBuilderFixedSize()
+        public void AddRangeToSpanWriter()
         {
-            using var builder = new SpanBuilder<int>(stackalloc int[10]);
+            var builder = new SpanWriter<int>(stackalloc int[10]);
             builder.Write(inputArray);
         }
 
         [Benchmark]
-        public void AddRangeToSpanBuilderGrowable()
+        public void AddRangeToBufferWriterSlim()
         {
-            using var builder = new SpanBuilder<int>(stackalloc int[10], false);
+            using var builder = new BufferWriterSlim<int>(stackalloc int[10], false);
+            builder.Write(inputArray);
+        }
+
+        [Benchmark]
+        public void AddRangeToBufferWriterSlimCopyOnOverflow()
+        {
+            using var builder = new BufferWriterSlim<int>(stackalloc int[10], true);
             builder.Write(inputArray);
         }
 

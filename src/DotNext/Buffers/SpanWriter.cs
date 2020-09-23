@@ -17,7 +17,7 @@ namespace DotNext.Buffers
         public SpanWriter(Span<T> span)
         {
             this.span = span;
-            position = 0; 
+            position = 0;
         }
 
         /// <summary>
