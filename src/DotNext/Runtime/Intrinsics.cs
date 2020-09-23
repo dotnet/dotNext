@@ -976,5 +976,24 @@ namespace DotNext.Runtime
             Ldelema<T>();
             return ref ReturnRef<T>();
         }
+
+        /// <summary>
+        /// Converts two bits to 32-bit signed integer.
+        /// </summary>
+        /// <remarks>
+        /// The result is always in range [0..4].
+        /// </remarks>
+        /// <param name="low">Low bit value.</param>
+        /// <param name="high">High bit value.</param>
+        /// <returns>32-bit signed integer assembled from two bits.</returns>
+        public static int ToInt32(bool low, bool high)
+        {
+            Push(low);
+            Push(high);
+            Ldc_I4_1();
+            Emit.Shl();
+            Emit.And();
+            return Return<int>();
+        }
     }
 }

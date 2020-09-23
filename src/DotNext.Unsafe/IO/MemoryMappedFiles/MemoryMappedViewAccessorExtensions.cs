@@ -3,10 +3,12 @@ using System.IO.MemoryMappedFiles;
 
 namespace DotNext.IO.MemoryMappedFiles
 {
+    using Intrinsics = Runtime.Intrinsics;
+
     internal static class MemoryMappedViewAccessorExtensions
     {
         internal static FileAccess GetFileAccess(this MemoryMappedViewAccessor accessor)
-            => (accessor.CanRead.ToInt32() + (accessor.CanWrite.ToInt32() << 1)) switch
+            => (Intrinsics.ToInt32(accessor.CanRead, accessor.CanWrite)) switch
             {
                 1 => FileAccess.Read,
                 2 => FileAccess.Write,
