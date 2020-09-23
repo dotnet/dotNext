@@ -176,8 +176,8 @@ namespace DotNext.Buffers
             }
 
             True(exceptionThrown);
-
             exceptionThrown = false;
+
             try
             {
                 Equal(10, builder[0]);
