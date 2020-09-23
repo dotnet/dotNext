@@ -349,5 +349,14 @@ namespace DotNext.Runtime
             Intrinsics.GetElementReference(array, UIntPtr.Zero) = "44";
             Equal("44", array[0]);
         }
+
+        [Fact]
+        public static void CombineBits()
+        {
+            Equal(0, Intrinsics.ToInt32(false, false));
+            Equal(1, Intrinsics.ToInt32(true, false));
+            Equal(2, Intrinsics.ToInt32(false, true));
+            Equal(3, Intrinsics.ToInt32(true, true));
+        }
     }
 }

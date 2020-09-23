@@ -981,7 +981,7 @@ namespace DotNext.Runtime
         /// Converts two bits to 32-bit signed integer.
         /// </summary>
         /// <remarks>
-        /// The result is always in range [0..4].
+        /// The result is always in range [0..3].
         /// </remarks>
         /// <param name="low">Low bit value.</param>
         /// <param name="high">High bit value.</param>
@@ -992,7 +992,7 @@ namespace DotNext.Runtime
             Push(high);
             Ldc_I4_1();
             Emit.Shl();
-            Emit.And();
+            Emit.Or();
             return Return<int>();
         }
     }
