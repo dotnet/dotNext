@@ -81,14 +81,10 @@ namespace DotNext.Buffers
         {
             get
             {
-                Span<T> result;
-                if (copyOnOverflow)
-                    result = position <= initialBuffer.Length ? initialBuffer : extraBuffer.Memory.Span;
-                else if (extraBuffer.IsEmpty)
-                    result = initialBuffer;
-                else
+                if (!copyOnOverflow)
                     throw new NotSupportedException();
-
+                
+                var result = position <= initialBuffer.Length ? initialBuffer : extraBuffer.Memory.Span;
                 return result.Slice(0, position);
             }
         }

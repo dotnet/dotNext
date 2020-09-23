@@ -25,7 +25,6 @@ namespace DotNext.Buffers
 
             Equal(10, builder[0]);
             Equal(20, builder[1]);
-            Equal(new int[] { 10, 20 }, builder.WrittenSpan.ToArray());
 
             builder.Write(new int[] { 30, 40 });
             Equal(4, builder.WrittenCount);
