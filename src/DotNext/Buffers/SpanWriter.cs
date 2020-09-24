@@ -46,7 +46,7 @@ namespace DotNext.Buffers
         public readonly Span<T> WrittenSpan => span.Slice(0, position);
 
         /// <summary>
-        /// Gets the underlying span.
+        /// Gets underlying span.
         /// </summary>
         public readonly Span<T> Span => span;
 
@@ -86,7 +86,7 @@ namespace DotNext.Buffers
         /// <see langword="true"/> if item has beem placed successfully;
         /// <see langword="false"/> if remaining space in the underlying span is not enough to place the item.
         /// </returns>
-        public bool TryWrite(T item)
+        public bool TryAdd(T item)
         {
             var newLength = checked(position + 1);
             if (newLength > span.Length)
@@ -102,9 +102,9 @@ namespace DotNext.Buffers
         /// </summary>
         /// <param name="item">The item to place.</param>
         /// <exception cref="EndOfStreamException">Remaining space in the underlying span is not enough to place the item.</exception>
-        public void Write(T item)
+        public void Add(T item)
         {
-            if (!TryWrite(item))
+            if (!TryAdd(item))
                 throw new EndOfStreamException(ExceptionMessages.NotEnoughMemory);
         }
 
