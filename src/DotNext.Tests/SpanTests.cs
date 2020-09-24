@@ -168,6 +168,7 @@ namespace DotNext
         }
 
         [Fact]
+        [Obsolete("This test is for deprecated methods")]
         public static void ReadValues()
         {
             var ids = new TwoIDs { First = Guid.NewGuid(), Second = Guid.NewGuid() };
@@ -175,6 +176,23 @@ namespace DotNext
             Equal(ids.First, Span.Read<Guid>(ref span));
             Equal(ids.Second, Span.Read<Guid>(ref span));
             True(span.IsEmpty);
+        }
+
+        [Fact]
+        [Obsolete("This test is for deprecated methods")]
+        public static void WriteValues()
+        {
+            var ids = new TwoIDs();
+            var span = Span.AsBytes(ref ids);
+            
+            var g1 = Guid.NewGuid();
+            var g2 = Guid.NewGuid();
+            Span.Write(in g1, ref span);
+            Span.Write(in g2, ref span);
+            True(span.IsEmpty);
+
+            Equal(g1, ids.First);
+            Equal(g2, ids.Second);
         }
 
         public static IEnumerable<object[]> TestAllocators()

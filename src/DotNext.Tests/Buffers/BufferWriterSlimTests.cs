@@ -8,57 +8,15 @@ using Xunit;
 namespace DotNext.Buffers
 {
     [ExcludeFromCodeCoverage]
-    public sealed class SpanBuilderTests : Test
+    public sealed class BufferWriterSlimTests : Test
     {
-        [Fact]
-        public static void FixedSizeBuilder()
-        {
-            using var builder = new SpanBuilder<int>(stackalloc int[4]);
-            Equal(0, builder.WrittenCount);
-            Equal(4, builder.Capacity);
-            Equal(4, builder.FreeCapacity);
-            False(builder.IsGrowable);
-
-            builder.Write(new int[] { 10, 20 });
-            Equal(2, builder.WrittenCount);
-            Equal(4, builder.Capacity);
-            Equal(2, builder.FreeCapacity);
-
-            Equal(new int[] { 10, 20 }, builder.WrittenSpan.ToArray());
-
-            builder.Add(30);
-            builder.Add(40);
-            Equal(4, builder.WrittenCount);
-            Equal(4, builder.Capacity);
-            Equal(0, builder.FreeCapacity);
-
-            Equal(new int[] { 10, 20, 30, 40 }, builder.WrittenSpan.ToArray());
-            
-            var exceptionThrown = false;
-            try
-            {
-                builder.Add(50);
-            }
-            catch (InsufficientMemoryException)
-            {
-                exceptionThrown = true;
-            }
-
-            True(exceptionThrown);
-
-            Span<int> result = stackalloc int[4];
-            builder.CopyTo(result);
-            Equal(new int[] { 10, 20, 30, 40 }, result.ToArray());
-        }
-
         [Fact]
         public static void GrowableBuffer()
         {
-            using var builder = new SpanBuilder<int>(stackalloc int[2], false);
+            using var builder = new BufferWriterSlim<int>(stackalloc int[2], false);
             Equal(0, builder.WrittenCount);
             Equal(2, builder.Capacity);
             Equal(2, builder.FreeCapacity);
-            True(builder.IsGrowable);
 
             builder.Write(new int[] { 10, 20 });
             Equal(2, builder.WrittenCount);
@@ -67,7 +25,6 @@ namespace DotNext.Buffers
 
             Equal(10, builder[0]);
             Equal(20, builder[1]);
-            Equal(new int[] { 10, 20 }, builder.WrittenSpan.ToArray());
 
             builder.Write(new int[] { 30, 40 });
             Equal(4, builder.WrittenCount);
@@ -114,11 +71,10 @@ namespace DotNext.Buffers
         [Fact]
         public static void GrowableCopyingBuffer()
         {
-            using var builder = new SpanBuilder<int>(stackalloc int[2], true);
+            using var builder = new BufferWriterSlim<int>(stackalloc int[2], true);
             Equal(0, builder.WrittenCount);
             Equal(2, builder.Capacity);
             Equal(2, builder.FreeCapacity);
-            True(builder.IsGrowable);
 
             builder.Write(new int[] { 10, 20 });
             Equal(2, builder.WrittenCount);
@@ -161,40 +117,18 @@ namespace DotNext.Buffers
         [Fact]
         public static void EmptyBuilder()
         {
-            using var builder = new SpanBuilder<int>();
+            using var builder = new BufferWriterSlim<int>();
             Equal(0, builder.Capacity);
-            False(builder.IsGrowable);
-
-            var exceptionThrown = false;
-            try
-            {
-                builder.Add(10);
-            }
-            catch (InsufficientMemoryException)
-            {
-                exceptionThrown = true;
-            }
-
-            True(exceptionThrown);
-
-            exceptionThrown = false;
-            try
-            {
-                Equal(10, builder[0]);
-            }
-            catch (ArgumentOutOfRangeException)
-            {
-                exceptionThrown = true;
-            }
-
-            True(exceptionThrown);
+            builder.Add(10);
+            Equal(1, builder.WrittenCount);
+            Equal(10, builder[0]);
         }
 
         [Fact]
         public static void DrainToStream()
         {
             var expected = new byte[] { 10, 20, 30, 40, 50, 60, 70, 80 };
-            var builder = new SpanBuilder<byte>(stackalloc byte[8]);
+            using var builder = new BufferWriterSlim<byte>(stackalloc byte[8], false);
             builder.Write(expected);
 
             using var ms = new MemoryStream(8);
@@ -207,7 +141,7 @@ namespace DotNext.Buffers
         public static void DrainToBuffer()
         {
             var expected = new byte[] { 10, 20, 30, 40, 50, 60, 70, 80 };
-            var builder = new SpanBuilder<byte>(stackalloc byte[8]);
+            using var builder = new BufferWriterSlim<byte>(stackalloc byte[8], false);
             builder.Write(expected);
 
             var writer = new ArrayBufferWriter<byte>();
@@ -220,7 +154,7 @@ namespace DotNext.Buffers
         public static void DrainToStringBuilder()
         {
             const string expected = "Hello, world!";
-            var builder = new SpanBuilder<char>(stackalloc char[2], true);
+            using var builder = new BufferWriterSlim<char>(stackalloc char[2], true);
             builder.Write(expected);
 
             var sb = new StringBuilder();
@@ -233,13 +167,26 @@ namespace DotNext.Buffers
         public static void DrainToWriter()
         {
             const string expected = "Hello, world!";
-            var builder = new SpanBuilder<char>(stackalloc char[2], false, MemoryPool<char>.Shared.ToAllocator());
+            using var builder = new BufferWriterSlim<char>(stackalloc char[2], false, MemoryPool<char>.Shared.ToAllocator());
             builder.Write(expected);
 
             var sb = new StringWriter();
             builder.CopyTo(sb);
 
             Equal(expected, sb.ToString());
+        }
+
+        [Fact]
+        public static void DrainToSpanWriter()
+        {
+            var expected = new byte[] { 1, 2, 3, 4 };
+            using var builder = new BufferWriterSlim<byte>(stackalloc byte[4], false);
+            builder.Write(expected);
+
+            var writer = new SpanWriter<byte>(stackalloc byte[4]);
+            builder.CopyTo(ref writer);
+            Equal(expected, writer.Span.ToArray());
+            Equal(expected, writer.WrittenSpan.ToArray());
         }
     }
 }

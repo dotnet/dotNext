@@ -6,6 +6,8 @@ using System.Runtime.Serialization;
 
 namespace DotNext.Net.Cluster
 {
+    using Buffers;
+
     /// <summary>
     /// Represents unique identifier of cluster member.
     /// </summary>
@@ -47,10 +49,11 @@ namespace DotNext.Net.Cluster
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="bytes"/> is too small.</exception>
         public ClusterMemberId(ReadOnlySpan<byte> bytes)
         {
-            address = Span.Read<Guid>(ref bytes);
-            port = Span.Read<int>(ref bytes);
-            length = Span.Read<int>(ref bytes);
-            family = Span.Read<int>(ref bytes);
+            var reader = new SpanReader<byte>(bytes);
+            address = reader.Read<Guid>();
+            port = reader.Read<int>();
+            length = reader.Read<int>();
+            family = reader.Read<int>();
         }
 
         /// <summary>

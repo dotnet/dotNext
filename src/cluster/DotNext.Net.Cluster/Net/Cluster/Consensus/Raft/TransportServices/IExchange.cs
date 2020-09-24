@@ -6,6 +6,8 @@ using static System.Buffers.Binary.BinaryPrimitives;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
+    using Buffers;
+
     /// <summary>
     /// Represents network exchange between local and remote peer.
     /// </summary>
@@ -43,9 +45,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         internal static int WriteResult(in Result<bool> result, Span<byte> output)
         {
-            WriteInt64LittleEndian(output, result.Term);
-            output[sizeof(long)] = result.Value.ToByte();
-            return sizeof(long) + 1;
+            var writer = new SpanWriter<byte>(output);
+
+            WriteInt64LittleEndian(writer.Slide(sizeof(long)), result.Term);
+            writer.Add(result.Value.ToByte());
+
+            return writer.WrittenCount;
         }
 
         internal static Result<bool> ReadResult(ReadOnlySpan<byte> input)

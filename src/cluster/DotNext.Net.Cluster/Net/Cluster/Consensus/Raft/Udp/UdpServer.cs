@@ -65,8 +65,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             ReadOnlyMemory<byte> datagram = args.MemoryBuffer.Slice(0, args.BytesTransferred);
 
             // dispatch datagram to appropriate exchange
-            var correlationId = new CorrelationId(ref datagram);
-            var headers = new PacketHeaders(ref datagram);
+            var correlationId = new CorrelationId(datagram.Span, out var consumedBytes);
+            datagram = datagram.Slice(consumedBytes);
+
+            var headers = new PacketHeaders(datagram, out consumedBytes);
+            datagram = datagram.Slice(consumedBytes);
+
             request_channel:
             if (!channels.TryGetValue(correlationId, out var channel))
             {

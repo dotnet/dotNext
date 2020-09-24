@@ -13,10 +13,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         internal ControlOctet(MessageType type, FlowControl control)
             => value = (byte)((int)type | (int)control);
 
-        internal ControlOctet(ref ReadOnlyMemory<byte> input)
+        internal ControlOctet(ReadOnlyMemory<byte> input, out int consumedBytes)
         {
             value = input.Span[0];
-            input = input.Slice(sizeof(byte));
+            consumedBytes = sizeof(byte);
         }
 
         internal void WriteTo(ref Memory<byte> output)

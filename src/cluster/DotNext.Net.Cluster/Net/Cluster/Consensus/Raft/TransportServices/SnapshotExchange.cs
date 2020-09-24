@@ -8,12 +8,12 @@ using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
+    using Buffers;
     using static IO.DataTransferObject;
     using static IO.Pipelines.PipeExtensions;
 
     internal sealed class SnapshotExchange : ClientExchange<Result<bool>>, IAsyncDisposable
     {
-        private static readonly int AnnouncementSize = sizeof(ushort) + sizeof(long) + sizeof(long) + sizeof(long) + sizeof(long) + Unsafe.SizeOf<DateTimeOffset>();
         private readonly Pipe pipe;
         private readonly long term, snapshotIndex;
         private readonly IRaftLogEntry snapshot;
@@ -29,45 +29,30 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         internal static int ParseAnnouncement(ReadOnlySpan<byte> input, out ushort remotePort, out long term, out long snapshotIndex, out long length, out long snapshotTerm, out DateTimeOffset timestamp)
         {
-            remotePort = ReadUInt16LittleEndian(input);
-            input = input.Slice(sizeof(ushort));
+            var reader = new SpanReader<byte>(input);
 
-            term = ReadInt64LittleEndian(input);
-            input = input.Slice(sizeof(long));
+            remotePort = ReadUInt16LittleEndian(reader.Read(sizeof(ushort)));
+            term = ReadInt64LittleEndian(reader.Read(sizeof(long)));
+            snapshotIndex = ReadInt64LittleEndian(reader.Read(sizeof(long)));
+            length = ReadInt64LittleEndian(reader.Read(sizeof(long)));
+            snapshotTerm = ReadInt64LittleEndian(reader.Read(sizeof(long)));
+            timestamp = reader.Read<DateTimeOffset>();
 
-            snapshotIndex = ReadInt64LittleEndian(input);
-            input = input.Slice(sizeof(long));
-
-            length = ReadInt64LittleEndian(input);
-            input = input.Slice(sizeof(long));
-
-            snapshotTerm = ReadInt64LittleEndian(input);
-            input = input.Slice(sizeof(long));
-
-            timestamp = Span.Read<DateTimeOffset>(ref input);
-            return AnnouncementSize;
+            return reader.ConsumedCount;
         }
 
         private int WriteAnnouncement(Span<byte> output)
         {
-            WriteUInt16LittleEndian(output, myPort);
-            output = output.Slice(sizeof(ushort));
+            var writer = new SpanWriter<byte>(output);
 
-            WriteInt64LittleEndian(output, term);
-            output = output.Slice(sizeof(long));
+            WriteUInt16LittleEndian(writer.Slide(sizeof(ushort)), myPort);
+            WriteInt64LittleEndian(writer.Slide(sizeof(long)), term);
+            WriteInt64LittleEndian(writer.Slide(sizeof(long)), snapshotIndex);
+            WriteInt64LittleEndian(writer.Slide(sizeof(long)), snapshot.Length.GetValueOrDefault(-1));
+            WriteInt64LittleEndian(writer.Slide(sizeof(long)), snapshot.Term);
+            writer.Write(snapshot.Timestamp);
 
-            WriteInt64LittleEndian(output, snapshotIndex);
-            output = output.Slice(sizeof(long));
-
-            WriteInt64LittleEndian(output, snapshot.Length.GetValueOrDefault(-1));
-            output = output.Slice(sizeof(long));
-
-            WriteInt64LittleEndian(output, snapshot.Term);
-            output = output.Slice(sizeof(long));
-
-            Span.Write(snapshot.Timestamp, ref output);
-
-            return AnnouncementSize;
+            return writer.WrittenCount;
         }
 
         private async Task WriteSnapshotAsync(CancellationToken token)

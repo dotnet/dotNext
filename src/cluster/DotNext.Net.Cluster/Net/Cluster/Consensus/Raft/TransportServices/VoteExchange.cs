@@ -5,6 +5,8 @@ using static System.Buffers.Binary.BinaryPrimitives;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
+    using Buffers;
+
     internal sealed class VoteExchange : ClientExchange
     {
         private readonly long lastLogIndex, lastLogTerm;
@@ -18,32 +20,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         internal static void Parse(ReadOnlySpan<byte> payload, out ushort remotePort, out long term, out long lastLogIndex, out long lastLogTerm)
         {
-            remotePort = ReadUInt16LittleEndian(payload);
-            payload = payload.Slice(sizeof(ushort));
+            var reader = new SpanReader<byte>(payload);
 
-            term = ReadInt64LittleEndian(payload);
-            payload = payload.Slice(sizeof(long));
-
-            lastLogIndex = ReadInt64LittleEndian(payload);
-            payload = payload.Slice(sizeof(long));
-
-            lastLogTerm = ReadInt64LittleEndian(payload);
+            remotePort = ReadUInt16LittleEndian(reader.Read(sizeof(ushort)));
+            term = ReadInt64LittleEndian(reader.Read(sizeof(long)));
+            lastLogIndex = ReadInt64LittleEndian(reader.Read(sizeof(long)));
+            lastLogTerm = ReadInt64LittleEndian(reader.Read(sizeof(long)));
         }
 
         private int CreateOutboundMessage(Span<byte> payload)
         {
-            WriteUInt16LittleEndian(payload, myPort);
-            payload = payload.Slice(sizeof(ushort));
+            var writer = new SpanWriter<byte>(payload);
 
-            WriteInt64LittleEndian(payload, currentTerm);
-            payload = payload.Slice(sizeof(long));
+            WriteUInt16LittleEndian(writer.Slide(sizeof(ushort)), myPort);
+            WriteInt64LittleEndian(writer.Slide(sizeof(long)), currentTerm);
+            WriteInt64LittleEndian(writer.Slide(sizeof(long)), lastLogIndex);
+            WriteInt64LittleEndian(writer.Slide(sizeof(long)), lastLogTerm);
 
-            WriteInt64LittleEndian(payload, lastLogIndex);
-            payload = payload.Slice(sizeof(long));
-
-            WriteInt64LittleEndian(payload, lastLogTerm);
-
-            return sizeof(ushort) + sizeof(long) + sizeof(long) + sizeof(long);
+            return writer.WrittenCount;
         }
 
         public override ValueTask<(PacketHeaders, int, bool)> CreateOutboundMessageAsync(Memory<byte> payload, CancellationToken token)
