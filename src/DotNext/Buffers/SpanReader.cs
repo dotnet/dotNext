@@ -12,6 +12,7 @@ namespace DotNext.Buffers
     [StructLayout(LayoutKind.Auto)]
     public ref struct SpanReader<T>
     {
+        // TODO: Support of BinaryPrimitives should be added using function pointers in C# 9
         private readonly ReadOnlySpan<T> span;
         private int position;
 

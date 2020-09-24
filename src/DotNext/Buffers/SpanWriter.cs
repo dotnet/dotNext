@@ -11,6 +11,7 @@ namespace DotNext.Buffers
     [StructLayout(LayoutKind.Auto)]
     public ref struct SpanWriter<T>
     {
+        // TODO: Support of BinaryPrimitives should be added using function pointers in C# 9
         private readonly Span<T> span;
         private int position;
 
