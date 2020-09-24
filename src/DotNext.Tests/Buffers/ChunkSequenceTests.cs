@@ -19,17 +19,19 @@ namespace DotNext.Buffers
         }
 
         [Fact]
+        [Obsolete("This is the test for deprecated method")]
         public static void AsReadOnlySequence()
         {
-            var sequence = "abcde".Split(2).ToReadOnlySequence();
+            var sequence = StringExtensions.Split("abcde", 2).ToReadOnlySequence();
             Equal(5, sequence.Length);
         }
 
         [Fact]
+        [Obsolete("This is the test for deprecated method")]
         public static void SequenceEnumeration()
         {
             var index = 0;
-            foreach (var segment in "abcde".Split(2))
+            foreach (var segment in StringExtensions.Split("abcde", 2))
                 switch (index++)
                 {
                     case 0:
@@ -54,9 +56,10 @@ namespace DotNext.Buffers
         }
 
         [Fact]
+        [Obsolete("This is the test for deprecated method")]
         public static void SplitMemory()
         {
-            var sequence = (ReadOnlySequence<char>)"abcde".Split(2);
+            var sequence = (ReadOnlySequence<char>)StringExtensions.Split("abcde", 2);
             False(sequence.IsSingleSegment);
             var index = 0;
             foreach (var segment in sequence)
@@ -107,7 +110,7 @@ namespace DotNext.Buffers
         [Fact]
         public static void Concatenation()
         {
-            Memory<byte> block1 = default, block2 = default;
+            ReadOnlyMemory<byte> block1 = default, block2 = default;
             Equal(Array.Empty<byte>(), block1.Concat(block2).ToArray());
 
             block1 = new byte[] {1, 2};
@@ -124,7 +127,7 @@ namespace DotNext.Buffers
         [Fact]
         public static void Concatenation2()
         {
-            Memory<byte> block1 = default, block2 = default;
+            ReadOnlyMemory<byte> block1 = default, block2 = default;
             Equal(Array.Empty<byte>(), new[] {block1, block2}.ToReadOnlySequence().ToArray());
 
             block1 = new byte[] {1, 2};
