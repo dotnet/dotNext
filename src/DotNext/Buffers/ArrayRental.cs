@@ -15,7 +15,7 @@ namespace DotNext.Buffers
     {
         private readonly ArrayPool<T>? pool;
         private readonly T[] array;
-        private readonly bool clearArray;
+        private readonly bool clearArray;   // TODO: Remove this field in the next major version
 
         /// <summary>
         /// Obtains a new array from array pool.
