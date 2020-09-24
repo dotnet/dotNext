@@ -146,3 +146,29 @@ using (FileBufferingWriter.ReadOnlySequenceSource source = writer.GetWrittenCont
     ReadOnlySequence<byte> memory = source.Sequence;
 }
 ```
+
+# Encoding/decoding Contiguous Memory
+[Span&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.span-1) and [ReadOnlySpan&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.readonlyspan-1) are powerful data types for working with contiguous memory blocks. Random access to memory elements is perfectly supported by their public methods. However, there a lot of cases when sequential access to memory elements required. For instance, the frame of network protocol passed over the wire can be represented as span. Parsing or writing the frame is sequential operation. To cover such use cases, .NEXT exposes simple but powerful types aimed to simplify sequential access to span contents:
+* [SpanReader&lt;T&gt;](../../api/DotNext.Buffers.SpanReader-1.yml) provides sequential reading of elements from the memory
+* [SpanWriter&lt;T&gt;](../../api/DotNext.Buffers.SpanWriter-1.yml) provides sequential writing of elements to the memory
+
+The following example demonstrates how to encode and decode values to/from the stack-allocated memory:
+```csharp
+using DotNext.Buffers;
+using System;
+using static System.Runtime.InteropServices.MemoryMarshal;
+
+Span<byte> memory = stackalloc byte[32];
+
+// encodes int32, int64 and Guid values to stack-allocated memory
+var writer = new SpanWriter<byte>(memory);
+WriteInt32LittleEndian(writer.Slide(sizeof(int)), 42);
+WriteInt64LittleEndian(writer.Slide(sizeof(long)), 42L);
+writer.Write<Guid>(Guid.NewGuid());
+
+// decodes int32, int64 and Guid values from stack-allocated memory
+var reader = new SpanReader<byte>(memory);
+var i32 = ReadInt32LittleEndian(reader.Read(sizeof(int)));
+var i64 = ReadInt64LittleEndian(reader.Read(sizeof(long)));
+var g = reader.Read<Guid>();
+```
