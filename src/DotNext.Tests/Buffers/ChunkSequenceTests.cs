@@ -12,6 +12,7 @@ namespace DotNext.Buffers
     public sealed class ChunkSequenceTests : Test
     {
         [Fact]
+        [Obsolete("This is the test for deprecated data type")]
         public static void EmptySequence()
         {
             var sequence = default(ChunkSequence<char>);
