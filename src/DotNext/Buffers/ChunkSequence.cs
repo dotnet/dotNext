@@ -223,7 +223,8 @@ namespace DotNext.Buffers
         /// <param name="output">The output stream.</param>
         /// <param name="token">The token that can be used to cancel execution of this method.</param>
         /// <returns>The task representing asynchronouos execution of this method.</returns>
-        public static async ValueTask CopyToAsync(this ChunkSequence<byte> sequence, Stream output, CancellationToken token = default)
+        [Obsolete("Use ReadOnlySequence<T> value type instead", true)]
+        public static async ValueTask CopyToAsync(ChunkSequence<byte> sequence, Stream output, CancellationToken token = default)
         {
             foreach (var segment in sequence)
             {
@@ -239,7 +240,8 @@ namespace DotNext.Buffers
         /// <param name="output">The text writer.</param>
         /// <param name="token">The token that can be used to cancel execution of this method.</param>
         /// <returns>The task representing asynchronouos execution of this method.</returns>
-        public static async ValueTask CopyToAsync(this ChunkSequence<char> sequence, TextWriter output, CancellationToken token = default)
+        [Obsolete("Use ReadOnlySequence<T> value type instead", true)]
+        public static async ValueTask CopyToAsync(ChunkSequence<char> sequence, TextWriter output, CancellationToken token = default)
         {
             foreach (var segment in sequence)
             {
