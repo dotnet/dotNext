@@ -12,14 +12,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         private readonly ControlOctet control;
 
         internal PacketHeaders(MessageType type, FlowControl control)
-        {
-            this.control = new ControlOctet(type, control);
-        }
+            => this.control = new ControlOctet(type, control);
 
-        internal PacketHeaders(ref ReadOnlyMemory<byte> header)
-        {
-            control = new ControlOctet(ref header);
-        }
+        internal PacketHeaders(ReadOnlyMemory<byte> header, out int consumedBytes)
+            => control = new ControlOctet(header, out consumedBytes);
 
         internal void WriteTo(Memory<byte> output)
         {

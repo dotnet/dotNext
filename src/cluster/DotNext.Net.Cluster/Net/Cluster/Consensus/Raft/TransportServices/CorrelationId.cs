@@ -30,7 +30,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             StreamId = streamId;
         }
 
-        private CorrelationId(ReadOnlySpan<byte> bytes, out int consumedBytes)
+        internal CorrelationId(ReadOnlySpan<byte> bytes, out int consumedBytes)
         {
             var reader = new SpanReader<byte>(bytes);
 
@@ -39,10 +39,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
             consumedBytes = reader.ConsumedCount;
         }
-
-        internal CorrelationId(ref ReadOnlyMemory<byte> bytes)
-            : this(bytes.Span, out var count)
-            => bytes = bytes.Slice(count);
 
         internal void WriteTo(Span<byte> output)
         {
