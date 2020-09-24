@@ -128,7 +128,7 @@ namespace DotNext.Buffers
         public static void DrainToStream()
         {
             var expected = new byte[] { 10, 20, 30, 40, 50, 60, 70, 80 };
-            var builder = new BufferWriterSlim<byte>(stackalloc byte[8], false);
+            using var builder = new BufferWriterSlim<byte>(stackalloc byte[8], false);
             builder.Write(expected);
 
             using var ms = new MemoryStream(8);
@@ -141,7 +141,7 @@ namespace DotNext.Buffers
         public static void DrainToBuffer()
         {
             var expected = new byte[] { 10, 20, 30, 40, 50, 60, 70, 80 };
-            var builder = new BufferWriterSlim<byte>(stackalloc byte[8], false);
+            using var builder = new BufferWriterSlim<byte>(stackalloc byte[8], false);
             builder.Write(expected);
 
             var writer = new ArrayBufferWriter<byte>();
@@ -154,7 +154,7 @@ namespace DotNext.Buffers
         public static void DrainToStringBuilder()
         {
             const string expected = "Hello, world!";
-            var builder = new BufferWriterSlim<char>(stackalloc char[2], true);
+            using var builder = new BufferWriterSlim<char>(stackalloc char[2], true);
             builder.Write(expected);
 
             var sb = new StringBuilder();
@@ -167,13 +167,26 @@ namespace DotNext.Buffers
         public static void DrainToWriter()
         {
             const string expected = "Hello, world!";
-            var builder = new BufferWriterSlim<char>(stackalloc char[2], false, MemoryPool<char>.Shared.ToAllocator());
+            using var builder = new BufferWriterSlim<char>(stackalloc char[2], false, MemoryPool<char>.Shared.ToAllocator());
             builder.Write(expected);
 
             var sb = new StringWriter();
             builder.CopyTo(sb);
 
             Equal(expected, sb.ToString());
+        }
+
+        [Fact]
+        public static void DrainToSpanWriter()
+        {
+            var expected = new byte[] { 1, 2, 3, 4 };
+            using var builder = new BufferWriterSlim<byte>(stackalloc byte[4], false);
+            builder.Write(expected);
+
+            var writer = new SpanWriter<byte>(stackalloc byte[4]);
+            builder.CopyTo(ref writer);
+            Equal(expected, writer.Span.ToArray());
+            Equal(expected, writer.WrittenSpan.ToArray());
         }
     }
 }
