@@ -59,12 +59,10 @@ namespace DotNext.Buffers
         /// </returns>
         public bool TryWrite(ReadOnlySpan<T> input)
         {
-            var newLength = checked(position + input.Length);
-            if (newLength > span.Length)
+            if (!input.TryCopyTo(span.Slice(position)))
                 return false;
 
-            input.CopyTo(span.Slice(position));
-            position = newLength;
+            position = position + input.Length;
             return true;
         }
 
