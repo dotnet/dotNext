@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Diagnostics.Debug;
+using static System.Linq.Enumerable;
 
 namespace DotNext.Buffers
 {
@@ -146,20 +147,9 @@ namespace DotNext.Buffers
         [Obsolete("Use ToReadOnlySequence method with ReadOnlyMemory<T> parameters", true)]
         public static ReadOnlySequence<T> ToReadOnlySequence<T>(IEnumerable<Memory<T>> chunks)
         {
-            Chunk<T>? head = null, tail = null;
-            foreach (var segment in chunks)
-            {
-                if (!segment.IsEmpty)
-                    Chunk<T>.AddChunk(segment, ref head, ref tail);
-            }
+            return ToReadOnlySequence(chunks.Select(Cast));
 
-            if (head is null || tail is null)
-                return ReadOnlySequence<T>.Empty;
-
-            if (ReferenceEquals(head, tail))
-                return new ReadOnlySequence<T>(head.Memory);
-
-            return Chunk<T>.CreateSequence(head, tail);
+            static ReadOnlyMemory<T> Cast(Memory<T> memory) => memory;
         }
 
         /// <summary>
