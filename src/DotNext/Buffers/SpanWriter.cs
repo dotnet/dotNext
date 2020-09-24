@@ -1,10 +1,13 @@
 using System;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers
 {
     /// <summary>
     /// Represents simple memory writer backed by <see cref="Span{T}"/>
     /// </summary>
+    /// <typeparam name="T">The type of elements in the span.</typeparam>
+    [StructLayout(LayoutKind.Auto)]
     public ref struct SpanWriter<T>
     {
         private readonly Span<T> span;
@@ -29,6 +32,11 @@ namespace DotNext.Buffers
         /// Gets the number of occupied elements in the underlying span.
         /// </summary>
         public readonly int WrittenCount => position;
+
+        /// <summary>
+        /// Sets writer position to the first element.
+        /// </summary>
+        public void Reset() => position = 0;
 
         /// <summary>
         /// Gets the span over written elements.
