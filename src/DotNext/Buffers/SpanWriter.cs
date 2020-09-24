@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers
@@ -70,11 +71,11 @@ namespace DotNext.Buffers
         /// Copies the elements to the underlying span.
         /// </summary>
         /// <param name="input">The span of elements to be copied.</param>
-        /// <exception cref="InvalidOperationException">Remaining space in the underlying span is not enough to place all elements from <paramref name="input"/>.</exception>
+        /// <exception cref="EndOfStreamException">Remaining space in the underlying span is not enough to place all elements from <paramref name="input"/>.</exception>
         public void Write(ReadOnlySpan<T> input)
         {
             if (!TryWrite(input))
-                throw new InvalidOperationException(ExceptionMessages.NotEnoughMemory);
+                throw new EndOfStreamException(ExceptionMessages.NotEnoughMemory);
         }
 
         /// <summary>
@@ -100,11 +101,11 @@ namespace DotNext.Buffers
         /// Puts single element into the underlying span.
         /// </summary>
         /// <param name="item">The item to place.</param>
-        /// <exception cref="InvalidOperationException">Remaining space in the underlying span is not enough to place the item.</exception>
+        /// <exception cref="EndOfStreamException">Remaining space in the underlying span is not enough to place the item.</exception>
         public void Write(T item)
         {
             if (!TryWrite(item))
-                throw new InvalidOperationException(ExceptionMessages.NotEnoughMemory);
+                throw new EndOfStreamException(ExceptionMessages.NotEnoughMemory);
         }
 
         /// <summary>
@@ -116,8 +117,12 @@ namespace DotNext.Buffers
         /// <see langword="true"/> if segment is obtained successfully;
         /// <see langword="false"/> if remaining space in the underlying span is not enough to place <paramref name="count"/> elements.
         /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is negative.</exception>
         public bool TrySlide(int count, out Span<T> segment)
         {
+            if (count < 0)
+                throw new ArgumentOutOfRangeException(nameof(count));
+
             var newLength = checked(position + count);
             if (newLength <= span.Length)
             {
@@ -135,8 +140,8 @@ namespace DotNext.Buffers
         /// </summary>
         /// <param name="count">The size of the segment.</param>
         /// <returns>The portion of the underlying span.</returns>
-        /// <exception cref="InvalidOperationException">Remaining space in the underlying span is not enough to place <paramref name="count"/> elements.</exception>
+        /// <exception cref="EndOfStreamException">Remaining space in the underlying span is not enough to place <paramref name="count"/> elements.</exception>
         public Span<T> Slide(int count)
-            => TrySlide(count, out var result) ? result : throw new InvalidOperationException(ExceptionMessages.NotEnoughMemory);
+            => TrySlide(count, out var result) ? result : throw new EndOfStreamException(ExceptionMessages.NotEnoughMemory);
     }
 }
