@@ -471,6 +471,7 @@ namespace DotNext
         /// <typeparam name="T">The blittable type.</typeparam>
         /// <returns>The deserialized value.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="bytes"/> is smaller than <typeparamref name="T"/>.</exception>
+        [Obsolete("Use SpanReader<T> type instead")]
         public static unsafe T Read<T>(ref ReadOnlySpan<byte> bytes)
             where T : unmanaged
         {
@@ -486,6 +487,7 @@ namespace DotNext
         /// <param name="output">The block of memory.</param>
         /// <typeparam name="T">The blittable type.</typeparam>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="output"/> is smaller than <typeparamref name="T"/>.</exception>
+        [Obsolete("Use SpanWriter<T> type instead")]
         public static unsafe void Write<T>(in T value, ref Span<byte> output)
             where T : unmanaged
         {
