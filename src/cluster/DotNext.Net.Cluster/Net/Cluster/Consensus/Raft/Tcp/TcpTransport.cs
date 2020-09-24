@@ -38,7 +38,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             private static void ReadPrologue(ReadOnlyMemory<byte> prologue, out PacketHeaders headers, out int count)
             {
                 headers = new PacketHeaders(ref prologue);
-                count = ReadInt32LittleEndian(prologue.Span);
+                count = (prologue.Span);
             }
 
             private protected async ValueTask<(PacketHeaders Headers, ReadOnlyMemory<byte> Payload)> ReadPacket(Memory<byte> buffer, CancellationToken token)

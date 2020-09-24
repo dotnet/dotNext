@@ -248,7 +248,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 (headers, bytesWritten, waitForInput) = await channel.Exchange.CreateOutboundMessageAsync(AdjustToPayload(bufferHolder.Memory), channel.Token).ConfigureAwait(false);
 
                 // write correlation ID and headers
-                id.WriteTo(bufferHolder.Memory);
+                id.WriteTo(bufferHolder.Memory.Span);
                 headers.WriteTo(bufferHolder.Memory.Slice(CorrelationId.NaturalSize));
                 await SendToAsync(AdjustPacket(bufferHolder.Memory, bytesWritten), endpoint).ConfigureAwait(false);
             }
