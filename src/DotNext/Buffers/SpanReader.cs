@@ -140,7 +140,7 @@ namespace DotNext.Buffers
         /// <typeparam name="T">The blittable type.</typeparam>
         /// <returns>
         /// <see langword="true"/> if memory block contains enough amount of unread bytes to decode the value;
-        /// otherwise, <see langword="false"/>
+        /// otherwise, <see langword="false"/>.
         /// </returns>
         public static unsafe bool TryRead<T>(this ref SpanReader<byte> reader, out T result)
             where T : unmanaged
