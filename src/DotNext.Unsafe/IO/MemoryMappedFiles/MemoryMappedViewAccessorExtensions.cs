@@ -8,7 +8,7 @@ namespace DotNext.IO.MemoryMappedFiles
     internal static class MemoryMappedViewAccessorExtensions
     {
         internal static FileAccess GetFileAccess(this MemoryMappedViewAccessor accessor)
-            => (Intrinsics.ToInt32(accessor.CanRead, accessor.CanWrite)) switch
+            => Intrinsics.ToInt32(accessor.CanRead, accessor.CanWrite) switch
             {
                 1 => FileAccess.Read,
                 2 => FileAccess.Write,

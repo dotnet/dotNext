@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 namespace DotNext.Buffers
 {
     /// <summary>
-    /// Represents simple memory writer backed by <see cref="Span{T}"/>
+    /// Represents simple memory writer backed by <see cref="Span{T}"/>.
     /// </summary>
     /// <typeparam name="T">The type of elements in the span.</typeparam>
     [StructLayout(LayoutKind.Auto)]
@@ -53,7 +53,7 @@ namespace DotNext.Buffers
         /// <summary>
         /// Copies the elements to the underlying span.
         /// </summary>
-        /// <param name="input"></param>
+        /// <param name="input">The span to copy from.</param>
         /// <returns>
         /// <see langword="true"/> if all elements are copied successfully;
         /// <see langword="false"/> if remaining space in the underlying span is not enough to place all elements from <paramref name="input"/>.
@@ -70,7 +70,7 @@ namespace DotNext.Buffers
         /// <summary>
         /// Copies the elements to the underlying span.
         /// </summary>
-        /// <param name="input">The span of elements to be copied.</param>
+        /// <param name="input">The span of elements to copy from.</param>
         /// <exception cref="EndOfStreamException">Remaining space in the underlying span is not enough to place all elements from <paramref name="input"/>.</exception>
         public void Write(ReadOnlySpan<T> input)
         {
