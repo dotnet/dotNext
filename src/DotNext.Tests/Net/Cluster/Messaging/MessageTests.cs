@@ -1,5 +1,4 @@
-﻿using System.Buffers;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Pipelines;
 using System.Text;
@@ -9,7 +8,6 @@ using Xunit;
 
 namespace DotNext.Net.Cluster.Messaging
 {
-    using Buffers;
     using IO;
 
     [ExcludeFromCodeCoverage]
@@ -59,7 +57,7 @@ namespace DotNext.Net.Cluster.Messaging
         {
             var pipe = new Pipe();
             var bytes = Encoding.UTF8.GetBytes("abcde");
-            IMessage message = new BinaryMessage((ReadOnlySequence<byte>)new ChunkSequence<byte>(bytes, 2), "msg");
+            IMessage message = new BinaryMessage(ToReadOnlySequence<byte>(bytes, 2), "msg");
             ThreadPool.QueueUserWorkItem(async state =>
             {
                 await message.WriteToAsync(pipe.Writer).ConfigureAwait(false);

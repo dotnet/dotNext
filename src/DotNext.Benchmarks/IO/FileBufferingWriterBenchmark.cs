@@ -25,25 +25,18 @@ namespace DotNext.IO
 
         private IEnumerable<ReadOnlyMemory<byte>> GetChunks()
         {
-            var segment = new ReadOnlyMemory<byte>(content);
-            var offset = 0;
             const int chunkSize = 1024;
 
-            while (!segment.IsEmpty)
-            {
-                if (segment.Length > chunkSize)
-                {
-                    yield return segment.Slice(0, chunkSize);
-                    offset += chunkSize;
-                }
-                else
-                {
-                    yield return segment;
-                    offset += segment.Length;
-                }
+            var startIndex = 0;
+            var length = Math.Min(chunkSize, content.Length);
 
-                segment = segment.Slice(offset);
+            do
+            {
+                yield return content.AsMemory(startIndex, length);
+                startIndex += chunkSize;
+                length = Math.Min(content.Length - startIndex, chunkSize);
             }
+            while (startIndex < content.Length);
         }
 
         [Benchmark]

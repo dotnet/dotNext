@@ -15,12 +15,14 @@ namespace DotNext.Buffers
     /// </summary>
     /// <typeparam name="T">The type of elements stored in contiguous memory.</typeparam>
     [StructLayout(LayoutKind.Auto)]
+    [Obsolete("Use ReadOnlySequence<T> data type instead")]
     public readonly struct ChunkSequence<T> : IEnumerable<ReadOnlyMemory<T>>
     {
         /// <summary>
         /// Represents enumerator of memory chunks.
         /// </summary>
         [StructLayout(LayoutKind.Auto)]
+        [Obsolete("Use ReadOnlySequence<T> data type instead")]
         public struct Enumerator : IEnumerator<ReadOnlyMemory<T>>
         {
             private readonly ReadOnlyMemory<T> source;
