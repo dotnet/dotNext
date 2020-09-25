@@ -42,6 +42,11 @@ namespace DotNext.Buffers
         public readonly ReadOnlySpan<T> Span => span;
 
         /// <summary>
+        /// Gets the span over consumed elements.
+        /// </summary>
+        public readonly ReadOnlySpan<T> ConsumedSpan => span.Slice(0, position);
+
+        /// <summary>
         /// Sets reader position to the first element.
         /// </summary>
         public void Reset() => position = 0;

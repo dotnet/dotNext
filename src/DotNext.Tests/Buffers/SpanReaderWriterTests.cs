@@ -54,11 +54,13 @@ namespace DotNext.Buffers
             var reader = new SpanReader<byte>(writer.Span);
             Equal(3, reader.RemainingCount);
             Equal(0, reader.ConsumedCount);
+            True(reader.ConsumedSpan.IsEmpty);
 
             Equal(10, reader.Read());
             Equal(2, reader.RemainingCount);
             Equal(1, reader.ConsumedCount);
 
+            Equal(new byte[] { 10 }, reader.ConsumedSpan.ToArray());
             Equal(new byte[] { 20, 30 }, reader.Read(2).ToArray());
 
             var exceptionThrown = false;
