@@ -69,11 +69,14 @@ namespace DotNext.Reflection
         }
 
         [Fact]
-        public static void IsImmutable()
+        public static unsafe void IsImmutable()
         {
             True(typeof(ReadOnlySpan<int>).IsImmutable());
             False(typeof(Guid).IsImmutable());
             True(typeof(long).IsImmutable());
+            True(typeof(void*).IsImmutable());
+            True(typeof(void).MakeByRefType().IsImmutable());
+            True(typeof(EnvironmentVariableTarget).IsImmutable());
         }
 
         [Fact]
