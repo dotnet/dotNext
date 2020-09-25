@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 #if DEBUG
 using System.Runtime.CompilerServices;
 
@@ -6,3 +7,4 @@ using System.Runtime.CompilerServices;
 #endif
 
 [assembly: CLSCompliant(true)]
+[assembly: ComVisible(false)]
