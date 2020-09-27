@@ -27,6 +27,12 @@ namespace DotNext.Buffers
         }
 
         /// <summary>
+        /// Gets the element at the current position in the
+        /// underlying memory block.
+        /// </summary>
+        public readonly ref readonly T Current => ref span[position];
+
+        /// <summary>
         /// Gets the number of consumed elements.
         /// </summary>
         public readonly int ConsumedCount => position;

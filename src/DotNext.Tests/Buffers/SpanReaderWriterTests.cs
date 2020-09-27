@@ -14,10 +14,12 @@ namespace DotNext.Buffers
             var writer = new SpanWriter<int>(stackalloc int[5]);
             Equal(0, writer.WrittenCount);
             Equal(5, writer.FreeCapacity);
+            ref int current = ref writer.Current;
             
             writer.Add(10);
             Equal(1, writer.WrittenCount);
             Equal(4, writer.FreeCapacity);
+            Equal(10, current);
             
             var segment = writer.Slide(4);
             segment[0] = 20;
@@ -55,8 +57,10 @@ namespace DotNext.Buffers
             Equal(3, reader.RemainingCount);
             Equal(0, reader.ConsumedCount);
             True(reader.ConsumedSpan.IsEmpty);
+            Equal(10, reader.Current);
 
             Equal(10, reader.Read());
+            Equal(20, reader.Current);
             Equal(2, reader.RemainingCount);
             Equal(1, reader.ConsumedCount);
 

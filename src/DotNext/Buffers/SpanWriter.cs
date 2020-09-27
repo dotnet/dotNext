@@ -26,6 +26,12 @@ namespace DotNext.Buffers
         }
 
         /// <summary>
+        /// Gets the element at the current position in the
+        /// underlying memory block.
+        /// </summary>
+        public readonly ref T Current => ref span[position];
+
+        /// <summary>
         /// Gets the available space in the underlying span.
         /// </summary>
         public readonly int FreeCapacity => span.Length - position;
