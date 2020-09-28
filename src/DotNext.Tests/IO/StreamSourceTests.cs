@@ -20,8 +20,8 @@ namespace DotNext.IO
         public static IEnumerable<object[]> TestBuffers()
         {
             yield return new object[] { new ReadOnlySequence<byte>(data) };
-            yield return new object[] { new ChunkSequence<byte>(data, 2).ToReadOnlySequence() };
-            yield return new object[] { new ChunkSequence<byte>(data, 3).ToReadOnlySequence() };
+            yield return new object[] { ToReadOnlySequence<byte>(data, 2) };
+            yield return new object[] { ToReadOnlySequence<byte>(data, 3) };
         }
 
         [Theory]
@@ -54,7 +54,7 @@ namespace DotNext.IO
         public static void SeekAndCopy()
         {
             using var dest = new MemoryStream();
-            using var src = new ChunkSequence<byte>(data, 5).ToReadOnlySequence().AsStream();
+            using var src = ToReadOnlySequence<byte>(data, 5).AsStream();
             NotEqual(0L, src.Length);
             src.Position = data.Length;
 
@@ -78,7 +78,7 @@ namespace DotNext.IO
         public static void CopyAfterReuse()
         {
             var dest = new MemoryStream();
-            using var src = new ChunkSequence<byte>(data, 5).ToReadOnlySequence().AsStream();
+            using var src = ToReadOnlySequence<byte>(data, 5).AsStream();
 
             src.CopyTo(dest);
             Equal(data, dest.ToArray());
@@ -96,7 +96,7 @@ namespace DotNext.IO
         public static void SeekFromEnd()
         {
             using var dest = new MemoryStream();
-            using var src = new ChunkSequence<byte>(data, 5).ToReadOnlySequence().AsStream();
+            using var src = ToReadOnlySequence<byte>(data, 5).AsStream();
             Equal(data.Length - 1, src.Seek(-1L, SeekOrigin.End));
             src.CopyTo(dest);
             Equal(1L, dest.Length);
@@ -107,7 +107,7 @@ namespace DotNext.IO
         public static void SeekFromStart()
         {
             using var dest = new MemoryStream();
-            using var src = new ChunkSequence<byte>(data, 5).ToReadOnlySequence().AsStream();
+            using var src = ToReadOnlySequence<byte>(data, 5).AsStream();
             Equal(data.Length - 1, src.Seek(data.Length - 1, SeekOrigin.Begin));
             src.CopyTo(dest);
             Equal(1L, dest.Length);
@@ -118,7 +118,7 @@ namespace DotNext.IO
         public static void SeekFromCurrent()
         {
             using var dest = new MemoryStream();
-            using var src = new ChunkSequence<byte>(data, 5).ToReadOnlySequence().AsStream();
+            using var src = ToReadOnlySequence<byte>(data, 5).AsStream();
             src.Position = 1;
             Equal(data.Length - 1, src.Seek(data.Length - 2, SeekOrigin.Current));
             src.CopyTo(dest);
@@ -199,7 +199,7 @@ namespace DotNext.IO
         [Fact]
         public static void InvalidSeek()
         {
-            using var src = new ChunkSequence<byte>(data, 6).ToReadOnlySequence().AsStream();
+            using var src = ToReadOnlySequence<byte>(data, 6).AsStream();
             Throws<ArgumentOutOfRangeException>(() => src.Seek(500L, SeekOrigin.Begin));
             Throws<IOException>(() => src.Seek(-500L, SeekOrigin.End));
         }
@@ -212,7 +212,7 @@ namespace DotNext.IO
         [Fact]
         public static void ReadApm()
         {
-            using var src = new ChunkSequence<byte>(data, 5).ToReadOnlySequence().AsStream();
+            using var src = ToReadOnlySequence<byte>(data, 5).AsStream();
             var buffer = new byte[4];
             src.Position = 1;
             var ar = src.BeginRead(buffer, 0, 2, null, "state");
@@ -228,7 +228,7 @@ namespace DotNext.IO
         [Fact]
         public static async Task ReadApm2()
         {
-            using var src = new ChunkSequence<byte>(data, 5).ToReadOnlySequence().AsStream();
+            using var src = ToReadOnlySequence<byte>(data, 5).AsStream();
             var buffer = new byte[4];
             src.Position = 1;
             var checker = new CallbackChecker();
@@ -245,7 +245,7 @@ namespace DotNext.IO
         [Fact]
         public static void Truncation()
         {
-            using var src = new ChunkSequence<byte>(data, 5).ToReadOnlySequence().AsStream();
+            using var src = ToReadOnlySequence<byte>(data, 5).AsStream();
             src.Position = 1L;
             src.SetLength(data.Length - 2L);
             Equal(data.Length - 2L, src.Length);
@@ -281,7 +281,7 @@ namespace DotNext.IO
         [Fact]
         public static async Task WriteNotSupported2()
         {
-            using var src = new ChunkSequence<byte>(data, 5).ToReadOnlySequence().AsStream();
+            using var src = ToReadOnlySequence<byte>(data, 5).AsStream();
             True(src.CanRead);
             True(src.CanSeek);
             False(src.CanWrite);
@@ -329,7 +329,7 @@ namespace DotNext.IO
             {
                 formatter.Serialize(ms, dict);
                 ms.Position = 0L;
-                sequence = new ChunkSequence<byte>(ms.ToArray(), 10).ToReadOnlySequence();
+                sequence = ToReadOnlySequence<byte>(ms.ToArray(), 10);
             }
 
             using var stream = sequence.AsStream();

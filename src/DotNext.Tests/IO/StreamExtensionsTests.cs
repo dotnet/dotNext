@@ -396,7 +396,7 @@ namespace DotNext.IO
         public static void WriteSequence()
         {
             var content = new byte[] { 1, 5, 8, 9 };
-            var sequence = new ChunkSequence<byte>(content, 2).ToReadOnlySequence();
+            var sequence = ToReadOnlySequence<byte>(content, 2);
             using var ms = new MemoryStream();
             ms.Write(sequence);
             ms.Position = 0;

@@ -115,7 +115,7 @@ namespace DotNext.Runtime.CompilerServices
 
         private void InvokeOneImpl(TDelegate d)
         {
-            var errors = (Exception[])exceptions!;
+            var errors = (Exception?[])exceptions!;
             var currentIndex = index.IncrementAndGet();
             try
             {
@@ -142,7 +142,7 @@ namespace DotNext.Runtime.CompilerServices
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        private void Complete(Exception[]? errors)
+        private void Complete(Exception?[]? errors)
         {
             if (errors != null)
                 exceptions = new AggregateException(errors.SkipNulls());
@@ -166,7 +166,7 @@ namespace DotNext.Runtime.CompilerServices
                 var list = invocationList.GetInvocationList();
                 index = -1L;
                 totalCount = list.LongLength;
-                exceptions = new Exception[list.LongLength];
+                exceptions = new Exception?[list.LongLength];
                 Action<TDelegate> invoker = InvokeOneImpl;
                 foreach (TDelegate instance in list)
                     ThreadPool.QueueUserWorkItem(invoker, instance, false);

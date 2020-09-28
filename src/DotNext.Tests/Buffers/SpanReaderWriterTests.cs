@@ -14,10 +14,12 @@ namespace DotNext.Buffers
             var writer = new SpanWriter<int>(stackalloc int[5]);
             Equal(0, writer.WrittenCount);
             Equal(5, writer.FreeCapacity);
+            ref int current = ref writer.Current;
             
             writer.Add(10);
             Equal(1, writer.WrittenCount);
             Equal(4, writer.FreeCapacity);
+            Equal(10, current);
             
             var segment = writer.Slide(4);
             segment[0] = 20;
@@ -54,11 +56,15 @@ namespace DotNext.Buffers
             var reader = new SpanReader<byte>(writer.Span);
             Equal(3, reader.RemainingCount);
             Equal(0, reader.ConsumedCount);
+            True(reader.ConsumedSpan.IsEmpty);
+            Equal(10, reader.Current);
 
             Equal(10, reader.Read());
+            Equal(20, reader.Current);
             Equal(2, reader.RemainingCount);
             Equal(1, reader.ConsumedCount);
 
+            Equal(new byte[] { 10 }, reader.ConsumedSpan.ToArray());
             Equal(new byte[] { 20, 30 }, reader.Read(2).ToArray());
 
             var exceptionThrown = false;
@@ -96,6 +102,101 @@ namespace DotNext.Buffers
             reader.Reset();
             writer.Write(in expected);
             Equal(expected, reader.Read<Guid>());
+        }
+
+        [Fact]
+        public static void EmptyReader()
+        {
+            var reader = new SpanReader<byte>();
+            Equal(0, reader.RemainingCount);
+            Equal(0, reader.ConsumedCount);
+
+            var exceptionThrown = false;
+            try
+            {
+                reader.Current.ToString();
+            }
+            catch (InvalidOperationException)
+            {
+                exceptionThrown = true;
+            }
+
+            True(exceptionThrown);
+            False(reader.TryRead(new byte[1]));
+            False(reader.TryRead(1, out _));
+            False(reader.TryRead(out _));
+            False(reader.TryRead(out Guid value));
+
+            exceptionThrown = false;
+            try
+            {
+                reader.Read(new byte[1]);
+            }
+            catch (EndOfStreamException)
+            {
+                exceptionThrown = true;
+            }
+
+            True(exceptionThrown);
+            exceptionThrown = false;
+            try
+            {
+                reader.Read(10);
+            }
+            catch (EndOfStreamException)
+            {
+                exceptionThrown = true;
+            }
+
+            True(exceptionThrown);
+        }
+
+        [Fact]
+        public static void EmptyWriter()
+        {
+            var writer = new SpanWriter<byte>();
+            Equal(0, writer.WrittenCount);
+            Equal(0, writer.FreeCapacity);
+
+            var exceptionThrown = false;
+            try
+            {
+                writer.Current.ToString();
+            }
+            catch (InvalidOperationException)
+            {
+                exceptionThrown = true;
+            }
+
+            True(exceptionThrown);
+            False(writer.TryWrite(new byte[1]));
+            False(writer.TryWrite(1));
+            False(writer.TrySlide(2, out _));
+            False(writer.TryAdd(1));
+
+            exceptionThrown = false;
+            try
+            {
+                writer.Write(new byte[1]);
+            }
+            catch (EndOfStreamException)
+            {
+                exceptionThrown = true;
+            }
+
+            True(exceptionThrown);
+            exceptionThrown = false;
+
+            try
+            {
+                writer.Slide(2);
+            }
+            catch (EndOfStreamException)
+            {
+                exceptionThrown = true;
+            }
+
+            True(exceptionThrown);
         }
     }
 }

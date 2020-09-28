@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
@@ -5,17 +6,18 @@ using Xunit;
 
 namespace DotNext.IO
 {
+    using ChunkSequence = Buffers.ChunkSequence;
+
     [ExcludeFromCodeCoverage]
     public sealed class TextWriterExtensionsTests : Test
     {
         [Fact]
         public static async Task WriteSequence()
         {
-            const string value = "abcdefg";
-            var sequence = value.Split(3).ToReadOnlySequence();
+            var sequence = ChunkSequence.ToReadOnlySequence(new [] { "abc".AsMemory(), "def".AsMemory(), "g".AsMemory() });
             await using var writer = new StringWriter();
             await writer.WriteAsync(sequence);
-            Equal(value, writer.ToString());
+            Equal("abcdefg", writer.ToString());
         }
     }
 }

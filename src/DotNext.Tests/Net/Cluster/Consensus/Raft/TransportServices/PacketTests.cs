@@ -29,7 +29,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                     var headers = new PacketHeaders(type.Value, control.Value);
                     headers.WriteTo(buffer);
                     ReadOnlyMemory<byte> readOnlyView = buffer;
-                    headers = new PacketHeaders(ref readOnlyView);
+                    headers = new PacketHeaders(readOnlyView, out _);
                     Equal(type.Value, headers.Type);
                     Equal(control.Value, headers.Control);
                 }

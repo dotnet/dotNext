@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers
@@ -27,6 +28,22 @@ namespace DotNext.Buffers
         }
 
         /// <summary>
+        /// Gets the element at the current position in the
+        /// underlying memory block.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">The position of this reader is out of range.</exception>
+        public readonly ref readonly T Current
+        {
+            get
+            {
+                if (position >= span.Length)
+                    throw new InvalidOperationException();
+
+                return ref Unsafe.Add(ref MemoryMarshal.GetReference(span), position);
+            }
+        }
+
+        /// <summary>
         /// Gets the number of consumed elements.
         /// </summary>
         public readonly int ConsumedCount => position;
@@ -40,6 +57,11 @@ namespace DotNext.Buffers
         /// Gets underlying span.
         /// </summary>
         public readonly ReadOnlySpan<T> Span => span;
+
+        /// <summary>
+        /// Gets the span over consumed elements.
+        /// </summary>
+        public readonly ReadOnlySpan<T> ConsumedSpan => span.Slice(0, position);
 
         /// <summary>
         /// Sets reader position to the first element.
@@ -90,7 +112,7 @@ namespace DotNext.Buffers
 
             if (newLength <= span.Length)
             {
-                result = span[position];
+                result = Unsafe.Add(ref MemoryMarshal.GetReference(span), position);
                 position = newLength;
                 return true;
             }

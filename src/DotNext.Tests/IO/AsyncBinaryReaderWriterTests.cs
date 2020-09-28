@@ -15,7 +15,6 @@ using TimeSpanStyles = System.Globalization.TimeSpanStyles;
 namespace DotNext.IO
 {
     using Text;
-    using ChunkSequence = Buffers.ChunkSequence<byte>;
     using static Buffers.MemoryAllocator;
 
     [ExcludeFromCodeCoverage]
@@ -155,8 +154,8 @@ namespace DotNext.IO
             public IAsyncBinaryReader CreateReader()
             {
                 stream.Position = 0L;
-                var sequence = new ChunkSequence(stream.ToArray(), 3);
-                return IAsyncBinaryReader.Create(sequence.ToReadOnlySequence());
+                var sequence = ToReadOnlySequence<byte>(stream.ToArray(), 3);
+                return IAsyncBinaryReader.Create(sequence);
             }
 
             public ValueTask DisposeAsync() => stream.DisposeAsync();

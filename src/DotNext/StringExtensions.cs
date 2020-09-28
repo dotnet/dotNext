@@ -70,7 +70,8 @@ namespace DotNext
         /// <param name="str">The string to split.</param>
         /// <param name="chunkSize">The maximum length of the substring in the sequence.</param>
         /// <returns>The sequence of substrings.</returns>
-        public static CharSequence Split(this string str, int chunkSize) => new CharSequence(str.AsMemory(), chunkSize);
+        [Obsolete("Use ReadOnlyMemory<T>.Slice instead", true)]
+        public static CharSequence Split(string str, int chunkSize) => new CharSequence(str.AsMemory(), chunkSize);
 
         /// <summary>
         /// Gets managed pointer to the first character in the string.

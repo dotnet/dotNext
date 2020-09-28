@@ -19,22 +19,7 @@ namespace DotNext.Reflection
         /// <param name="type">The type to inspect.</param>
         /// <returns><see langword="true"/>, if the specified type is immutable value type; otherwise, <see langword="false"/>.</returns>
         public static bool IsImmutable(this Type type)
-        {
-            if (type.IsPrimitive)
-            {
-                return true;
-            }
-            else if (type.IsValueType)
-            {
-                foreach (var attribute in type.GetCustomAttributesData())
-                {
-                    if (attribute.AttributeType == typeof(IsReadOnlyAttribute))
-                        return true;
-                }
-            }
-
-            return false;
-        }
+            => type.IsPrimitive || type.IsPointer || type.IsEnum || type.IsByRef || type.IsValueType && type.IsDefined<IsReadOnlyAttribute>();
 
         /// <summary>
         /// Determines whether the type is unmanaged value type.
@@ -53,11 +38,11 @@ namespace DotNext.Reflection
 
                 return false;
             }
-            else if (type.IsPrimitive || type.IsPointer || type.IsEnum)
-            {
+
+            if (type.IsPrimitive || type.IsPointer || type.IsEnum)
                 return true;
-            }
-            else if (type.IsValueType)
+
+            if (type.IsValueType)
             {
                 // check all fields
                 foreach (var field in type.GetFields(BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic))
@@ -68,10 +53,8 @@ namespace DotNext.Reflection
 
                 return true;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
 
         /// <summary>
