@@ -1,6 +1,49 @@
 Release Notes
 ====
 
+# 09-28-2020
+<a href="https://www.nuget.org/packages/dotnext/2.10.0">DotNext 2.10.0</a>
+* Fixed correctness of `Clear(bool)` method overridden by `PooledArrayBufferWriter<T>` and `PooledBufferWriter<T>` classes
+* Added `RemoveLast` and `RemoveFirst` methods to `PooledArrayBufferWriter<T>` class
+* `Optional<T>` type distinguishes **null** and undefined value
+* [DotNext.Sequence](https://sakno.github.io/dotNext/api/DotNext.Sequence.html) class is now deprecated and replaced with [DotNext.Collections.Generic.Sequence](https://sakno.github.io/dotNext/api/DotNext.Collections.Generic.Sequence.html) class. It's binary compatible but source incompatible change
+* Added [new API](https://sakno.github.io/dotNext/api/DotNext.Resources.ResourceManagerExtensions.html) for writing resource string readers. It utilizes [Caller Info](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/attributes/caller-information) feature in C# to resolve resource entry name using accessor method or property
+* Introduced [BufferWriterSlim&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.BufferWriterSlim-1.html) type as lightweight and stackalloc-friendly version of [PooledBufferWriter&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.PooledBufferWriter-1.html) type
+* Introduced [SpanReader&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.SpanReader-1.html) and [SpanWriter&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.SpanWriter-1.html) types that can be used for sequential access to the elements in the memory span
+* Removed unused resource strings
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.10.0">DotNext.Metaprogramming 2.10.0</a>
+* Added extension methods of [ExpressionBuilder](https://sakno.github.io/dotNext/api/DotNext.Linq.Expressions.ExpressionBuilder.html) class for constructing expressions of type [Optional&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Optional-1.html), [Result&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Result-1.html) or [Nullable&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.nullable-1)
+* Fixed bug with expression building using **dynamic** keyword
+* [UniversalExpression](https://sakno.github.io/dotNext/api/DotNext.Linq.Expressions.UniversalExpression.html) is superseded by _ExpressionBuilder.AsDynamic_ extension method
+* Removed unused resource strings
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.reflection/2.10.0">DotNext.Reflection 2.10.0</a>
+* Removed unused resource strings
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/2.10.0">DotNext.Threading 2.10.0</a>
+* [AsyncExchanger&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncExchanger-1.html) class now has a method for fast synchronous exchange
+* [AsyncTimer](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncTimer.html) implements [IAsyncDisposable](https://docs.microsoft.com/en-us/dotnet/api/system.iasyncdisposable) for graceful shutdown
+* Removed unused resource strings
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/2.10.0">DotNext.Unsafe 2.10.0</a>
+* [Pointer&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Runtime.InteropServices.Pointer-1.html) value type now implements [IPinnable](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ipinnable) interface
+* Added interop between [Pointer&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Runtime.InteropServices.Pointer-1.html) and [System.Reflection.Pointer](https://docs.microsoft.com/en-us/dotnet/api/system.reflection.pointer)
+* Removed unused resource strings
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/2.10.0">DotNext.Net.Cluster 2.10.0</a>
+* Removed unused resource strings
+* Updated dependencies shipped with .NET Core 3.1.8
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/2.10.0">DotNext.AspNetCore.Cluster 2.10.0</a>
+* Removed unused resource strings
+* Updated dependencies shipped with .NET Core 3.1.8
+
 # 08-16-2020
 <a href="https://www.nuget.org/packages/dotnext/2.9.6">DotNext 2.9.6</a>
 * Improved performance of [Enum Member API](https://sakno.github.io/dotNext/features/core/enum.html)
