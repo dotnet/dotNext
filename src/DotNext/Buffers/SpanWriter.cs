@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers
@@ -29,7 +30,17 @@ namespace DotNext.Buffers
         /// Gets the element at the current position in the
         /// underlying memory block.
         /// </summary>
-        public readonly ref T Current => ref span[position];
+        /// <exception cref="InvalidOperationException">The position of this writer is out of range.</exception>
+        public readonly ref T Current
+        {
+            get
+            {
+                if (position >= span.Length)
+                    throw new InvalidOperationException();
+
+                return ref Unsafe.Add(ref MemoryMarshal.GetReference(span), position);
+            }
+        }
 
         /// <summary>
         /// Gets the available space in the underlying span.
@@ -99,7 +110,7 @@ namespace DotNext.Buffers
             if (newLength > span.Length)
                 return false;
 
-            span[position] = item;
+            Unsafe.Add(ref MemoryMarshal.GetReference(span), position) = item;
             position = newLength;
             return true;
         }
