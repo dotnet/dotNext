@@ -313,7 +313,7 @@ namespace DotNext.Buffers
     /// <summary>
     /// Provides extension methods for <see cref="BufferWriterSlim{T}"/> type.
     /// </summary>
-    public static class SpanBuilder
+    public static class BufferWriterSlim
     {
         // TODO: Must be rewritten using function pointer
 
