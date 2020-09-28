@@ -142,7 +142,7 @@ namespace DotNext.Runtime.CompilerServices
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        private void Complete(Exception[]? errors)
+        private void Complete(Exception?[]? errors)
         {
             if (errors != null)
                 exceptions = new AggregateException(errors.SkipNulls());
