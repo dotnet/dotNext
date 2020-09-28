@@ -118,7 +118,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_ChunkSequence_Concat__1_System_Memory___0__System_Memory___0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.ChunkSequence.Concat%60%601(System.Memory%7B%60%600%7D%2CSystem.Memory%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/ChunkSequence.cs/#L169">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/ChunkSequence.cs/#L186">View Source</a>
   </span>
   <a id="DotNext_Buffers_ChunkSequence_Concat_" data-uid="DotNext.Buffers.ChunkSequence.Concat*"></a>
   <h4 id="DotNext_Buffers_ChunkSequence_Concat__1_System_Memory___0__System_Memory___0__" data-uid="DotNext.Buffers.ChunkSequence.Concat``1(System.Memory{``0},System.Memory{``0})">Concat&lt;T&gt;(Memory&lt;T&gt;, Memory&lt;T&gt;)</h4>
@@ -127,7 +127,8 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ReadOnlySequence&lt;T&gt; Concat&lt;T&gt;(this Memory&lt;T&gt; first, Memory&lt;T&gt; second)</code></pre>
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use Concat with ReadOnlySpan&lt;T&gt; parameters&quot;, true)]
+public static ReadOnlySequence&lt;T&gt; Concat&lt;T&gt;(Memory&lt;T&gt; first, Memory&lt;T&gt; second)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -187,10 +188,82 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_ChunkSequence_Concat__1_System_ReadOnlyMemory___0__System_ReadOnlyMemory___0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.ChunkSequence.Concat%60%601(System.ReadOnlyMemory%7B%60%600%7D%2CSystem.ReadOnlyMemory%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/ChunkSequence.cs/#L197">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_ChunkSequence_Concat_" data-uid="DotNext.Buffers.ChunkSequence.Concat*"></a>
+  <h4 id="DotNext_Buffers_ChunkSequence_Concat__1_System_ReadOnlyMemory___0__System_ReadOnlyMemory___0__" data-uid="DotNext.Buffers.ChunkSequence.Concat``1(System.ReadOnlyMemory{``0},System.ReadOnlyMemory{``0})">Concat&lt;T&gt;(ReadOnlyMemory&lt;T&gt;, ReadOnlyMemory&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Converts two memory blocks to <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence&lt;T&gt;</a> data type.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ReadOnlySequence&lt;T&gt; Concat&lt;T&gt;(this ReadOnlyMemory&lt;T&gt; first, ReadOnlyMemory&lt;T&gt; second)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;T&gt;</td>
+        <td><span class="parametername">first</span></td>
+        <td><p>The first memory block.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;T&gt;</td>
+        <td><span class="parametername">second</span></td>
+        <td><p>The second memory block.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;T&gt;</td>
+        <td><p>The constructed <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence&lt;T&gt;</a> instance containing memory blocks.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of elements in the memory blocks.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_ChunkSequence_CopyToAsync_DotNext_Buffers_ChunkSequence_System_Byte__System_IO_Stream_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.ChunkSequence.CopyToAsync(DotNext.Buffers.ChunkSequence%7BSystem.Byte%7D%2CSystem.IO.Stream%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/ChunkSequence.cs/#L190">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/ChunkSequence.cs/#L218">View Source</a>
   </span>
   <a id="DotNext_Buffers_ChunkSequence_CopyToAsync_" data-uid="DotNext.Buffers.ChunkSequence.CopyToAsync*"></a>
   <h4 id="DotNext_Buffers_ChunkSequence_CopyToAsync_DotNext_Buffers_ChunkSequence_System_Byte__System_IO_Stream_System_Threading_CancellationToken_" data-uid="DotNext.Buffers.ChunkSequence.CopyToAsync(DotNext.Buffers.ChunkSequence{System.Byte},System.IO.Stream,System.Threading.CancellationToken)">CopyToAsync(ChunkSequence&lt;Byte&gt;, Stream, CancellationToken)</h4>
@@ -199,7 +272,8 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ValueTask CopyToAsync(this ChunkSequence&lt;byte&gt; sequence, Stream output, CancellationToken token = default(CancellationToken))</code></pre>
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use ReadOnlySequence&lt;T&gt; value type instead&quot;, true)]
+public static ValueTask CopyToAsync(ChunkSequence&lt;byte&gt; sequence, Stream output, CancellationToken token = default(CancellationToken))</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -252,7 +326,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_ChunkSequence_CopyToAsync_DotNext_Buffers_ChunkSequence_System_Char__System_IO_TextWriter_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.ChunkSequence.CopyToAsync(DotNext.Buffers.ChunkSequence%7BSystem.Char%7D%2CSystem.IO.TextWriter%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/ChunkSequence.cs/#L206">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/ChunkSequence.cs/#L235">View Source</a>
   </span>
   <a id="DotNext_Buffers_ChunkSequence_CopyToAsync_" data-uid="DotNext.Buffers.ChunkSequence.CopyToAsync*"></a>
   <h4 id="DotNext_Buffers_ChunkSequence_CopyToAsync_DotNext_Buffers_ChunkSequence_System_Char__System_IO_TextWriter_System_Threading_CancellationToken_" data-uid="DotNext.Buffers.ChunkSequence.CopyToAsync(DotNext.Buffers.ChunkSequence{System.Char},System.IO.TextWriter,System.Threading.CancellationToken)">CopyToAsync(ChunkSequence&lt;Char&gt;, TextWriter, CancellationToken)</h4>
@@ -261,7 +335,8 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ValueTask CopyToAsync(this ChunkSequence&lt;char&gt; sequence, TextWriter output, CancellationToken token = default(CancellationToken))</code></pre>
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use ReadOnlySequence&lt;T&gt; value type instead&quot;, true)]
+public static ValueTask CopyToAsync(ChunkSequence&lt;char&gt; sequence, TextWriter output, CancellationToken token = default(CancellationToken))</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -314,7 +389,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_ChunkSequence_ToReadOnlySequence__1_System_Collections_Generic_IEnumerable_System_Memory___0___.md&amp;value=---%0Auid%3A%20DotNext.Buffers.ChunkSequence.ToReadOnlySequence%60%601(System.Collections.Generic.IEnumerable%7BSystem.Memory%7B%60%600%7D%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/ChunkSequence.cs/#L144">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/ChunkSequence.cs/#L147">View Source</a>
   </span>
   <a id="DotNext_Buffers_ChunkSequence_ToReadOnlySequence_" data-uid="DotNext.Buffers.ChunkSequence.ToReadOnlySequence*"></a>
   <h4 id="DotNext_Buffers_ChunkSequence_ToReadOnlySequence__1_System_Collections_Generic_IEnumerable_System_Memory___0___" data-uid="DotNext.Buffers.ChunkSequence.ToReadOnlySequence``1(System.Collections.Generic.IEnumerable{System.Memory{``0}})">ToReadOnlySequence&lt;T&gt;(IEnumerable&lt;Memory&lt;T&gt;&gt;)</h4>
@@ -323,7 +398,8 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ReadOnlySequence&lt;T&gt; ToReadOnlySequence&lt;T&gt;(this IEnumerable&lt;Memory&lt;T&gt;&gt; chunks)</code></pre>
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use ToReadOnlySequence method with ReadOnlyMemory&lt;T&gt; parameters&quot;, true)]
+public static ReadOnlySequence&lt;T&gt; ToReadOnlySequence&lt;T&gt;(IEnumerable&lt;Memory&lt;T&gt;&gt; chunks)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -375,6 +451,72 @@
       </tr>
     </tbody>
   </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_ChunkSequence_ToReadOnlySequence__1_System_Collections_Generic_IEnumerable_System_ReadOnlyMemory___0___.md&amp;value=---%0Auid%3A%20DotNext.Buffers.ChunkSequence.ToReadOnlySequence%60%601(System.Collections.Generic.IEnumerable%7BSystem.ReadOnlyMemory%7B%60%600%7D%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/ChunkSequence.cs/#L161">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_ChunkSequence_ToReadOnlySequence_" data-uid="DotNext.Buffers.ChunkSequence.ToReadOnlySequence*"></a>
+  <h4 id="DotNext_Buffers_ChunkSequence_ToReadOnlySequence__1_System_Collections_Generic_IEnumerable_System_ReadOnlyMemory___0___" data-uid="DotNext.Buffers.ChunkSequence.ToReadOnlySequence``1(System.Collections.Generic.IEnumerable{System.ReadOnlyMemory{``0}})">ToReadOnlySequence&lt;T&gt;(IEnumerable&lt;ReadOnlyMemory&lt;T&gt;&gt;)</h4>
+  <div class="markdown level1 summary"><p>Converts the sequence of memory blocks to <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence&lt;T&gt;</a> data type.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ReadOnlySequence&lt;T&gt; ToReadOnlySequence&lt;T&gt;(this IEnumerable&lt;ReadOnlyMemory&lt;T&gt;&gt; chunks)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;T&gt;&gt;</td>
+        <td><span class="parametername">chunks</span></td>
+        <td><p>The sequence of memory blocks.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;T&gt;</td>
+        <td><p>The constructed <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence&lt;T&gt;</a> instance containing memory blocks.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of elements in the memory blocks.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
 </article>
           </div>
           
@@ -386,7 +528,7 @@
                     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_ChunkSequence.md&amp;value=---%0Auid%3A%20DotNext.Buffers.ChunkSequence%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/ChunkSequence.cs/#L136" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/ChunkSequence.cs/#L139" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

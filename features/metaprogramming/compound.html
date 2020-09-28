@@ -84,7 +84,7 @@ typeof(Exception).New(&quot;Exception message&quot;.Const()).Throw()    //equiva
 <pre><code class="lang-csharp">using System;
 using DotNext.Metaprogramming;
 
-dynamic expr = (UniversalExpression)42;
+dynamic expr = 42.Const().AsDynamic();
 expr = -expr + 1;
 Expression tree = expr; //tree is -42 + 1
 </code></pre>

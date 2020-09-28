@@ -118,7 +118,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_StringExtensions_AsTemplate_System_String_System_Char_.md&amp;value=---%0Auid%3A%20DotNext.StringExtensions.AsTemplate(System.String%2CSystem.Char)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/StringExtensions.cs/#L114">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/StringExtensions.cs/#L115">View Source</a>
   </span>
   <a id="DotNext_StringExtensions_AsTemplate_" data-uid="DotNext.StringExtensions.AsTemplate*"></a>
   <h4 id="DotNext_StringExtensions_AsTemplate_System_String_System_Char_" data-uid="DotNext.StringExtensions.AsTemplate(System.String,System.Char)">AsTemplate(String, Char)</h4>
@@ -174,7 +174,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_StringExtensions_AsTemplate_System_String_System_String_.md&amp;value=---%0Auid%3A%20DotNext.StringExtensions.AsTemplate(System.String%2CSystem.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/StringExtensions.cs/#L105">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/StringExtensions.cs/#L106">View Source</a>
   </span>
   <a id="DotNext_StringExtensions_AsTemplate_" data-uid="DotNext.StringExtensions.AsTemplate*"></a>
   <h4 id="DotNext_StringExtensions_AsTemplate_System_String_System_String_" data-uid="DotNext.StringExtensions.AsTemplate(System.String,System.String)">AsTemplate(String, String)</h4>
@@ -230,7 +230,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_StringExtensions_GetRawData_System_String_.md&amp;value=---%0Auid%3A%20DotNext.StringExtensions.GetRawData(System.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/StringExtensions.cs/#L80">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/StringExtensions.cs/#L81">View Source</a>
   </span>
   <a id="DotNext_StringExtensions_GetRawData_" data-uid="DotNext.StringExtensions.GetRawData*"></a>
   <h4 id="DotNext_StringExtensions_GetRawData_System_String_" data-uid="DotNext.StringExtensions.GetRawData(System.String)">GetRawData(String)</h4>
@@ -240,7 +240,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use String.GetPinnableReference method instead&quot;)]
-public static char GetRawData(this string str)</code></pre>
+public static char GetRawData(string str)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -457,7 +457,8 @@ is <span class="xref">null</span> or empty.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ChunkSequence&lt;char&gt; Split(this string str, int chunkSize)</code></pre>
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use ReadOnlyMemory&lt;T&gt;.Slice instead&quot;, true)]
+public static ChunkSequence&lt;char&gt; Split(string str, int chunkSize)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -504,7 +505,7 @@ is <span class="xref">null</span> or empty.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_StringExtensions_Substring_System_String_System_Range_.md&amp;value=---%0Auid%3A%20DotNext.StringExtensions.Substring(System.String%2CSystem.Range)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/StringExtensions.cs/#L93">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/StringExtensions.cs/#L94">View Source</a>
   </span>
   <a id="DotNext_StringExtensions_Substring_" data-uid="DotNext.StringExtensions.Substring*"></a>
   <h4 id="DotNext_StringExtensions_Substring_System_String_System_Range_" data-uid="DotNext.StringExtensions.Substring(System.String,System.Range)">Substring(String, Range)</h4>

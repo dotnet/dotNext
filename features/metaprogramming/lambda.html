@@ -72,41 +72,43 @@
 <p>Expression Trees in C# doesn't support multi-line lambda expressions. This limitation can be avoided using <a href="../../api/DotNext.Metaprogramming.CodeGenerator.html">CodeGenerator.Lambda</a> construction method. The method accepts lexical scope of the lambda expression in the form of the delegate and provides access to parameters.</p>
 <p>The following example shows how to generate lambda function which performs factorial computation using recursion:</p>
 <pre><code class="lang-csharp">using System;
+using System.Linq.Expressions;
 using static DotNext.Metaprogramming.CodeGenerator;
-using U = DotNext.Linq.Expressions.UniversalExpression;
+using static DotNext.Linq.Expressions.ExpressionBuilder;
 
 Func&lt;long, long&gt; fact = Lambda&lt;Func&lt;long, long&gt;&gt;(fun =&gt; 
 {
-    var arg = (U)fun[0];
-    If(arg &gt; 1L)
-        .Then(arg * fun.Invoke(arg - 1L))
+    var arg = fun[0];
+    If((Expression)(arg.AsDynamic() &gt; 1L))
+        .Then(arg.AsDynamic() * fun.Invoke(arg.AsDynamic() - 1L))
         .Else(arg)
 		.OfType&lt;long&gt;()
     .End();
 }).Compile();
 fact(3);    // == 6
 </code></pre>
-<p><code>fun</code> parameter is of type <a href="../../api/DotNext.Metaprogramming.LambdaContext.html">LambdaContext</a> and provide access to the function parameters. <code>arg</code> local variable is just a conversion of the lambda function parameter into <a href="universal.html">Universal Expression</a>. <code>If</code> starts construction of <em>if-then-else</em> expression. <code>fun.Invoke</code> method allows to invoke lambda function recursively. <code>OfType</code> describes type of conditional expression that was started by <code>If</code> call. <code>End</code> method call represents end of conditional expression.</p>
+<p><code>fun</code> parameter is of type <a href="../../api/DotNext.Metaprogramming.LambdaContext.html">LambdaContext</a> and provide access to the function parameters. <code>arg</code> is the lambda function parameter. <code>If</code> starts construction of <em>if-then-else</em> expression. <code>fun.Invoke</code> method allows to invoke lambda function recursively. <code>OfType</code> describes type of conditional expression that was started by <code>If</code> call. <code>End</code> method call represents end of conditional expression. <code>AsDynamic</code> extension method allows to convert expression node to it's dynamically-typed representation that allows to use dynamic features of C# for building expression trees.</p>
 <p><code>LambdaContext</code> type supports decomposition so it is possible to use convenient syntax to obtain function parameters:</p>
 <pre><code class="lang-csharp">using System;
 using static DotNext.Metaprogramming.CodeGenerator;
-using U = DotNext.Linq.Expressions.UniversalExpression;
+using static DotNext.Linq.Expressions.ExpressionBuilder;
 
 Lambda&lt;Func&lt;int, int, int&gt;&gt;(fun =&gt; 
 {
   var (x, y) = fun;
-  Return((U)x + y);
+  Return(x.AsDynamic() + y);
 });
 </code></pre>
 <p>The last expression inside of lamda function is interpreted as return value. However, explicit return is supported.</p>
 <pre><code class="lang-csharp">using System;
+using System.Linq.Expressions;
 using static DotNext.Metaprogramming.CodeGenerator;
-using U = DotNext.Linq.Expressions.UniversalExpression;
+using static DotNext.Linq.Expressions.ExpressionBuilder;
 
 Func&lt;long, bool&gt; isZero = Lambda&lt;Func&lt;long, bool&gt;&gt;(fun =&gt; 
 {
-    var arg = (U)fun[0];
-    If(arg != 0L)
+    var arg = fun[0];
+    If((Expression)(arg.AsDynamic() != 0L))
         .Then(() =&gt; Return(true))
         .Else(() =&gt; Return(false))
     .End();

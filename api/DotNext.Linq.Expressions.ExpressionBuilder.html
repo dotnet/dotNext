@@ -346,6 +346,212 @@ AND operation that evaluates the second operand only if the first operand evalua
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_ExpressionBuilder_AsDynamic_System_Linq_Expressions_Expression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.ExpressionBuilder.AsDynamic(System.Linq.Expressions.Expression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/ExpressionBuilder.DynamicSupport.cs/#L28">View Source</a>
+  </span>
+  <a id="DotNext_Linq_Expressions_ExpressionBuilder_AsDynamic_" data-uid="DotNext.Linq.Expressions.ExpressionBuilder.AsDynamic*"></a>
+  <h4 id="DotNext_Linq_Expressions_ExpressionBuilder_AsDynamic_System_Linq_Expressions_Expression_" data-uid="DotNext.Linq.Expressions.ExpressionBuilder.AsDynamic(System.Linq.Expressions.Expression)">AsDynamic(Expression)</h4>
+  <div class="markdown level1 summary"><p>Converts expression to its dynamic representation that allows
+to construct expression trees using native language expressions.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static dynamic AsDynamic(this Expression expression)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.expression">Expression</a></td>
+        <td><span class="parametername">expression</span></td>
+        <td><p>The expression to be converted to dynamic expression builder.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
+        <td><p>The dynamic representation of expression.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_ExpressionBuilder_AsNullable_System_Linq_Expressions_Expression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.ExpressionBuilder.AsNullable(System.Linq.Expressions.Expression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/ExpressionBuilder.cs/#L1360">View Source</a>
+  </span>
+  <a id="DotNext_Linq_Expressions_ExpressionBuilder_AsNullable_" data-uid="DotNext.Linq.Expressions.ExpressionBuilder.AsNullable*"></a>
+  <h4 id="DotNext_Linq_Expressions_ExpressionBuilder_AsNullable_System_Linq_Expressions_Expression_" data-uid="DotNext.Linq.Expressions.ExpressionBuilder.AsNullable(System.Linq.Expressions.Expression)">AsNullable(Expression)</h4>
+  <div class="markdown level1 summary"><p>Converts value type to the expression of <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable&lt;T&gt;</a> type.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Expression AsNullable(this Expression expression)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.expression">Expression</a></td>
+        <td><span class="parametername">expression</span></td>
+        <td><p>The expression to be converted.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.expression">Expression</a></td>
+        <td><p>The nullable expression.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Linq_Expressions_ExpressionBuilder_AsNullable_System_Linq_Expressions_Expression__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>If <code data-dev-comment-type="paramref" class="paramref">expression</code> is of pointer of reference type then
+method returns unmodified expression.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_ExpressionBuilder_AsOptional_System_Linq_Expressions_Expression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.ExpressionBuilder.AsOptional(System.Linq.Expressions.Expression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/ExpressionBuilder.cs/#L1368">View Source</a>
+  </span>
+  <a id="DotNext_Linq_Expressions_ExpressionBuilder_AsOptional_" data-uid="DotNext.Linq.Expressions.ExpressionBuilder.AsOptional*"></a>
+  <h4 id="DotNext_Linq_Expressions_ExpressionBuilder_AsOptional_System_Linq_Expressions_Expression_" data-uid="DotNext.Linq.Expressions.ExpressionBuilder.AsOptional(System.Linq.Expressions.Expression)">AsOptional(Expression)</h4>
+  <div class="markdown level1 summary"><p>Creates the expression of <see cref="!:Optional&lt;T>"></see> type.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Expression AsOptional(this Expression expression)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.expression">Expression</a></td>
+        <td><span class="parametername">expression</span></td>
+        <td><p>The expression to be converted.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.expression">Expression</a></td>
+        <td><p>The expression of <see cref="!:Optional&lt;T>"></see> type.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_ExpressionBuilder_AsResult_System_Linq_Expressions_Expression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.ExpressionBuilder.AsResult(System.Linq.Expressions.Expression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/ExpressionBuilder.cs/#L1377">View Source</a>
+  </span>
+  <a id="DotNext_Linq_Expressions_ExpressionBuilder_AsResult_" data-uid="DotNext.Linq.Expressions.ExpressionBuilder.AsResult*"></a>
+  <h4 id="DotNext_Linq_Expressions_ExpressionBuilder_AsResult_System_Linq_Expressions_Expression_" data-uid="DotNext.Linq.Expressions.ExpressionBuilder.AsResult(System.Linq.Expressions.Expression)">AsResult(Expression)</h4>
+  <div class="markdown level1 summary"><p>Converts compound expression to its safe equivalent
+that doesn't throw exception and return <see cref="!:Result&lt;T>"></see> instead.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Expression AsResult(this Expression expression)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.expression">Expression</a></td>
+        <td><span class="parametername">expression</span></td>
+        <td><p>The compound expression.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.expression">Expression</a></td>
+        <td><p>The expression of type <see cref="!:Result&lt;T>"></see>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_ExpressionBuilder_Assign_System_Linq_Expressions_IndexExpression_System_Linq_Expressions_Expression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.ExpressionBuilder.Assign(System.Linq.Expressions.IndexExpression%2CSystem.Linq.Expressions.Expression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
@@ -6626,7 +6832,7 @@ reference or boxing conversion where <span class="xref">null</span> is supplied 
                     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_ExpressionBuilder.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.ExpressionBuilder%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/ExpressionBuilder.cs/#L16" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/ExpressionBuilder.DynamicSupport.cs/#L6" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

@@ -138,6 +138,26 @@ writer.Write(4);
 
 string result = buffer.BuildString();
 </code></pre>
+<h1 id="bufferwriterslim">BufferWriterSlim</h1>
+<p><a href="../../api/DotNext.Buffers.BufferWriterSlim-1.html">BufferWriterSlim&lt;T&gt;</a> is a lightweight version of <a href="../../api/DotNext.Buffers.PooledBufferWriter-1.html">PooledBufferWriter&lt;T&gt;</a> class with its own unique features. The instance of writer always allocated on the stack because the type is declared as ref-like value type. Additionally, the writer allows to use stack-allocated memory for placing new elements.</p>
+<p>The type supports the following modes:</p>
+<ul>
+<li><strong>Non-contiguous memory re-allocation</strong> mode utilizes pooled memory to place new elements if capacity of pre-allocated buffer exceeded. However, added elements are placed to non-contiguous memory (i.e. divided pre-allocated buffer and pooled memory). In other words, the head of the list of added elements is always in pre-allocated buffer.</li>
+<li><strong>Contiguous memory re-allocation</strong> ensures that all elements are placed in contiguous memory, thus can be obtained as <a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span&lt;T&gt;</a>. The writer trying to place new elements to pre-allocated buffer. If it's capacity exceeded then the whole content of such buffer moving to pooled memory. Therefore, head and tail are not divided on two buffers.</li>
+</ul>
+<p>The first mode doesn't allow to obtain written memory as <a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span&lt;T&gt;</a>.</p>
+<pre><code class="lang-csharp">using DotNext.Buffers;
+
+using var builder = new SpanBuilder&lt;byte&gt;(stackalloc byte[128], false); // capacity can be changed at runtime
+builder.Write(new byte[] { 1, 2, 3 });
+ReadOnlySpan&lt;byte&gt; result = builder.WrittenSpan;    // throw NotSupportedException if the content is in non-contiguous memory
+</code></pre>
+<p>To enable usage of contiguous memory, just pass <strong>true</strong> to constructor in the example above instead of <strong>false</strong> constant.</p>
+<p>This type has the following limitations:</p>
+<ul>
+<li>Incompatible with async methods</li>
+<li>Focused on <a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span&lt;T&gt;</a> data type, there is no interop with types from <a href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic">System.Collections.Generic</a> namespace</li>
+</ul>
 </article>
           </div>
           

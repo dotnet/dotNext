@@ -106,13 +106,6 @@ var str = &quot;abc&quot;.Reverse(); //str is &quot;cba&quot;
 var str = &quot;abc&quot;.TrimLength(2);  //str is &quot;ab&quot;
 str = &quot;abc&quot;.TrimLength(4);  //str is &quot;abc&quot;
 </code></pre>
-<h2 id="raw-data">Raw Data</h2>
-<p>Extension method <em>GetRawData</em> allows to obtain managed pointer to the underlying char buffer referenced by the string instance. This method can be used in performance-critical paths in your code</p>
-<pre><code class="lang-csharp">using DotNext;
-
-ref readonly char ch = ref &quot;str&quot;.GetRawData();  //now ch points to the first string character of 's'
-</code></pre>
-<p>Returned managed pointer is immutable because instantiated string cannot be modified at runtime.</p>
 <h1 id="delegates">Delegates</h1>
 <p>Related classes: <a href="../../api/DotNext.StringExtensions.html">DelegateHelpers</a>, <a href="../../api/DotNext.Func.html">Func</a>, <a href="../../api/DotNext.Converter.html">Converter</a>, <a href="../../api/DotNext.Predicate.html">Predicate</a>.</p>
 <h2 id="change-type-of-delegate">Change type of delegate</h2>

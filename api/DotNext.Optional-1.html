@@ -125,7 +125,7 @@ public struct Optional&lt;T&gt; : IEquatable&lt;Optional&lt;T&gt;&gt;, IEquatabl
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_1__ctor__0_.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.%23ctor(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L181">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L208">View Source</a>
   </span>
   <a id="DotNext_Optional_1__ctor_" data-uid="DotNext.Optional`1.#ctor*"></a>
   <h4 id="DotNext_Optional_1__ctor__0_" data-uid="DotNext.Optional`1.#ctor(`0)">Optional(T)</h4>
@@ -154,6 +154,11 @@ public struct Optional&lt;T&gt; : IEquatable&lt;Optional&lt;T&gt;&gt;, IEquatabl
       </tr>
     </tbody>
   </table>
+  <h5 id="DotNext_Optional_1__ctor__0__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The property <span class="xref">langword_csharp_IsNull</span> of the constructed object may be <span class="xref">true</span>
+if <code data-dev-comment-type="paramref" class="paramref">value</code> is <span class="xref">null</span>.
+The property <span class="xref">langword_csharp_IsUndefined</span> of the constructed object is always <span class="xref">false</span>.</p>
+</div>
   <h3 id="properties">Properties
   </h3>
   <span class="small pull-right mobile-hide">
@@ -161,7 +166,7 @@ public struct Optional&lt;T&gt; : IEquatable&lt;Optional&lt;T&gt;&gt;, IEquatabl
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_1_Empty.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.Empty%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L203">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L245">View Source</a>
   </span>
   <a id="DotNext_Optional_1_Empty_" data-uid="DotNext.Optional`1.Empty*"></a>
   <h4 id="DotNext_Optional_1_Empty" data-uid="DotNext.Optional`1.Empty">Empty</h4>
@@ -170,7 +175,8 @@ public struct Optional&lt;T&gt; : IEquatable&lt;Optional&lt;T&gt;&gt;, IEquatabl
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Optional&lt;T&gt; Empty { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use None static property instead&quot;)]
+public static Optional&lt;T&gt; Empty { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -187,12 +193,15 @@ public struct Optional&lt;T&gt; : IEquatable&lt;Optional&lt;T&gt;&gt;, IEquatabl
       </tr>
     </tbody>
   </table>
+  <h5 id="DotNext_Optional_1_Empty_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The property <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_IsUndefined">IsUndefined</a> of returned object is always <span class="xref">true</span>.</p>
+</div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_1_HasValue.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.HasValue%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L208">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L263">View Source</a>
   </span>
   <a id="DotNext_Optional_1_HasValue_" data-uid="DotNext.Optional`1.HasValue*"></a>
   <h4 id="DotNext_Optional_1_HasValue" data-uid="DotNext.Optional`1.HasValue">HasValue</h4>
@@ -218,12 +227,120 @@ public struct Optional&lt;T&gt; : IEquatable&lt;Optional&lt;T&gt;&gt;, IEquatabl
       </tr>
     </tbody>
   </table>
+  <h5 id="DotNext_Optional_1_HasValue_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>If this property is <span class="xref">true</span> then <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_IsUndefined">IsUndefined</a> and <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_IsNull">IsNull</a>
+equal to <span class="xref">false</span>.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_1_IsNull.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.IsNull%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L278">View Source</a>
+  </span>
+  <a id="DotNext_Optional_1_IsNull_" data-uid="DotNext.Optional`1.IsNull*"></a>
+  <h4 id="DotNext_Optional_1_IsNull" data-uid="DotNext.Optional`1.IsNull">IsNull</h4>
+  <div class="markdown level1 summary"><p>Indicates that the value is <span class="xref">null</span>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsNull { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Optional_1_IsNull_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This property returns <span class="xref">true</span> only if this instance
+was constructed using <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1__ctor__0_">Optional(T)</a> with <span class="xref">null</span> argument.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_1_IsUndefined.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.IsUndefined%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L269">View Source</a>
+  </span>
+  <a id="DotNext_Optional_1_IsUndefined_" data-uid="DotNext.Optional`1.IsUndefined*"></a>
+  <h4 id="DotNext_Optional_1_IsUndefined" data-uid="DotNext.Optional`1.IsUndefined">IsUndefined</h4>
+  <div class="markdown level1 summary"><p>Indicates that the value is undefined.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsUndefined { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Optional_1_IsUndefined_seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_None">None</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_1_None.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.None%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L254">View Source</a>
+  </span>
+  <a id="DotNext_Optional_1_None_" data-uid="DotNext.Optional`1.None*"></a>
+  <h4 id="DotNext_Optional_1_None" data-uid="DotNext.Optional`1.None">None</h4>
+  <div class="markdown level1 summary"><p>Represents optional container without value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Optional&lt;T&gt; None { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Optional_1_None_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The property <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_IsUndefined">IsUndefined</a> of returned object is always <span class="xref">true</span>.</p>
+</div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_1_Value.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.Value%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L291">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L385">View Source</a>
   </span>
   <a id="DotNext_Optional_1_Value_" data-uid="DotNext.Optional`1.Value*"></a>
   <h4 id="DotNext_Optional_1_Value" data-uid="DotNext.Optional`1.Value">Value</h4>
@@ -272,7 +389,7 @@ public struct Optional&lt;T&gt; : IEquatable&lt;Optional&lt;T&gt;&gt;, IEquatabl
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_1_Box.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.Box%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L214">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L284">View Source</a>
   </span>
   <a id="DotNext_Optional_1_Box_" data-uid="DotNext.Optional`1.Box*"></a>
   <h4 id="DotNext_Optional_1_Box" data-uid="DotNext.Optional`1.Box">Box()</h4>
@@ -304,12 +421,12 @@ public struct Optional&lt;T&gt; : IEquatable&lt;Optional&lt;T&gt;&gt;, IEquatabl
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_1_Convert__1_DotNext_ValueFunc__0___0___.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.Convert%60%601(DotNext.ValueFunc%7B%600%2C%60%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L301">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L414">View Source</a>
   </span>
   <a id="DotNext_Optional_1_Convert_" data-uid="DotNext.Optional`1.Convert*"></a>
   <h4 id="DotNext_Optional_1_Convert__1_DotNext_ValueFunc__0___0___" data-uid="DotNext.Optional`1.Convert``1(DotNext.ValueFunc{`0,``0}@)">Convert&lt;TResult&gt;(ValueFunc&lt;T, TResult&gt;)</h4>
   <div class="markdown level1 summary"><p>If a value is present, apply the provided mapping function to it, and if the result is
-non-null, return an Optional describing the result. Otherwise returns <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_Empty">Empty</a>.</p>
+non-null, return an Optional describing the result. Otherwise returns <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_None">None</a>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -345,7 +462,7 @@ non-null, return an Optional describing the result. Otherwise returns <a class="
     <tbody>
       <tr>
         <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;TResult&gt;</td>
-        <td><p>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_Empty">Empty</a>.</p>
+        <td><p>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_None">None</a>.</p>
 </td>
       </tr>
     </tbody>
@@ -371,12 +488,12 @@ non-null, return an Optional describing the result. Otherwise returns <a class="
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_1_Convert__1_DotNext_ValueFunc__0_DotNext_Optional___0____.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.Convert%60%601(DotNext.ValueFunc%7B%600%2CDotNext.Optional%7B%60%600%7D%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L319">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L432">View Source</a>
   </span>
   <a id="DotNext_Optional_1_Convert_" data-uid="DotNext.Optional`1.Convert*"></a>
   <h4 id="DotNext_Optional_1_Convert__1_DotNext_ValueFunc__0_DotNext_Optional___0____" data-uid="DotNext.Optional`1.Convert``1(DotNext.ValueFunc{`0,DotNext.Optional{``0}}@)">Convert&lt;TResult&gt;(ValueFunc&lt;T, Optional&lt;TResult&gt;&gt;)</h4>
   <div class="markdown level1 summary"><p>If a value is present, apply the provided mapping function to it, and if the result is
-non-null, return an Optional describing the result. Otherwise returns <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_Empty">Empty</a>.</p>
+non-null, return an Optional describing the result. Otherwise returns <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_None">None</a>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -412,7 +529,7 @@ non-null, return an Optional describing the result. Otherwise returns <a class="
     <tbody>
       <tr>
         <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;TResult&gt;</td>
-        <td><p>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_Empty">Empty</a>.</p>
+        <td><p>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_None">None</a>.</p>
 </td>
       </tr>
     </tbody>
@@ -438,12 +555,12 @@ non-null, return an Optional describing the result. Otherwise returns <a class="
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_1_Convert__1_System_Converter__0___0__.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.Convert%60%601(System.Converter%7B%600%2C%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L310">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L423">View Source</a>
   </span>
   <a id="DotNext_Optional_1_Convert_" data-uid="DotNext.Optional`1.Convert*"></a>
   <h4 id="DotNext_Optional_1_Convert__1_System_Converter__0___0__" data-uid="DotNext.Optional`1.Convert``1(System.Converter{`0,``0})">Convert&lt;TResult&gt;(Converter&lt;T, TResult&gt;)</h4>
   <div class="markdown level1 summary"><p>If a value is present, apply the provided mapping function to it, and if the result is
-non-null, return an Optional describing the result. Otherwise returns <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_Empty">Empty</a>.</p>
+non-null, return an Optional describing the result. Otherwise returns <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_None">None</a>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -479,7 +596,7 @@ non-null, return an Optional describing the result. Otherwise returns <a class="
     <tbody>
       <tr>
         <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;TResult&gt;</td>
-        <td><p>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_Empty">Empty</a>.</p>
+        <td><p>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_None">None</a>.</p>
 </td>
       </tr>
     </tbody>
@@ -505,12 +622,12 @@ non-null, return an Optional describing the result. Otherwise returns <a class="
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_1_Convert__1_System_Converter__0_DotNext_Optional___0___.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.Convert%60%601(System.Converter%7B%600%2CDotNext.Optional%7B%60%600%7D%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L328">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L441">View Source</a>
   </span>
   <a id="DotNext_Optional_1_Convert_" data-uid="DotNext.Optional`1.Convert*"></a>
   <h4 id="DotNext_Optional_1_Convert__1_System_Converter__0_DotNext_Optional___0___" data-uid="DotNext.Optional`1.Convert``1(System.Converter{`0,DotNext.Optional{``0}})">Convert&lt;TResult&gt;(Converter&lt;T, Optional&lt;TResult&gt;&gt;)</h4>
   <div class="markdown level1 summary"><p>If a value is present, apply the provided mapping function to it, and if the result is
-non-null, return an Optional describing the result. Otherwise returns <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_Empty">Empty</a>.</p>
+non-null, return an Optional describing the result. Otherwise returns <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_None">None</a>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -546,7 +663,7 @@ non-null, return an Optional describing the result. Otherwise returns <a class="
     <tbody>
       <tr>
         <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;TResult&gt;</td>
-        <td><p>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_Empty">Empty</a>.</p>
+        <td><p>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_None">None</a>.</p>
 </td>
       </tr>
     </tbody>
@@ -572,7 +689,7 @@ non-null, return an Optional describing the result. Otherwise returns <a class="
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_1_Equals__0_.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.Equals(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L368">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L486">View Source</a>
   </span>
   <a id="DotNext_Optional_1_Equals_" data-uid="DotNext.Optional`1.Equals*"></a>
   <h4 id="DotNext_Optional_1_Equals__0_" data-uid="DotNext.Optional`1.Equals(`0)">Equals(T)</h4>
@@ -623,7 +740,7 @@ value as the specified value.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_1_Equals_DotNext_Optional__0__.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.Equals(DotNext.Optional%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L376">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L508">View Source</a>
   </span>
   <a id="DotNext_Optional_1_Equals_" data-uid="DotNext.Optional`1.Equals*"></a>
   <h4 id="DotNext_Optional_1_Equals_DotNext_Optional__0__" data-uid="DotNext.Optional`1.Equals(DotNext.Optional{`0})">Equals(Optional&lt;T&gt;)</h4>
@@ -674,7 +791,7 @@ the same value as other.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_1_Equals_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.Equals(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L389">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L516">View Source</a>
   </span>
   <a id="DotNext_Optional_1_Equals_" data-uid="DotNext.Optional`1.Equals*"></a>
   <h4 id="DotNext_Optional_1_Equals_System_Object_" data-uid="DotNext.Optional`1.Equals(System.Object)">Equals(Object)</h4>
@@ -727,7 +844,7 @@ the same value as other.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_1_Equals_System_Object_System_Collections_IEqualityComparer_.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.Equals(System.Object%2CSystem.Collections.IEqualityComparer)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L404">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L540">View Source</a>
   </span>
   <a id="DotNext_Optional_1_Equals_" data-uid="DotNext.Optional`1.Equals*"></a>
   <h4 id="DotNext_Optional_1_Equals_System_Object_System_Collections_IEqualityComparer_" data-uid="DotNext.Optional`1.Equals(System.Object,System.Collections.IEqualityComparer)">Equals(Object, IEqualityComparer)</h4>
@@ -784,7 +901,7 @@ and the specified value using method <a class="xref" href="https://docs.microsof
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_1_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.GetHashCode%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L360">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L478">View Source</a>
   </span>
   <a id="DotNext_Optional_1_GetHashCode_" data-uid="DotNext.Optional`1.GetHashCode*"></a>
   <h4 id="DotNext_Optional_1_GetHashCode" data-uid="DotNext.Optional`1.GetHashCode">GetHashCode()</h4>
@@ -822,7 +939,7 @@ for the object <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_1_GetHashCode_System_Collections_IEqualityComparer_.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.GetHashCode(System.Collections.IEqualityComparer)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L413">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L549">View Source</a>
   </span>
   <a id="DotNext_Optional_1_GetHashCode_" data-uid="DotNext.Optional`1.GetHashCode*"></a>
   <h4 id="DotNext_Optional_1_GetHashCode_System_Collections_IEqualityComparer_" data-uid="DotNext.Optional`1.GetHashCode(System.Collections.IEqualityComparer)">GetHashCode(IEqualityComparer)</h4>
@@ -873,7 +990,7 @@ using method <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_1_If_DotNext_ValueFunc__0_System_Boolean___.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.If(DotNext.ValueFunc%7B%600%2CSystem.Boolean%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L336">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L449">View Source</a>
   </span>
   <a id="DotNext_Optional_1_If_" data-uid="DotNext.Optional`1.If*"></a>
   <h4 id="DotNext_Optional_1_If_DotNext_ValueFunc__0_System_Boolean___" data-uid="DotNext.Optional`1.If(DotNext.ValueFunc{`0,System.Boolean}@)">If(ValueFunc&lt;T, Boolean&gt;)</h4>
@@ -924,7 +1041,7 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_1_If_System_Predicate__0__.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.If(System.Predicate%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L344">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L457">View Source</a>
   </span>
   <a id="DotNext_Optional_1_If_" data-uid="DotNext.Optional`1.If*"></a>
   <h4 id="DotNext_Optional_1_If_System_Predicate__0__" data-uid="DotNext.Optional`1.If(System.Predicate{`0})">If(Predicate&lt;T&gt;)</h4>
@@ -975,7 +1092,7 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_1_Or__0_.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.Or(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L232">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L326">View Source</a>
   </span>
   <a id="DotNext_Optional_1_Or_" data-uid="DotNext.Optional`1.Or*"></a>
   <h4 id="DotNext_Optional_1_Or__0_" data-uid="DotNext.Optional`1.Or(`0)">Or(T)</h4>
@@ -1025,7 +1142,7 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_1_OrDefault.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.OrDefault%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L285">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L379">View Source</a>
   </span>
   <a id="DotNext_Optional_1_OrDefault_" data-uid="DotNext.Optional`1.OrDefault*"></a>
   <h4 id="DotNext_Optional_1_OrDefault" data-uid="DotNext.Optional`1.OrDefault">OrDefault()</h4>
@@ -1057,7 +1174,7 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_1_OrInvoke_DotNext_ValueFunc__0___.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.OrInvoke(DotNext.ValueFunc%7B%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L272">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L366">View Source</a>
   </span>
   <a id="DotNext_Optional_1_OrInvoke_" data-uid="DotNext.Optional`1.OrInvoke*"></a>
   <h4 id="DotNext_Optional_1_OrInvoke_DotNext_ValueFunc__0___" data-uid="DotNext.Optional`1.OrInvoke(DotNext.ValueFunc{`0}@)">OrInvoke(ValueFunc&lt;T&gt;)</h4>
@@ -1107,7 +1224,7 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_1_OrInvoke_System_Func__0__.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.OrInvoke(System.Func%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L279">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L373">View Source</a>
   </span>
   <a id="DotNext_Optional_1_OrInvoke_" data-uid="DotNext.Optional`1.OrInvoke*"></a>
   <h4 id="DotNext_Optional_1_OrInvoke_System_Func__0__" data-uid="DotNext.Optional`1.OrInvoke(System.Func{`0})">OrInvoke(Func&lt;T&gt;)</h4>
@@ -1157,7 +1274,7 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_1_OrThrow__1.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.OrThrow%60%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L240">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L334">View Source</a>
   </span>
   <a id="DotNext_Optional_1_OrThrow_" data-uid="DotNext.Optional`1.OrThrow*"></a>
   <h4 id="DotNext_Optional_1_OrThrow__1" data-uid="DotNext.Optional`1.OrThrow``1">OrThrow&lt;TException&gt;()</h4>
@@ -1207,7 +1324,7 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_1_OrThrow__1_DotNext_ValueFunc___0___.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.OrThrow%60%601(DotNext.ValueFunc%7B%60%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L251">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L345">View Source</a>
   </span>
   <a id="DotNext_Optional_1_OrThrow_" data-uid="DotNext.Optional`1.OrThrow*"></a>
   <h4 id="DotNext_Optional_1_OrThrow__1_DotNext_ValueFunc___0___" data-uid="DotNext.Optional`1.OrThrow``1(DotNext.ValueFunc{``0}@)">OrThrow&lt;TException&gt;(ValueFunc&lt;TException&gt;)</h4>
@@ -1275,7 +1392,7 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_1_OrThrow__1_System_Func___0__.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.OrThrow%60%601(System.Func%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L262">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L356">View Source</a>
   </span>
   <a id="DotNext_Optional_1_OrThrow_" data-uid="DotNext.Optional`1.OrThrow*"></a>
   <h4 id="DotNext_Optional_1_OrThrow__1_System_Func___0__" data-uid="DotNext.Optional`1.OrThrow``1(System.Func{``0})">OrThrow&lt;TException&gt;(Func&lt;TException&gt;)</h4>
@@ -1343,7 +1460,7 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_1_ToString.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L350">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L463">View Source</a>
   </span>
   <a id="DotNext_Optional_1_ToString_" data-uid="DotNext.Optional`1.ToString*"></a>
   <h4 id="DotNext_Optional_1_ToString" data-uid="DotNext.Optional`1.ToString">ToString()</h4>
@@ -1377,7 +1494,7 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_1_TryGet__0__.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.TryGet(%600%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L221">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L291">View Source</a>
   </span>
   <a id="DotNext_Optional_1_TryGet_" data-uid="DotNext.Optional`1.TryGet*"></a>
   <h4 id="DotNext_Optional_1_TryGet__0__" data-uid="DotNext.Optional`1.TryGet(`0@)">TryGet(out T)</h4>
@@ -1422,6 +1539,62 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
       </tr>
     </tbody>
   </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_1_TryGet__0__System_Boolean__.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.TryGet(%600%40%2CSystem.Boolean%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L303">View Source</a>
+  </span>
+  <a id="DotNext_Optional_1_TryGet_" data-uid="DotNext.Optional`1.TryGet*"></a>
+  <h4 id="DotNext_Optional_1_TryGet__0__System_Boolean__" data-uid="DotNext.Optional`1.TryGet(`0@,System.Boolean@)">TryGet(out T, out Boolean)</h4>
+  <div class="markdown level1 summary"><p>Attempts to extract value from container if it is present.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool TryGet(out T value, out bool isNull)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Extracted value.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">isNull</span></td>
+        <td><p><span class="xref">true</span> if underlying value is <span class="xref">null</span>; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if value is present; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="operators">Operators
   </h3>
   <span class="small pull-right mobile-hide">
@@ -1429,7 +1602,7 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_1_op_BitwiseOr_DotNext_Optional__0___DotNext_Optional__0___.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.op_BitwiseOr(DotNext.Optional%7B%600%7D%40%2CDotNext.Optional%7B%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L463">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L591">View Source</a>
   </span>
   <a id="DotNext_Optional_1_op_BitwiseOr_" data-uid="DotNext.Optional`1.op_BitwiseOr*"></a>
   <h4 id="DotNext_Optional_1_op_BitwiseOr_DotNext_Optional__0___DotNext_Optional__0___" data-uid="DotNext.Optional`1.op_BitwiseOr(DotNext.Optional{`0}@,DotNext.Optional{`0}@)">BitwiseOr(Optional&lt;T&gt;, Optional&lt;T&gt;)</h4>
@@ -1489,7 +1662,7 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_1_op_Equality_DotNext_Optional__0___DotNext_Optional__0___.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.op_Equality(DotNext.Optional%7B%600%7D%40%2CDotNext.Optional%7B%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L436">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L572">View Source</a>
   </span>
   <a id="DotNext_Optional_1_op_Equality_" data-uid="DotNext.Optional`1.op_Equality*"></a>
   <h4 id="DotNext_Optional_1_op_Equality_DotNext_Optional__0___DotNext_Optional__0___" data-uid="DotNext.Optional`1.op_Equality(DotNext.Optional{`0}@,DotNext.Optional{`0}@)">Equality(Optional&lt;T&gt;, Optional&lt;T&gt;)</h4>
@@ -1545,7 +1718,7 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_1_op_ExclusiveOr_DotNext_Optional__0___DotNext_Optional__0___.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.op_ExclusiveOr(DotNext.Optional%7B%600%7D%40%2CDotNext.Optional%7B%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L472">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L600">View Source</a>
   </span>
   <a id="DotNext_Optional_1_op_ExclusiveOr_" data-uid="DotNext.Optional`1.op_ExclusiveOr*"></a>
   <h4 id="DotNext_Optional_1_op_ExclusiveOr_DotNext_Optional__0___DotNext_Optional__0___" data-uid="DotNext.Optional`1.op_ExclusiveOr(DotNext.Optional{`0}@,DotNext.Optional{`0}@)">ExclusiveOr(Optional&lt;T&gt;, Optional&lt;T&gt;)</h4>
@@ -1601,7 +1774,7 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_1_op_Explicit_DotNext_Optional__0_____0.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.op_Explicit(DotNext.Optional%7B%600%7D%40)~%600%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L428">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L564">View Source</a>
   </span>
   <a id="DotNext_Optional_1_op_Explicit_" data-uid="DotNext.Optional`1.op_Explicit*"></a>
   <h4 id="DotNext_Optional_1_op_Explicit_DotNext_Optional__0_____0" data-uid="DotNext.Optional`1.op_Explicit(DotNext.Optional{`0}@)~`0">Explicit(Optional&lt;T&gt; to T)</h4>
@@ -1666,7 +1839,7 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_1_op_False_DotNext_Optional__0___.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.op_False(DotNext.Optional%7B%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L493">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L631">View Source</a>
   </span>
   <a id="DotNext_Optional_1_op_False_" data-uid="DotNext.Optional`1.op_False*"></a>
   <h4 id="DotNext_Optional_1_op_False_DotNext_Optional__0___" data-uid="DotNext.Optional`1.op_False(DotNext.Optional{`0}@)">False(Optional&lt;T&gt;)</h4>
@@ -1716,7 +1889,7 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_1_op_Implicit__0__DotNext_Optional__0_.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.op_Implicit(%600)~DotNext.Optional%7B%600%7D%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L420">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L556">View Source</a>
   </span>
   <a id="DotNext_Optional_1_op_Implicit_" data-uid="DotNext.Optional`1.op_Implicit*"></a>
   <h4 id="DotNext_Optional_1_op_Implicit__0__DotNext_Optional__0_" data-uid="DotNext.Optional`1.op_Implicit(`0)~DotNext.Optional{`0}">Implicit(T to Optional&lt;T&gt;)</h4>
@@ -1765,7 +1938,7 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_1_op_Inequality_DotNext_Optional__0___DotNext_Optional__0___.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.op_Inequality(DotNext.Optional%7B%600%7D%40%2CDotNext.Optional%7B%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L449">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L581">View Source</a>
   </span>
   <a id="DotNext_Optional_1_op_Inequality_" data-uid="DotNext.Optional`1.op_Inequality*"></a>
   <h4 id="DotNext_Optional_1_op_Inequality_DotNext_Optional__0___DotNext_Optional__0___" data-uid="DotNext.Optional`1.op_Inequality(DotNext.Optional{`0}@,DotNext.Optional{`0}@)">Inequality(Optional&lt;T&gt;, Optional&lt;T&gt;)</h4>
@@ -1821,7 +1994,7 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_1_op_True_DotNext_Optional__0___.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.op_True(DotNext.Optional%7B%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L485">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L623">View Source</a>
   </span>
   <a id="DotNext_Optional_1_op_True_" data-uid="DotNext.Optional`1.op_True*"></a>
   <h4 id="DotNext_Optional_1_op_True_DotNext_Optional__0___" data-uid="DotNext.Optional`1.op_True(DotNext.Optional{`0}@)">True(Optional&lt;T&gt;)</h4>
@@ -1873,7 +2046,7 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_1_System_Runtime_Serialization_ISerializable_GetObjectData_System_Runtime_Serialization_SerializationInfo_System_Runtime_Serialization_StreamingContext_.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.System%23Runtime%23Serialization%23ISerializable%23GetObjectData(System.Runtime.Serialization.SerializationInfo%2CSystem.Runtime.Serialization.StreamingContext)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L496">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L634">View Source</a>
   </span>
   <a id="DotNext_Optional_1_System_Runtime_Serialization_ISerializable_GetObjectData_" data-uid="DotNext.Optional`1.System#Runtime#Serialization#ISerializable#GetObjectData*"></a>
   <h4 id="DotNext_Optional_1_System_Runtime_Serialization_ISerializable_GetObjectData_System_Runtime_Serialization_SerializationInfo_System_Runtime_Serialization_StreamingContext_" data-uid="DotNext.Optional`1.System#Runtime#Serialization#ISerializable#GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">ISerializable.GetObjectData(SerializationInfo, StreamingContext)</h4>
@@ -1923,13 +2096,13 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
       <a class="xref" href="DotNext.Optional.html#DotNext_Optional_Coalesce__1_DotNext_Optional___0___DotNext_Optional___0___">Optional.Coalesce&lt;T&gt;(Optional&lt;T&gt;, Optional&lt;T&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_Skip__2___0__System_Int32_">Sequence.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, Int32)</a>
-  </div>
-  <div>
       <a class="xref" href="DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_IsOneOf__1___0_System_Collections_Generic_IEnumerable___0__">ValueTypeExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_IsOneOf__1___0___0___">ValueTypeExtensions.IsOneOf&lt;T&gt;(T, T[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_Skip__2___0__System_Int32_">Sequence.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, Int32)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
@@ -1945,7 +2118,7 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
                     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Optional_1.md&amp;value=---%0Auid%3A%20DotNext.Optional%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L151" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L176" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

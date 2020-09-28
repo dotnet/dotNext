@@ -80,10 +80,17 @@
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.expression">Expression</a></div>
-    <div class="level2"><span class="xref">AsyncResultExpression</span></div>
+    <div class="level2"><a class="xref" href="DotNext.Linq.Expressions.CustomExpression.html">CustomExpression</a></div>
+    <div class="level3"><span class="xref">AsyncResultExpression</span></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="DotNext.Linq.Expressions.CustomExpression.html#DotNext_Linq_Expressions_CustomExpression_NodeType">CustomExpression.NodeType</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Linq.Expressions.CustomExpression.html#DotNext_Linq_Expressions_CustomExpression_CanReduce">CustomExpression.CanReduce</a>
+    </div>
     <div>
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.expression.accept#System_Linq_Expressions_Expression_Accept_System_Linq_Expressions_ExpressionVisitor_">Expression.Accept(ExpressionVisitor)</a>
     </div>
@@ -1046,7 +1053,7 @@
   <h6><strong>Assembly</strong>: DotNext.Metaprogramming.dll</h6>
   <h5 id="DotNext_Linq_Expressions_AsyncResultExpression_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class AsyncResultExpression : Expression</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class AsyncResultExpression : CustomExpression</code></pre>
   </div>
   <h5 id="DotNext_Linq_Expressions_AsyncResultExpression_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>This expression turns async state machine into final state.</p>
@@ -1162,72 +1169,6 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_AsyncResultExpression_CanReduce.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.AsyncResultExpression.CanReduce%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/AsyncResultExpression.cs/#L73">View Source</a>
-  </span>
-  <a id="DotNext_Linq_Expressions_AsyncResultExpression_CanReduce_" data-uid="DotNext.Linq.Expressions.AsyncResultExpression.CanReduce*"></a>
-  <h4 id="DotNext_Linq_Expressions_AsyncResultExpression_CanReduce" data-uid="DotNext.Linq.Expressions.AsyncResultExpression.CanReduce">CanReduce</h4>
-  <div class="markdown level1 summary"><p>Indicates that this expression can be reduced to well-known LINQ expression.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override bool CanReduce { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.expression.canreduce#System_Linq_Expressions_Expression_CanReduce">Expression.CanReduce</a></div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_AsyncResultExpression_NodeType.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.AsyncResultExpression.NodeType%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/AsyncResultExpression.cs/#L68">View Source</a>
-  </span>
-  <a id="DotNext_Linq_Expressions_AsyncResultExpression_NodeType_" data-uid="DotNext.Linq.Expressions.AsyncResultExpression.NodeType*"></a>
-  <h4 id="DotNext_Linq_Expressions_AsyncResultExpression_NodeType" data-uid="DotNext.Linq.Expressions.AsyncResultExpression.NodeType">NodeType</h4>
-  <div class="markdown level1 summary"><p>Expression type. Always returns <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.expressiontype#System_Linq_Expressions_ExpressionType_Extension">Extension</a>.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override ExpressionType NodeType { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.expressiontype">ExpressionType</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.expression.nodetype#System_Linq_Expressions_Expression_NodeType">Expression.NodeType</a></div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_AsyncResultExpression_Type.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.AsyncResultExpression.Type%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
@@ -1269,7 +1210,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_AsyncResultExpression_Reduce.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.AsyncResultExpression.Reduce%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/AsyncResultExpression.cs/#L80">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/AsyncResultExpression.cs/#L70">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_AsyncResultExpression_Reduce_" data-uid="DotNext.Linq.Expressions.AsyncResultExpression.Reduce*"></a>
   <h4 id="DotNext_Linq_Expressions_AsyncResultExpression_Reduce" data-uid="DotNext.Linq.Expressions.AsyncResultExpression.Reduce">Reduce()</h4>
@@ -1298,13 +1239,13 @@ using Lowering technique.</p>
     </tbody>
   </table>
   <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.expression.reduce#System_Linq_Expressions_Expression_Reduce">Expression.Reduce()</a></div>
+  <div><a class="xref" href="DotNext.Linq.Expressions.CustomExpression.html#DotNext_Linq_Expressions_CustomExpression_Reduce">CustomExpression.Reduce()</a></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_AsyncResultExpression_VisitChildren_System_Linq_Expressions_ExpressionVisitor_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.AsyncResultExpression.VisitChildren(System.Linq.Expressions.ExpressionVisitor)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/AsyncResultExpression.cs/#L114">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/AsyncResultExpression.cs/#L104">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_AsyncResultExpression_VisitChildren_" data-uid="DotNext.Linq.Expressions.AsyncResultExpression.VisitChildren*"></a>
   <h4 id="DotNext_Linq_Expressions_AsyncResultExpression_VisitChildren_System_Linq_Expressions_ExpressionVisitor_" data-uid="DotNext.Linq.Expressions.AsyncResultExpression.VisitChildren(System.Linq.Expressions.ExpressionVisitor)">VisitChildren(ExpressionVisitor)</h4>
@@ -1624,6 +1565,18 @@ using Lowering technique.</p>
   </div>
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Index_System_Linq_Expressions_Expression_System_Boolean_">ExpressionBuilder.Index(Expression, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_AsNullable_System_Linq_Expressions_Expression_">ExpressionBuilder.AsNullable(Expression)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_AsOptional_System_Linq_Expressions_Expression_">ExpressionBuilder.AsOptional(Expression)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_AsResult_System_Linq_Expressions_Expression_">ExpressionBuilder.AsResult(Expression)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_AsDynamic_System_Linq_Expressions_Expression_">ExpressionBuilder.AsDynamic(Expression)</a>
   </div>
   <h3 id="seealso">See Also</h3>
   <div class="seealso">

@@ -99,7 +99,8 @@ primitive data types.</p>
   <h6><strong>Assembly</strong>: DotNext.Metaprogramming.dll</h6>
   <h5 id="DotNext_Linq_Expressions_UniversalExpression_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public struct UniversalExpression : IExpressionBuilder&lt;Expression&gt;, IDynamicMetaObjectProvider, IEquatable&lt;UniversalExpression&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use ExpressionBuilder.AsDynamic method for building expressions dynamically&quot;)]
+public struct UniversalExpression : IExpressionBuilder&lt;Expression&gt;, IDynamicMetaObjectProvider, IEquatable&lt;UniversalExpression&gt;</code></pre>
   </div>
   <h5 id="DotNext_Linq_Expressions_UniversalExpression_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>This class is intended for expression building purposes only.</p>
@@ -111,7 +112,7 @@ primitive data types.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_NodeType.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.NodeType%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L36">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L38">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_NodeType_" data-uid="DotNext.Linq.Expressions.UniversalExpression.NodeType*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_NodeType" data-uid="DotNext.Linq.Expressions.UniversalExpression.NodeType">NodeType</h4>
@@ -142,7 +143,7 @@ primitive data types.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_Type.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.Type%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L31">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L33">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_Type_" data-uid="DotNext.Linq.Expressions.UniversalExpression.Type*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_Type" data-uid="DotNext.Linq.Expressions.UniversalExpression.Type">Type</h4>
@@ -175,7 +176,7 @@ primitive data types.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_AndAlso_DotNext_Linq_Expressions_UniversalExpression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.AndAlso(DotNext.Linq.Expressions.UniversalExpression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L618">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L620">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_AndAlso_" data-uid="DotNext.Linq.Expressions.UniversalExpression.AndAlso*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_AndAlso_DotNext_Linq_Expressions_UniversalExpression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.AndAlso(DotNext.Linq.Expressions.UniversalExpression)">AndAlso(UniversalExpression)</h4>
@@ -226,7 +227,7 @@ AND operation that evaluates the second operand only if the this expression eval
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_AndAlso_System_Linq_Expressions_Expression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.AndAlso(System.Linq.Expressions.Expression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L610">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L612">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_AndAlso_" data-uid="DotNext.Linq.Expressions.UniversalExpression.AndAlso*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_AndAlso_System_Linq_Expressions_Expression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.AndAlso(System.Linq.Expressions.Expression)">AndAlso(Expression)</h4>
@@ -277,7 +278,7 @@ AND operation that evaluates the second operand only if the this expression eval
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_ArrayLength.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.ArrayLength%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L653">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L655">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_ArrayLength_" data-uid="DotNext.Linq.Expressions.UniversalExpression.ArrayLength*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_ArrayLength" data-uid="DotNext.Linq.Expressions.UniversalExpression.ArrayLength">ArrayLength()</h4>
@@ -309,7 +310,7 @@ AND operation that evaluates the second operand only if the this expression eval
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_Await.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.Await%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L541">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L543">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_Await_" data-uid="DotNext.Linq.Expressions.UniversalExpression.Await*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_Await" data-uid="DotNext.Linq.Expressions.UniversalExpression.Await">Await()</h4>
@@ -345,7 +346,7 @@ AND operation that evaluates the second operand only if the this expression eval
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_Call_System_Reflection_MethodInfo_System_Linq_Expressions_Expression___.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.Call(System.Reflection.MethodInfo%2CSystem.Linq.Expressions.Expression%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L661">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L663">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_Call_" data-uid="DotNext.Linq.Expressions.UniversalExpression.Call*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_Call_System_Reflection_MethodInfo_System_Linq_Expressions_Expression___" data-uid="DotNext.Linq.Expressions.UniversalExpression.Call(System.Reflection.MethodInfo,System.Linq.Expressions.Expression[])">Call(MethodInfo, Expression[])</h4>
@@ -401,7 +402,7 @@ AND operation that evaluates the second operand only if the this expression eval
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_Call_System_String_System_Linq_Expressions_Expression___.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.Call(System.String%2CSystem.Linq.Expressions.Expression%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L669">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L671">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_Call_" data-uid="DotNext.Linq.Expressions.UniversalExpression.Call*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_Call_System_String_System_Linq_Expressions_Expression___" data-uid="DotNext.Linq.Expressions.UniversalExpression.Call(System.String,System.Linq.Expressions.Expression[])">Call(String, Expression[])</h4>
@@ -457,7 +458,7 @@ AND operation that evaluates the second operand only if the this expression eval
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_Call_System_Type_System_String_System_Linq_Expressions_Expression___.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.Call(System.Type%2CSystem.String%2CSystem.Linq.Expressions.Expression%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L678">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L680">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_Call_" data-uid="DotNext.Linq.Expressions.UniversalExpression.Call*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_Call_System_Type_System_String_System_Linq_Expressions_Expression___" data-uid="DotNext.Linq.Expressions.UniversalExpression.Call(System.Type,System.String,System.Linq.Expressions.Expression[])">Call(Type, String, Expression[])</h4>
@@ -519,7 +520,7 @@ AND operation that evaluates the second operand only if the this expression eval
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_Concat_System_Linq_Expressions_Expression___.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.Concat(System.Linq.Expressions.Expression%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L728">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L730">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_Concat_" data-uid="DotNext.Linq.Expressions.UniversalExpression.Concat*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_Concat_System_Linq_Expressions_Expression___" data-uid="DotNext.Linq.Expressions.UniversalExpression.Concat(System.Linq.Expressions.Expression[])">Concat(Expression[])</h4>
@@ -569,7 +570,7 @@ AND operation that evaluates the second operand only if the this expression eval
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_Condition_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_System_Type_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.Condition(System.Linq.Expressions.Expression%2CSystem.Linq.Expressions.Expression%2CSystem.Type)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L758">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L760">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_Condition_" data-uid="DotNext.Linq.Expressions.UniversalExpression.Condition*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_Condition_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_System_Type_" data-uid="DotNext.Linq.Expressions.UniversalExpression.Condition(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression,System.Type)">Condition(Expression, Expression, Type)</h4>
@@ -631,7 +632,7 @@ AND operation that evaluates the second operand only if the this expression eval
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_Condition__1_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.Condition%60%601(System.Linq.Expressions.Expression%2CSystem.Linq.Expressions.Expression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L768">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L770">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_Condition_" data-uid="DotNext.Linq.Expressions.UniversalExpression.Condition*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_Condition__1_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.Condition``1(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression)">Condition&lt;TResult&gt;(Expression, Expression)</h4>
@@ -703,7 +704,7 @@ AND operation that evaluates the second operand only if the this expression eval
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_Convert_System_Type_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.Convert(System.Type)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L548">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L550">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_Convert_" data-uid="DotNext.Linq.Expressions.UniversalExpression.Convert*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_Convert_System_Type_" data-uid="DotNext.Linq.Expressions.UniversalExpression.Convert(System.Type)">Convert(Type)</h4>
@@ -753,7 +754,7 @@ AND operation that evaluates the second operand only if the this expression eval
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_Convert__1.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.Convert%60%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L555">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L557">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_Convert_" data-uid="DotNext.Linq.Expressions.UniversalExpression.Convert*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_Convert__1" data-uid="DotNext.Linq.Expressions.UniversalExpression.Convert``1">Convert&lt;T&gt;()</h4>
@@ -801,7 +802,7 @@ AND operation that evaluates the second operand only if the this expression eval
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_ElementAt_System_Linq_Expressions_Expression___.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.ElementAt(System.Linq.Expressions.Expression%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L647">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L649">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_ElementAt_" data-uid="DotNext.Linq.Expressions.UniversalExpression.ElementAt*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_ElementAt_System_Linq_Expressions_Expression___" data-uid="DotNext.Linq.Expressions.UniversalExpression.ElementAt(System.Linq.Expressions.Expression[])">ElementAt(Expression[])</h4>
@@ -851,7 +852,7 @@ AND operation that evaluates the second operand only if the this expression eval
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_Equals_DotNext_Linq_Expressions_UniversalExpression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.Equals(DotNext.Linq.Expressions.UniversalExpression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L805">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L807">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_Equals_" data-uid="DotNext.Linq.Expressions.UniversalExpression.Equals*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_Equals_DotNext_Linq_Expressions_UniversalExpression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.Equals(DotNext.Linq.Expressions.UniversalExpression)">Equals(UniversalExpression)</h4>
@@ -902,7 +903,7 @@ represents the same underlying expression as other.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_Equals_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.Equals(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L813">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L815">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_Equals_" data-uid="DotNext.Linq.Expressions.UniversalExpression.Equals*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_Equals_System_Object_" data-uid="DotNext.Linq.Expressions.UniversalExpression.Equals(System.Object)">Equals(Object)</h4>
@@ -955,7 +956,7 @@ represents the same underlying expression as other.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_Field_System_Reflection_FieldInfo_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.Field(System.Reflection.FieldInfo)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L714">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L716">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_Field_" data-uid="DotNext.Linq.Expressions.UniversalExpression.Field*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_Field_System_Reflection_FieldInfo_" data-uid="DotNext.Linq.Expressions.UniversalExpression.Field(System.Reflection.FieldInfo)">Field(FieldInfo)</h4>
@@ -1005,7 +1006,7 @@ represents the same underlying expression as other.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_Field_System_String_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.Field(System.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L721">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L723">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_Field_" data-uid="DotNext.Linq.Expressions.UniversalExpression.Field*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_Field_System_String_" data-uid="DotNext.Linq.Expressions.UniversalExpression.Field(System.String)">Field(String)</h4>
@@ -1055,7 +1056,7 @@ represents the same underlying expression as other.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.GetHashCode%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L797">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L799">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_GetHashCode_" data-uid="DotNext.Linq.Expressions.UniversalExpression.GetHashCode*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_GetHashCode" data-uid="DotNext.Linq.Expressions.UniversalExpression.GetHashCode">GetHashCode()</h4>
@@ -1089,7 +1090,7 @@ represents the same underlying expression as other.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_Index_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.Index(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L782">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L784">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_Index_" data-uid="DotNext.Linq.Expressions.UniversalExpression.Index*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_Index_System_Boolean_" data-uid="DotNext.Linq.Expressions.UniversalExpression.Index(System.Boolean)">Index(Boolean)</h4>
@@ -1139,7 +1140,7 @@ represents the same underlying expression as other.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_InstanceOf_System_Type_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.InstanceOf(System.Type)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L562">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L564">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_InstanceOf_" data-uid="DotNext.Linq.Expressions.UniversalExpression.InstanceOf*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_InstanceOf_System_Type_" data-uid="DotNext.Linq.Expressions.UniversalExpression.InstanceOf(System.Type)">InstanceOf(Type)</h4>
@@ -1189,7 +1190,7 @@ represents the same underlying expression as other.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_InstanceOf__1.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.InstanceOf%60%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L570">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L572">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_InstanceOf_" data-uid="DotNext.Linq.Expressions.UniversalExpression.InstanceOf*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_InstanceOf__1" data-uid="DotNext.Linq.Expressions.UniversalExpression.InstanceOf``1">InstanceOf&lt;T&gt;()</h4>
@@ -1237,7 +1238,7 @@ represents the same underlying expression as other.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_Invoke_System_Linq_Expressions_Expression___.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.Invoke(System.Linq.Expressions.Expression%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L640">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L642">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_Invoke_" data-uid="DotNext.Linq.Expressions.UniversalExpression.Invoke*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_Invoke_System_Linq_Expressions_Expression___" data-uid="DotNext.Linq.Expressions.UniversalExpression.Invoke(System.Linq.Expressions.Expression[])">Invoke(Expression[])</h4>
@@ -1287,7 +1288,7 @@ represents the same underlying expression as other.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_Loop.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.Loop%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L749">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L751">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_Loop_" data-uid="DotNext.Linq.Expressions.UniversalExpression.Loop*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_Loop" data-uid="DotNext.Linq.Expressions.UniversalExpression.Loop">Loop()</h4>
@@ -1319,7 +1320,7 @@ represents the same underlying expression as other.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_Loop_System_Linq_Expressions_LabelTarget_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.Loop(System.Linq.Expressions.LabelTarget)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L743">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L745">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_Loop_" data-uid="DotNext.Linq.Expressions.UniversalExpression.Loop*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_Loop_System_Linq_Expressions_LabelTarget_" data-uid="DotNext.Linq.Expressions.UniversalExpression.Loop(System.Linq.Expressions.LabelTarget)">Loop(LabelTarget)</h4>
@@ -1369,7 +1370,7 @@ represents the same underlying expression as other.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_Loop_System_Linq_Expressions_LabelTarget_System_Linq_Expressions_LabelTarget_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.Loop(System.Linq.Expressions.LabelTarget%2CSystem.Linq.Expressions.LabelTarget)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L736">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L738">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_Loop_" data-uid="DotNext.Linq.Expressions.UniversalExpression.Loop*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_Loop_System_Linq_Expressions_LabelTarget_System_Linq_Expressions_LabelTarget_" data-uid="DotNext.Linq.Expressions.UniversalExpression.Loop(System.Linq.Expressions.LabelTarget,System.Linq.Expressions.LabelTarget)">Loop(LabelTarget, LabelTarget)</h4>
@@ -1425,7 +1426,7 @@ represents the same underlying expression as other.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_Exponent_DotNext_Linq_Expressions_UniversalExpression_DotNext_Linq_Expressions_UniversalExpression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_Exponent(DotNext.Linq.Expressions.UniversalExpression%2CDotNext.Linq.Expressions.UniversalExpression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L464">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L466">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_Exponent_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Exponent*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_Exponent_DotNext_Linq_Expressions_UniversalExpression_DotNext_Linq_Expressions_UniversalExpression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Exponent(DotNext.Linq.Expressions.UniversalExpression,DotNext.Linq.Expressions.UniversalExpression)">op_Exponent(UniversalExpression, UniversalExpression)</h4>
@@ -1481,7 +1482,7 @@ represents the same underlying expression as other.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_Exponent_DotNext_Linq_Expressions_UniversalExpression_System_Linq_Expressions_Expression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_Exponent(DotNext.Linq.Expressions.UniversalExpression%2CSystem.Linq.Expressions.Expression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L477">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L479">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_Exponent_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Exponent*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_Exponent_DotNext_Linq_Expressions_UniversalExpression_System_Linq_Expressions_Expression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Exponent(DotNext.Linq.Expressions.UniversalExpression,System.Linq.Expressions.Expression)">op_Exponent(UniversalExpression, Expression)</h4>
@@ -1537,7 +1538,7 @@ represents the same underlying expression as other.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_LeftShift_DotNext_Linq_Expressions_UniversalExpression_DotNext_Linq_Expressions_UniversalExpression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_LeftShift(DotNext.Linq.Expressions.UniversalExpression%2CDotNext.Linq.Expressions.UniversalExpression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L490">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L492">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_LeftShift_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_LeftShift*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_LeftShift_DotNext_Linq_Expressions_UniversalExpression_DotNext_Linq_Expressions_UniversalExpression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_LeftShift(DotNext.Linq.Expressions.UniversalExpression,DotNext.Linq.Expressions.UniversalExpression)">op_LeftShift(UniversalExpression, UniversalExpression)</h4>
@@ -1593,7 +1594,7 @@ represents the same underlying expression as other.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_LeftShift_DotNext_Linq_Expressions_UniversalExpression_System_Linq_Expressions_Expression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_LeftShift(DotNext.Linq.Expressions.UniversalExpression%2CSystem.Linq.Expressions.Expression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L503">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L505">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_LeftShift_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_LeftShift*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_LeftShift_DotNext_Linq_Expressions_UniversalExpression_System_Linq_Expressions_Expression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_LeftShift(DotNext.Linq.Expressions.UniversalExpression,System.Linq.Expressions.Expression)">op_LeftShift(UniversalExpression, Expression)</h4>
@@ -1649,7 +1650,7 @@ represents the same underlying expression as other.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_RightShift_DotNext_Linq_Expressions_UniversalExpression_DotNext_Linq_Expressions_UniversalExpression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_RightShift(DotNext.Linq.Expressions.UniversalExpression%2CDotNext.Linq.Expressions.UniversalExpression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L516">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L518">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_RightShift_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_RightShift*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_RightShift_DotNext_Linq_Expressions_UniversalExpression_DotNext_Linq_Expressions_UniversalExpression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_RightShift(DotNext.Linq.Expressions.UniversalExpression,DotNext.Linq.Expressions.UniversalExpression)">op_RightShift(UniversalExpression, UniversalExpression)</h4>
@@ -1705,7 +1706,7 @@ represents the same underlying expression as other.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_RightShift_DotNext_Linq_Expressions_UniversalExpression_System_Linq_Expressions_Expression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_RightShift(DotNext.Linq.Expressions.UniversalExpression%2CSystem.Linq.Expressions.Expression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L529">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L531">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_RightShift_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_RightShift*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_RightShift_DotNext_Linq_Expressions_UniversalExpression_System_Linq_Expressions_Expression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_RightShift(DotNext.Linq.Expressions.UniversalExpression,System.Linq.Expressions.Expression)">op_RightShift(UniversalExpression, Expression)</h4>
@@ -1761,7 +1762,7 @@ represents the same underlying expression as other.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_OrElse_DotNext_Linq_Expressions_UniversalExpression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.OrElse(DotNext.Linq.Expressions.UniversalExpression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L602">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L604">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_OrElse_" data-uid="DotNext.Linq.Expressions.UniversalExpression.OrElse*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_OrElse_DotNext_Linq_Expressions_UniversalExpression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.OrElse(DotNext.Linq.Expressions.UniversalExpression)">OrElse(UniversalExpression)</h4>
@@ -1812,7 +1813,7 @@ OR operation that evaluates the second operand only if the this expression evalu
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_OrElse_System_Linq_Expressions_Expression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.OrElse(System.Linq.Expressions.Expression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L594">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L596">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_OrElse_" data-uid="DotNext.Linq.Expressions.UniversalExpression.OrElse*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_OrElse_System_Linq_Expressions_Expression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.OrElse(System.Linq.Expressions.Expression)">OrElse(Expression)</h4>
@@ -1863,7 +1864,7 @@ OR operation that evaluates the second operand only if the this expression evalu
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_Property_System_Reflection_PropertyInfo_System_Linq_Expressions_Expression___.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.Property(System.Reflection.PropertyInfo%2CSystem.Linq.Expressions.Expression%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L687">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L689">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_Property_" data-uid="DotNext.Linq.Expressions.UniversalExpression.Property*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_Property_System_Reflection_PropertyInfo_System_Linq_Expressions_Expression___" data-uid="DotNext.Linq.Expressions.UniversalExpression.Property(System.Reflection.PropertyInfo,System.Linq.Expressions.Expression[])">Property(PropertyInfo, Expression[])</h4>
@@ -1919,7 +1920,7 @@ OR operation that evaluates the second operand only if the this expression evalu
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_Property_System_String_System_Linq_Expressions_Expression___.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.Property(System.String%2CSystem.Linq.Expressions.Expression%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L706">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L708">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_Property_" data-uid="DotNext.Linq.Expressions.UniversalExpression.Property*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_Property_System_String_System_Linq_Expressions_Expression___" data-uid="DotNext.Linq.Expressions.UniversalExpression.Property(System.String,System.Linq.Expressions.Expression[])">Property(String, Expression[])</h4>
@@ -1975,7 +1976,7 @@ OR operation that evaluates the second operand only if the this expression evalu
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_Property_System_Type_System_String_System_Linq_Expressions_Expression___.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.Property(System.Type%2CSystem.String%2CSystem.Linq.Expressions.Expression%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L697">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L699">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_Property_" data-uid="DotNext.Linq.Expressions.UniversalExpression.Property*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_Property_System_Type_System_String_System_Linq_Expressions_Expression___" data-uid="DotNext.Linq.Expressions.UniversalExpression.Property(System.Type,System.String,System.Linq.Expressions.Expression[])">Property(Type, String, Expression[])</h4>
@@ -2037,7 +2038,7 @@ OR operation that evaluates the second operand only if the this expression evalu
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_Slice_System_Linq_Expressions_Expression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.Slice(System.Linq.Expressions.Expression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L790">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L792">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_Slice_" data-uid="DotNext.Linq.Expressions.UniversalExpression.Slice*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_Slice_System_Linq_Expressions_Expression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.Slice(System.Linq.Expressions.Expression)">Slice(Expression)</h4>
@@ -2087,7 +2088,7 @@ OR operation that evaluates the second operand only if the this expression evalu
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_Throw.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.Throw%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L775">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L777">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_Throw_" data-uid="DotNext.Linq.Expressions.UniversalExpression.Throw*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_Throw" data-uid="DotNext.Linq.Expressions.UniversalExpression.Throw">Throw()</h4>
@@ -2119,7 +2120,7 @@ OR operation that evaluates the second operand only if the this expression evalu
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_ToString.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L824">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L826">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_ToString_" data-uid="DotNext.Linq.Expressions.UniversalExpression.ToString*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_ToString" data-uid="DotNext.Linq.Expressions.UniversalExpression.ToString">ToString()</h4>
@@ -2153,7 +2154,7 @@ OR operation that evaluates the second operand only if the this expression evalu
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_TryConvert_System_Type_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.TryConvert(System.Type)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L578">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L580">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_TryConvert_" data-uid="DotNext.Linq.Expressions.UniversalExpression.TryConvert*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_TryConvert_System_Type_" data-uid="DotNext.Linq.Expressions.UniversalExpression.TryConvert(System.Type)">TryConvert(Type)</h4>
@@ -2204,7 +2205,7 @@ reference or boxing conversion where <span class="xref">null</span> is supplied 
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_TryConvert__1.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.TryConvert%60%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L586">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L588">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_TryConvert_" data-uid="DotNext.Linq.Expressions.UniversalExpression.TryConvert*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_TryConvert__1" data-uid="DotNext.Linq.Expressions.UniversalExpression.TryConvert``1">TryConvert&lt;T&gt;()</h4>
@@ -2253,7 +2254,7 @@ reference or boxing conversion where <span class="xref">null</span> is supplied 
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_Unbox_System_Type_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.Unbox(System.Type)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L625">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L627">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_Unbox_" data-uid="DotNext.Linq.Expressions.UniversalExpression.Unbox*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_Unbox_System_Type_" data-uid="DotNext.Linq.Expressions.UniversalExpression.Unbox(System.Type)">Unbox(Type)</h4>
@@ -2303,7 +2304,7 @@ reference or boxing conversion where <span class="xref">null</span> is supplied 
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_Unbox__1.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.Unbox%60%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L632">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L634">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_Unbox_" data-uid="DotNext.Linq.Expressions.UniversalExpression.Unbox*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_Unbox__1" data-uid="DotNext.Linq.Expressions.UniversalExpression.Unbox``1">Unbox&lt;T&gt;()</h4>
@@ -2355,7 +2356,7 @@ reference or boxing conversion where <span class="xref">null</span> is supplied 
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_Addition_DotNext_Linq_Expressions_UniversalExpression_DotNext_Linq_Expressions_UniversalExpression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_Addition(DotNext.Linq.Expressions.UniversalExpression%2CDotNext.Linq.Expressions.UniversalExpression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L194">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L196">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_Addition_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Addition*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_Addition_DotNext_Linq_Expressions_UniversalExpression_DotNext_Linq_Expressions_UniversalExpression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Addition(DotNext.Linq.Expressions.UniversalExpression,DotNext.Linq.Expressions.UniversalExpression)">Addition(UniversalExpression, UniversalExpression)</h4>
@@ -2411,7 +2412,7 @@ reference or boxing conversion where <span class="xref">null</span> is supplied 
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_Addition_DotNext_Linq_Expressions_UniversalExpression_System_Linq_Expressions_Expression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_Addition(DotNext.Linq.Expressions.UniversalExpression%2CSystem.Linq.Expressions.Expression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L203">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L205">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_Addition_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Addition*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_Addition_DotNext_Linq_Expressions_UniversalExpression_System_Linq_Expressions_Expression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Addition(DotNext.Linq.Expressions.UniversalExpression,System.Linq.Expressions.Expression)">Addition(UniversalExpression, Expression)</h4>
@@ -2467,7 +2468,7 @@ reference or boxing conversion where <span class="xref">null</span> is supplied 
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_BitwiseAnd_DotNext_Linq_Expressions_UniversalExpression_DotNext_Linq_Expressions_UniversalExpression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_BitwiseAnd(DotNext.Linq.Expressions.UniversalExpression%2CDotNext.Linq.Expressions.UniversalExpression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L356">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L358">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_BitwiseAnd_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_BitwiseAnd*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_BitwiseAnd_DotNext_Linq_Expressions_UniversalExpression_DotNext_Linq_Expressions_UniversalExpression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_BitwiseAnd(DotNext.Linq.Expressions.UniversalExpression,DotNext.Linq.Expressions.UniversalExpression)">BitwiseAnd(UniversalExpression, UniversalExpression)</h4>
@@ -2523,7 +2524,7 @@ reference or boxing conversion where <span class="xref">null</span> is supplied 
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_BitwiseAnd_DotNext_Linq_Expressions_UniversalExpression_System_Linq_Expressions_Expression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_BitwiseAnd(DotNext.Linq.Expressions.UniversalExpression%2CSystem.Linq.Expressions.Expression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L365">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L367">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_BitwiseAnd_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_BitwiseAnd*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_BitwiseAnd_DotNext_Linq_Expressions_UniversalExpression_System_Linq_Expressions_Expression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_BitwiseAnd(DotNext.Linq.Expressions.UniversalExpression,System.Linq.Expressions.Expression)">BitwiseAnd(UniversalExpression, Expression)</h4>
@@ -2579,7 +2580,7 @@ reference or boxing conversion where <span class="xref">null</span> is supplied 
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_BitwiseOr_DotNext_Linq_Expressions_UniversalExpression_DotNext_Linq_Expressions_UniversalExpression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_BitwiseOr(DotNext.Linq.Expressions.UniversalExpression%2CDotNext.Linq.Expressions.UniversalExpression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L338">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L340">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_BitwiseOr_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_BitwiseOr*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_BitwiseOr_DotNext_Linq_Expressions_UniversalExpression_DotNext_Linq_Expressions_UniversalExpression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_BitwiseOr(DotNext.Linq.Expressions.UniversalExpression,DotNext.Linq.Expressions.UniversalExpression)">BitwiseOr(UniversalExpression, UniversalExpression)</h4>
@@ -2635,7 +2636,7 @@ reference or boxing conversion where <span class="xref">null</span> is supplied 
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_BitwiseOr_DotNext_Linq_Expressions_UniversalExpression_System_Linq_Expressions_Expression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_BitwiseOr(DotNext.Linq.Expressions.UniversalExpression%2CSystem.Linq.Expressions.Expression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L347">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L349">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_BitwiseOr_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_BitwiseOr*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_BitwiseOr_DotNext_Linq_Expressions_UniversalExpression_System_Linq_Expressions_Expression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_BitwiseOr(DotNext.Linq.Expressions.UniversalExpression,System.Linq.Expressions.Expression)">BitwiseOr(UniversalExpression, Expression)</h4>
@@ -2691,7 +2692,7 @@ reference or boxing conversion where <span class="xref">null</span> is supplied 
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_Division_DotNext_Linq_Expressions_UniversalExpression_DotNext_Linq_Expressions_UniversalExpression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_Division(DotNext.Linq.Expressions.UniversalExpression%2CDotNext.Linq.Expressions.UniversalExpression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L320">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L322">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_Division_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Division*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_Division_DotNext_Linq_Expressions_UniversalExpression_DotNext_Linq_Expressions_UniversalExpression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Division(DotNext.Linq.Expressions.UniversalExpression,DotNext.Linq.Expressions.UniversalExpression)">Division(UniversalExpression, UniversalExpression)</h4>
@@ -2747,7 +2748,7 @@ reference or boxing conversion where <span class="xref">null</span> is supplied 
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_Division_DotNext_Linq_Expressions_UniversalExpression_System_Linq_Expressions_Expression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_Division(DotNext.Linq.Expressions.UniversalExpression%2CSystem.Linq.Expressions.Expression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L329">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L331">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_Division_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Division*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_Division_DotNext_Linq_Expressions_UniversalExpression_System_Linq_Expressions_Expression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Division(DotNext.Linq.Expressions.UniversalExpression,System.Linq.Expressions.Expression)">Division(UniversalExpression, Expression)</h4>
@@ -2803,7 +2804,7 @@ reference or boxing conversion where <span class="xref">null</span> is supplied 
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_Equality_DotNext_Linq_Expressions_UniversalExpression_DotNext_Linq_Expressions_UniversalExpression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_Equality(DotNext.Linq.Expressions.UniversalExpression%2CDotNext.Linq.Expressions.UniversalExpression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L392">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L394">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_Equality_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Equality*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_Equality_DotNext_Linq_Expressions_UniversalExpression_DotNext_Linq_Expressions_UniversalExpression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Equality(DotNext.Linq.Expressions.UniversalExpression,DotNext.Linq.Expressions.UniversalExpression)">Equality(UniversalExpression, UniversalExpression)</h4>
@@ -2859,7 +2860,7 @@ reference or boxing conversion where <span class="xref">null</span> is supplied 
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_Equality_DotNext_Linq_Expressions_UniversalExpression_System_Linq_Expressions_Expression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_Equality(DotNext.Linq.Expressions.UniversalExpression%2CSystem.Linq.Expressions.Expression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L401">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L403">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_Equality_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Equality*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_Equality_DotNext_Linq_Expressions_UniversalExpression_System_Linq_Expressions_Expression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Equality(DotNext.Linq.Expressions.UniversalExpression,System.Linq.Expressions.Expression)">Equality(UniversalExpression, Expression)</h4>
@@ -2915,7 +2916,7 @@ reference or boxing conversion where <span class="xref">null</span> is supplied 
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_ExclusiveOr_DotNext_Linq_Expressions_UniversalExpression_DotNext_Linq_Expressions_UniversalExpression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_ExclusiveOr(DotNext.Linq.Expressions.UniversalExpression%2CDotNext.Linq.Expressions.UniversalExpression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L374">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L376">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_ExclusiveOr_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_ExclusiveOr*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_ExclusiveOr_DotNext_Linq_Expressions_UniversalExpression_DotNext_Linq_Expressions_UniversalExpression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_ExclusiveOr(DotNext.Linq.Expressions.UniversalExpression,DotNext.Linq.Expressions.UniversalExpression)">ExclusiveOr(UniversalExpression, UniversalExpression)</h4>
@@ -2971,7 +2972,7 @@ reference or boxing conversion where <span class="xref">null</span> is supplied 
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_ExclusiveOr_DotNext_Linq_Expressions_UniversalExpression_System_Linq_Expressions_Expression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_ExclusiveOr(DotNext.Linq.Expressions.UniversalExpression%2CSystem.Linq.Expressions.Expression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L383">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L385">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_ExclusiveOr_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_ExclusiveOr*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_ExclusiveOr_DotNext_Linq_Expressions_UniversalExpression_System_Linq_Expressions_Expression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_ExclusiveOr(DotNext.Linq.Expressions.UniversalExpression,System.Linq.Expressions.Expression)">ExclusiveOr(UniversalExpression, Expression)</h4>
@@ -3027,7 +3028,7 @@ reference or boxing conversion where <span class="xref">null</span> is supplied 
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_Explicit_System_Linq_Expressions_Expression__DotNext_Linq_Expressions_UniversalExpression.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_Explicit(System.Linq.Expressions.Expression)~DotNext.Linq.Expressions.UniversalExpression%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L43">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L45">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_Explicit_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Explicit*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_Explicit_System_Linq_Expressions_Expression__DotNext_Linq_Expressions_UniversalExpression" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Explicit(System.Linq.Expressions.Expression)~DotNext.Linq.Expressions.UniversalExpression">Explicit(Expression to UniversalExpression)</h4>
@@ -3077,7 +3078,7 @@ reference or boxing conversion where <span class="xref">null</span> is supplied 
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_GreaterThan_DotNext_Linq_Expressions_UniversalExpression_DotNext_Linq_Expressions_UniversalExpression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_GreaterThan(DotNext.Linq.Expressions.UniversalExpression%2CDotNext.Linq.Expressions.UniversalExpression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L230">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L232">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_GreaterThan_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_GreaterThan*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_GreaterThan_DotNext_Linq_Expressions_UniversalExpression_DotNext_Linq_Expressions_UniversalExpression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_GreaterThan(DotNext.Linq.Expressions.UniversalExpression,DotNext.Linq.Expressions.UniversalExpression)">GreaterThan(UniversalExpression, UniversalExpression)</h4>
@@ -3133,7 +3134,7 @@ reference or boxing conversion where <span class="xref">null</span> is supplied 
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_GreaterThan_DotNext_Linq_Expressions_UniversalExpression_System_Linq_Expressions_Expression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_GreaterThan(DotNext.Linq.Expressions.UniversalExpression%2CSystem.Linq.Expressions.Expression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L239">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L241">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_GreaterThan_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_GreaterThan*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_GreaterThan_DotNext_Linq_Expressions_UniversalExpression_System_Linq_Expressions_Expression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_GreaterThan(DotNext.Linq.Expressions.UniversalExpression,System.Linq.Expressions.Expression)">GreaterThan(UniversalExpression, Expression)</h4>
@@ -3189,7 +3190,7 @@ reference or boxing conversion where <span class="xref">null</span> is supplied 
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_GreaterThanOrEqual_DotNext_Linq_Expressions_UniversalExpression_DotNext_Linq_Expressions_UniversalExpression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_GreaterThanOrEqual(DotNext.Linq.Expressions.UniversalExpression%2CDotNext.Linq.Expressions.UniversalExpression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L248">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L250">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_GreaterThanOrEqual_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_GreaterThanOrEqual*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_GreaterThanOrEqual_DotNext_Linq_Expressions_UniversalExpression_DotNext_Linq_Expressions_UniversalExpression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_GreaterThanOrEqual(DotNext.Linq.Expressions.UniversalExpression,DotNext.Linq.Expressions.UniversalExpression)">GreaterThanOrEqual(UniversalExpression, UniversalExpression)</h4>
@@ -3245,7 +3246,7 @@ reference or boxing conversion where <span class="xref">null</span> is supplied 
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_GreaterThanOrEqual_DotNext_Linq_Expressions_UniversalExpression_System_Linq_Expressions_Expression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_GreaterThanOrEqual(DotNext.Linq.Expressions.UniversalExpression%2CSystem.Linq.Expressions.Expression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L257">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L259">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_GreaterThanOrEqual_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_GreaterThanOrEqual*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_GreaterThanOrEqual_DotNext_Linq_Expressions_UniversalExpression_System_Linq_Expressions_Expression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_GreaterThanOrEqual(DotNext.Linq.Expressions.UniversalExpression,System.Linq.Expressions.Expression)">GreaterThanOrEqual(UniversalExpression, Expression)</h4>
@@ -3301,7 +3302,7 @@ reference or boxing conversion where <span class="xref">null</span> is supplied 
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_Implicit_DotNext_Linq_Expressions_UniversalExpression__System_Linq_Expressions_Expression.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_Implicit(DotNext.Linq.Expressions.UniversalExpression)~System.Linq.Expressions.Expression%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L49">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L51">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_Implicit_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Implicit*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_Implicit_DotNext_Linq_Expressions_UniversalExpression__System_Linq_Expressions_Expression" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Implicit(DotNext.Linq.Expressions.UniversalExpression)~System.Linq.Expressions.Expression">Implicit(UniversalExpression to Expression)</h4>
@@ -3350,7 +3351,7 @@ reference or boxing conversion where <span class="xref">null</span> is supplied 
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_Implicit_System_Boolean__DotNext_Linq_Expressions_UniversalExpression.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_Implicit(System.Boolean)~DotNext.Linq.Expressions.UniversalExpression%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L122">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L124">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_Implicit_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Implicit*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_Implicit_System_Boolean__DotNext_Linq_Expressions_UniversalExpression" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Implicit(System.Boolean)~DotNext.Linq.Expressions.UniversalExpression">Implicit(Boolean to UniversalExpression)</h4>
@@ -3399,7 +3400,7 @@ reference or boxing conversion where <span class="xref">null</span> is supplied 
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_Implicit_System_Byte__DotNext_Linq_Expressions_UniversalExpression.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_Implicit(System.Byte)~DotNext.Linq.Expressions.UniversalExpression%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L109">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L111">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_Implicit_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Implicit*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_Implicit_System_Byte__DotNext_Linq_Expressions_UniversalExpression" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Implicit(System.Byte)~DotNext.Linq.Expressions.UniversalExpression">Implicit(Byte to UniversalExpression)</h4>
@@ -3448,7 +3449,7 @@ reference or boxing conversion where <span class="xref">null</span> is supplied 
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_Implicit_System_Char__DotNext_Linq_Expressions_UniversalExpression.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_Implicit(System.Char)~DotNext.Linq.Expressions.UniversalExpression%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L152">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L154">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_Implicit_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Implicit*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_Implicit_System_Char__DotNext_Linq_Expressions_UniversalExpression" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Implicit(System.Char)~DotNext.Linq.Expressions.UniversalExpression">Implicit(Char to UniversalExpression)</h4>
@@ -3497,7 +3498,7 @@ reference or boxing conversion where <span class="xref">null</span> is supplied 
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_Implicit_System_Decimal__DotNext_Linq_Expressions_UniversalExpression.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_Implicit(System.Decimal)~DotNext.Linq.Expressions.UniversalExpression%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L134">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L136">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_Implicit_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Implicit*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_Implicit_System_Decimal__DotNext_Linq_Expressions_UniversalExpression" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Implicit(System.Decimal)~DotNext.Linq.Expressions.UniversalExpression">Implicit(Decimal to UniversalExpression)</h4>
@@ -3546,7 +3547,7 @@ reference or boxing conversion where <span class="xref">null</span> is supplied 
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_Implicit_System_Double__DotNext_Linq_Expressions_UniversalExpression.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_Implicit(System.Double)~DotNext.Linq.Expressions.UniversalExpression%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L146">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L148">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_Implicit_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Implicit*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_Implicit_System_Double__DotNext_Linq_Expressions_UniversalExpression" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Implicit(System.Double)~DotNext.Linq.Expressions.UniversalExpression">Implicit(Double to UniversalExpression)</h4>
@@ -3595,7 +3596,7 @@ reference or boxing conversion where <span class="xref">null</span> is supplied 
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_Implicit_System_FormattableString__DotNext_Linq_Expressions_UniversalExpression.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_Implicit(System.FormattableString)~DotNext.Linq.Expressions.UniversalExpression%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L158">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L160">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_Implicit_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Implicit*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_Implicit_System_FormattableString__DotNext_Linq_Expressions_UniversalExpression" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Implicit(System.FormattableString)~DotNext.Linq.Expressions.UniversalExpression">Implicit(FormattableString to UniversalExpression)</h4>
@@ -3644,7 +3645,7 @@ reference or boxing conversion where <span class="xref">null</span> is supplied 
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_Implicit_System_Int16__DotNext_Linq_Expressions_UniversalExpression.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_Implicit(System.Int16)~DotNext.Linq.Expressions.UniversalExpression%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L96">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L98">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_Implicit_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Implicit*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_Implicit_System_Int16__DotNext_Linq_Expressions_UniversalExpression" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Implicit(System.Int16)~DotNext.Linq.Expressions.UniversalExpression">Implicit(Int16 to UniversalExpression)</h4>
@@ -3693,7 +3694,7 @@ reference or boxing conversion where <span class="xref">null</span> is supplied 
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_Implicit_System_Int32__DotNext_Linq_Expressions_UniversalExpression.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_Implicit(System.Int32)~DotNext.Linq.Expressions.UniversalExpression%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L83">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L85">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_Implicit_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Implicit*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_Implicit_System_Int32__DotNext_Linq_Expressions_UniversalExpression" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Implicit(System.Int32)~DotNext.Linq.Expressions.UniversalExpression">Implicit(Int32 to UniversalExpression)</h4>
@@ -3742,7 +3743,7 @@ reference or boxing conversion where <span class="xref">null</span> is supplied 
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_Implicit_System_Int64__DotNext_Linq_Expressions_UniversalExpression.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_Implicit(System.Int64)~DotNext.Linq.Expressions.UniversalExpression%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L70">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L72">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_Implicit_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Implicit*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_Implicit_System_Int64__DotNext_Linq_Expressions_UniversalExpression" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Implicit(System.Int64)~DotNext.Linq.Expressions.UniversalExpression">Implicit(Int64 to UniversalExpression)</h4>
@@ -3791,7 +3792,7 @@ reference or boxing conversion where <span class="xref">null</span> is supplied 
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_Implicit_System_SByte__DotNext_Linq_Expressions_UniversalExpression.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_Implicit(System.SByte)~DotNext.Linq.Expressions.UniversalExpression%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L115">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L117">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_Implicit_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Implicit*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_Implicit_System_SByte__DotNext_Linq_Expressions_UniversalExpression" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Implicit(System.SByte)~DotNext.Linq.Expressions.UniversalExpression">Implicit(SByte to UniversalExpression)</h4>
@@ -3841,7 +3842,7 @@ public static implicit operator UniversalExpression(sbyte value)</code></pre>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_Implicit_System_Single__DotNext_Linq_Expressions_UniversalExpression.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_Implicit(System.Single)~DotNext.Linq.Expressions.UniversalExpression%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L140">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L142">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_Implicit_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Implicit*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_Implicit_System_Single__DotNext_Linq_Expressions_UniversalExpression" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Implicit(System.Single)~DotNext.Linq.Expressions.UniversalExpression">Implicit(Single to UniversalExpression)</h4>
@@ -3890,7 +3891,7 @@ public static implicit operator UniversalExpression(sbyte value)</code></pre>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_Implicit_System_String__DotNext_Linq_Expressions_UniversalExpression.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_Implicit(System.String)~DotNext.Linq.Expressions.UniversalExpression%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L128">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L130">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_Implicit_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Implicit*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_Implicit_System_String__DotNext_Linq_Expressions_UniversalExpression" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Implicit(System.String)~DotNext.Linq.Expressions.UniversalExpression">Implicit(String to UniversalExpression)</h4>
@@ -3939,7 +3940,7 @@ public static implicit operator UniversalExpression(sbyte value)</code></pre>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_Implicit_System_UInt16__DotNext_Linq_Expressions_UniversalExpression.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_Implicit(System.UInt16)~DotNext.Linq.Expressions.UniversalExpression%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L102">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L104">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_Implicit_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Implicit*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_Implicit_System_UInt16__DotNext_Linq_Expressions_UniversalExpression" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Implicit(System.UInt16)~DotNext.Linq.Expressions.UniversalExpression">Implicit(UInt16 to UniversalExpression)</h4>
@@ -3989,7 +3990,7 @@ public static implicit operator UniversalExpression(ushort value)</code></pre>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_Implicit_System_UInt32__DotNext_Linq_Expressions_UniversalExpression.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_Implicit(System.UInt32)~DotNext.Linq.Expressions.UniversalExpression%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L89">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L91">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_Implicit_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Implicit*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_Implicit_System_UInt32__DotNext_Linq_Expressions_UniversalExpression" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Implicit(System.UInt32)~DotNext.Linq.Expressions.UniversalExpression">Implicit(UInt32 to UniversalExpression)</h4>
@@ -4039,7 +4040,7 @@ public static implicit operator UniversalExpression(uint value)</code></pre>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_Implicit_System_UInt64__DotNext_Linq_Expressions_UniversalExpression.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_Implicit(System.UInt64)~DotNext.Linq.Expressions.UniversalExpression%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L76">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L78">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_Implicit_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Implicit*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_Implicit_System_UInt64__DotNext_Linq_Expressions_UniversalExpression" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Implicit(System.UInt64)~DotNext.Linq.Expressions.UniversalExpression">Implicit(UInt64 to UniversalExpression)</h4>
@@ -4089,7 +4090,7 @@ public static implicit operator UniversalExpression(ulong value)</code></pre>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_Inequality_DotNext_Linq_Expressions_UniversalExpression_DotNext_Linq_Expressions_UniversalExpression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_Inequality(DotNext.Linq.Expressions.UniversalExpression%2CDotNext.Linq.Expressions.UniversalExpression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L410">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L412">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_Inequality_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Inequality*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_Inequality_DotNext_Linq_Expressions_UniversalExpression_DotNext_Linq_Expressions_UniversalExpression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Inequality(DotNext.Linq.Expressions.UniversalExpression,DotNext.Linq.Expressions.UniversalExpression)">Inequality(UniversalExpression, UniversalExpression)</h4>
@@ -4145,7 +4146,7 @@ public static implicit operator UniversalExpression(ulong value)</code></pre>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_Inequality_DotNext_Linq_Expressions_UniversalExpression_System_Linq_Expressions_Expression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_Inequality(DotNext.Linq.Expressions.UniversalExpression%2CSystem.Linq.Expressions.Expression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L419">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L421">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_Inequality_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Inequality*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_Inequality_DotNext_Linq_Expressions_UniversalExpression_System_Linq_Expressions_Expression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Inequality(DotNext.Linq.Expressions.UniversalExpression,System.Linq.Expressions.Expression)">Inequality(UniversalExpression, Expression)</h4>
@@ -4201,7 +4202,7 @@ public static implicit operator UniversalExpression(ulong value)</code></pre>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_LeftShift_DotNext_Linq_Expressions_UniversalExpression_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_LeftShift(DotNext.Linq.Expressions.UniversalExpression%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L455">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L457">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_LeftShift_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_LeftShift*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_LeftShift_DotNext_Linq_Expressions_UniversalExpression_System_Int32_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_LeftShift(DotNext.Linq.Expressions.UniversalExpression,System.Int32)">LeftShift(UniversalExpression, Int32)</h4>
@@ -4257,7 +4258,7 @@ public static implicit operator UniversalExpression(ulong value)</code></pre>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_LessThan_DotNext_Linq_Expressions_UniversalExpression_DotNext_Linq_Expressions_UniversalExpression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_LessThan(DotNext.Linq.Expressions.UniversalExpression%2CDotNext.Linq.Expressions.UniversalExpression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L266">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L268">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_LessThan_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_LessThan*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_LessThan_DotNext_Linq_Expressions_UniversalExpression_DotNext_Linq_Expressions_UniversalExpression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_LessThan(DotNext.Linq.Expressions.UniversalExpression,DotNext.Linq.Expressions.UniversalExpression)">LessThan(UniversalExpression, UniversalExpression)</h4>
@@ -4313,7 +4314,7 @@ public static implicit operator UniversalExpression(ulong value)</code></pre>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_LessThan_DotNext_Linq_Expressions_UniversalExpression_System_Linq_Expressions_Expression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_LessThan(DotNext.Linq.Expressions.UniversalExpression%2CSystem.Linq.Expressions.Expression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L275">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L277">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_LessThan_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_LessThan*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_LessThan_DotNext_Linq_Expressions_UniversalExpression_System_Linq_Expressions_Expression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_LessThan(DotNext.Linq.Expressions.UniversalExpression,System.Linq.Expressions.Expression)">LessThan(UniversalExpression, Expression)</h4>
@@ -4369,7 +4370,7 @@ public static implicit operator UniversalExpression(ulong value)</code></pre>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_LessThanOrEqual_DotNext_Linq_Expressions_UniversalExpression_DotNext_Linq_Expressions_UniversalExpression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_LessThanOrEqual(DotNext.Linq.Expressions.UniversalExpression%2CDotNext.Linq.Expressions.UniversalExpression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L284">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L286">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_LessThanOrEqual_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_LessThanOrEqual*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_LessThanOrEqual_DotNext_Linq_Expressions_UniversalExpression_DotNext_Linq_Expressions_UniversalExpression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_LessThanOrEqual(DotNext.Linq.Expressions.UniversalExpression,DotNext.Linq.Expressions.UniversalExpression)">LessThanOrEqual(UniversalExpression, UniversalExpression)</h4>
@@ -4425,7 +4426,7 @@ public static implicit operator UniversalExpression(ulong value)</code></pre>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_LessThanOrEqual_DotNext_Linq_Expressions_UniversalExpression_System_Linq_Expressions_Expression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_LessThanOrEqual(DotNext.Linq.Expressions.UniversalExpression%2CSystem.Linq.Expressions.Expression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L293">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L295">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_LessThanOrEqual_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_LessThanOrEqual*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_LessThanOrEqual_DotNext_Linq_Expressions_UniversalExpression_System_Linq_Expressions_Expression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_LessThanOrEqual(DotNext.Linq.Expressions.UniversalExpression,System.Linq.Expressions.Expression)">LessThanOrEqual(UniversalExpression, Expression)</h4>
@@ -4481,7 +4482,7 @@ public static implicit operator UniversalExpression(ulong value)</code></pre>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_LogicalNot_DotNext_Linq_Expressions_UniversalExpression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_LogicalNot(DotNext.Linq.Expressions.UniversalExpression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L165">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L167">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_LogicalNot_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_LogicalNot*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_LogicalNot_DotNext_Linq_Expressions_UniversalExpression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_LogicalNot(DotNext.Linq.Expressions.UniversalExpression)">LogicalNot(UniversalExpression)</h4>
@@ -4531,7 +4532,7 @@ public static implicit operator UniversalExpression(ulong value)</code></pre>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_Modulus_DotNext_Linq_Expressions_UniversalExpression_DotNext_Linq_Expressions_UniversalExpression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_Modulus(DotNext.Linq.Expressions.UniversalExpression%2CDotNext.Linq.Expressions.UniversalExpression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L428">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L430">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_Modulus_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Modulus*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_Modulus_DotNext_Linq_Expressions_UniversalExpression_DotNext_Linq_Expressions_UniversalExpression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Modulus(DotNext.Linq.Expressions.UniversalExpression,DotNext.Linq.Expressions.UniversalExpression)">Modulus(UniversalExpression, UniversalExpression)</h4>
@@ -4587,7 +4588,7 @@ public static implicit operator UniversalExpression(ulong value)</code></pre>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_Modulus_DotNext_Linq_Expressions_UniversalExpression_System_Linq_Expressions_Expression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_Modulus(DotNext.Linq.Expressions.UniversalExpression%2CSystem.Linq.Expressions.Expression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L437">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L439">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_Modulus_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Modulus*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_Modulus_DotNext_Linq_Expressions_UniversalExpression_System_Linq_Expressions_Expression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Modulus(DotNext.Linq.Expressions.UniversalExpression,System.Linq.Expressions.Expression)">Modulus(UniversalExpression, Expression)</h4>
@@ -4643,7 +4644,7 @@ public static implicit operator UniversalExpression(ulong value)</code></pre>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_Multiply_DotNext_Linq_Expressions_UniversalExpression_DotNext_Linq_Expressions_UniversalExpression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_Multiply(DotNext.Linq.Expressions.UniversalExpression%2CDotNext.Linq.Expressions.UniversalExpression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L302">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L304">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_Multiply_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Multiply*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_Multiply_DotNext_Linq_Expressions_UniversalExpression_DotNext_Linq_Expressions_UniversalExpression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Multiply(DotNext.Linq.Expressions.UniversalExpression,DotNext.Linq.Expressions.UniversalExpression)">Multiply(UniversalExpression, UniversalExpression)</h4>
@@ -4699,7 +4700,7 @@ public static implicit operator UniversalExpression(ulong value)</code></pre>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_Multiply_DotNext_Linq_Expressions_UniversalExpression_System_Linq_Expressions_Expression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_Multiply(DotNext.Linq.Expressions.UniversalExpression%2CSystem.Linq.Expressions.Expression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L311">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L313">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_Multiply_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Multiply*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_Multiply_DotNext_Linq_Expressions_UniversalExpression_System_Linq_Expressions_Expression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Multiply(DotNext.Linq.Expressions.UniversalExpression,System.Linq.Expressions.Expression)">Multiply(UniversalExpression, Expression)</h4>
@@ -4755,7 +4756,7 @@ public static implicit operator UniversalExpression(ulong value)</code></pre>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_OnesComplement_DotNext_Linq_Expressions_UniversalExpression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_OnesComplement(DotNext.Linq.Expressions.UniversalExpression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L172">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L174">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_OnesComplement_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_OnesComplement*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_OnesComplement_DotNext_Linq_Expressions_UniversalExpression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_OnesComplement(DotNext.Linq.Expressions.UniversalExpression)">OnesComplement(UniversalExpression)</h4>
@@ -4805,7 +4806,7 @@ public static implicit operator UniversalExpression(ulong value)</code></pre>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_RightShift_DotNext_Linq_Expressions_UniversalExpression_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_RightShift(DotNext.Linq.Expressions.UniversalExpression%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L446">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L448">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_RightShift_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_RightShift*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_RightShift_DotNext_Linq_Expressions_UniversalExpression_System_Int32_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_RightShift(DotNext.Linq.Expressions.UniversalExpression,System.Int32)">RightShift(UniversalExpression, Int32)</h4>
@@ -4861,7 +4862,7 @@ public static implicit operator UniversalExpression(ulong value)</code></pre>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_Subtraction_DotNext_Linq_Expressions_UniversalExpression_DotNext_Linq_Expressions_UniversalExpression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_Subtraction(DotNext.Linq.Expressions.UniversalExpression%2CDotNext.Linq.Expressions.UniversalExpression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L212">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L214">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_Subtraction_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Subtraction*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_Subtraction_DotNext_Linq_Expressions_UniversalExpression_DotNext_Linq_Expressions_UniversalExpression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Subtraction(DotNext.Linq.Expressions.UniversalExpression,DotNext.Linq.Expressions.UniversalExpression)">Subtraction(UniversalExpression, UniversalExpression)</h4>
@@ -4917,7 +4918,7 @@ public static implicit operator UniversalExpression(ulong value)</code></pre>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_Subtraction_DotNext_Linq_Expressions_UniversalExpression_System_Linq_Expressions_Expression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_Subtraction(DotNext.Linq.Expressions.UniversalExpression%2CSystem.Linq.Expressions.Expression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L221">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L223">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_Subtraction_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Subtraction*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_Subtraction_DotNext_Linq_Expressions_UniversalExpression_System_Linq_Expressions_Expression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_Subtraction(DotNext.Linq.Expressions.UniversalExpression,System.Linq.Expressions.Expression)">Subtraction(UniversalExpression, Expression)</h4>
@@ -4973,7 +4974,7 @@ public static implicit operator UniversalExpression(ulong value)</code></pre>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_UnaryNegation_DotNext_Linq_Expressions_UniversalExpression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_UnaryNegation(DotNext.Linq.Expressions.UniversalExpression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L186">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L188">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_UnaryNegation_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_UnaryNegation*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_UnaryNegation_DotNext_Linq_Expressions_UniversalExpression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_UnaryNegation(DotNext.Linq.Expressions.UniversalExpression)">UnaryNegation(UniversalExpression)</h4>
@@ -5023,7 +5024,7 @@ public static implicit operator UniversalExpression(ulong value)</code></pre>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_op_UnaryPlus_DotNext_Linq_Expressions_UniversalExpression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.op_UnaryPlus(DotNext.Linq.Expressions.UniversalExpression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L179">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L181">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_op_UnaryPlus_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_UnaryPlus*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_op_UnaryPlus_DotNext_Linq_Expressions_UniversalExpression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.op_UnaryPlus(DotNext.Linq.Expressions.UniversalExpression)">UnaryPlus(UniversalExpression)</h4>
@@ -5075,7 +5076,7 @@ public static implicit operator UniversalExpression(ulong value)</code></pre>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression_System_Dynamic_IDynamicMetaObjectProvider_GetMetaObject_System_Linq_Expressions_Expression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression.System%23Dynamic%23IDynamicMetaObjectProvider%23GetMetaObject(System.Linq.Expressions.Expression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L830">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L832">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UniversalExpression_System_Dynamic_IDynamicMetaObjectProvider_GetMetaObject_" data-uid="DotNext.Linq.Expressions.UniversalExpression.System#Dynamic#IDynamicMetaObjectProvider#GetMetaObject*"></a>
   <h4 id="DotNext_Linq_Expressions_UniversalExpression_System_Dynamic_IDynamicMetaObjectProvider_GetMetaObject_System_Linq_Expressions_Expression_" data-uid="DotNext.Linq.Expressions.UniversalExpression.System#Dynamic#IDynamicMetaObjectProvider#GetMetaObject(System.Linq.Expressions.Expression)">IDynamicMetaObjectProvider.GetMetaObject(Expression)</h4>
@@ -5126,16 +5127,20 @@ public static implicit operator UniversalExpression(ulong value)</code></pre>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
-      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_Skip__2___0__System_Int32_">Sequence.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, Int32)</a>
-  </div>
-  <div>
       <a class="xref" href="DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_IsOneOf__1___0_System_Collections_Generic_IEnumerable___0__">ValueTypeExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_IsOneOf__1___0___0___">ValueTypeExtensions.IsOneOf&lt;T&gt;(T, T[])</a>
   </div>
   <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_Skip__2___0__System_Int32_">Sequence.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, Int32)</a>
+  </div>
+  <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+  </div>
+  <h3 id="seealso">See Also</h3>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_AsDynamic_System_Linq_Expressions_Expression_">AsDynamic</a>(<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.expression">Expression</a>)</div>
   </div>
 </article>
           </div>
@@ -5148,7 +5153,7 @@ public static implicit operator UniversalExpression(ulong value)</code></pre>
                     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UniversalExpression.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UniversalExpression%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L18" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UniversalExpression.cs/#L19" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

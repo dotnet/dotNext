@@ -119,19 +119,19 @@ without instantiation of <a class="xref" href="https://docs.microsoft.com/dotnet
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamExtensions_AsBufferWriter_System_IO_Stream_MemoryAllocator_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.AsBufferWriter(System.IO.Stream%2CMemoryAllocator%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamExtensions_AsBufferWriter_System_IO_Stream_System_Nullable_MemoryAllocator_System_Byte___.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.AsBufferWriter(System.IO.Stream%2CSystem.Nullable%7BMemoryAllocator%7BSystem.Byte%7D%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamExtensions.cs/#L2535">View Source</a>
   </span>
   <a id="DotNext_IO_StreamExtensions_AsBufferWriter_" data-uid="DotNext.IO.StreamExtensions.AsBufferWriter*"></a>
-  <h4 id="DotNext_IO_StreamExtensions_AsBufferWriter_System_IO_Stream_MemoryAllocator_System_Byte__" data-uid="DotNext.IO.StreamExtensions.AsBufferWriter(System.IO.Stream,MemoryAllocator{System.Byte})">AsBufferWriter(Stream, MemoryAllocator&lt;Byte&gt;)</h4>
+  <h4 id="DotNext_IO_StreamExtensions_AsBufferWriter_System_IO_Stream_System_Nullable_MemoryAllocator_System_Byte___" data-uid="DotNext.IO.StreamExtensions.AsBufferWriter(System.IO.Stream,System.Nullable{MemoryAllocator{System.Byte}})">AsBufferWriter(Stream, Nullable&lt;MemoryAllocator&lt;Byte&gt;&gt;)</h4>
   <div class="markdown level1 summary"><p>Converts the stream to <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter&lt;T&gt;</a>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static IFlushableBufferWriter&lt;byte&gt; AsBufferWriter(this Stream output, MemoryAllocator&lt;byte&gt; allocator)</code></pre>
+    <pre><code class="lang-csharp hljs">public static IFlushableBufferWriter&lt;byte&gt; AsBufferWriter(this Stream output, MemoryAllocator&lt;byte&gt;? allocator = default(MemoryAllocator&lt;byte&gt;? ))</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -150,7 +150,7 @@ without instantiation of <a class="xref" href="https://docs.microsoft.com/dotnet
 </td>
       </tr>
       <tr>
-        <td><span class="xref">MemoryAllocator</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;<span class="xref">MemoryAllocator</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;&gt;</td>
         <td><span class="parametername">allocator</span></td>
         <td><p>The allocator of the buffer.</p>
 </td>
@@ -184,7 +184,7 @@ without instantiation of <a class="xref" href="https://docs.microsoft.com/dotnet
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
-        <td><p><code data-dev-comment-type="paramref" class="paramref">output</code> or <code data-dev-comment-type="paramref" class="paramref">allocator</code> is <span class="xref">null</span>.</p>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">output</code> is <span class="xref">null</span>.</p>
 </td>
       </tr>
       <tr>
@@ -199,7 +199,7 @@ without instantiation of <a class="xref" href="https://docs.microsoft.com/dotnet
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamExtensions_CopyTo_System_IO_Stream_System_Buffers_IBufferWriter_System_Byte__System_Int32_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.CopyTo(System.IO.Stream%2CSystem.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.Int32%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamExtensions.cs/#L2717">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamExtensions.cs/#L2715">View Source</a>
   </span>
   <a id="DotNext_IO_StreamExtensions_CopyTo_" data-uid="DotNext.IO.StreamExtensions.CopyTo*"></a>
   <h4 id="DotNext_IO_StreamExtensions_CopyTo_System_IO_Stream_System_Buffers_IBufferWriter_System_Byte__System_Int32_System_Threading_CancellationToken_" data-uid="DotNext.IO.StreamExtensions.CopyTo(System.IO.Stream,System.Buffers.IBufferWriter{System.Byte},System.Int32,System.Threading.CancellationToken)">CopyTo(Stream, IBufferWriter&lt;Byte&gt;, Int32, CancellationToken)</h4>
@@ -367,7 +367,7 @@ writer, using a specified cancellation token.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamExtensions_CopyToAsync_System_IO_Stream_System_Buffers_IBufferWriter_System_Byte__System_Int32_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.CopyToAsync(System.IO.Stream%2CSystem.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.Int32%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamExtensions.cs/#L2684">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamExtensions.cs/#L2682">View Source</a>
   </span>
   <a id="DotNext_IO_StreamExtensions_CopyToAsync_" data-uid="DotNext.IO.StreamExtensions.CopyToAsync*"></a>
   <h4 id="DotNext_IO_StreamExtensions_CopyToAsync_System_IO_Stream_System_Buffers_IBufferWriter_System_Byte__System_Int32_System_Threading_CancellationToken_" data-uid="DotNext.IO.StreamExtensions.CopyToAsync(System.IO.Stream,System.Buffers.IBufferWriter{System.Byte},System.Int32,System.Threading.CancellationToken)">CopyToAsync(Stream, IBufferWriter&lt;Byte&gt;, Int32, CancellationToken)</h4>
@@ -619,7 +619,7 @@ writer, using a specified cancellation token.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamExtensions_Read__1_System_IO_Stream_System_Buffers_ReadOnlySpanAction_System_Byte___0____0_System_Int32_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.Read%60%601(System.IO.Stream%2CSystem.Buffers.ReadOnlySpanAction%7BSystem.Byte%2C%60%600%7D%2C%60%600%2CSystem.Int32%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamExtensions.cs/#L2578">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamExtensions.cs/#L2576">View Source</a>
   </span>
   <a id="DotNext_IO_StreamExtensions_Read_" data-uid="DotNext.IO.StreamExtensions.Read*"></a>
   <h4 id="DotNext_IO_StreamExtensions_Read__1_System_IO_Stream_System_Buffers_ReadOnlySpanAction_System_Byte___0____0_System_Int32_System_Threading_CancellationToken_" data-uid="DotNext.IO.StreamExtensions.Read``1(System.IO.Stream,System.Buffers.ReadOnlySpanAction{System.Byte,``0},``0,System.Int32,System.Threading.CancellationToken)">Read&lt;TArg&gt;(Stream, ReadOnlySpanAction&lt;Byte, TArg&gt;, TArg, Int32, CancellationToken)</h4>
@@ -714,7 +714,7 @@ writer, using a specified cancellation token.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamExtensions_Read__1_System_IO_Stream_System_Buffers_ReadOnlySpanAction_System_Byte___0____0_System_Span_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.Read%60%601(System.IO.Stream%2CSystem.Buffers.ReadOnlySpanAction%7BSystem.Byte%2C%60%600%7D%2C%60%600%2CSystem.Span%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamExtensions.cs/#L2558">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamExtensions.cs/#L2556">View Source</a>
   </span>
   <a id="DotNext_IO_StreamExtensions_Read_" data-uid="DotNext.IO.StreamExtensions.Read*"></a>
   <h4 id="DotNext_IO_StreamExtensions_Read__1_System_IO_Stream_System_Buffers_ReadOnlySpanAction_System_Byte___0____0_System_Span_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.StreamExtensions.Read``1(System.IO.Stream,System.Buffers.ReadOnlySpanAction{System.Byte,``0},``0,System.Span{System.Byte},System.Threading.CancellationToken)">Read&lt;TArg&gt;(Stream, ReadOnlySpanAction&lt;Byte, TArg&gt;, TArg, Span&lt;Byte&gt;, CancellationToken)</h4>
@@ -809,7 +809,7 @@ writer, using a specified cancellation token.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamExtensions_ReadAsync__1_System_IO_Stream_System_Buffers_ReadOnlySpanAction_System_Byte___0____0_System_Int32_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.ReadAsync%60%601(System.IO.Stream%2CSystem.Buffers.ReadOnlySpanAction%7BSystem.Byte%2C%60%600%7D%2C%60%600%2CSystem.Int32%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamExtensions.cs/#L2620">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamExtensions.cs/#L2618">View Source</a>
   </span>
   <a id="DotNext_IO_StreamExtensions_ReadAsync_" data-uid="DotNext.IO.StreamExtensions.ReadAsync*"></a>
   <h4 id="DotNext_IO_StreamExtensions_ReadAsync__1_System_IO_Stream_System_Buffers_ReadOnlySpanAction_System_Byte___0____0_System_Int32_System_Threading_CancellationToken_" data-uid="DotNext.IO.StreamExtensions.ReadAsync``1(System.IO.Stream,System.Buffers.ReadOnlySpanAction{System.Byte,``0},``0,System.Int32,System.Threading.CancellationToken)">ReadAsync&lt;TArg&gt;(Stream, ReadOnlySpanAction&lt;Byte, TArg&gt;, TArg, Int32, CancellationToken)</h4>
@@ -920,7 +920,7 @@ writer, using a specified cancellation token.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamExtensions_ReadAsync__1_System_IO_Stream_System_Buffers_ReadOnlySpanAction_System_Byte___0____0_System_Memory_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.ReadAsync%60%601(System.IO.Stream%2CSystem.Buffers.ReadOnlySpanAction%7BSystem.Byte%2C%60%600%7D%2C%60%600%2CSystem.Memory%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamExtensions.cs/#L2599">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamExtensions.cs/#L2597">View Source</a>
   </span>
   <a id="DotNext_IO_StreamExtensions_ReadAsync_" data-uid="DotNext.IO.StreamExtensions.ReadAsync*"></a>
   <h4 id="DotNext_IO_StreamExtensions_ReadAsync__1_System_IO_Stream_System_Buffers_ReadOnlySpanAction_System_Byte___0____0_System_Memory_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.StreamExtensions.ReadAsync``1(System.IO.Stream,System.Buffers.ReadOnlySpanAction{System.Byte,``0},``0,System.Memory{System.Byte},System.Threading.CancellationToken)">ReadAsync&lt;TArg&gt;(Stream, ReadOnlySpanAction&lt;Byte, TArg&gt;, TArg, Memory&lt;Byte&gt;, CancellationToken)</h4>
@@ -1031,7 +1031,7 @@ writer, using a specified cancellation token.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamExtensions_ReadAsync__1_System_IO_Stream_System_Func_System_ReadOnlyMemory_System_Byte____0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask____0_System_Int32_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.ReadAsync%60%601(System.IO.Stream%2CSystem.Func%7BSystem.ReadOnlyMemory%7BSystem.Byte%7D%2C%60%600%2CSystem.Threading.CancellationToken%2CSystem.Threading.Tasks.ValueTask%7D%2C%60%600%2CSystem.Int32%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamExtensions.cs/#L2662">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamExtensions.cs/#L2660">View Source</a>
   </span>
   <a id="DotNext_IO_StreamExtensions_ReadAsync_" data-uid="DotNext.IO.StreamExtensions.ReadAsync*"></a>
   <h4 id="DotNext_IO_StreamExtensions_ReadAsync__1_System_IO_Stream_System_Func_System_ReadOnlyMemory_System_Byte____0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask____0_System_Int32_System_Threading_CancellationToken_" data-uid="DotNext.IO.StreamExtensions.ReadAsync``1(System.IO.Stream,System.Func{System.ReadOnlyMemory{System.Byte},``0,System.Threading.CancellationToken,System.Threading.Tasks.ValueTask},``0,System.Int32,System.Threading.CancellationToken)">ReadAsync&lt;TArg&gt;(Stream, Func&lt;ReadOnlyMemory&lt;Byte&gt;, TArg, CancellationToken, ValueTask&gt;, TArg, Int32, CancellationToken)</h4>
@@ -1142,7 +1142,7 @@ writer, using a specified cancellation token.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamExtensions_ReadAsync__1_System_IO_Stream_System_Func_System_ReadOnlyMemory_System_Byte____0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask____0_System_Memory_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.ReadAsync%60%601(System.IO.Stream%2CSystem.Func%7BSystem.ReadOnlyMemory%7BSystem.Byte%7D%2C%60%600%2CSystem.Threading.CancellationToken%2CSystem.Threading.Tasks.ValueTask%7D%2C%60%600%2CSystem.Memory%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamExtensions.cs/#L2641">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamExtensions.cs/#L2639">View Source</a>
   </span>
   <a id="DotNext_IO_StreamExtensions_ReadAsync_" data-uid="DotNext.IO.StreamExtensions.ReadAsync*"></a>
   <h4 id="DotNext_IO_StreamExtensions_ReadAsync__1_System_IO_Stream_System_Func_System_ReadOnlyMemory_System_Byte____0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask____0_System_Memory_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.StreamExtensions.ReadAsync``1(System.IO.Stream,System.Func{System.ReadOnlyMemory{System.Byte},``0,System.Threading.CancellationToken,System.Threading.Tasks.ValueTask},``0,System.Memory{System.Byte},System.Threading.CancellationToken)">ReadAsync&lt;TArg&gt;(Stream, Func&lt;ReadOnlyMemory&lt;Byte&gt;, TArg, CancellationToken, ValueTask&gt;, TArg, Memory&lt;Byte&gt;, CancellationToken)</h4>
@@ -1927,7 +1927,7 @@ writer, using a specified cancellation token.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use ReadBlock extension method instead&quot;)]
-public static void ReadBytes(this Stream stream, Span&lt;byte&gt; output)</code></pre>
+public static void ReadBytes(Stream stream, Span&lt;byte&gt; output)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1984,7 +1984,7 @@ public static void ReadBytes(this Stream stream, Span&lt;byte&gt; output)</code>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use ReadBlockAsync extension method instead&quot;)]
-public static ValueTask ReadBytesAsync(this Stream stream, Memory&lt;byte&gt; output, CancellationToken token = default(CancellationToken))</code></pre>
+public static ValueTask ReadBytesAsync(Stream stream, Memory&lt;byte&gt; output, CancellationToken token = default(CancellationToken))</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">

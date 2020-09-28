@@ -91,7 +91,7 @@
 <li><a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/proposals/csharp-8.0/ranges">Ranges and Indicies</a></li>
 <li>Pattern matching</li>
 <li>Extension methods for easy construction of compound expressions and statements</li>
-<li>Universal expression which allows to use standard operators provided by programming language</li>
+<li>Building expression trees using <strong>dynamic</strong> keyword in C#</li>
 </ul>
 <p>All these extensions are compatible with <a href="https://docs.microsoft.com/en-us/dotnet/api/system.linq.expressions.expression">Expression</a> class.</p>
 <p>Additionally, .NEXT Metaprogramming library replaces limit of <a href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/expression-trees/">C# Expression Trees</a> where only single-line lambda expression is allowed.</p>
@@ -102,7 +102,7 @@
 <h1 id="concept">Concept</h1>
 <p>The code construction based on the following concepts:</p>
 <ul>
-<li><a href="universal.html">Universal Expression</a></li>
+<li><a href="dynamic.html">Dynamic Construction of Expressions</a></li>
 <li><a href="../../api/DotNext.Metaprogramming.CodeGenerator.html">Code Generator</a> provides methods for adding statement such as method calls, assignment, loops, if-then-else statement etc.</li>
 <li><a href="../../api/DotNext.Linq.Expressions.ExpressionBuilder.html">Expression Builder</a> provides extension methods for constructing expressions</li>
 </ul>
@@ -121,22 +121,22 @@
 <p>The lexical scope is enclosed by multi-line lambda function. The body of such function contains the code for generation of expressions and statements.</p>
 <pre><code class="lang-csharp">using DotNext.Linq.Expressions;
 using System;
+using System.Linq.Expressions;
 using static DotNext.Metaprogramming.CodeGenerator;
-using U = DotNext.Linq.Expression.UniversalExpression;
 
 Func&lt;long, long&gt; fact = Lambda&lt;Func&lt;long, long&gt;&gt;(fun =&gt; 
 {
-    var arg = (U)fun[0];    //convert parameter into universal expression
+    var arg = fun[0];    //declares access to lambda parameter
     //if-then-else expression
-    If(arg &gt; 1L)
-        .Then(arg * fun.Invoke(arg - 1L))  //recursive invocation of the current lambda function
+    If((Expression)(arg.AsDynamic() &gt; 1L))
+        .Then(arg.AsDynamic() * fun.Invoke(arg.AsDynamic() - 1L))  //recursive invocation of the current lambda function
         .Else(arg)  //else branch
         .OfType&lt;long&gt;()
     .End();
     //declare local variable of type long
     var local = DeclareVariable&lt;long&gt;(&quot;local&quot;);
     //assignment
-    Assign(local, -arg);  //equivalent is the assignment statement local = -arg
+    Assign(local, -arg.AsDynamic());  //equivalent is the assignment statement local = -arg
     //try-catch
     Try(() =&gt; 
     {

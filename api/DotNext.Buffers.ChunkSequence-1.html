@@ -106,7 +106,8 @@
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Buffers_ChunkSequence_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public struct ChunkSequence&lt;T&gt; : IEnumerable&lt;ReadOnlyMemory&lt;T&gt;&gt;, IEnumerable</code></pre>
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use ReadOnlySequence&lt;T&gt; data type instead&quot;)]
+public struct ChunkSequence&lt;T&gt; : IEnumerable&lt;ReadOnlyMemory&lt;T&gt;&gt;, IEnumerable</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -131,7 +132,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_ChunkSequence_1__ctor_System_ReadOnlyMemory__0__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.ChunkSequence%601.%23ctor(System.ReadOnlyMemory%7B%600%7D%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/ChunkSequence.cs/#L83">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/ChunkSequence.cs/#L86">View Source</a>
   </span>
   <a id="DotNext_Buffers_ChunkSequence_1__ctor_" data-uid="DotNext.Buffers.ChunkSequence`1.#ctor*"></a>
   <h4 id="DotNext_Buffers_ChunkSequence_1__ctor_System_ReadOnlyMemory__0__System_Int32_" data-uid="DotNext.Buffers.ChunkSequence`1.#ctor(System.ReadOnlyMemory{`0},System.Int32)">ChunkSequence(ReadOnlyMemory&lt;T&gt;, Int32)</h4>
@@ -189,7 +190,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_ChunkSequence_1_GetEnumerator.md&amp;value=---%0Auid%3A%20DotNext.Buffers.ChunkSequence%601.GetEnumerator%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/ChunkSequence.cs/#L95">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/ChunkSequence.cs/#L98">View Source</a>
   </span>
   <a id="DotNext_Buffers_ChunkSequence_1_GetEnumerator_" data-uid="DotNext.Buffers.ChunkSequence`1.GetEnumerator*"></a>
   <h4 id="DotNext_Buffers_ChunkSequence_1_GetEnumerator" data-uid="DotNext.Buffers.ChunkSequence`1.GetEnumerator">GetEnumerator()</h4>
@@ -221,7 +222,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_ChunkSequence_1_ToReadOnlySequence.md&amp;value=---%0Auid%3A%20DotNext.Buffers.ChunkSequence%601.ToReadOnlySequence%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/ChunkSequence.cs/#L109">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/ChunkSequence.cs/#L112">View Source</a>
   </span>
   <a id="DotNext_Buffers_ChunkSequence_1_ToReadOnlySequence_" data-uid="DotNext.Buffers.ChunkSequence`1.ToReadOnlySequence*"></a>
   <h4 id="DotNext_Buffers_ChunkSequence_1_ToReadOnlySequence" data-uid="DotNext.Buffers.ChunkSequence`1.ToReadOnlySequence">ToReadOnlySequence()</h4>
@@ -255,7 +256,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_ChunkSequence_1_op_Explicit_DotNext_Buffers_ChunkSequence__0___System_Buffers_ReadOnlySequence__0_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.ChunkSequence%601.op_Explicit(DotNext.Buffers.ChunkSequence%7B%600%7D)~System.Buffers.ReadOnlySequence%7B%600%7D%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/ChunkSequence.cs/#L130">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/ChunkSequence.cs/#L133">View Source</a>
   </span>
   <a id="DotNext_Buffers_ChunkSequence_1_op_Explicit_" data-uid="DotNext.Buffers.ChunkSequence`1.op_Explicit*"></a>
   <h4 id="DotNext_Buffers_ChunkSequence_1_op_Explicit_DotNext_Buffers_ChunkSequence__0___System_Buffers_ReadOnlySequence__0_" data-uid="DotNext.Buffers.ChunkSequence`1.op_Explicit(DotNext.Buffers.ChunkSequence{`0})~System.Buffers.ReadOnlySequence{`0}">Explicit(ChunkSequence&lt;T&gt; to ReadOnlySequence&lt;T&gt;)</h4>
@@ -307,7 +308,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_ChunkSequence_1_System_Collections_Generic_IEnumerable_System_ReadOnlyMemory_T___GetEnumerator.md&amp;value=---%0Auid%3A%20DotNext.Buffers.ChunkSequence%601.System%23Collections%23Generic%23IEnumerable%7BSystem%23ReadOnlyMemory%7BT%7D%7D%23GetEnumerator%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/ChunkSequence.cs/#L98">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/ChunkSequence.cs/#L101">View Source</a>
   </span>
   <a id="DotNext_Buffers_ChunkSequence_1_System_Collections_Generic_IEnumerable_System_ReadOnlyMemory_T___GetEnumerator_" data-uid="DotNext.Buffers.ChunkSequence`1.System#Collections#Generic#IEnumerable{System#ReadOnlyMemory{T}}#GetEnumerator*"></a>
   <h4 id="DotNext_Buffers_ChunkSequence_1_System_Collections_Generic_IEnumerable_System_ReadOnlyMemory_T___GetEnumerator" data-uid="DotNext.Buffers.ChunkSequence`1.System#Collections#Generic#IEnumerable{System#ReadOnlyMemory{T}}#GetEnumerator">IEnumerable&lt;ReadOnlyMemory&lt;T&gt;&gt;.GetEnumerator()</h4>
@@ -337,7 +338,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_ChunkSequence_1_System_Collections_IEnumerable_GetEnumerator.md&amp;value=---%0Auid%3A%20DotNext.Buffers.ChunkSequence%601.System%23Collections%23IEnumerable%23GetEnumerator%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/ChunkSequence.cs/#L102">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/ChunkSequence.cs/#L105">View Source</a>
   </span>
   <a id="DotNext_Buffers_ChunkSequence_1_System_Collections_IEnumerable_GetEnumerator_" data-uid="DotNext.Buffers.ChunkSequence`1.System#Collections#IEnumerable#GetEnumerator*"></a>
   <h4 id="DotNext_Buffers_ChunkSequence_1_System_Collections_IEnumerable_GetEnumerator" data-uid="DotNext.Buffers.ChunkSequence`1.System#Collections#IEnumerable#GetEnumerator">IEnumerable.GetEnumerator()</h4>
@@ -371,49 +372,52 @@
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
-      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_ForEach__1_System_Collections_Generic_IEnumerable___0__System_Action___0__">Sequence.ForEach&lt;T&gt;(IEnumerable&lt;T&gt;, Action&lt;T&gt;)</a>
+      <a class="xref" href="DotNext.Buffers.ChunkSequence.html#DotNext_Buffers_ChunkSequence_ToReadOnlySequence__1_System_Collections_Generic_IEnumerable_System_ReadOnlyMemory___0___">ChunkSequence.ToReadOnlySequence&lt;T&gt;(IEnumerable&lt;ReadOnlyMemory&lt;T&gt;&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_ForEach__1_System_Collections_Generic_IEnumerable___0__DotNext_ValueAction___0___">Sequence.ForEach&lt;T&gt;(IEnumerable&lt;T&gt;, ValueAction&lt;T&gt;)</a>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_ForEach__1_System_Collections_Generic_IEnumerable___0__System_Action___0__">Sequence.ForEach&lt;T&gt;(IEnumerable&lt;T&gt;, Action&lt;T&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_ForEachAsync__1_System_Collections_Generic_IEnumerable___0__System_Func___0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__System_Threading_CancellationToken_">Sequence.ForEachAsync&lt;T&gt;(IEnumerable&lt;T&gt;, Func&lt;T, CancellationToken, ValueTask&gt;, CancellationToken)</a>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_ForEach__1_System_Collections_Generic_IEnumerable___0__DotNext_ValueAction___0___">Sequence.ForEach&lt;T&gt;(IEnumerable&lt;T&gt;, ValueAction&lt;T&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_ForEachAsync__1_System_Collections_Generic_IEnumerable___0__DotNext_ValueFunc___0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__System_Threading_CancellationToken_">Sequence.ForEachAsync&lt;T&gt;(IEnumerable&lt;T&gt;, ValueFunc&lt;T, CancellationToken, ValueTask&gt;, CancellationToken)</a>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_ForEachAsync__1_System_Collections_Generic_IEnumerable___0__System_Func___0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__System_Threading_CancellationToken_">Sequence.ForEachAsync&lt;T&gt;(IEnumerable&lt;T&gt;, Func&lt;T, CancellationToken, ValueTask&gt;, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_FirstOrNull__1_System_Collections_Generic_IEnumerable___0__">Sequence.FirstOrNull&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_ForEachAsync__1_System_Collections_Generic_IEnumerable___0__DotNext_ValueFunc___0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__System_Threading_CancellationToken_">Sequence.ForEachAsync&lt;T&gt;(IEnumerable&lt;T&gt;, ValueFunc&lt;T, CancellationToken, ValueTask&gt;, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_FirstOrEmpty__1_System_Collections_Generic_IEnumerable___0__">Sequence.FirstOrEmpty&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_FirstOrNull__1_System_Collections_Generic_IEnumerable___0__">Sequence.FirstOrNull&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_FirstOrEmpty__1_System_Collections_Generic_IEnumerable___0__DotNext_ValueFunc___0_System_Boolean___">Sequence.FirstOrEmpty&lt;T&gt;(IEnumerable&lt;T&gt;, ValueFunc&lt;T, Boolean&gt;)</a>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_FirstOrEmpty__1_System_Collections_Generic_IEnumerable___0__">Sequence.FirstOrEmpty&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_FirstOrEmpty__1_System_Collections_Generic_IEnumerable___0__System_Predicate___0__">Sequence.FirstOrEmpty&lt;T&gt;(IEnumerable&lt;T&gt;, Predicate&lt;T&gt;)</a>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_FirstOrEmpty__1_System_Collections_Generic_IEnumerable___0__DotNext_ValueFunc___0_System_Boolean___">Sequence.FirstOrEmpty&lt;T&gt;(IEnumerable&lt;T&gt;, ValueFunc&lt;T, Boolean&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_Skip__2___0__System_Int32_">Sequence.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, Int32)</a>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_FirstOrEmpty__1_System_Collections_Generic_IEnumerable___0__System_Predicate___0__">Sequence.FirstOrEmpty&lt;T&gt;(IEnumerable&lt;T&gt;, Predicate&lt;T&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_ElementAt__1_System_Collections_Generic_IEnumerable___0__System_Int32___0__">Sequence.ElementAt&lt;T&gt;(IEnumerable&lt;T&gt;, Int32, out T)</a>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_Skip__2___0__System_Int32_">Sequence.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, Int32)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_ToString__1_System_Collections_Generic_IEnumerable___0__System_String_System_String_">Sequence.ToString&lt;T&gt;(IEnumerable&lt;T&gt;, String, String)</a>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_ElementAt__1_System_Collections_Generic_IEnumerable___0__System_Int32___0__">Sequence.ElementAt&lt;T&gt;(IEnumerable&lt;T&gt;, Int32, out T)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_Prepend__1_System_Collections_Generic_IEnumerable___0____0___">Sequence.Prepend&lt;T&gt;(IEnumerable&lt;T&gt;, T[])</a>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_ToString__1_System_Collections_Generic_IEnumerable___0__System_String_System_String_">Sequence.ToString&lt;T&gt;(IEnumerable&lt;T&gt;, String, String)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_Append__1_System_Collections_Generic_IEnumerable___0____0___">Sequence.Append&lt;T&gt;(IEnumerable&lt;T&gt;, T[])</a>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_Prepend__1_System_Collections_Generic_IEnumerable___0____0___">Sequence.Prepend&lt;T&gt;(IEnumerable&lt;T&gt;, T[])</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_ToAsyncEnumerable__1_System_Collections_Generic_IEnumerable___0__">Sequence.ToAsyncEnumerable&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_Append__1_System_Collections_Generic_IEnumerable___0____0___">Sequence.Append&lt;T&gt;(IEnumerable&lt;T&gt;, T[])</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_GetAsyncEnumerator__1_System_Collections_Generic_IEnumerable___0__System_Threading_CancellationToken_">Sequence.GetAsyncEnumerator&lt;T&gt;(IEnumerable&lt;T&gt;, CancellationToken)</a>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_ToAsyncEnumerable__1_System_Collections_Generic_IEnumerable___0__">Sequence.ToAsyncEnumerable&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_GetAsyncEnumerator__1_System_Collections_Generic_IEnumerable___0__System_Threading_CancellationToken_">Sequence.GetAsyncEnumerator&lt;T&gt;(IEnumerable&lt;T&gt;, CancellationToken)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
@@ -429,7 +433,7 @@
                     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_ChunkSequence_1.md&amp;value=---%0Auid%3A%20DotNext.Buffers.ChunkSequence%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/ChunkSequence.cs/#L17" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/ChunkSequence.cs/#L18" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>
