@@ -6,6 +6,7 @@ using Xunit;
 namespace DotNext.Threading
 {
     [ExcludeFromCodeCoverage]
+    [Obsolete("This is the test suite for deprecated class")]
     public sealed class ConcurrentObjectPoolTests : Test
     {
         [Fact]
