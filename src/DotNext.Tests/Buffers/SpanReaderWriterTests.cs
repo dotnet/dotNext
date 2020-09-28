@@ -103,5 +103,100 @@ namespace DotNext.Buffers
             writer.Write(in expected);
             Equal(expected, reader.Read<Guid>());
         }
+
+        [Fact]
+        public static void EmptyReader()
+        {
+            var reader = new SpanReader<byte>();
+            Equal(0, reader.RemainingCount);
+            Equal(0, reader.ConsumedCount);
+
+            var exceptionThrown = false;
+            try
+            {
+                reader.Current.ToString();
+            }
+            catch (InvalidOperationException)
+            {
+                exceptionThrown = true;
+            }
+
+            True(exceptionThrown);
+            False(reader.TryRead(new byte[1]));
+            False(reader.TryRead(1, out _));
+            False(reader.TryRead(out _));
+            False(reader.TryRead(out Guid value));
+
+            exceptionThrown = false;
+            try
+            {
+                reader.Read(new byte[1]);
+            }
+            catch (EndOfStreamException)
+            {
+                exceptionThrown = true;
+            }
+
+            True(exceptionThrown);
+            exceptionThrown = false;
+            try
+            {
+                reader.Read(10);
+            }
+            catch (EndOfStreamException)
+            {
+                exceptionThrown = true;
+            }
+
+            True(exceptionThrown);
+        }
+
+        [Fact]
+        public static void EmptyWriter()
+        {
+            var writer = new SpanWriter<byte>();
+            Equal(0, writer.WrittenCount);
+            Equal(0, writer.FreeCapacity);
+
+            var exceptionThrown = false;
+            try
+            {
+                writer.Current.ToString();
+            }
+            catch (InvalidOperationException)
+            {
+                exceptionThrown = true;
+            }
+
+            True(exceptionThrown);
+            False(writer.TryWrite(new byte[1]));
+            False(writer.TryWrite(1));
+            False(writer.TrySlide(2, out _));
+            False(writer.TryAdd(1));
+
+            exceptionThrown = false;
+            try
+            {
+                writer.Write(new byte[1]);
+            }
+            catch (EndOfStreamException)
+            {
+                exceptionThrown = true;
+            }
+
+            True(exceptionThrown);
+            exceptionThrown = false;
+
+            try
+            {
+                writer.Slide(2);
+            }
+            catch (EndOfStreamException)
+            {
+                exceptionThrown = true;
+            }
+
+            True(exceptionThrown);
+        }
     }
 }
