@@ -45,7 +45,7 @@ Documentation for older versions:
 * [1.x](https://sakno.github.io/dotNext/versions/1.x/index.html)
 
 # What's new
-Release Date: MM-DD-2020
+Release Date: 09-28-2020
 
 <a href="https://www.nuget.org/packages/dotnext/2.10.0">DotNext 2.10.0</a>
 * Fixed correctness of `Clear(bool)` method overridden by `PooledArrayBufferWriter<T>` and `PooledBufferWriter<T>` classes
