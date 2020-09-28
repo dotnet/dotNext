@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using CancellationToken = System.Threading.CancellationToken;
 using MemoryHandle = System.Buffers.MemoryHandle;
+using Pointer = System.Reflection.Pointer;
 
 namespace DotNext.Runtime.InteropServices
 {
@@ -24,7 +25,7 @@ namespace DotNext.Runtime.InteropServices
     /// Null-pointer is the only check performed by methods.
     /// </remarks>
     [StructLayout(LayoutKind.Sequential)]
-    public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IStrongBox, IConvertible<IntPtr>, IConvertible<UIntPtr>
+    public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IStrongBox, IConvertible<IntPtr>, IConvertible<UIntPtr>, IPinnable
         where T : unmanaged
     {
         /// <summary>
@@ -116,6 +117,14 @@ namespace DotNext.Runtime.InteropServices
         }
 
         /// <summary>
+        /// Gets boxed pointer.
+        /// </summary>
+        /// <returns>The boxed pointer.</returns>
+        /// <seealso cref="Pointer"/>
+        [CLSCompliant(false)]
+        public unsafe object GetBoxedPointer() => Pointer.Box(value, typeof(T*));
+
+        /// <summary>
         /// Determines whether this pointer is aligned
         /// to the size of <typeparamref name="T"/>.
         /// </summary>
@@ -203,8 +212,16 @@ namespace DotNext.Runtime.InteropServices
             set => *this.value = (T)value;
         }
 
-        internal unsafe MemoryHandle GetHandle(int elementIndex)
+        internal unsafe MemoryHandle Pin(long elementIndex)
             => new MemoryHandle(value + elementIndex);
+
+        /// <inheritdoc />
+        MemoryHandle IPinnable.Pin(int elementIndex) => Pin(elementIndex);
+
+        /// <inheritdoc />
+        void IPinnable.Unpin()
+        {
+        }
 
         /// <summary>
         /// Fill memory with zero bytes.
@@ -220,6 +237,12 @@ namespace DotNext.Runtime.InteropServices
                 throw new ArgumentOutOfRangeException(nameof(count));
             Intrinsics.ClearBits(value, sizeof(T) * count);
         }
+
+        /// <summary>
+        /// Sets value at the address represented by this pointer to the default value of <typeparamref name="T"/>.
+        /// </summary>
+        /// <exception cref="NullPointerException">This pointer is equal to zero.</exception>
+        public unsafe void Clear() => Value = default;
 
         /// <summary>
         /// Copies block of memory from the source address to the destination address.
@@ -261,16 +284,6 @@ namespace DotNext.Runtime.InteropServices
             return count;
         }
 
-        private static unsafe void WriteToSteam(byte* source, long length, Stream destination)
-        {
-            while (length > 0L)
-            {
-                var bytes = new ReadOnlySpan<byte>(source, (int)Math.Min(int.MaxValue, length));
-                destination.Write(bytes);
-                length -= bytes.Length;
-            }
-        }
-
         /// <summary>
         /// Copies bytes from the memory location identified by this pointer to the stream.
         /// </summary>
@@ -288,7 +301,17 @@ namespace DotNext.Runtime.InteropServices
             if (!destination.CanWrite)
                 throw new ArgumentException(ExceptionMessages.StreamNotWritable, nameof(destination));
             if (count > 0)
-                WriteToSteam((byte*)value, count * sizeof(T), destination);
+                WriteTo((byte*)value, count * sizeof(T), destination);
+
+            static void WriteTo(byte* source, long length, Stream destination)
+            {
+                while (length > 0L)
+                {
+                    var bytes = new ReadOnlySpan<byte>(source, (int)Math.Min(int.MaxValue, length));
+                    destination.Write(bytes);
+                    length -= bytes.Length;
+                }
+            }
         }
 
         private static async ValueTask WriteToSteamAsync(IntPtr source, long length, Stream destination, CancellationToken token)
@@ -351,21 +374,6 @@ namespace DotNext.Runtime.InteropServices
             return count;
         }
 
-        private static unsafe long ReadFromStream(Stream source, byte* destination, long length)
-        {
-            var total = 0L;
-            while (length > 0)
-            {
-                var bytesRead = source.Read(new Span<byte>(&destination[total], (int)Math.Min(int.MaxValue, length)));
-                if (bytesRead == 0)
-                    break;
-                total += bytesRead;
-                length -= bytesRead;
-            }
-
-            return total;
-        }
-
         /// <summary>
         /// Copies bytes from the given stream to the memory location identified by this pointer.
         /// </summary>
@@ -385,7 +393,22 @@ namespace DotNext.Runtime.InteropServices
                 throw new ArgumentException(ExceptionMessages.StreamNotReadable, nameof(source));
             if (count == 0L)
                 return 0L;
-            return ReadFromStream(source, (byte*)value, sizeof(T) * count);
+            return ReadFrom(source, (byte*)value, sizeof(T) * count);
+
+            static long ReadFrom(Stream source, byte* destination, long length)
+            {
+                var total = 0L;
+                while (length > 0)
+                {
+                    var bytesRead = source.Read(new Span<byte>(&destination[total], (int)Math.Min(int.MaxValue, length)));
+                    if (bytesRead == 0)
+                        break;
+                    total += bytesRead;
+                    length -= bytesRead;
+                }
+
+                return total;
+            }
         }
 
         private static async ValueTask<long> ReadFromStreamAsync(Stream source, IntPtr destination, long length, CancellationToken token)
@@ -458,7 +481,7 @@ namespace DotNext.Runtime.InteropServices
             if (IsNull)
                 return Array.Empty<byte>();
             var result = new byte[sizeof(T) * length];
-            Intrinsics.Copy(in Unsafe.AsRef<byte>(value), ref result[0], length * sizeof(T));
+            Intrinsics.Copy(in ((byte*)value)[0], ref result[0], length * sizeof(T));
             return result;
         }
 

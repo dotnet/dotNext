@@ -5,6 +5,8 @@ using Xunit;
 
 namespace DotNext
 {
+    using static Collections.Generic.Sequence;
+
     [ExcludeFromCodeCoverage]
     public sealed class OneDimensionalArrayTests : Test
     {
@@ -129,7 +131,5 @@ namespace DotNext
             Equal(Array.Empty<long>(), array.RemoveFirst(3));
             Equal(Array.Empty<long>(), array.RemoveLast(3));
         }
-
-
     }
 }

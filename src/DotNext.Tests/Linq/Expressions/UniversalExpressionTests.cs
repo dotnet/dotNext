@@ -7,6 +7,7 @@ using Xunit;
 namespace DotNext.Linq.Expressions
 {
     [ExcludeFromCodeCoverage]
+    [Obsolete("Set of tests for deprecated UniversalExpression type")]
     public sealed class UniversalExpressionTests : Test
     {
         private sealed class MyClass

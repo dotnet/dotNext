@@ -157,7 +157,7 @@ namespace DotNext.Buffers
             var span = writer.GetSpan(10);
             new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }.AsSpan().CopyTo(span);
             writer.Advance(10);
-            using var stream = writer.GetWrittenBytesAsStream();
+            using var stream = PooledArrayBufferWriter.GetWrittenBytesAsStream(writer);
             True(stream.CanRead);
             False(stream.CanWrite);
             Equal(0, stream.Position);
@@ -346,6 +346,36 @@ namespace DotNext.Buffers
             using (var writer = new PooledArrayBufferWriter<byte> { BufferSizeCallback = counter.WriteMetric})
                 writer.Write(new byte[] { 1, 2, 3 });
             True(counter.Value >= 3);
+        }
+
+        [Fact]
+        public static void RemoveTailElements()
+        {
+            using var writer = new PooledArrayBufferWriter<string>();
+            writer.Add("a");
+            writer.Add("b");
+            writer.Add("c");
+            writer.RemoveLast(2);
+            Equal(1, writer.WrittenCount);
+            Equal("a", writer[0]);
+            writer.RemoveLast(1);
+            Equal(0, writer.WrittenCount);
+            Throws<ArgumentOutOfRangeException>(() => writer.RemoveLast(-1));
+        }
+
+        [Fact]
+        public static void RemoveHeadElements()
+        {
+            using var writer = new PooledArrayBufferWriter<string>();
+            writer.Add("a");
+            writer.Add("b");
+            writer.Add("c");
+            writer.RemoveFirst(2);
+            Equal(1, writer.WrittenCount);
+            Equal("c", writer[0]);
+            writer.RemoveFirst(1);
+            Equal(0, writer.WrittenCount);
+            Throws<ArgumentOutOfRangeException>(() => writer.RemoveFirst(-1));
         }
     }
 }

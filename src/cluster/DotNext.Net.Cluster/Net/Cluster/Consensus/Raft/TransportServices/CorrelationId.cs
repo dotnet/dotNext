@@ -4,6 +4,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
+    using Buffers;
+
     [StructLayout(LayoutKind.Sequential)]
     internal readonly struct CorrelationId : IEquatable<CorrelationId>
     {
@@ -28,22 +30,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             StreamId = streamId;
         }
 
-        internal CorrelationId(ref ReadOnlyMemory<byte> bytes)
+        internal CorrelationId(ReadOnlySpan<byte> bytes, out int consumedBytes)
         {
-            ApplicationId = BinaryPrimitives.ReadInt64LittleEndian(bytes.Span);
+            var reader = new SpanReader<byte>(bytes);
 
-            bytes = bytes.Slice(sizeof(long));
-            StreamId = BinaryPrimitives.ReadInt64LittleEndian(bytes.Span);
+            ApplicationId = BinaryPrimitives.ReadInt64LittleEndian(reader.Read(sizeof(long)));
+            StreamId = BinaryPrimitives.ReadInt64LittleEndian(reader.Read(sizeof(long)));
 
-            bytes = bytes.Slice(sizeof(long));
+            consumedBytes = reader.ConsumedCount;
         }
 
-        internal void WriteTo(Memory<byte> output)
+        internal void WriteTo(Span<byte> output)
         {
-            BinaryPrimitives.WriteInt64LittleEndian(output.Span, ApplicationId);
-            output = output.Slice(sizeof(long));
+            var writer = new SpanWriter<byte>(output);
 
-            BinaryPrimitives.WriteInt64LittleEndian(output.Span, StreamId);
+            BinaryPrimitives.WriteInt64LittleEndian(writer.Slide(sizeof(long)), ApplicationId);
+            BinaryPrimitives.WriteInt64LittleEndian(writer.Slide(sizeof(long)), StreamId);
         }
 
         public bool Equals(CorrelationId other)

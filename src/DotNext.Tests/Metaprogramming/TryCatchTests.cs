@@ -7,7 +7,6 @@ namespace DotNext.Metaprogramming
 {
     using Linq.Expressions;
     using static CodeGenerator;
-    using U = Linq.Expressions.UniversalExpression;
 
     [ExcludeFromCodeCoverage]
     public sealed class TryCatchTests : Test
@@ -19,7 +18,7 @@ namespace DotNext.Metaprogramming
             {
                 var (arg1, arg2) = fun;
                 Assign(result, true.Const());
-                Try((U)arg1 / arg2)
+                Try((Expression)(arg1.AsDynamic() / arg2))
                     .Fault(() => Assign(result, false.Const()))
                     .End();
             })
@@ -35,7 +34,7 @@ namespace DotNext.Metaprogramming
             {
                 var (arg1, arg2) = fun;
                 Assign(result, true.Const());
-                Try((U)arg1 / arg2)
+                Try((Expression)(arg1.AsDynamic() / arg2))
                     .Catch<DivideByZeroException>(() => Assign(result, false.Const()))
                     .End();
             })
@@ -51,7 +50,7 @@ namespace DotNext.Metaprogramming
             var lambda = Lambda<Func<long, long, bool>>((fun, result) =>
             {
                 var (arg1, arg2) = fun;
-                Try((U)arg1 / arg2)
+                Try((Expression)(arg1.AsDynamic() / arg2))
                     .Catch<DivideByZeroException>(() => Return(false.Const()))
                     .End();
                 Return(true.Const());
@@ -68,7 +67,7 @@ namespace DotNext.Metaprogramming
             var lambda = Lambda<Func<long, long, bool>>(fun =>
             {
                 var (arg1, arg2) = fun;
-                Try(Expression.Block((U)arg1 / arg2, true.Const()))
+                Try(Expression.Block((Expression)(arg1.AsDynamic() / arg2), true.Const()))
                     .Catch(typeof(Exception), e => e.InstanceOf<DivideByZeroException>(), e => InPlaceValue(false))
                     .OfType<bool>()
                     .End();

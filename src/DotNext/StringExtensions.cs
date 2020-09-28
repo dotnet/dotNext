@@ -70,7 +70,8 @@ namespace DotNext
         /// <param name="str">The string to split.</param>
         /// <param name="chunkSize">The maximum length of the substring in the sequence.</param>
         /// <returns>The sequence of substrings.</returns>
-        public static CharSequence Split(this string str, int chunkSize) => new CharSequence(str.AsMemory(), chunkSize);
+        [Obsolete("Use ReadOnlyMemory<T>.Slice instead", true)]
+        public static CharSequence Split(string str, int chunkSize) => new CharSequence(str.AsMemory(), chunkSize);
 
         /// <summary>
         /// Gets managed pointer to the first character in the string.
@@ -78,7 +79,7 @@ namespace DotNext
         /// <param name="str">The string data.</param>
         /// <returns>The managed pointer to the first character in the string.</returns>
         [Obsolete("Use String.GetPinnableReference method instead")]
-        public static ref readonly char GetRawData(this string str)
+        public static ref readonly char GetRawData(string str)
             => ref GetReference(str.AsSpan());
 
         /// <summary>

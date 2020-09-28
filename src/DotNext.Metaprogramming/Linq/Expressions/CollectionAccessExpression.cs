@@ -10,7 +10,7 @@ namespace DotNext.Linq.Expressions
     /// <summary>
     /// Represents access to the collection element using <see cref="ItemIndexExpression"/>.
     /// </summary>
-    public sealed class CollectionAccessExpression : Expression
+    public sealed class CollectionAccessExpression : CustomExpression
     {
         private const BindingFlags PublicInstance = BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly;
 
@@ -113,17 +113,6 @@ namespace DotNext.Linq.Expressions
         /// Gets result type of asynchronous operation.
         /// </summary>
         public override Type Type => indexer?.PropertyType ?? Collection.Type.GetElementType();
-
-        /// <summary>
-        /// Always return <see langword="true"/>.
-        /// </summary>
-        public override bool CanReduce => true;
-
-        /// <summary>
-        /// Gets expression node type.
-        /// </summary>
-        /// <see cref="ExpressionType.Extension"/>
-        public override ExpressionType NodeType => ExpressionType.Extension;
 
         private static Expression ArrayAccess(Expression array, Expression index)
             => ArrayIndex(array, ItemIndexExpression.GetOffset(index, ArrayLength(array)));

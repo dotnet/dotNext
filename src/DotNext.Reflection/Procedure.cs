@@ -67,7 +67,7 @@ namespace DotNext
         /// <param name="this">The first argument to be captured.</param>
         /// <returns>The procedure instance.</returns>
         [Obsolete("Use Bind method instead", true)]
-        public static Procedure<TArgs> Capture<T, TArgs>(this Procedure<T, TArgs> procedure, [DisallowNull]T @this)
+        public static Procedure<TArgs> Capture<T, TArgs>(Procedure<T, TArgs> procedure, [DisallowNull]T @this)
             where TArgs : struct
             => Bind(procedure, @this);
 

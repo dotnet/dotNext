@@ -67,5 +67,25 @@ namespace DotNext.Threading
             True(task.IsFaulted);
             await ThrowsAsync<ExchangeTerminatedException>(task.AsTask);
         }
+
+        [Fact]
+        public static async Task SynchronousExchange()
+        {
+            using var exchanger = new AsyncExchanger<int>();
+            var value = 56;
+            False(exchanger.TryExchange(ref value));
+            Equal(56, value);
+
+            var task = exchanger.ExchangeAsync(42);
+            True(exchanger.TryExchange(ref value));
+            Equal(42, value);
+            Equal(56, await task);
+
+            exchanger.Terminate();
+            Throws<ExchangeTerminatedException>(() => {
+                var tmp = 0;
+                exchanger.TryExchange(ref tmp);
+            });
+        }
     }
 }

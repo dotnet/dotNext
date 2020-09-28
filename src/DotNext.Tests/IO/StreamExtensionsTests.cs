@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Xunit;
 using static System.Globalization.CultureInfo;
 using DateTimeStyles = System.Globalization.DateTimeStyles;
-using TimeSpanStyles = System.Globalization.TimeSpanStyles;
 
 namespace DotNext.IO
 {
@@ -369,7 +368,6 @@ namespace DotNext.IO
         public static void BufferWriterOverStreamExceptions()
         {
             Throws<ArgumentNullException>(() => StreamExtensions.AsBufferWriter(null, ArrayPool<byte>.Shared.ToAllocator()));
-            Throws<ArgumentNullException>(() => Stream.Null.AsBufferWriter(null));
             using var ms = new MemoryStream(new byte[12], false);
             Throws<ArgumentException>(() => ms.AsBufferWriter(ArrayPool<byte>.Shared.ToAllocator()));
         }
@@ -398,7 +396,7 @@ namespace DotNext.IO
         public static void WriteSequence()
         {
             var content = new byte[] { 1, 5, 8, 9 };
-            var sequence = new ChunkSequence<byte>(content, 2).ToReadOnlySequence();
+            var sequence = ToReadOnlySequence<byte>(content, 2);
             using var ms = new MemoryStream();
             ms.Write(sequence);
             ms.Position = 0;

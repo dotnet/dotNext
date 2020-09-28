@@ -36,7 +36,7 @@ namespace DotNext.IO.MemoryMappedFiles
 
         public override Memory<byte> Memory => CreateMemory(length);
 
-        public override MemoryHandle Pin(int elementIndex) => Pointer.GetHandle(elementIndex);
+        public override MemoryHandle Pin(int elementIndex) => Pointer.Pin(elementIndex);
 
         public override void Unpin()
         {

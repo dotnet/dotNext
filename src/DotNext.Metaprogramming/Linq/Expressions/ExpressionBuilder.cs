@@ -13,7 +13,7 @@ namespace DotNext.Linq.Expressions
     /// <summary>
     /// Provides extension methods to simplify construction of complex expressions.
     /// </summary>
-    public static class ExpressionBuilder
+    public static partial class ExpressionBuilder
     {
         /// <summary>
         /// Constructs unary plus expression.
@@ -1347,5 +1347,41 @@ namespace DotNext.Linq.Expressions
         /// <exception cref="ArgumentException"><paramref name="right"/> is not assignable to <paramref name="left"/>.</exception>
         public static NullCoalescingAssignmentExpression NullCoalescingAssignment(this IndexExpression left, Expression right)
             => new NullCoalescingAssignmentExpression(left, right);
+
+        /// <summary>
+        /// Converts value type to the expression of <see cref="Nullable{T}"/> type.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="expression"/> is of pointer of reference type then
+        /// method returns unmodified expression.
+        /// </remarks>
+        /// <param name="expression">The expression to be converted.</param>
+        /// <returns>The nullable expression.</returns>
+        public static Expression AsNullable(this Expression expression)
+            => Nullable.GetUnderlyingType(expression.Type) is null && !expression.Type.IsPointer && expression.Type.IsValueType ? Expression.Convert(expression, typeof(Nullable<>).MakeGenericType(expression.Type)) : expression;
+
+        /// <summary>
+        /// Creates the expression of <see cref="Optional{T}"/> type.
+        /// </summary>
+        /// <param name="expression">The expression to be converted.</param>
+        /// <returns>The expression of <see cref="Optional{T}"/> type.</returns>
+        public static Expression AsOptional(this Expression expression)
+            => Expression.Convert(expression, typeof(Optional<>).MakeGenericType(expression.Type));
+
+        /// <summary>
+        /// Converts compound expression to its safe equivalent
+        /// that doesn't throw exception and return <see cref="Result{T}"/> instead.
+        /// </summary>
+        /// <param name="expression">The compound expression.</param>
+        /// <returns>The expression of type <see cref="Result{T}"/>.</returns>
+        public static Expression AsResult(this Expression expression)
+        {
+            var exception = Expression.Parameter(typeof(Exception));
+            var ctor = typeof(Result<>).MakeGenericType(expression.Type).GetConstructor(new[] { expression.Type });
+            var fallbackCtor = ctor.DeclaringType.GetConstructor(new[] { typeof(Exception) });
+            return Expression.TryCatch(
+                Expression.New(ctor, expression),
+                Expression.Catch(exception, Expression.New(fallbackCtor, exception)));
+        }
     }
 }

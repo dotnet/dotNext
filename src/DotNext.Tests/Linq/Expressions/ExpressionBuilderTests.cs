@@ -55,7 +55,7 @@ namespace DotNext.Linq.Expressions
             False(nullablePred(0));
 
             var optionalPred = MakeNullCheck<Optional<string>>();
-            True(optionalPred(Optional<string>.Empty));
+            True(optionalPred(Optional<string>.None));
             False(optionalPred(""));
         }
 
@@ -74,7 +74,7 @@ namespace DotNext.Linq.Expressions
             True(nullablePred(0));
 
             var optionalPred = MakeNotNullCheck<Optional<string>>();
-            False(optionalPred(Optional<string>.Empty));
+            False(optionalPred(Optional<string>.None));
             True(optionalPred(""));
         }
 
@@ -90,7 +90,7 @@ namespace DotNext.Linq.Expressions
 
             var optionalToString = MakeToString<Optional<int>>();
             Equal("42", optionalToString(42));
-            Null(optionalToString(Optional<int>.Empty));
+            Null(optionalToString(Optional<int>.None));
         }
 
         [Fact]
@@ -105,7 +105,7 @@ namespace DotNext.Linq.Expressions
 
             var optionalHash = MakeGetHashCode<Optional<string>>();
             NotNull(optionalHash(""));
-            Null(optionalHash(Optional<string>.Empty));
+            Null(optionalHash(Optional<string>.None));
         }
 
         private delegate ref int RefIntDelegate(TypedReference typedref);
@@ -429,10 +429,6 @@ namespace DotNext.Linq.Expressions
 
             lambda = Expression.Lambda<Func<string, string>>(parameter.Slice(typeof(Range).New(1.Index(false), 1.Index(true))), parameter).Compile();
             Equal("abcd"[1..^1], lambda("abcd"));
-
-            var uParam = (UniversalExpression)parameter;
-            lambda = Expression.Lambda<Func<string, string>>(uParam.Slice(typeof(Range).New(1.Index(false), 1.Index(true))), parameter).Compile();
-            Equal("abcd"[1..^1], lambda("abcd"));
         }
 
         [Fact]
@@ -498,6 +494,48 @@ namespace DotNext.Linq.Expressions
             array[0] = "Hello, world!";
             lambda(provider);
             Equal("Hello, world!", array[0]);
+        }
+
+        [Fact]
+        public static void ConvertToNullable()
+        {
+            var lambda = Expression.Lambda<Func<int?>>(2.Const().AsNullable()).Compile();
+            Equal(2, lambda());
+
+            var lambda2 = Expression.Lambda<Func<int?>>(2.Const().AsNullable()).Compile();
+            Equal(2, lambda());
+
+            var lambda3 = Expression.Lambda<Func<string>>("Hello, world!".Const().AsNullable()).Compile();
+            Equal("Hello, world!", lambda3());
+        }
+
+        [Fact]
+        public static void ConvertToOptional()
+        {
+            var lamdba = Expression.Lambda<Func<Optional<int>>>(2.Const().AsOptional()).Compile();
+            Equal(2, lamdba());
+        }
+
+        [Fact]
+        public static void ConvertToResult()
+        {
+            var parameter = Expression.Parameter(typeof(string));
+            var methodCall = Expression.Call(typeof(int), nameof(int.Parse), Type.EmptyTypes, parameter);
+            var lambda = Expression.Lambda<Func<string, Result<int>>>(methodCall.AsResult(), parameter).Compile();
+
+            Equal(42, lambda("42"));
+            False(lambda("ab").IsSuccessful);
+            Throws<FormatException>(() => lambda("ab").Value);
+        }
+
+        [Fact]
+        public static void CachedBindingRegression()
+        {
+            BinaryExpression expr1 = 42.Const().AsDynamic() > 2;
+            BinaryExpression expr2 = 43.Const().AsDynamic() > 3;
+            BinaryExpression expr3 = 43L.Const().AsDynamic() > 3L;
+            NotEqual(expr1.Right, expr2.Right);
+            NotEqual(expr2, expr3);
         }
     }
 }

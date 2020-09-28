@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Diagnostics.Debug;
+using static System.Linq.Enumerable;
 
 namespace DotNext.Buffers
 {
@@ -15,12 +16,14 @@ namespace DotNext.Buffers
     /// </summary>
     /// <typeparam name="T">The type of elements stored in contiguous memory.</typeparam>
     [StructLayout(LayoutKind.Auto)]
+    [Obsolete("Use ReadOnlySequence<T> data type instead")]
     public readonly struct ChunkSequence<T> : IEnumerable<ReadOnlyMemory<T>>
     {
         /// <summary>
         /// Represents enumerator of memory chunks.
         /// </summary>
         [StructLayout(LayoutKind.Auto)]
+        [Obsolete("Use ReadOnlySequence<T> data type instead")]
         public struct Enumerator : IEnumerator<ReadOnlyMemory<T>>
         {
             private readonly ReadOnlyMemory<T> source;
@@ -141,7 +144,21 @@ namespace DotNext.Buffers
         /// <param name="chunks">The sequence of memory blocks.</param>
         /// <typeparam name="T">The type of elements in the memory blocks.</typeparam>
         /// <returns>The constructed <see cref="ReadOnlySequence{T}"/> instance containing memory blocks.</returns>
-        public static ReadOnlySequence<T> ToReadOnlySequence<T>(this IEnumerable<Memory<T>> chunks)
+        [Obsolete("Use ToReadOnlySequence method with ReadOnlyMemory<T> parameters", true)]
+        public static ReadOnlySequence<T> ToReadOnlySequence<T>(IEnumerable<Memory<T>> chunks)
+        {
+            return ToReadOnlySequence(chunks.Select(Cast));
+
+            static ReadOnlyMemory<T> Cast(Memory<T> memory) => memory;
+        }
+
+        /// <summary>
+        /// Converts the sequence of memory blocks to <see cref="ReadOnlySequence{T}"/> data type.
+        /// </summary>
+        /// <param name="chunks">The sequence of memory blocks.</param>
+        /// <typeparam name="T">The type of elements in the memory blocks.</typeparam>
+        /// <returns>The constructed <see cref="ReadOnlySequence{T}"/> instance containing memory blocks.</returns>
+        public static ReadOnlySequence<T> ToReadOnlySequence<T>(this IEnumerable<ReadOnlyMemory<T>> chunks)
         {
             Chunk<T>? head = null, tail = null;
             foreach (var segment in chunks)
@@ -166,7 +183,18 @@ namespace DotNext.Buffers
         /// <param name="second">The second memory block.</param>
         /// <typeparam name="T">The type of elements in the memory blocks.</typeparam>
         /// <returns>The constructed <see cref="ReadOnlySequence{T}"/> instance containing memory blocks.</returns>
-        public static ReadOnlySequence<T> Concat<T>(this Memory<T> first, Memory<T> second)
+        [Obsolete("Use Concat with ReadOnlySpan<T> parameters", true)]
+        public static ReadOnlySequence<T> Concat<T>(Memory<T> first, Memory<T> second)
+            => Concat((ReadOnlyMemory<T>)first, (ReadOnlyMemory<T>)second);
+
+        /// <summary>
+        /// Converts two memory blocks to <see cref="ReadOnlySequence{T}"/> data type.
+        /// </summary>
+        /// <param name="first">The first memory block.</param>
+        /// <param name="second">The second memory block.</param>
+        /// <typeparam name="T">The type of elements in the memory blocks.</typeparam>
+        /// <returns>The constructed <see cref="ReadOnlySequence{T}"/> instance containing memory blocks.</returns>
+        public static ReadOnlySequence<T> Concat<T>(this ReadOnlyMemory<T> first, ReadOnlyMemory<T> second)
         {
             if (first.IsEmpty)
                 return second.IsEmpty ? ReadOnlySequence<T>.Empty : new ReadOnlySequence<T>(second);
@@ -187,7 +215,8 @@ namespace DotNext.Buffers
         /// <param name="output">The output stream.</param>
         /// <param name="token">The token that can be used to cancel execution of this method.</param>
         /// <returns>The task representing asynchronouos execution of this method.</returns>
-        public static async ValueTask CopyToAsync(this ChunkSequence<byte> sequence, Stream output, CancellationToken token = default)
+        [Obsolete("Use ReadOnlySequence<T> value type instead", true)]
+        public static async ValueTask CopyToAsync(ChunkSequence<byte> sequence, Stream output, CancellationToken token = default)
         {
             foreach (var segment in sequence)
             {
@@ -203,7 +232,8 @@ namespace DotNext.Buffers
         /// <param name="output">The text writer.</param>
         /// <param name="token">The token that can be used to cancel execution of this method.</param>
         /// <returns>The task representing asynchronouos execution of this method.</returns>
-        public static async ValueTask CopyToAsync(this ChunkSequence<char> sequence, TextWriter output, CancellationToken token = default)
+        [Obsolete("Use ReadOnlySequence<T> value type instead", true)]
+        public static async ValueTask CopyToAsync(ChunkSequence<char> sequence, TextWriter output, CancellationToken token = default)
         {
             foreach (var segment in sequence)
             {

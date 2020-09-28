@@ -5,8 +5,6 @@ using Xunit;
 
 namespace DotNext.Security.Cryptography
 {
-    using Buffers;
-
     [ExcludeFromCodeCoverage]
     public sealed class HashBuilderTests : Test
     {
@@ -51,7 +49,7 @@ namespace DotNext.Security.Cryptography
             using var alg = new SHA256Managed();
             var hash = new byte[alg.HashSize / 8];
             using var builder = new HashBuilder(alg);
-            builder.Add(new ChunkSequence<byte>(data, 3).ToReadOnlySequence());
+            builder.Add(ToReadOnlySequence<byte>(data, 3));
             Equal(alg.HashSize / 8, builder.Build(hash));
             alg.Initialize();
             Equal(hash, alg.ComputeHash(data));

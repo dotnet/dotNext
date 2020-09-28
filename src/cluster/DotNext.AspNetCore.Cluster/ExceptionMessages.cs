@@ -4,30 +4,25 @@ using System.Resources;
 
 namespace DotNext
 {
-    [SuppressMessage("Globalization", "CA1304", Justification = "This is culture-specific resource strings")]
-    [SuppressMessage("Globalization", "CA1305", Justification = "This is culture-specific resource strings")]
+    using static Resources.ResourceManagerExtensions;
+
     [ExcludeFromCodeCoverage]
     internal static class ExceptionMessages
     {
         private static readonly ResourceManager Resources = new ResourceManager("DotNext.ExceptionMessages", Assembly.GetExecutingAssembly());
 
-#pragma warning disable CS8603, CS8604
-        internal static string UnresolvedHostName(string hostName) =>
-            string.Format(Resources.GetString("UnresolvedHostName"), hostName);
+        internal static string UnresolvedHostName(string hostName)
+            => Resources.Get().Format(hostName);
 
-        internal static string MissingHeader(string headerName) =>
-            string.Format(Resources.GetString("MissingHeader"), headerName);
+        internal static string MissingHeader(string headerName)
+            => Resources.Get().Format(headerName);
 
-        internal static string IncorrectResponse => Resources.GetString("IncorrectResponse");
+        internal static string IncorrectResponse => (string)Resources.Get();
 
-        internal static string UnresolvedLocalMember => Resources.GetString("UnresolvedLocalMember");
+        internal static string UnresolvedLocalMember => (string)Resources.Get();
 
-        internal static string MessagingNotSupported => Resources.GetString("MessagingNotSupported");
+        internal static string UnavailableMember => (string)Resources.Get();
 
-        internal static string UnavailableMember => Resources.GetString("UnavailableMember");
-
-        internal static string LeaderIsUnavailable => Resources.GetString("LeaderIsUnavailable");
-
-#pragma warning restore CS8603, CS8604
+        internal static string LeaderIsUnavailable => (string)Resources.Get();
     }
 }

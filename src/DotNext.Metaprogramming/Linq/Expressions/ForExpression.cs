@@ -4,11 +4,13 @@ using System.Linq.Expressions;
 
 namespace DotNext.Linq.Expressions
 {
+    using Seq = Collections.Generic.Sequence;
+
     /// <summary>
     /// Represents <c>for</c> loop as expression.
     /// </summary>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/for">for Statement</seealso>
-    public sealed class ForExpression : Expression, ILoopLabels
+    public sealed class ForExpression : CustomExpression, ILoopLabels
     {
         internal interface IBuilder : ILoopLabels
         {
@@ -180,20 +182,9 @@ namespace DotNext.Linq.Expressions
         }
 
         /// <summary>
-        /// Always returns <see cref="ExpressionType.Extension"/>.
-        /// </summary>
-        public override ExpressionType NodeType => ExpressionType.Extension;
-
-        /// <summary>
         /// Always returns <see cref="void"/>.
         /// </summary>
         public override Type Type => typeof(void);
-
-        /// <summary>
-        /// Always returns <see langword="true"/> because
-        /// this expression is <see cref="ExpressionType.Extension"/>.
-        /// </summary>
-        public override bool CanReduce => true;
 
         /// <summary>
         /// Translates this expression into predefined set of expressions
@@ -204,7 +195,7 @@ namespace DotNext.Linq.Expressions
         {
             Expression body = Condition(Test, Body, Goto(BreakLabel), typeof(void));
             body = Loop(body, BreakLabel);
-            return Block(typeof(void), Sequence.Singleton(LoopVar), Assign(LoopVar, Initialization), body);
+            return Block(typeof(void), Seq.Singleton(LoopVar), Assign(LoopVar, Initialization), body);
         }
     }
 }

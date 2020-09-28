@@ -371,7 +371,7 @@ namespace DotNext.IO
                 bytes[i] = i;
 
             IBufferWriter<byte> buffer = writer;
-            Throws<OutOfMemoryException>(() => buffer.Write(bytes));
+            Throws<InsufficientMemoryException>(() => buffer.Write(bytes));
         }
 
         private sealed class CallbackChecker : TaskCompletionSource<bool>

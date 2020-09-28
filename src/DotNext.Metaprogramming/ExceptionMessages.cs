@@ -5,65 +5,64 @@ using System.Resources;
 
 namespace DotNext
 {
-    [SuppressMessage("Globalization", "CA1304", Justification = "This is culture-specific resource strings")]
-    [SuppressMessage("Globalization", "CA1305", Justification = "This is culture-specific resource strings")]
+    using static Resources.ResourceManagerExtensions;
+
     [ExcludeFromCodeCoverage]
     internal static class ExceptionMessages
     {
         private static readonly ResourceManager Resources = new ResourceManager("DotNext.ExceptionMessages", Assembly.GetExecutingAssembly());
 
-        internal static string AbstractDelegate => Resources.GetString("AbstractDelegate");
+        internal static string AbstractDelegate => (string)Resources.Get();
 
-        internal static string MissingGetAwaiterMethod(Type t) => string.Format(Resources.GetString("MissingGetAwaiterMethod"), t.FullName);
+        internal static string MissingGetAwaiterMethod(Type t) => Resources.Get().Format(t.FullName);
 
-        internal static string MissingGetResultMethod(Type t) => string.Format(Resources.GetString("MissingGetResultMethod"), t.FullName);
+        internal static string MissingGetResultMethod(Type t) => Resources.Get().Format(t.FullName);
 
-        internal static string InterfaceNotImplemented(Type t, Type i) => string.Format(Resources.GetString("InterfaceNotImplemented"), t.FullName, i.FullName);
+        internal static string InterfaceNotImplemented(Type t, Type i) => Resources.Get().Format(t.FullName, i.FullName);
 
-        internal static string EnumerablePatternExpected => Resources.GetString("EnumerablePatternExpected");
+        internal static string EnumerablePatternExpected => (string)Resources.Get();
 
-        internal static string DisposePatternExpected(Type t) => string.Format(Resources.GetString("DisposePatternExpected"), t.FullName);
+        internal static string DisposePatternExpected(Type t) => Resources.Get().Format(t.FullName);
 
-        internal static string UnsupportedAsyncType => Resources.GetString("UnsupportedAsyncType");
+        internal static string UnsupportedAsyncType => (string)Resources.Get();
 
-        internal static string UnsupportedConditionalExpr => Resources.GetString("UnsupportedConditionalExpr");
+        internal static string UnsupportedConditionalExpr => (string)Resources.Get();
 
-        internal static string VoidLabelExpected => Resources.GetString("VoidLabelExpected");
+        internal static string VoidLabelExpected => (string)Resources.Get();
 
-        internal static string VoidSwitchExpected => Resources.GetString("VoidSwitchExpected");
+        internal static string VoidSwitchExpected => (string)Resources.Get();
 
-        internal static string LeavingFinallyClause => Resources.GetString("LeavingFinallyClause");
+        internal static string LeavingFinallyClause => (string)Resources.Get();
 
-        internal static string VoidLoopExpected => Resources.GetString("VoidLoopExpected");
+        internal static string VoidLoopExpected => (string)Resources.Get();
 
-        internal static string FilterHasAwait => Resources.GetString("FilterHasAwait");
+        internal static string FilterHasAwait => (string)Resources.Get();
 
-        internal static string OutOfLexicalScope => Resources.GetString("OutOfLexicalScope");
+        internal static string OutOfLexicalScope => (string)Resources.Get();
 
-        internal static string LoopNotAvailable => Resources.GetString("LoopNotAvailable");
+        internal static string LoopNotAvailable => (string)Resources.Get();
 
-        internal static string InvalidRethrow => Resources.GetString("InvalidRethrow");
+        internal static string InvalidRethrow => (string)Resources.Get();
 
         internal static string TypeExpected(Type type)
-            => string.Format(Resources.GetString("ExpressionTypeExpected"), type.FullName);
+            => Resources.Get().Format(type.FullName);
 
         internal static string TypeExpected<T>()
             => TypeExpected(typeof(T));
 
-        internal static string InvalidFragmentRendering => Resources.GetString("InvalidFragmentRendering");
+        internal static string InvalidFragmentRendering => (string)Resources.Get();
 
-        internal static string CollectionImplementationExpected => Resources.GetString("CollectionImplementationExpected");
+        internal static string CollectionImplementationExpected => (string)Resources.Get();
 
-        internal static string UnsupportedSafeNavigationType(Type type) => string.Format(Resources.GetString("UnsupportedSafeNavigationType"), type);
+        internal static string UnsupportedSafeNavigationType(Type type)
+            => Resources.Get().Format(type.FullName);
 
-        internal static string TypedReferenceExpected => Resources.GetString("TypedReferenceExpected");
+        internal static string TypedReferenceExpected => (string)Resources.Get();
 
-        internal static string UndeclaredVariable(string name) => string.Format(Resources.GetString("UndeclaredVariable"), name);
+        internal static string UndeclaredVariable(string name) => Resources.Get().Format(name);
 
-        internal static string VoidLambda => Resources.GetString("VoidLambda");
+        internal static string VoidLambda => (string)Resources.Get();
 
-        internal static string MissingIndexerProperty(Type type) => string.Format(Resources.GetString("MissingIndexerProperty"), type);
-
-        internal static string CollectionExpected(Type type) => string.Format(Resources.GetString("CollectionExpected"), type);
+        internal static string CollectionExpected(Type type) => Resources.Get().Format(type.FullName);
     }
 }

@@ -5,7 +5,8 @@ using System.Threading.Tasks;
 
 namespace DotNext.Threading.Tasks
 {
-    using Runtime.CompilerServices;
+    using Dynamic;
+    using RuntimeFeaturesAttribute = Runtime.CompilerServices.RuntimeFeaturesAttribute;
 
     /// <summary>
     /// Represents dynamically-typed task.
@@ -76,6 +77,6 @@ namespace DotNext.Threading.Tasks
         public Awaiter GetAwaiter() => new Awaiter(task, continueOnCaptureContext);
 
         [RuntimeFeatures(DynamicCodeCompilation = true)]
-        internal static dynamic GetResult(Task task) => GetResultCallSite.Target.Invoke(GetResultCallSite, task);
+        internal static object GetResult(Task task) => GetResultCallSite.Target.Invoke(GetResultCallSite, task);
     }
 }

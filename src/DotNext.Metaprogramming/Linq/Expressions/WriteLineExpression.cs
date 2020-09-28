@@ -11,7 +11,7 @@ namespace DotNext.Linq.Expressions
     /// <seealso cref="Console.Error"/>
     /// <seealso cref="TextWriter.WriteLine(object)"/>
     /// <seealso cref="System.Diagnostics.Debug.WriteLine(object)"/>
-    public sealed class WriteLineExpression : Expression
+    public sealed class WriteLineExpression : CustomExpression
     {
         private enum Kind : byte
         {
@@ -35,17 +35,6 @@ namespace DotNext.Linq.Expressions
         /// Always returns <see cref="void"/>.
         /// </summary>
         public override Type Type => typeof(void);
-
-        /// <summary>
-        /// Always returns <see langword="true"/> because
-        /// this expression is <see cref="ExpressionType.Extension"/>.
-        /// </summary>
-        public override bool CanReduce => true;
-
-        /// <summary>
-        /// Always returns <see cref="ExpressionType.Extension"/>.
-        /// </summary>
-        public override ExpressionType NodeType => ExpressionType.Extension;
 
         /// <summary>
         /// Creates an expression that writes the object into <see cref="Console.Out"/>.

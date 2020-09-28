@@ -9,6 +9,7 @@ namespace DotNext.Runtime.CompilerServices
     using Linq.Expressions;
     using Reflection;
     using static Collections.Generic.Dictionary;
+    using static Collections.Generic.Sequence;
     using static Reflection.TypeExtensions;
 
     /// <summary>

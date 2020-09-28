@@ -10,6 +10,7 @@ namespace DotNext
     using Reflection;
     using Runtime.CompilerServices;
     using Intrinsics = Runtime.Intrinsics;
+    using Seq = Collections.Generic.Sequence;
 
     /// <summary>
     /// Generates hash code and equality check functions for the particular type.
@@ -87,7 +88,7 @@ namespace DotNext
                 typeof(OneDimensionalArray)
                         .GetMethod(nameof(OneDimensionalArray.BitwiseEquals), 1, PublicStaticFlags, null, new[] { arrayType, arrayType }, null)!
                         .MakeGenericMethod(itemType)
-                : new Func<IEnumerable<object>?, IEnumerable<object>?, bool>(Sequence.SequenceEqual).Method;
+                : new Func<IEnumerable<object>?, IEnumerable<object>?, bool>(Seq.SequenceEqual).Method;
         }
 
         private static MethodCallExpression EqualsMethodForArrayElementType(MemberExpression fieldX, MemberExpression fieldY)
@@ -103,8 +104,8 @@ namespace DotNext
                   typeof(OneDimensionalArray)
                           .GetMethod(nameof(OneDimensionalArray.BitwiseHashCode), 1, PublicStaticFlags, null, new[] { arrayType, typeof(bool) }, null)!
                           .MakeGenericMethod(itemType) :
-                  typeof(Sequence)
-                          .GetMethod(nameof(Sequence.SequenceHashCode), new[] { typeof(IEnumerable<object>), typeof(bool) });
+                  typeof(Seq)
+                          .GetMethod(nameof(Seq.SequenceHashCode), new[] { typeof(IEnumerable<object>), typeof(bool) });
         }
 
         private static MethodCallExpression HashCodeMethodForArrayElementType(Expression expr, ConstantExpression salted)
@@ -222,7 +223,7 @@ namespace DotNext
                 }
 
                 expressions.Add(hashCodeTemp);
-                expr = Expression.Block(typeof(int), Sequence.Singleton(hashCodeTemp), expressions);
+                expr = Expression.Block(typeof(int), Seq.Singleton(hashCodeTemp), expressions);
                 return Expression.Lambda<Func<T, int>>(expr, false, inputParam).Compile();
             }
         }

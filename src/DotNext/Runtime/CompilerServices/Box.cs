@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -9,7 +10,7 @@ namespace DotNext.Runtime.CompilerServices
     /// </summary>
     /// <typeparam name="T">The value type to be boxed.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct Box<T> : IEquatable<Box<T>>
+    public readonly struct Box<T> : IEquatable<Box<T>> // TODO: Move to Runtime namespace
         where T : struct
     {
         private readonly object value;
@@ -42,6 +43,13 @@ namespace DotNext.Runtime.CompilerServices
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => ref Unsafe.Unbox<T>(value);
         }
+
+        /// <summary>
+        /// Gets pinnable managed pointer to the boxed object.
+        /// </summary>
+        /// <returns>The pinnable managed pointer.</returns>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public ref T GetPinnableReference() => ref Value;
 
         /// <summary>
         /// Unboxes the reference value.

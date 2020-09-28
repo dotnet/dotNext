@@ -3,10 +3,12 @@ using System.Linq.Expressions;
 
 namespace DotNext.Linq.Expressions
 {
+    using Seq = Collections.Generic.Sequence;
+
     /// <summary>
     /// Represents expression that is protected by null check, e.g. safe navigation operator (?. in C#).
     /// </summary>
-    public sealed class NullSafetyExpression : Expression
+    public sealed class NullSafetyExpression : CustomExpression
     {
         private readonly BinaryExpression? assignment;
         private readonly bool alwaysNotNull;
@@ -59,17 +61,6 @@ namespace DotNext.Linq.Expressions
         }
 
         /// <summary>
-        /// Always returns <see langword="true"/> because
-        /// this expression is <see cref="ExpressionType.Extension"/>.
-        /// </summary>
-        public override bool CanReduce => true;
-
-        /// <summary>
-        /// Always returns <see cref="ExpressionType.Extension"/>.
-        /// </summary>
-        public override ExpressionType NodeType => ExpressionType.Extension;
-
-        /// <summary>
         /// Gets type of this expression.
         /// </summary>
         public override Type Type
@@ -105,7 +96,7 @@ namespace DotNext.Linq.Expressions
             Expression conditional = Condition(Target.IsNotNull(), body, Default(body.Type));
             return assignment is null ?
                 conditional :
-                Block(body.Type, Sequence.Singleton(Target), assignment, conditional);
+                Block(body.Type, Seq.Singleton(Target), assignment, conditional);
         }
     }
 }

@@ -4,51 +4,47 @@ using System.Resources;
 
 namespace DotNext
 {
-    [SuppressMessage("Globalization", "CA1304", Justification = "This is culture-specific resource strings")]
-    [SuppressMessage("Globalization", "CA1305", Justification = "This is culture-specific resource strings")]
+    using static Resources.ResourceManagerExtensions;
+
     [ExcludeFromCodeCoverage]
     internal static class ExceptionMessages
     {
         private static readonly ResourceManager Resources = new ResourceManager("DotNext.ExceptionMessages", Assembly.GetExecutingAssembly());
 
-        internal static string NoConsensus => Resources.GetString("NoConsensus");
+        internal static string CannotRemoveLocalNode => (string)Resources.Get();
 
-        internal static string CannotRemoveLocalNode => Resources.GetString("CannotRemoveLocalNode");
+        internal static string EntrySetIsEmpty => (string)Resources.Get();
 
-        internal static string ReplicationRejected => Resources.GetString("ReplicationRejected");
+        internal static string LocalNodeNotLeader => (string)Resources.Get();
 
-        internal static string EntrySetIsEmpty => Resources.GetString("EntrySetIsEmpty");
+        internal static string InvalidEntryIndex(long index) => Resources.Get().Format(index);
 
-        internal static string LocalNodeNotLeader => Resources.GetString("LocalNodeNotLeader");
+        internal static string InvalidAppendIndex => (string)Resources.Get();
 
-        internal static string InvalidEntryIndex(long index) => string.Format(Resources.GetString("InvalidEntryIndex"), index);
+        internal static string SnapshotDetected => (string)Resources.Get();
 
-        internal static string InvalidAppendIndex => Resources.GetString("InvalidAppendIndex");
+        internal static string RangeTooBig => (string)Resources.Get();
 
-        internal static string SnapshotDetected => Resources.GetString("SnapshotDetected");
+        internal static string UnexpectedError => (string)Resources.Get();
 
-        internal static string RangeTooBig => Resources.GetString("RangeTooBig");
+        internal static string NoAvailableReadSessions => (string)Resources.Get();
 
-        internal static string UnexpectedError => Resources.GetString("UnexpectedError");
+        internal static string InvalidLockToken => (string)Resources.Get();
 
-        internal static string NoAvailableReadSessions => Resources.GetString("NoAvailableReadSessions");
+        internal static string UnsupportedAddressFamily => (string)Resources.Get();
 
-        internal static string InvalidLockToken => Resources.GetString("InvalidLockToken");
+        internal static string NotEnoughSenders => (string)Resources.Get();
 
-        internal static string UnsupportedAddressFamily => Resources.GetString("UnsupportedAddressFamily");
+        internal static string DuplicateCorrelationId => (string)Resources.Get();
 
-        internal static string NotEnoughSenders => Resources.GetString("NotEnoughSenders");
+        internal static string UnexpectedUdpSenderBehavior => (string)Resources.Get();
 
-        internal static string DuplicateCorrelationId => Resources.GetString("DuplicateCorrelationId");
+        internal static string ExchangeCompleted => (string)Resources.Get();
 
-        internal static string UnexpectedUdpSenderBehavior => Resources.GetString("UnexpectedUdpSenderBehavior");
+        internal static string CanceledByRemoteHost => (string)Resources.Get();
 
-        internal static string ExchangeCompleted => Resources.GetString("ExchangeCompleted");
+        internal static string UnavailableMember => (string)Resources.Get();
 
-        internal static string CanceledByRemoteHost => Resources.GetString("CanceledByRemoteHost");
-
-        internal static string UnavailableMember => Resources.GetString("UnavailableMember");
-
-        internal static string UnresolvedLocalMember => Resources.GetString("UnresolvedLocalMember");
+        internal static string UnresolvedLocalMember => (string)Resources.Get();
     }
 }

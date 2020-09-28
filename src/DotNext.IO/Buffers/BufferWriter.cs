@@ -15,7 +15,7 @@ namespace DotNext.Buffers
     public static class BufferWriter
     {
         private const int MaxBufferSize = int.MaxValue / 2;
-        internal static readonly MemoryAllocator<char> DefaultAllocator = ArrayPool<char>.Shared.ToAllocator();
+        internal const MemoryAllocator<char>? DefaultAllocator = null;
 
         // TODO: Replace with function pointers in C# 9
         internal interface ISpanFormattable
@@ -436,7 +436,7 @@ namespace DotNext.Buffers
             Span<char> charBuffer = stackalloc char[initialCharBufferSize];
             if (!WriteString(writer, value, charBuffer, lengthFormat, in context, format, provider, bufferSize))
             {
-                for (var charBufferSize = initialCharBufferSize * 2; ; charBufferSize = charBufferSize <= MaxBufferSize ? charBufferSize * 2 : throw new OutOfMemoryException())
+                for (var charBufferSize = initialCharBufferSize * 2; ; charBufferSize = charBufferSize <= MaxBufferSize ? charBufferSize * 2 : throw new InsufficientMemoryException())
                 {
                     using var owner = DefaultAllocator.Invoke(charBufferSize, false);
                     if (WriteString(writer, value, charBuffer, lengthFormat, in context, format, provider, bufferSize))
@@ -685,7 +685,7 @@ namespace DotNext.Buffers
                     break;
                 }
 
-                bufferSize = bufferSize <= MaxBufferSize ? bufferSize * 2 : throw new OutOfMemoryException();
+                bufferSize = bufferSize <= MaxBufferSize ? bufferSize * 2 : throw new InsufficientMemoryException();
             }
         }
 

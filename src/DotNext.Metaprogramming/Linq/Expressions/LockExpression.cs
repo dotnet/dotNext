@@ -4,11 +4,13 @@ using System.Threading;
 
 namespace DotNext.Linq.Expressions
 {
+    using Seq = Collections.Generic.Sequence;
+
     /// <summary>
     /// Represents synchronized block of code.
     /// </summary>
     /// <see href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/lock-statement">lock Statement.</see>
-    public sealed class LockExpression : Expression
+    public sealed class LockExpression : CustomExpression
     {
         /// <summary>
         /// Represents constructor of synchronized block of code.
@@ -70,17 +72,6 @@ namespace DotNext.Linq.Expressions
         }
 
         /// <summary>
-        /// Always returns <see langword="true"/> because
-        /// this expression is <see cref="ExpressionType.Extension"/>.
-        /// </summary>
-        public override bool CanReduce => true;
-
-        /// <summary>
-        /// Always returns <see cref="ExpressionType.Extension"/>.
-        /// </summary>
-        public override ExpressionType NodeType => ExpressionType.Extension;
-
-        /// <summary>
         /// Gets type of this expression.
         /// </summary>
         public override Type Type => Body.Type;
@@ -109,7 +100,7 @@ namespace DotNext.Linq.Expressions
             var body = TryFinally(Body, Call(monitorExit, SyncRoot));
             return assignment is null ?
                     Block(Call(monitorEnter, SyncRoot), body) :
-                    Block(Sequence.Singleton(SyncRoot), assignment, Call(monitorEnter, SyncRoot), body);
+                    Block(Seq.Singleton(SyncRoot), assignment, Call(monitorEnter, SyncRoot), body);
         }
     }
 }

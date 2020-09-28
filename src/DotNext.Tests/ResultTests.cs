@@ -80,5 +80,32 @@ namespace DotNext
             Null(new Result<string>(default(string)).Box().Value);
             IsType<ArithmeticException>(new Result<int>(new ArithmeticException()).Box().Error);
         }
+
+        [Fact]
+        public static void OptionalInterop()
+        {
+            var result = (Result<string>)Optional<string>.None;
+            False(result.IsSuccessful);
+            Throws<InvalidOperationException>(() => result.Value);
+            
+            result = (Result<string>)new Optional<string>(null);
+            True(result.IsSuccessful);
+            Null(result.Value);
+
+            result = (Result<string>)new Optional<string>("Hello, world!");
+            True(result.IsSuccessful);
+            Equal("Hello, world!", result.Value);
+        }
+
+        [Fact]
+        public static void UnderlyingType()
+        {
+            var type = Result.GetUnderlyingType(typeof(Result<>));
+            Null(type);
+            type = Result.GetUnderlyingType(typeof(int));
+            Null(type);
+            type = Result.GetUnderlyingType(typeof(Result<string>));
+            Equal(typeof(string), type);
+        }
     }
 }

@@ -18,7 +18,7 @@ namespace DotNext.IO
         [Fact]
         public static async Task ReadMemory()
         {
-            var sequence = new ChunkSequence<byte>(new byte[] { 1, 5, 8, 9 }, 2).ToReadOnlySequence();
+            var sequence = ToReadOnlySequence<byte>(new byte[] { 1, 5, 8, 9 }, 2);
             False(sequence.IsSingleSegment);
             var result = new byte[3];
             IAsyncBinaryReader reader = IAsyncBinaryReader.Create(sequence);
@@ -32,7 +32,7 @@ namespace DotNext.IO
         public static async Task CopyToStream()
         {
             var content = new byte[] { 1, 5, 8, 9 };
-            IAsyncBinaryReader reader = IAsyncBinaryReader.Create(new ChunkSequence<byte>(content, 2).ToReadOnlySequence());
+            IAsyncBinaryReader reader = IAsyncBinaryReader.Create(ToReadOnlySequence<byte>(content, 2));
             using var ms = new MemoryStream();
             await reader.CopyToAsync(ms);
             ms.Position = 0;
@@ -43,7 +43,7 @@ namespace DotNext.IO
         public static async Task CopyToPipe()
         {
             var expected = new byte[] { 1, 5, 8, 9 };
-            IAsyncBinaryReader reader = IAsyncBinaryReader.Create(new ChunkSequence<byte>(expected, 2).ToReadOnlySequence());
+            IAsyncBinaryReader reader = IAsyncBinaryReader.Create(ToReadOnlySequence<byte>(expected, 2));
             var pipe = new Pipe();
             await reader.CopyToAsync(pipe.Writer);
             await pipe.Writer.CompleteAsync();

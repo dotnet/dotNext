@@ -37,7 +37,7 @@ namespace DotNext
         /// </summary>
         /// <param name="resultType">The type of <see cref="Result{T}"/>.</param>
         /// <returns><see langword="true"/>, if specified type is result type; otherwise, <see langword="false"/>.</returns>
-        public static bool IsResult(this Type resultType) => resultType.IsGenericInstanceOf(typeof(Result<>));
+        public static bool IsResult(this Type resultType) => resultType.IsConstructedGenericType && resultType.GetGenericTypeDefinition() == typeof(Result<>);
 
         /// <summary>
         /// Returns the underlying type argument of the specified result type.
@@ -68,16 +68,8 @@ namespace DotNext
         /// <param name="value">The value to be stored as result.</param>
         public Result(T value)
         {
-            if (value is Exception e)
-            {
-                exception = ExceptionDispatchInfo.Capture(e);
-                this.value = default;
-            }
-            else
-            {
-                this.value = value;
-                exception = null;
-            }
+            this.value = value;
+            exception = null;
         }
 
         /// <summary>
@@ -103,6 +95,24 @@ namespace DotNext
             exception = info.GetValue(ExceptionSerData, typeof(Exception)) is Exception e ?
                 ExceptionDispatchInfo.Capture(e) :
                 null;
+        }
+
+        /// <summary>
+        /// Creates <see cref="Result{T}"/> from <see cref="Optional{T}"/> instance.
+        /// </summary>
+        /// <param name="optional">The optional value.</param>
+        /// <returns>The converted optional value.</returns>
+        public static Result<T> FromOptional(in Optional<T> optional)
+        {
+            Result<T> result;
+            if (optional.HasValue)
+                result = new Result<T>(optional.OrDefault());
+            else if (optional.IsNull)
+                result = default;
+            else
+                result = new Result<T>(new InvalidOperationException(ExceptionMessages.OptionalNoValue));
+
+            return result;
         }
 
         /// <summary>
@@ -236,7 +246,7 @@ namespace DotNext
         /// Converts the result into <see cref="Optional{T}"/>.
         /// </summary>
         /// <returns>Option monad representing value in this monad.</returns>
-        public Optional<T> TryGet() => exception is null ? new Optional<T>(value) : Optional<T>.Empty;
+        public Optional<T> TryGet() => exception is null ? new Optional<T>(value) : Optional<T>.None;
 
         /// <summary>
         /// Converts the result into <see cref="Optional{T}"/>.
@@ -248,7 +258,15 @@ namespace DotNext
         /// Converts value into the result.
         /// </summary>
         /// <param name="result">The result to be converted.</param>
+        /// <returns>The result representing <paramref name="result"/> value.</returns>
         public static implicit operator Result<T>(T result) => new Result<T>(result);
+
+        /// <summary>
+        /// Converts <see cref="Optional{T}"/> to <see cref="Result{T}"/>.
+        /// </summary>
+        /// <param name="optional">The optional value.</param>
+        /// <returns>The result representing optional value.</returns>
+        public static explicit operator Result<T>(in Optional<T> optional) => FromOptional(in optional);
 
         /// <summary>
         /// Indicates that both results are successful.

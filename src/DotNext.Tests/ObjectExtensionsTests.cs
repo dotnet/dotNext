@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
@@ -22,6 +23,7 @@ namespace DotNext
         public static void OneOfCheck()
         {
             True("str".IsOneOf("a", "b", "str"));
+            True("str".IsOneOf(new List<string> { "a", "b", "str" }));
         }
 
         [Fact]

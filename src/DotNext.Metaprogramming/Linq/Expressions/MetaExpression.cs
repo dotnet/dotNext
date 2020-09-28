@@ -3,26 +3,30 @@ using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Linq.Expressions
 {
     internal sealed class MetaExpression : DynamicMetaObject
     {
-        private static readonly MethodInfo MakeUnaryMethod = typeof(Expression).GetMethod(nameof(Expression.MakeUnary), new[] { typeof(ExpressionType), typeof(Expression), typeof(Type) });
-        private static readonly MethodInfo MakeBinaryMethod = typeof(Expression).GetMethod(nameof(Expression.MakeBinary), new[] { typeof(ExpressionType), typeof(Expression), typeof(Expression) });
-        private static readonly MethodInfo PropertyOrFieldMethod = typeof(Expression).GetMethod(nameof(Expression.PropertyOrField), new[] { typeof(Expression), typeof(string) });
-        private static readonly MethodInfo AssignMethod = typeof(Expression).GetMethod(nameof(Expression.Assign), new[] { typeof(Expression), typeof(Expression) });
-        private static readonly MethodInfo CallMethod = typeof(ExpressionBuilder).GetMethod(nameof(ExpressionBuilder.Call), new[] { typeof(Expression), typeof(string), typeof(Expression[]) });
-        private static readonly MethodInfo InvokeMethod = typeof(Expression).GetMethod(nameof(Expression.Invoke), new[] { typeof(Expression), typeof(Expression[]) });
-        private static readonly MethodInfo NewMethod = typeof(ExpressionBuilder).GetMethod(nameof(ExpressionBuilder.New), new[] { typeof(Type), typeof(Expression[]) });
-        private static readonly MethodInfo PropertyMethod = typeof(Expression).GetMethod(nameof(Expression.Property), new[] { typeof(Expression), typeof(string), typeof(Expression[]) });
-        private static readonly MethodInfo ActivateMethod = typeof(ExpressionBuilder).GetMethod(nameof(ExpressionBuilder.New), new[] { typeof(Expression), typeof(Expression[]) });
+        private static readonly MethodInfo AsExpressionBuilderMethod = new Func<object, IExpressionBuilder<Expression>>(Unsafe.As<IExpressionBuilder<Expression>>).Method;
+        private static readonly MethodInfo AsExpressionMethod = new Func<object, Expression>(Unsafe.As<Expression>).Method;
+        private static readonly MethodInfo BuildMethod = typeof(IExpressionBuilder<Expression>).GetMethod(nameof(IExpressionBuilder<Expression>.Build), BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+        private static readonly MethodInfo MakeUnaryMethod = new Func<ExpressionType, Expression, Type, UnaryExpression>(Expression.MakeUnary).Method;
+        private static readonly MethodInfo MakeBinaryMethod = new Func<ExpressionType, Expression, Expression, BinaryExpression>(Expression.MakeBinary).Method;
+        private static readonly MethodInfo PropertyOrFieldMethod = new Func<Expression, string, MemberExpression>(Expression.PropertyOrField).Method;
+        private static readonly MethodInfo AssignMethod = new Func<Expression, Expression, BinaryExpression>(Expression.Assign).Method;
+        private static readonly MethodInfo CallMethod = new Func<Expression, string, Expression[], MethodCallExpression>(ExpressionBuilder.Call).Method;
+        private static readonly MethodInfo InvokeMethod = new Func<Expression, Expression[], InvocationExpression>(Expression.Invoke).Method;
+        private static readonly MethodInfo NewMethod = new Func<Type, Expression[], NewExpression>(ExpressionBuilder.New).Method;
+        private static readonly MethodInfo PropertyMethod = new Func<Expression, string, Expression[], IndexExpression>(Expression.Property).Method;
+        private static readonly MethodInfo ActivateMethod = new Func<Expression, Expression[], MethodCallExpression>(ExpressionBuilder.New).Method;
 
         private static readonly ConstantExpression ItemName = "Item".Const();
         private static readonly ConstantExpression ConvertOperator = ExpressionType.Convert.Const();
 
         internal MetaExpression(Expression binding, IExpressionBuilder<Expression> builder)
-            : base(binding, BindingRestrictions.GetTypeRestriction(binding, builder.GetType()), builder)
+            : base(binding, BindingRestrictions.GetExpressionRestriction(Expression.TypeIs(binding, typeof(IExpressionBuilder<Expression>))), builder)
         {
         }
 
@@ -35,14 +39,17 @@ namespace DotNext.Linq.Expressions
         {
             if (arg is MetaExpression meta)
                 return meta.PrepareExpression();
-            else if (typeof(Expression).IsAssignableFrom(arg.LimitType))
-                return arg.Expression;
-            else
-                return Expression.Constant(arg.Value, arg.LimitType).Const();
+
+            if (typeof(Expression).IsAssignableFrom(arg.LimitType))
+                return arg.Expression.Type == typeof(Expression) ? arg.Expression : Expression.Call(null, AsExpressionMethod, arg.Expression);
+
+            return Expression.Call(typeof(ExpressionBuilder), nameof(ExpressionBuilder.Const), new[] { arg.LimitType }, arg.Expression);
         }
 
         private Expression PrepareExpression()
-            => Value is IExpressionBuilder<Expression> ? Expression.Convert<IExpressionBuilder<Expression>>().Call(nameof(IExpressionBuilder<Expression>.Build)) : Expression;
+            => Value is IExpressionBuilder<Expression> ?
+                Expression.Call(Expression.Call(null, AsExpressionBuilderMethod, Expression), BuildMethod) :
+                Expression;
 
         public override DynamicMetaObject BindUnaryOperation(UnaryOperationBinder binder)
         {

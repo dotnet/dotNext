@@ -11,6 +11,7 @@ namespace DotNext.Runtime.InteropServices
     /// <summary>
     /// Allows to call unmanaged functions with <see langword="void"/> return type.
     /// </summary>
+    [Obsolete("Use function pointers in C# 9")]
     public static class UnmanagedFunction
     {
         /// <summary>
@@ -618,6 +619,7 @@ namespace DotNext.Runtime.InteropServices
     /// Allows to call unmanaged functions with <typeparamref name="TResult"/> return type.
     /// </summary>
     /// <typeparam name="TResult">The return type of the unmanage function.</typeparam>
+    [Obsolete("Use function pointers in C# 9")]
     public static class UnmanagedFunction<TResult>
         where TResult : unmanaged
     {

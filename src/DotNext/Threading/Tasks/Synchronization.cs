@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Threading.Timeout;
@@ -70,8 +69,7 @@ namespace DotNext.Threading.Tasks
             try
             {
                 task.Wait(token);
-                var value = DynamicTaskAwaitable.GetResult(task);
-                result = new Result<object>(Unsafe.As<dynamic, object>(ref value));
+                result = new Result<object>(DynamicTaskAwaitable.GetResult(task));
             }
             catch (Exception e)
             {
@@ -95,8 +93,7 @@ namespace DotNext.Threading.Tasks
             {
                 if (task.Wait(timeout))
                 {
-                    var value = DynamicTaskAwaitable.GetResult(task);
-                    result = new Result<object>(Unsafe.As<dynamic, object>(ref value));
+                    result = new Result<object>(DynamicTaskAwaitable.GetResult(task));
                 }
                 else
                 {

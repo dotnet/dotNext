@@ -77,7 +77,7 @@ namespace DotNext
         /// <param name="this">The first argument to be captured.</param>
         /// <returns>The function instance.</returns>
         [Obsolete("Use Bind method instead", true)]
-        public static Function<TArgs, TResult> Capture<T, TArgs, TResult>(this Function<T, TArgs, TResult> function, [DisallowNull]T @this)
+        public static Function<TArgs, TResult> Capture<T, TArgs, TResult>(Function<T, TArgs, TResult> function, [DisallowNull]T @this)
             where TArgs : struct
             => Bind(function, @this);
 

@@ -13,6 +13,8 @@ namespace DotNext
 
         internal static string OptionalNoValue => Resources.GetString("OptionalNoValue");
 
+        internal static string OptionalNullValue => Resources.GetString("OptionalNullValue");
+
         internal static string InvalidUserDataSlot => Resources.GetString("InvalidUserDataSlot");
 
         internal static string IndexShouldBeZero => Resources.GetString("IndexShouldBeZero");
@@ -20,10 +22,6 @@ namespace DotNext
         internal static string CastNullToValueType => Resources.GetString("CastNullToValueType");
 
         internal static string UnsupportedLockAcquisition => Resources.GetString("UnsupportedLockAcquisition");
-
-        internal static string InvalidMethodSignature => Resources.GetString("CannotMakeMethodPointer");
-
-        internal static string UnsupportedMethodPointerType => Resources.GetString("UnsupportedMethodPointerType");
 
         internal static string UnreachableCodeDetected => Resources.GetString("UnreachableCodeDetected");
 
@@ -38,5 +36,10 @@ namespace DotNext
         internal static string BoxedValueTypeExpected<T>()
             where T : struct
             => string.Format(Resources.GetString("BoxedValueTypeExpected"), typeof(T));
+
+        internal static string ResourceEntryIsNull(string name)
+            => string.Format(Resources.GetString("ResourceEntryIsNull"), name);
+
+        internal static string EmptyBuffer => Resources.GetString("EmptyBuffer");
     }
 }

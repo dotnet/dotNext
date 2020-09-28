@@ -244,25 +244,6 @@ namespace DotNext
             where T : unmanaged
             => MemoryMarshal.AsBytes(first).SequenceCompareTo(MemoryMarshal.AsBytes(second));
 
-        private static int Partition<T, TComparer>(Span<T> span, int startIndex, int endIndex, ref TComparer comparison)
-            where TComparer : struct, ISupplier<T, T, int>
-        {
-            var pivot = span[endIndex];
-            var i = startIndex - 1;
-            for (var j = startIndex; j < endIndex; j++)
-            {
-                ref var jptr = ref span[j];
-                if (comparison.Invoke(jptr, pivot) > 0)
-                    continue;
-                i += 1;
-                Intrinsics.Swap(ref span[i], ref jptr);
-            }
-
-            i += 1;
-            Intrinsics.Swap(ref span[endIndex], ref span[i]);
-            return i;
-        }
-
         private static void QuickSort<T, TComparer>(Span<T> span, int startIndex, int endIndex, ref TComparer comparison)
             where TComparer : struct, ISupplier<T, T, int>
         {
@@ -271,6 +252,24 @@ namespace DotNext
                 var partitionIndex = Partition(span, startIndex, endIndex, ref comparison);
                 QuickSort(span, startIndex, partitionIndex - 1, ref comparison);
                 startIndex = partitionIndex + 1;
+            }
+
+            static int Partition(Span<T> span, int startIndex, int endIndex, ref TComparer comparison)
+            {
+                var pivot = span[endIndex];
+                var i = startIndex - 1;
+                for (var j = startIndex; j < endIndex; j++)
+                {
+                    ref var jptr = ref span[j];
+                    if (comparison.Invoke(jptr, pivot) > 0)
+                        continue;
+                    i += 1;
+                    Intrinsics.Swap(ref span[i], ref jptr);
+                }
+
+                i += 1;
+                Intrinsics.Swap(ref span[endIndex], ref span[i]);
+                return i;
             }
         }
 
@@ -472,6 +471,7 @@ namespace DotNext
         /// <typeparam name="T">The blittable type.</typeparam>
         /// <returns>The deserialized value.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="bytes"/> is smaller than <typeparamref name="T"/>.</exception>
+        [Obsolete("Use SpanReader<T> type instead")]
         public static unsafe T Read<T>(ref ReadOnlySpan<byte> bytes)
             where T : unmanaged
         {
@@ -487,6 +487,7 @@ namespace DotNext
         /// <param name="output">The block of memory.</param>
         /// <typeparam name="T">The blittable type.</typeparam>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="output"/> is smaller than <typeparamref name="T"/>.</exception>
+        [Obsolete("Use SpanWriter<T> type instead")]
         public static unsafe void Write<T>(in T value, ref Span<byte> output)
             where T : unmanaged
         {
@@ -597,5 +598,8 @@ namespace DotNext
 
         internal static void CopyTo(ReadOnlySpan<char> source, TextWriter writer)
             => writer.Write(source);
+
+        internal static void CopyTo(ReadOnlySpan<byte> source, Stream stream)
+            => stream.Write(source);
     }
 }

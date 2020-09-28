@@ -12,7 +12,6 @@ namespace DotNext.Metaprogramming
     using Linq.Expressions;
     using static CodeGenerator;
     using static Threading.Tasks.Synchronization;
-    using U = Linq.Expressions.UniversalExpression;
 
     [ExcludeFromCodeCoverage]
     public sealed class LambdaTests : Test
@@ -27,8 +26,8 @@ namespace DotNext.Metaprogramming
         {
             var fact = Lambda<Func<long, long>>(fun =>
             {
-                var arg = (U)fun[0];
-                If(arg > 1L).Then(arg * fun.Invoke(arg - 1L)).Else(arg).OfType<long>().End();
+                var arg = fun[0];
+                If((Expression)(arg.AsDynamic() > 1L)).Then(arg.AsDynamic() * fun.Invoke(arg.AsDynamic() - 1L)).Else(arg).OfType<long>().End();
             })
             .Compile();
             Equal(120, Fact(5));
@@ -41,7 +40,7 @@ namespace DotNext.Metaprogramming
             var lambda = Lambda<Func<int, int, Task<int>>>((fun, result) =>
             {
                 var (arg1, arg2) = fun;
-                Assign(result, new AsyncResultExpression((U)arg1 + arg2, false));
+                Assign(result, new AsyncResultExpression(arg1.AsDynamic() + arg2, false));
             });
             Equal(42, lambda.Compile().Invoke(40, 2).GetResult(TimeSpan.FromMinutes(1)));
         }
@@ -52,7 +51,7 @@ namespace DotNext.Metaprogramming
             var lambda = Lambda<Func<int, int, ValueTask<int>>>((fun, result) =>
             {
                 var (arg1, arg2) = fun;
-                Assign(result, new AsyncResultExpression((U)arg1 + arg2, true));
+                Assign(result, new AsyncResultExpression(arg1.AsDynamic() + arg2, true));
             });
             Equal(42, lambda.Compile().Invoke(40, 2).AsTask().GetResult(TimeSpan.FromMinutes(1)));
         }
@@ -69,7 +68,7 @@ namespace DotNext.Metaprogramming
                 var (arg1, arg2) = fun;
                 var temp = DeclareVariable<long>("tmp");
                 Assign(temp, Expression.Call(null, sumMethod, arg1, arg2).Await(true));
-                Return((U)temp + 20L);
+                Return(temp.AsDynamic() + 20L);
             });
             var fn = lambda.Compile();
             Equal(35L, fn(5L, 10L).GetResult(TimeSpan.FromMinutes(1)));
@@ -84,7 +83,7 @@ namespace DotNext.Metaprogramming
                 var (arg1, arg2) = fun;
                 var temp = DeclareVariable<long>("tmp");
                 Assign(temp, Expression.Call(null, sumMethod, arg1, arg2).Await());
-                Return((U)temp + 20L);
+                Return(temp.AsDynamic() + 20L);
             });
             var fn = lambda.Compile();
             Equal(35L, fn(5L, 10L).AsTask().GetResult(TimeSpan.FromMinutes(1)));
@@ -96,8 +95,8 @@ namespace DotNext.Metaprogramming
             var sumMethod = typeof(LambdaTests).GetMethod(nameof(Sum), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
             var lambda = AsyncLambda<Func<long, Task<long>>>(fun =>
             {
-                var arg = (U)fun[0];
-                If(arg > 10L)
+                var arg = fun[0];
+                If((Expression)(arg.AsDynamic() > 10L))
                     .Then(() => Return(Expression.Call(null, sumMethod, arg, 10L.Const()).Await()))
                     .Else(() =>
                     {
@@ -121,7 +120,7 @@ namespace DotNext.Metaprogramming
                 var result = DeclareVariable<long>("accumulator");
                 ForEach(fun[0], item =>
                 {
-                    If((U)item == 0L).Then(Break).End();
+                    If(((Expression)(item.AsDynamic() == 0L))).Then(Break).End();
                     Assign(result, Expression.Call(null, sumMethod, result, item).Await(true));
                 });
                 Return(result);
@@ -137,11 +136,11 @@ namespace DotNext.Metaprogramming
             var sumMethod = typeof(LambdaTests).GetMethod(nameof(Sum), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
             var lambda = AsyncLambda<Func<long, Task<long>>>(fun =>
             {
-                var arg = (U)fun[0];
+                var arg = fun[0];
                 Try(() =>
                 {
-                    If(arg < 0L).Then(Throw<InvalidOperationException>).End();
-                    If(arg > 10L).Then(Throw<ArgumentException>).Else(() => Return(arg)).End();
+                    If((Expression)(arg.AsDynamic() < 0L)).Then(Throw<InvalidOperationException>).End();
+                    If((Expression)(arg.AsDynamic() > 10L)).Then(Throw<ArgumentException>).Else(() => Return(arg)).End();
                 })
                 .Catch<ArgumentException>(() => Return((-42L).Const()))
                 .Catch<InvalidOperationException>(Rethrow)
@@ -160,7 +159,7 @@ namespace DotNext.Metaprogramming
         {
             var lambda = AsyncLambda<Func<long[], Task<string>>>(fun =>
             {
-                For(0.Const(), i => (U)i < fun[0].ArrayLength(), PostIncrementAssign, i =>
+                For(0.Const(), i => i.AsDynamic() < fun[0].ArrayLength(), PostIncrementAssign, i =>
                 {
                     Using(typeof(MemoryStream).New(), Break);
                 });

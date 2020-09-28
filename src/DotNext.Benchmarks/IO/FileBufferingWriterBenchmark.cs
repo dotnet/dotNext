@@ -9,8 +9,6 @@ using System.Threading.Tasks;
 
 namespace DotNext.IO
 {
-    using Buffers;
-
     [SimpleJob(runStrategy: RunStrategy.Throughput, launchCount: 1)]
     [Orderer(SummaryOrderPolicy.FastestToSlowest)]
     public class FileBufferingWriterBenchmark
@@ -26,7 +24,20 @@ namespace DotNext.IO
         }
 
         private IEnumerable<ReadOnlyMemory<byte>> GetChunks()
-            => new ChunkSequence<byte>(content, ChunkSize);
+        {
+            const int chunkSize = 1024;
+
+            var startIndex = 0;
+            var length = Math.Min(chunkSize, content.Length);
+
+            do
+            {
+                yield return content.AsMemory(startIndex, length);
+                startIndex += chunkSize;
+                length = Math.Min(content.Length - startIndex, chunkSize);
+            }
+            while (startIndex < content.Length);
+        }
 
         [Benchmark]
         public async Task BufferingWriterAsync()

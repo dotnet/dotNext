@@ -15,6 +15,8 @@ namespace DotNext.Linq.Expressions
     /// <remarks>
     /// This class is intended for expression building purposes only.
     /// </remarks>
+    /// <seealso cref="ExpressionBuilder.AsDynamic"/>
+    [Obsolete("Use ExpressionBuilder.AsDynamic method for building expressions dynamically")]
     public readonly struct UniversalExpression : IExpressionBuilder<Expression>, IDynamicMetaObjectProvider, IEquatable<UniversalExpression>
     {
         private readonly Expression? expression;

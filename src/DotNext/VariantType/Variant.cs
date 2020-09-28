@@ -1,7 +1,5 @@
 using System;
-using System.Dynamic;
 using System.Runtime.InteropServices;
-using Expression = System.Linq.Expressions.Expression;
 
 namespace DotNext.VariantType
 {
@@ -59,12 +57,12 @@ namespace DotNext.VariantType
         /// <typeparam name="TResult">The type of conversion result.</typeparam>
         /// <param name="mapper1">The converter for the first possible type.</param>
         /// <param name="mapper2">The converter for the second possible type.</param>
-        /// <returns>Conversion result; or <see cref="Optional{T}.Empty"/> if stored value is <see langword="null"/>.</returns>
+        /// <returns>Conversion result; or <see cref="Optional{T}.None"/> if stored value is <see langword="null"/>.</returns>
         public Optional<TResult> Convert<TResult>(in ValueFunc<T1, TResult> mapper1, in ValueFunc<T2, TResult> mapper2) => value switch
         {
             T1 first => mapper1.Invoke(first),
             T2 second => mapper2.Invoke(second),
-            _ => Optional<TResult>.Empty,
+            _ => Optional<TResult>.None,
         };
 
         /// <summary>
@@ -73,7 +71,7 @@ namespace DotNext.VariantType
         /// <typeparam name="TResult">The type of conversion result.</typeparam>
         /// <param name="mapper1">The converter for the first possible type.</param>
         /// <param name="mapper2">The converter for the second possible type.</param>
-        /// <returns>Conversion result; or <see cref="Optional{T}.Empty"/> if stored value is <see langword="null"/>.</returns>
+        /// <returns>Conversion result; or <see cref="Optional{T}.None"/> if stored value is <see langword="null"/>.</returns>
         public Optional<TResult> Convert<TResult>(Converter<T1, TResult> mapper1, Converter<T2, TResult> mapper2)
             => Convert(mapper1.AsValueFunc(true), mapper2.AsValueFunc(true));
 
@@ -231,10 +229,6 @@ namespace DotNext.VariantType
         /// <returns><see langword="true"/>, if stored value is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object? other)
             => other is IVariant variant ? Equals(value, variant.Value) : Equals(value, other);
-
-        /// <inheritdoc/>
-        DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter)
-            => new VariantImmutableMetaObject(parameter, this);
     }
 
     /// <summary>
@@ -432,10 +426,6 @@ namespace DotNext.VariantType
         /// <returns><see langword="true"/>, if stored value is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object? other)
             => other is IVariant variant ? Equals(value, variant.Value) : Equals(value, other);
-
-        /// <inheritdoc/>
-        DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter)
-            => new VariantImmutableMetaObject(parameter, this);
     }
 
     /// <summary>
@@ -663,9 +653,5 @@ namespace DotNext.VariantType
         /// <returns><see langword="true"/>, if stored value is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object? other)
             => other is IVariant variant ? Equals(value, variant.Value) : Equals(value, other);
-
-        /// <inheritdoc/>
-        DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter)
-            => new VariantImmutableMetaObject(parameter, this);
     }
 }

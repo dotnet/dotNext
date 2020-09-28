@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>DotNext</RootNamespace>
     <Nullable>enable</Nullable>
-    <Version>2.6.6</Version>
+    <Version>2.10.0</Version>
     <Authors>Roman Sakno</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>Framework for fault-tolerant clustered microservices based on ASP.NET Core</Description>
@@ -52,10 +52,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="IPNetwork2" Version="2.5.211" />
+    <PackageReference Include="IPNetwork2" Version="2.5.226" />
     <FrameworkReference Include="Microsoft.AspNetCore.App" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.7" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.1.7" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.8" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.1.8" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.0" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
@@ -67,7 +67,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="DotNext.Net.Cluster" Version="[2.6.6, 3)" />
+    <PackageReference Include="DotNext.Net.Cluster" Version="[2.10.0, 3)" />
   </ItemGroup>
 
   <ItemGroup>

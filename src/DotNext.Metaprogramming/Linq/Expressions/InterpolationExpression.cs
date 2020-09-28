@@ -10,7 +10,7 @@ namespace DotNext.Linq.Expressions
     /// </summary>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/tokens/interpolated">String Interpolation in C#</seealso>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/visual-basic/programming-guide/language-features/strings/interpolated-strings">String Interpolation in VB.NET</seealso>
-    public sealed class InterpolationExpression : Expression
+    public sealed class InterpolationExpression : CustomExpression
     {
         private enum Kind : byte
         {
@@ -69,12 +69,6 @@ namespace DotNext.Linq.Expressions
         public string Format { get; }
 
         /// <summary>
-        /// Always returns <see langword="true"/> because
-        /// this expression is <see cref="ExpressionType.Extension"/>.
-        /// </summary>
-        public override bool CanReduce => true;
-
-        /// <summary>
         /// Gets type of this expression.
         /// </summary>
         /// <remarks>
@@ -90,11 +84,6 @@ namespace DotNext.Linq.Expressions
                 _ => typeof(void),
             };
         }
-
-        /// <summary>
-        /// Always returns <see cref="ExpressionType.Extension"/>.
-        /// </summary>
-        public override ExpressionType NodeType => ExpressionType.Extension;
 
         private Expression MakePlainString()
         {

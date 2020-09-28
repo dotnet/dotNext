@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 namespace DotNext.VariantType
 {
@@ -12,7 +13,7 @@ namespace DotNext.VariantType
             valueExpression = Expression.Property(Expression.TypeAs(parameter, typeof(IVariant)), typeof(IVariant), nameof(IVariant.Value));
         }
 
-        public new IVariant Value => (IVariant)base.Value;
+        public new IVariant Value => Unsafe.As<IVariant>(base.Value);
 
         protected abstract DynamicMetaObject VariantValue { get; }
 

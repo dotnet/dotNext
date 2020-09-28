@@ -213,7 +213,7 @@ namespace DotNext.IO
             Span<char> charBuffer = stackalloc char[InitialCharBufferSize];
             if (!WriteString(stream, value, charBuffer, lengthFormat, encoding, format, provider))
             {
-                for (var charBufferSize = InitialCharBufferSize * 2; ; charBufferSize = charBufferSize <= MaxBufferSize ? charBufferSize * 2 : throw new OutOfMemoryException())
+                for (var charBufferSize = InitialCharBufferSize * 2; ; charBufferSize = charBufferSize <= MaxBufferSize ? charBufferSize * 2 : throw new InsufficientMemoryException())
                 {
                     using var owner = DefaultAllocator.Invoke(charBufferSize, false);
                     if (WriteString(stream, value, charBuffer, lengthFormat, encoding, format, provider))
@@ -512,7 +512,7 @@ namespace DotNext.IO
         private static async ValueTask WriteAsync<T>(Stream stream, T value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format, IFormatProvider? provider, CancellationToken token)
             where T : struct, ISpanFormattable
         {
-            for (var charBufferSize = InitialCharBufferSize; ; charBufferSize = charBufferSize <= MaxBufferSize ? charBufferSize * 2 : throw new OutOfMemoryException())
+            for (var charBufferSize = InitialCharBufferSize; ; charBufferSize = charBufferSize <= MaxBufferSize ? charBufferSize * 2 : throw new InsufficientMemoryException())
             {
                 using var owner = DefaultAllocator.Invoke(charBufferSize, false);
 
@@ -2338,7 +2338,7 @@ namespace DotNext.IO
         /// <param name="output">A region of memory. When this method returns, the contents of this region are replaced by the bytes read from the current source.</param>
         /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
         [Obsolete("Use ReadBlock extension method instead")]
-        public static void ReadBytes(this Stream stream, Span<byte> output)
+        public static void ReadBytes(Stream stream, Span<byte> output)
             => ReadBlock(stream, output);
 
         /// <summary>
@@ -2385,7 +2385,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         [Obsolete("Use ReadBlockAsync extension method instead")]
-        public static ValueTask ReadBytesAsync(this Stream stream, Memory<byte> output, CancellationToken token = default)
+        public static ValueTask ReadBytesAsync(Stream stream, Memory<byte> output, CancellationToken token = default)
             => ReadBlockAsync(stream, output, token);
 
         /// <summary>
@@ -2530,14 +2530,12 @@ namespace DotNext.IO
         /// <param name="output">The stream to convert.</param>
         /// <param name="allocator">The allocator of the buffer.</param>
         /// <returns>The buffered stream writer.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="output"/> or <paramref name="allocator"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="output"/> is <see langword="null"/>.</exception>
         /// <exception cref="ArgumentException"><paramref name="output"/> is not writable stream.</exception>
-        public static IFlushableBufferWriter<byte> AsBufferWriter(this Stream output, MemoryAllocator<byte> allocator)
+        public static IFlushableBufferWriter<byte> AsBufferWriter(this Stream output, MemoryAllocator<byte>? allocator = null)
         {
             if (output is null)
                 throw new ArgumentNullException(nameof(output));
-            if (allocator is null)
-                throw new ArgumentNullException(nameof(allocator));
             if (!output.CanWrite)
                 throw new ArgumentException(ExceptionMessages.StreamNotWritable, nameof(output));
 

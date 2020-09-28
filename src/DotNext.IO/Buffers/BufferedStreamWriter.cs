@@ -8,11 +8,11 @@ namespace DotNext.Buffers
     internal sealed class BufferedStreamWriter : IFlushableBufferWriter<byte>
     {
         private readonly Stream output;
-        private readonly MemoryAllocator<byte> allocator;
+        private readonly MemoryAllocator<byte>? allocator;
         private MemoryOwner<byte> buffer;
         private int position;
 
-        internal BufferedStreamWriter(Stream output, MemoryAllocator<byte> allocator)
+        internal BufferedStreamWriter(Stream output, MemoryAllocator<byte>? allocator)
         {
             this.output = output;
             this.allocator = allocator;

@@ -12,6 +12,7 @@ namespace DotNext.Buffers
     public sealed class ChunkSequenceTests : Test
     {
         [Fact]
+        [Obsolete("This is the test for deprecated data type")]
         public static void EmptySequence()
         {
             var sequence = default(ChunkSequence<char>);
@@ -19,17 +20,19 @@ namespace DotNext.Buffers
         }
 
         [Fact]
+        [Obsolete("This is the test for deprecated method")]
         public static void AsReadOnlySequence()
         {
-            var sequence = "abcde".Split(2).ToReadOnlySequence();
+            var sequence = StringExtensions.Split("abcde", 2).ToReadOnlySequence();
             Equal(5, sequence.Length);
         }
 
         [Fact]
+        [Obsolete("This is the test for deprecated method")]
         public static void SequenceEnumeration()
         {
             var index = 0;
-            foreach (var segment in "abcde".Split(2))
+            foreach (var segment in StringExtensions.Split("abcde", 2))
                 switch (index++)
                 {
                     case 0:
@@ -54,9 +57,10 @@ namespace DotNext.Buffers
         }
 
         [Fact]
+        [Obsolete("This is the test for deprecated method")]
         public static void SplitMemory()
         {
-            var sequence = (ReadOnlySequence<char>)"abcde".Split(2);
+            var sequence = (ReadOnlySequence<char>)StringExtensions.Split("abcde", 2);
             False(sequence.IsSingleSegment);
             var index = 0;
             foreach (var segment in sequence)
@@ -84,30 +88,32 @@ namespace DotNext.Buffers
         }
 
         [Fact]
+        [Obsolete("This is the test for deprecated method")]
         public static async Task CopyByteChunksToStream()
         {
             var bytes = new ChunkSequence<byte>(Encoding.UTF8.GetBytes("Hello, world!"), 3);
             using var content = new MemoryStream();
-            await bytes.CopyToAsync(content).ConfigureAwait(false);
+            await ChunkSequence.CopyToAsync(bytes, content).ConfigureAwait(false);
             content.Seek(0, SeekOrigin.Begin);
             using var reader = new StreamReader(content, Encoding.UTF8, false, 1024, true);
             Equal("Hello, world!", reader.ReadToEnd());
         }
 
         [Fact]
+        [Obsolete("This is the test for deprecated method")]
         public static async Task CopyCharChunksToStream()
         {
             var bytes = new ChunkSequence<char>("Hello, world!".AsMemory(), 3);
             var sb = new StringBuilder();
             using (var writer = new StringWriter(sb))
-                await bytes.CopyToAsync(writer).ConfigureAwait(false);
+                await ChunkSequence.CopyToAsync(bytes, writer).ConfigureAwait(false);
             Equal("Hello, world!", sb.ToString());
         }
 
         [Fact]
         public static void Concatenation()
         {
-            Memory<byte> block1 = default, block2 = default;
+            ReadOnlyMemory<byte> block1 = default, block2 = default;
             Equal(Array.Empty<byte>(), block1.Concat(block2).ToArray());
 
             block1 = new byte[] {1, 2};
@@ -124,7 +130,7 @@ namespace DotNext.Buffers
         [Fact]
         public static void Concatenation2()
         {
-            Memory<byte> block1 = default, block2 = default;
+            ReadOnlyMemory<byte> block1 = default, block2 = default;
             Equal(Array.Empty<byte>(), new[] {block1, block2}.ToReadOnlySequence().ToArray());
 
             block1 = new byte[] {1, 2};

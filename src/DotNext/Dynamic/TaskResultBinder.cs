@@ -5,12 +5,14 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
-namespace DotNext.Runtime.CompilerServices
+namespace DotNext.Dynamic
 {
+    using RuntimeFeaturesAttribute = Runtime.CompilerServices.RuntimeFeaturesAttribute;
+
     [RuntimeFeatures(DynamicCodeCompilation = true, RuntimeGenericInstantiation = true)]
     internal sealed class TaskResultBinder : CallSiteBinder
     {
-        private const string PropertyName = nameof(Task<int>.Result);
+        private const string PropertyName = nameof(Task<Missing>.Result);
         private const BindingFlags PropertyFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy;
 
         private static Expression BindMissingProperty(Expression target, out Expression restrictions)

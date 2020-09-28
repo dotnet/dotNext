@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Runtime.InteropServices;
 
 namespace DotNext.Metaprogramming
 {
@@ -12,13 +11,13 @@ namespace DotNext.Metaprogramming
     /// <remarks>
     /// The context lifetime is limited by surrounding lexical scope of the lambda function.
     /// </remarks>
-    public struct LambdaContext : IReadOnlyList<ParameterExpression>, IDisposable
+    public readonly struct LambdaContext : IReadOnlyList<ParameterExpression>, IDisposable
     {
-        private GCHandle lambda;
+        private readonly WeakReference? lambda;
 
-        internal LambdaContext(LambdaExpression lambda) => this.lambda = GCHandle.Alloc(lambda, GCHandleType.Weak);
+        internal LambdaContext(LambdaExpression lambda) => this.lambda = new WeakReference(lambda);
 
-        private LambdaExpression Lambda => lambda.Target is LambdaExpression result ? result : throw new ObjectDisposedException(nameof(LambdaContext));
+        private LambdaExpression Lambda => lambda?.Target is LambdaExpression result ? result : throw new ObjectDisposedException(nameof(LambdaContext));
 
         /// <summary>
         /// Gets parameter of the lambda function.
@@ -243,8 +242,10 @@ namespace DotNext.Metaprogramming
         /// <inheritdoc/>
         void IDisposable.Dispose()
         {
-            lambda.Free();
-            this = default;
+            if (!(lambda is null))
+            {
+                lambda.Target = null;
+            }
         }
     }
 }

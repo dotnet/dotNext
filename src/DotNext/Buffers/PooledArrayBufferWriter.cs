@@ -241,6 +241,17 @@ namespace DotNext.Buffers
                 ReleaseBuffer();
                 buffer = Array.Empty<T>();
             }
+            else if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+            {
+                if (buffer.LongLength <= int.MaxValue)
+                {
+                    Array.Clear(buffer, 0, buffer.Length);
+                }
+                else
+                {
+                    Array.Fill(buffer, default!);
+                }
+            }
 
             position = 0;
         }
@@ -284,6 +295,65 @@ namespace DotNext.Buffers
             return new ArraySegment<T>(buffer, position, buffer.Length - position);
         }
 
+        /// <summary>
+        /// Removes the specified number of elements from the tail of this buffer.
+        /// </summary>
+        /// <param name="count">The number of elements to be removed from the tail of this buffer.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than 0.</exception>
+        /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
+        public void RemoveLast(int count)
+        {
+            if (count < 0)
+                throw new ArgumentOutOfRangeException(nameof(count));
+            ThrowIfDisposed();
+
+            if (count >= position)
+            {
+                ReleaseBuffer();
+                buffer = Array.Empty<T>();
+                position = 0;
+            }
+            else if (count > 0)
+            {
+                var newSize = position - count;
+                if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+                {
+                    Array.Clear(buffer, newSize, position - newSize);
+                }
+
+                position = newSize;
+            }
+        }
+
+        /// <summary>
+        /// Removes the specified number of elements from the head of this buffer.
+        /// </summary>
+        /// <param name="count">The number of elements to be removed from the head of this buffer.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than 0.</exception>
+        /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
+        public void RemoveFirst(int count)
+        {
+            if (count < 0)
+                throw new ArgumentOutOfRangeException(nameof(count));
+            ThrowIfDisposed();
+
+            if (count >= position)
+            {
+                ReleaseBuffer();
+                buffer = Array.Empty<T>();
+                position = 0;
+            }
+            else if (count > 0)
+            {
+                var newSize = position - count;
+                var newBuffer = pool.Rent(newSize);
+                Array.Copy(buffer, count, newBuffer, 0, newSize);
+                ReleaseBuffer();
+                buffer = newBuffer;
+                position = newSize;
+            }
+        }
+
         /// <inheritdoc/>
         private protected override void Resize(int newSize)
         {
@@ -319,7 +389,7 @@ namespace DotNext.Buffers
         /// <param name="writer">The buffer writer.</param>
         /// <returns>The stream representing written bytes.</returns>
         [Obsolete("Use DotNext.IO.StreamSource.AsStream in combination with WrittenArray or WrittenMemory property instead", true)]
-        public static Stream GetWrittenBytesAsStream(this PooledArrayBufferWriter<byte> writer)
+        public static Stream GetWrittenBytesAsStream(PooledArrayBufferWriter<byte> writer)
             => IO.StreamSource.GetWrittenBytesAsStream(writer);
     }
 }

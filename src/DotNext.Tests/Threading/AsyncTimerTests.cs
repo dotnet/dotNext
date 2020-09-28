@@ -44,5 +44,26 @@ namespace DotNext.Threading
             await Task.Delay(100);
             Equal(currentValue, counter.Value);
         }
+
+        [Fact]
+        public static void GracefulShutdown()
+        {
+            using var counter = new Counter();
+            var timer = new AsyncTimer(counter.Run);
+            var task = timer.DisposeAsync();
+            True(task.IsCompletedSuccessfully);
+        }
+
+        [Fact]
+        public static async Task GracefulShutdownAsync()
+        {
+            using var counter = new Counter();
+            var timer = new AsyncTimer(counter.Run);
+            True(timer.Start(TimeSpan.FromMilliseconds(10)));
+            True(counter.WaitOne(DefaultTimeout));
+            True(timer.IsRunning);
+            await timer.DisposeAsync();
+            False(timer.IsRunning);
+        }
     }
 }

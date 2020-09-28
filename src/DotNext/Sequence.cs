@@ -1,35 +1,27 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace DotNext
 {
+    using NewSequence = Collections.Generic.Sequence;
+
     /// <summary>
     /// Various methods to work with classes implementing <see cref="IEnumerable{T}"/> interface.
     /// </summary>
-    public static partial class Sequence // TODO: Should be moved to DotNext.Collections.Generic namespace
+    [Obsolete("Use DotNext.Collections.Generic.Sequence class instead", true)]
+    public static partial class Sequence
     {
-        private const int HashSalt = -1521134295;
-
-        private static int GetHashCode(int hash, object? obj) => (hash * HashSalt) + obj?.GetHashCode() ?? 0;
-
         /// <summary>
         /// Computes hash code for the sequence of objects.
         /// </summary>
         /// <param name="sequence">The sequence of elements.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>The hash code computed from each element in the sequence.</returns>
-        public static int SequenceHashCode(this IEnumerable<object?> sequence, bool salted = true)
-        {
-            var hashCode = sequence.Aggregate(-910176598, GetHashCode);
-            return salted ? (hashCode * HashSalt) + RandomExtensions.BitwiseHashSalt : hashCode;
-        }
-
-        internal static bool SequenceEqual(IEnumerable<object>? first, IEnumerable<object>? second)
-            => first is null || second is null ? ReferenceEquals(first, second) : Enumerable.SequenceEqual(first, second);
+        public static int SequenceHashCode(IEnumerable<object?> sequence, bool salted = true)
+            => NewSequence.SequenceHashCode(sequence, salted);
 
         /// <summary>
         /// Applies specified action to each collection element.
@@ -37,7 +29,8 @@ namespace DotNext
         /// <typeparam name="T">Type of elements in the collection.</typeparam>
         /// <param name="collection">A collection to enumerate. Cannot be <see langword="null"/>.</param>
         /// <param name="action">An action to applied for each element.</param>
-        public static void ForEach<T>(this IEnumerable<T> collection, Action<T> action) => ForEach(collection, new ValueAction<T>(action, true));
+        public static void ForEach<T>(IEnumerable<T> collection, Action<T> action)
+            => NewSequence.ForEach(collection, action);
 
         /// <summary>
         /// Applies specified action to each collection element.
@@ -45,11 +38,8 @@ namespace DotNext
         /// <typeparam name="T">Type of elements in the collection.</typeparam>
         /// <param name="collection">A collection to enumerate. Cannot be <see langword="null"/>.</param>
         /// <param name="action">An action to applied for each element.</param>
-        public static void ForEach<T>(this IEnumerable<T> collection, in ValueAction<T> action)
-        {
-            foreach (var item in collection)
-                action.Invoke(item);
-        }
+        public static void ForEach<T>(IEnumerable<T> collection, in ValueAction<T> action)
+            => NewSequence.ForEach(collection, in action);
 
         /// <summary>
         /// Applies the specified asynchronous action to each collection element.
@@ -60,8 +50,8 @@ namespace DotNext
         /// <param name="token">The token that can be used to cancel the enumeration.</param>
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The enumeration has been canceled.</exception>
-        public static ValueTask ForEachAsync<T>(this IEnumerable<T> collection, Func<T, CancellationToken, ValueTask> action, CancellationToken token = default)
-            => ForEachAsync(collection, new ValueFunc<T, CancellationToken, ValueTask>(action, true), token);
+        public static ValueTask ForEachAsync<T>(IEnumerable<T> collection, Func<T, CancellationToken, ValueTask> action, CancellationToken token = default)
+            => NewSequence.ForEachAsync(collection, action, token);
 
         /// <summary>
         /// Applies the specified asynchronous action to each collection element.
@@ -72,11 +62,8 @@ namespace DotNext
         /// <param name="token">The token that can be used to cancel the enumeration.</param>
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The enumeration has been canceled.</exception>
-        public static async ValueTask ForEachAsync<T>(this IEnumerable<T> collection, ValueFunc<T, CancellationToken, ValueTask> action, CancellationToken token = default)
-        {
-            foreach (var item in collection)
-                await action.Invoke(item, token).ConfigureAwait(false);
-        }
+        public static ValueTask ForEachAsync<T>(IEnumerable<T> collection, ValueFunc<T, CancellationToken, ValueTask> action, CancellationToken token = default)
+            => NewSequence.ForEachAsync(collection, action, token);
 
         /// <summary>
         /// Obtains first value type in the sequence; or <see langword="null"/>
@@ -85,25 +72,19 @@ namespace DotNext
         /// <typeparam name="T">Type of elements in the sequence.</typeparam>
         /// <param name="seq">A sequence to check. Cannot be <see langword="null"/>.</param>
         /// <returns>First element in the sequence; or <see langword="null"/> if sequence is empty. </returns>
-        public static T? FirstOrNull<T>(this IEnumerable<T> seq)
+        public static T? FirstOrNull<T>(IEnumerable<T> seq)
             where T : struct
-        {
-            using var enumerator = seq.GetEnumerator();
-            return enumerator.MoveNext() ? enumerator.Current : new T?();
-        }
+            => NewSequence.FirstOrNull(seq);
 
         /// <summary>
-        /// Obtains first value in the sequence; or <see cref="Optional{T}.Empty"/>
+        /// Obtains first value in the sequence; or <see cref="Optional{T}.None"/>
         /// if sequence is empty.
         /// </summary>
         /// <typeparam name="T">Type of elements in the sequence.</typeparam>
         /// <param name="seq">A sequence to check. Cannot be <see langword="null"/>.</param>
-        /// <returns>The first element in the sequence; or <see cref="Optional{T}.Empty"/> if sequence is empty. </returns>
-        public static Optional<T> FirstOrEmpty<T>(this IEnumerable<T> seq)
-        {
-            using var enumerator = seq.GetEnumerator();
-            return enumerator.MoveNext() ? enumerator.Current : Optional<T>.Empty;
-        }
+        /// <returns>The first element in the sequence; or <see cref="Optional{T}.None"/> if sequence is empty. </returns>
+        public static Optional<T> FirstOrEmpty<T>(IEnumerable<T> seq)
+            => NewSequence.FirstOrEmpty(seq);
 
         /// <summary>
         /// Returns the first element in a sequence that satisfies a specified condition.
@@ -112,17 +93,9 @@ namespace DotNext
         /// <param name="seq">A collection to return an element from.</param>
         /// <param name="filter">A function to test each element for a condition.</param>
         /// <returns>The first element in the sequence that matches to the specified filter; or empty value.</returns>
-        public static Optional<T> FirstOrEmpty<T>(this IEnumerable<T> seq, in ValueFunc<T, bool> filter)
+        public static Optional<T> FirstOrEmpty<T>(IEnumerable<T> seq, in ValueFunc<T, bool> filter)
             where T : notnull
-        {
-            foreach (var item in seq)
-            {
-                if (filter.Invoke(item))
-                    return item;
-            }
-
-            return Optional<T>.Empty;
-        }
+            => NewSequence.FirstOrEmpty(seq, in filter);
 
         /// <summary>
         /// Returns the first element in a sequence that satisfies a specified condition.
@@ -131,9 +104,9 @@ namespace DotNext
         /// <param name="seq">A collection to return an element from.</param>
         /// <param name="filter">A function to test each element for a condition.</param>
         /// <returns>The first element in the sequence that matches to the specified filter; or empty value.</returns>
-        public static Optional<T> FirstOrEmpty<T>(this IEnumerable<T> seq, Predicate<T> filter)
+        public static Optional<T> FirstOrEmpty<T>(IEnumerable<T> seq, Predicate<T> filter)
             where T : notnull
-            => FirstOrEmpty(seq, filter.AsValueFunc(true));
+            => NewSequence.FirstOrEmpty(seq, filter);
 
         /// <summary>
         /// Bypasses a specified number of elements in a sequence.
@@ -142,18 +115,8 @@ namespace DotNext
         /// <param name="enumerator">Enumerator to modify. Cannot be <see langword="null"/>.</param>
         /// <param name="count">The number of elements to skip.</param>
         /// <returns><see langword="true"/>, if current element is available; otherwise, <see langword="false"/>.</returns>
-        public static bool Skip<T>(this IEnumerator<T> enumerator, int count)
-        {
-            while (count > 0)
-            {
-                if (enumerator.MoveNext())
-                    count--;
-                else
-                    return false;
-            }
-
-            return true;
-        }
+        public static bool Skip<T>(IEnumerator<T> enumerator, int count)
+            => NewSequence.Skip(enumerator, count);
 
         /// <summary>
         /// Bypasses a specified number of elements in a sequence.
@@ -163,47 +126,9 @@ namespace DotNext
         /// <param name="enumerator">Enumerator to modify.</param>
         /// <param name="count">The number of elements to skip.</param>
         /// <returns><see langword="true"/>, if current element is available; otherwise, <see langword="false"/>.</returns>
-        public static bool Skip<TEnumerator, T>(this ref TEnumerator enumerator, int count)
+        public static bool Skip<TEnumerator, T>(ref TEnumerator enumerator, int count)
             where TEnumerator : struct, IEnumerator<T>
-        {
-            while (count > 0)
-            {
-                if (enumerator.MoveNext())
-                    count--;
-                else
-                    return false;
-            }
-
-            return true;
-        }
-
-        private static bool ElementAt<T>(this IList<T> list, int index, [MaybeNullWhen(false)]out T element)
-        {
-            if (index >= 0 && index < list.Count)
-            {
-                element = list[index];
-                return true;
-            }
-            else
-            {
-                element = default!;
-                return false;
-            }
-        }
-
-        private static bool ElementAt<T>(this IReadOnlyList<T> list, int index, [MaybeNullWhen(false)]out T element)
-        {
-            if (index >= 0 && index < list.Count)
-            {
-                element = list[index];
-                return true;
-            }
-            else
-            {
-                element = default!;
-                return false;
-            }
-        }
+            => NewSequence.Skip<TEnumerator, T>(ref enumerator, count);
 
         /// <summary>
         /// Obtains element at the specified index in the sequence.
@@ -217,31 +142,8 @@ namespace DotNext
         /// <param name="index">Index of the element to read.</param>
         /// <param name="element">Obtained element.</param>
         /// <returns><see langword="true"/>, if element is available in the collection and obtained successfully; otherwise, <see langword="false"/>.</returns>
-        public static bool ElementAt<T>(this IEnumerable<T> collection, int index, [MaybeNullWhen(false)]out T element)
-        {
-            switch (collection)
-            {
-                case IList<T> list:
-                    return ElementAt(list, index, out element);
-                case IReadOnlyList<T> readOnlyList:
-                    return ElementAt(readOnlyList, index, out element);
-                default:
-                    using (var enumerator = collection.GetEnumerator())
-                    {
-                        enumerator.Skip(index);
-                        if (enumerator.MoveNext())
-                        {
-                            element = enumerator.Current;
-                            return true;
-                        }
-                        else
-                        {
-                            element = default!;
-                            return false;
-                        }
-                    }
-            }
-        }
+        public static bool ElementAt<T>(IEnumerable<T> collection, int index, [MaybeNullWhen(false)]out T element)
+            => NewSequence.ElementAt(collection, index, out element);
 
         /// <summary>
         /// Skip <see langword="null"/> values in the collection.
@@ -249,9 +151,9 @@ namespace DotNext
         /// <typeparam name="T">Type of elements in the collection.</typeparam>
         /// <param name="collection">A collection to check. Cannot be <see langword="null"/>.</param>
         /// <returns>Modified lazy collection without <see langword="null"/> values.</returns>
-        public static IEnumerable<T> SkipNulls<T>(this IEnumerable<T?> collection)
+        public static IEnumerable<T> SkipNulls<T>(IEnumerable<T?> collection)
             where T : class
-            => new NotNullEnumerable<T>(collection);
+            => NewSequence.SkipNulls(collection);
 
         /// <summary>
         /// Concatenates each element from the collection into single string.
@@ -261,8 +163,8 @@ namespace DotNext
         /// <param name="delimiter">Delimiter between elements in the final string.</param>
         /// <param name="ifEmpty">A string to be returned if collection has no elements.</param>
         /// <returns>Converted collection into string.</returns>
-        public static string ToString<T>(this IEnumerable<T> collection, string delimiter, string ifEmpty = "")
-            => string.Join(delimiter, collection).IfNullOrEmpty(ifEmpty);
+        public static string ToString<T>(IEnumerable<T> collection, string delimiter, string ifEmpty = "")
+            => NewSequence.ToString(collection, delimiter, ifEmpty);
 
         /// <summary>
         /// Constructs a sequence from the single element.
@@ -271,7 +173,7 @@ namespace DotNext
         /// <param name="item">An item to be placed into sequence.</param>
         /// <returns>Sequence of single element.</returns>
         public static IEnumerable<T> Singleton<T>(T item)
-            => Collections.Generic.List.Singleton(item);
+            => NewSequence.Singleton(item);
 
         /// <summary>
         /// Adds <paramref name="items"/> to the beginning of <paramref name="collection"/>.
@@ -280,8 +182,8 @@ namespace DotNext
         /// <param name="collection">The collection to be concatenated with the items.</param>
         /// <param name="items">The items to be added to the beginning of the collection.</param>
         /// <returns>The concatenated collection.</returns>
-        public static IEnumerable<T> Prepend<T>(this IEnumerable<T> collection, params T[] items)
-            => items.Concat(collection);
+        public static IEnumerable<T> Prepend<T>(IEnumerable<T> collection, params T[] items)
+            => NewSequence.Prepend(collection, items);
 
         /// <summary>
         /// Adds <paramref name="items"/> to the end of <paramref name="collection"/>.
@@ -290,8 +192,8 @@ namespace DotNext
         /// <param name="collection">The collection to be concatenated with the items.</param>
         /// <param name="items">The items to be added to the end of the collection.</param>
         /// <returns>The concatenated collection.</returns>
-        public static IEnumerable<T> Append<T>(this IEnumerable<T> collection, params T[] items)
-            => collection.Concat(items);
+        public static IEnumerable<T> Append<T>(IEnumerable<T> collection, params T[] items)
+            => NewSequence.Append(collection, items);
 
         /// <summary>
         /// Limits the number of the elements in the sequence.
@@ -301,7 +203,7 @@ namespace DotNext
         /// <param name="count">The maximum number of the elements in the returned sequence.</param>
         /// <param name="leaveOpen"><see langword="false"/> to dispose <paramref name="enumerator"/>; otherwise, <see langword="true"/>.</param>
         /// <returns>The enumerator which is limited by count.</returns>
-        public static LimitedEnumerator<T> Limit<T>(this IEnumerator<T> enumerator, int count, bool leaveOpen = false)
+        public static LimitedEnumerator<T> Limit<T>(IEnumerator<T> enumerator, int count, bool leaveOpen = false)
             => new LimitedEnumerator<T>(enumerator, count, leaveOpen);
 
         /// <summary>
@@ -312,10 +214,7 @@ namespace DotNext
         /// <returns>The enumerator over all elements in the memory.</returns>
         /// <seealso cref="System.Runtime.InteropServices.MemoryMarshal.ToEnumerable{T}(ReadOnlyMemory{T})"/>
         public static IEnumerator<T> ToEnumerator<T>(ReadOnlyMemory<T> memory)
-        {
-            for (var i = 0; i < memory.Length; i++)
-                yield return memory.Span[i];
-        }
+            => NewSequence.ToEnumerator(memory);
 
         /// <summary>
         /// Converts synchronous collection of elements to asynchronous.
@@ -323,8 +222,8 @@ namespace DotNext
         /// <param name="enumerable">The collection of elements.</param>
         /// <typeparam name="T">The type of the elements in the collection.</typeparam>
         /// <returns>The asynchronous wrapper over synchronous collection of elements.</returns>
-        public static IAsyncEnumerable<T> ToAsyncEnumerable<T>(this IEnumerable<T> enumerable)
-            => new AsyncEnumerable<T>(enumerable ?? throw new ArgumentNullException(nameof(enumerable)));
+        public static IAsyncEnumerable<T> ToAsyncEnumerable<T>(IEnumerable<T> enumerable)
+            => NewSequence.ToAsyncEnumerable(enumerable);
 
         /// <summary>
         /// Obtains asynchronous enumerator over the sequence of elements.
@@ -333,7 +232,7 @@ namespace DotNext
         /// <param name="token">The token that can be used by consumer to cancel the enumeration.</param>
         /// <typeparam name="T">The type of the elements in the collection.</typeparam>
         /// <returns>The asynchronous wrapper over synchronous enumerator.</returns>
-        public static IAsyncEnumerator<T> GetAsyncEnumerator<T>(this IEnumerable<T> enumerable, CancellationToken token = default)
-            => new AsyncEnumerable<T>.Enumerator(enumerable ?? throw new ArgumentNullException(nameof(enumerable)), token);
+        public static IAsyncEnumerator<T> GetAsyncEnumerator<T>(IEnumerable<T> enumerable, CancellationToken token = default)
+            => NewSequence.GetAsyncEnumerator(enumerable, token);
     }
 }

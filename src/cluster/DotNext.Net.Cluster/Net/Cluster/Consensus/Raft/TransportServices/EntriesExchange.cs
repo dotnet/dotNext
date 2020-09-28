@@ -5,10 +5,10 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Buffers.Binary.BinaryPrimitives;
-using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
+    using Buffers;
     using static IO.DataTransferObject;
     using static IO.Pipelines.PipeExtensions;
 
@@ -49,59 +49,40 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         internal static int ParseLogEntryPrologue(ReadOnlySpan<byte> input, out long length, out long term, out DateTimeOffset timeStamp, out bool isSnapshot)
         {
-            length = ReadInt64LittleEndian(input);
-            input = input.Slice(sizeof(long));
+            var reader = new SpanReader<byte>(input);
 
-            term = ReadInt64LittleEndian(input);
-            input = input.Slice(sizeof(long));
+            length = ReadInt64LittleEndian(reader.Read(sizeof(long)));
+            term = ReadInt64LittleEndian(reader.Read(sizeof(long)));
+            timeStamp = reader.Read<DateTimeOffset>();
+            isSnapshot = ValueTypeExtensions.ToBoolean(reader.Read());
 
-            timeStamp = Span.Read<DateTimeOffset>(ref input);
-
-            isSnapshot = ValueTypeExtensions.ToBoolean(input[0]);
-
-            return sizeof(long) + sizeof(long) + Unsafe.SizeOf<DateTimeOffset>() + sizeof(byte);
+            return reader.ConsumedCount;
         }
 
         internal static void ParseAnnouncement(ReadOnlySpan<byte> input, out ushort remotePort, out long term, out long prevLogIndex, out long prevLogTerm, out long commitIndex, out int entriesCount)
         {
-            remotePort = ReadUInt16LittleEndian(input);
-            input = input.Slice(sizeof(ushort));
+            var reader = new SpanReader<byte>(input);
 
-            term = ReadInt64LittleEndian(input);
-            input = input.Slice(sizeof(long));
-
-            prevLogIndex = ReadInt64LittleEndian(input);
-            input = input.Slice(sizeof(long));
-
-            prevLogTerm = ReadInt64LittleEndian(input);
-            input = input.Slice(sizeof(long));
-
-            commitIndex = ReadInt64LittleEndian(input);
-            input = input.Slice(sizeof(long));
-
-            entriesCount = ReadInt32LittleEndian(input);
+            remotePort = ReadUInt16LittleEndian(reader.Read(sizeof(ushort)));
+            term = ReadInt64LittleEndian(reader.Read(sizeof(long)));
+            prevLogIndex = ReadInt64LittleEndian(reader.Read(sizeof(long)));
+            prevLogTerm = ReadInt64LittleEndian(reader.Read(sizeof(long)));
+            commitIndex = ReadInt64LittleEndian(reader.Read(sizeof(long)));
+            entriesCount = ReadInt32LittleEndian(reader.Read(sizeof(int)));
         }
 
         private protected int WriteAnnouncement(Span<byte> output, int entriesCount)
         {
-            WriteUInt16LittleEndian(output, myPort);
-            output = output.Slice(sizeof(ushort));
+            var writer = new SpanWriter<byte>(output);
 
-            WriteInt64LittleEndian(output, term);
-            output = output.Slice(sizeof(long));
+            WriteUInt16LittleEndian(writer.Slide(sizeof(ushort)), myPort);
+            WriteInt64LittleEndian(writer.Slide(sizeof(long)), term);
+            WriteInt64LittleEndian(writer.Slide(sizeof(long)), prevLogIndex);
+            WriteInt64LittleEndian(writer.Slide(sizeof(long)), prevLogTerm);
+            WriteInt64LittleEndian(writer.Slide(sizeof(long)), commitIndex);
+            WriteInt32LittleEndian(writer.Slide(sizeof(int)), entriesCount);
 
-            WriteInt64LittleEndian(output, prevLogIndex);
-            output = output.Slice(sizeof(long));
-
-            WriteInt64LittleEndian(output, prevLogTerm);
-            output = output.Slice(sizeof(long));
-
-            WriteInt64LittleEndian(output, commitIndex);
-            output = output.Slice(sizeof(long));
-
-            WriteInt32LittleEndian(output, entriesCount);
-
-            return sizeof(ushort) + sizeof(long) + sizeof(long) + sizeof(long) + sizeof(long) + sizeof(int);
+            return writer.WrittenCount;
         }
 
         private protected sealed override void OnException(Exception e) => pipe.Writer.Complete(e);

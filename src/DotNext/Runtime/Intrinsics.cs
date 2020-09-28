@@ -9,7 +9,6 @@ using static InlineIL.IL;
 using static InlineIL.IL.Emit;
 using static InlineIL.MethodRef;
 using static InlineIL.TypeRef;
-using Debug = System.Diagnostics.Debug;
 using Var = InlineIL.LocalVar;
 
 namespace DotNext.Runtime
@@ -194,14 +193,8 @@ namespace DotNext.Runtime
         {
             if (index < 0 || index >= tuple.Length)
                 throw new ArgumentOutOfRangeException(nameof(index));
-            Push(ref tuple);
-            Sizeof<TItem>();
-            Push(index);
-            Conv_U4();
-            Mul_Ovf_Un();
-            Add();
-            Ldobj<TItem>();
-            return Return<TItem>();
+
+            return Unsafe.Add(ref Unsafe.As<T, TItem>(ref tuple), index);
         }
 
         /// <summary>
@@ -373,7 +366,7 @@ namespace DotNext.Runtime
         /// <seealso cref="GetReadonlyRef{I, O}(I[], long)"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [Obsolete("Use overloaded method that allows to specify return type explicitly")]
-        public static ref readonly T GetReadonlyRef<T>(this T[] array, long index) => ref array[index];
+        public static ref readonly T GetReadonlyRef<T>(T[] array, long index) => ref array[index];
 
         /// <summary>
         /// Allows to reinterpret managed pointer to array element.
@@ -894,12 +887,114 @@ namespace DotNext.Runtime
         /// <param name="obj">The object to clone.</param>
         /// <typeparam name="T">The type of the object to clone.</typeparam>
         /// <returns>The clone of <paramref name="obj"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T ShallowCopy<T>(T obj)
             where T : class
         {
             Push(obj);
             Call(Method(Type<object>(), nameof(MemberwiseClone)));
             return Return<T>();
+        }
+
+        /// <summary>
+        /// Gets length of the zero-base one-dimensional array.
+        /// </summary>
+        /// <param name="array">The array object.</param>
+        /// <returns>The length of the array as native unsigned integer.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static UIntPtr GetLength(Array array)
+        {
+            Push(array);
+            Ldlen();
+            return Return<UIntPtr>();
+        }
+
+        /// <summary>
+        /// Gets an element of the array by its index.
+        /// </summary>
+        /// <param name="array">The one-dimensional array.</param>
+        /// <param name="index">The index of the array element.</param>
+        /// <typeparam name="T">The type of the elements in the array.</typeparam>
+        /// <returns>The array element.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T GetElement<T>(T[] array, IntPtr index)
+        {
+            Push(array);
+            Push(index);
+            Ldelem_Any<T>();
+            return Return<T>();
+        }
+
+        /// <summary>
+        /// Gets the address of the array element.
+        /// </summary>
+        /// <param name="array">The one-dimensional array.</param>
+        /// <param name="index">The index of the array element.</param>
+        /// <typeparam name="T">The type of the elements in the array.</typeparam>
+        /// <returns>The reference to the array element.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ref T GetElementReference<T>(T[] array, IntPtr index)
+        {
+            Push(array);
+            Push(index);
+            Ldelema<T>();
+            return ref ReturnRef<T>();
+        }
+
+        /// <summary>
+        /// Gets an element of the array by its index.
+        /// </summary>
+        /// <param name="array">The one-dimensional array.</param>
+        /// <param name="index">The index of the array element.</param>
+        /// <typeparam name="T">The type of the elements in the array.</typeparam>
+        /// <returns>The array element.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static T GetElement<T>(T[] array, UIntPtr index)
+        {
+            Push(array);
+            Push(index);
+            Conv_Ovf_I_Un();
+            Ldelem_Any<T>();
+            return Return<T>();
+        }
+
+        /// <summary>
+        /// Gets the address of the array element.
+        /// </summary>
+        /// <param name="array">The one-dimensional array.</param>
+        /// <param name="index">The index of the array element.</param>
+        /// <typeparam name="T">The type of the elements in the array.</typeparam>
+        /// <returns>The reference to the array element.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static ref T GetElementReference<T>(T[] array, UIntPtr index)
+        {
+            Push(array);
+            Push(index);
+            Conv_Ovf_I_Un();
+            Ldelema<T>();
+            return ref ReturnRef<T>();
+        }
+
+        /// <summary>
+        /// Converts two bits to 32-bit signed integer.
+        /// </summary>
+        /// <remarks>
+        /// The result is always in range [0..3].
+        /// </remarks>
+        /// <param name="low">Low bit value.</param>
+        /// <param name="high">High bit value.</param>
+        /// <returns>32-bit signed integer assembled from two bits.</returns>
+        public static int ToInt32(bool low, bool high)
+        {
+            Push(low);
+            Push(high);
+            Ldc_I4_1();
+            Emit.Shl();
+            Emit.Or();
+            return Return<int>();
         }
     }
 }

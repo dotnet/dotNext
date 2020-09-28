@@ -69,11 +69,14 @@ namespace DotNext.Reflection
         }
 
         [Fact]
-        public static void IsImmutable()
+        public static unsafe void IsImmutable()
         {
             True(typeof(ReadOnlySpan<int>).IsImmutable());
             False(typeof(Guid).IsImmutable());
             True(typeof(long).IsImmutable());
+            True(typeof(void*).IsImmutable());
+            True(typeof(void).MakeByRefType().IsImmutable());
+            True(typeof(EnvironmentVariableTarget).IsImmutable());
         }
 
         [Fact]
@@ -123,7 +126,7 @@ namespace DotNext.Reflection
         public static void ReflectMember()
         {
             NotNull(Reflector.MemberOf<FieldInfo, Func<string>>(() => string.Empty));
-            NotNull(Reflector.MemberOf<PropertyInfo, Func<Optional<string>>>(() => Optional<string>.Empty));
+            NotNull(Reflector.MemberOf<PropertyInfo, Func<Optional<string>>>(() => Optional<string>.None));
             NotNull(Reflector.MemberOf<ConstructorInfo, Func<string>>(() => new string('a', 3)));
             NotNull(Reflector.MemberOf<MethodInfo, Func<decimal, decimal>>(x => -x));
             Null(Reflector.MemberOf<MemberInfo, Func<int, int>>(i => -i));
