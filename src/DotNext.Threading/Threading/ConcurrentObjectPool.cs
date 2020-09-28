@@ -44,6 +44,7 @@ namespace DotNext.Threading
     /// is one thread and return it back to the pool in another thread.
     /// </remarks>
     /// <typeparam name="T">Type of objects in the pool.</typeparam>
+    [Obsolete("Use Microsoft.Extensions.ObjectPool library instead")]
     public class ConcurrentObjectPool<T> : Disposable
         where T : class
     {
