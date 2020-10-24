@@ -43,7 +43,7 @@
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="System.Threading.Channels" Version="4.7.1" />
-    <PackageReference Include="Fody" Version="6.2.6" PrivateAssets="all" />
+    <PackageReference Include="Fody" Version="6.3.0" PrivateAssets="all" />
     <PackageReference Include="DotNext.Augmentation.Fody" Version="2.1.0" PrivateAssets="all" />
   </ItemGroup>
 
