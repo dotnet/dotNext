@@ -71,9 +71,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             var response = default(HttpResponseMessage);
             var timeStamp = Timestamp.Current;
+            using var timeout = CancellationTokenSource.CreateLinkedTokenSource(token);
             try
             {
-                response = (await SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token)
+                if (Timeout != ElectionRequestTimeout && !(message is CustomMessage))
+                {
+                    timeout.CancelAfter(ElectionRequestTimeout);
+                }
+
+                response = (await SendAsync(request, HttpCompletionOption.ResponseHeadersRead, timeout.Token)
                     .ConfigureAwait(false)).EnsureSuccessStatusCode();
                 ChangeStatus(ClusterMemberStatus.Available);
                 return await message.ParseResponse(response, token).ConfigureAwait(false);
@@ -164,6 +170,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         }
 
         ref long IRaftClusterMember.NextIndex => ref nextIndex;
+
+        internal TimeSpan ElectionRequestTimeout { get; set; }
 
         public override string ToString() => BaseAddress.ToString();
     }

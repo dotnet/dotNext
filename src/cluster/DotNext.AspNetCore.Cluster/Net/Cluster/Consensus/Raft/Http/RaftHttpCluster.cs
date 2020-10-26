@@ -22,6 +22,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private readonly IDisposable configurationTracker;
         private readonly IHttpMessageHandlerFactory? httpHandlerFactory;
         private readonly TimeSpan requestTimeout;
+        private readonly TimeSpan electionRequestTimeout;
         private readonly bool openConnectionForEachRequest;
         private readonly string clientHandlerName;
         private readonly HttpVersion protocolVersion;
@@ -34,7 +35,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             openConnectionForEachRequest = config.OpenConnectionForEachRequest;
             allowedNetworks = config.AllowedNetworks;
             metadata = new MemberMetadata(config.Metadata);
-            requestTimeout = TimeSpan.FromMilliseconds(config.UpperElectionTimeout);
+            requestTimeout = TimeSpan.FromMilliseconds(config.RequestTimeout ?? config.UpperElectionTimeout);
+            electionRequestTimeout = TimeSpan.FromMilliseconds(config.UpperElectionTimeout);
             duplicationDetector = new DuplicateRequestDetector(config.RequestJournal);
             clientHandlerName = config.ClientHandlerName;
             protocolVersion = config.ProtocolVersion;
@@ -64,6 +66,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private protected void ConfigureMember(RaftClusterMember member)
         {
             member.Timeout = requestTimeout;
+            member.ElectionRequestTimeout = electionRequestTimeout;
             member.DefaultRequestHeaders.ConnectionClose = openConnectionForEachRequest;
             member.Metrics = Metrics as IClientMetricsCollector;
             member.ProtocolVersion = protocolVersion;
