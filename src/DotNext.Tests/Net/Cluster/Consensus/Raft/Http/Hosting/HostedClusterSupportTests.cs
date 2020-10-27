@@ -54,7 +54,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
                 {"port", "3565"},
                 {"members:0", "http://localhost:3565"},
                 {"members:1", "http://localhost:3566"},
-                {"allowedNetworks:0", "127.0.0.0"}
+                {"allowedNetworks:0", "127.0.0.0"},
+                {"keepAliveTimeout", "00:01:00"}
             };
             using var host = CreateHost<WebApplicationSetup>(3100, true, config);
             await host.StartAsync();
