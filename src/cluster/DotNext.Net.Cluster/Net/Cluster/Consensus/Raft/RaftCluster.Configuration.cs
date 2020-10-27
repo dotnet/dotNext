@@ -354,7 +354,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             };
 
             internal override RaftClusterMember CreateMemberClient(ILocalMember localMember, IPEndPoint endPoint, IClientMetricsCollector? metrics)
-                => new ExchangePeer(localMember, endPoint, CreateClient, TimeSpan.FromMilliseconds(LowerElectionTimeout), PipeConfig, metrics);
+                => new ExchangePeer(localMember, endPoint, CreateClient, Timeout, PipeConfig, metrics);
 
             internal override IServer CreateServer(ILocalMember localMember)
             {
