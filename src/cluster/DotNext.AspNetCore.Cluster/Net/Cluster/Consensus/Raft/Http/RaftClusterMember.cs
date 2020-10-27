@@ -91,8 +91,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             var timeStamp = Timestamp.Current;
             try
             {
-                response = (await SendAsync(request, HttpCompletionOption.ResponseHeadersRead, tokenWithTimeout)
-                    .ConfigureAwait(false)).EnsureSuccessStatusCode();
+                response = await SendAsync(request, HttpCompletionOption.ResponseHeadersRead, tokenWithTimeout)
+                    .ConfigureAwait(false);
+                response.EnsureSuccessStatusCode();
                 ChangeStatus(ClusterMemberStatus.Available);
                 return await message.ParseResponse(response, tokenWithTimeout).ConfigureAwait(false);
             }
