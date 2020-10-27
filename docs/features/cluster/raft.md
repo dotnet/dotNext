@@ -55,6 +55,7 @@ The configuration of the local node depends on chosen network transport. [NodeCo
 | Metadata | No | Empty dictionary | A set of metadata properties associated with the local node |
 | Members | Yes | Empty list | A set of cluster members. The list must contain address of the local node which is equal to _PublicEndPoint_ value |
 | TimeToLive | No | 64 |  Time To Live (TTL) value of Internet Protocol (IP) packets |
+| RequestTimeout | No | _UpperElectionTimeout_ | Defines request timeout for accessing cluster members across the network |
 | LoggerFactory | No | [NullLoggerFactory.Instance](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.logging.abstractions.nullloggerfactory.instance) | The logger factory |
 
 
