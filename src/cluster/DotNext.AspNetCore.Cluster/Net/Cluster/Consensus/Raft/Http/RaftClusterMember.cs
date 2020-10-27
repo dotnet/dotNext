@@ -70,8 +70,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             message.PrepareRequest(request);
 
-            
-
             // setup additional timeout control token needed if actual timeout
             // doesn't match to HttpClient.Timeout
             CancellationTokenSource? timeoutControl;
