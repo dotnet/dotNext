@@ -1245,5 +1245,21 @@ namespace DotNext.Metaprogramming
             using var statement = new AsyncLambdaExpression<TDelegate>();
             return statement.Build(body);
         }
+
+        /// <summary>
+        /// Constructs multi-line async lambda function capturing the current lexical scope.
+        /// </summary>
+        /// <typeparam name="TDelegate">The delegate describing signature of lambda function.</typeparam>
+        /// <param name="body">Lambda function builder.</param>
+        /// <returns>Constructed lambda expression.</returns>
+        /// <seealso cref="AwaitExpression"/>
+        /// <seealso cref="AsyncResultExpression"/>
+        /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/async/#BKMK_HowtoWriteanAsyncMethod">Async methods</seealso>
+        public static Expression<TDelegate> AsyncLambda<TDelegate>(Action<LambdaContext, ParameterExpression> body)
+            where TDelegate : Delegate
+        {
+            using var statement = new AsyncLambdaExpression<TDelegate>();
+            return statement.Build(body);
+        }
     }
 }

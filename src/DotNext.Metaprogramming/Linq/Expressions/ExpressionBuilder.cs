@@ -1114,10 +1114,21 @@ namespace DotNext.Linq.Expressions
         {
             if (instructions.Count == 0)
                 return expression;
-            else if (expression is BlockExpression block)
-                return Expression.Block(inferType ? block.Type : typeof(void), block.Variables, block.Expressions.Concat(instructions));
+
+            IEnumerable<Expression> result;
+            IEnumerable<ParameterExpression> variables;
+            if (expression is BlockExpression block)
+            {
+                variables = block.Variables;
+                result = block.Expressions.Concat(instructions);
+            }
             else
-                return Expression.Block(inferType ? instructions.Last().Type : typeof(void), instructions.Prepend(expression));
+            {
+                variables = Empty<ParameterExpression>();
+                result = instructions.Prepend(expression);
+            }
+
+            return Expression.Block(inferType ? result.Last().Type : typeof(void), variables, result);
         }
 
         internal static Expression AddPrologue(this Expression expression, bool inferType, params Expression[] instructions)

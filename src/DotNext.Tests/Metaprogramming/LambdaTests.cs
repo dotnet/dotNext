@@ -75,6 +75,37 @@ namespace DotNext.Metaprogramming
         }
 
         [Fact]
+        public static void SimpleAsyncLambdaImplicitResult()
+        {
+            var sumMethod = typeof(LambdaTests).GetMethod(nameof(Sum), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+            var lambda = AsyncLambda<Func<long, long, Task<long>>>((fun, result) =>
+            {
+                var (arg1, arg2) = fun;
+                var temp = DeclareVariable<long>("tmp");
+                Assign(temp, Expression.Call(null, sumMethod, arg1, arg2).Await(true));
+                Assign(result, temp.AsDynamic() + 20L);
+            });
+            var fn = lambda.Compile();
+            Equal(35L, fn(5L, 10L).GetResult(TimeSpan.FromMinutes(1)));
+        }
+
+        [Fact]
+        public static void SimpleAsyncLambdaImplicitResult2()
+        {
+            var sumMethod = typeof(LambdaTests).GetMethod(nameof(Sum), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+            var lambda = AsyncLambda<Func<long, long, Task<long>>>((fun, result) =>
+            {
+                var (arg1, arg2) = fun;
+                var temp = DeclareVariable<long>("tmp");
+                Assign(temp, Expression.Call(null, sumMethod, arg1, arg2).Await(true));
+                Assign(result, temp.AsDynamic() + 20L);
+                Return();
+            });
+            var fn = lambda.Compile();
+            Equal(35L, fn(5L, 10L).GetResult(TimeSpan.FromMinutes(1)));
+        }
+
+        [Fact]
         public static void SimpleAsyncLambdaValueTask()
         {
             var sumMethod = typeof(LambdaTests).GetMethod(nameof(Sum), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
