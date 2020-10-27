@@ -42,7 +42,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         /// <summary>
         /// Gets or sets request timeout used to communicate with cluster members.
         /// </summary>
-        /// <value></value>
+        /// <value>HTTP request timeout; default is <see cref="ClusterMemberConfiguration.UpperElectionTimeout"/>.</value>
         public TimeSpan RequestTimeout
         {
             get => requestTimeout ?? TimeSpan.FromMilliseconds(UpperElectionTimeout);
