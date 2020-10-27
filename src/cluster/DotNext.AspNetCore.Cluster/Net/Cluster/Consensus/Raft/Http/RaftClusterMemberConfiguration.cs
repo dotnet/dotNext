@@ -44,6 +44,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         /// </summary>
         public int? RequestTimeout { get; set; }
 
+        /// <summary>
+        /// Gets or sets the request timeout, in milliseconds, used for election-related messages sent to other nodes in the cluster.
+        /// If not specified, defaults to the value of <see cref="ClusterMemberConfiguration.UpperElectionTimeout"/>.
+        /// </summary>
+        public int? ElectionRequestTimeout { get; set; }
+
         internal void SetupHostAddressHint(IFeatureCollection features)
         {
             var address = HostAddressHint;

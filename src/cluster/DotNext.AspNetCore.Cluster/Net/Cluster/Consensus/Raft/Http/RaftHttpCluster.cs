@@ -36,7 +36,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             allowedNetworks = config.AllowedNetworks;
             metadata = new MemberMetadata(config.Metadata);
             requestTimeout = TimeSpan.FromMilliseconds(config.RequestTimeout ?? config.UpperElectionTimeout);
-            electionRequestTimeout = TimeSpan.FromMilliseconds(config.UpperElectionTimeout);
+            electionRequestTimeout = TimeSpan.FromMilliseconds(config.ElectionRequestTimeout ?? config.UpperElectionTimeout);
             duplicationDetector = new DuplicateRequestDetector(config.RequestJournal);
             clientHandlerName = config.ClientHandlerName;
             protocolVersion = config.ProtocolVersion;

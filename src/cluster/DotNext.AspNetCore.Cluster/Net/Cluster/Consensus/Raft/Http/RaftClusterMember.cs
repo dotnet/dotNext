@@ -71,15 +71,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             var response = default(HttpResponseMessage);
             var timeStamp = Timestamp.Current;
-            using var timeout = CancellationTokenSource.CreateLinkedTokenSource(token);
+            bool isElectionRelatedMessage = !(message is CustomMessage);
+            using var requestTimeoutTokenSrc = CreateRequestTimeoutTokenIfNeeded(isElectionRelatedMessage, token);
             try
             {
-                if (Timeout != ElectionRequestTimeout && !(message is CustomMessage))
-                {
-                    timeout.CancelAfter(ElectionRequestTimeout);
-                }
-
-                response = (await SendAsync(request, HttpCompletionOption.ResponseHeadersRead, timeout.Token)
+                response = (await SendAsync(request, HttpCompletionOption.ResponseHeadersRead, requestTimeoutTokenSrc?.Token ?? token)
                     .ConfigureAwait(false)).EnsureSuccessStatusCode();
                 ChangeStatus(ClusterMemberStatus.Available);
                 return await message.ParseResponse(response, token).ConfigureAwait(false);
@@ -95,7 +91,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
                 throw new UnexpectedStatusCodeException(response, e);
             }
-            catch (OperationCanceledException e) when (!token.IsCancellationRequested)
+            catch (OperationCanceledException e) when (!token.IsCancellationRequested && isElectionRelatedMessage)
             {
                 context.Logger.MemberUnavailable(Endpoint, e);
                 ChangeStatus(ClusterMemberStatus.Unavailable);
@@ -106,6 +102,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 Disposable.Dispose(response, response?.Content, request);
                 Metrics?.ReportResponseTime(timeStamp.Elapsed);
             }
+        }
+
+        private CancellationTokenSource? CreateRequestTimeoutTokenIfNeeded(bool isElectionRelatedMessage, CancellationToken token)
+        {
+            if (Timeout != ElectionRequestTimeout && isElectionRelatedMessage)
+            {
+                var requestTimeoutTokenSrc = CancellationTokenSource.CreateLinkedTokenSource(token);
+                requestTimeoutTokenSrc.CancelAfter(ElectionRequestTimeout);
+                return requestTimeoutTokenSrc;
+            }
+            return null;
         }
 
         Task<Result<bool>> IRaftClusterMember.VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
