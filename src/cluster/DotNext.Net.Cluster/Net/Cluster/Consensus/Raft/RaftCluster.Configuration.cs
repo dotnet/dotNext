@@ -29,6 +29,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private MemoryAllocator<byte>? allocator;
             private int? serverChannels;
             private ILoggerFactory? loggerFactory;
+            private TimeSpan? requestTimeout;
             private protected readonly Func<long> applicationIdGenerator;
 
             private protected NodeConfiguration(IPEndPoint hostAddress)
@@ -113,8 +114,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 set => allocator = value;
             }
 
-            private protected TimeSpan Timeout
+            private protected TimeSpan ConnectTimeout
                 => TimeSpan.FromMilliseconds(LowerElectionTimeout);
+
+            /// <summary>
+            /// Gets or sets request processing timeout.
+            /// </summary>
+            public TimeSpan RequestTimeout
+            {
+                get => requestTimeout ?? TimeSpan.FromMilliseconds(UpperElectionTimeout);
+                set => requestTimeout = value;
+            }
 
             /// <summary>
             /// Gets upper possible value of leader election timeout, in milliseconds.
@@ -280,14 +290,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 };
 
             internal override RaftClusterMember CreateMemberClient(ILocalMember localMember, IPEndPoint endPoint, IClientMetricsCollector? metrics)
-                => new ExchangePeer(localMember, endPoint, CreateClient, Timeout, PipeConfig, metrics);
+                => new ExchangePeer(localMember, endPoint, CreateClient, RequestTimeout, PipeConfig, metrics);
 
             internal override IServer CreateServer(ILocalMember localMember)
                 => new UdpServer(HostEndPoint, ServerBacklog, MemoryAllocator, ExchangePoolFactory(localMember), LoggerFactory)
                 {
                     DatagramSize = datagramSize,
                     DontFragment = DontFragment,
-                    ReceiveTimeout = Timeout,
+                    ReceiveTimeout = RequestTimeout,
                     Ttl = TimeToLive,
                 };
         }
@@ -325,7 +335,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// </summary>
             public TimeSpan GracefulShutdownTimeout
             {
-                get => gracefulShutdown ?? Timeout;
+                get => gracefulShutdown ?? ConnectTimeout;
                 set => gracefulShutdown = value;
             }
 
@@ -351,10 +361,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 TransmissionBlockSize = TransmissionBlockSize,
                 LingerOption = LingerOption,
                 Ttl = TimeToLive,
+                ConnectTimeout = ConnectTimeout
             };
 
             internal override RaftClusterMember CreateMemberClient(ILocalMember localMember, IPEndPoint endPoint, IClientMetricsCollector? metrics)
-                => new ExchangePeer(localMember, endPoint, CreateClient, Timeout, PipeConfig, metrics);
+                => new ExchangePeer(localMember, endPoint, CreateClient, RequestTimeout, PipeConfig, metrics);
 
             internal override IServer CreateServer(ILocalMember localMember)
             {
@@ -363,7 +374,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     TransmissionBlockSize = TransmissionBlockSize,
                     LingerOption = LingerOption,
-                    ReceiveTimeout = Timeout,
+                    ReceiveTimeout = RequestTimeout,
                     GracefulShutdownTimeout = (int)GracefulShutdownTimeout.TotalMilliseconds,
                     Ttl = TimeToLive,
                 };

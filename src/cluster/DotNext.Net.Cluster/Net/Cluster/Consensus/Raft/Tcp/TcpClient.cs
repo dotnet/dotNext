@@ -68,13 +68,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             : base(address, allocator, loggerFactory)
         {
             accessLock = new AsyncExclusiveLock();
+            ConnectTimeout = TimeSpan.FromSeconds(30);
         }
+
+        internal TimeSpan ConnectTimeout { get; set; }
 
         private static void CancelConnectAsync(object args)
             => Socket.CancelConnectAsync((SocketAsyncEventArgs)args);
 
-        private static async Task<ClientNetworkStream> ConnectAsync(IPEndPoint endPoint, LingerOption linger, byte ttl, CancellationToken token)
+        private static async Task<ClientNetworkStream> ConnectAsync(IPEndPoint endPoint, LingerOption linger, byte ttl, TimeSpan timeout, CancellationToken token)
         {
+            using var timeoutControl = CancellationTokenSource.CreateLinkedTokenSource(token);
+            timeoutControl.CancelAfter(timeout);
+            token = timeoutControl.Token;
+
             using var args = new ConnectEventArgs(token)
             {
                 RemoteEndPoint = endPoint,
@@ -101,7 +108,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             try
             {
                 lockHolder = await accessLock.AcquireLockAsync(token).ConfigureAwait(false);
-                result = stream ??= await ConnectAsync(Address, LingerOption, Ttl, token).ConfigureAwait(false);
+                result = stream ??= await ConnectAsync(Address, LingerOption, Ttl, ConnectTimeout, token).ConfigureAwait(false);
             }
             catch (Exception e)
             {
