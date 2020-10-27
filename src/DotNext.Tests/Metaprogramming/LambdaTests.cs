@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
@@ -72,6 +73,25 @@ namespace DotNext.Metaprogramming
             });
             var fn = lambda.Compile();
             Equal(35L, fn(5L, 10L).GetResult(TimeSpan.FromMinutes(1)));
+        }
+
+        [Fact]
+        public static void SimpleAsyncLambdaThrowsException()
+        {
+            var lambda = AsyncLambda<Func<Task<long>, long, Task<long>>>(fun =>
+            {
+                var (arg1, arg2) = fun;
+                Return(arg1.Await().Add(arg2));
+            });
+
+            var fn = lambda.Compile();
+
+            var source = new TaskCompletionSource<long>();
+            var result = fn(source.Task, 115L);
+            False(result.IsCompleted);
+            source.SetException(new ApplicationException());
+            var e = Throws<AggregateException>(() => result.Result);
+            IsType<ApplicationException>(e.InnerException);
         }
 
         [Fact]
@@ -159,6 +179,28 @@ namespace DotNext.Metaprogramming
             var fn = lambda.Compile();
             Equal(15L, fn(new[] { 3L, 2L, 10L }).GetResult(TimeSpan.FromMinutes(1)));
             Equal(5, fn(new[] { 3L, 2L, 0L, 10L }).GetResult(TimeSpan.FromMinutes(1)));
+        }
+
+        private sealed class FinallyCallback : StrongBox<bool>
+        {
+            internal void OnFinally() => Value = true;
+        }
+
+        [Fact]
+        public static void TryFinallyWithException()
+        {
+            var lambda = AsyncLambda<Func<Task, Action, Task>>(fun =>
+            {
+                Try(() => Await(fun[0])).Finally(fun[1].Invoke()).End();
+            });
+
+            var fn = lambda.Compile();
+            var source = new TaskCompletionSource<int>();
+            var callback = new FinallyCallback();
+            var result = fn(source.Task, callback.OnFinally);
+            source.SetException(new ApplicationException());
+            Throws<ApplicationException>(result.GetAwaiter().GetResult);
+            True(callback.Value);
         }
 
         [Fact]

@@ -130,6 +130,9 @@ namespace DotNext.Runtime.CompilerServices
                 // try to recover from exception and re-enter into state machine
                 if (guardedRegionsCounter > 0)
                     goto begin;
+
+                // no exception handlers - just finalize state machine
+                StateId = IAsyncStateMachine<TState>.FinalState;
             }
 
             // finalize state machine
@@ -162,6 +165,7 @@ namespace DotNext.Runtime.CompilerServices
             // avoid boxing of this state machine through continuation action if awaiter is completed already
             if (Awaiter<TAwaiter>.IsCompleted(ref awaiter))
                 return true;
+
             builder.AwaitOnCompleted(ref awaiter, ref this);
             return false;
         }
@@ -371,6 +375,9 @@ namespace DotNext.Runtime.CompilerServices
                 // try to recover from exception and re-enter into state machine
                 if (guardedRegionsCounter > 0)
                     goto begin;
+
+                // no exception handlers - just finalize state machine
+                StateId = IAsyncStateMachine<TState>.FinalState;
             }
 
             // finalize state machine

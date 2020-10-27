@@ -229,6 +229,8 @@ namespace DotNext.Runtime.CompilerServices
 
             // attach all available finalization code
             var prologue = context.CurrentStatement.PrologueCodeInserter();
+            expr = (AsyncResultExpression)base.VisitExtension(expr);
+
             foreach (var finalization in context.CreateJumpPrologue(AsyncMethodEnd.Goto(), this))
                 prologue(finalization);
             return expr;
