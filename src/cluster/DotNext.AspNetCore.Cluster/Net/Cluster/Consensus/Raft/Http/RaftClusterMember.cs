@@ -115,9 +115,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
             finally
             {
+                timeoutControl?.Dispose();
                 Disposable.Dispose(response, response?.Content, request);
                 Metrics?.ReportResponseTime(timeStamp.Elapsed);
-                timeoutControl?.Dispose();
             }
         }
 
