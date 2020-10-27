@@ -361,7 +361,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 TransmissionBlockSize = TransmissionBlockSize,
                 LingerOption = LingerOption,
                 Ttl = TimeToLive,
-                ConnectTimeout = ConnectTimeout
+                ConnectTimeout = ConnectTimeout,
             };
 
             internal override RaftClusterMember CreateMemberClient(ILocalMember localMember, IPEndPoint endPoint, IClientMetricsCollector? metrics)
