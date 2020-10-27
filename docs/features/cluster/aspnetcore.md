@@ -100,6 +100,7 @@ The application should be configured properly to work as a cluster node. The fol
 | protocolVersion | Hosted, Embedded | No | `auto` | HTTP protocol version that should be used for communication between members. Possible values are `auto`, `http1`, `http2` |
 | requestHeadersTimeout | Hosted | No | 30 seconds | The maximum amount of time the server will spend receiving request headers. |
 | keepAliveTimeout | Hosted | No | 2 minutes | TCP keep-alive timeout |
+| requestTimeout | Hosted, Embedded | No | `upperElectionTimeout` | Request timeout used to access cluster members across the network using HTTP client |
 
 `requestJournal` configuration section is rarely used and useful for high-load scenario only.
 
