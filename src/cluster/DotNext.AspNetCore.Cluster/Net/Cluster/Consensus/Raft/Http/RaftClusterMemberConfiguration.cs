@@ -12,6 +12,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private const string DefaultClientHandlerName = "raftClient";
 
         private string? handlerName;
+        private TimeSpan? requestTimeout;
 
         /// <summary>
         /// Gets collection of members.
@@ -37,6 +38,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         /// Gets or sets HTTP version supported by Raft implementation.
         /// </summary>
         public HttpVersion ProtocolVersion { get; set; }
+
+        /// <summary>
+        /// Gets or sets request timeout used to communicate with cluster members.
+        /// </summary>
+        /// <value></value>
+        public TimeSpan RequestTimeout
+        {
+            get => requestTimeout ?? TimeSpan.FromMilliseconds(UpperElectionTimeout);
+            set => requestTimeout = value;
+        }
 
         internal void SetupHostAddressHint(IFeatureCollection features)
         {
