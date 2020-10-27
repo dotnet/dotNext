@@ -296,5 +296,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                     return Task.CompletedTask;
             }
         }
+
+        private bool TryGetTimeout(Type messageType, out TimeSpan timeout)
+        {
+            if (typeof(RaftHttpMessage).IsAssignableFrom(messageType))
+            {
+                timeout = raftRpcTimeout;
+                return true;
+            }
+
+            timeout = default;
+            return false;
+        }
+
+        bool IHostingContext.TryGetTimeout<TMessage>(out TimeSpan timeout)
+            => TryGetTimeout(typeof(TMessage), out timeout);
     }
 }

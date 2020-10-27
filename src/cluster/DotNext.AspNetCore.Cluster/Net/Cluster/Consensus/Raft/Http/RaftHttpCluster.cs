@@ -21,7 +21,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private readonly IClusterMemberLifetime? configurator;
         private readonly IDisposable configurationTracker;
         private readonly IHttpMessageHandlerFactory? httpHandlerFactory;
-        private readonly TimeSpan requestTimeout;
+        private readonly TimeSpan requestTimeout, raftRpcTimeout;
         private readonly bool openConnectionForEachRequest;
         private readonly string clientHandlerName;
         private readonly HttpVersion protocolVersion;
@@ -35,6 +35,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             allowedNetworks = config.AllowedNetworks;
             metadata = new MemberMetadata(config.Metadata);
             requestTimeout = config.RequestTimeout;
+            raftRpcTimeout = config.RpcTimeout;
             duplicationDetector = new DuplicateRequestDetector(config.RequestJournal);
             clientHandlerName = config.ClientHandlerName;
             protocolVersion = config.ProtocolVersion;
