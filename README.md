@@ -71,7 +71,7 @@ Release Date: 10-XX-2020
 * Updated dependencies shipped with .NET Core 3.1.9
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/2.11.0">DotNext.AspNetCore.Cluster 2.11.0</a>
-* Added `requestTimeout` and `rpcTimeout` configuration properties for precise control over timeouts used for communication between Raft nodes
+* Added `requestTimeout` and `rpcTimeout` configuration properties for precise control over timeouts used for communication between Raft nodes (issue [12](https://github.com/sakno/dotNext/issues/12))
 * Updated dependencies shipped with .NET Core 3.1.9
 
 Changelog for previous versions located [here](./CHANGELOG.md).
