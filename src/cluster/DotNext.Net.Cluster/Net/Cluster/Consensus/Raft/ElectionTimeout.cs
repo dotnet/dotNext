@@ -55,7 +55,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="lowerValue">The lower possible value of leader election timeout, in milliseconds.</param>
         /// <param name="upperValue">The upper possible value of leader election timeout, in milliseconds.</param>
         /// <returns>The modified leader election timeout.</returns>
-        [Obsolete("Use ElectionTimeoutExtensions.Update method instead")]
+        [Obsolete("Use ElectionTimeoutExtensions.Update method instead", true)]
         public ElectionTimeout Modify(int lowerValue, int upperValue)
             => new ElectionTimeout(lowerValue, upperValue, random);
 
