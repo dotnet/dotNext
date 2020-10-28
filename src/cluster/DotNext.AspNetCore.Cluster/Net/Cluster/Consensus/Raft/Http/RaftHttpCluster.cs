@@ -135,6 +135,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         public override Task StartAsync(CancellationToken token)
         {
+            if (raftRpcTimeout > requestTimeout)
+                return Task.FromException(new RaftProtocolException(ExceptionMessages.InvalidRpcTimeout));
+
             // detect local member
             var localMember = FindMember(LocalMemberFinder) ?? throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
             this.localMember = localMember.Endpoint;
