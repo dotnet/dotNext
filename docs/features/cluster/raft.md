@@ -134,7 +134,7 @@ UDP transport is WAN unfriendly. It should not be used in unreliable networks. H
 * Cluster nodes are in Docker/LXC/Windows containers running on the same physical host
 
 ## Example
-There is Raft playground represented by RaftNode application. You can find this app [here](https://github.com/sakno/dotNext/tree/develop/src/examples/RaftNode). This playground allows to test Raft consensus protocol in real world using one of the supported transports: `http`, `tcp`, `udp`.
+There is Raft playground represented by RaftNode application. You can find this app [here](https://github.com/sakno/dotNext/tree/develop/src/examples/RaftNode). This playground allows to test Raft consensus protocol in real world using one of the supported transports: `http`, `tcp`, `tcp+ssl`, `udp`.
 
 Each instance of launched application represents cluster node. All nodes can be started using the following script:
 ```bash
