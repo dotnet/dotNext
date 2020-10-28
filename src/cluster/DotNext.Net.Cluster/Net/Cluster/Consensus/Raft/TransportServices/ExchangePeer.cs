@@ -18,26 +18,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
     {
         private readonly IClient client;
         private readonly PipeOptions pipeConfig;
-        private readonly TimeSpan raftRpcTimeout, requestTimeout;
+        private readonly TimeSpan requestTimeout;
 
-        internal ExchangePeer(ILocalMember localMember, IPEndPoint address, Func<IPEndPoint, IClient> clientFactory, TimeSpan requestTimeout, TimeSpan rpcTimeout, PipeOptions pipeConfig, IClientMetricsCollector? metrics)
+        internal ExchangePeer(ILocalMember localMember, IPEndPoint address, Func<IPEndPoint, IClient> clientFactory, TimeSpan requestTimeout, PipeOptions pipeConfig, IClientMetricsCollector? metrics)
             : base(localMember, address, metrics)
         {
             client = clientFactory(address);
             this.requestTimeout = requestTimeout;
-            raftRpcTimeout = rpcTimeout;
             this.pipeConfig = pipeConfig;
         }
 
         public override ValueTask CancelPendingRequestsAsync() => client.CancelPendingRequestsAsync();
 
-        private async Task<TResult> SendAsync<TResult, TExchange>(TExchange exchange, TimeSpan timeout, CancellationToken token)
+        private async Task<TResult> SendAsync<TResult, TExchange>(TExchange exchange, CancellationToken token)
             where TExchange : class, IClientExchange<TResult>
         {
             ThrowIfDisposed();
             exchange.MyPort = (ushort)LocalPort;
             var timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(token);
-            timeoutSource.CancelAfter(timeout);
+            timeoutSource.CancelAfter(requestTimeout);
             var timeStamp = Timestamp.Current;
             try
             {
@@ -60,21 +59,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         }
 
         private protected override Task<Result<bool>> VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
-            => SendAsync<Result<bool>, VoteExchange>(new VoteExchange(term, lastLogIndex, lastLogTerm), raftRpcTimeout, token);
+            => SendAsync<Result<bool>, VoteExchange>(new VoteExchange(term, lastLogIndex, lastLogTerm), token);
 
         private protected override Task<Result<bool>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
             => entries.Count > 0 ?
-            SendAsync<Result<bool>, EntriesExchange>(new EntriesExchange<TEntry, TList>(term, entries, prevLogIndex, prevLogTerm, commitIndex, pipeConfig), raftRpcTimeout, token)
-            : SendAsync<Result<bool>, HeartbeatExchange>(new HeartbeatExchange(term, prevLogIndex, prevLogTerm, commitIndex), raftRpcTimeout, token);
+            SendAsync<Result<bool>, EntriesExchange>(new EntriesExchange<TEntry, TList>(term, entries, prevLogIndex, prevLogTerm, commitIndex, pipeConfig), token)
+            : SendAsync<Result<bool>, HeartbeatExchange>(new HeartbeatExchange(term, prevLogIndex, prevLogTerm, commitIndex), token);
 
         private protected override Task<Result<bool>> InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
-            => SendAsync<Result<bool>, SnapshotExchange>(new SnapshotExchange(term, snapshot, snapshotIndex, pipeConfig), raftRpcTimeout, token);
+            => SendAsync<Result<bool>, SnapshotExchange>(new SnapshotExchange(term, snapshot, snapshotIndex, pipeConfig), token);
 
         private protected override Task<bool> ResignAsync(CancellationToken token)
-            => SendAsync<bool, ResignExchange>(new ResignExchange(), requestTimeout, token);
+            => SendAsync<bool, ResignExchange>(new ResignExchange(), token);
 
         private protected override Task<IReadOnlyDictionary<string, string>> GetMetadataAsync(CancellationToken token)
-            => SendAsync<IReadOnlyDictionary<string, string>, MetadataExchange>(new MetadataExchange(token, pipeConfig), requestTimeout, token);
+            => SendAsync<IReadOnlyDictionary<string, string>, MetadataExchange>(new MetadataExchange(token, pipeConfig), token);
 
         /// <summary>
         /// Releases all resources associated with this cluster member.

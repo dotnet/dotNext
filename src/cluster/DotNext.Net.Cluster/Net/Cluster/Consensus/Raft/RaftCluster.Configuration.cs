@@ -124,17 +124,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// </summary>
             public TimeSpan RequestTimeout
             {
-                get => requestTimeout ?? TimeSpan.FromMilliseconds(UpperElectionTimeout);
+                get => requestTimeout ?? TimeSpan.FromMilliseconds(UpperElectionTimeout / 2D);
                 set => requestTimeout = value > TimeSpan.Zero ? value : throw new ArgumentOutOfRangeException(nameof(value));
-            }
-
-            /// <summary>
-            /// Gets or sets Raft-specific request processing timeout.
-            /// </summary>
-            public TimeSpan RpcTimeout
-            {
-                get => rpcTimeout ?? TimeSpan.FromMilliseconds(UpperElectionTimeout / 2D);
-                set => rpcTimeout = value > TimeSpan.Zero ? value : throw new ArgumentOutOfRangeException(nameof(value));
             }
 
             /// <summary>
@@ -301,7 +292,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 };
 
             internal override RaftClusterMember CreateMemberClient(ILocalMember localMember, IPEndPoint endPoint, IClientMetricsCollector? metrics)
-                => new ExchangePeer(localMember, endPoint, CreateClient, RequestTimeout, RpcTimeout, PipeConfig, metrics);
+                => new ExchangePeer(localMember, endPoint, CreateClient, RequestTimeout, PipeConfig, metrics);
 
             internal override IServer CreateServer(ILocalMember localMember)
                 => new UdpServer(HostEndPoint, ServerBacklog, MemoryAllocator, ExchangePoolFactory(localMember), LoggerFactory)
@@ -387,7 +378,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             };
 
             internal override RaftClusterMember CreateMemberClient(ILocalMember localMember, IPEndPoint endPoint, IClientMetricsCollector? metrics)
-                => new ExchangePeer(localMember, endPoint, CreateClient, RequestTimeout, RpcTimeout, PipeConfig, metrics);
+                => new ExchangePeer(localMember, endPoint, CreateClient, RequestTimeout, PipeConfig, metrics);
 
             internal override IServer CreateServer(ILocalMember localMember)
             {
