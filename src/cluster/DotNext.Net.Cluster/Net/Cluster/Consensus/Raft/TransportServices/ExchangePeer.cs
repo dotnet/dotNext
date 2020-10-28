@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
-    using Threading;
     using IClientMetricsCollector = Metrics.IClientMetricsCollector;
     using Timestamp = Diagnostics.Timestamp;
 
@@ -19,36 +18,33 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
     {
         private readonly IClient client;
         private readonly PipeOptions pipeConfig;
+        private readonly TimeSpan raftRpcTimeout, requestTimeout;
 
-        internal ExchangePeer(ILocalMember localMember, IPEndPoint address, Func<IPEndPoint, IClient> clientFactory, TimeSpan requestTimeout, PipeOptions pipeConfig, IClientMetricsCollector? metrics)
+        internal ExchangePeer(ILocalMember localMember, IPEndPoint address, Func<IPEndPoint, IClient> clientFactory, TimeSpan requestTimeout, TimeSpan rpcTimeout, PipeOptions pipeConfig, IClientMetricsCollector? metrics)
             : base(localMember, address, metrics)
         {
             client = clientFactory(address);
-            RequestTimeout = requestTimeout;
+            this.requestTimeout = requestTimeout;
+            raftRpcTimeout = rpcTimeout;
             this.pipeConfig = pipeConfig;
         }
 
-        /// <summary>
-        /// Gets request timeout used for communication with this member.
-        /// </summary>
-        public TimeSpan RequestTimeout { get; }
-
         public override void CancelPendingRequests() => client.CancelPendingRequests();
 
-        private async Task<TResult> SendAsync<TResult, TExchange>(TExchange exchange, CancellationToken token)
+        private async Task<TResult> SendAsync<TResult, TExchange>(TExchange exchange, TimeSpan timeout, CancellationToken token)
             where TExchange : class, IClientExchange<TResult>
         {
             ThrowIfDisposed();
             exchange.MyPort = (ushort)LocalPort;
-            var timeoutSource = new CancellationTokenSource(RequestTimeout);
-            var linkedSource = token.LinkTo(timeoutSource.Token);
+            var timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(token);
+            timeoutSource.CancelAfter(timeout);
             var timeStamp = Timestamp.Current;
             try
             {
-                client.Enqueue(exchange, token);
+                client.Enqueue(exchange, timeoutSource.Token);
                 return await exchange.Task.ConfigureAwait(false);
             }
-            catch (Exception e) when (!(e is OperationCanceledException cancellation) || timeoutSource.IsCancellationRequested)
+            catch (Exception e) when (!(e is OperationCanceledException) || !token.IsCancellationRequested)
             {
                 Logger.MemberUnavailable(Endpoint, e);
                 ChangeStatus(ClusterMemberStatus.Unavailable);
@@ -57,7 +53,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             finally
             {
                 metrics?.ReportResponseTime(timeStamp.Elapsed);
-                linkedSource?.Dispose();
                 timeoutSource.Dispose();
                 if (exchange is IAsyncDisposable disposable)
                     await disposable.DisposeAsync().ConfigureAwait(false);
@@ -65,21 +60,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         }
 
         private protected override Task<Result<bool>> VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
-            => SendAsync<Result<bool>, VoteExchange>(new VoteExchange(term, lastLogIndex, lastLogTerm), token);
+            => SendAsync<Result<bool>, VoteExchange>(new VoteExchange(term, lastLogIndex, lastLogTerm), raftRpcTimeout, token);
 
         private protected override Task<Result<bool>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
             => entries.Count > 0 ?
-            SendAsync<Result<bool>, EntriesExchange>(new EntriesExchange<TEntry, TList>(term, entries, prevLogIndex, prevLogTerm, commitIndex, pipeConfig), token)
-            : SendAsync<Result<bool>, HeartbeatExchange>(new HeartbeatExchange(term, prevLogIndex, prevLogTerm, commitIndex), token);
+            SendAsync<Result<bool>, EntriesExchange>(new EntriesExchange<TEntry, TList>(term, entries, prevLogIndex, prevLogTerm, commitIndex, pipeConfig), raftRpcTimeout, token)
+            : SendAsync<Result<bool>, HeartbeatExchange>(new HeartbeatExchange(term, prevLogIndex, prevLogTerm, commitIndex), raftRpcTimeout, token);
 
         private protected override Task<Result<bool>> InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
-            => SendAsync<Result<bool>, SnapshotExchange>(new SnapshotExchange(term, snapshot, snapshotIndex, pipeConfig), token);
+            => SendAsync<Result<bool>, SnapshotExchange>(new SnapshotExchange(term, snapshot, snapshotIndex, pipeConfig), raftRpcTimeout, token);
 
         private protected override Task<bool> ResignAsync(CancellationToken token)
-            => SendAsync<bool, ResignExchange>(new ResignExchange(), token);
+            => SendAsync<bool, ResignExchange>(new ResignExchange(), requestTimeout, token);
 
         private protected override Task<IReadOnlyDictionary<string, string>> GetMetadataAsync(CancellationToken token)
-            => SendAsync<IReadOnlyDictionary<string, string>, MetadataExchange>(new MetadataExchange(token, pipeConfig), token);
+            => SendAsync<IReadOnlyDictionary<string, string>, MetadataExchange>(new MetadataExchange(token, pipeConfig), requestTimeout, token);
 
         /// <summary>
         /// Releases all resources associated with this cluster member.

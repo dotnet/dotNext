@@ -29,7 +29,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private MemoryAllocator<byte>? allocator;
             private int? serverChannels;
             private ILoggerFactory? loggerFactory;
-            private TimeSpan? requestTimeout;
+            private TimeSpan? requestTimeout, rpcTimeout;
             private protected readonly Func<long> applicationIdGenerator;
 
             private protected NodeConfiguration(IPEndPoint hostAddress)
@@ -123,7 +123,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public TimeSpan RequestTimeout
             {
                 get => requestTimeout ?? TimeSpan.FromMilliseconds(UpperElectionTimeout);
-                set => requestTimeout = value;
+                set => requestTimeout = value > TimeSpan.Zero ? value : throw new ArgumentOutOfRangeException(nameof(value));
+            }
+
+            /// <summary>
+            /// Gets or sets Raft-specific request processing timeout.
+            /// </summary>
+            /// <value></value>
+            public TimeSpan RpcTimeout
+            {
+                get => rpcTimeout ?? TimeSpan.FromMilliseconds(UpperElectionTimeout / 2D);
+                set => rpcTimeout = value > TimeSpan.Zero ? value : throw new ArgumentOutOfRangeException(nameof(value));
             }
 
             /// <summary>
@@ -290,7 +300,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 };
 
             internal override RaftClusterMember CreateMemberClient(ILocalMember localMember, IPEndPoint endPoint, IClientMetricsCollector? metrics)
-                => new ExchangePeer(localMember, endPoint, CreateClient, RequestTimeout, PipeConfig, metrics);
+                => new ExchangePeer(localMember, endPoint, CreateClient, RequestTimeout, RpcTimeout, PipeConfig, metrics);
 
             internal override IServer CreateServer(ILocalMember localMember)
                 => new UdpServer(HostEndPoint, ServerBacklog, MemoryAllocator, ExchangePoolFactory(localMember), LoggerFactory)
@@ -365,7 +375,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             };
 
             internal override RaftClusterMember CreateMemberClient(ILocalMember localMember, IPEndPoint endPoint, IClientMetricsCollector? metrics)
-                => new ExchangePeer(localMember, endPoint, CreateClient, RequestTimeout, PipeConfig, metrics);
+                => new ExchangePeer(localMember, endPoint, CreateClient, RequestTimeout, RpcTimeout, PipeConfig, metrics);
 
             internal override IServer CreateServer(ILocalMember localMember)
             {
