@@ -33,9 +33,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         private protected class PacketStream : Disposable
         {
             private readonly TcpStream transport;
+
+            // actual stream for Network I/O
+            // can be of type TcpStream or SslStream
+            private readonly Stream networkStream;
             private protected readonly SslStream? ssl;
-            private readonly Func<ReadOnlyMemory<byte>, CancellationToken, ValueTask> writeAsync;
-            private readonly Func<Memory<byte>, CancellationToken, ValueTask> readBlockAsync;
 
             internal PacketStream(Socket socket, bool owns, bool useSsl)
             {
@@ -43,14 +45,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 if (useSsl)
                 {
                     ssl = new SslStream(transport, true);
-                    writeAsync = ssl.WriteAsync;
-                    readBlockAsync = ssl.ReadBlockAsync;
+                    networkStream = ssl;
                 }
                 else
                 {
                     ssl = null;
-                    writeAsync = transport.WriteAsync;
-                    readBlockAsync = transport.ReadBlockAsync;
+                    networkStream = transport;
                 }
             }
 
@@ -65,7 +65,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 WriteInt32LittleEndian(buffer.Span.Slice(PacketHeaders.NaturalSize), count);
 
                 // transmit packet to the remote endpoint
-                return writeAsync(AdjustPacket(buffer, count), token);
+                return networkStream.WriteAsync(AdjustPacket(buffer, count), token);
             }
 
             private static void ReadPrologue(ReadOnlyMemory<byte> prologue, out PacketHeaders headers, out int count)
@@ -77,10 +77,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             private protected async ValueTask<(PacketHeaders Headers, ReadOnlyMemory<byte> Payload)> ReadPacket(Memory<byte> buffer, CancellationToken token)
             {
                 // read headers and number of bytes
-                await readBlockAsync(buffer.Slice(0, PacketPrologueSize), token).ConfigureAwait(false);
+                await networkStream.ReadBlockAsync(buffer.Slice(0, PacketPrologueSize), token).ConfigureAwait(false);
                 ReadPrologue(buffer, out var headers, out var count);
                 buffer = buffer.Slice(0, count);
-                await readBlockAsync(buffer, token).ConfigureAwait(false);
+                await networkStream.ReadBlockAsync(buffer, token).ConfigureAwait(false);
                 return (headers, buffer);
             }
 
