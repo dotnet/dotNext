@@ -55,7 +55,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         /// </summary>
         public TimeSpan RpcTimeout
         {
-            get => rpcTimeout ?? TimeSpan.FromMilliseconds(UpperElectionTimeout / 2);
+            get => rpcTimeout ?? TimeSpan.FromMilliseconds(UpperElectionTimeout / 2D);
             set => rpcTimeout = value > TimeSpan.Zero ? value : throw new ArgumentOutOfRangeException(nameof(value));
         }
 
