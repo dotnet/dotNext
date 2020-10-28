@@ -94,8 +94,9 @@ The following table describes configuration properties applicable to TCP transpo
 | LingerOption | No | Not enabled | The configuration that specifies whether a TCP socket will delay its closing in an attempt to send all pending data |
 | GracefulShutdownTimeout | No | The same as _LowerElectionTimeout_ | The timeout of graceful shutdown of active incoming connections |
 | TransmissionBlockSize | No | 65535 | The size, in bytes, of internal memory block used for sending packets. If your network has high packet loss then you can decrease this value to avoid retransmission of large blocks. |
+| SslOptions | No | _N/A_ | Allows to enable and configure transport-level encryption using SSL and X.509 certificates |
 
-TCP transport is WAN friendly. However, it doesn't support TLS and should not be used for communication over Internet or any other untrusted public network. Its primary use is corporate isolated network for communication between cluster nodes located in geographically distributed datacenters.
+TCP transport is WAN friendly and support transport-level encryption. However, the underlying application-level protocol is binary and can be a problem for corporate firewalls.
 
 ## UDP Transport
 UDP transport used as bottom layer for specialized application protocol aimed to efficient transmission of Raft messages. This transport doesn't use persistent connection in contrast to TCP. As a result, it has no TCP overhead related to congestion and flow control of messages. These capabilities are implemented by application protocol itself. However, retransmission of lost packets is not implemented. The transport uses pessimistic approach and interprets lost packets as connection timeout. This is reasonable approach because the leader node examines other cluster members periodically and the next attempt may be successful. Some Raft messages such as **Vote** and **Heartbeat** with empty set of log entries (or if log entries are small enough) for replication can be easily placed to single datagram without fragmentation.
