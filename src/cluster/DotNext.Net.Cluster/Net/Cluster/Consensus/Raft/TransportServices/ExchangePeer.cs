@@ -29,7 +29,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             this.pipeConfig = pipeConfig;
         }
 
-        public override void CancelPendingRequests() => client.CancelPendingRequests();
+        public override ValueTask CancelPendingRequestsAsync() => client.CancelPendingRequestsAsync();
 
         private async Task<TResult> SendAsync<TResult, TExchange>(TExchange exchange, TimeSpan timeout, CancellationToken token)
             where TExchange : class, IClientExchange<TResult>

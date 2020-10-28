@@ -41,4 +41,10 @@
     <ProjectReference Include="..\DotNext\DotNext.csproj" />
     <ProjectReference Include="..\VisualBasicElements\VisualBasicElements.vbproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="node.pfx">
+      <Generator></Generator>
+    </EmbeddedResource>
+  </ItemGroup>
 </Project>

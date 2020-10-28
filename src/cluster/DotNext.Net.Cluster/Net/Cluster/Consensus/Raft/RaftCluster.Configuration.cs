@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Pipelines;
 using System.Net;
+using System.Net.Security;
 using Microsoft.Extensions.Logging;
 using LingerOption = System.Net.Sockets.LingerOption;
 using NullLoggerFactory = Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory;
@@ -10,6 +11,7 @@ using NullLoggerFactory = Microsoft.Extensions.Logging.Abstractions.NullLoggerFa
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using Buffers;
+    using Net.Security;
     using Tcp;
     using TransportServices;
     using Udp;
@@ -129,7 +131,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <summary>
             /// Gets or sets Raft-specific request processing timeout.
             /// </summary>
-            /// <value></value>
             public TimeSpan RpcTimeout
             {
                 get => rpcTimeout ?? TimeSpan.FromMilliseconds(UpperElectionTimeout / 2D);
@@ -366,11 +367,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 set => TcpTransport.ValidateTranmissionBlockSize(value);
             }
 
+            /// <summary>
+            /// Gets or sets transport-level encryption options.
+            /// </summary>
+            /// <value><see langword="null"/> to disable transport-level encryption.</value>
+            public SslOptions? SslOptions
+            {
+                get;
+                set;
+            }
+
             private TcpClient CreateClient(IPEndPoint address) => new TcpClient(address, MemoryAllocator, LoggerFactory)
             {
                 TransmissionBlockSize = TransmissionBlockSize,
                 LingerOption = LingerOption,
                 Ttl = TimeToLive,
+                SslOptions = SslOptions?.ClientOptions,
                 ConnectTimeout = ConnectTimeout,
             };
 
@@ -387,6 +399,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     ReceiveTimeout = RequestTimeout,
                     GracefulShutdownTimeout = (int)GracefulShutdownTimeout.TotalMilliseconds,
                     Ttl = TimeToLive,
+                    SslOptions = SslOptions?.ServerOptions,
                 };
             }
         }

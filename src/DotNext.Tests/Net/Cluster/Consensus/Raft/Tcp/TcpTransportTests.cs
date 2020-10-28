@@ -1,7 +1,11 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Net;
+using System.Net.Security;
+using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -31,18 +35,49 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             }
         }
 
-        [Fact]
-        public Task RequestResponse()
+        private static X509Certificate2 LoadCertificate()
         {
-            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new TcpServer(address, 2, DefaultAllocator, ServerExchangeFactory(member), NullLoggerFactory.Instance)
+            using var rawCertificate = Assembly.GetCallingAssembly().GetManifestResourceStream(typeof(Test), "node.pfx");
+            using var ms = new MemoryStream(1024);
+            rawCertificate?.CopyTo(ms);
+            ms.Seek(0, SeekOrigin.Begin);
+            return new X509Certificate2(ms.ToArray(), "1234");
+        }
+
+        private static SslServerAuthenticationOptions CreateServerSslOptions() => new SslServerAuthenticationOptions
+        {
+            AllowRenegotiation = true,
+            EncryptionPolicy = EncryptionPolicy.RequireEncryption,
+            ServerCertificate = LoadCertificate()
+        };
+
+        private static SslClientAuthenticationOptions CreateClientSslOptions() => new SslClientAuthenticationOptions
+        {
+            AllowRenegotiation = true,
+            TargetHost = "localhost",
+            RemoteCertificateValidationCallback = ValidateCert
+        };
+
+        private static bool ValidateCert(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+            => true;
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public Task RequestResponse(bool useSsl)
+        {
+            TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new TcpServer(address, 2, DefaultAllocator, ServerExchangeFactory(member), NullLoggerFactory.Instance)
             {
                 ReceiveTimeout = timeout,
                 TransmissionBlockSize = 65535,
-                GracefulShutdownTimeout = 2000
+                GracefulShutdownTimeout = 2000,
+                SslOptions = useSsl ? CreateServerSslOptions() : null
             };
-            static TcpClient CreateClient(IPEndPoint address) => new TcpClient(address, DefaultAllocator, NullLoggerFactory.Instance)
+
+            TcpClient CreateClient(IPEndPoint address) => new TcpClient(address, DefaultAllocator, NullLoggerFactory.Instance)
             {
-                TransmissionBlockSize = 65535
+                TransmissionBlockSize = 65535,
+                SslOptions = useSsl ? CreateClientSslOptions() : null
             };
             return RequestResponseTest(CreateServer, CreateClient);
         }

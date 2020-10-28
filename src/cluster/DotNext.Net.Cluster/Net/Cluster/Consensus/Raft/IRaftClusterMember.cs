@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -55,6 +56,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Aborts all active outbound requests.
         /// </summary>
-        void CancelPendingRequests();
+        [Obsolete("Use CancelPendingRequestsAsync method instead")]
+        void CancelPendingRequests()
+        {
+        }
+
+        /// <summary>
+        /// Aborts all active outbound requests asynchronously.
+        /// </summary>
+        /// <returns>The task representing shutdown operation.</returns>
+        ValueTask CancelPendingRequestsAsync()
+            => new ValueTask(Task.Factory.StartNew(CancelPendingRequests, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Current));
     }
 }

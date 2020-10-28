@@ -9,25 +9,18 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Net.Security;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
+using SslOptions = DotNext.Net.Security.SslOptions;
 using static DotNext.Threading.AsyncEvent;
 
 namespace RaftNode
 {
     public static class Program
     {
-        private static X509Certificate2 LoadCertificate()
-        {
-            using var rawCertificate = Assembly.GetCallingAssembly().GetManifestResourceStream(typeof(Program), "node.pfx");
-            using var ms = new MemoryStream(1024);
-            rawCertificate?.CopyTo(ms);
-            ms.Seek(0, SeekOrigin.Begin);
-            return new X509Certificate2(ms.ToArray(), "1234");
-        }
-
         private static Task UseAspNetCoreHost(int port, string? persistentStorage = null)
         {
             var configuration = new Dictionary<string, string>
@@ -101,15 +94,26 @@ namespace RaftNode
             return UseConfiguration(configuration, persistentStorage);
         }
 
-        private static Task UseTcpTransport(int port, string? persistentStorage)
+        private static Task UseTcpTransport(int port, string? persistentStorage, bool useSsl)
         {
             var configuration = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback, port))
             {
                 LowerElectionTimeout = 150,
                 UpperElectionTimeout = 300,
-                TransmissionBlockSize = 4096
+                TransmissionBlockSize = 4096,
+                SslOptions = useSsl ? CreateSslOptions() : null
             };
+
             return UseConfiguration(configuration, persistentStorage);
+
+            static SslOptions CreateSslOptions()
+            {
+                var options = new SslOptions();
+                options.ServerOptions.ServerCertificate = LoadCertificate();
+                options.ClientOptions.TargetHost = "localhost";
+                options.ClientOptions.RemoteCertificateValidationCallback = AllowAnyCert;
+                return options;
+            }
         }
 
         private static Task StartNode(string protocol, int port, string? persistentStorage = null)
@@ -122,7 +126,9 @@ namespace RaftNode
                 case "udp":
                     return UseUdpTransport(port, persistentStorage);
                 case "tcp":
-                    return UseTcpTransport(port, persistentStorage);
+                    return UseTcpTransport(port, persistentStorage, false);
+                case "tcp+ssl":
+                    return UseTcpTransport(port, persistentStorage, true);
                 default:
                     Console.Error.WriteLine("Unsupported protocol type");
                     Environment.ExitCode = 1;
@@ -146,5 +152,17 @@ namespace RaftNode
                     break;
             }
         }
+
+        private static X509Certificate2 LoadCertificate()
+        {
+            using var rawCertificate = Assembly.GetCallingAssembly().GetManifestResourceStream(typeof(Program), "node.pfx");
+            using var ms = new MemoryStream(1024);
+            rawCertificate?.CopyTo(ms);
+            ms.Seek(0, SeekOrigin.Begin);
+            return new X509Certificate2(ms.ToArray(), "1234");
+        }
+
+        private static bool AllowAnyCert(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+            => true;
     }
 }

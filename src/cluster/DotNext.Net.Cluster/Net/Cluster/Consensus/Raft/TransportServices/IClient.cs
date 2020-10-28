@@ -1,4 +1,5 @@
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
@@ -9,6 +10,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
     {
         void Enqueue(IExchange exchange, CancellationToken token);
 
-        void CancelPendingRequests();
+        ValueTask CancelPendingRequestsAsync();
     }
 }

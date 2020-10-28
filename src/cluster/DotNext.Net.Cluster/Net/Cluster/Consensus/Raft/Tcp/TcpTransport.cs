@@ -1,5 +1,7 @@
 using System;
+using System.IO;
 using System.Net;
+using System.Net.Security;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,7 +18,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
     {
         private const int PacketPrologueSize = PacketHeaders.NaturalSize + sizeof(int);
 
-        private protected class TcpStream : NetworkStream
+        private sealed class TcpStream : NetworkStream
         {
             internal TcpStream(Socket socket, bool owns)
                 : base(socket, owns)
@@ -25,6 +27,37 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
 
             internal bool Connected => Socket.Connected;
 
+            internal EndPoint RemoteEndPoint => Socket.RemoteEndPoint;
+        }
+
+        private protected class PacketStream : Disposable
+        {
+            private readonly TcpStream transport;
+            private protected readonly SslStream? ssl;
+            private readonly Func<ReadOnlyMemory<byte>, CancellationToken, ValueTask> writeAsync;
+            private readonly Func<Memory<byte>, CancellationToken, ValueTask> readBlockAsync;
+
+            internal PacketStream(Socket socket, bool owns, bool useSsl)
+            {
+                transport = new TcpStream(socket, owns);
+                if (useSsl)
+                {
+                    ssl = new SslStream(transport, true);
+                    writeAsync = ssl.WriteAsync;
+                    readBlockAsync = ssl.ReadBlockAsync;
+                }
+                else
+                {
+                    ssl = null;
+                    writeAsync = transport.WriteAsync;
+                    readBlockAsync = transport.ReadBlockAsync;
+                }
+            }
+
+            internal bool Connected => transport.Connected;
+
+            private protected EndPoint RemoteEndPoint => transport.RemoteEndPoint;
+
             private protected ValueTask WritePacket(PacketHeaders headers, Memory<byte> buffer, int count, CancellationToken token)
             {
                 // write headers
@@ -32,7 +65,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 WriteInt32LittleEndian(buffer.Span.Slice(PacketHeaders.NaturalSize), count);
 
                 // transmit packet to the remote endpoint
-                return WriteAsync(AdjustPacket(buffer, count), token);
+                return writeAsync(AdjustPacket(buffer, count), token);
             }
 
             private static void ReadPrologue(ReadOnlyMemory<byte> prologue, out PacketHeaders headers, out int count)
@@ -44,11 +77,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             private protected async ValueTask<(PacketHeaders Headers, ReadOnlyMemory<byte> Payload)> ReadPacket(Memory<byte> buffer, CancellationToken token)
             {
                 // read headers and number of bytes
-                await this.ReadBlockAsync(buffer.Slice(0, PacketPrologueSize), token).ConfigureAwait(false);
+                await readBlockAsync(buffer.Slice(0, PacketPrologueSize), token).ConfigureAwait(false);
                 ReadPrologue(buffer, out var headers, out var count);
                 buffer = buffer.Slice(0, count);
-                await this.ReadBlockAsync(buffer, token).ConfigureAwait(false);
+                await readBlockAsync(buffer, token).ConfigureAwait(false);
                 return (headers, buffer);
+            }
+
+            internal void Close(int timeout) => transport.Close(timeout);
+
+            protected override void Dispose(bool disposing)
+            {
+                if (disposing)
+                {
+                    ssl?.Dispose();
+                    transport.Dispose();
+                }
+
+                base.Dispose(disposing);
             }
         }
 

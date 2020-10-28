@@ -102,5 +102,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         internal static void TcpGracefulShutdownFailed(this ILogger logger, int timeout)
             => logger.LogWarning(Resources.GetString("TcpGracefulShutdownFailed"), timeout);
+
+        internal static void FailedToCancelPendingRequests(this ILogger logger, Exception e)
+            => logger.LogWarning(e, Resources.GetString("FailedToCancelPendingRequests"));
     }
 }
