@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Pipelines;
 using System.Net;
-using System.Net.Security;
 using Microsoft.Extensions.Logging;
 using LingerOption = System.Net.Sockets.LingerOption;
 using NullLoggerFactory = Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory;
@@ -31,7 +30,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private MemoryAllocator<byte>? allocator;
             private int? serverChannels;
             private ILoggerFactory? loggerFactory;
-            private TimeSpan? requestTimeout, rpcTimeout;
+            private TimeSpan? requestTimeout;
             private protected readonly Func<long> applicationIdGenerator;
 
             private protected NodeConfiguration(IPEndPoint hostAddress)
