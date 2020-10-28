@@ -15,7 +15,6 @@ namespace DotNext.Net.Security
         /// <summary>
         /// Gets client-side options.
         /// </summary>
-
         public SslClientAuthenticationOptions ClientOptions { get; } = new SslClientAuthenticationOptions();
     }
 }
