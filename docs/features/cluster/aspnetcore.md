@@ -101,6 +101,7 @@ The application should be configured properly to work as a cluster node. The fol
 | requestHeadersTimeout | Hosted | No | 30 seconds | The maximum amount of time the server will spend receiving request headers. |
 | keepAliveTimeout | Hosted | No | 2 minutes | TCP keep-alive timeout |
 | requestTimeout | Hosted, Embedded | No | `upperElectionTimeout` | Request timeout used to access cluster members across the network using HTTP client |
+| rpcTimeout | Hosted, Embedded | No | `upperElectionTimeout` / 2 | Request timeout used to send Raft-specific messages to cluster members. Must be less than or equal to _requestTimeout_ parameter |
 
 `requestJournal` configuration section is rarely used and useful for high-load scenario only.
 
