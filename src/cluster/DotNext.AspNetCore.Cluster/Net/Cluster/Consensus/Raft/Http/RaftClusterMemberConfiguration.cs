@@ -47,7 +47,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         public TimeSpan RequestTimeout
         {
             get => requestTimeout ?? TimeSpan.FromMilliseconds(UpperElectionTimeout);
-            set => requestTimeout = value;
+            set => requestTimeout = value > TimeSpan.Zero ? value : throw new ArgumentOutOfRangeException(nameof(value));
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         public TimeSpan RpcTimeout
         {
             get => rpcTimeout ?? TimeSpan.FromMilliseconds(UpperElectionTimeout / 2);
-            set => rpcTimeout = value;
+            set => rpcTimeout = value > TimeSpan.Zero ? value : throw new ArgumentOutOfRangeException(nameof(value));
         }
 
         internal void SetupHostAddressHint(IFeatureCollection features)
