@@ -153,7 +153,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                 {"lowerElectionTimeout", "600" },
                 {"upperElectionTimeout", "900" },
                 {"members:0", "http://localhost:3262"},
-                {"members:1", "http://localhost:3263"}
+                {"members:1", "http://localhost:3263"},
+                {"requestTimeout", "00:01:00"}
             };
             var config2 = new Dictionary<string, string>
             {
@@ -161,7 +162,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                 {"lowerElectionTimeout", "600" },
                 {"upperElectionTimeout", "900" },
                 {"members:0", "http://localhost:3262"},
-                {"members:1", "http://localhost:3263"}
+                {"members:1", "http://localhost:3263"},
+                {"requestTimeout", "00:01:00"}
             };
             using var host1 = CreateHost<Startup>(3262, true, config1);
             using var host2 = CreateHost<Startup>(3263, true, config2);
