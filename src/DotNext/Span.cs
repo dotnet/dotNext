@@ -601,5 +601,37 @@ namespace DotNext
 
         internal static void CopyTo(ReadOnlySpan<byte> source, Stream stream)
             => stream.Write(source);
+
+        /// <summary>
+        /// Copies the contents from the source span into a destination span.
+        /// </summary>
+        /// <param name="source">Source memory.</param>
+        /// <param name="destination">Destination memory.</param>
+        /// <param name="writtenCount">The number of copied elements.</param>
+        /// <typeparam name="T">The type of the elements in the span.</typeparam>
+        public static void CopyTo<T>(this ReadOnlySpan<T> source, Span<T> destination, out int writtenCount)
+        {
+            if (source.Length > destination.Length)
+            {
+                source = source.Slice(0, destination.Length);
+                writtenCount = destination.Length;
+            }
+            else
+            {
+                writtenCount = source.Length;
+            }
+
+            source.CopyTo(destination);
+        }
+
+        /// <summary>
+        /// Copies the contents from the source span into a destination span.
+        /// </summary>
+        /// <param name="source">Source memory.</param>
+        /// <param name="destination">Destination memory.</param>
+        /// <param name="writtenCount">The number of copied elements.</param>
+        /// <typeparam name="T">The type of the elements in the span.</typeparam>
+        public static void CopyTo<T>(this Span<T> source, Span<T> destination, out int writtenCount)
+            => CopyTo((ReadOnlySpan<T>)source, destination, out writtenCount);
     }
 }
