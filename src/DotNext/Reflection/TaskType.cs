@@ -28,18 +28,19 @@ namespace DotNext.Reflection
         /// Returns task type for the specified result type.
         /// </summary>
         /// <param name="taskResult">Task result type.</param>
-        /// <returns>Returns <see cref="Task"/> if <paramref name="taskResult"/> is <see cref="Void"/>; or <see cref="Task{TResult}"/> with actual generic argument equals to <paramref name="taskResult"/>.</returns>
+        /// <param name="valueTask"><see langword="true"/> to make value task type.</param>
+        /// <returns>Returns <see cref="Task"/> or <see cref="ValueTask"/> if <paramref name="taskResult"/> is <see cref="Void"/>; or <see cref="Task{TResult}"/> or <see cref="ValueTask{TResult}"/> with actual generic argument equals to <paramref name="taskResult"/>.</returns>
         /// <seealso cref="Task"/>
         /// <seealso cref="Task{TResult}"/>
         /// <seealso cref="ValueTask"/>
         /// <seealso cref="ValueTask{TResult}"/>
         [RuntimeFeatures(RuntimeGenericInstantiation = true)]
-        public static Type MakeTaskType(this Type taskResult, bool isValueTask)
+        public static Type MakeTaskType(this Type taskResult, bool valueTask)
         {
             if (taskResult == typeof(void))
-                return isValueTask ? typeof(ValueTask) : typeof(Task);
+                return valueTask ? typeof(ValueTask) : typeof(Task);
 
-            return (isValueTask ? typeof(ValueTask<>) : typeof(Task<>)).MakeGenericType(taskResult);
+            return (valueTask ? typeof(ValueTask<>) : typeof(Task<>)).MakeGenericType(taskResult);
         }
 
         private static Type? GetValueTaskType(Type valueTaskType)
