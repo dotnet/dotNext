@@ -22,7 +22,36 @@ namespace DotNext.Reflection
         /// <seealso cref="Task{TResult}"/>
         [RuntimeFeatures(RuntimeGenericInstantiation = true)]
         public static Type MakeTaskType(this Type taskResult)
-            => taskResult == typeof(void) ? typeof(Task) : typeof(Task<>).MakeGenericType(taskResult);
+            => MakeTaskType(taskResult, false);
+
+        /// <summary>
+        /// Returns task type for the specified result type.
+        /// </summary>
+        /// <param name="taskResult">Task result type.</param>
+        /// <returns>Returns <see cref="Task"/> if <paramref name="taskResult"/> is <see cref="Void"/>; or <see cref="Task{TResult}"/> with actual generic argument equals to <paramref name="taskResult"/>.</returns>
+        /// <seealso cref="Task"/>
+        /// <seealso cref="Task{TResult}"/>
+        /// <seealso cref="ValueTask"/>
+        /// <seealso cref="ValueTask{TResult}"/>
+        [RuntimeFeatures(RuntimeGenericInstantiation = true)]
+        public static Type MakeTaskType(this Type taskResult, bool isValueTask)
+        {
+            if (taskResult == typeof(void))
+                return isValueTask ? typeof(ValueTask) : typeof(Task);
+
+            return (isValueTask ? typeof(ValueTask<>) : typeof(Task<>)).MakeGenericType(taskResult);
+        }
+
+        private static Type? GetValueTaskType(Type valueTaskType)
+        {
+            if (valueTaskType == typeof(ValueTask))
+                return typeof(void);
+
+            if (valueTaskType.IsConstructedGenericType && valueTaskType.GetGenericTypeDefinition() == typeof(ValueTask<>))
+                return valueTaskType.GetGenericArguments()[0];
+
+            return null;
+        }
 
         /// <summary>
         /// Obtains result type from task type.
@@ -31,13 +60,17 @@ namespace DotNext.Reflection
         /// <returns>Task result type; or <see langword="null"/> if <paramref name="taskType"/> is not a task type.</returns>
         public static Type? GetTaskType(this Type taskType)
         {
+            if (taskType.IsValueType)
+                return GetValueTaskType(taskType);
+
             var result = taskType.FindGenericInstance(typeof(Task<>));
             if (!(result is null))
                 return result.GetGenericArguments()[0];
-            else if (typeof(Task).IsAssignableFrom(taskType))
+
+            if (typeof(Task).IsAssignableFrom(taskType))
                 return typeof(void);
-            else
-                return null;
+
+            return null;
         }
     }
 }
