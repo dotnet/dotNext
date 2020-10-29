@@ -19,7 +19,7 @@ namespace DotNext.Threading.Tasks
     [StructLayout(LayoutKind.Auto)]
     public readonly struct DynamicTaskAwaitable
     {
-        private static readonly CallSite<Func<CallSite, Task, object>> GetResultCallSite = CallSite<Func<CallSite, Task, object>>.Create(new TaskResultBinder());
+        private static readonly CallSite<Func<CallSite, Task, object?>> GetResultCallSite = CallSite<Func<CallSite, Task, object?>>.Create(new TaskResultBinder());
 
         /// <summary>
         /// Provides an object that waits for the completion of an asynchronous task.
@@ -51,7 +51,7 @@ namespace DotNext.Threading.Tasks
             /// Gets dynamically typed task result.
             /// </summary>
             /// <returns>The result of the completed task; or <see cref="System.Reflection.Missing.Value"/> if underlying task is not of type <see cref="Task{TResult}"/>.</returns>
-            public dynamic GetResult() => DynamicTaskAwaitable.GetResult(task);
+            public dynamic? GetResult() => DynamicTaskAwaitable.GetResult(task);
         }
 
         private readonly Task task;
@@ -77,6 +77,6 @@ namespace DotNext.Threading.Tasks
         public Awaiter GetAwaiter() => new Awaiter(task, continueOnCapturedContext);
 
         [RuntimeFeatures(DynamicCodeCompilation = true)]
-        internal static object GetResult(Task task) => GetResultCallSite.Target.Invoke(GetResultCallSite, task);
+        internal static object? GetResult(Task task) => GetResultCallSite.Target.Invoke(GetResultCallSite, task);
     }
 }

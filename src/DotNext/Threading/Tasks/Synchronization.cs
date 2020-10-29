@@ -63,17 +63,17 @@ namespace DotNext.Threading.Tasks
         /// <param name="task">The task to synchronize.</param>
         /// <param name="token">Cancellation token.</param>
         /// <returns>Task result; or <see cref="System.Reflection.Missing.Value"/> returned from <see cref="Result{T}.Value"/> if <paramref name="task"/> is not of type <see cref="Task{TResult}"/>.</returns>
-        public static Result<dynamic> GetResult(this Task task, CancellationToken token)
+        public static Result<dynamic?> GetResult(this Task task, CancellationToken token)
         {
-            Result<object> result;
+            Result<object?> result;
             try
             {
                 task.Wait(token);
-                result = new Result<object>(DynamicTaskAwaitable.GetResult(task));
+                result = new Result<object?>(DynamicTaskAwaitable.GetResult(task));
             }
             catch (Exception e)
             {
-                result = new Result<object>(e);
+                result = new Result<object?>(e);
             }
 
             return result;
@@ -86,23 +86,23 @@ namespace DotNext.Threading.Tasks
         /// <param name="timeout">Synchronization timeout.</param>
         /// <returns>Task result; or <see cref="System.Reflection.Missing.Value"/> returned from <see cref="Result{T}.Value"/> if <paramref name="task"/> is not of type <see cref="Task{TResult}"/>.</returns>
         /// <exception cref="TimeoutException">Task is not completed.</exception>
-        public static Result<dynamic> GetResult(this Task task, TimeSpan timeout)
+        public static Result<dynamic?> GetResult(this Task task, TimeSpan timeout)
         {
-            Result<object> result;
+            Result<object?> result;
             try
             {
                 if (task.Wait(timeout))
                 {
-                    result = new Result<object>(DynamicTaskAwaitable.GetResult(task));
+                    result = new Result<object?>(DynamicTaskAwaitable.GetResult(task));
                 }
                 else
                 {
-                    result = new Result<object>(new TimeoutException());
+                    result = new Result<object?>(new TimeoutException());
                 }
             }
             catch (Exception e)
             {
-                result = new Result<object>(e);
+                result = new Result<object?>(e);
             }
 
             return result;
