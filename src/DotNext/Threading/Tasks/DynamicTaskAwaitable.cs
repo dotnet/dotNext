@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 namespace DotNext.Threading.Tasks
 {
     using Dynamic;
-    using static Runtime.Intrinsics;
     using RuntimeFeaturesAttribute = Runtime.CompilerServices.RuntimeFeaturesAttribute;
 
     /// <summary>
@@ -51,9 +50,9 @@ namespace DotNext.Threading.Tasks
             public void OnCompleted(Action continuation) => awaiter.OnCompleted(continuation);
 
             internal object? GetRawResult()
-                => task.GetType().TypeHandle.Equals(TypeOf<Task>()) ?
-                    Missing.Value :
-                    GetResultCallSite.Target.Invoke(GetResultCallSite, task);
+                => task.GetType().IsConstructedGenericType ?
+                    GetResultCallSite.Target.Invoke(GetResultCallSite, task) :
+                    Missing.Value;
 
             /// <summary>
             /// Gets dynamically typed task result.
