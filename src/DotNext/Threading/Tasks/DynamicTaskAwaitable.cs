@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 namespace DotNext.Threading.Tasks
 {
     using Dynamic;
-    using RuntimeFeaturesAttribute = Runtime.CompilerServices.RuntimeFeaturesAttribute;
     using static Runtime.Intrinsics;
+    using RuntimeFeaturesAttribute = Runtime.CompilerServices.RuntimeFeaturesAttribute;
 
     /// <summary>
     /// Represents dynamically-typed task.
@@ -50,6 +50,11 @@ namespace DotNext.Threading.Tasks
             /// <param name="continuation">The action to perform when the wait operation completes.</param>
             public void OnCompleted(Action continuation) => awaiter.OnCompleted(continuation);
 
+            internal object? GetRawResult()
+                => task.GetType().TypeHandle.Equals(TypeOf<Task>()) ?
+                    Missing.Value :
+                    GetResultCallSite.Target.Invoke(GetResultCallSite, task);
+
             /// <summary>
             /// Gets dynamically typed task result.
             /// </summary>
@@ -57,9 +62,7 @@ namespace DotNext.Threading.Tasks
             public dynamic? GetResult()
             {
                 awaiter.GetResult();
-                return task.GetType().TypeHandle.Equals(TypeOf<Task>()) ?
-                    Missing.Value :
-                    GetResultCallSite.Target.Invoke(GetResultCallSite, task);
+                return GetRawResult();
             }
         }
 

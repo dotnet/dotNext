@@ -65,16 +65,16 @@ namespace DotNext.Threading.Tasks
         /// <returns>Task result; or <see cref="System.Reflection.Missing.Value"/> returned from <see cref="Result{T}.Value"/> if <paramref name="task"/> is not of type <see cref="Task{TResult}"/>.</returns>
         public static Result<dynamic?> GetResult(this Task task, CancellationToken token)
         {
-            Result<dynamic?> result;
+            Result<object?> result;
             try
             {
                 task.Wait(token);
                 var awaiter = new DynamicTaskAwaitable.Awaiter(task, false);
-                result = new Result<dynamic?>(awaiter.GetResult());
+                result = new Result<object?>(awaiter.GetRawResult());
             }
             catch (Exception e)
             {
-                result = new Result<dynamic?>(e);
+                result = new Result<object?>(e);
             }
 
             return result;
@@ -95,16 +95,16 @@ namespace DotNext.Threading.Tasks
                 if (task.Wait(timeout))
                 {
                     var awaiter = new DynamicTaskAwaitable.Awaiter(task, false);
-                    result = new Result<dynamic?>(awaiter.GetResult());
+                    result = new Result<object?>(awaiter.GetRawResult());
                 }
                 else
                 {
-                    result = new Result<dynamic?>(new TimeoutException());
+                    result = new Result<object?>(new TimeoutException());
                 }
             }
             catch (Exception e)
             {
-                result = new Result<dynamic?>(e);
+                result = new Result<object?>(e);
             }
 
             return result;
