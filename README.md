@@ -47,6 +47,7 @@ Documentation for older versions:
 Release Date: 10-XX-2020
 
 <a href="https://www.nuget.org/packages/dotnext/2.11.0">DotNext 2.11.0</a>
+* Added `Span<T>.CopyTo` and `ReadOnlySpan<T>.CopyTo` extension methods to support cases when the source span can be larger than the destination
 * Minor performance improvements
 * Updated dependencies
 
