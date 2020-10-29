@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ namespace DotNext.Threading.Tasks
 {
     using Dynamic;
     using RuntimeFeaturesAttribute = Runtime.CompilerServices.RuntimeFeaturesAttribute;
+    using static Runtime.Intrinsics;
 
     /// <summary>
     /// Represents dynamically-typed task.
@@ -25,6 +27,7 @@ namespace DotNext.Threading.Tasks
         /// Provides an object that waits for the completion of an asynchronous task.
         /// </summary>
         [StructLayout(LayoutKind.Auto)]
+        [RuntimeFeatures(DynamicCodeCompilation = true)]
         public readonly struct Awaiter : IFuture
         {
             private readonly Task task;
@@ -51,7 +54,13 @@ namespace DotNext.Threading.Tasks
             /// Gets dynamically typed task result.
             /// </summary>
             /// <returns>The result of the completed task; or <see cref="System.Reflection.Missing.Value"/> if underlying task is not of type <see cref="Task{TResult}"/>.</returns>
-            public dynamic? GetResult() => DynamicTaskAwaitable.GetResult(task);
+            public dynamic? GetResult()
+            {
+                awaiter.GetResult();
+                return task.GetType().TypeHandle.Equals(TypeOf<Task>()) ?
+                    Missing.Value :
+                    GetResultCallSite.Target.Invoke(GetResultCallSite, task);
+            }
         }
 
         private readonly Task task;
@@ -75,8 +84,5 @@ namespace DotNext.Threading.Tasks
         /// </summary>
         /// <returns>An awaiter instance.</returns>
         public Awaiter GetAwaiter() => new Awaiter(task, continueOnCapturedContext);
-
-        [RuntimeFeatures(DynamicCodeCompilation = true)]
-        internal static object? GetResult(Task task) => GetResultCallSite.Target.Invoke(GetResultCallSite, task);
     }
 }
