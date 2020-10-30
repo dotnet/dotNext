@@ -27,7 +27,7 @@ namespace DotNext.Threading.Tasks
         /// </summary>
         [StructLayout(LayoutKind.Auto)]
         [RuntimeFeatures(DynamicCodeCompilation = true)]
-        public readonly struct Awaiter : IFuture
+        public readonly struct Awaiter : IFuture, ICriticalNotifyCompletion
         {
             private readonly Task task;
             private readonly ConfiguredTaskAwaitable.ConfiguredTaskAwaiter awaiter;
@@ -48,6 +48,9 @@ namespace DotNext.Threading.Tasks
             /// </summary>
             /// <param name="continuation">The action to perform when the wait operation completes.</param>
             public void OnCompleted(Action continuation) => awaiter.OnCompleted(continuation);
+
+            void ICriticalNotifyCompletion.UnsafeOnCompleted(Action continuation)
+                => awaiter.OnCompleted(continuation);
 
             internal object? GetRawResult()
                 => task.GetType().IsConstructedGenericType ?

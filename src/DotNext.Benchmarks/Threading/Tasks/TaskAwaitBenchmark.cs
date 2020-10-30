@@ -7,6 +7,7 @@ namespace DotNext.Threading.Tasks
 {
     [SimpleJob(runStrategy: RunStrategy.Throughput, launchCount: 10)]
     [Orderer(SummaryOrderPolicy.FastestToSlowest)]
+    [MemoryDiagnoser]
     public class TaskAwaitBenchmark
     {
         private readonly Task task = Task.FromResult("Hello, world");
