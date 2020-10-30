@@ -29,6 +29,7 @@ namespace DotNext.Metaprogramming
 
             var dlg = outerExp.Compile();
             var result = await dlg(new TestClass("original"));
+            Equal("updated", result.TestString);
         }
 
         private static Expression<Func<TestClass, Task<TestClass>>> GetTestExpression(bool useCompilerGeneratedExpression)

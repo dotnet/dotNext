@@ -396,6 +396,10 @@ namespace DotNext.Runtime.CompilerServices
             }
         }
 
+        // do not rewrite the body of inner lambda expression
+        public override Expression Visit(Expression node)
+            => node is LambdaExpression ? node.ReduceExtensions() : base.Visit(node);
+
         protected override Expression VisitDynamic(DynamicExpression node)
             => context.Rewrite(node, base.VisitDynamic);
 
