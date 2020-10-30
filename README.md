@@ -54,6 +54,7 @@ Release Date: 10-XX-2020
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.11.0">DotNext.Metaprogramming 2.11.0</a>
 * Overloaded `CodeGenerator.AsyncLambda` supports _Pascal_-style return (issue [13](https://github.com/sakno/dotNext/issues/13))
 * Fixed suppression of exceptions raised by generated async lambda (issue [14](https://github.com/sakno/dotNext/issues/14))
+* Fixed invalid behavior of async lambda body rewriter (issue [17](https://github.com/sakno/dotNext/issues/17))
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.reflection/2.11.0">DotNext.Reflection 2.11.0</a>
