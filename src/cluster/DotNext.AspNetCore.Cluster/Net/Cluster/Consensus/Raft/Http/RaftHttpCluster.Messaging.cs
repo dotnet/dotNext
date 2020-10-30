@@ -19,7 +19,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     {
         private static readonly Func<RaftClusterMember, IPEndPoint, bool> MatchByEndPoint = IsMatchedByEndPoint;
         private readonly DuplicateRequestDetector duplicationDetector;
-        private volatile ISet<IPNetwork> allowedNetworks;
+        private volatile IImmutableSet<IPNetwork> allowedNetworks;
         private volatile ImmutableList<IInputChannel> messageHandlers;
         private volatile MemberMetadata metadata;
 

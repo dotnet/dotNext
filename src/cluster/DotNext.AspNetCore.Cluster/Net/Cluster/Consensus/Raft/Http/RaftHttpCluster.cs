@@ -32,7 +32,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             : base(config, out members)
         {
             openConnectionForEachRequest = config.OpenConnectionForEachRequest;
-            allowedNetworks = config.AllowedNetworks;
+            allowedNetworks = config.AllowedNetworks.ToImmutableHashSet();
             metadata = new MemberMetadata(config.Metadata);
             requestTimeout = config.RequestTimeout;
             raftRpcTimeout = config.RpcTimeout;
@@ -83,7 +83,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private async void ConfigurationChanged(RaftClusterMemberConfiguration configuration, string name)
         {
             metadata = new MemberMetadata(configuration.Metadata);
-            allowedNetworks = configuration.AllowedNetworks;
+            allowedNetworks = configuration.AllowedNetworks.ToImmutableHashSet();
             await ChangeMembersAsync(members =>
             {
                 var existingMembers = new HashSet<Uri>();
