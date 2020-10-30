@@ -49,6 +49,7 @@ namespace DotNext.Threading.Tasks
             /// <param name="continuation">The action to perform when the wait operation completes.</param>
             public void OnCompleted(Action continuation) => awaiter.OnCompleted(continuation);
 
+            /// <inheritdoc />
             void ICriticalNotifyCompletion.UnsafeOnCompleted(Action continuation)
                 => awaiter.OnCompleted(continuation);
 
