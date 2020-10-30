@@ -11,13 +11,12 @@ namespace DotNext.Metaprogramming
 
     public sealed class RegressionIssue17 : Test
     {
-        private static readonly PropertyInfo _propertyInfo = typeof(TestClass).GetProperties().First();
-
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
         public static async Task Regression(bool useCompilerGeneratedExpression)
         {
+            PropertyInfo _propertyInfo = typeof(TestClass).GetProperty(nameof(TestClass.TestString));
             var innerExp = GetTestExpression(useCompilerGeneratedExpression);
 
             var outerExp = CodeGenerator.AsyncLambda<Func<TestClass, Task<TestClass>>>(context =>
