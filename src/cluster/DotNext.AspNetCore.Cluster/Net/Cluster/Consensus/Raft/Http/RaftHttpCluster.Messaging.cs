@@ -125,7 +125,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private static async Task ReceiveOneWayMessageFastAck(ISubscriber sender, IMessage message, IEnumerable<IInputChannel> handlers, HttpResponse response, CancellationToken token)
         {
             IInputChannel? handler = handlers.FirstOrDefault(message.IsSignalSupported);
-            if (handlers is null)
+            if (handler is null)
                 return;
             IBufferedMessage buffered;
             if (message.Length.TryGetValue(out var length) && length < FileMessage.MinSize)
