@@ -60,8 +60,11 @@ namespace DotNext.Threading.Tasks
             /// <returns>The result of the completed task; or <see cref="System.Reflection.Missing.Value"/> if underlying task is not of type <see cref="Task{TResult}"/>.</returns>
             public dynamic? GetResult()
             {
+                if (task.GetType().IsConstructedGenericType)
+                    return GetResultCallSite.Target.Invoke(GetResultCallSite, task);
+
                 awaiter.GetResult();
-                return GetRawResult();
+                return Missing.Value;
             }
         }
 
