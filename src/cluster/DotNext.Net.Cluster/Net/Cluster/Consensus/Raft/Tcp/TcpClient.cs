@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Net;
+using System.Net.Security;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,12 +33,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             }
         }
 
-        private sealed class ClientNetworkStream : TcpStream
+        private sealed class ClientNetworkStream : PacketStream
         {
-            internal ClientNetworkStream(Socket socket)
-                : base(socket, true)
+            internal ClientNetworkStream(Socket socket, bool useSsl)
+                : base(socket, true, useSsl)
             {
             }
+
+            internal Task Authenticate(SslClientAuthenticationOptions options, CancellationToken token)
+                => ssl is null ? Task.CompletedTask : ssl.AuthenticateAsClientAsync(options, token);
 
             internal async Task Exchange(IExchange exchange, Memory<byte> buffer, CancellationToken token)
             {
@@ -57,8 +61,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                     // read response
                     (headers, response) = await ReadPacket(buffer, token).ConfigureAwait(false);
                 }
-                while (await exchange.ProcessInboundMessageAsync(headers, response, Socket.RemoteEndPoint, token).ConfigureAwait(false));
+                while (await exchange.ProcessInboundMessageAsync(headers, response, RemoteEndPoint, token).ConfigureAwait(false));
             }
+
+            internal Task ShutdownAsync() => ssl is null ? Task.CompletedTask : ssl.ShutdownAsync();
         }
 
         private readonly AsyncExclusiveLock accessLock;
@@ -68,13 +74,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             : base(address, allocator, loggerFactory)
         {
             accessLock = new AsyncExclusiveLock();
+            ConnectTimeout = TimeSpan.FromSeconds(30);
         }
+
+        internal SslClientAuthenticationOptions? SslOptions { get; set; }
+
+        internal TimeSpan ConnectTimeout { get; set; }
 
         private static void CancelConnectAsync(object args)
             => Socket.CancelConnectAsync((SocketAsyncEventArgs)args);
 
-        private static async Task<ClientNetworkStream> ConnectAsync(IPEndPoint endPoint, LingerOption linger, byte ttl, CancellationToken token)
+        private static async Task<ClientNetworkStream> ConnectAsync(IPEndPoint endPoint, LingerOption linger, byte ttl, SslClientAuthenticationOptions? sslOptions, TimeSpan timeout, CancellationToken token)
         {
+            using var timeoutControl = CancellationTokenSource.CreateLinkedTokenSource(token);
+            timeoutControl.CancelAfter(timeout);
+            token = timeoutControl.Token;
+
             using var args = new ConnectEventArgs(token)
             {
                 RemoteEndPoint = endPoint,
@@ -91,7 +106,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             }
 
             ConfigureSocket(args.ConnectSocket, linger, ttl);
-            return new ClientNetworkStream(args.ConnectSocket);
+            ClientNetworkStream result;
+
+            if (sslOptions is null)
+            {
+                result = new ClientNetworkStream(args.ConnectSocket, false);
+            }
+            else
+            {
+                result = new ClientNetworkStream(args.ConnectSocket, true);
+                await result.Authenticate(sslOptions, token).ConfigureAwait(false);
+            }
+
+            return result;
         }
 
         private async ValueTask<ClientNetworkStream?> ConnectAsync(IExchange exchange, CancellationToken token)
@@ -101,7 +128,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             try
             {
                 lockHolder = await accessLock.AcquireLockAsync(token).ConfigureAwait(false);
-                result = stream ??= await ConnectAsync(Address, LingerOption, Ttl, token).ConfigureAwait(false);
+                result = stream ??= await ConnectAsync(Address, LingerOption, Ttl, SslOptions, ConnectTimeout, token).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -162,10 +189,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             }
         }
 
-        public void CancelPendingRequests()
+        private static async Task ShutdownConnectionGracefully(ClientNetworkStream stream, TimeSpan flushTimeout)
+        {
+            using (stream)
+            {
+                await stream.ShutdownAsync().ConfigureAwait(false);
+                stream.Close((int)flushTimeout.TotalMilliseconds);
+            }
+        }
+
+        public ValueTask CancelPendingRequestsAsync()
         {
             accessLock.CancelSuspendedCallers(new CancellationToken(true));
-            Interlocked.Exchange(ref stream, null)?.Dispose();
+            var stream = Interlocked.Exchange(ref this.stream, null);
+            return stream is null ? new ValueTask() : new ValueTask(ShutdownConnectionGracefully(stream, ConnectTimeout));
         }
 
         protected override void Dispose(bool disposing)

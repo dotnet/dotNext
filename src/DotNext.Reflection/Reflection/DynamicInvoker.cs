@@ -19,5 +19,5 @@
     /// <param name="target">Target object; for static members should be <see langword="null"/>.</param>
     /// <param name="args">The arguments.</param>
     /// <returns>The result of member invocation.</returns>
-    public delegate object? DynamicInvoker(object? target, params object?[] args);
+    public delegate object? DynamicInvoker(object? target, params object?[] args);  // TODO: args must be changed to ReadOnlySpan<object>
 }

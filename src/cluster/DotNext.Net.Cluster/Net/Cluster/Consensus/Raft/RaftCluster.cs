@@ -14,7 +14,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using IO.Log;
     using Threading;
-    using static Collections.Generic.Sequence;
     using static Threading.Tasks.ValueTaskSynchronization;
 
     /// <summary>
@@ -24,7 +23,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, IRaftStateMachine
         where TMember : class, IRaftClusterMember, IDisposable
     {
-        private static readonly Action<TMember> CancelPendingRequests = DelegateHelpers.CreateOpenDelegate<Action<TMember>>(member => member.CancelPendingRequests());
         private static readonly IMemberCollection EmptyCollection = new EmptyMemberCollection();
 
         internal interface IMemberCollection : ICollection<TMember>, IReadOnlyCollection<TMember>
@@ -331,6 +329,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             state = new FollowerState(this) { Metrics = Metrics }.StartServing(TimeSpan.FromMilliseconds(electionTimeout), Token);
         }
 
+        private async Task CancelPendingRequestsAsync()
+        {
+            ICollection<Task> tasks = new LinkedList<Task>();
+            foreach (var member in members)
+                tasks.Add(member.CancelPendingRequestsAsync().AsTask());
+
+            try
+            {
+                await Task.WhenAll(tasks).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                Logger.FailedToCancelPendingRequests(e);
+            }
+        }
+
         /// <summary>
         /// Stops serving local member.
         /// </summary>
@@ -341,7 +355,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (transitionCancellation.IsCancellationRequested)
                 return;
             transitionCancellation.Cancel(false);
-            members.ForEach(CancelPendingRequests);
+            await CancelPendingRequestsAsync().ConfigureAwait(false);
             leader = null;
             using (await transitionSync.AcquireAsync(token).ConfigureAwait(false))
             {

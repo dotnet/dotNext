@@ -98,6 +98,9 @@ namespace DotNext.Buffers
         /// <exception cref="OverflowException">The size of the internal buffer becomes greater than <see cref="int.MaxValue"/>.</exception>
         public void Write(ReadOnlySpan<T> input)
         {
+            if (input.IsEmpty)
+                return;
+
             var newSize = checked(position + input.Length);
             Span<T> output;
             int offset;

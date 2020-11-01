@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using System.Net.Security;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -35,12 +36,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             Stopped,
         }
 
-        private sealed class ServerNetworkStream : TcpStream
+        private sealed class ServerNetworkStream : PacketStream
         {
-            internal ServerNetworkStream(Socket client)
-                : base(client, true)
+            internal ServerNetworkStream(Socket client, bool useSsl)
+                : base(client, true, useSsl)
             {
             }
+
+            internal Task Authenticate(SslServerAuthenticationOptions options, CancellationToken token)
+                => ssl is null ? Task.CompletedTask : ssl.AuthenticateAsServerAsync(options, token);
 
             internal async Task<ExchangeResult> Exchange(IExchange exchange, Memory<byte> buffer, TimeSpan receiveTimeout, CancellationToken token)
             {
@@ -51,7 +55,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                     var (headers, request) = await ReadPacket(buffer, token).ConfigureAwait(false);
                     timeoutTracker = CancellationTokenSource.CreateLinkedTokenSource(token);
                     timeoutTracker.CancelAfter(receiveTimeout);
-                    while (await exchange.ProcessInboundMessageAsync(headers, request, Socket.RemoteEndPoint, timeoutTracker.Token).ConfigureAwait(false))
+                    while (await exchange.ProcessInboundMessageAsync(headers, request, RemoteEndPoint, timeoutTracker.Token).ConfigureAwait(false))
                     {
                         bool waitForInput;
                         int count;
@@ -116,14 +120,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             }
         }
 
+        internal SslServerAuthenticationOptions? SslOptions
+        {
+            get;
+            set;
+        }
+
         private async void HandleConnection(Socket remoteClient, CancellationToken token)
         {
-            var stream = new ServerNetworkStream(remoteClient);
+            var sslOptions = SslOptions;
+            var stream = new ServerNetworkStream(remoteClient, sslOptions != null);
             var buffer = AllocTransmissionBlock();
             var exchange = exchangeFactory();
             Interlocked.Increment(ref connections);
             try
             {
+                if (sslOptions != null)
+                    await stream.Authenticate(sslOptions, token).ConfigureAwait(false);
+
                 while (stream.Connected && !IsDisposed)
                 {
                     switch (await stream.Exchange(exchange, buffer.Memory, receiveTimeout, token).ConfigureAwait(false))

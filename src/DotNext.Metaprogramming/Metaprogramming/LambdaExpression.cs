@@ -32,6 +32,8 @@ namespace DotNext.Metaprogramming
             get;
         }
 
+        internal abstract ParameterExpression? Result { get; }
+
         /// <summary>
         /// Gets lambda parameters.
         /// </summary>
@@ -76,7 +78,7 @@ namespace DotNext.Metaprogramming
         /// </summary>
         internal override IReadOnlyList<ParameterExpression> Parameters { get; }
 
-        private ParameterExpression? Result
+        internal override ParameterExpression? Result
         {
             get
             {

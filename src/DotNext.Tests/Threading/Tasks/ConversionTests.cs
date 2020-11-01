@@ -37,6 +37,7 @@ namespace DotNext.Threading.Tasks
             result = await Task.FromResult("Hello2").AsDynamic();
             Equal("Hello2", result);
             await ThrowsAnyAsync<OperationCanceledException>(async () => await Task.FromCanceled(new CancellationToken(true)).AsDynamic());
+            await ThrowsAsync<InvalidOperationException>(async () => await Task.FromException(new InvalidOperationException()).AsDynamic());
         }
 
         [Fact]

@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -15,14 +15,6 @@ namespace DotNext.Dynamic
         private const string PropertyName = nameof(Task<Missing>.Result);
         private const BindingFlags PropertyFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy;
 
-        private static Expression BindMissingProperty(Expression target, out Expression restrictions)
-        {
-            restrictions = Expression.TypeEqual(target, typeof(Task));
-            target = Expression.Call(target, nameof(Task.GetAwaiter), Type.EmptyTypes);
-            target = Expression.Call(target, nameof(TaskAwaiter.GetResult), Type.EmptyTypes);
-            return Expression.Block(typeof(object), target, Expression.Field(null, typeof(Missing), nameof(Missing.Value)));
-        }
-
         private static Expression BindProperty(PropertyInfo resultProperty, Expression target, out Expression restrictions)
         {
             restrictions = Expression.TypeIs(target, resultProperty.DeclaringType);
@@ -36,9 +28,8 @@ namespace DotNext.Dynamic
         private static Expression Bind(object targetValue, Expression target, LabelTarget returnLabel)
         {
             PropertyInfo? property = targetValue.GetType().GetProperty(PropertyName, PropertyFlags);
-            target = property is null ?
-                BindMissingProperty(target, out var restrictions) :
-                BindProperty(property, target, out restrictions);
+            Debug.Assert(!(property is null));
+            target = BindProperty(property, target, out var restrictions);
 
             target = Expression.Return(returnLabel, target);
             target = Expression.Condition(restrictions, target, Expression.Goto(UpdateLabel));

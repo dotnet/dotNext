@@ -19,7 +19,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     {
         private static readonly Func<RaftClusterMember, IPEndPoint, bool> MatchByEndPoint = IsMatchedByEndPoint;
         private readonly DuplicateRequestDetector duplicationDetector;
-        private volatile ISet<IPNetwork> allowedNetworks;
+        private volatile IImmutableSet<IPNetwork> allowedNetworks;
         private volatile ImmutableList<IInputChannel> messageHandlers;
         private volatile MemberMetadata metadata;
 
@@ -125,7 +125,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private static async Task ReceiveOneWayMessageFastAck(ISubscriber sender, IMessage message, IEnumerable<IInputChannel> handlers, HttpResponse response, CancellationToken token)
         {
             IInputChannel? handler = handlers.FirstOrDefault(message.IsSignalSupported);
-            if (handlers is null)
+            if (handler is null)
                 return;
             IBufferedMessage buffered;
             if (message.Length.TryGetValue(out var length) && length < FileMessage.MinSize)
@@ -296,5 +296,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                     return Task.CompletedTask;
             }
         }
+
+        private bool TryGetTimeout(Type messageType, out TimeSpan timeout)
+        {
+            if (typeof(RaftHttpMessage).IsAssignableFrom(messageType))
+            {
+                timeout = raftRpcTimeout;
+                return true;
+            }
+
+            timeout = default;
+            return false;
+        }
+
+        bool IHostingContext.TryGetTimeout<TMessage>(out TimeSpan timeout)
+            => TryGetTimeout(typeof(TMessage), out timeout);
     }
 }

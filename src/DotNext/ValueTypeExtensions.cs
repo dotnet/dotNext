@@ -320,7 +320,7 @@ namespace DotNext
         }
 
         /// <summary>
-        /// Adds twp specified native integers.
+        /// Adds two specified native integers.
         /// </summary>
         /// <param name="x">The first value to add.</param>
         /// <param name="y">The second value to add.</param>
@@ -335,7 +335,7 @@ namespace DotNext
         }
 
         /// <summary>
-        /// Adds twp specified native integers.
+        /// Adds two specified native integers.
         /// </summary>
         /// <param name="x">The first value to add.</param>
         /// <param name="y">The second value to add.</param>

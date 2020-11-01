@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Udp
@@ -56,7 +57,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             this.localEndPoint = localEndPoint;
         }
 
-        void IClient.CancelPendingRequests() => channels.ClearAndDestroyChannels();
+        ValueTask IClient.CancelPendingRequestsAsync()
+        {
+            channels.ClearAndDestroyChannels();
+            return new ValueTask();
+        }
 
         private protected override void ReportError(SocketError error)
             => channels.ReportError(error);

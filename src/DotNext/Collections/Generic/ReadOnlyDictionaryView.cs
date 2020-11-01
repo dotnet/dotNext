@@ -88,11 +88,9 @@ namespace DotNext.Collections.Generic
                 value = mapper.Invoke(sourceVal);
                 return true;
             }
-            else
-            {
-                value = default!;
-                return false;
-            }
+
+            value = default;
+            return false;
         }
 
         /// <inheritdoc/>

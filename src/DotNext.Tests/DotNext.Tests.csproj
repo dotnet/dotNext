@@ -3,7 +3,7 @@
   <PropertyGroup>
 	  <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>DotNext</RootNamespace>
-    <Version>2.10.1</Version>
+    <Version>2.11.0</Version>
     <IsPackable>false</IsPackable>
     <Authors>Roman Sakno</Authors>
     <Product>.NEXT Family of Libraries</Product>
@@ -17,7 +17,7 @@
 
   <PropertyGroup>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <RunSettingsFilePath>.runsettings</RunSettingsFilePath>
+    <RunSettingsFilePath>$(MSBuildProjectDirectory)/.runsettings</RunSettingsFilePath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -40,5 +40,11 @@
     <ProjectReference Include="..\DotNext.Unsafe\DotNext.Unsafe.csproj" />
     <ProjectReference Include="..\DotNext\DotNext.csproj" />
     <ProjectReference Include="..\VisualBasicElements\VisualBasicElements.vbproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="node.pfx">
+      <Generator></Generator>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

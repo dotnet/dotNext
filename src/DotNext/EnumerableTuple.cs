@@ -15,6 +15,7 @@ namespace DotNext
     /// <typeparam name="TItem">The type of items in the tuple.</typeparam>
     /// <typeparam name="TTuple">The tuple type.</typeparam>
     [StructLayout(LayoutKind.Auto)]
+    [Obsolete("Use Span.AsSpan(ref ValueTuple) extension methods instead")]
     public readonly struct EnumerableTuple<TItem, TTuple> : IReadOnlyList<TItem>
         where TTuple : ITuple
     {
@@ -22,6 +23,7 @@ namespace DotNext
         /// Represents enumerator over items in the tuple.
         /// </summary>
         [StructLayout(LayoutKind.Auto)]
+        [Obsolete("Use Span.AsSpan(ref ValueTuple) extension methods instead")]
         public struct Enumerator : IEnumerator<TItem>
         {
             private const int InitialPosition = -1;
@@ -113,6 +115,7 @@ namespace DotNext
     /// </summary>
     /// <seealso cref="Tuple"/>
     /// <see cref="ValueTuple"/>
+    [Obsolete("Use Span.AsSpan(ref ValueTuple) extension methods instead")]
     public static class EnumerableTuple
     {
         private static TItem GetItem<TItem>(ref Tuple<TItem> tuple, int index)
@@ -181,7 +184,7 @@ namespace DotNext
         /// <typeparam name="T">The type of items in the tuple.</typeparam>
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
-        public static EnumerableTuple<T, ValueTuple<T>> AsEnumerable<T>(this ValueTuple<T> tuple)
+        public static EnumerableTuple<T, ValueTuple<T>> AsEnumerable<T>(ValueTuple<T> tuple)
             => new EnumerableTuple<T, ValueTuple<T>>(tuple, new ValueRefFunc<ValueTuple<T>, int, T>(GetTupleItem<ValueTuple<T>, T>));
 
         /// <summary>
@@ -190,7 +193,7 @@ namespace DotNext
         /// <typeparam name="T">The type of items in the tuple.</typeparam>
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
-        public static EnumerableTuple<T, Tuple<T>> AsEnumerable<T>(this Tuple<T> tuple)
+        public static EnumerableTuple<T, Tuple<T>> AsEnumerable<T>(Tuple<T> tuple)
             => tuple is null ? default : new EnumerableTuple<T, Tuple<T>>(tuple, new ValueRefFunc<Tuple<T>, int, T>(GetItem));
 
         /// <summary>
@@ -199,7 +202,7 @@ namespace DotNext
         /// <typeparam name="T">The type of items in the tuple.</typeparam>
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
-        public static EnumerableTuple<T, (T, T)> AsEnumerable<T>(this (T, T) tuple)
+        public static EnumerableTuple<T, (T, T)> AsEnumerable<T>((T, T) tuple)
             => new EnumerableTuple<T, (T, T)>(tuple, new ValueRefFunc<(T, T), int, T>(GetTupleItem<(T, T), T>));
 
         /// <summary>
@@ -208,7 +211,7 @@ namespace DotNext
         /// <typeparam name="T">The type of items in the tuple.</typeparam>
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
-        public static EnumerableTuple<T, Tuple<T, T>> AsEnumerable<T>(this Tuple<T, T> tuple)
+        public static EnumerableTuple<T, Tuple<T, T>> AsEnumerable<T>(Tuple<T, T> tuple)
             => tuple is null ? default : new EnumerableTuple<T, Tuple<T, T>>(tuple, new ValueRefFunc<Tuple<T, T>, int, T>(GetItem));
 
         /// <summary>
@@ -217,7 +220,7 @@ namespace DotNext
         /// <typeparam name="T">The type of items in the tuple.</typeparam>
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
-        public static EnumerableTuple<T, (T, T, T)> AsEnumerable<T>(this (T, T, T) tuple)
+        public static EnumerableTuple<T, (T, T, T)> AsEnumerable<T>((T, T, T) tuple)
             => new EnumerableTuple<T, (T, T, T)>(tuple, new ValueRefFunc<(T, T, T), int, T>(GetTupleItem<(T, T, T), T>));
 
         /// <summary>
@@ -226,7 +229,7 @@ namespace DotNext
         /// <typeparam name="T">The type of items in the tuple.</typeparam>
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
-        public static EnumerableTuple<T, Tuple<T, T, T>> AsEnumerable<T>(this Tuple<T, T, T> tuple)
+        public static EnumerableTuple<T, Tuple<T, T, T>> AsEnumerable<T>(Tuple<T, T, T> tuple)
             => tuple is null ? default : new EnumerableTuple<T, Tuple<T, T, T>>(tuple, new ValueRefFunc<Tuple<T, T, T>, int, T>(GetItem));
 
         /// <summary>
@@ -235,7 +238,7 @@ namespace DotNext
         /// <typeparam name="T">The type of items in the tuple.</typeparam>
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
-        public static EnumerableTuple<T, (T, T, T, T)> AsEnumerable<T>(this (T, T, T, T) tuple)
+        public static EnumerableTuple<T, (T, T, T, T)> AsEnumerable<T>((T, T, T, T) tuple)
             => new EnumerableTuple<T, (T, T, T, T)>(tuple, new ValueRefFunc<(T, T, T, T), int, T>(GetTupleItem<(T, T, T, T), T>));
 
         /// <summary>
@@ -244,7 +247,7 @@ namespace DotNext
         /// <typeparam name="T">The type of items in the tuple.</typeparam>
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
-        public static EnumerableTuple<T, Tuple<T, T, T, T>> AsEnumerable<T>(this Tuple<T, T, T, T> tuple)
+        public static EnumerableTuple<T, Tuple<T, T, T, T>> AsEnumerable<T>(Tuple<T, T, T, T> tuple)
             => tuple is null ? default : new EnumerableTuple<T, Tuple<T, T, T, T>>(tuple, new ValueRefFunc<Tuple<T, T, T, T>, int, T>(GetItem));
 
         /// <summary>
@@ -253,7 +256,7 @@ namespace DotNext
         /// <typeparam name="T">The type of items in the tuple.</typeparam>
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
-        public static EnumerableTuple<T, (T, T, T, T, T)> AsEnumerable<T>(this (T, T, T, T, T) tuple)
+        public static EnumerableTuple<T, (T, T, T, T, T)> AsEnumerable<T>((T, T, T, T, T) tuple)
             => new EnumerableTuple<T, (T, T, T, T, T)>(tuple, new ValueRefFunc<(T, T, T, T, T), int, T>(GetTupleItem<(T, T, T, T, T), T>));
 
         /// <summary>
@@ -262,7 +265,7 @@ namespace DotNext
         /// <typeparam name="T">The type of items in the tuple.</typeparam>
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
-        public static EnumerableTuple<T, Tuple<T, T, T, T, T>> AsEnumerable<T>(this Tuple<T, T, T, T, T> tuple)
+        public static EnumerableTuple<T, Tuple<T, T, T, T, T>> AsEnumerable<T>(Tuple<T, T, T, T, T> tuple)
             => tuple is null ? default : new EnumerableTuple<T, Tuple<T, T, T, T, T>>(tuple, new ValueRefFunc<Tuple<T, T, T, T, T>, int, T>(GetItem));
 
         /// <summary>
@@ -271,7 +274,7 @@ namespace DotNext
         /// <typeparam name="T">The type of items in the tuple.</typeparam>
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
-        public static EnumerableTuple<T, (T, T, T, T, T, T)> AsEnumerable<T>(this (T, T, T, T, T, T) tuple)
+        public static EnumerableTuple<T, (T, T, T, T, T, T)> AsEnumerable<T>((T, T, T, T, T, T) tuple)
             => new EnumerableTuple<T, (T, T, T, T, T, T)>(tuple, new ValueRefFunc<(T, T, T, T, T, T), int, T>(GetTupleItem<(T, T, T, T, T, T), T>));
 
         /// <summary>
@@ -280,7 +283,7 @@ namespace DotNext
         /// <typeparam name="T">The type of items in the tuple.</typeparam>
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
-        public static EnumerableTuple<T, Tuple<T, T, T, T, T, T>> AsEnumerable<T>(this Tuple<T, T, T, T, T, T> tuple)
+        public static EnumerableTuple<T, Tuple<T, T, T, T, T, T>> AsEnumerable<T>(Tuple<T, T, T, T, T, T> tuple)
             => tuple is null ? default : new EnumerableTuple<T, Tuple<T, T, T, T, T, T>>(tuple, new ValueRefFunc<Tuple<T, T, T, T, T, T>, int, T>(GetItem));
 
         /// <summary>
@@ -289,7 +292,7 @@ namespace DotNext
         /// <typeparam name="T">The type of items in the tuple.</typeparam>
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
-        public static EnumerableTuple<T, (T, T, T, T, T, T, T)> AsEnumerable<T>(this (T, T, T, T, T, T, T) tuple)
+        public static EnumerableTuple<T, (T, T, T, T, T, T, T)> AsEnumerable<T>((T, T, T, T, T, T, T) tuple)
             => new EnumerableTuple<T, (T, T, T, T, T, T, T)>(tuple, new ValueRefFunc<(T, T, T, T, T, T, T), int, T>(GetTupleItem<(T, T, T, T, T, T, T), T>));
 
         /// <summary>
@@ -298,7 +301,7 @@ namespace DotNext
         /// <typeparam name="T">The type of items in the tuple.</typeparam>
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
-        public static EnumerableTuple<T, Tuple<T, T, T, T, T, T, T>> AsEnumerable<T>(this Tuple<T, T, T, T, T, T, T> tuple)
+        public static EnumerableTuple<T, Tuple<T, T, T, T, T, T, T>> AsEnumerable<T>(Tuple<T, T, T, T, T, T, T> tuple)
             => tuple is null ? default : new EnumerableTuple<T, Tuple<T, T, T, T, T, T, T>>(tuple, new ValueRefFunc<Tuple<T, T, T, T, T, T, T>, int, T>(GetItem));
     }
 }
