@@ -2,6 +2,7 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Order;
 using System;
+using System.Collections.Generic;
 
 namespace DotNext.Benchmarks
 {
@@ -16,10 +17,18 @@ namespace DotNext.Benchmarks
         public int GuidHashCode() => NonEmptyGuid.GetHashCode();
 
         [Benchmark]
+        public int GuidHashCodeUsingDefaultEqualityComparer()
+            => EqualityComparer<Guid>.Default.GetHashCode(NonEmptyGuid);
+
+        [Benchmark]
         public int GuidBitwiseHashCode() => BitwiseComparer<Guid>.GetHashCode(NonEmptyGuid, false);
 
         [Benchmark]
         public int LargeStructureHashCode() => NonEmptyLargeStruct.GetHashCode();
+
+        [Benchmark]
+        public int LargeStructureHashCodeUsingDefaultEqualityComparer()
+            => EqualityComparer<BitwiseEqualityBenchmark.LargeStruct>.Default.GetHashCode(NonEmptyLargeStruct);
 
         [Benchmark]
         public int LargeStructureBitwiseHashCode()
