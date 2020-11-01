@@ -57,7 +57,8 @@ namespace DotNext.Reflection
         /// <seealso cref="IReadOnlyCollection{T}"/>
         public static Type? GetImplementedCollection(this Type type)
         {
-            foreach (var collectionType in (typeof(IReadOnlyCollection<>), typeof(ICollection<>)).AsEnumerable())
+            var types = (typeof(IReadOnlyCollection<>), typeof(ICollection<>));
+            foreach (var collectionType in types.AsSpan())
             {
                 var instance = type.FindGenericInstance(collectionType);
                 if (!(instance is null))

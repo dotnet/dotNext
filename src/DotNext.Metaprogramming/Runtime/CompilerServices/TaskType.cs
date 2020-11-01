@@ -31,16 +31,17 @@ namespace DotNext.Runtime.CompilerServices
             }
             else
             {
-                using (var supportedTasks = (typeof(Task<>), typeof(ValueTask<>)).AsEnumerable().GetEnumerator())
-                {
-                    move_next:
-                    if (!supportedTasks.MoveNext())
-                        throw new ArgumentException(ExceptionMessages.UnsupportedAsyncType);
-                    if (taskType.IsGenericInstanceOf(supportedTasks.Current))
-                        resultType = taskType.GetGenericArguments(supportedTasks.Current)[0];
-                    else
-                        goto move_next;
-                }
+                var supportedTasks = (typeof(Task<>), typeof(ValueTask<>));
+                var enumerator = supportedTasks.AsSpan().GetEnumerator();
+
+                move_next:
+                var current = enumerator.Current;
+                if (!enumerator.MoveNext())
+                    throw new ArgumentException(ExceptionMessages.UnsupportedAsyncType);
+                if (taskType.IsGenericInstanceOf(current))
+                    resultType = taskType.GetGenericArguments(current)[0];
+                else
+                    goto move_next;
             }
         }
 
