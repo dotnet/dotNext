@@ -247,6 +247,13 @@ namespace DotNext
         }
 
         [Fact]
+        public static void Tuple0ToReadOnlySpan()
+        {
+            var tuple = new ValueTuple();
+            True(tuple.AsReadOnlySpan<int>().IsEmpty);
+        }
+
+        [Fact]
         public static void Tuple1ToSpan()
         {
             var tuple = new ValueTuple<int>(42);
@@ -257,6 +264,15 @@ namespace DotNext
 
             span[0] = 52;
             Equal(52, tuple.Item1);
+        }
+
+        [Fact]
+        public static void Tuple1ToReadOnlySpan()
+        {
+            var span = new ValueTuple<int>(42).AsReadOnlySpan();
+            False(span.IsEmpty);
+            Equal(1, span.Length);
+            Equal(42, span[0]);
         }
 
         [Fact]
@@ -276,6 +292,16 @@ namespace DotNext
         }
 
         [Fact]
+        public static void Tuple2ToReadOnlySpan()
+        {
+            var span = (42, 43).AsReadOnlySpan();
+            False(span.IsEmpty);
+            Equal(2, span.Length);
+            Equal(42, span[0]);
+            Equal(43, span[1]);
+        }
+
+        [Fact]
         public static void Tuple3ToSpan()
         {
             var tuple = (42, 43, 44);
@@ -292,6 +318,17 @@ namespace DotNext
             Equal(52, tuple.Item1);
             Equal(53, tuple.Item2);
             Equal(54, tuple.Item3);
+        }
+
+        [Fact]
+        public static void Tuple3ToReadOnlySpan()
+        {
+            var span = (42, 43, 44).AsReadOnlySpan();
+            False(span.IsEmpty);
+            Equal(3, span.Length);
+            Equal(42, span[0]);
+            Equal(43, span[1]);
+            Equal(44, span[2]);
         }
 
         [Fact]
@@ -317,6 +354,18 @@ namespace DotNext
         }
 
         [Fact]
+        public static void Tuple4ToReadOnlySpan()
+        {
+            var span = (42, 43, 44, 45).AsReadOnlySpan();
+            False(span.IsEmpty);
+            Equal(4, span.Length);
+            Equal(42, span[0]);
+            Equal(43, span[1]);
+            Equal(44, span[2]);
+            Equal(45, span[3]);
+        }
+
+        [Fact]
         public static void Tuple5ToSpan()
         {
             var tuple = (42, 43, 44, 45, 46);
@@ -339,6 +388,19 @@ namespace DotNext
             Equal(54, tuple.Item3);
             Equal(55, tuple.Item4);
             Equal(56, tuple.Item5);
+        }
+
+        [Fact]
+        public static void Tuple5ToReadOnlySpan()
+        {
+            var span = (42, 43, 44, 45, 46).AsReadOnlySpan();
+            False(span.IsEmpty);
+            Equal(5, span.Length);
+            Equal(42, span[0]);
+            Equal(43, span[1]);
+            Equal(44, span[2]);
+            Equal(45, span[3]);
+            Equal(46, span[4]);
         }
 
         [Fact]
@@ -370,6 +432,20 @@ namespace DotNext
         }
 
         [Fact]
+        public static void Tuple6ToReadOnlySpan()
+        {
+            var span = (42, 43, 44, 45, 46, 47).AsReadOnlySpan();
+            False(span.IsEmpty);
+            Equal(6, span.Length);
+            Equal(42, span[0]);
+            Equal(43, span[1]);
+            Equal(44, span[2]);
+            Equal(45, span[3]);
+            Equal(46, span[4]);
+            Equal(47, span[5]);
+        }
+
+        [Fact]
         public static void Tuple7ToSpan()
         {
             var tuple = (42, 43, 44, 45, 46, 47, 48);
@@ -398,6 +474,21 @@ namespace DotNext
             Equal(56, tuple.Item5);
             Equal(57, tuple.Item6);
             Equal(58, tuple.Item7);
+        }
+
+        [Fact]
+        public static void Tuple7ToReadOnlySpan()
+        {
+            var span = (42, 43, 44, 45, 46, 47, 48).AsReadOnlySpan();
+            False(span.IsEmpty);
+            Equal(7, span.Length);
+            Equal(42, span[0]);
+            Equal(43, span[1]);
+            Equal(44, span[2]);
+            Equal(45, span[3]);
+            Equal(46, span[4]);
+            Equal(47, span[5]);
+            Equal(48, span[6]);
         }
     }
 }
