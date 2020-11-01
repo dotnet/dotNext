@@ -8,7 +8,7 @@
     <title>Benchmarks | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Benchmarks | .NEXT ">
-    <meta name="generator" content="docfx 2.56.2.0">
+    <meta name="generator" content="docfx 2.56.4.0">
     
     <link rel="shortcut icon" href="fav.ico">
     <link rel="stylesheet" href="styles/docfx.vendor.css">
@@ -74,11 +74,11 @@
 <tbody>
 <tr>
 <td>Host</td>
-<td>.NET Core 3.1.7 (CoreCLR 4.700.20.36602, CoreFX 4.700.20.37001), X64 RyuJIT</td>
+<td>.NET Core 3.1.9 (CoreCLR 4.700.20.47201, CoreFX 4.700.20.47203), X64 RyuJIT</td>
 </tr>
 <tr>
 <td>Job</td>
-<td>.NET Core 3.1.7 (CoreCLR 4.700.20.36602, CoreFX 4.700.20.37001), X64 RyuJIT</td>
+<td>.NET Core 3.1.9 (CoreCLR 4.700.20.47201, CoreFX 4.700.20.47203), X64 RyuJIT</td>
 </tr>
 <tr>
 <td>LaunchCount</td>
@@ -90,7 +90,7 @@
 </tr>
 <tr>
 <td>OS</td>
-<td>Ubuntu 18.04.5</td>
+<td>Ubuntu 20.04.1</td>
 </tr>
 <tr>
 <td>CPU</td>
@@ -127,44 +127,51 @@ dotnet run -c Bench
 <th>Mean</th>
 <th>Error</th>
 <th>StdDev</th>
+<th>Median</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>BitwiseComparer&lt;Guid&gt;.Equals</code></td>
-<td>3.3381 ns</td>
-<td>0.0323 ns</td>
-<td>0.0287 ns</td>
+<td>4.0946 ns</td>
+<td>0.1103 ns</td>
+<td>0.1546 ns</td>
+<td>4.0572 ns</td>
 </tr>
 <tr>
 <td><code>Guid.Equals</code></td>
-<td>2.1275 ns</td>
-<td>0.0126 ns</td>
-<td>0.0112 ns</td>
+<td>2.6408 ns</td>
+<td>0.0679 ns</td>
+<td>0.0567 ns</td>
+<td>2.6404 ns</td>
 </tr>
 <tr>
 <td><code>ReadOnlySpan.SequenceEqual</code> for <code>Guid</code></td>
-<td>4.5505 ns</td>
-<td>0.0477 ns</td>
-<td>0.0423 ns</td>
+<td>4.7230 ns</td>
+<td>0.1173 ns</td>
+<td>0.1992 ns</td>
+<td>4.6229 ns</td>
 </tr>
 <tr>
 <td><code>BitwiseComparer&lt;LargeStruct&gt;.Equals</code></td>
-<td>16.0034 ns</td>
-<td>0.3494 ns</td>
-<td>0.5542 ns</td>
+<td>20.8664 ns</td>
+<td>0.5215 ns</td>
+<td>1.4537 ns</td>
+<td>21.0593 ns</td>
 </tr>
 <tr>
 <td><code>LargeStruct.Equals</code></td>
-<td>45.1184 ns</td>
-<td>0.0946 ns</td>
-<td>0.0884 ns</td>
+<td>44.2600 ns</td>
+<td>0.8155 ns</td>
+<td>0.7230 ns</td>
+<td>44.4745 ns</td>
 </tr>
 <tr>
 <td><code>ReadOnlySpan.SequenceEqual</code> for <code>LargeStruct</code></td>
-<td>24.8373 ns</td>
-<td>0.4922 ns</td>
-<td>0.4364 ns</td>
+<td>24.2414 ns</td>
+<td>0.3574 ns</td>
+<td>0.2984 ns</td>
+<td>24.2423 ns</td>
 </tr>
 </tbody>
 </table>
@@ -184,45 +191,45 @@ dotnet run -c Bench
 <tbody>
 <tr>
 <td><code>Guid[].BitwiseEquals</code>, small arrays (~10 elements)</td>
-<td>9.039 ns</td>
-<td>0.0426 ns</td>
-<td>0.0399 ns</td>
-<td>9.042 ns</td>
+<td>10.13 ns</td>
+<td>0.083 ns</td>
+<td>0.077 ns</td>
+<td>10.15 ns</td>
 </tr>
 <tr>
 <td><code>ReadOnlySpan&lt;Guid&gt;.SequenceEqual</code>, small arrays (~10 elements)</td>
-<td>45.571 ns</td>
-<td>0.1440 ns</td>
-<td>0.1276 ns</td>
-<td>45.569 ns</td>
+<td>46.68 ns</td>
+<td>0.200 ns</td>
+<td>0.187 ns</td>
+<td>46.69 ns</td>
 </tr>
 <tr>
 <td><code>for</code> loop, small arrays (~10 elements)</td>
-<td>63.031 ns</td>
-<td>0.1057 ns</td>
-<td>0.0937 ns</td>
-<td>63.064 ns</td>
+<td>61.23 ns</td>
+<td>0.144 ns</td>
+<td>0.127 ns</td>
+<td>61.27 ns</td>
 </tr>
 <tr>
 <td><code>Guid[].BitwiseEquals</code>, large arrays (~100 elements)</td>
-<td>47.892 ns</td>
-<td>0.2260 ns</td>
-<td>0.2004 ns</td>
-<td>47.893 ns</td>
+<td>52.30 ns</td>
+<td>0.130 ns</td>
+<td>0.121 ns</td>
+<td>52.25 ns</td>
 </tr>
 <tr>
 <td><code>ReadOnlySpan&lt;Guid&gt;.SequenceEqual</code>, large arrays (~100 elements)</td>
-<td>381.872 ns</td>
-<td>7.4653 ns</td>
-<td>11.1737 ns</td>
-<td>375.948 ns</td>
+<td>437.96 ns</td>
+<td>8.669 ns</td>
+<td>8.109 ns</td>
+<td>444.44 ns</td>
 </tr>
 <tr>
 <td><code>for</code> loop, large arrays (~100 elements)</td>
-<td>631.655 ns</td>
-<td>12.4212 ns</td>
-<td>19.7013 ns</td>
-<td>634.035 ns</td>
+<td>607.54 ns</td>
+<td>2.572 ns</td>
+<td>2.406 ns</td>
+<td>607.48 ns</td>
 </tr>
 </tbody>
 </table>
@@ -236,37 +243,32 @@ dotnet run -c Bench
 <th>Mean</th>
 <th>Error</th>
 <th>StdDev</th>
-<th>Median</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>Guid.GetHashCode</code></td>
-<td>1.578 ns</td>
-<td>0.0328 ns</td>
-<td>0.0540 ns</td>
-<td>1.570 ns</td>
+<td>1.446 ns</td>
+<td>0.0137 ns</td>
+<td>0.0128 ns</td>
 </tr>
 <tr>
 <td><code>BitwiseComparer&lt;Guid&gt;.GetHashCode</code></td>
-<td>7.288 ns</td>
-<td>0.1816 ns</td>
-<td>0.3084 ns</td>
-<td>7.454 ns</td>
+<td>5.646 ns</td>
+<td>0.0256 ns</td>
+<td>0.0214 ns</td>
 </tr>
 <tr>
 <td><code>BitwiseComparer&lt;LargeStructure&gt;.GetHashCode</code></td>
-<td>40.471 ns</td>
-<td>0.1063 ns</td>
-<td>0.0994 ns</td>
-<td>40.445 ns</td>
+<td>40.257 ns</td>
+<td>0.1833 ns</td>
+<td>0.1714 ns</td>
 </tr>
 <tr>
 <td><code>LargeStructure.GetHashCode</code></td>
-<td>27.826 ns</td>
-<td>0.4569 ns</td>
-<td>0.5611 ns</td>
-<td>27.759 ns</td>
+<td>33.694 ns</td>
+<td>0.7107 ns</td>
+<td>1.5749 ns</td>
 </tr>
 </tbody>
 </table>
@@ -287,58 +289,58 @@ dotnet run -c Bench
 <tr>
 <td><code>BitConverter.ToString</code></td>
 <td>16 bytes</td>
-<td>70.23 ns</td>
-<td>0.448 ns</td>
-<td>0.419 ns</td>
+<td>66.22 ns</td>
+<td>0.481 ns</td>
+<td>0.427 ns</td>
 </tr>
 <tr>
 <td><code>Span.ToHex</code></td>
 <td>16 bytes</td>
-<td>71.96 ns</td>
-<td>0.507 ns</td>
-<td>0.450 ns</td>
+<td>78.10 ns</td>
+<td>0.583 ns</td>
+<td>0.487 ns</td>
 </tr>
 <tr>
 <td><code>BitConverter.ToString</code></td>
 <td>64 bytes</td>
-<td>242.70 ns</td>
-<td>1.423 ns</td>
-<td>1.111 ns</td>
+<td>219.96 ns</td>
+<td>1.742 ns</td>
+<td>1.454 ns</td>
 </tr>
 <tr>
 <td><code>Span.ToHex</code></td>
 <td>64 bytes</td>
-<td>151.06 ns</td>
-<td>2.869 ns</td>
-<td>3.730 ns</td>
+<td>158.60 ns</td>
+<td>0.966 ns</td>
+<td>0.904 ns</td>
 </tr>
 <tr>
 <td><code>BitConverter.ToString</code></td>
 <td>128 bytes</td>
-<td>481.28 ns</td>
-<td>1.176 ns</td>
-<td>1.042 ns</td>
+<td>447.40 ns</td>
+<td>3.989 ns</td>
+<td>3.331 ns</td>
 </tr>
 <tr>
 <td><code>Span.ToHex</code></td>
 <td>128 bytes</td>
-<td>253.64 ns</td>
-<td>5.092 ns</td>
-<td>6.622 ns</td>
+<td>258.58 ns</td>
+<td>1.359 ns</td>
+<td>1.205 ns</td>
 </tr>
 <tr>
 <td><code>BitConverter.ToString</code></td>
 <td>256 bytes</td>
-<td>936.35 ns</td>
-<td>18.775 ns</td>
-<td>23.745 ns</td>
+<td>838.54 ns</td>
+<td>12.750 ns</td>
+<td>9.955 ns</td>
 </tr>
 <tr>
 <td><code>Span.ToHex</code></td>
 <td>256 bytes</td>
-<td>467.52 ns</td>
-<td>1.321 ns</td>
-<td>1.103 ns</td>
+<td>496.05 ns</td>
+<td>3.077 ns</td>
+<td>2.402 ns</td>
 </tr>
 </tbody>
 </table>
@@ -360,51 +362,44 @@ dotnet run -c Bench
 <th>Mean</th>
 <th>Error</th>
 <th>StdDev</th>
-<th>Median</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>Direct call</td>
-<td>11.41 ns</td>
-<td>0.080 ns</td>
-<td>0.067 ns</td>
-<td>11.42 ns</td>
+<td>12.17 ns</td>
+<td>0.045 ns</td>
+<td>0.042 ns</td>
 </tr>
 <tr>
 <td>Reflection with DotNext using delegate type <code>MemberGetter&lt;IndexOfCalculator, int&gt;</code></td>
-<td>12.71 ns</td>
-<td>0.196 ns</td>
-<td>0.184 ns</td>
-<td>12.64 ns</td>
+<td>13.90 ns</td>
+<td>0.261 ns</td>
+<td>0.231 ns</td>
 </tr>
 <tr>
 <td>Reflection with DotNext using <code>DynamicInvoker</code></td>
-<td>21.99 ns</td>
-<td>0.046 ns</td>
-<td>0.043 ns</td>
-<td>21.98 ns</td>
+<td>22.14 ns</td>
+<td>0.442 ns</td>
+<td>0.648 ns</td>
 </tr>
 <tr>
 <td>Reflection with DotNext using delegate type <code>Function&lt;object, ValueTuple, object&gt;</code></td>
-<td>24.55 ns</td>
-<td>0.143 ns</td>
-<td>0.111 ns</td>
-<td>23.05 ns</td>
+<td>22.00 ns</td>
+<td>0.432 ns</td>
+<td>0.592 ns</td>
 </tr>
 <tr>
 <td><code>ObjectAccess</code> class from <em>FastMember</em> library</td>
-<td>52.67 ns</td>
-<td>0.120 ns</td>
-<td>0.112 ns</td>
-<td>52.67 ns</td>
+<td>52.58 ns</td>
+<td>0.073 ns</td>
+<td>0.065 ns</td>
 </tr>
 <tr>
 <td>.NET reflection</td>
-<td>163.74 ns</td>
-<td>0.502 ns</td>
-<td>0.419 ns</td>
-<td>162.01 ns</td>
+<td>161.02 ns</td>
+<td>0.736 ns</td>
+<td>0.689 ns</td>
 </tr>
 </tbody>
 </table>
@@ -426,113 +421,129 @@ dotnet run -c Bench
 <th>Mean</th>
 <th>Error</th>
 <th>StdDev</th>
+<th>Median</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>Direct call</td>
 <td>Empty String</td>
-<td>6.321 ns</td>
-<td>0.1605 ns</td>
-<td>0.1784 ns</td>
+<td>5.027 ns</td>
+<td>0.0192 ns</td>
+<td>0.0179 ns</td>
+<td>5.029 ns</td>
 </tr>
 <tr>
 <td>Direct call</td>
 <td>Best Case</td>
-<td>9.329 ns</td>
-<td>0.0867 ns</td>
-<td>0.0724 ns</td>
+<td>11.265 ns</td>
+<td>0.2595 ns</td>
+<td>0.5473 ns</td>
+<td>11.038 ns</td>
 </tr>
 <tr>
 <td>Direct call</td>
 <td>Worst Case</td>
-<td>12.657 ns</td>
-<td>0.1746 ns</td>
-<td>0.1633 ns</td>
+<td>13.702 ns</td>
+<td>0.0381 ns</td>
+<td>0.0357 ns</td>
+<td>13.701 ns</td>
 </tr>
 <tr>
 <td>Reflection with DotNext using delegate type <code>Func&lt;string, char, int, int&gt;</code></td>
 <td>Empty String</td>
-<td>8.017 ns</td>
-<td>0.0424 ns</td>
-<td>0.0331 ns</td>
+<td>8.292 ns</td>
+<td>0.1272 ns</td>
+<td>0.1062 ns</td>
+<td>8.292 ns</td>
 </tr>
 <tr>
 <td>Reflection with DotNext using delegate type <code>Func&lt;string, char, int, int&gt;</code></td>
 <td>Best Case</td>
-<td>12.418 ns</td>
-<td>0.0512 ns</td>
-<td>0.0479 ns</td>
+<td>10.786 ns</td>
+<td>0.0263 ns</td>
+<td>0.0233 ns</td>
+<td>10.787 ns</td>
 </tr>
 <tr>
 <td>Reflection with DotNext using delegate type <code>Func&lt;string, char, int, int&gt;</code></td>
 <td>Worst Case</td>
-<td>18.113 ns</td>
-<td>0.0588 ns</td>
-<td>0.0550 ns</td>
+<td>16.156 ns</td>
+<td>0.0532 ns</td>
+<td>0.0445 ns</td>
+<td>16.164 ns</td>
 </tr>
 <tr>
 <td>Reflection with DotNext using delegate type <code>Function&lt;string, (char, int), int&gt;</code></td>
 <td>Empty String</td>
-<td>12.389 ns</td>
-<td>0.0227 ns</td>
-<td>0.0202 ns</td>
+<td>12.920 ns</td>
+<td>0.0802 ns</td>
+<td>0.0711 ns</td>
+<td>12.912 ns</td>
 </tr>
 <tr>
 <td>Reflection with DotNext using delegate type <code>Function&lt;string, (char, int), int&gt;</code></td>
 <td>Best Case</td>
-<td>17.252 ns</td>
-<td>0.0729 ns</td>
-<td>0.0682 ns</td>
+<td>16.764 ns</td>
+<td>0.3341 ns</td>
+<td>0.6357 ns</td>
+<td>16.547 ns</td>
 </tr>
 <tr>
 <td>Reflection with DotNext using delegate type <code>Function&lt;string, (char, int), int&gt;</code></td>
 <td>Worst Case</td>
-<td>20.930 ns</td>
-<td>0.0226 ns</td>
-<td>0.0200 ns</td>
+<td>19.723 ns</td>
+<td>0.0467 ns</td>
+<td>0.0437 ns</td>
+<td>19.718 ns</td>
 </tr>
 <tr>
 <td>Reflection with DotNext using delegate type <code>Function&lt;object, (object, object), object&gt;</code></td>
 <td>Empty String</td>
-<td>30.871 ns</td>
-<td>0.1307 ns</td>
-<td>0.1222 ns</td>
+<td>30.837 ns</td>
+<td>0.9323 ns</td>
+<td>2.6749 ns</td>
+<td>29.444 ns</td>
 </tr>
 <tr>
 <td>Reflection with DotNext using delegate type <code>Function&lt;object, (object, object), object&gt;</code></td>
 <td>Best Case</td>
-<td>33.069 ns</td>
-<td>0.5989 ns</td>
-<td>1.0006 ns</td>
+<td>34.313 ns</td>
+<td>0.6684 ns</td>
+<td>1.1168 ns</td>
+<td>34.725 ns</td>
 </tr>
 <tr>
 <td>Reflection with DotNext using delegate type <code>Function&lt;object, (object, object), object&gt;</code></td>
 <td>Worst Case</td>
-<td>35.981 ns</td>
-<td>0.7064 ns</td>
-<td>0.6938 ns</td>
+<td>38.278 ns</td>
+<td>0.2308 ns</td>
+<td>0.2159 ns</td>
+<td>38.261 ns</td>
 </tr>
 <tr>
 <td>.NET reflection</td>
 <td>Empty String</td>
-<td>311.787 ns</td>
-<td>1.0205 ns</td>
-<td>0.9546 ns</td>
+<td>330.086 ns</td>
+<td>6.4941 ns</td>
+<td>10.4867 ns</td>
+<td>325.026 ns</td>
 </tr>
 <tr>
 <td>.NET reflection</td>
 <td>Best Case</td>
-<td>318.686 ns</td>
-<td>6.2622 ns</td>
-<td>6.4308 ns</td>
+<td>332.212 ns</td>
+<td>6.6117 ns</td>
+<td>11.5798 ns</td>
+<td>326.741 ns</td>
 </tr>
 <tr>
 <td>.NET reflection</td>
 <td>Worst Case</td>
-<td>332.189 ns</td>
-<td>1.3130 ns</td>
-<td>1.2282 ns</td>
+<td>339.153 ns</td>
+<td>2.0429 ns</td>
+<td>1.7059 ns</td>
+<td>339.822 ns</td>
 </tr>
 </tbody>
 </table>
@@ -552,38 +563,44 @@ dotnet run -c Bench
 <th>Mean</th>
 <th>Error</th>
 <th>StdDev</th>
+<th>Median</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>Direct call</td>
-<td>124.1 ns</td>
-<td>1.98 ns</td>
-<td>2.78 ns</td>
+<td>133.9 ns</td>
+<td>0.71 ns</td>
+<td>0.66 ns</td>
+<td>133.8 ns</td>
 </tr>
 <tr>
 <td>Reflection with DotNext using delegate type <code>TryParseDelegate</code></td>
-<td>133.5 ns</td>
-<td>0.28 ns</td>
-<td>0.25 ns</td>
+<td>138.1 ns</td>
+<td>1.21 ns</td>
+<td>1.07 ns</td>
+<td>137.7 ns</td>
 </tr>
 <tr>
 <td>Reflection with DotNext using delegate type <code>Function&lt;(string text, decimal result), bool&gt;</code></td>
-<td>142.8 ns</td>
-<td>0.23 ns</td>
-<td>0.21 ns</td>
+<td>153.1 ns</td>
+<td>3.04 ns</td>
+<td>4.92 ns</td>
+<td>153.9 ns</td>
 </tr>
 <tr>
 <td>Reflection with DotNext using delegate type <code>Function&lt;(object text, object result), object&gt;</code></td>
-<td>182.4 ns</td>
-<td>0.77 ns</td>
-<td>0.68 ns</td>
+<td>163.6 ns</td>
+<td>0.39 ns</td>
+<td>0.35 ns</td>
+<td>163.7 ns</td>
 </tr>
 <tr>
 <td>.NET reflection</td>
-<td>517.0 ns</td>
-<td>1.53 ns</td>
-<td>1.43 ns</td>
+<td>586.3 ns</td>
+<td>11.59 ns</td>
+<td>32.50 ns</td>
+<td>573.6 ns</td>
 </tr>
 </tbody>
 </table>
@@ -603,24 +620,24 @@ dotnet run -c Bench
 <tbody>
 <tr>
 <td>Atomic</td>
-<td>336.8 us</td>
-<td>9.20 us</td>
-<td>87.27 us</td>
-<td>318.1 us</td>
+<td>352.8 us</td>
+<td>10.00 us</td>
+<td>93.91 us</td>
+<td>341.1 us</td>
 </tr>
 <tr>
 <td>Synchronized</td>
-<td>902.3 us</td>
-<td>8.32 us</td>
-<td>78.44 us</td>
-<td>896.4 us</td>
+<td>993.8 us</td>
+<td>11.41 us</td>
+<td>104.88 us</td>
+<td>982.4 us</td>
 </tr>
 <tr>
 <td>SpinLock</td>
-<td>1,814.2 us</td>
-<td>55.27 us</td>
-<td>518.56 us</td>
-<td>1,715.9 us</td>
+<td>1,539.2 us</td>
+<td>38.05 us</td>
+<td>337.18 us</td>
+<td>1,603.6 us</td>
 </tr>
 </tbody>
 </table>
@@ -696,27 +713,27 @@ dotnet run -c Bench
 <tbody>
 <tr>
 <td><code>FileBufferingWriter</code> in synchronous mode</td>
-<td>877.5 us</td>
-<td>17.13 us</td>
-<td>18.33 us</td>
+<td>1.001 ms</td>
+<td>0.0111 ms</td>
+<td>0.0104 ms</td>
 </tr>
 <tr>
 <td><code>FileBufferingWriteStream</code> in synchronous mode</td>
-<td>26,396.0 us</td>
-<td>943.21 us</td>
-<td>2,751.40 us</td>
+<td>26.690 ms</td>
+<td>1.4974 ms</td>
+<td>4.4151 ms</td>
 </tr>
 <tr>
 <td><code>FileBufferingWriter</code> in asynchronous mode</td>
-<td>14,526.9 us</td>
-<td>1,888.52 us</td>
-<td>5,568.36 us</td>
+<td>8.947 ms</td>
+<td>0.2014 ms</td>
+<td>0.5412 ms</td>
 </tr>
 <tr>
 <td><code>FileBufferingWriteStream</code> in asynchronous mode</td>
-<td>16,819.3 us</td>
-<td>1,074.98 us</td>
-<td>3,169.59 us</td>
+<td>19.300 ms</td>
+<td>1.2528 ms</td>
+<td>3.6546 ms</td>
 </tr>
 </tbody>
 </table>
@@ -734,7 +751,8 @@ dotnet run -c Bench
                 </ul>
               </div>
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
-              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+                <h5>In This Article</h5>
+                <div></div>
               </nav>
             </div>
           </div>

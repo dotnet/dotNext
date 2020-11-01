@@ -8,7 +8,7 @@
     <title>Clustered ASP.NET Core Microservices | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Clustered ASP.NET Core Microservices | .NEXT ">
-    <meta name="generator" content="docfx 2.56.2.0">
+    <meta name="generator" content="docfx 2.56.4.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -142,13 +142,17 @@ IHost host = new HostBuilder()
 	},
 	&quot;resourcePath&quot; : &quot;/cluster-consensus/raft&quot;,
 	&quot;port&quot; : 3262,
-	&quot;heartbeatThreshold&quot; : 0.5
+	&quot;heartbeatThreshold&quot; : 0.5,
+    &quot;requestTimeout&quot; : &quot;00:01:00&quot;,
+    &quot;keepAliveTimeout&quot;: &quot;00:02:00&quot;,
+    &quot;requestHeadersTimeout&quot; : &quot;00:00:30&quot;
 }
 </code></pre>
 <table>
 <thead>
 <tr>
 <th>Configuration parameter</th>
+<th>Mode</th>
 <th>Required</th>
 <th>Default Value</th>
 <th>Description</th>
@@ -157,93 +161,136 @@ IHost host = new HostBuilder()
 <tbody>
 <tr>
 <td>partitioning</td>
+<td>Hosted, Embedded</td>
 <td>No</td>
 <td>false</td>
 <td><code>true</code> if partitioning supported. In this case, each cluster partition may have its own leader, i.e. it is possible to have more that one leader for external observer. However, single partition cannot have more than 1 leader. <code>false</code> if partitioning is not supported and only one partition with majority of nodes can have leader. Note that cluster may be totally unavailable even if there are operating members presented</td>
 </tr>
 <tr>
 <td>lowerElectionTimeout, upperElectionTimeout</td>
+<td>Hosted, Embedded</td>
 <td>No</td>
 <td>150, 300</td>
 <td>Defines range for election timeout (in milliseconds) which is picked randomly inside of it for each cluster member. If cluster node doesn't receive heartbeat from leader node during this timeout then it becomes a candidate and start a election. The recommended value for  <em>upperElectionTimeout</em> is <code>2  X lowerElectionTimeout</code></td>
 </tr>
 <tr>
 <td>members</td>
+<td>Hosted, Embedded</td>
 <td>Yes</td>
 <td>N/A</td>
 <td>An array of all cluster nodes. This list must include local node. DNS name cannot be used as host name in URL except <code>localhost</code>. Only IP address is allowed</td>
 </tr>
 <tr>
 <td>allowedNetworks</td>
+<td>Hosted, Embedded</td>
 <td>No</td>
 <td>Empty list which means that all networks are allowed</td>
 <td>List of networks with other nodes which a part of single cluster. This property can be used to restrict unathorized requests to the internal endpoint responsible for handling Raft messages</td>
 </tr>
 <tr>
 <td>metadata</td>
+<td>Hosted, Embedded</td>
 <td>No</td>
 <td>empty dictionary</td>
 <td>A set of key/value pairs to be associated with cluster node. The metadata is queriable through <code>IClusterMember</code> interface</td>
 </tr>
 <tr>
 <td>openConnectionForEachRequest</td>
+<td>Hosted, Embedded</td>
 <td>No</td>
 <td>false</td>
 <td><code>true</code> to create TCP connection every time for each outbound request. <code>false</code> to use HTTP KeepAlive</td>
 </tr>
 <tr>
 <td>clientHandlerName</td>
+<td>Hosted, Embedded</td>
 <td>No</td>
 <td>raftClient</td>
 <td>The name to be passed into <a href="https://docs.microsoft.com/en-us/dotnet/api/system.net.http.ihttpmessagehandlerfactory">IHttpMessageHandlerFactory</a> to create <a href="https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpmessageinvoker">HttpMessageInvoker</a> used by Raft client code</td>
 </tr>
 <tr>
 <td>resourcePath</td>
+<td>Embedded</td>
 <td>No</td>
 <td>/cluster-consensus/raft</td>
-<td>This configuration parameter is relevant for Embedded Mode only. It defines relative path to the endpoint responsible for handling internal Raft messages</td>
+<td>Defines relative path to the endpoint responsible for handling internal Raft messages</td>
 </tr>
 <tr>
 <td>port</td>
+<td>Hosted</td>
 <td>No</td>
 <td>32999</td>
-<td>This configuration is relevant for Hosted Mode only. It defines the port number that the internal endpoint handler is listening to.</td>
+<td>Defines the port number that the internal endpoint handler is listening to.</td>
 </tr>
 <tr>
 <td>requestJournal:memoryLimit</td>
+<td>Hosted, Embedded</td>
 <td>No</td>
 <td>10</td>
 <td>The maximum amount of memory (in MB) utilized by internal buffer used to track duplicate messages</td>
 </tr>
 <tr>
 <td>requestJournal:expiration</td>
+<td>Hosted, Embedded</td>
 <td>No</td>
 <td>00:00:10</td>
 <td>The eviction time of the record containing unique request identifier</td>
 </tr>
 <tr>
 <td>requestJournal:pollingInterval</td>
+<td>Hosted, Embedded</td>
 <td>No</td>
 <td>00:01:00</td>
 <td>Gets the maximum time after which the buffer updates its memory statistics</td>
 </tr>
 <tr>
 <td>hostAddressHint</td>
+<td>Hosted, Embedded</td>
 <td>No</td>
 <td>N/A</td>
 <td>Allows to specify real IP address of the host where cluster node launched. Usually it is needed when node executed inside of Docker container. If this parameter is not specified then cluster node may fail to detect itself because network interfaces inside of Docker container have different addresses in comparison with real host network interfaces. The value can be defined at container startup time, e.g. <code>docker container run -e &quot;member-config:hostAddressHint=$(hostname -i)&quot;</code></td>
 </tr>
 <tr>
 <td>heartbeatThreshold</td>
+<td>Hosted, Embedded</td>
 <td>No</td>
 <td>0.5</td>
 <td>Specifies frequency of heartbeat messages generated by leader node to inform follower nodes about its leadership. The range is (0, 1). The lower the value means that the messages are generated more frequently and vice versa.</td>
 </tr>
 <tr>
 <td>protocolVersion</td>
+<td>Hosted, Embedded</td>
 <td>No</td>
 <td><code>auto</code></td>
 <td>HTTP protocol version that should be used for communication between members. Possible values are <code>auto</code>, <code>http1</code>, <code>http2</code></td>
+</tr>
+<tr>
+<td>requestHeadersTimeout</td>
+<td>Hosted</td>
+<td>No</td>
+<td>30 seconds</td>
+<td>The maximum amount of time the server will spend receiving request headers.</td>
+</tr>
+<tr>
+<td>keepAliveTimeout</td>
+<td>Hosted</td>
+<td>No</td>
+<td>2 minutes</td>
+<td>TCP keep-alive timeout</td>
+</tr>
+<tr>
+<td>requestTimeout</td>
+<td>Hosted, Embedded</td>
+<td>No</td>
+<td><code>upperElectionTimeout</code></td>
+<td>Request timeout used to access cluster members across the network using HTTP client</td>
+</tr>
+<tr>
+<td>rpcTimeout</td>
+<td>Hosted, Embedded</td>
+<td>No</td>
+<td><code>upperElectionTimeout</code> / 2</td>
+<td>Request timeout used to send Raft-specific messages to cluster members. Must be less than or equal to <em>requestTimeout</em> parameter</td>
 </tr>
 </tbody>
 </table>
@@ -480,7 +527,8 @@ dotnet run -- http 3264 node3
                 </ul>
               </div>
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
-              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+                <h5>In This Article</h5>
+                <div></div>
               </nav>
             </div>
           </div>

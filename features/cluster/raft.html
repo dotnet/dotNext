@@ -8,7 +8,7 @@
     <title>Raft | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Raft | .NEXT ">
-    <meta name="generator" content="docfx 2.56.2.0">
+    <meta name="generator" content="docfx 2.56.4.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -179,6 +179,12 @@ await cluster.StopAsync(CancellationToken.None);    //stops hosting of the local
 <td>Time To Live (TTL) value of Internet Protocol (IP) packets</td>
 </tr>
 <tr>
+<td>RequestTimeout</td>
+<td>No</td>
+<td><em>UpperElectionTimeout</em></td>
+<td>Defines request timeout for accessing cluster members across the network</td>
+</tr>
+<tr>
 <td>LoggerFactory</td>
 <td>No</td>
 <td><a href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.logging.abstractions.nullloggerfactory.instance">NullLoggerFactory.Instance</a></td>
@@ -244,9 +250,15 @@ await cluster.StopAsync(CancellationToken.None);    //stops hosting of the local
 <td>65535</td>
 <td>The size, in bytes, of internal memory block used for sending packets. If your network has high packet loss then you can decrease this value to avoid retransmission of large blocks.</td>
 </tr>
+<tr>
+<td>SslOptions</td>
+<td>No</td>
+<td><em>N/A</em></td>
+<td>Allows to enable and configure transport-level encryption using SSL and X.509 certificates</td>
+</tr>
 </tbody>
 </table>
-<p>TCP transport is WAN friendly. However, it doesn't support TLS and should not be used for communication over Internet or any other untrusted public network. Its primary use is corporate isolated network for communication between cluster nodes located in geographically distributed datacenters.</p>
+<p>TCP transport is WAN friendly and support transport-level encryption. However, the underlying application-level protocol is binary and can be a problem for corporate firewalls.</p>
 <h2 id="udp-transport">UDP Transport</h2>
 <p>UDP transport used as bottom layer for specialized application protocol aimed to efficient transmission of Raft messages. This transport doesn't use persistent connection in contrast to TCP. As a result, it has no TCP overhead related to congestion and flow control of messages. These capabilities are implemented by application protocol itself. However, retransmission of lost packets is not implemented. The transport uses pessimistic approach and interprets lost packets as connection timeout. This is reasonable approach because the leader node examines other cluster members periodically and the next attempt may be successful. Some Raft messages such as <strong>Vote</strong> and <strong>Heartbeat</strong> with empty set of log entries (or if log entries are small enough) for replication can be easily placed to single datagram without fragmentation.</p>
 <p>The transport has very low overhead which is equal to ~20 bytes per datagram. Therefore, most Raft messages can be placed to single datagram without streaming per request.</p>
@@ -311,7 +323,7 @@ await cluster.StopAsync(CancellationToken.None);    //stops hosting of the local
 <li>Cluster nodes are in Docker/LXC/Windows containers running on the same physical host</li>
 </ul>
 <h2 id="example">Example</h2>
-<p>There is Raft playground represented by RaftNode application. You can find this app <a href="https://github.com/sakno/dotNext/tree/develop/src/examples/RaftNode">here</a>. This playground allows to test Raft consensus protocol in real world using one of the supported transports: <code>http</code>, <code>tcp</code>, <code>udp</code>.</p>
+<p>There is Raft playground represented by RaftNode application. You can find this app <a href="https://github.com/sakno/dotNext/tree/develop/src/examples/RaftNode">here</a>. This playground allows to test Raft consensus protocol in real world using one of the supported transports: <code>http</code>, <code>tcp</code>, <code>tcp+ssl</code>, <code>udp</code>.</p>
 <p>Each instance of launched application represents cluster node. All nodes can be started using the following script:</p>
 <pre><code class="lang-bash">cd &lt;dotnext&gt;/src/examples/RaftNode
 dotnet run -- tcp 3262
@@ -459,7 +471,8 @@ sealed class ClusterMember : Disposable, IRaftClusterMember
                 </ul>
               </div>
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
-              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+                <h5>In This Article</h5>
+                <div></div>
               </nav>
             </div>
           </div>

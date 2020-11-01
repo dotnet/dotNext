@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class CodeGenerator
    | .NEXT ">
-    <meta name="generator" content="docfx 2.56.2.0">
+    <meta name="generator" content="docfx 2.56.4.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -614,6 +614,80 @@ public static void Assert(Expression test, string message = null)</code></pre>
       </tr>
     </tbody>
   </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_CodeGenerator_AsyncLambda__1_System_Action_DotNext_Metaprogramming_LambdaContext_System_Linq_Expressions_ParameterExpression__.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.CodeGenerator.AsyncLambda%60%601(System.Action%7BDotNext.Metaprogramming.LambdaContext%2CSystem.Linq.Expressions.ParameterExpression%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/CodeGenerator.cs/#L1258">View Source</a>
+  </span>
+  <a id="DotNext_Metaprogramming_CodeGenerator_AsyncLambda_" data-uid="DotNext.Metaprogramming.CodeGenerator.AsyncLambda*"></a>
+  <h4 id="DotNext_Metaprogramming_CodeGenerator_AsyncLambda__1_System_Action_DotNext_Metaprogramming_LambdaContext_System_Linq_Expressions_ParameterExpression__" data-uid="DotNext.Metaprogramming.CodeGenerator.AsyncLambda``1(System.Action{DotNext.Metaprogramming.LambdaContext,System.Linq.Expressions.ParameterExpression})">AsyncLambda&lt;TDelegate&gt;(Action&lt;LambdaContext, ParameterExpression&gt;)</h4>
+  <div class="markdown level1 summary"><p>Constructs multi-line async lambda function capturing the current lexical scope.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Expression&lt;TDelegate&gt; AsyncLambda&lt;TDelegate&gt;(Action&lt;LambdaContext, ParameterExpression&gt; body)
+
+    where TDelegate : Delegate</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-2">Action</a>&lt;<a class="xref" href="DotNext.Metaprogramming.LambdaContext.html">LambdaContext</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a>&gt;</td>
+        <td><span class="parametername">body</span></td>
+        <td><p>Lambda function builder.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.expression-1">Expression</a>&lt;TDelegate&gt;</td>
+        <td><p>Constructed lambda expression.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TDelegate</span></td>
+        <td><p>The delegate describing signature of lambda function.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Metaprogramming_CodeGenerator_AsyncLambda__1_System_Action_DotNext_Metaprogramming_LambdaContext_System_Linq_Expressions_ParameterExpression___seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Linq.Expressions.AwaitExpression.html">AwaitExpression</a></div>
+      <div><a class="xref" href="DotNext.Linq.Expressions.AsyncResultExpression.html">AsyncResultExpression</a></div>
+      <div><span><a href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/async/#BKMK_HowtoWriteanAsyncMethod">Async methods</a></span></div>
+  </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_CodeGenerator_AsyncLambda__1_System_Action_DotNext_Metaprogramming_LambdaContext__.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.CodeGenerator.AsyncLambda%60%601(System.Action%7BDotNext.Metaprogramming.LambdaContext%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
@@ -7131,7 +7205,8 @@ of the object or structure.</p>
                 </ul>
               </div>
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
-              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+                <h5>In This Article</h5>
+                <div></div>
               </nav>
             </div>
           </div>

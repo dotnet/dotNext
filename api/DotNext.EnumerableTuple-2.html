@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Struct EnumerableTuple&lt;TItem, TTuple&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.56.2.0">
+    <meta name="generator" content="docfx 2.56.4.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -108,7 +108,8 @@
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_EnumerableTuple_2_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public struct EnumerableTuple&lt;TItem, TTuple&gt; : IReadOnlyList&lt;TItem&gt;, IReadOnlyCollection&lt;TItem&gt;, IEnumerable&lt;TItem&gt;, IEnumerable where TTuple : ITuple</code></pre>
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use Span.AsSpan(ref ValueTuple) extension methods instead&quot;)]
+public struct EnumerableTuple&lt;TItem, TTuple&gt; : IReadOnlyList&lt;TItem&gt;, IReadOnlyCollection&lt;TItem&gt;, IEnumerable&lt;TItem&gt;, IEnumerable where TTuple : ITuple</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -138,7 +139,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_EnumerableTuple_2_Count.md&amp;value=---%0Auid%3A%20DotNext.EnumerableTuple%602.Count%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/EnumerableTuple.cs/#L83">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/EnumerableTuple.cs/#L85">View Source</a>
   </span>
   <a id="DotNext_EnumerableTuple_2_Count_" data-uid="DotNext.EnumerableTuple`2.Count*"></a>
   <h4 id="DotNext_EnumerableTuple_2_Count" data-uid="DotNext.EnumerableTuple`2.Count">Count</h4>
@@ -169,7 +170,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_EnumerableTuple_2_Item_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.EnumerableTuple%602.Item(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/EnumerableTuple.cs/#L78">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/EnumerableTuple.cs/#L80">View Source</a>
   </span>
   <a id="DotNext_EnumerableTuple_2_Item_" data-uid="DotNext.EnumerableTuple`2.Item*"></a>
   <h4 id="DotNext_EnumerableTuple_2_Item_System_Int32_" data-uid="DotNext.EnumerableTuple`2.Item(System.Int32)">Item[Int32]</h4>
@@ -237,7 +238,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_EnumerableTuple_2_CopyTo_System_Span__0__.md&amp;value=---%0Auid%3A%20DotNext.EnumerableTuple%602.CopyTo(System.Span%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/EnumerableTuple.cs/#L90">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/EnumerableTuple.cs/#L92">View Source</a>
   </span>
   <a id="DotNext_EnumerableTuple_2_CopyTo_" data-uid="DotNext.EnumerableTuple`2.CopyTo*"></a>
   <h4 id="DotNext_EnumerableTuple_2_CopyTo_System_Span__0__" data-uid="DotNext.EnumerableTuple`2.CopyTo(System.Span{`0})">CopyTo(Span&lt;TItem&gt;)</h4>
@@ -287,7 +288,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_EnumerableTuple_2_GetEnumerator.md&amp;value=---%0Auid%3A%20DotNext.EnumerableTuple%602.GetEnumerator%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/EnumerableTuple.cs/#L102">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/EnumerableTuple.cs/#L104">View Source</a>
   </span>
   <a id="DotNext_EnumerableTuple_2_GetEnumerator_" data-uid="DotNext.EnumerableTuple`2.GetEnumerator*"></a>
   <h4 id="DotNext_EnumerableTuple_2_GetEnumerator" data-uid="DotNext.EnumerableTuple`2.GetEnumerator">GetEnumerator()</h4>
@@ -321,7 +322,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_EnumerableTuple_2_System_Collections_Generic_IEnumerable_TItem__GetEnumerator.md&amp;value=---%0Auid%3A%20DotNext.EnumerableTuple%602.System%23Collections%23Generic%23IEnumerable%7BTItem%7D%23GetEnumerator%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/EnumerableTuple.cs/#L105">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/EnumerableTuple.cs/#L107">View Source</a>
   </span>
   <a id="DotNext_EnumerableTuple_2_System_Collections_Generic_IEnumerable_TItem__GetEnumerator_" data-uid="DotNext.EnumerableTuple`2.System#Collections#Generic#IEnumerable{TItem}#GetEnumerator*"></a>
   <h4 id="DotNext_EnumerableTuple_2_System_Collections_Generic_IEnumerable_TItem__GetEnumerator" data-uid="DotNext.EnumerableTuple`2.System#Collections#Generic#IEnumerable{TItem}#GetEnumerator">IEnumerable&lt;TItem&gt;.GetEnumerator()</h4>
@@ -351,7 +352,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_EnumerableTuple_2_System_Collections_IEnumerable_GetEnumerator.md&amp;value=---%0Auid%3A%20DotNext.EnumerableTuple%602.System%23Collections%23IEnumerable%23GetEnumerator%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/EnumerableTuple.cs/#L108">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/EnumerableTuple.cs/#L110">View Source</a>
   </span>
   <a id="DotNext_EnumerableTuple_2_System_Collections_IEnumerable_GetEnumerator_" data-uid="DotNext.EnumerableTuple`2.System#Collections#IEnumerable#GetEnumerator*"></a>
   <h4 id="DotNext_EnumerableTuple_2_System_Collections_IEnumerable_GetEnumerator" data-uid="DotNext.EnumerableTuple`2.System#Collections#IEnumerable#GetEnumerator">IEnumerable.GetEnumerator()</h4>
@@ -466,7 +467,8 @@
                 </ul>
               </div>
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
-              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+                <h5>In This Article</h5>
+                <div></div>
               </nav>
             </div>
           </div>
