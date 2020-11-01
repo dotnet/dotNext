@@ -636,65 +636,74 @@ namespace DotNext
             => MemoryMarshal.CreateSpan(ref As<TTuple, T>(ref tuple), tuple.Length);
 
         /// <summary>
-        /// Obtains a span over elements in the tuple.
+        /// Obtains a span over tuple items.
         /// </summary>
         /// <param name="tuple">The tuple.</param>
-        /// <typeparam name="T">The type of the elements in the tuple.</typeparam>
-        /// <returns>The span over elements in the tuple.</returns>
+        /// <typeparam name="T">The type of items in the tuple.</typeparam>
+        /// <returns>The span over items in the tuple.</returns>
+        public static Span<T> AsSpan<T>(this ref ValueTuple tuple)
+            => Span<T>.Empty;
+
+        /// <summary>
+        /// Obtains a span over tuple items.
+        /// </summary>
+        /// <param name="tuple">The tuple.</param>
+        /// <typeparam name="T">The type of items in the tuple.</typeparam>
+        /// <returns>The span over items in the tuple.</returns>
         public static Span<T> AsSpan<T>(this ref ValueTuple<T> tuple)
             => TupleToSpan<T, ValueTuple<T>>(ref tuple);
 
         /// <summary>
-        /// Obtains a span over elements in the tuple.
+        /// Obtains a span over tuple items.
         /// </summary>
         /// <param name="tuple">The tuple.</param>
-        /// <typeparam name="T">The type of the elements in the tuple.</typeparam>
-        /// <returns>The span over elements in the tuple.</returns>
+        /// <typeparam name="T">The type of items in the tuple.</typeparam>
+        /// <returns>The span over items in the tuple.</returns>
         public static Span<T> AsSpan<T>(this ref ValueTuple<T, T> tuple)
             => TupleToSpan<T, ValueTuple<T, T>>(ref tuple);
 
         /// <summary>
-        /// Obtains a span over elements in the tuple.
+        /// Obtains a span over tuple items.
         /// </summary>
         /// <param name="tuple">The tuple.</param>
-        /// <typeparam name="T">The type of the elements in the tuple.</typeparam>
-        /// <returns>The span over elements in the tuple.</returns>
+        /// <typeparam name="T">The type of items in the tuple.</typeparam>
+        /// <returns>The span over items in the tuple.</returns>
         public static Span<T> AsSpan<T>(this ref ValueTuple<T, T, T> tuple)
             => TupleToSpan<T, ValueTuple<T, T, T>>(ref tuple);
 
         /// <summary>
-        /// Obtains a span over elements in the tuple.
+        /// Obtains a span over tuple items.
         /// </summary>
         /// <param name="tuple">The tuple.</param>
-        /// <typeparam name="T">The type of the elements in the tuple.</typeparam>
-        /// <returns>The span over elements in the tuple.</returns>
+        /// <typeparam name="T">The type of items in the tuple.</typeparam>
+        /// <returns>The span over items in the tuple.</returns>
         public static Span<T> AsSpan<T>(this ref ValueTuple<T, T, T, T> tuple)
             => TupleToSpan<T, ValueTuple<T, T, T, T>>(ref tuple);
 
         /// <summary>
-        /// Obtains a span over elements in the tuple.
+        /// Obtains a span over tuple items.
         /// </summary>
         /// <param name="tuple">The tuple.</param>
-        /// <typeparam name="T">The type of the elements in the tuple.</typeparam>
-        /// <returns>The span over elements in the tuple.</returns>
+        /// <typeparam name="T">The type of items in the tuple.</typeparam>
+        /// <returns>The span over items in the tuple.</returns>
         public static Span<T> AsSpan<T>(this ref ValueTuple<T, T, T, T, T> tuple)
             => TupleToSpan<T, ValueTuple<T, T, T, T, T>>(ref tuple);
 
         /// <summary>
-        /// Obtains a span over elements in the tuple.
+        /// Obtains a span over tuple items.
         /// </summary>
         /// <param name="tuple">The tuple.</param>
-        /// <typeparam name="T">The type of the elements in the tuple.</typeparam>
-        /// <returns>The span over elements in the tuple.</returns>
+        /// <typeparam name="T">The type of items in the tuple.</typeparam>
+        /// <returns>The span over items in the tuple.</returns>
         public static Span<T> AsSpan<T>(this ref ValueTuple<T, T, T, T, T, T> tuple)
             => TupleToSpan<T, ValueTuple<T, T, T ,T, T, T>>(ref tuple);
 
         /// <summary>
-        /// Obtains a span over elements in the tuple.
+        /// Obtains a span over tuple items.
         /// </summary>
         /// <param name="tuple">The tuple.</param>
-        /// <typeparam name="T">The type of the elements in the tuple.</typeparam>
-        /// <returns>The span over elements in the tuple.</returns>
+        /// <typeparam name="T">The type of items in the tuple.</typeparam>
+        /// <returns>The span over items in the tuple.</returns>
         public static Span<T> AsSpan<T>(this ref ValueTuple<T, T, T, T, T, T, T> tuple)
             => TupleToSpan<T, ValueTuple<T, T, T ,T, T, T, T>>(ref tuple);
     }

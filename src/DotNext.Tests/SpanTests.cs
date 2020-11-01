@@ -238,5 +238,166 @@ namespace DotNext
             for (var i = 0; i < writtenCount; i++)
                 Equal(src[i], dst[i]);
         }
+
+        [Fact]
+        public static void Tuple0ToSpan()
+        {
+            var tuple = new ValueTuple();
+            True(tuple.AsSpan<int>().IsEmpty);
+        }
+
+        [Fact]
+        public static void Tuple1ToSpan()
+        {
+            var tuple = new ValueTuple<int>(42);
+            var span = tuple.AsSpan();
+            False(span.IsEmpty);
+            Equal(1, span.Length);
+            Equal(42, span[0]);
+
+            span[0] = 52;
+            Equal(52, tuple.Item1);
+        }
+
+        [Fact]
+        public static void Tuple2ToSpan()
+        {
+            var tuple = (42, 43);
+            var span = tuple.AsSpan();
+            False(span.IsEmpty);
+            Equal(2, span.Length);
+            Equal(42, span[0]);
+            Equal(43, span[1]);
+
+            span[0] = 52;
+            span[1] = 53;
+            Equal(52, tuple.Item1);
+            Equal(53, tuple.Item2);
+        }
+
+        [Fact]
+        public static void Tuple3ToSpan()
+        {
+            var tuple = (42, 43, 44);
+            var span = tuple.AsSpan();
+            False(span.IsEmpty);
+            Equal(3, span.Length);
+            Equal(42, span[0]);
+            Equal(43, span[1]);
+            Equal(44, span[2]);
+
+            span[0] = 52;
+            span[1] = 53;
+            span[2] = 54;
+            Equal(52, tuple.Item1);
+            Equal(53, tuple.Item2);
+            Equal(54, tuple.Item3);
+        }
+
+        [Fact]
+        public static void Tuple4ToSpan()
+        {
+            var tuple = (42, 43, 44, 45);
+            var span = tuple.AsSpan();
+            False(span.IsEmpty);
+            Equal(4, span.Length);
+            Equal(42, span[0]);
+            Equal(43, span[1]);
+            Equal(44, span[2]);
+            Equal(45, span[3]);
+
+            span[0] = 52;
+            span[1] = 53;
+            span[2] = 54;
+            span[3] = 55;
+            Equal(52, tuple.Item1);
+            Equal(53, tuple.Item2);
+            Equal(54, tuple.Item3);
+            Equal(55, tuple.Item4);
+        }
+
+        [Fact]
+        public static void Tuple5ToSpan()
+        {
+            var tuple = (42, 43, 44, 45, 46);
+            var span = tuple.AsSpan();
+            False(span.IsEmpty);
+            Equal(5, span.Length);
+            Equal(42, span[0]);
+            Equal(43, span[1]);
+            Equal(44, span[2]);
+            Equal(45, span[3]);
+            Equal(46, span[4]);
+
+            span[0] = 52;
+            span[1] = 53;
+            span[2] = 54;
+            span[3] = 55;
+            span[4] = 56;
+            Equal(52, tuple.Item1);
+            Equal(53, tuple.Item2);
+            Equal(54, tuple.Item3);
+            Equal(55, tuple.Item4);
+            Equal(56, tuple.Item5);
+        }
+
+        [Fact]
+        public static void Tuple6ToSpan()
+        {
+            var tuple = (42, 43, 44, 45, 46, 47);
+            var span = tuple.AsSpan();
+            False(span.IsEmpty);
+            Equal(6, span.Length);
+            Equal(42, span[0]);
+            Equal(43, span[1]);
+            Equal(44, span[2]);
+            Equal(45, span[3]);
+            Equal(46, span[4]);
+            Equal(47, span[5]);
+
+            span[0] = 52;
+            span[1] = 53;
+            span[2] = 54;
+            span[3] = 55;
+            span[4] = 56;
+            span[5] = 57;
+            Equal(52, tuple.Item1);
+            Equal(53, tuple.Item2);
+            Equal(54, tuple.Item3);
+            Equal(55, tuple.Item4);
+            Equal(56, tuple.Item5);
+            Equal(57, tuple.Item6);
+        }
+
+        [Fact]
+        public static void Tuple7ToSpan()
+        {
+            var tuple = (42, 43, 44, 45, 46, 47, 48);
+            var span = tuple.AsSpan();
+            False(span.IsEmpty);
+            Equal(7, span.Length);
+            Equal(42, span[0]);
+            Equal(43, span[1]);
+            Equal(44, span[2]);
+            Equal(45, span[3]);
+            Equal(46, span[4]);
+            Equal(47, span[5]);
+            Equal(48, span[6]);
+
+            span[0] = 52;
+            span[1] = 53;
+            span[2] = 54;
+            span[3] = 55;
+            span[4] = 56;
+            span[5] = 57;
+            span[6] = 58;
+            Equal(52, tuple.Item1);
+            Equal(53, tuple.Item2);
+            Equal(54, tuple.Item3);
+            Equal(55, tuple.Item4);
+            Equal(56, tuple.Item5);
+            Equal(57, tuple.Item6);
+            Equal(58, tuple.Item7);
+        }
     }
 }
