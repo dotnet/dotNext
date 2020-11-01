@@ -44,10 +44,12 @@ Documentation for older versions:
 * [1.x](https://sakno.github.io/dotNext/versions/1.x/index.html)
 
 # What's new
-Release Date: 10-XX-2020
+Release Date: 11-01-2020
 
 <a href="https://www.nuget.org/packages/dotnext/2.11.0">DotNext 2.11.0</a>
 * Added `Span<T>.CopyTo` and `ReadOnlySpan<T>.CopyTo` extension methods to support cases when the source span can be larger than the destination
+* Added `Span.AsSpan` and `Span.AsReadOnlySpan` for value tuples
+* Deprecated [EnumerableTuple](https://sakno.github.io/dotNext/api/DotNext.EnumerableTuple-2.html) data type
 * Minor performance improvements
 * Updated dependencies
 

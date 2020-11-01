@@ -426,9 +426,6 @@ namespace DotNext
             return new string(buffer.Span.Slice(0, count));
         }
 
-        private static ReadOnlySpan<T> AsSpan<T>(this ref (T, T) pair)
-            => MemoryMarshal.CreateReadOnlySpan(ref As<(T, T), T>(ref pair), 2);
-
         /// <summary>
         /// Decodes hexadecimal representation of bytes.
         /// </summary>
@@ -633,5 +630,153 @@ namespace DotNext
         /// <typeparam name="T">The type of the elements in the span.</typeparam>
         public static void CopyTo<T>(this Span<T> source, Span<T> destination, out int writtenCount)
             => CopyTo((ReadOnlySpan<T>)source, destination, out writtenCount);
+
+        private static Span<T> TupleToSpan<T, TTuple>(ref TTuple tuple)
+            where TTuple : struct, ITuple
+            => MemoryMarshal.CreateSpan(ref As<TTuple, T>(ref tuple), tuple.Length);
+
+        /// <summary>
+        /// Obtains a span over tuple items.
+        /// </summary>
+        /// <param name="tuple">The tuple.</param>
+        /// <typeparam name="T">The type of items in the tuple.</typeparam>
+        /// <returns>The span over items in the tuple.</returns>
+        public static Span<T> AsSpan<T>(this ref ValueTuple tuple)
+            => Span<T>.Empty;
+
+        /// <summary>
+        /// Obtains read-only span over tuple items.
+        /// </summary>
+        /// <param name="tuple">The tuple.</param>
+        /// <typeparam name="T">The type of items in the tuple.</typeparam>
+        /// <returns>The span over items in the tuple.</returns>
+        public static ReadOnlySpan<T> AsReadOnlySpan<T>(this in ValueTuple tuple)
+            => ReadOnlySpan<T>.Empty;
+
+        /// <summary>
+        /// Obtains a span over tuple items.
+        /// </summary>
+        /// <param name="tuple">The tuple.</param>
+        /// <typeparam name="T">The type of items in the tuple.</typeparam>
+        /// <returns>The span over items in the tuple.</returns>
+        public static Span<T> AsSpan<T>(this ref ValueTuple<T> tuple)
+            => TupleToSpan<T, ValueTuple<T>>(ref tuple);
+
+        /// <summary>
+        /// Obtains read-only span over tuple items.
+        /// </summary>
+        /// <param name="tuple">The tuple.</param>
+        /// <typeparam name="T">The type of items in the tuple.</typeparam>
+        /// <returns>The span over items in the tuple.</returns>
+        public static ReadOnlySpan<T> AsReadOnlySpan<T>(this in ValueTuple<T> tuple)
+            => TupleToSpan<T, ValueTuple<T>>(ref AsRef(in tuple));
+
+        /// <summary>
+        /// Obtains a span over tuple items.
+        /// </summary>
+        /// <param name="tuple">The tuple.</param>
+        /// <typeparam name="T">The type of items in the tuple.</typeparam>
+        /// <returns>The span over items in the tuple.</returns>
+        public static Span<T> AsSpan<T>(this ref ValueTuple<T, T> tuple)
+            => TupleToSpan<T, ValueTuple<T, T>>(ref tuple);
+
+        /// <summary>
+        /// Obtains read-only span over tuple items.
+        /// </summary>
+        /// <param name="tuple">The tuple.</param>
+        /// <typeparam name="T">The type of items in the tuple.</typeparam>
+        /// <returns>The span over items in the tuple.</returns>
+        public static ReadOnlySpan<T> AsReadOnlySpan<T>(this in ValueTuple<T, T> tuple)
+            => TupleToSpan<T, ValueTuple<T, T>>(ref AsRef(in tuple));
+
+        /// <summary>
+        /// Obtains a span over tuple items.
+        /// </summary>
+        /// <param name="tuple">The tuple.</param>
+        /// <typeparam name="T">The type of items in the tuple.</typeparam>
+        /// <returns>The span over items in the tuple.</returns>
+        public static Span<T> AsSpan<T>(this ref (T, T, T) tuple)
+            => TupleToSpan<T, (T, T, T)>(ref tuple);
+
+        /// <summary>
+        /// Obtains read-only span over tuple items.
+        /// </summary>
+        /// <param name="tuple">The tuple.</param>
+        /// <typeparam name="T">The type of items in the tuple.</typeparam>
+        /// <returns>The span over items in the tuple.</returns>
+        public static ReadOnlySpan<T> AsReadOnlySpan<T>(this in (T, T, T) tuple)
+            => TupleToSpan<T, (T, T, T)>(ref AsRef(in tuple));
+
+        /// <summary>
+        /// Obtains a span over tuple items.
+        /// </summary>
+        /// <param name="tuple">The tuple.</param>
+        /// <typeparam name="T">The type of items in the tuple.</typeparam>
+        /// <returns>The span over items in the tuple.</returns>
+        public static Span<T> AsSpan<T>(this ref (T, T, T, T) tuple)
+            => TupleToSpan<T, (T, T, T, T)>(ref tuple);
+
+        /// <summary>
+        /// Obtains read-only span over tuple items.
+        /// </summary>
+        /// <param name="tuple">The tuple.</param>
+        /// <typeparam name="T">The type of items in the tuple.</typeparam>
+        /// <returns>The span over items in the tuple.</returns>
+        public static ReadOnlySpan<T> AsReadOnlySpan<T>(this in (T, T, T, T) tuple)
+            => TupleToSpan<T, (T, T, T, T)>(ref AsRef(in tuple));
+
+        /// <summary>
+        /// Obtains a span over tuple items.
+        /// </summary>
+        /// <param name="tuple">The tuple.</param>
+        /// <typeparam name="T">The type of items in the tuple.</typeparam>
+        /// <returns>The span over items in the tuple.</returns>
+        public static Span<T> AsSpan<T>(this ref (T, T, T, T, T) tuple)
+            => TupleToSpan<T, (T, T, T, T, T)>(ref tuple);
+
+        /// <summary>
+        /// Obtains read-only span over tuple items.
+        /// </summary>
+        /// <param name="tuple">The tuple.</param>
+        /// <typeparam name="T">The type of items in the tuple.</typeparam>
+        /// <returns>The span over items in the tuple.</returns>
+        public static ReadOnlySpan<T> AsReadOnlySpan<T>(this in (T, T, T, T, T) tuple)
+            => TupleToSpan<T, (T, T, T, T, T)>(ref AsRef(in tuple));
+
+        /// <summary>
+        /// Obtains a span over tuple items.
+        /// </summary>
+        /// <param name="tuple">The tuple.</param>
+        /// <typeparam name="T">The type of items in the tuple.</typeparam>
+        /// <returns>The span over items in the tuple.</returns>
+        public static Span<T> AsSpan<T>(this ref (T, T, T, T, T, T) tuple)
+            => TupleToSpan<T, (T, T, T, T, T, T)>(ref tuple);
+
+        /// <summary>
+        /// Obtains read-only span over tuple items.
+        /// </summary>
+        /// <param name="tuple">The tuple.</param>
+        /// <typeparam name="T">The type of items in the tuple.</typeparam>
+        /// <returns>The span over items in the tuple.</returns>
+        public static ReadOnlySpan<T> AsReadOnlySpan<T>(this in (T, T, T, T, T, T) tuple)
+            => TupleToSpan<T, (T, T, T, T, T, T)>(ref AsRef(in tuple));
+
+        /// <summary>
+        /// Obtains a span over tuple items.
+        /// </summary>
+        /// <param name="tuple">The tuple.</param>
+        /// <typeparam name="T">The type of items in the tuple.</typeparam>
+        /// <returns>The span over items in the tuple.</returns>
+        public static Span<T> AsSpan<T>(this ref (T, T, T, T, T, T, T) tuple)
+            => TupleToSpan<T, (T, T, T, T, T, T, T)>(ref tuple);
+
+        /// <summary>
+        /// Obtains read-only span over tuple items.
+        /// </summary>
+        /// <param name="tuple">The tuple.</param>
+        /// <typeparam name="T">The type of items in the tuple.</typeparam>
+        /// <returns>The span over items in the tuple.</returns>
+        public static ReadOnlySpan<T> AsReadOnlySpan<T>(this in (T, T, T, T, T, T, T) tuple)
+            => TupleToSpan<T, (T, T, T, T, T, T, T)>(ref AsRef(in tuple));
     }
 }
