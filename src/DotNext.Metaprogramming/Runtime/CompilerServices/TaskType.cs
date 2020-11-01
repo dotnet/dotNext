@@ -34,9 +34,10 @@ namespace DotNext.Runtime.CompilerServices
                 var enumerator = (typeof(Task<>), typeof(ValueTask<>)).AsReadOnlySpan().GetEnumerator();
 
                 move_next:
-                var current = enumerator.Current;
                 if (!enumerator.MoveNext())
                     throw new ArgumentException(ExceptionMessages.UnsupportedAsyncType);
+
+                var current = enumerator.Current;
                 if (taskType.IsGenericInstanceOf(current))
                     resultType = taskType.GetGenericArguments(current)[0];
                 else
