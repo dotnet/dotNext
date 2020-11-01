@@ -21,7 +21,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private readonly IClusterMemberLifetime? configurator;
         private readonly IDisposable configurationTracker;
         private readonly IHttpMessageHandlerFactory? httpHandlerFactory;
-        private readonly TimeSpan requestTimeout;
+        private readonly TimeSpan requestTimeout, raftRpcTimeout;
         private readonly bool openConnectionForEachRequest;
         private readonly string clientHandlerName;
         private readonly HttpVersion protocolVersion;
@@ -32,9 +32,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             : base(config, out members)
         {
             openConnectionForEachRequest = config.OpenConnectionForEachRequest;
-            allowedNetworks = config.AllowedNetworks;
+            allowedNetworks = config.AllowedNetworks.ToImmutableHashSet();
             metadata = new MemberMetadata(config.Metadata);
             requestTimeout = config.RequestTimeout;
+            raftRpcTimeout = config.RpcTimeout;
             duplicationDetector = new DuplicateRequestDetector(config.RequestJournal);
             clientHandlerName = config.ClientHandlerName;
             protocolVersion = config.ProtocolVersion;
@@ -82,7 +83,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private async void ConfigurationChanged(RaftClusterMemberConfiguration configuration, string name)
         {
             metadata = new MemberMetadata(configuration.Metadata);
-            allowedNetworks = configuration.AllowedNetworks;
+            allowedNetworks = configuration.AllowedNetworks.ToImmutableHashSet();
             await ChangeMembersAsync(members =>
             {
                 var existingMembers = new HashSet<Uri>();
@@ -134,6 +135,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         public override Task StartAsync(CancellationToken token)
         {
+            if (raftRpcTimeout > requestTimeout)
+                return Task.FromException(new RaftProtocolException(ExceptionMessages.InvalidRpcTimeout));
+
             // detect local member
             var localMember = FindMember(LocalMemberFinder) ?? throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
             this.localMember = localMember.Endpoint;

@@ -24,5 +24,7 @@ namespace DotNext
         internal static string UnavailableMember => (string)Resources.Get();
 
         internal static string LeaderIsUnavailable => (string)Resources.Get();
+
+        internal static string InvalidRpcTimeout => (string)Resources.Get();
     }
 }

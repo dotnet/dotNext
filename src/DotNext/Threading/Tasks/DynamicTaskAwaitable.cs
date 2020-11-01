@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -19,13 +20,14 @@ namespace DotNext.Threading.Tasks
     [StructLayout(LayoutKind.Auto)]
     public readonly struct DynamicTaskAwaitable
     {
-        private static readonly CallSite<Func<CallSite, Task, object>> GetResultCallSite = CallSite<Func<CallSite, Task, object>>.Create(new TaskResultBinder());
+        private static readonly CallSite<Func<CallSite, Task, object?>> GetResultCallSite = CallSite<Func<CallSite, Task, object?>>.Create(new TaskResultBinder());
 
         /// <summary>
         /// Provides an object that waits for the completion of an asynchronous task.
         /// </summary>
         [StructLayout(LayoutKind.Auto)]
-        public readonly struct Awaiter : IFuture
+        [RuntimeFeatures(DynamicCodeCompilation = true)]
+        public readonly struct Awaiter : IFuture, ICriticalNotifyCompletion
         {
             private readonly Task task;
             private readonly ConfiguredTaskAwaitable.ConfiguredTaskAwaiter awaiter;
@@ -47,36 +49,49 @@ namespace DotNext.Threading.Tasks
             /// <param name="continuation">The action to perform when the wait operation completes.</param>
             public void OnCompleted(Action continuation) => awaiter.OnCompleted(continuation);
 
+            /// <inheritdoc />
+            void ICriticalNotifyCompletion.UnsafeOnCompleted(Action continuation)
+                => awaiter.OnCompleted(continuation);
+
+            internal object? GetRawResult()
+                => task.GetType().IsConstructedGenericType ?
+                    GetResultCallSite.Target.Invoke(GetResultCallSite, task) :
+                    Missing.Value;
+
             /// <summary>
             /// Gets dynamically typed task result.
             /// </summary>
             /// <returns>The result of the completed task; or <see cref="System.Reflection.Missing.Value"/> if underlying task is not of type <see cref="Task{TResult}"/>.</returns>
-            public dynamic GetResult() => DynamicTaskAwaitable.GetResult(task);
+            public dynamic? GetResult()
+            {
+                if (task.GetType().IsConstructedGenericType)
+                    return GetResultCallSite.Target.Invoke(GetResultCallSite, task);
+
+                awaiter.GetResult();
+                return Missing.Value;
+            }
         }
 
         private readonly Task task;
-        private readonly bool continueOnCaptureContext;
+        private readonly bool continueOnCapturedContext;
 
-        internal DynamicTaskAwaitable(Task task, bool continueOnCaptureContext = true)
+        internal DynamicTaskAwaitable(Task task, bool continueOnCapturedContext = true)
         {
             this.task = task;
-            this.continueOnCaptureContext = continueOnCaptureContext;
+            this.continueOnCapturedContext = continueOnCapturedContext;
         }
 
         /// <summary>
         /// Configures an awaiter used to await this task.
         /// </summary>
-        /// <param name="continueOnCaptureContext"><see langword="true"/> to attempt to marshal the continuation back to the original context captured; otherwise, <see langword="false"/>.</param>
+        /// <param name="continueOnCapturedContext"><see langword="true"/> to attempt to marshal the continuation back to the original context captured; otherwise, <see langword="false"/>.</param>
         /// <returns>An object used to await this task.</returns>
-        public DynamicTaskAwaitable ConfigureAwait(bool continueOnCaptureContext) => new DynamicTaskAwaitable(task, continueOnCaptureContext);
+        public DynamicTaskAwaitable ConfigureAwait(bool continueOnCapturedContext) => new DynamicTaskAwaitable(task, continueOnCapturedContext);
 
         /// <summary>
         /// Gets an awaiter used to await this task.
         /// </summary>
         /// <returns>An awaiter instance.</returns>
-        public Awaiter GetAwaiter() => new Awaiter(task, continueOnCaptureContext);
-
-        [RuntimeFeatures(DynamicCodeCompilation = true)]
-        internal static object GetResult(Task task) => GetResultCallSite.Target.Invoke(GetResultCallSite, task);
+        public Awaiter GetAwaiter() => new Awaiter(task, continueOnCapturedContext);
     }
 }

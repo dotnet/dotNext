@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
-    using Threading;
     using IClientMetricsCollector = Metrics.IClientMetricsCollector;
     using Timestamp = Diagnostics.Timestamp;
 
@@ -19,36 +18,32 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
     {
         private readonly IClient client;
         private readonly PipeOptions pipeConfig;
+        private readonly TimeSpan requestTimeout;
 
         internal ExchangePeer(ILocalMember localMember, IPEndPoint address, Func<IPEndPoint, IClient> clientFactory, TimeSpan requestTimeout, PipeOptions pipeConfig, IClientMetricsCollector? metrics)
             : base(localMember, address, metrics)
         {
             client = clientFactory(address);
-            RequestTimeout = requestTimeout;
+            this.requestTimeout = requestTimeout;
             this.pipeConfig = pipeConfig;
         }
 
-        /// <summary>
-        /// Gets request timeout used for communication with this member.
-        /// </summary>
-        public TimeSpan RequestTimeout { get; }
-
-        public override void CancelPendingRequests() => client.CancelPendingRequests();
+        public override ValueTask CancelPendingRequestsAsync() => client.CancelPendingRequestsAsync();
 
         private async Task<TResult> SendAsync<TResult, TExchange>(TExchange exchange, CancellationToken token)
             where TExchange : class, IClientExchange<TResult>
         {
             ThrowIfDisposed();
             exchange.MyPort = (ushort)LocalPort;
-            var timeoutSource = new CancellationTokenSource(RequestTimeout);
-            var linkedSource = token.LinkTo(timeoutSource.Token);
+            var timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(token);
+            timeoutSource.CancelAfter(requestTimeout);
             var timeStamp = Timestamp.Current;
             try
             {
-                client.Enqueue(exchange, token);
+                client.Enqueue(exchange, timeoutSource.Token);
                 return await exchange.Task.ConfigureAwait(false);
             }
-            catch (Exception e) when (!(e is OperationCanceledException cancellation) || timeoutSource.IsCancellationRequested)
+            catch (Exception e) when (!(e is OperationCanceledException) || !token.IsCancellationRequested)
             {
                 Logger.MemberUnavailable(Endpoint, e);
                 ChangeStatus(ClusterMemberStatus.Unavailable);
@@ -57,7 +52,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             finally
             {
                 metrics?.ReportResponseTime(timeStamp.Elapsed);
-                linkedSource?.Dispose();
                 timeoutSource.Dispose();
                 if (exchange is IAsyncDisposable disposable)
                     await disposable.DisposeAsync().ConfigureAwait(false);

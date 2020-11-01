@@ -17,5 +17,16 @@ namespace DotNext.Reflection
             Equal(typeof(int), task.GetTaskType());
             Equal(typeof(Task<int>), typeof(int).MakeTaskType());
         }
+
+        [Fact]
+        public static void ReflectValueTaskType()
+        {
+            var task = typeof(ValueTask);
+            Equal(typeof(void), task.GetTaskType());
+            Equal(typeof(ValueTask), typeof(void).MakeTaskType(true));
+            task = typeof(ValueTask<int>);
+            Equal(typeof(int), task.GetTaskType());
+            Equal(typeof(ValueTask<int>), typeof(int).MakeTaskType(true));
+        } 
     }
 }

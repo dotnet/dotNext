@@ -16,7 +16,7 @@ namespace DotNext.Diagnostics
         private Timestamp(long ticks) => this.ticks = ticks;
 
         /// <summary>
-        /// Gets current point in time.
+        /// Gets the current point in time.
         /// </summary>
         public static Timestamp Current => new Timestamp(GetTimestamp());
 

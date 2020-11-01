@@ -2,6 +2,7 @@
 using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Order;
 using System;
+using System.Collections.Generic;
 
 namespace DotNext
 {
@@ -44,6 +45,10 @@ namespace DotNext
         public bool GuidEqualsMethod() => NonEmptyGuid.Equals(default);
 
         [Benchmark]
+        public bool GuidEqualsUsingDefaultEqualityComparer()
+            => EqualityComparer<Guid>.Default.Equals(NonEmptyGuid, default);
+
+        [Benchmark]
         public bool GuidBitwiseEqualsMethod()
             => BitwiseComparer<Guid>.Equals<Guid>(NonEmptyGuid, default);
 
@@ -59,6 +64,10 @@ namespace DotNext
 
         [Benchmark]
         public bool LargeStructEqualsMethod() => NonEmptyLargeStruct.Equals(default);
+
+        [Benchmark]
+        public bool LargeStructEqualsUsingDefaultEqualityComparer()
+            => EqualityComparer<LargeStruct>.Default.Equals(NonEmptyLargeStruct, default);
 
         [Benchmark]
         public bool LargeStructBitwiseEqualsMethod()

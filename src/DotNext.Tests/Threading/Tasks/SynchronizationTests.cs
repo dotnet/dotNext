@@ -64,6 +64,9 @@ namespace DotNext.Threading.Tasks
             task = Task.FromCanceled(new CancellationToken(true));
             result = task.GetResult(CancellationToken.None);
             IsType<AggregateException>(result.Error);
+            task = Task.FromException(new InvalidOperationException());
+            result = task.GetResult(TimeSpan.Zero);
+            IsType<AggregateException>(result.Error);
         }
     }
 }

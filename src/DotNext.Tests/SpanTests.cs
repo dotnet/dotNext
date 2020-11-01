@@ -223,5 +223,20 @@ namespace DotNext
             Equal("Hello, world!", new string(owner.Memory.Span));
             owner.Dispose();
         }
+
+        [Theory]
+        [InlineData(new int[] { 10, 20, 30 }, new int[] { 0, 0, 0 })]
+        [InlineData(new int[] { 10, 20, 30 }, new int[] { 0, 0 })]
+        [InlineData(new int[] { 10, 20, 30 }, new int[] { 0, 0, 0, 0 })]
+        public static void Copy(int[] source, int[] destination)
+        {
+            ReadOnlySpan<int> src = source;
+            Span<int> dst = destination;
+            src.CopyTo(dst, out var writtenCount);
+            Equal(Math.Min(src.Length, dst.Length), writtenCount);
+            
+            for (var i = 0; i < writtenCount; i++)
+                Equal(src[i], dst[i]);
+        }
     }
 }

@@ -44,49 +44,37 @@ Documentation for older versions:
 * [1.x](https://sakno.github.io/dotNext/versions/1.x/index.html)
 
 # What's new
-Release Date: 09-29-2020
+Release Date: 10-XX-2020
 
-<a href="https://www.nuget.org/packages/dotnext/2.10.1">DotNext 2.10.1</a>
-* Fixed correctness of `Clear(bool)` method overridden by `PooledArrayBufferWriter<T>` and `PooledBufferWriter<T>` classes
-* Added `RemoveLast` and `RemoveFirst` methods to `PooledArrayBufferWriter<T>` class
-* `Optional<T>` type distinguishes **null** and undefined value
-* [DotNext.Sequence](https://sakno.github.io/dotNext/api/DotNext.Sequence.html) class is now deprecated and replaced with [DotNext.Collections.Generic.Sequence](https://sakno.github.io/dotNext/api/DotNext.Collections.Generic.Sequence.html) class. It's binary compatible but source incompatible change
-* Added [new API](https://sakno.github.io/dotNext/api/DotNext.Resources.ResourceManagerExtensions.html) for writing resource string readers. It utilizes [Caller Info](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/attributes/caller-information) feature in C# to resolve resource entry name using accessor method or property
-* Introduced [BufferWriterSlim&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.BufferWriterSlim-1.html) type as lightweight and stackalloc-friendly version of [PooledBufferWriter&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.PooledBufferWriter-1.html) type
-* Introduced [SpanReader&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.SpanReader-1.html) and [SpanWriter&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.SpanWriter-1.html) types that can be used for sequential access to the elements in the memory span
-* Removed unused resource strings
+<a href="https://www.nuget.org/packages/dotnext/2.11.0">DotNext 2.11.0</a>
+* Added `Span<T>.CopyTo` and `ReadOnlySpan<T>.CopyTo` extension methods to support cases when the source span can be larger than the destination
+* Minor performance improvements
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.10.1">DotNext.Metaprogramming 2.10.1</a>
-* Added extension methods of [ExpressionBuilder](https://sakno.github.io/dotNext/api/DotNext.Linq.Expressions.ExpressionBuilder.html) class for constructing expressions of type [Optional&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Optional-1.html), [Result&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Result-1.html) or [Nullable&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.nullable-1)
-* Fixed bug with expression building using **dynamic** keyword
-* [UniversalExpression](https://sakno.github.io/dotNext/api/DotNext.Linq.Expressions.UniversalExpression.html) is superseded by _ExpressionBuilder.AsDynamic_ extension method
-* Removed unused resource strings
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.11.0">DotNext.Metaprogramming 2.11.0</a>
+* Overloaded `CodeGenerator.AsyncLambda` supports _Pascal_-style return (issue [13](https://github.com/sakno/dotNext/issues/13))
+* Fixed suppression of exceptions raised by generated async lambda (issue [14](https://github.com/sakno/dotNext/issues/14))
+* Fixed invalid behavior of async lambda body rewriter (issue [17](https://github.com/sakno/dotNext/issues/17))
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.reflection/2.10.1">DotNext.Reflection 2.10.1</a>
-* Removed unused resource strings
+<a href="https://www.nuget.org/packages/dotnext.reflection/2.11.0">DotNext.Reflection 2.11.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.threading/2.10.1">DotNext.Threading 2.10.1</a>
-* [AsyncExchanger&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncExchanger-1.html) class now has a method for fast synchronous exchange
-* [AsyncTimer](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncTimer.html) implements [IAsyncDisposable](https://docs.microsoft.com/en-us/dotnet/api/system.iasyncdisposable) for graceful shutdown
-* Removed unused resource strings
+<a href="https://www.nuget.org/packages/dotnext.threading/2.11.0">DotNext.Threading 2.11.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/2.10.1">DotNext.Unsafe 2.10.1</a>
-* [Pointer&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Runtime.InteropServices.Pointer-1.html) value type now implements [IPinnable](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ipinnable) interface
-* Added interop between [Pointer&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Runtime.InteropServices.Pointer-1.html) and [System.Reflection.Pointer](https://docs.microsoft.com/en-us/dotnet/api/system.reflection.pointer)
-* Removed unused resource strings
+<a href="https://www.nuget.org/packages/dotnext.unsafe/2.11.0">DotNext.Unsafe 2.11.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/2.10.1">DotNext.Net.Cluster 2.10.1</a>
-* Removed unused resource strings
-* Updated dependencies shipped with .NET Core 3.1.8
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/2.11.0">DotNext.Net.Cluster 2.11.0</a>
+* Added `requestTimeout` configuration property for TCP/UDP transports
+* Stabilized shutdown of Raft server for TCP/UDP transports
+* Added SSL support for TCP transport
+* Updated dependencies shipped with .NET Core 3.1.9
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/2.10.1">DotNext.AspNetCore.Cluster 2.10.1</a>
-* Removed unused resource strings
-* Updated dependencies shipped with .NET Core 3.1.8
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/2.11.0">DotNext.AspNetCore.Cluster 2.11.0</a>
+* Added `requestTimeout` and `rpcTimeout` configuration properties for precise control over timeouts used for communication between Raft nodes (issue [12](https://github.com/sakno/dotNext/issues/12))
+* Updated dependencies shipped with .NET Core 3.1.9
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 

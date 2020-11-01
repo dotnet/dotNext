@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
+using static System.Threading.Timeout;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
@@ -69,14 +70,32 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             message.PrepareRequest(request);
 
+            // setup additional timeout control token needed if actual timeout
+            // doesn't match to HttpClient.Timeout
+            CancellationTokenSource? timeoutControl;
+            CancellationToken tokenWithTimeout;
+            if (context.TryGetTimeout<TMessage>(out var timeout) && timeout != Timeout)
+            {
+                timeoutControl = CancellationTokenSource.CreateLinkedTokenSource(token);
+                timeoutControl.CancelAfter(timeout);
+                tokenWithTimeout = token;
+            }
+            else
+            {
+                timeoutControl = null;
+                tokenWithTimeout = token;
+            }
+
+            // do HTTP request and use token associated with custom timeout
             var response = default(HttpResponseMessage);
             var timeStamp = Timestamp.Current;
             try
             {
-                response = (await SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token)
-                    .ConfigureAwait(false)).EnsureSuccessStatusCode();
+                response = await SendAsync(request, HttpCompletionOption.ResponseHeadersRead, tokenWithTimeout)
+                    .ConfigureAwait(false);
+                response.EnsureSuccessStatusCode();
                 ChangeStatus(ClusterMemberStatus.Available);
-                return await message.ParseResponse(response, token).ConfigureAwait(false);
+                return await message.ParseResponse(response, tokenWithTimeout).ConfigureAwait(false);
             }
             catch (HttpRequestException e)
             {
@@ -97,9 +116,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
             finally
             {
+                timeoutControl?.Dispose();
                 Disposable.Dispose(response, response?.Content, request);
                 Metrics?.ReportResponseTime(timeStamp.Elapsed);
             }
+        }
+
+        ValueTask IRaftClusterMember.CancelPendingRequestsAsync()
+        {
+            CancelPendingRequests();
+            return new ValueTask();
         }
 
         Task<Result<bool>> IRaftClusterMember.VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)

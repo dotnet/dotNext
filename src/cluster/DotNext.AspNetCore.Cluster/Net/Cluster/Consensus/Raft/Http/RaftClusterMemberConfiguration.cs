@@ -13,6 +13,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         private string? handlerName;
         private TimeSpan? requestTimeout;
+        private TimeSpan? rpcTimeout;
 
         /// <summary>
         /// Gets collection of members.
@@ -46,7 +47,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         public TimeSpan RequestTimeout
         {
             get => requestTimeout ?? TimeSpan.FromMilliseconds(UpperElectionTimeout);
-            set => requestTimeout = value;
+            set => requestTimeout = value > TimeSpan.Zero ? value : throw new ArgumentOutOfRangeException(nameof(value));
+        }
+
+        /// <summary>
+        /// Gets or sets Raft RPC timeout.
+        /// </summary>
+        public TimeSpan RpcTimeout
+        {
+            get => rpcTimeout ?? TimeSpan.FromMilliseconds(UpperElectionTimeout / 2D);
+            set => rpcTimeout = value > TimeSpan.Zero ? value : throw new ArgumentOutOfRangeException(nameof(value));
         }
 
         internal void SetupHostAddressHint(IFeatureCollection features)

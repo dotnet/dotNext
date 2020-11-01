@@ -229,6 +229,8 @@ namespace DotNext.Runtime.CompilerServices
 
             // attach all available finalization code
             var prologue = context.CurrentStatement.PrologueCodeInserter();
+            expr = (AsyncResultExpression)base.VisitExtension(expr);
+
             foreach (var finalization in context.CreateJumpPrologue(AsyncMethodEnd.Goto(), this))
                 prologue(finalization);
             return expr;
@@ -393,6 +395,10 @@ namespace DotNext.Runtime.CompilerServices
                 throw new NotSupportedException(ExceptionMessages.VoidLoopExpected);
             }
         }
+
+        // do not rewrite the body of inner lambda expression
+        public override Expression Visit(Expression node)
+            => node is LambdaExpression ? node.ReduceExtensions() : base.Visit(node);
 
         protected override Expression VisitDynamic(DynamicExpression node)
             => context.Rewrite(node, base.VisitDynamic);
