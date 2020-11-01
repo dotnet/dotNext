@@ -31,8 +31,7 @@ namespace DotNext.Runtime.CompilerServices
             }
             else
             {
-                var supportedTasks = (typeof(Task<>), typeof(ValueTask<>));
-                var enumerator = supportedTasks.AsSpan().GetEnumerator();
+                var enumerator = (typeof(Task<>), typeof(ValueTask<>)).AsReadOnlySpan().GetEnumerator();
 
                 move_next:
                 var current = enumerator.Current;
