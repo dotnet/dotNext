@@ -60,10 +60,11 @@ namespace DotNext.Linq.Expressions
         private static MethodCallExpression WriteLineTo(MemberExpression stream, Expression value)
         {
             var writeLineMethod = typeof(TextWriter).GetMethod(nameof(TextWriter.WriteLine), new[] { value.Type });
+            if (writeLineMethod != null)
+                return Call(stream, writeLineMethod, value);
             if (value.Type.IsValueType)
                 value = Convert(value, typeof(object));
-            if (writeLineMethod is null)
-                writeLineMethod = typeof(TextWriter).GetMethod(nameof(TextWriter.WriteLine), new[] { typeof(object) });
+            writeLineMethod = typeof(TextWriter).GetMethod(nameof(TextWriter.WriteLine), new[] { typeof(object) });
             return Call(stream, writeLineMethod, value);
         }
 
