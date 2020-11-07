@@ -61,6 +61,9 @@ namespace DotNext.Linq.Expressions
         private static MethodCallExpression WriteLineTo(MemberExpression stream, Expression value)
         {
             MethodInfo? writeLineMethod = typeof(TextWriter).GetMethod(nameof(TextWriter.WriteLine), new[] { value.Type });
+
+            // WriteLine method will always be resolved here because Type.DefaultBinder
+            // chooses TextWriter.WriteLine(object) if there is not exact match
             System.Diagnostics.Debug.Assert(!(writeLineMethod is null));
             var firstParam = writeLineMethod.GetParameters()[0].ParameterType;
             if (firstParam != value.Type && value.Type.IsValueType)
