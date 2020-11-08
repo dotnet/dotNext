@@ -187,7 +187,7 @@ namespace DotNext.Reflection
             // handle parameters
             foreach (var parameter in method.GetParameters())
             {
-                Expression argument = Expression.ArrayIndex(arguments, Expression.Constant(parameter.Position));
+                Expression argument = Expression.ArrayAccess(arguments, Expression.Constant(parameter.Position));
                 if (parameter.ParameterType.IsByRefLike)
                 {
                     throw new NotSupportedException();
