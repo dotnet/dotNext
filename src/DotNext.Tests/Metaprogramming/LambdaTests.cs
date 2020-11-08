@@ -313,6 +313,36 @@ namespace DotNext.Metaprogramming
         }
 
         [Fact]
+        public static void RegressionIssue19CharType()
+        {
+            var lambda = Lambda<Action<string>>(fun =>
+            {
+                ForEach(fun[0], WriteLine);
+            }).Compile();
+            lambda("Hello");
+        }
+
+        [Fact]
+        public static void RegressionIssue19GuidType()
+        {
+            var lambda = Lambda<Action<Guid>>(fun =>
+            {
+                WriteLine(fun[0]);
+            }).Compile();
+            lambda(Guid.Empty);
+        }
+
+        [Fact]
+        public static void RegressionIssue19RefType()
+        {
+            var lambda = Lambda<Action<Type>>(fun =>
+            {
+                WriteLine(fun[0]);
+            }).Compile();
+            lambda(typeof(object));
+        }
+
+        [Fact]
         public static void WriteLineToError()
         {
             var lambda = Lambda<Action<string>>(fun =>

@@ -44,39 +44,15 @@ Documentation for older versions:
 * [1.x](https://sakno.github.io/dotNext/versions/1.x/index.html)
 
 # What's new
-Release Date: 11-01-2020
+Release Date: 11-08-2020
 
-<a href="https://www.nuget.org/packages/dotnext/2.11.0">DotNext 2.11.0</a>
-* Added `Span<T>.CopyTo` and `ReadOnlySpan<T>.CopyTo` extension methods to support cases when the source span can be larger than the destination
-* Added `Span.AsSpan` and `Span.AsReadOnlySpan` for value tuples
-* Deprecated [EnumerableTuple](https://sakno.github.io/dotNext/api/DotNext.EnumerableTuple-2.html) data type
-* Minor performance improvements
-* Updated dependencies
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.11.1">DotNext.Metaprogramming 2.11.1</a>
+* Fixed issue [19](https://github.com/sakno/dotNext/issues/19)
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.11.0">DotNext.Metaprogramming 2.11.0</a>
-* Overloaded `CodeGenerator.AsyncLambda` supports _Pascal_-style return (issue [13](https://github.com/sakno/dotNext/issues/13))
-* Fixed suppression of exceptions raised by generated async lambda (issue [14](https://github.com/sakno/dotNext/issues/14))
-* Fixed invalid behavior of async lambda body rewriter (issue [17](https://github.com/sakno/dotNext/issues/17))
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.reflection/2.11.0">DotNext.Reflection 2.11.0</a>
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.threading/2.11.0">DotNext.Threading 2.11.0</a>
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.unsafe/2.11.0">DotNext.Unsafe 2.11.0</a>
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/2.11.0">DotNext.Net.Cluster 2.11.0</a>
-* Added `requestTimeout` configuration property for TCP/UDP transports
-* Stabilized shutdown of Raft server for TCP/UDP transports
-* Added SSL support for TCP transport
-* Updated dependencies shipped with .NET Core 3.1.9
-
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/2.11.0">DotNext.AspNetCore.Cluster 2.11.0</a>
-* Added `requestTimeout` and `rpcTimeout` configuration properties for precise control over timeouts used for communication between Raft nodes (issue [12](https://github.com/sakno/dotNext/issues/12))
-* Updated dependencies shipped with .NET Core 3.1.9
+<a href="https://www.nuget.org/packages/dotnext.reflection/2.11.1">DotNext.Reflection 2.11.1</a>
+* `Reflector.Unreflect` now can correctly represents **void** method or property setter as [DynamicInvoker](https://sakno.github.io/dotNext/api/DotNext.Reflection.DynamicInvoker.html) delegate
+* Unreflected members via [DynamicInvoker](https://sakno.github.io/dotNext/api/DotNext.Reflection.DynamicInvoker.html) delegate correctly handles boxed value types
+* Improved performance of [DynamicInvoker](https://sakno.github.io/dotNext/api/DotNext.Reflection.DynamicInvoker.html) for by-ref argument of value type
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
