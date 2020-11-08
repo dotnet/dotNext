@@ -56,7 +56,7 @@ namespace DotNext.Reflection
             {
                 if (actualParameter.IsByRef)
                 {
-                    // T local = args.param is null ? default(T) : (T)args;
+                    // T local = args.param is null ? default(T) : (T)args.param;
                     // ...call(ref local)
                     // args.param = (object)local;
                     localVar = Expression.Variable(actualParameter.GetElementType());
