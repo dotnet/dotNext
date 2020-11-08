@@ -13,28 +13,20 @@ namespace DotNext.Reflection
         private static void Reflect(ParameterExpression argListParameter, out Type[] parameters, out Expression[] arglist)
         {
             var publicFields = argListParameter.Type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
-            if (publicFields.LongLength == 0L)
+            parameters = new Type[publicFields.LongLength];
+            arglist = new Expression[publicFields.LongLength];
+            for (var i = 0L; i < publicFields.LongLength; i++)
             {
-                arglist = new[] { argListParameter };
-                parameters = new[] { argListParameter.Type };
-            }
-            else
-            {
-                parameters = new Type[publicFields.LongLength];
-                arglist = new Expression[publicFields.LongLength];
-                for (var i = 0L; i < publicFields.LongLength; i++)
+                var field = publicFields[i];
+                if (Ref.Reflect(field.FieldType, out var underlyingType, out var valueField))
                 {
-                    var field = publicFields[i];
-                    if (Ref.Reflect(field.FieldType, out var underlyingType, out var valueField))
-                    {
-                        parameters[i] = underlyingType.MakeByRefType();
-                        arglist[i] = Expression.Field(Expression.Field(argListParameter, field), valueField);
-                    }
-                    else
-                    {
-                        parameters[i] = field.FieldType;
-                        arglist[i] = Expression.Field(argListParameter, field);
-                    }
+                    parameters[i] = underlyingType.MakeByRefType();
+                    arglist[i] = Expression.Field(Expression.Field(argListParameter, field), valueField);
+                }
+                else
+                {
+                    parameters[i] = field.FieldType;
+                    arglist[i] = Expression.Field(argListParameter, field);
                 }
             }
         }

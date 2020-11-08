@@ -24,10 +24,10 @@ namespace DotNext.Reflection
         [Fact]
         public static void MutableInstanceMethodCall()
         {
-            Procedure<object, int> setter = typeof(Point).GetProperty("X").SetMethod.Unreflect<Procedure<object, int>>();
+            Procedure<object, ValueTuple<int>> setter = typeof(Point).GetProperty("X").SetMethod.Unreflect<Procedure<object, ValueTuple<int>>>();
             NotNull(setter);
             object point = new Point();
-            setter(point, 42);
+            setter.Invoke(point, 42);
             Equal(42, Unbox<Point>(point).X);
         }
 
