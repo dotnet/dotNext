@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.Reflection;
 using Xunit;
+using static System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Reflection
 {
@@ -14,6 +16,11 @@ namespace DotNext.Reflection
             public string ObjectField;
             public unsafe byte* TypedPointerField;
             public unsafe void* UntypedPointerField;
+        }
+
+        private struct MyType
+        {
+            public int X, Y;
         }
 
         [Fact]
@@ -137,6 +144,24 @@ namespace DotNext.Reflection
         {
             var ctor = typeof(string).GetConstructor(new[] { typeof(char), typeof(int) }).Unreflect();
             Equal("aaa", ctor(null, 'a', 3));
+        }
+
+        [Fact]
+        public static void ModifyPropertyByRef()
+        {
+            object point = new Point();
+            var setter = point.GetType().GetProperty(nameof(Point.X)).SetMethod.Unreflect();
+            setter(point, 42);
+            Equal(42, Unbox<Point>(point).X);
+        }
+
+        [Fact]
+        public static void ModifyFieldByRef()
+        {
+            object value = new MyType();
+            var setter = value.GetType().GetField(nameof(MyType.X)).Unreflect(BindingFlags.SetField);
+            setter(value, 42);
+            Equal(42, Unbox<MyType>(value).X);
         }
     }
 }
