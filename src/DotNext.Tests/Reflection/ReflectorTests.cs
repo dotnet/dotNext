@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using Xunit;
 using static System.Runtime.CompilerServices.Unsafe;
 
@@ -113,6 +114,15 @@ namespace DotNext.Reflection
             field = 56;
             Equal(instanceField, field);
             True(AreSame(ref field, ref instanceField));
+        }
+
+        [Fact]
+        public static void ModifyPropertyViaDynamicInvoker()
+        {
+            object point = new Point();
+            var setter = point.GetType().GetProperty(nameof(Point.X)).SetMethod.Unreflect();
+            setter(point, 42);
+            Equal(42, Unbox<Point>(point).X);
         }
     }
 }

@@ -83,7 +83,17 @@ namespace DotNext.Reflection
             where T : notnull => Field<T, TValue>.GetOrCreate(field);
 
         private static MemberExpression BuildFieldAccess(FieldInfo field, ParameterExpression target)
-            => field.IsStatic ? Expression.Field(null, field) : Expression.Field(Expression.Convert(target, field.DeclaringType), field);
+        {
+            Expression? owner;
+            if (field.IsStatic)
+                owner = null;
+            else if (field.DeclaringType.IsValueType)
+                owner = Expression.Unbox(target, field.DeclaringType);
+            else
+                owner = Expression.Convert(target, field.DeclaringType);
+
+            return Expression.Field(owner, field);
+        }
 
         private static Expression BuildGetter(MemberExpression field)
         {
@@ -163,7 +173,14 @@ namespace DotNext.Reflection
         {
             var target = Expression.Parameter(typeof(object));
             var arguments = Expression.Parameter(typeof(object[]));
-            var thisArg = method.IsStatic || method.MemberType == MemberTypes.Constructor ? null : Expression.Convert(target, method.DeclaringType);
+            Expression? thisArg;
+            if (method.IsStatic || method.MemberType == MemberTypes.Constructor)
+                thisArg = null;
+            else if (method.DeclaringType.IsValueType)
+                thisArg = Expression.Unbox(target, method.DeclaringType);
+            else
+                thisArg = Expression.Convert(target, method.DeclaringType);
+
             ICollection<Expression> arglist = new LinkedList<Expression>(), prologue = new LinkedList<Expression>(), epilogue = new LinkedList<Expression>();
             ICollection<ParameterExpression> tempVars = new LinkedList<ParameterExpression>();
 
@@ -207,14 +224,23 @@ namespace DotNext.Reflection
                 throw new NotSupportedException();
             else if (result.Type == typeof(void))
                 epilogue.Add(Expression.Default(typeof(object)));
-            if (result.Type.IsPointer)
+            else if (result.Type.IsPointer)
                 result = Wrap(result);
             else if (result.Type.IsValueType)
                 result = Expression.Convert(result, typeof(object));
 
             // construct lambda expression
             bool useTailCall;
-            if (epilogue.Count > 0)
+            if (epilogue.Count == 0)
+            {
+                useTailCall = true;
+            }
+            else if (result.Type == typeof(void))
+            {
+                result = Expression.Block(typeof(object), tempVars, prologue.Append(result).Concat(epilogue));
+                useTailCall = false;
+            }
+            else
             {
                 var resultVar = Expression.Variable(typeof(object));
                 tempVars.Add(resultVar);
@@ -222,10 +248,6 @@ namespace DotNext.Reflection
                 epilogue.Add(resultVar);
                 result = Expression.Block(typeof(object), tempVars, prologue.Append(result).Concat(epilogue));
                 useTailCall = false;
-            }
-            else
-            {
-                useTailCall = true;
             }
 
             // help GC
