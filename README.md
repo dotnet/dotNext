@@ -52,6 +52,7 @@ Release Date: 11-08-2020
 <a href="https://www.nuget.org/packages/dotnext.reflection/2.11.1">DotNext.Reflection 2.11.1</a>
 * `Reflector.Unreflect` now can correctly represents **void** method or property setter as [DynamicInvoker](https://sakno.github.io/dotNext/api/DotNext.Reflection.DynamicInvoker.html) delegate
 * Unreflected members via [DynamicInvoker](https://sakno.github.io/dotNext/api/DotNext.Reflection.DynamicInvoker.html) delegate correctly handles boxed value types
+* Improved performance of [DynamicInvoker](https://sakno.github.io/dotNext/api/DotNext.Reflection.DynamicInvoker.html) for by-ref argument of value type
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
