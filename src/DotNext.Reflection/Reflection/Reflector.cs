@@ -187,7 +187,7 @@ namespace DotNext.Reflection
             // handle parameters
             foreach (var parameter in method.GetParameters())
             {
-                Expression argument = Expression.ArrayAccess(arguments, Expression.Constant(parameter.Position));
+                Expression argument = Expression.ArrayIndex(arguments, Expression.Constant(parameter.Position));
                 if (parameter.ParameterType.IsByRefLike)
                 {
                     throw new NotSupportedException();
@@ -195,16 +195,25 @@ namespace DotNext.Reflection
                 else if (parameter.ParameterType.IsByRef)
                 {
                     var parameterType = parameter.ParameterType.GetElementType();
-                    var tempVar = Expression.Variable(parameterType);
-                    tempVars.Add(tempVar);
-                    prologue.Add(Expression.Assign(tempVar, parameterType.IsPointer ? Unwrap(argument, parameterType.GetElementType()) : Expression.Convert(argument, parameterType)));
-                    if (parameterType.IsPointer)
-                        epilogue.Add(Expression.Assign(argument, Wrap(tempVar)));
-                    else if (parameterType.IsValueType)
-                        epilogue.Add(Expression.Assign(argument, Expression.Convert(tempVar, typeof(object))));
+
+                    // value type parameter can be passed as unboxed reference
+                    if (parameterType.IsValueType)
+                    {
+                        argument = Expression.Unbox(argument, parameterType);
+                    }
                     else
-                        epilogue.Add(Expression.Assign(argument, tempVar));
-                    argument = tempVar;
+                    {
+                        var tempVar = Expression.Variable(parameterType);
+                        tempVars.Add(tempVar);
+                        prologue.Add(Expression.Assign(tempVar, parameterType.IsPointer ? Unwrap(argument, parameterType.GetElementType()) : Expression.Convert(argument, parameterType)));
+                        if (parameterType.IsPointer)
+                            epilogue.Add(Expression.Assign(argument, Wrap(tempVar)));
+                        else if (parameterType.IsValueType)
+                            epilogue.Add(Expression.Assign(argument, Expression.Convert(tempVar, typeof(object))));
+                        else
+                            epilogue.Add(Expression.Assign(argument, tempVar));
+                        argument = tempVar;
+                    }
                 }
                 else if (parameter.ParameterType.IsPointer)
                 {
