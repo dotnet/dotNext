@@ -488,7 +488,9 @@ namespace DotNext.Reflection
             else if (method.DeclaringType.IsAssignableFromWithoutBoxing(thisParam.Type))
                 thisArg = thisParam;
             else if (thisParam.Type == typeof(object))
-                thisArg = Expression.Convert(thisParam, method.DeclaringType);
+                thisArg = method.DeclaringType.IsValueType ?
+                    Expression.Unbox(thisParam, method.DeclaringType) :
+                    Expression.Convert(thisParam, method.DeclaringType);
             else
                 return null;
 

@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using Xunit;
 using static System.Runtime.CompilerServices.Unsafe;
 
@@ -18,6 +19,16 @@ namespace DotNext.Reflection
             Function<(char, int), string> reflected2 = ctor.Unreflect<Function<(char, int), string>>();
             NotNull(reflected2);
             Equal("ccc", reflected2(('c', 3)));
+        }
+
+        [Fact]
+        public static void MutableInstanceMethodCall()
+        {
+            Procedure<object, int> setter = typeof(Point).GetProperty("X").SetMethod.Unreflect<Procedure<object, int>>();
+            NotNull(setter);
+            object point = new Point();
+            setter(point, 42);
+            Equal(42, Unbox<Point>(point).X);
         }
 
         [Fact]
