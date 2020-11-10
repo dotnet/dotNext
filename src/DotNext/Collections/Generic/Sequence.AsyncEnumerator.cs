@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -54,5 +55,24 @@ namespace DotNext.Collections.Generic
             public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken token)
                 => new Enumerator(enumerable, token);
         }
+
+        /// <summary>
+        /// Converts synchronous collection of elements to asynchronous.
+        /// </summary>
+        /// <param name="enumerable">The collection of elements.</param>
+        /// <typeparam name="T">The type of the elements in the collection.</typeparam>
+        /// <returns>The asynchronous wrapper over synchronous collection of elements.</returns>
+        public static IAsyncEnumerable<T> ToAsyncEnumerable<T>(this IEnumerable<T> enumerable)
+            => new AsyncEnumerable<T>(enumerable ?? throw new ArgumentNullException(nameof(enumerable)));
+
+        /// <summary>
+        /// Obtains asynchronous enumerator over the sequence of elements.
+        /// </summary>
+        /// <param name="enumerable">The collection of elements.</param>
+        /// <param name="token">The token that can be used by consumer to cancel the enumeration.</param>
+        /// <typeparam name="T">The type of the elements in the collection.</typeparam>
+        /// <returns>The asynchronous wrapper over synchronous enumerator.</returns>
+        public static IAsyncEnumerator<T> GetAsyncEnumerator<T>(this IEnumerable<T> enumerable, CancellationToken token = default)
+            => new AsyncEnumerable<T>.Enumerator(enumerable ?? throw new ArgumentNullException(nameof(enumerable)), token);
     }
 }
