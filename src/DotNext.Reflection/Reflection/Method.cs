@@ -484,18 +484,26 @@ namespace DotNext.Reflection
             // adjust THIS
             Expression? thisArg;
             if (thisParam is null || method.DeclaringType is null)
+            {
                 thisArg = null;
+            }
             else if (method.DeclaringType.IsAssignableFromWithoutBoxing(thisParam.Type))
+            {
                 thisArg = thisParam;
+            }
             else if (thisParam.Type == typeof(object))
+            {
                 thisArg = method.DeclaringType.IsValueType ?
                     Expression.Unbox(thisParam, method.DeclaringType) :
                     Expression.Convert(thisParam, method.DeclaringType);
+            }
             else
+            {
                 return null;
+            }
 
             // adjust arguments
-            if (!Signature.NormalizeArguments(method.GetParameterTypes(), arglist, locals, prologue, epilogue))
+            if (!Signature.NormalizeArguments(method.GetParameters(), arglist, locals, prologue, epilogue))
                 return null;
             Expression body;
 

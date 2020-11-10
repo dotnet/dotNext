@@ -324,7 +324,7 @@ namespace DotNext.Reflection
             var locals = new LinkedList<ParameterExpression>();
 
             // adjust arguments
-            if (!Signature.NormalizeArguments(ctor.GetParameterTypes(), arglist, locals, prologue, epilogue))
+            if (!Signature.NormalizeArguments(ctor.GetParameters(), arglist, locals, prologue, epilogue))
                 return null;
             Expression body;
 
