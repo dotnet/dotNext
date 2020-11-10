@@ -510,7 +510,6 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>Reinterpreted pointer type.</returns>
         /// <exception cref="GenericArgumentException{U}">Type <typeparamref name="TOther"/> should be the same size or less than type <typeparamref name="T"/>.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [SuppressMessage("Usage", "CA2208", Justification = "The name of the generic parameter is correct")]
         public unsafe Pointer<TOther> As<TOther>()
             where TOther : unmanaged
             => sizeof(T) >= sizeof(TOther) ? new Pointer<TOther>(Address) : throw new GenericArgumentException<TOther>(ExceptionMessages.WrongTargetTypeSize, nameof(TOther));

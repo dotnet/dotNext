@@ -42,7 +42,6 @@ namespace DotNext.Threading.Tasks
         /// </summary>
         /// <param name="task">The task to await.</param>
         /// <returns><paramref name="task"/> in final state.</returns>
-        [SuppressMessage("Design", "CA1068", Justification = "Signature is similar to ContinueWith method")]
         public static Task<Task> OnCompleted(this Task task)
             => task.ContinueWith(Func.Identity<Task>(), DefaultOf<CancellationToken>(), TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
 
@@ -53,7 +52,6 @@ namespace DotNext.Threading.Tasks
         /// <typeparam name="TResult">The type of the task result.</typeparam>
         /// <param name="task">The task to await.</param>
         /// <returns><paramref name="task"/> in final state.</returns>
-        [SuppressMessage("Design", "CA1068", Justification = "Signature is similar to ContinueWith method")]
         public static Task<Task<TResult>> OnCompleted<TResult>(this Task<TResult> task)
             => task.ContinueWith(Func.Identity<Task<TResult>>(), DefaultOf<CancellationToken>(), TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
 
@@ -69,7 +67,6 @@ namespace DotNext.Threading.Tasks
         /// <typeparam name="T">The type of task result.</typeparam>
         /// <typeparam name="TConstant">The type describing constant value.</typeparam>
         /// <returns>The task representing continuation.</returns>
-        [SuppressMessage("Design", "CA1068", Justification = "Signature is similar to ContinueWith method")]
         public static Task<T> OnFaulted<T, TConstant>(this Task<T> task, TaskScheduler? scheduler = null)
             where TConstant : Constant<T>, new()
             => ContinueWithConstant<T, TConstant>(task, task.IsFaulted, Continuation<T, TConstant>.WhenFaulted, DefaultOf<CancellationToken>(), scheduler);
@@ -86,7 +83,6 @@ namespace DotNext.Threading.Tasks
         /// <typeparam name="T">The type of task result.</typeparam>
         /// <typeparam name="TConstant">The type describing constant value.</typeparam>
         /// <returns>The task representing continuation.</returns>
-        [SuppressMessage("Design", "CA1068", Justification = "Signature is similar to ContinueWith method")]
         public static Task<T> OnFaultedOrCanceled<T, TConstant>(this Task<T> task, TaskScheduler? scheduler = null)
             where TConstant : Constant<T>, new()
             => ContinueWithConstant<T, TConstant>(task, task.IsFaulted | task.IsCanceled, Continuation<T, TConstant>.WhenFaultedOrCanceled, DefaultOf<CancellationToken>(), scheduler);

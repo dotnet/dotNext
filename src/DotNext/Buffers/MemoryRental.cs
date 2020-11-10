@@ -135,7 +135,6 @@ namespace DotNext.Buffers
         /// </summary>
         /// <param name="span">The allocated memory to convert.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [SuppressMessage("Usage", "CA2225", Justification = "Accessible via constructor")]
         public static implicit operator MemoryRental<T>(Span<T> span)
             => new MemoryRental<T>(span);
 

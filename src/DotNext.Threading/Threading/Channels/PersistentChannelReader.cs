@@ -27,10 +27,8 @@ namespace DotNext.Threading.Channels
         private sealed class SingleReaderBuffer : IReadBuffer
         {
             private AtomicBoolean readyToRead;
-#pragma warning disable CS8618
             [AllowNull]
             private T value;
-#pragma warning restore CS8618
 
             void IReadBuffer.Add(T item)
             {
