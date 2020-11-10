@@ -7,10 +7,10 @@ namespace DotNext.Runtime.CompilerServices
 {
     internal static class PointerHelpers
     {
-        internal static unsafe object Wrap<T>(T* ptr)
+        public static unsafe object Wrap<T>(T* ptr)
             where T : unmanaged => Pointer.Box(ptr, typeof(T*));
 
-        internal static unsafe T* Unwrap<T>(object ptr)
+        public static unsafe T* Unwrap<T>(object ptr)
             where T : unmanaged => (T*)Pointer.Unbox(ptr);
 
         internal static Expression Wrap(Expression expression)
