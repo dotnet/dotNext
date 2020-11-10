@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -326,6 +327,35 @@ namespace DotNext.Collections.Generic
                 list.Add(item);
 
             Empty(list);
+        }
+
+        [Fact]
+        public static void EmptyConsumingEnumerable()
+        {
+            var enumerable = new Sequence.ConsumingEnumerable<int>();
+            Empty(enumerable);
+        }
+
+        [Fact]
+        public static void ConsumeQueue()
+        {
+            var queue = new ConcurrentQueue<int>();
+            queue.Enqueue(42);
+            queue.Enqueue(52);
+
+            var consumer = queue.GetConsumer();
+            Collection(consumer, i => Equal(42, i), i => Equal(52, i));
+        }
+
+        [Fact]
+        public static void ConsumeStack()
+        {
+            var queue = new ConcurrentStack<int>();
+            queue.Push(42);
+            queue.Push(52);
+
+            var consumer = queue.GetConsumer();
+            Collection(consumer, i => Equal(52, i), i => Equal(42, i));
         }
     }
 }
