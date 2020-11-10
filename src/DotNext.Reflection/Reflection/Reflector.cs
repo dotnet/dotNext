@@ -208,8 +208,6 @@ namespace DotNext.Reflection
                         prologue.Add(Expression.Assign(tempVar, parameterType.IsPointer ? Unwrap(argument, parameterType.GetElementType()) : Expression.Convert(argument, parameterType)));
                         if (parameterType.IsPointer)
                             epilogue.Add(Expression.Assign(argument, Wrap(tempVar)));
-                        else if (parameterType.IsValueType)
-                            epilogue.Add(Expression.Assign(argument, Expression.Convert(tempVar, typeof(object))));
                         else
                             epilogue.Add(Expression.Assign(argument, tempVar));
                         argument = tempVar;
