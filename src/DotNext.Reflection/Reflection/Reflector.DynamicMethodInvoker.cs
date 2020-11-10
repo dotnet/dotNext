@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 namespace DotNext.Reflection
 {
     using static Collections.Generic.Sequence;
-    using static Runtime.CompilerServices.PointerHelpers;
+    using static Runtime.CompilerServices.ReflectionUtils;
 
     public partial class Reflector
     {
@@ -49,7 +49,7 @@ namespace DotNext.Reflection
                     {
                         var tempVar = Expression.Variable(parameterType);
                         tempVars.Add(tempVar);
-                        prologue.Add(Expression.Assign(tempVar, parameterType.IsPointer ? Unwrap(argument, parameterType.GetElementType()) : Expression.Convert(argument, parameterType)));
+                        prologue.Add(Expression.Assign(tempVar, parameterType.IsPointer ? Unwrap(argument, parameterType) : Expression.Convert(argument, parameterType)));
                         if (parameterType.IsPointer)
                             epilogue.Add(Expression.Assign(argument, Wrap(tempVar)));
                         else

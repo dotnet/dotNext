@@ -93,14 +93,32 @@ namespace DotNext.Reflection
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="flags"/> is invalid.</exception>
         /// <exception cref="NotSupportedException">The type of <paramref name="field"/> is ref-like value type.</exception>
         public static DynamicInvoker Unreflect(this FieldInfo field, BindingFlags flags = BindingFlags.GetField | BindingFlags.SetField)
+            => Unreflect(field, false, flags);  // TODO: Must be merged into single method with optional volatileAccess parameter
+
+        /// <summary>
+        /// Creates dynamic invoker for the field.
+        /// </summary>
+        /// <remarks>
+        /// This method doesn't cache the result so the caller is responsible for storing delegate to the field or cache.
+        /// <paramref name="flags"/> supports the following combination of values: <see cref="BindingFlags.GetField"/>, <see cref="BindingFlags.SetField"/> or
+        /// both.
+        /// </remarks>
+        /// <param name="field">The field to unreflect.</param>
+        /// <param name="volatileAccess"><see langword="true"/> to generate volatile access to the field.</param>
+        /// <param name="flags">Describes the access to the field using invoker.</param>
+        /// <returns>The delegate that can be used to access field value.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="flags"/> is invalid.</exception>
+        /// <exception cref="NotSupportedException">The type of <paramref name="field"/> is ref-like value type.</exception>
+        public static DynamicInvoker Unreflect(this FieldInfo field, bool volatileAccess, BindingFlags flags = BindingFlags.GetField | BindingFlags.SetField)
         {
             if (field.FieldType.IsByRefLike)
                 throw new NotSupportedException();
+
             return flags switch
             {
-                BindingFlags.GetField => BuildFieldGetter(field),
-                BindingFlags.SetField => BuildFieldSetter(field),
-                BindingFlags.GetField | BindingFlags.SetField => BuildFieldAccess(field),
+                BindingFlags.GetField => BuildFieldGetter(field, volatileAccess),
+                BindingFlags.SetField => BuildFieldSetter(field, volatileAccess),
+                BindingFlags.GetField | BindingFlags.SetField => BuildFieldAccess(field, volatileAccess),
                 _ => throw new ArgumentOutOfRangeException(nameof(flags))
             };
         }

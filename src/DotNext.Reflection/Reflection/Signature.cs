@@ -60,7 +60,8 @@ namespace DotNext.Reflection
             {
                 localVar = Expression.Variable(expectedArgument.Type);
                 var assignment = Expression.Assign(localVar, expectedArgument);
-                var condition = Expression.IfThen(Expression.ReferenceEqual(localVar, Expression.Constant(null, expectedArgument.Type)),
+                var condition = Expression.IfThen(
+                    Expression.ReferenceEqual(localVar, Expression.Constant(null, expectedArgument.Type)),
                     Expression.Assign(localVar, Expression.Convert(Expression.Default(elementType), expectedArgument.Type)));
                 prologue = Expression.Block(assignment, condition);
                 epilogue = Expression.Assign(expectedArgument, localVar);
