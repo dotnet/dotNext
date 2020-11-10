@@ -91,12 +91,12 @@ The next series of benchmarks demonstrate performance of strongly typed reflecti
 
 | Method | Mean | Error | StdDev |
 | ---- | ---- | ---- | ---- |
-| Direct call |  12.17 ns | 0.045 ns | 0.042 ns |
-| Reflection with DotNext using delegate type `MemberGetter<IndexOfCalculator, int>` | 13.90 ns | 0.261 ns | 0.231 ns |
-| Reflection with DotNext using `DynamicInvoker` | 22.14 ns | 0.442 ns | 0.648 ns |
-| Reflection with DotNext using delegate type `Function<object, ValueTuple, object>` | 22.00 ns | 0.432 ns | 0.592 ns |
-| `ObjectAccess` class from _FastMember_ library | 52.58 ns | 0.073 ns | 0.065 ns |
-| .NET reflection | 161.02 ns | 0.736 ns | 0.689 ns |
+| Direct call | 11.04 ns | 0.056 ns | 0.049 ns |
+| Reflection with DotNext using delegate type `MemberGetter<IndexOfCalculator, int>` | 12.74 ns | 0.150 ns | 0.133 ns |
+| Reflection with DotNext using `DynamicInvoker` | 21.35 ns | 0.083 ns | 0.073 ns |
+| Reflection with DotNext using delegate type `Function<object, ValueTuple, object>` | 22.47 ns | 0.067 ns | 0.060 ns |
+| `ObjectAccess` class from _FastMember_ library | 44.78 ns | 0.116 ns | 0.109 ns |
+| .NET reflection | 169.14 ns | 0.466 ns | 0.413 ns |
 
 Strongly typed reflection provided by DotNext Reflection library has the same performance as direct call.
 
@@ -138,11 +138,11 @@ DotNext Reflection library offers the best result in case when delegate type exa
 
 | Method | Mean | Error | StdDev | Median |
 | ---- | ---- | ---- | ---- | ---- |
-| Direct call | 133.9 ns | 0.71 ns | 0.66 ns | 133.8 ns |
-| Reflection with DotNext using delegate type `TryParseDelegate` | 138.1 ns | 1.21 ns | 1.07 ns | 137.7 ns |
-| Reflection with DotNext using delegate type `Function<(string text, decimal result), bool>` | 153.1 ns | 3.04 ns | 4.92 ns | 153.9 ns |
-| Reflection with DotNext using delegate type `Function<(object text, object result), object>` | 163.6 ns | 0.39 ns |  0.35 ns | 163.7 ns |
-| .NET reflection | 586.3 ns | 11.59 ns | 32.50 ns | 573.6 ns |
+| Direct call | 127.5 ns | 0.74 ns | 0.65 ns | 127.2 ns |
+| Reflection with DotNext using delegate type `TryParseDelegate` | 127.4 ns | 0.41 ns | 0.36 ns | 127.1 ns |
+| Reflection with DotNext using delegate type `Function<(string text, decimal result), bool>` | 142.3 ns | 0.50 ns | 0.42 ns | 142.9 ns |
+| Reflection with DotNext using delegate type `Function<(object text, object result), object>` | 154.8 ns | 2.70 ns | 2.40 ns | 155.1 ns |
+| .NET reflection | 516.0 ns | 4.61 ns | 4.09 ns | 514.13 ns |
 
 Strongly typed reflection provided by DotNext Reflection library has the same performance as direct call.
 
