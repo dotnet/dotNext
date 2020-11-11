@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.Tracing;
 using System.IO;
 using System.Threading;
 using System.Threading.Channels;
@@ -22,6 +23,7 @@ namespace DotNext.Threading.Channels
         private readonly IAsyncEvent readTrigger;
         private readonly int bufferSize;
         private readonly DirectoryInfo location;
+        private readonly IncrementingEventCounter? writeRate;
 
         /// <summary>
         /// Initializes a new persistent channel with the specified options.
@@ -35,10 +37,11 @@ namespace DotNext.Threading.Channels
             if (!location.Exists)
                 location.Create();
             var writer = new PersistentChannelWriter<TInput>(this, options.SingleWriter, options.InitialPartitionSize);
-            var reader = new PersistentChannelReader<TOutput>(this, options.SingleReader);
+            var reader = new PersistentChannelReader<TOutput>(this, options.SingleReader, options.ReadRateCounter);
             Reader = reader;
             Writer = writer;
             readTrigger = new AsyncCounter(writer.Position - reader.Position);
+            writeRate = options.WriteRateCounter;
         }
 
         /// <summary>
@@ -59,13 +62,17 @@ namespace DotNext.Threading.Channels
         /// <value>The number of unread messages.</value>
         public long RemainingCount => ((Writer as IChannelInfo)?.Position ?? 0L) - ((Reader as IChannelInfo)?.Position ?? 0L);
 
-        long IChannelReader<TOutput>.WrittenCount => ((Writer as IChannelInfo)?.Position ?? 0L);
+        long IChannelReader<TOutput>.WrittenCount => (Writer as IChannelInfo)?.Position ?? 0L;
 
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's member of internal interface")]
         DirectoryInfo IChannel.Location => location;
 
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's member of internal interface")]
-        void IChannelWriter<TInput>.MessageReady() => readTrigger.Signal();
+        void IChannelWriter<TInput>.MessageReady()
+        {
+            readTrigger.Signal();
+            writeRate?.Increment();
+        }
 
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's member of internal interface")]
         ValueTask IChannelWriter<TInput>.SerializeAsync(TInput input, PartitionStream output, CancellationToken token)
