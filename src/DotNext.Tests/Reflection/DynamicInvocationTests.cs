@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Reflection;
 using Xunit;
+using static System.Globalization.CultureInfo;
 using static System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Reflection
@@ -181,6 +182,14 @@ namespace DotNext.Reflection
         {
             var getTypedPointer = GetType().GetMethod(nameof(GetTypedPointer)).Unreflect();
             True(((int*)42) == Pointer.Unbox(getTypedPointer(null)));
+        }
+
+        [Fact]
+        public static void UnreflectInterfaceMethod()
+        {
+            var toStringMethod = typeof(IFormattable).GetMethod("ToString").Unreflect();
+            object i = 42;
+            Equal("42", toStringMethod(i, null, InvariantCulture));
         }
     }
 }
