@@ -54,7 +54,7 @@ namespace DotNext.Threading.Channels
         }
 
         /// <summary>
-        /// Gets number of unread messages.
+        /// Gets the number of unread messages.
         /// </summary>
         /// <value>The number of unread messages.</value>
         public long RemainingCount => ((Writer as IChannelInfo)?.Position ?? 0L) - ((Reader as IChannelInfo)?.Position ?? 0L);
