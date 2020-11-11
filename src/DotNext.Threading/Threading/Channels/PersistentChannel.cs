@@ -140,8 +140,6 @@ namespace DotNext.Threading.Channels
                 readTrigger.Dispose();
                 (Reader as IDisposable)?.Dispose();
                 (Writer as IDisposable)?.Dispose();
-                Reader = null;
-                Writer = null;
             }
         }
 
