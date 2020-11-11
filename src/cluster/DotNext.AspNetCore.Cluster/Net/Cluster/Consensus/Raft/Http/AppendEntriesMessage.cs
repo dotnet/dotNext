@@ -95,6 +95,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             {
                 var task = current?.DisposeAsync() ?? new ValueTask();
                 current = null;
+                GC.SuppressFinalize(this);
                 return task;
             }
 
