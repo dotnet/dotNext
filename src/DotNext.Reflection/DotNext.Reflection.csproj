@@ -57,7 +57,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="DotNext" Version="[2.11.0, 3)" />
+    <PackageReference Include="DotNext" Version="[2.12.0, 3)" />
   </ItemGroup>
 
   <ItemGroup>
