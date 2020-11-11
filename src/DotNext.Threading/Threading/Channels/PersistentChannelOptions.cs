@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Tracing;
 using System.IO;
 using System.Threading.Channels;
 
@@ -60,6 +61,25 @@ namespace DotNext.Threading.Channels
         /// file on disk during writing.
         /// </remarks>
         public long InitialPartitionSize
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Specifies counter for write operations.
+        /// </summary>
+        public IncrementingEventCounter? WriteRateCounter
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Specifiies counter for read operations.
+        /// </summary>
+        /// <value></value>
+        public IncrementingEventCounter? ReadRateCounter
         {
             get;
             set;
