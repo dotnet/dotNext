@@ -60,6 +60,12 @@ Release Date: 11-11-2020
 * Added support of diagnostics counters for persistent channel
 * Updated dependencies
 
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/2.12.0">DotNext.Net.Cluster 2.12.0</a>
+* Updated dependencies shipped with .NET Core 3.1.10
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/2.12.0">DotNext.AspNetCore.Cluster 2.12.0</a>
+* Updated dependencies shipped with .NET Core 3.1.10
+
 Changelog for previous versions located [here](./CHANGELOG.md).
 
 # Release Policy
