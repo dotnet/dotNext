@@ -44,11 +44,9 @@ namespace DotNext.Threading.Channels
                     result = value;
                     return true;
                 }
-                else
-                {
-                    result = default!;
-                    return false;
-                }
+
+                result = default!;
+                return false;
             }
 
             void IReadBuffer.Clear() => value = default;
