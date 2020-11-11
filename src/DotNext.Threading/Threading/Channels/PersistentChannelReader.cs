@@ -87,6 +87,10 @@ namespace DotNext.Threading.Channels
 
         public long Position => cursor.Position;
 
+        public override bool CanCount => true;
+
+        public override int Count => checked((int)(reader.WrittenCount - Position));
+
         private PartitionStream Partition => reader.GetOrCreatePartition(ref cursor, ref readTopic, fileOptions, true);
 
         public override bool TryRead(out T item) => buffer.TryRead(out item);
