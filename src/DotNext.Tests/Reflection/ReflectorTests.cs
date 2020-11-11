@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using Xunit;
+using static System.Globalization.CultureInfo;
 using static System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Reflection
@@ -124,6 +125,19 @@ namespace DotNext.Reflection
             field = 56;
             Equal(instanceField, field);
             True(AreSame(ref field, ref instanceField));
+        }
+
+        [Fact]
+        public static void UnreflectInterfaceMethod()
+        {
+            Function<IFormattable, (string, IFormatProvider), string> typedToString = Type<IFormattable>.RequireMethod<(string, IFormatProvider), string>(nameof(IFormattable.ToString));
+            NotNull(typedToString);
+            IFormattable i = 42;
+            Equal("42", typedToString.Invoke(i, null, InvariantCulture));
+
+            Function<object, (object, object), object> untypedToString = typeof(IFormattable).GetMethod(nameof(IFormattable.ToString)).Unreflect<Function<object, (object, object), object>>();
+            NotNull(untypedToString);
+            Equal("42", untypedToString.Invoke(i, null, InvariantCulture));
         }
     }
 }

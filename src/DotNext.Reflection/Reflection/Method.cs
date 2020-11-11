@@ -584,7 +584,7 @@ namespace DotNext.Reflection
                 throw new AbstractDelegateException<TSignature>();
             else if (method is Method<TSignature> existing)
                 return existing;
-            else if (method.IsGenericMethodDefinition || method.IsAbstract || method.IsConstructor)
+            else if (method.IsGenericMethodDefinition || method.IsConstructor)
                 return null;
             else if (method.IsStatic)
                 return UnreflectStatic(method);
