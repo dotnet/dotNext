@@ -35,10 +35,10 @@ namespace DotNext.Collections.Generic
                 /// <summary>
                 /// Gets consumed item from the underlying collection.
                 /// </summary>
-                public T Current => current;
+                public readonly T Current => current;
 
                 /// <inheritdoc />
-                object? IEnumerator.Current => Current;
+                readonly object? IEnumerator.Current => Current;
 
                 /// <summary>
                 /// Consumes the item from the underlying collection.
@@ -47,7 +47,7 @@ namespace DotNext.Collections.Generic
                 public bool MoveNext() => collection != null && collection.TryTake(out current);
 
                 /// <inheritdoc />
-                void IEnumerator.Reset() => throw new NotSupportedException();
+                readonly void IEnumerator.Reset() => throw new NotSupportedException();
 
                 /// <inheritdoc />
                 void IDisposable.Dispose() => this = default;
