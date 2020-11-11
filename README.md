@@ -51,7 +51,7 @@ Release Date: 11-11-2020
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.reflection/2.12.0">DotNext.Reflection 2.12.0</a>
-* More performance optimizations in code generation mechanism responsible for construction dynamic method or constructor calls
+* More performance optimizations in code generation mechanism responsible for the method or constructor calls
 * Added ability to reflect abstract and interface methods
 * Added support of volatile access to the field via reflection
 
