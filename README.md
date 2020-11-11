@@ -46,8 +46,14 @@ Documentation for older versions:
 # What's new
 Release Date: 11-11-2020
 
-<a href="https://www.nuget.org/packages/dotnext.reflection/2.11.2">DotNext.Reflection 2.11.2</a>
+<a href="https://www.nuget.org/packages/dotnext/2.12.0">DotNext.Reflection 2.12.0</a>
+* Addec consuming enumerator for [IProducerConsumerCollection&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.collections.concurrent.iproducerconsumercollection-1)
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.reflection/2.12.0">DotNext.Reflection 2.12.0</a>
 * More performance optimizations in code generation mechanism responsible for construction dynamic method or constructor calls
+* Added ability to reflect abstract and interface methods
+* Added support of volatile access to the field via reflection
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
