@@ -394,6 +394,7 @@ namespace DotNext.Runtime
         /// <typeparam name="T">The type of the managed pointer.</typeparam>
         /// <returns><see langword="true"/>, if the specified managed pointer is <see langword="null"/>; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [Obsolete("Use Unsafe.IsNullRef method instead", false)]
         public static bool IsNull<T>(in T value)
         {
             PushInRef(in value);

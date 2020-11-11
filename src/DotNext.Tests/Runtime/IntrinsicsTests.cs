@@ -91,6 +91,7 @@ namespace DotNext.Runtime
         }
 
         [Fact]
+        [Obsolete("This is test for backward compatibility")]
         public unsafe static void NullCheck()
         {
             static void NullRefCheck()
