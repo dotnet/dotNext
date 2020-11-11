@@ -29,7 +29,7 @@ namespace DotNext.Threading
                 valid = true;
             }
 
-            internal readonly bool IsValid(in int version) => valid && this.version == Unsafe.AsRef(in version).VolatileRead();
+            internal bool IsValid(in int version) => valid && this.version == Unsafe.AsRef(in version).VolatileRead();
 
             /// <summary>
             /// Determines whether this stamp represents the same version of the lock state
@@ -37,7 +37,7 @@ namespace DotNext.Threading
             /// </summary>
             /// <param name="other">The lock stamp to compare.</param>
             /// <returns><see langword="true"/> of this stamp is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-            public readonly bool Equals(LockStamp other) => version == other.version && valid == other.valid;
+            public bool Equals(LockStamp other) => version == other.version && valid == other.valid;
 
             /// <summary>
             /// Determines whether this stamp represents the same version of the lock state
@@ -45,13 +45,13 @@ namespace DotNext.Threading
             /// </summary>
             /// <param name="other">The lock stamp to compare.</param>
             /// <returns><see langword="true"/> of this stamp is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-            public override readonly bool Equals(object? other) => other is LockStamp stamp && Equals(stamp);
+            public override bool Equals(object? other) => other is LockStamp stamp && Equals(stamp);
 
             /// <summary>
             /// Computes hash code for this stamp.
             /// </summary>
             /// <returns>The hash code of this stamp.</returns>
-            public override readonly int GetHashCode() => version;
+            public override int GetHashCode() => version;
 
             /// <summary>
             /// Determines whether the first stamp represents the same version of the lock state
