@@ -62,6 +62,7 @@ namespace DotNext.Threading.Channels
         /// <value>The number of unread messages.</value>
         public long RemainingCount => ((Writer as IChannelInfo)?.Position ?? 0L) - ((Reader as IChannelInfo)?.Position ?? 0L);
 
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's member of internal interface")]
         long IChannelReader<TOutput>.WrittenCount => (Writer as IChannelInfo)?.Position ?? 0L;
 
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's member of internal interface")]

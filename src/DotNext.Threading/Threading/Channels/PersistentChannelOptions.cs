@@ -78,7 +78,6 @@ namespace DotNext.Threading.Channels
         /// <summary>
         /// Specifiies counter for read operations.
         /// </summary>
-        /// <value></value>
         public IncrementingEventCounter? ReadRateCounter
         {
             get;
