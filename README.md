@@ -58,6 +58,7 @@ Release Date: 11-11-2020
 <a href="https://www.nuget.org/packages/dotnext.threading/2.12.0">DotNext.Threading 2.12.0</a>
 * Addes support of `Count` and `CanCount` properties inherited from [ChannelReader&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.threading.channels.channelreader-1) by persistent channel reader
 * Added support of diagnostics counters for persistent channel
+* Fixed resuming of suspended callers in [AsyncTrigger](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncTrigger.html) class
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/2.12.0">DotNext.Net.Cluster 2.12.0</a>
