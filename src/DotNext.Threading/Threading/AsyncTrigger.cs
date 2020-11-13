@@ -25,19 +25,36 @@ namespace DotNext.Threading
                 => tail is null ? new WaitNode() : new WaitNode(tail);
         }
 
-        private sealed class ConditionalNode<TState> : WaitNode
+        private abstract class ConditionalNode : WaitNode
+        {
+            private protected ConditionalNode()
+            {
+            }
+
+            private protected ConditionalNode(WaitNode parent)
+                : base(parent)
+            {
+            }
+
+            internal abstract bool CheckCondition(object state);
+        }
+
+        private sealed class WaitNode<TState> : ConditionalNode
             where TState : class
         {
-            internal readonly Predicate<TState> Condition;
+            private readonly Predicate<TState> predicate;
 
-            internal ConditionalNode(Predicate<TState> condition) => Condition = condition;
+            internal WaitNode(Predicate<TState> condition) => predicate = condition;
 
-            internal ConditionalNode(Predicate<TState> condition, WaitNode tail)
-                : base(tail) => Condition = condition;
+            internal WaitNode(Predicate<TState> condition, WaitNode tail)
+                : base(tail) => predicate = condition;
+
+            internal override bool CheckCondition(object state)
+                => state is TState typedState && predicate(typedState);
         }
 
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct ConditionalLockManager<TState> : ILockManager<ConditionalNode<TState>>
+        private readonly struct ConditionalLockManager<TState> : ILockManager<WaitNode<TState>>
             where TState : class
         {
             private readonly Predicate<TState> condition;
@@ -49,10 +66,10 @@ namespace DotNext.Threading
                 this.condition = condition;
             }
 
-            bool ILockManager<ConditionalNode<TState>>.TryAcquire() => condition(state);
+            bool ILockManager<WaitNode<TState>>.TryAcquire() => condition(state);
 
-            ConditionalNode<TState> ILockManager<ConditionalNode<TState>>.CreateNode(WaitNode? tail)
-                => tail is null ? new ConditionalNode<TState>(condition) : new ConditionalNode<TState>(condition, tail);
+            WaitNode<TState> ILockManager<WaitNode<TState>>.CreateNode(WaitNode? tail)
+                => tail is null ? new WaitNode<TState>(condition) : new WaitNode<TState>(condition, tail);
         }
 
         /// <inheritdoc/>
@@ -80,7 +97,7 @@ namespace DotNext.Threading
             for (WaitNode? current = head, next; !(current is null); current = next)
             {
                 next = current.Next;
-                if (!(current is ConditionalNode<TState> conditional) || conditional.Condition(state))
+                if (!(current is ConditionalNode conditional) || conditional.CheckCondition(state))
                 {
                     current.Complete();
                     RemoveNode(current);
@@ -193,7 +210,7 @@ namespace DotNext.Threading
             where TState : class
         {
             var manager = new ConditionalLockManager<TState>(state, condition);
-            return WaitAsync<ConditionalNode<TState>, ConditionalLockManager<TState>>(ref manager, timeout, token);
+            return WaitAsync<WaitNode<TState>, ConditionalLockManager<TState>>(ref manager, timeout, token);
         }
 
         /// <summary>
@@ -255,7 +272,7 @@ namespace DotNext.Threading
             ThrowIfDisposed();
             ResumePendingCallers(state);
             var manager = new ConditionalLockManager<TState>(state, condition);
-            return WaitAsync<ConditionalNode<TState>, ConditionalLockManager<TState>>(ref manager, timeout, token);
+            return WaitAsync<WaitNode<TState>, ConditionalLockManager<TState>>(ref manager, timeout, token);
         }
 
         /// <summary>
@@ -296,7 +313,7 @@ namespace DotNext.Threading
             mutator(state, args);
             ResumePendingCallers(state);
             var manager = new ConditionalLockManager<TState>(state, condition);
-            return WaitAsync<ConditionalNode<TState>, ConditionalLockManager<TState>>(ref manager, timeout, token);
+            return WaitAsync<WaitNode<TState>, ConditionalLockManager<TState>>(ref manager, timeout, token);
         }
 
         /// <summary>
@@ -338,7 +355,7 @@ namespace DotNext.Threading
             mutator(state);
             ResumePendingCallers(state);
             var manager = new ConditionalLockManager<TState>(state, condition);
-            return WaitAsync<ConditionalNode<TState>, ConditionalLockManager<TState>>(ref manager, timeout, token);
+            return WaitAsync<WaitNode<TState>, ConditionalLockManager<TState>>(ref manager, timeout, token);
         }
 
         /// <summary>

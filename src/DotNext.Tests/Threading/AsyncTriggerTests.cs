@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using Xunit;
@@ -81,6 +82,26 @@ namespace DotNext.Threading
             False(waitTask2.IsCompleted);
             trigger.Signal();
             True(waitTask2.IsCompletedSuccessfully);
+        }
+
+        [Fact]
+        public static void VariousStateTypes()
+        {
+            using var trigger = new AsyncTrigger();
+            var untypedWait = trigger.WaitAsync();
+            False(untypedWait.IsCompleted);
+            var stringWait = trigger.WaitAsync(string.Empty, str => str.Length > 0);
+            False(stringWait.IsCompleted);
+            var arrayWait = trigger.WaitAsync(Array.Empty<int>(), array => array.Length > 0);
+            False(arrayWait.IsCompleted);
+
+            trigger.Signal("Hello, world!");
+            True(untypedWait.IsCompletedSuccessfully);
+            True(stringWait.IsCompletedSuccessfully);
+            False(arrayWait.IsCompleted);
+
+            trigger.Signal(new int[1]);
+            True(arrayWait.IsCompletedSuccessfully);
         }
     }
 }
