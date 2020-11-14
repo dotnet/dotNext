@@ -34,6 +34,7 @@ namespace DotNext.Threading
             bool IConvertible<bool>.Convert() => condition(arg);
         }
 
+        [StructLayout(LayoutKind.Auto)]
         private readonly struct FuncCondition<T1, T2> : IConvertible<bool>
         {
             private readonly T1 arg1;
