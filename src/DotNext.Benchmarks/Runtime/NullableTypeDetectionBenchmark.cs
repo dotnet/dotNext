@@ -5,8 +5,6 @@ using System.Text;
 
 namespace DotNext.Runtime
 {
-
-
     [SimpleJob(runStrategy: RunStrategy.Throughput, launchCount: 1)]
     [Orderer(SummaryOrderPolicy.FastestToSlowest)]
     public class NullableTypeDetectionBenchmark
