@@ -841,6 +841,7 @@ namespace DotNext.Runtime
         /// <param name="obj">The object to test.</param>
         /// <typeparam name="T">The expected type of object.</typeparam>
         /// <returns><see langword="true"/> if <paramref name="obj"/> is not <see langword="null"/> and of type <typeparamref name="T"/>; otherwise, <see langword="false"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsExactTypeOf<T>(object? obj)
             => obj != null && obj.GetType() == typeof(T);
 
