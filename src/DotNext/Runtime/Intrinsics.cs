@@ -842,7 +842,7 @@ namespace DotNext.Runtime
         /// <typeparam name="T">The expected type of object.</typeparam>
         /// <returns><see langword="true"/> if <paramref name="obj"/> is not <see langword="null"/> and of type <typeparamref name="T"/>; otherwise, <see langword="false"/>.</returns>
         public static bool IsExactTypeOf<T>(object? obj)
-            => obj != null && obj.GetType().TypeHandle.Equals(TypeOf<T>());
+            => obj != null && obj.GetType() == typeof(T);
 
         /// <summary>
         /// Throws arbitrary object as exception.
