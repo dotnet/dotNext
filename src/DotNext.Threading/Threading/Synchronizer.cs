@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Threading.Timeout;
@@ -18,6 +19,37 @@ namespace DotNext.Threading
     /// </remarks>
     public abstract class Synchronizer : Disposable, ISynchronizer
     {
+        [StructLayout(LayoutKind.Auto)]
+        private readonly struct PredicateCondition<T> : IConvertible<bool>
+        {
+            private readonly T arg;
+            private readonly Predicate<T> condition;
+
+            internal PredicateCondition(Predicate<T> condition, T arg)
+            {
+                this.condition = condition ?? throw new ArgumentNullException(nameof(condition));
+                this.arg = arg;
+            }
+
+            bool IConvertible<bool>.Convert() => condition(arg);
+        }
+
+        private readonly struct FuncCondition<T1, T2> : IConvertible<bool>
+        {
+            private readonly T1 arg1;
+            private readonly T2 arg2;
+            private readonly Func<T1, T2, bool> condition;
+
+            internal FuncCondition(Func<T1, T2, bool> condition, T1 arg1, T2 arg2)
+            {
+                this.condition = condition ?? throw new ArgumentNullException(nameof(condition));
+                this.arg1 = arg1;
+                this.arg2 = arg2;
+            }
+
+            bool IConvertible<bool>.Convert() => condition(arg1, arg2);
+        }
+
         private protected volatile ISynchronizer.WaitNode? node; // null means signaled state
 
         private protected Synchronizer()
@@ -53,6 +85,19 @@ namespace DotNext.Threading
             return node.Task.WaitAsync(timeout, token);
         }
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        private Task<bool> WaitAsync<TCondition>(ref TCondition condition, TimeSpan timeout, CancellationToken token)
+            where TCondition : struct, IConvertible<bool>
+        {
+            if (IsDisposed)
+                return GetDisposedTask<bool>();
+
+            if (node is null || condition.Convert())
+                return CompletedTask<bool, BooleanConst.True>.Task;
+
+            return node.Task.WaitAsync(timeout, token);
+        }
+
         /// <summary>
         /// Suspends the caller until this event is set.
         /// </summary>
@@ -68,16 +113,10 @@ namespace DotNext.Threading
         /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        [MethodImpl(MethodImplOptions.Synchronized)]
         public Task<bool> WaitAsync<T>(Predicate<T> condition, T arg, TimeSpan timeout, CancellationToken token = default)
         {
-            if (IsDisposed)
-                return GetDisposedTask<bool>();
-
-            if (node is null || condition(arg))
-                return CompletedTask<bool, BooleanConst.True>.Task;
-
-            return node.Task.WaitAsync(timeout, token);
+            var cond = new PredicateCondition<T>(condition, arg);
+            return WaitAsync(ref cond, timeout, token);
         }
 
         /// <summary>
@@ -113,16 +152,10 @@ namespace DotNext.Threading
         /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        [MethodImpl(MethodImplOptions.Synchronized)]
         public Task<bool> WaitAsync<T1, T2>(Func<T1, T2, bool> condition, T1 arg1, T2 arg2, TimeSpan timeout, CancellationToken token = default)
         {
-            if (IsDisposed)
-                return GetDisposedTask<bool>();
-
-            if (node is null || condition(arg1, arg2))
-                return CompletedTask<bool, BooleanConst.True>.Task;
-
-            return node.Task.WaitAsync(timeout, token);
+            var cond = new FuncCondition<T1, T2>(condition, arg1, arg2);
+            return WaitAsync(ref cond, timeout, token);
         }
 
         /// <summary>
