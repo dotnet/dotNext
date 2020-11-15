@@ -100,15 +100,17 @@ namespace DotNext.Metaprogramming
             Equal("a", builder.ToString());
         }
 
-        [Fact]
-        public static async Task AwaitDisposableTest()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public static async Task AwaitDisposableTest(bool configureAwait)
         {
             var lambda = AsyncLambda<Func<DisposableClass, Task<long>>>((fun, result) =>
             {
                 AwaitUsing(fun[0], () =>
                 {
                     Assign(result, 42L.Const());
-                });
+                }, configureAwait);
             })
            .Compile();
             var disposable = new DisposableClass();
