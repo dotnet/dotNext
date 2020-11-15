@@ -22,19 +22,21 @@ namespace DotNext.Reflection
         {
             enumerableInterface = collectionType.FindGenericInstance(typeof(IEnumerable<>));
             if (!(enumerableInterface is null))
-            {
                 return enumerableInterface.GetGenericArguments()[0];
-            }
-            else if (typeof(IEnumerable).IsAssignableFrom(collectionType))
+
+            if (typeof(IEnumerable).IsAssignableFrom(collectionType))
             {
                 enumerableInterface = typeof(IEnumerable);
                 return typeof(object);
             }
-            else
-            {
-                enumerableInterface = null;
-                return null;
-            }
+
+            // handle async enumerable type
+            enumerableInterface = collectionType.FindGenericInstance(typeof(IAsyncEnumerable<>));
+            if (!(enumerableInterface is null))
+                return enumerableInterface.GetGenericArguments()[0];
+
+            enumerableInterface = null;
+            return null;
         }
 
         /// <summary>
