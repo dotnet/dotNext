@@ -134,8 +134,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 buffered = new FileMessage(message.Name, message.Type);
             await buffered.LoadFromAsync(message, token).ConfigureAwait(false);
             buffered.PrepareForReuse();
-            response.OnCompleted(() => handler.ReceiveSignal(sender, buffered, null, token));
-            response.RegisterForDispose(buffered);
+            response.OnCompleted(ReceiveSignal);
+
+            async Task ReceiveSignal()
+            {
+                using (buffered)
+                    await handler.ReceiveSignal(sender, buffered, null, token).ConfigureAwait(false);
+            }
         }
 
         private static Task ReceiveOneWayMessage(ISubscriber sender, CustomMessage request, IEnumerable<IInputChannel> handlers, bool reliable, HttpResponse response, CancellationToken token)
