@@ -183,6 +183,14 @@ namespace DotNext
         }
 
         [Fact]
+        public static void ConstantProvider()
+        {
+            Null(Func.Constant<string>(null).Invoke());
+            Equal(42, Func.Constant<int>(42).Invoke());
+            Equal("Hello, world", Func.Constant<string>("Hello, world").Invoke());
+        }
+
+        [Fact]
         public static void Conversion()
         {
             var conv = new Converter<string, int>(int.Parse);
