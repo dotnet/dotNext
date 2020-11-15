@@ -52,6 +52,8 @@ Release Date: 11-11-2020
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.12.0">DotNext.Metaprogramming 2.12.0</a>
 * Added support of `await using` statement
+* Added support of `await foreach` statement
+* Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.reflection/2.12.0">DotNext.Reflection 2.12.0</a>
 * More performance optimizations in code generation mechanism responsible for the method or constructor calls
