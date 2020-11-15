@@ -1,11 +1,14 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace DotNext.Metaprogramming
 {
     using Linq.Expressions;
+    using static Collections.Generic.Sequence;
     using static CodeGenerator;
 
     [ExcludeFromCodeCoverage]
@@ -60,6 +63,22 @@ namespace DotNext.Metaprogramming
             })
             .Compile();
             Equal(10L, sum(new[] { 1L, 5L, 4L }));
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public static async Task ForEachAsync(bool configureAwait)
+        {
+            var sum = AsyncLambda<Func<IAsyncEnumerable<long>, Task<long>>>((fun, result) =>
+            {
+                AwaitForEach(fun[0], item =>
+                {
+                    Assign(result, result.AsDynamic() + item);
+                }, configureAwait: configureAwait);
+            })
+            .Compile();
+            Equal(10L, await sum(new[] { 1L, 5L, 4L }.ToAsyncEnumerable()));
         }
 
         [Fact]
