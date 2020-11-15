@@ -136,6 +136,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             buffered.PrepareForReuse();
             response.OnCompleted(ReceiveSignal);
 
+            // Do not use response.RegisterForDispose() because it is calling earlier than
+            // OnCompleted callback
             async Task ReceiveSignal()
             {
                 using (buffered)
