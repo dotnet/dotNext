@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace DotNext.Metaprogramming
@@ -13,9 +14,12 @@ namespace DotNext.Metaprogramming
     [ExcludeFromCodeCoverage]
     public sealed class BlockTests : Test
     {
-        private sealed class DisposableClass : Disposable
+        private sealed class DisposableClass : Disposable, IAsyncDisposable
         {
             public new bool IsDisposed => base.IsDisposed;
+
+            ValueTask IAsyncDisposable.DisposeAsync()
+                => new ValueTask(Task.Run(this.Dispose)); 
         }
 
         private struct DisposableStruct
@@ -31,7 +35,7 @@ namespace DotNext.Metaprogramming
         private delegate void DisposeLambda(ref DisposableStruct value);
 
         [Fact]
-        public void DisposableStructTest()
+        public static void DisposableStructTest()
         {
             var lambda = Lambda<DisposeLambda>(fun =>
             {
@@ -50,7 +54,7 @@ namespace DotNext.Metaprogramming
         }
 
         [Fact]
-        public void DisposableTest()
+        public static void DisposableTest()
         {
             var lambda = Lambda<Func<DisposableClass, long>>(fun =>
             {
@@ -67,7 +71,7 @@ namespace DotNext.Metaprogramming
         }
 
         [Fact]
-        public void WithBlockTest()
+        public static void WithBlockTest()
         {
             var lambda = Lambda<Func<int, int>>(fun =>
             {
@@ -81,7 +85,7 @@ namespace DotNext.Metaprogramming
         }
 
         [Fact]
-        public void LockTest()
+        public static void LockTest()
         {
             var lambda = Lambda<Action<StringBuilder>>(fun =>
             {
@@ -95,5 +99,22 @@ namespace DotNext.Metaprogramming
             lambda(builder);
             Equal("a", builder.ToString());
         }
+
+        [Fact]
+        public static async Task AwaitDisposableTest()
+        {
+            var lambda = AsyncLambda<Func<DisposableClass, Task<long>>>((fun, result) =>
+            {
+                AwaitUsing(fun[0], () =>
+                {
+                    Assign(result, 42L.Const());
+                });
+            })
+           .Compile();
+            var disposable = new DisposableClass();
+            False(disposable.IsDisposed);
+            Equal(42L, await lambda(disposable));
+            True(disposable.IsDisposed);
+        } 
     }
 }
