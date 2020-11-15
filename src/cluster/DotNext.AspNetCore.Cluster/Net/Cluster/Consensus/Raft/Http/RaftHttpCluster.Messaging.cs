@@ -136,7 +136,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             buffered.PrepareForReuse();
             response.OnCompleted(async () =>
             {
-                await using (buffered)
+                 (buffered)
                     await handler.ReceiveSignal(sender, buffered, null, token).ConfigureAwait(false);
             });
         }
@@ -237,7 +237,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private async Task ReceiveEntries(HttpRequest request, HttpResponse response, CancellationToken token)
         {
             var message = new AppendEntriesMessage(request, out var entries);
-            await using (entries)
+            await using (entries.ConfigureAwait(false))
             {
                 var sender = FindMember(MatchByEndPoint, message.Sender);
                 if (sender is null)
