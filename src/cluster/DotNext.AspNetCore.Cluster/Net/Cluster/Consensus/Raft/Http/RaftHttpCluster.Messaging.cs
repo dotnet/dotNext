@@ -234,7 +234,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private async Task ReceiveEntries(HttpRequest request, HttpResponse response, CancellationToken token)
         {
             var message = new AppendEntriesMessage(request, out var entries);
-            await using (entries.ConfigureAwait(false))
+            await using (entries)
             {
                 var sender = FindMember(MatchByEndPoint, message.Sender);
                 if (sender is null)
