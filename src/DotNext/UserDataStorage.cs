@@ -129,6 +129,7 @@ namespace DotNext
                 return result;
             }
 
+            [return: MaybeNull]
             internal TValue GetOrSet<TValue, TSupplier>(UserDataSlot<TValue> slot, ref TSupplier valueFactory)
                 where TSupplier : struct, ISupplier<TValue>
             {
@@ -163,12 +164,17 @@ namespace DotNext
                 return userData;
             }
 
-            internal bool Get<TValue>(UserDataSlot<TValue> slot, out TValue userData)
+            internal bool Get<TValue>(UserDataSlot<TValue> slot, [MaybeNullWhen(false)]out TValue userData)
             {
                 lockState.EnterReadLock();
-                var result = slot.GetUserData(this, out userData);
-                lockState.ExitReadLock();
-                return result;
+                try
+                {
+                    return slot.GetUserData(this, out userData);
+                }
+                finally
+                {
+                    lockState.ExitReadLock();
+                }
             }
 
             internal void Set<TValue>(UserDataSlot<TValue> slot, TValue userData)
@@ -192,12 +198,17 @@ namespace DotNext
                 return result;
             }
 
-            internal bool Remove<TValue>(UserDataSlot<TValue> slot, out TValue userData)
+            internal bool Remove<TValue>(UserDataSlot<TValue> slot, [MaybeNullWhen(false)]out TValue userData)
             {
                 lockState.EnterWriteLock();
-                var result = slot.GetUserData(this, out userData) && slot.RemoveUserData(this);
-                lockState.ExitWriteLock();
-                return result;
+                try
+                {
+                    return slot.RemoveUserData(this, out userData);
+                }
+                finally
+                {
+                    lockState.ExitWriteLock();
+                }
             }
         }
 
@@ -234,7 +245,7 @@ namespace DotNext
         public TValue Get<TValue>(UserDataSlot<TValue> slot, [AllowNull]TValue defaultValue)
         {
             var storage = GetStorage();
-            return storage is null ? defaultValue : storage.Get(slot, defaultValue);
+            return storage is null ? defaultValue : storage.Get(slot!, defaultValue);
         }
 
         /// <summary>
@@ -247,7 +258,7 @@ namespace DotNext
         public TValue Get<TValue>(UserDataSlot<TValue> slot)
         {
             var storage = GetStorage();
-            return storage is null ? default : storage.Get(slot, default);
+            return storage is null ? default : storage.Get(slot!, default);
         }
 
         /// <summary>
@@ -260,7 +271,7 @@ namespace DotNext
             where TValue : notnull, new()
         {
             var activator = ValueFunc<TValue>.Activator;
-            return GetOrCreateStorage().GetOrSet(slot, ref activator);
+            return GetOrCreateStorage().GetOrSet(slot, ref activator)!;
         }
 
         /// <summary>
@@ -274,7 +285,7 @@ namespace DotNext
             where T : class, TBase, new()
         {
             var activator = ValueFunc<T>.Activator;
-            return GetOrCreateStorage().GetOrSet(slot, ref activator);
+            return GetOrCreateStorage().GetOrSet(slot, ref activator)!;
         }
 
         /// <summary>
@@ -320,7 +331,7 @@ namespace DotNext
         /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
         /// <returns>The data associated with the slot.</returns>
         public TValue GetOrSet<TValue>(UserDataSlot<TValue> slot, in ValueFunc<TValue> valueFactory)
-            => GetOrCreateStorage().GetOrSet(slot, ref Unsafe.AsRef(valueFactory));
+            => GetOrCreateStorage().GetOrSet(slot, ref Unsafe.AsRef(valueFactory))!;
 
         /// <summary>
         /// Gets existing user data or creates a new data and return it.
@@ -334,7 +345,7 @@ namespace DotNext
         public TValue GetOrSet<T, TValue>(UserDataSlot<TValue> slot, T arg, in ValueFunc<T, TValue> valueFactory)
         {
             var supplier = new Supplier<T, TValue>(arg, valueFactory);
-            return GetOrCreateStorage().GetOrSet(slot, ref supplier);
+            return GetOrCreateStorage().GetOrSet(slot, ref supplier)!;
         }
 
         /// <summary>
@@ -351,7 +362,7 @@ namespace DotNext
         public TValue GetOrSet<T1, T2, TValue>(UserDataSlot<TValue> slot, T1 arg1, T2 arg2, in ValueFunc<T1, T2, TValue> valueFactory)
         {
             var supplier = new Supplier<T1, T2, TValue>(arg1, arg2, valueFactory);
-            return GetOrCreateStorage().GetOrSet(slot, ref supplier);
+            return GetOrCreateStorage().GetOrSet(slot, ref supplier)!;
         }
 
         /// <summary>
@@ -406,7 +417,7 @@ namespace DotNext
             var storage = GetStorage();
             if (storage is null)
             {
-                userData = default!;
+                userData = default;
                 return false;
             }
 
