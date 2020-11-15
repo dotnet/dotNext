@@ -1,6 +1,7 @@
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace DotNext.Linq.Expressions
 {
@@ -8,7 +9,7 @@ namespace DotNext.Linq.Expressions
     using Seq = Collections.Generic.Sequence;
 
     /// <summary>
-    /// Represents <c>using</c> expression.
+    /// Represents <c>using</c> or <c>await using</c> expression.
     /// </summary>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/using-statement">USING statement</seealso>
     public sealed class UsingExpression : CustomExpression
@@ -22,6 +23,7 @@ namespace DotNext.Linq.Expressions
 
         private readonly MethodInfo disposeMethod;
         private readonly BinaryExpression? assignment;
+        private readonly bool? configureAwait;
         private Expression? body;
 
         internal UsingExpression(Expression resource)
@@ -38,8 +40,29 @@ namespace DotNext.Linq.Expressions
             }
         }
 
+        internal UsingExpression(Expression resource, bool configureAwait)
+        {
+            disposeMethod = resource.Type.GetDisposeAsyncMethod() ?? throw new ArgumentException(ExceptionMessages.DisposePatternExpected(resource.Type), nameof(resource));
+            if (resource is ParameterExpression param)
+            {
+                assignment = null;
+                Resource = param;
+            }
+            else
+            {
+                assignment = Assign(Resource = Variable(resource.Type, "resource"), resource);
+            }
+
+            this.configureAwait = configureAwait;
+        }
+
         /// <summary>
-        /// Creates block of code associated with disposable resource.
+        /// Indicates that this <c>using</c> block is asynchronous.
+        /// </summary>
+        public bool IsAwaitable => configureAwait.HasValue;
+
+        /// <summary>
+        /// Creates a block of code associated with disposable resource.
         /// </summary>
         /// <param name="resource">The disposable resource.</param>
         /// <param name="body">The delegate used to construct the block of code.</param>
@@ -52,13 +75,37 @@ namespace DotNext.Linq.Expressions
         }
 
         /// <summary>
-        /// Creates block of code associated with disposable resource.
+        /// Creates a block of code associated with asynchronously disposable resource.
+        /// </summary>
+        /// <param name="resource">The disposable resource.</param>
+        /// <param name="configureAwait"><see langword="true"/> to call <see cref="Task.ConfigureAwait(bool)"/> with <see langword="false"/> argument when awaiting <see cref="IAsyncDisposable.DisposeAsync"/> method.</param>
+        /// <param name="body">The delegate used to construct the block of code.</param>
+        /// <returns>The constructed expression.</returns>
+        public static UsingExpression Create(Expression resource, bool configureAwait, Statement body)
+        {
+            var result = new UsingExpression(resource, configureAwait);
+            result.Body = body(result.Resource);
+            return result;
+        }
+
+        /// <summary>
+        /// Creates a block of code associated with disposable resource.
         /// </summary>
         /// <param name="resource">The disposable resource.</param>
         /// <param name="body">The body of the statement.</param>
         /// <returns>The constructed expression.</returns>
         public static UsingExpression Create(Expression resource, Expression body)
             => new UsingExpression(resource) { Body = body };
+
+        /// <summary>
+        /// Creates a block of code associated with asynchronously disposable resource.
+        /// </summary>
+        /// <param name="resource">The disposable resource.</param>
+        /// <param name="configureAwait"><see langword="true"/> to call <see cref="Task.ConfigureAwait(bool)"/> with <see langword="false"/> argument when awaiting <see cref="IAsyncDisposable.DisposeAsync"/> method.</param>
+        /// <param name="body">The body of the statement.</param>
+        /// <returns>The constructed expression.</returns>
+        public static UsingExpression Create(Expression resource, bool configureAwait, Expression body)
+            => new UsingExpression(resource, configureAwait) { Body = body };
 
         /// <summary>
         /// Gets body of <c>using</c> expression.
@@ -86,7 +133,10 @@ namespace DotNext.Linq.Expressions
         /// <returns>Updated expression.</returns>
         public UsingExpression Update(Expression body)
         {
-            var result = assignment is null ? new UsingExpression(Resource) : new UsingExpression(assignment.Right);
+            var resource = assignment is null ? Resource : assignment.Right;
+            var result = this.configureAwait.TryGetValue(out var configureAwait) ?
+                new UsingExpression(resource, configureAwait) :
+                new UsingExpression(resource);
             result.Body = body;
             return result;
         }
@@ -98,10 +148,15 @@ namespace DotNext.Linq.Expressions
         /// <returns>Translated expression.</returns>
         public override Expression Reduce()
         {
-            if (assignment is null)
-                return TryFinally(Body, Block(typeof(void), Call(Resource, disposeMethod), Assign(Resource, Default(Resource.Type))));
-            else
-                return Block(Seq.Singleton(Resource), assignment, TryFinally(Body, Call(Resource, disposeMethod)));
+            Expression disposeCall = Call(Resource, disposeMethod);
+            if (this.configureAwait.TryGetValue(out var configureAwait))
+            {
+                disposeCall = new AwaitExpression(disposeCall, configureAwait);
+            }
+
+            return assignment is null ?
+                TryFinally(Body, Block(typeof(void), disposeCall, Assign(Resource, Default(Resource.Type)))).As<Expression>() :
+                Block(Seq.Singleton(Resource), assignment, TryFinally(Body, disposeCall));
         }
     }
 }
