@@ -120,9 +120,9 @@ namespace DotNext.Linq.Expressions
         /// Creates asynchronous loop expression.
         /// </summary>
         /// <param name="collection">The collection to iterate through.</param>
-        /// <param name="body">A delegate that is used to construct the body of the loop.</param>
         /// <param name="cancellationToken">The expression of type <see cref="CancellationToken"/>.</param>
         /// <param name="configureAwait"><see langword="true"/> to call <see cref="ValueTask.ConfigureAwait(bool)"/> with <see langword="false"/> argument when awaiting <see cref="IAsyncEnumerator{T}.MoveNextAsync"/> method.</param>
+        /// <param name="body">A delegate that is used to construct the body of the loop.</param>
         /// <returns>The expression instance.</returns>
         /// <seealso cref="IAsyncEnumerable{T}"/>
         /// <seealso cref="IsAwaitable"/>
