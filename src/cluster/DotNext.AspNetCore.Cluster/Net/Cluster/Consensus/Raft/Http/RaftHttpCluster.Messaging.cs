@@ -136,7 +136,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             buffered.PrepareForReuse();
             response.OnCompleted(async () =>
             {
-                 (buffered)
+                using (buffered)
                     await handler.ReceiveSignal(sender, buffered, null, token).ConfigureAwait(false);
             });
         }
