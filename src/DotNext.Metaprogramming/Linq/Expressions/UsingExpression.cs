@@ -23,7 +23,7 @@ namespace DotNext.Linq.Expressions
 
         private readonly MethodInfo disposeMethod;
         private readonly BinaryExpression? assignment;
-        private readonly bool? configureAwait;
+        private readonly bool? configureAwait;  // null for synchronous expression
         private Expression? body;
 
         internal UsingExpression(Expression resource)
@@ -57,11 +57,6 @@ namespace DotNext.Linq.Expressions
         }
 
         /// <summary>
-        /// Indicates that this <c>using</c> block is asynchronous.
-        /// </summary>
-        public bool IsAwaitable => configureAwait.HasValue;
-
-        /// <summary>
         /// Creates a block of code associated with disposable resource.
         /// </summary>
         /// <param name="resource">The disposable resource.</param>
@@ -78,9 +73,10 @@ namespace DotNext.Linq.Expressions
         /// Creates a block of code associated with asynchronously disposable resource.
         /// </summary>
         /// <param name="resource">The disposable resource.</param>
-        /// <param name="configureAwait"><see langword="true"/> to call <see cref="Task.ConfigureAwait(bool)"/> with <see langword="false"/> argument when awaiting <see cref="IAsyncDisposable.DisposeAsync"/> method.</param>
+        /// <param name="configureAwait"><see langword="true"/> to call <see cref="ValueTask.ConfigureAwait(bool)"/> with <see langword="false"/> argument when awaiting <see cref="IAsyncDisposable.DisposeAsync"/> method.</param>
         /// <param name="body">The delegate used to construct the block of code.</param>
         /// <returns>The constructed expression.</returns>
+        /// <seealso cref="IsAwaitable"/>
         public static UsingExpression Create(Expression resource, bool configureAwait, Statement body)
         {
             var result = new UsingExpression(resource, configureAwait);
@@ -101,11 +97,17 @@ namespace DotNext.Linq.Expressions
         /// Creates a block of code associated with asynchronously disposable resource.
         /// </summary>
         /// <param name="resource">The disposable resource.</param>
-        /// <param name="configureAwait"><see langword="true"/> to call <see cref="Task.ConfigureAwait(bool)"/> with <see langword="false"/> argument when awaiting <see cref="IAsyncDisposable.DisposeAsync"/> method.</param>
+        /// <param name="configureAwait"><see langword="true"/> to call <see cref="ValueTask.ConfigureAwait(bool)"/> with <see langword="false"/> argument when awaiting <see cref="IAsyncDisposable.DisposeAsync"/> method.</param>
         /// <param name="body">The body of the statement.</param>
         /// <returns>The constructed expression.</returns>
+        /// <seealso cref="IsAwaitable"/>
         public static UsingExpression Create(Expression resource, bool configureAwait, Expression body)
             => new UsingExpression(resource, configureAwait) { Body = body };
+
+        /// <summary>
+        /// Indicates that this <c>using</c> block is asynchronous.
+        /// </summary>
+        public bool IsAwaitable => configureAwait.HasValue;
 
         /// <summary>
         /// Gets body of <c>using</c> expression.
@@ -151,7 +153,7 @@ namespace DotNext.Linq.Expressions
             Expression disposeCall = Call(Resource, disposeMethod);
             if (this.configureAwait.TryGetValue(out var configureAwait))
             {
-                disposeCall = new AwaitExpression(disposeCall, configureAwait);
+                disposeCall = disposeCall.Await(configureAwait);
             }
 
             return assignment is null ?
