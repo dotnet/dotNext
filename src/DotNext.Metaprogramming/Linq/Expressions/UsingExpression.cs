@@ -124,7 +124,7 @@ namespace DotNext.Linq.Expressions
         /// <summary>
         /// Gets the type of this expression.
         /// </summary>
-        public override Type Type => Body.Type;
+        public override Type Type => configureAwait is null ? Body.Type : typeof(void);
 
         /// <summary>
         /// Reconstructs expression with a new body.
@@ -155,8 +155,8 @@ namespace DotNext.Linq.Expressions
             }
 
             return assignment is null ?
-                TryFinally(Body, Block(typeof(void), disposeCall, Assign(Resource, Default(Resource.Type)))).As<Expression>() :
-                Block(Seq.Singleton(Resource), assignment, TryFinally(Body, disposeCall));
+                MakeTry(Type, Body, Block(typeof(void), disposeCall, Assign(Resource, Default(Resource.Type))), null, null).As<Expression>() :
+                Block(Type, Seq.Singleton(Resource), assignment, TryFinally(Body, disposeCall));
         }
     }
 }
