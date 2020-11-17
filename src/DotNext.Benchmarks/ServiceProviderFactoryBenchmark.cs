@@ -8,10 +8,10 @@ namespace DotNext.Benchmarks
 {
     [SimpleJob(runStrategy: RunStrategy.Throughput, launchCount: 1)]
     [Orderer(SummaryOrderPolicy.FastestToSlowest)]
-    public class ServiceProviderBuilderBenchmark
+    public class ServiceProviderFactoryBenchmark
     {
         private const string Value = "Hello, world!";
-        private static readonly IServiceProvider compiledProvider = ServiceProviderBuilder.CreateFactory(
+        private static readonly IServiceProvider compiledProvider = ServiceProviderFactory.CreateFactory(
             typeof(ICloneable),
             typeof(IComparable),
             typeof(IComparable<string>),
@@ -19,7 +19,7 @@ namespace DotNext.Benchmarks
             typeof(IEquatable<string>),
             typeof(IEnumerable<char>)).Invoke(new[] { Value, Value, Value, Value, Value, Value });
 
-        private static readonly IServiceProvider cachedProvider = new ServiceProviderBuilder()
+        private static readonly IServiceProvider cachedProvider = new ServiceProviderFactory.Builder()
             .Add<ICloneable>(Value)
             .Add<IComparable>(Value)
             .Add<IComparable<string>>(Value)
