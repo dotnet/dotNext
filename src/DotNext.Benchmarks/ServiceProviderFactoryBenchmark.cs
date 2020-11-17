@@ -28,20 +28,16 @@ namespace DotNext.Benchmarks
             .Add<IEnumerable<char>>(Value)
             .Build();
 
-        private static void QueryServices(IServiceProvider provider)
-        {
-            provider.GetService(typeof(ICloneable));
-            provider.GetService(typeof(IComparable));
-            provider.GetService(typeof(IComparable<string>));
-            provider.GetService(typeof(IConvertible));
-            provider.GetService(typeof(IEquatable<string>));
-            provider.GetService(typeof(IEnumerable<char>));
-        }
+        [Benchmark]
+        public object CompiledProvider() => compiledProvider.GetService(typeof(IConvertible));
 
         [Benchmark]
-        public void UseCompiledProvider() => QueryServices(compiledProvider);
+        public object CachedProvider() => cachedProvider.GetService(typeof(IConvertible));
 
         [Benchmark]
-        public void UseCachedProvider() => QueryServices(cachedProvider);
+        public object CompiledProviderMissingService() => compiledProvider.GetService(typeof(int));
+
+        [Benchmark]
+        public object CachedProviderMissingService() => cachedProvider.GetService(typeof(int));
     }
 }
