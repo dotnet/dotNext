@@ -1,13 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Reflection;
 using System.Runtime.CompilerServices;
-using static InlineIL.IL;
-using static InlineIL.IL.Emit;
-using static InlineIL.MethodRef;
-using static InlineIL.TypeRef;
-using BinaryOperator = InlineIL.BinaryOperator;
 
 namespace DotNext
 {
@@ -106,12 +100,7 @@ namespace DotNext
             for (var i = 0; i < types.Count; i++)
                 cases.Insert(i, Expression.SwitchCase(Expression.ArrayAccess(values, Expression.Constant(i)), Expression.Constant(types[i])));
 
-            // extract type equality operator
-            Ldtoken(Operator(Type<Type>(), BinaryOperator.Equality, Type<Type>(), Type<Type>()));
-            Pop(out RuntimeMethodHandle handle);
-            var equalityOperator = (MethodInfo)MethodBase.GetMethodFromHandle(handle);
-
-            return Expression.Switch(typeof(object), requestedType, defaultResolution, equalityOperator, cases);
+            return Expression.Switch(typeof(object), requestedType, defaultResolution, null, cases);
         }
 
         private static Func<Type, object?[], object?> CreateResolver(IReadOnlyList<Type> types)
