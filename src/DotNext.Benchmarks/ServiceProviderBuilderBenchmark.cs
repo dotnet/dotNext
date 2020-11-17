@@ -11,7 +11,7 @@ namespace DotNext.Benchmarks
     public class ServiceProviderBuilderBenchmark
     {
         private const string Value = "Hello, world!";
-        private static readonly IServiceProvider compiledProvider = ServiceProviderBuilder.Create(
+        private static readonly IServiceProvider compiledProvider = ServiceProviderBuilder.CreateFactory(
             typeof(ICloneable),
             typeof(IComparable),
             typeof(IComparable<string>),
