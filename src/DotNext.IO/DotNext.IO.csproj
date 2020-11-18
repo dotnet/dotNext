@@ -14,7 +14,7 @@
     <RepositoryUrl>https://github.com/sakno/dotNext.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>.netstandard;io;pipe;encoding;decoding;buffer;pipelines;stream;readstring;writestring</PackageTags>
-    <Copyright>Copyright © Roman Sakno 2019</Copyright>
+    <Copyright>Copyright © Roman Sakno 2020</Copyright>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Description>Common API surface for decoding and encoding data from/to stream or I/O pipe.</Description>
     <PackageIcon>logo.png</PackageIcon>
