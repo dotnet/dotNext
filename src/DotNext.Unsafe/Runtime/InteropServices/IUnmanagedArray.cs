@@ -33,7 +33,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="offset">The position in the destination array from which copying begins.</param>
         /// <param name="count">The number of array elements to be copied.</param>
         /// <returns>The actual number of copied elements.</returns>
-        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory has been released.</exception>
         long WriteTo(T[] destination, long offset, long count) => Pointer.WriteTo(destination, offset, count);
 
         /// <summary>
@@ -41,20 +41,15 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="destination">The destination array.</param>
         /// <returns>The actual number of copied elements.</returns>
-        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory has been released.</exception>
         long WriteTo(T[] destination) => Pointer.WriteTo(destination, 0, Math.Min(destination.LongLength, Length));
 
         /// <summary>
         /// Copies elements from the unmanaged array into managed heap.
         /// </summary>
         /// <returns>The array allocated in managed heap containing copied elements from unmanaged memory.</returns>
-        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
-        T[] ToArray()
-        {
-            var result = new T[Length];
-            WriteTo(result, 0, Length);
-            return result;
-        }
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory has been released.</exception>
+        T[] ToArray() => Pointer.ToArray(Length);
 
         /// <inheritdoc/>
         T[] IConvertible<T[]>.Convert() => ToArray();
@@ -67,7 +62,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="offset">The position in the source array from which copying begins.</param>
         /// <param name="count">The number of elements of type <typeparamref name="T"/> to be copied.</param>
         /// <returns>Actual number of copied elements.</returns>
-        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory has been released.</exception>
         long ReadFrom(T[] source, long offset, long count) => Pointer.ReadFrom(source, offset, Math.Min(Length, count));
 
         /// <summary>
@@ -75,21 +70,21 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="source">The source array.</param>
         /// <returns>The actual number of copied elements.</returns>
-        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory has been released.</exception>
         long ReadFrom(T[] source) => Pointer.ReadFrom(source, 0L, source.LongLength);
 
         /// <summary>
         /// Copies elements from the current memory location to the specified memory location.
         /// </summary>
         /// <param name="destination">The target memory location.</param>
-        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory has been released.</exception>
         void WriteTo(Pointer<T> destination) => Pointer.WriteTo(destination, Length);
 
         /// <summary>
         /// Copies bytes from the source memory to the memory identified by this object.
         /// </summary>
         /// <param name="source">The pointer to the source unmanaged memory.</param>
-        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory has been released.</exception>
         void ReadFrom(Pointer<T> source) => source.WriteTo(Pointer, Length);
 
         /// <summary>
@@ -97,7 +92,7 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="destination">The target memory location.</param>
         /// <returns>The actual number of copied elements.</returns>
-        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory has been released.</exception>
         long WriteTo(IUnmanagedArray<T> destination)
         {
             var count = Math.Min(Length, destination.Length);
@@ -110,7 +105,7 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="other">The block of memory to be compared.</param>
         /// <returns><see langword="true"/>, if both memory blocks have the same bytes; otherwise, <see langword="false"/>.</returns>
-        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory has been released.</exception>
         bool BitwiseEquals(Pointer<T> other) => Pointer.BitwiseEquals(other, Length);
 
         /// <summary>
@@ -118,7 +113,7 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="other">The array to be compared.</param>
         /// <returns><see langword="true"/>, if both memory blocks have the same bytes; otherwise, <see langword="false"/>.</returns>
-        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory has been released.</exception>
         unsafe bool BitwiseEquals(T[] other)
         {
             if (other.LongLength != Length)
@@ -132,7 +127,7 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="other">The block of memory to be compared.</param>
         /// <returns>Comparison result which has the semantics as return type of <see cref="IComparable.CompareTo(object)"/>.</returns>
-        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory has been released.</exception>
         int BitwiseCompare(Pointer<T> other) => Pointer.BitwiseCompare(other, Length);
 
         /// <summary>
@@ -140,7 +135,7 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="other">The array to be compared.</param>
         /// <returns>Comparison result which has the semantics as return type of <see cref="IComparable.CompareTo(object)"/>.</returns>
-        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory has been released.</exception>
         unsafe int BitwiseCompare(T[] other)
         {
             if (Length != other.LongLength)
