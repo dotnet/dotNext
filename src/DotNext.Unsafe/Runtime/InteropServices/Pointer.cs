@@ -200,7 +200,7 @@ namespace DotNext.Runtime.InteropServices
         {
             if (IsNull)
                 throw new NullPointerException();
-            else if (other.IsNull)
+            if (other.IsNull)
                 throw new ArgumentNullException(nameof(other));
             Intrinsics.Swap(value, other.value);
         }
@@ -280,7 +280,7 @@ namespace DotNext.Runtime.InteropServices
                 throw new ArgumentOutOfRangeException(nameof(offset));
             if (destination.LongLength == 0L || (offset + count) > destination.LongLength)
                 return 0L;
-            Intrinsics.Copy(in value[0], ref destination[0], count);
+            Intrinsics.Copy(in value[0], ref destination[offset], count);
             return count;
         }
 
@@ -370,7 +370,7 @@ namespace DotNext.Runtime.InteropServices
                 throw new ArgumentOutOfRangeException(nameof(offset));
             if (source.LongLength == 0L || (count + offset) > source.LongLength)
                 return 0L;
-            Intrinsics.Copy(in source[0], ref value[0], count);
+            Intrinsics.Copy(in source[offset], ref value[0], count);
             return count;
         }
 
@@ -658,12 +658,11 @@ namespace DotNext.Runtime.InteropServices
         {
             if (value == other.value)
                 return 0;
-            else if (IsNull)
+            if (IsNull)
                 throw new NullPointerException();
-            else if (other.IsNull)
+            if (other.IsNull)
                 throw new ArgumentNullException(nameof(other));
-            else
-                return Intrinsics.Compare(value, other, count * sizeof(T));
+            return Intrinsics.Compare(value, other, count * sizeof(T));
         }
 
         /// <summary>

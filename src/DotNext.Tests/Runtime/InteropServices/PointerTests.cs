@@ -89,6 +89,24 @@ namespace DotNext.Runtime.InteropServices
         }
 
         [Fact]
+        public static unsafe void ArrayInteropWithOffset()
+        {
+            var array = new ushort[] { 1, 2, 3 };
+            fixed (ushort* p = array)
+            {
+                var ptr = new Pointer<ushort>(p);
+                var dest = new ushort[array.LongLength];
+                Equal(1L, ptr.WriteTo(dest, 2L, 1L));
+                NotEqual(array, dest);
+                Equal(new ushort[] { 0, 0, 1}, dest);
+                dest[2] = 50;
+                Equal(1L, ptr.ReadFrom(dest, 2L, 1L));
+                Equal(50, ptr.Value);
+                Equal(50, array[0]);
+            }
+        }
+
+        [Fact]
         public static unsafe void Swap()
         {
             var array = new ushort[] { 1, 2 };
