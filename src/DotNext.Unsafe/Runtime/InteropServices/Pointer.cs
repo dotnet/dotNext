@@ -145,11 +145,11 @@ namespace DotNext.Runtime.InteropServices
                 throw new ArgumentOutOfRangeException(nameof(count));
             if (count == 0)
                 return;
-            var pointer = Address;
+            var pointer = this.value;
             do
             {
                 var actualCount = count.Truncate();
-                var span = new Span<T>(pointer.ToPointer(), actualCount);
+                var span = new Span<T>(pointer, actualCount);
                 span.Fill(value);
                 count -= actualCount;
                 pointer += actualCount;
