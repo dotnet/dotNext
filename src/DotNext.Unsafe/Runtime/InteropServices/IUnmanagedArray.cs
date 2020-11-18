@@ -27,6 +27,22 @@ namespace DotNext.Runtime.InteropServices
         Span<T> Span { get; }
 
         /// <summary>
+        /// Gets element of the unmanaged array.
+        /// </summary>
+        /// <param name="index">The index of the element to get.</param>
+        /// <exception cref="IndexOutOfRangeException"><paramref name="index"/> is out of range.</exception>
+        /// <value>The pointer to the array element.</value>
+        ref T this[int index]
+        {
+            get
+            {
+                if (index < 0 || index >= Length)
+                    throw new IndexOutOfRangeException();
+                return ref Pointer[index];
+            }
+        }
+
+        /// <summary>
         /// Copies elements from the memory location to the managed array.
         /// </summary>
         /// <param name="destination">The destination array.</param>
