@@ -77,7 +77,7 @@ namespace DotNext
             private readonly Type[] serviceTypes;
             private readonly IServiceProvider? fallback;
 
-            internal CachedServiceProvider(in T tuple, IServiceProvider? fallback)
+            internal CachedServiceProvider(T tuple, IServiceProvider? fallback)
             {
                 var tupleType = typeof(T);
                 serviceTypes = tupleType.IsConstructedGenericType ? tupleType.GetGenericArguments() : Array.Empty<Type>();
@@ -315,7 +315,7 @@ namespace DotNext
         /// <param name="fallback">The fallback provider used for service resolution if tuple doesn't contain the requested service.</param>
         /// <typeparam name="T">The tuple type representing a set of services.</typeparam>
         /// <returns>The service provider constructed from the tuple.</returns>
-        public static IServiceProvider FromTuple<T>(in T tuple, IServiceProvider? fallback = null)
+        public static IServiceProvider FromTuple<T>(T tuple, IServiceProvider? fallback = null)
             where T : struct, ITuple
             => new CachedServiceProvider<T>(tuple, fallback);
 
