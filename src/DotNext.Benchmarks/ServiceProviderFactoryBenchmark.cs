@@ -28,6 +28,9 @@ namespace DotNext.Benchmarks
             .Add<IEnumerable<char>>(Value)
             .Build();
 
+        private static readonly IServiceProvider tupleProvider = ServiceProviderFactory.FromTuple(new ValueTuple<ICloneable, IComparable, IComparable<string>, IConvertible, IEquatable<string>, IEnumerable<char>>(
+            Value, Value, Value, Value, Value, Value));
+
         [Benchmark]
         public object CompiledProvider() => compiledProvider.GetService(typeof(IConvertible));
 
@@ -35,9 +38,15 @@ namespace DotNext.Benchmarks
         public object CachedProvider() => cachedProvider.GetService(typeof(IConvertible));
 
         [Benchmark]
+        public object TupleProvider() => tupleProvider.GetService(typeof(IConvertible));
+
+        [Benchmark]
         public object CompiledProviderMissingService() => compiledProvider.GetService(typeof(int));
 
         [Benchmark]
         public object CachedProviderMissingService() => cachedProvider.GetService(typeof(int));
+
+        [Benchmark]
+        public object TupleProviderMissingService() => tupleProvider.GetService(typeof(int));
     }
 }

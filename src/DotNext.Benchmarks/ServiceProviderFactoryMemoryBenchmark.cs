@@ -16,5 +16,8 @@ namespace DotNext.Benchmarks
 
         [Benchmark]
         public object CachedProvider() => ServiceProviderFactory.Create<IConvertible, ICloneable, IComparable>(Value, Value, Value);
+
+        [Benchmark]
+        public object FromTuple() => ServiceProviderFactory.FromTuple(new ValueTuple<IConvertible, ICloneable, IComparable>(Value, Value, Value));
     }
 }
