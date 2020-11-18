@@ -67,6 +67,10 @@ Release Date: 11-11-2020
 * Fixed resuming of suspended callers in [AsyncTrigger](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncTrigger.html) class
 * Updated dependencies
 
+<a href="https://www.nuget.org/packages/dotnext.unsafe/2.12.0">DotNext.Unsafe 2.12.0</a>
+* Fixed ignoring of array offset in `ReadFrom` and `WriteTo` methods of [Pointer&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Runtime.InteropServices.Pointer-1.html) type
+* Updated dependencies
+
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/2.12.0">DotNext.Net.Cluster 2.12.0</a>
 * Updated dependencies shipped with .NET Core 3.1.10
 
