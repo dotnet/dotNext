@@ -865,7 +865,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="length">The number of elements in the memory.</param>
         /// <returns>The instance of memory owner.</returns>
         public unsafe IMemoryOwner<T> ToMemoryOwner(int length)
-            => value == null ? new Buffers.UnmanagedMemory<T>(IntPtr.Zero, 0) : new Buffers.UnmanagedMemory<T>(new IntPtr(value), length);
+            => IsNull ? new Buffers.UnmanagedMemory<T>(IntPtr.Zero, 0) : new Buffers.UnmanagedMemory<T>(new IntPtr(value), length);
 
         /// <summary>
         /// Obtains pointer to the memory represented by given memory handle.
