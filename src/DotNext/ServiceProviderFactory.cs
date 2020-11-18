@@ -70,6 +70,28 @@ namespace DotNext
                 => TryGetValue(serviceType, out var service) ? service : fallback?.GetService(serviceType);
         }
 
+        private sealed class CachedServiceProvider<T> : IServiceProvider
+            where T : struct, ITuple
+        {
+            private T tuple;    // is not read-only to avoid defensive copies
+            private readonly Type[] serviceTypes;
+            private readonly IServiceProvider? fallback;
+
+            internal CachedServiceProvider(in T tuple, IServiceProvider? fallback)
+            {
+                var tupleType = typeof(T);
+                serviceTypes = tupleType.IsConstructedGenericType ? tupleType.GetGenericArguments() : Array.Empty<Type>();
+                this.tuple = tuple;
+                this.fallback = fallback;
+            }
+
+            object? IServiceProvider.GetService(Type serviceType)
+            {
+                var index = Array.IndexOf(serviceTypes, serviceType);
+                return index >= 0 && index < tuple.Length ? tuple[index] : fallback?.GetService(serviceType);
+            }
+        }
+
         private sealed class EmptyProvider : IServiceProvider
         {
             object? IServiceProvider.GetService(Type serviceType) => null;
@@ -293,20 +315,9 @@ namespace DotNext
         /// <param name="fallback">The fallback provider used for service resolution if tuple doesn't contain the requested service.</param>
         /// <typeparam name="T">The tuple type representing a set of services.</typeparam>
         /// <returns>The service provider constructed from the tuple.</returns>
-        public static IServiceProvider FromTuple<T>(T tuple, IServiceProvider? fallback = null)
+        public static IServiceProvider FromTuple<T>(in T tuple, IServiceProvider? fallback = null)
             where T : struct, ITuple
-        {
-            var tupleType = typeof(T);
-            var serviceTypes = tupleType.IsConstructedGenericType ? tupleType.GetGenericArguments() : Array.Empty<Type>();
-            if (GetLength(serviceTypes) == default)
-                return fallback ?? Empty;
-
-            var result = new CachedServiceProvider(serviceTypes.Length, fallback);
-            for (var i = 0; i < Math.Min(serviceTypes.Length, tuple.Length); i++)
-                result.Add(serviceTypes[i], tuple[i]);
-
-            return result;
-        }
+            => new CachedServiceProvider<T>(tuple, fallback);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static KeyValuePair<Type, object?> Registration<T>(T service)
