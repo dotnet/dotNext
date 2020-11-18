@@ -414,6 +414,11 @@ namespace DotNext.Runtime.InteropServices
             Equal(2, array[1]);
             Equal(3, array[2]);
             NotEqual(Pointer<byte>.Null, ptr);
+            array = ptr.ToArray(3);
+            Equal(3, array.Length);
+            Equal(1, array[0]);
+            Equal(2, array[1]);
+            Equal(3, array[2]);
         }
 
         [Fact]

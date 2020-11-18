@@ -471,17 +471,34 @@ namespace DotNext.Runtime.InteropServices
         }
 
         /// <summary>
-        /// Copies block of memory referenced by this pointer
+        /// Copies the block of memory referenced by this pointer
         /// into managed heap as array of bytes.
         /// </summary>
         /// <param name="length">Number of elements to copy.</param>
         /// <returns>A copy of memory block in the form of byte array.</returns>
         public unsafe byte[] ToByteArray(long length)
         {
-            if (IsNull)
+            if (IsNull || length == 0L)
                 return Array.Empty<byte>();
             var result = new byte[sizeof(T) * length];
             Intrinsics.Copy(in ((byte*)value)[0], ref result[0], length * sizeof(T));
+            return result;
+        }
+
+        /// <summary>
+        /// Copies the block of memory referenced by this pointer
+        /// into managed heap as array.
+        /// </summary>
+        /// <param name="length">The length of the memory block to be copied.</param>
+        /// <returns>The array containing elements from the memory block referenced by this pointer.</returns>
+        public unsafe T[] ToArray(long length)
+        {
+            if (IsNull || length == 0L)
+                return Array.Empty<T>();
+
+            // TODO: Replace with GC.AllocateUninitializedArray
+            var result = new T[length];
+            Intrinsics.Copy(in value[0], ref result[0], length);
             return result;
         }
 
