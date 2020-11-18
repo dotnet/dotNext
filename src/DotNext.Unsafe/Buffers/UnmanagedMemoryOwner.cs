@@ -22,6 +22,7 @@ namespace DotNext.Buffers
         internal UnmanagedMemoryOwner(int length, bool zeroMem, bool fromPool)
             : base(length, zeroMem) => this.fromPool = fromPool;
 
+        // TODO: Use covariant return type in C# 9
         unsafe object ICloneable.Clone()
         {
             var copy = new UnmanagedMemoryOwner<T>(Length, false, fromPool);
