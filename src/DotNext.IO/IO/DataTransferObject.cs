@@ -71,6 +71,18 @@ namespace DotNext.IO
                 => reader.ReadAsync<T>(token);
         }
 
+        [StructLayout(LayoutKind.Auto)]
+        private readonly struct DelegatingDecoder<T> : IDataTransferObject.IDecoder<T>
+        {
+            private readonly Func<IAsyncBinaryReader, CancellationToken, ValueTask<T>> decoder;
+
+            internal DelegatingDecoder(Func<IAsyncBinaryReader, CancellationToken, ValueTask<T>> decoder)
+                => this.decoder = decoder;
+
+            ValueTask<T> IDataTransferObject.IDecoder<T>.ReadAsync<TReader>(TReader reader, CancellationToken token)
+                => decoder(reader, token);
+        }
+
         /// <summary>
         /// Copies the object content into the specified stream.
         /// </summary>
@@ -194,5 +206,19 @@ namespace DotNext.IO
             where TResult : notnull, IDataTransferObject.IDecoder<TResult>, new()
             where TObject : notnull, IDataTransferObject
             => dto.GetObjectDataAsync<TResult, TResult>(new TResult(), token);
+
+        /// <summary>
+        /// Converts data transfer object to another type.
+        /// </summary>
+        /// <param name="dto">Data transfer object to decode.</param>
+        /// <param name="parser">The parser instance.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <typeparam name="TResult">The type of result.</typeparam>
+        /// <typeparam name="TObject">The type of the data transfer object.</typeparam>
+        /// <returns>The converted DTO content.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<TResult> GetObjectDataAsync<TResult, TObject>(this TObject dto, Func<IAsyncBinaryReader, CancellationToken, ValueTask<TResult>> parser, CancellationToken token = default)
+            where TObject : notnull, IDataTransferObject
+            => dto.GetObjectDataAsync<TResult, DelegatingDecoder<TResult>>(new DelegatingDecoder<TResult>(parser), token);
     }
 }
