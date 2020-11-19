@@ -49,9 +49,14 @@ namespace DotNext.IO
             }
         }
 
-        [StructLayout(LayoutKind.Auto)]
-        private readonly struct ArrayDecoder : IDataTransferObject.IDecoder<byte[]>
+        private sealed class ArrayDecoder : IDataTransferObject.IDecoder<byte[]>
         {
+            internal static readonly ArrayDecoder Instance = new ArrayDecoder();
+
+            private ArrayDecoder()
+            {
+            }
+
             public async ValueTask<byte[]> ReadAsync<TReader>(TReader reader, CancellationToken token)
                 where TReader : IAsyncBinaryReader
             {
@@ -177,7 +182,7 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static Task<byte[]> ToByteArrayAsync<TObject>(this TObject dto, CancellationToken token = default)
             where TObject : notnull, IDataTransferObject
-            => dto.GetObjectDataAsync<byte[], ArrayDecoder>(new ArrayDecoder(), token).AsTask();
+            => dto.GetObjectDataAsync<byte[], ArrayDecoder>(ArrayDecoder.Instance, token).AsTask();
 
         /// <summary>
         /// Converts DTO to value of blittable type.
