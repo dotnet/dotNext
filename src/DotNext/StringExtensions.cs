@@ -59,8 +59,9 @@ namespace DotNext
         /// <param name="strA">String A. Can be <see langword="null"/>.</param>
         /// <param name="strB">String B. Can be <see langword="null"/>.</param>
         /// <returns><see langword="true"/>, if the first string is equal to the second string; otherwise, <see langword="false"/>.</returns>
+        [Obsolete("Use string.Equals(string, string, StringComparison) static method instead")]
         public static bool IsEqualIgnoreCase(this string? strA, string? strB)
-            => string.Compare(strA, strB, StringComparison.OrdinalIgnoreCase) == 0;
+            => string.Equals(strA, strB, StringComparison.OrdinalIgnoreCase);
 
         /// <summary>
         /// Trims the source string to specified length if it exceeds it.
