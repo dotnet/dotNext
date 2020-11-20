@@ -54,8 +54,6 @@ namespace DotNext.Buffers
             return Chunk<T>.CreateSequence(head, tail);
         }
 
-        // TODO: Need writer for StringBuilder but it will be available in .NET Core 5
-
         /// <summary>
         /// Constructs the string from the buffer.
         /// </summary>

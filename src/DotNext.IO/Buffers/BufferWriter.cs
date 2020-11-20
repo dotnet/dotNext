@@ -842,6 +842,8 @@ namespace DotNext.Buffers
         public static void WriteTimeSpan(this IBufferWriter<char> writer, TimeSpan value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
             => Write<TimeSpanFormatter>(writer, value, format, provider);
 
+        // TODO: Need writer for StringBuilder but it will be available in .NET Core 5
+
         /// <summary>
         /// Constructs the string from the buffer.
         /// </summary>
