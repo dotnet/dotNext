@@ -18,6 +18,7 @@ namespace DotNext
         /// </summary>
         internal static readonly int BitwiseHashSalt = new Random().Next();
 
+        // TODO: Replace with method pointer in C# 9
         private interface IRandomStringGenerator
         {
             void NextString(Span<char> buffer, ReadOnlySpan<char> allowedChars);
