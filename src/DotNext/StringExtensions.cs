@@ -1,10 +1,10 @@
 using System;
+using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext
 {
-    using CharBuffer = Buffers.MemoryRental<char>;
     using CharSequence = Buffers.ChunkSequence<char>;
     using StringTemplate = Buffers.MemoryTemplate<char>;
 
@@ -13,6 +13,19 @@ namespace DotNext
     /// </summary>
     public static class StringExtensions
     {
+        private static readonly SpanAction<char, string> CopyAndReverse;
+
+        static StringExtensions()
+        {
+            CopyAndReverse = CreateReversedString;
+
+            static void CreateReversedString(Span<char> output, string origin)
+            {
+                origin.AsSpan().CopyTo(output);
+                output.Reverse();
+            }
+        }
+
         /// <summary>
         /// Returns alternative string if first string argument
         /// is <see langword="null"/> or empty.
@@ -36,12 +49,8 @@ namespace DotNext
         /// <returns>The string in inverse order of characters.</returns>
         public static string Reverse(this string str)
         {
-            if (str.Length == 0)
-                return str;
-            using CharBuffer result = str.Length <= CharBuffer.StackallocThreshold ? stackalloc char[str.Length] : new CharBuffer(str.Length);
-            str.AsSpan().CopyTo(result.Span);
-            result.Span.Reverse();
-            return new string(result.Span);
+            var length = str.Length;
+            return length > 0 ? string.Create(length, str, CopyAndReverse) : string.Empty;
         }
 
         /// <summary>
