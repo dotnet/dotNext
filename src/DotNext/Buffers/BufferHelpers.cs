@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 namespace DotNext.Buffers
 {
+    /// <summary>
+    /// Represents helper methods to work with various buffer representations.
+    /// </summary>
     public static class BufferHelpers
     {
         /// <summary>

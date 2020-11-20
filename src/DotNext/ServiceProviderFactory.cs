@@ -5,8 +5,6 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext
 {
-    using static Runtime.Intrinsics;
-
     /// <summary>
     /// Represents various ways for building <see cref="IServiceProvider"/> implementations.
     /// </summary>
@@ -73,9 +71,9 @@ namespace DotNext
         private sealed class CachedServiceProvider<T> : IServiceProvider
             where T : struct, ITuple
         {
-            private T tuple;    // is not read-only to avoid defensive copies
             private readonly Type[] serviceTypes;
             private readonly IServiceProvider? fallback;
+            private T tuple;    // is not read-only to avoid defensive copies
 
             internal CachedServiceProvider(T tuple, IServiceProvider? fallback)
             {
