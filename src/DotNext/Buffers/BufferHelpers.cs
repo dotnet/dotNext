@@ -78,7 +78,7 @@ namespace DotNext.Buffers
         /// <summary>
         /// Constructs the string from non-contiguous buffer.
         /// </summary>
-        /// <param name="sequence">The sequence of characters</param>
+        /// <param name="sequence">The sequence of characters.</param>
         /// <returns>The string constucted from the characters containing in the buffer.</returns>
         public static string BuildString(this in ReadOnlySequence<char> sequence)
         {
