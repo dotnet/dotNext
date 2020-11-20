@@ -49,6 +49,7 @@ Release Date: 11-11-2020
 <a href="https://www.nuget.org/packages/dotnext/2.12.0">DotNext 2.12.0</a>
 * Added consuming enumerator for [IProducerConsumerCollection&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.collections.concurrent.iproducerconsumercollection-1)
 * Introduced `ServiceProviderFactory` class and its factory methods for producing [Service Providers](https://docs.microsoft.com/en-us/dotnet/api/system.iserviceprovider)
+* Significant performance improvements of `StringExtensions.Reverse` method
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.io/2.12.0">DotNext.IO 2.12.0</a>
