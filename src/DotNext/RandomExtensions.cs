@@ -61,6 +61,7 @@ namespace DotNext
             }
         }
 
+        // TODO: Need to use SkipInitAttribute here
         private static string NextString<TGenerator>(TGenerator generator, ReadOnlySpan<char> allowedChars, int length)
             where TGenerator : struct, IRandomStringGenerator
         {
