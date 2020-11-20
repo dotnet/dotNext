@@ -2,14 +2,11 @@ using System;
 using System.Buffers;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace DotNext.IO
 {
-    using CharWriter = Buffers.SpanWriter<char>;
-
     /// <summary>
     /// Represents <see cref="TextReader"/> wrapper for <see cref="ReadOnlySequence{T}"/> type.
     /// </summary>
@@ -147,24 +144,28 @@ namespace DotNext.IO
         public override Task<int> ReadBlockAsync(char[] buffer, int index, int count)
             => ReadBlockAsync(buffer.AsMemory(index, count)).AsTask();
 
+        private static string ToString(ReadOnlySequence<char> sequence)
+        {
+            if (sequence.IsEmpty)
+                return string.Empty;
+
+            // optimal path where we can avoid allocation of the delegate instance
+            if (sequence.IsSingleSegment)
+                return new string(sequence.FirstSpan);
+
+            // TODO: Must be replaced with method pointer in future versions of .NET
+            return string.Create(checked((int)sequence.Length), sequence, ReadToEnd);
+
+            static void ReadToEnd(Span<char> output, ReadOnlySequence<char> input)
+                => input.CopyTo(output);
+        }
+
         /// <inheritdoc />
         public override string ReadToEnd()
         {
             var tail = sequence.Slice(position);
             position = sequence.End;
-
-            if (tail.IsEmpty)
-                return string.Empty;
-
-            // optimal path where we can avoid allocation of the delegate instance
-            if (tail.IsSingleSegment)
-                return new string(tail.FirstSpan);
-
-            // TODO: Must be replaced with method pointer in future versions of .NET
-            return string.Create(checked((int)tail.Length), tail, ReadToEnd);
-
-            static void ReadToEnd(Span<char> output, ReadOnlySequence<char> input)
-                => input.CopyTo(output);
+            return ToString(tail);
         }
 
         /// <inheritdoc />
@@ -186,42 +187,35 @@ namespace DotNext.IO
         /// <inheritdoc />
         public override string? ReadLine()
         {
-            // usage of pooled memory writer is not possible here due to inability to compute
-            // initial buffer size
-            var sb = new StringBuilder();
+            var start = position;
+            var length = 0L;
             var newLine = Environment.NewLine;
 
-            // this buffer is needed to save temporary characters that are candidates for line termination string
-            var buffer = new CharWriter(stackalloc char[newLine.Length]);
+            // this variable is needed to save temporary the length of characters that are candidates for line termination string
+            var newLineBufferPosition = 0;
             while (sequence.TryGet(ref position, out var block, false) && !block.IsEmpty)
             {
                 foreach (var ch in block.Span)
                 {
-                    if (ch == newLine[buffer.WrittenCount])
+                    if (ch == newLine[newLineBufferPosition])
                     {
                         // skip character which is a part of line termination string
-                        buffer.Add(ch);
+                        newLineBufferPosition += 1;
                     }
                     else
                     {
-                        var rest = buffer.WrittenSpan;
-                        if (!rest.IsEmpty)
-                        {
-                            sb.Append(rest);
-                            buffer.Reset();
-                        }
-
-                        sb.Append(ch);
+                        length += 1L + newLineBufferPosition;
+                        newLineBufferPosition = 0;
                     }
 
                     position = sequence.GetPosition(1L, position);
-                    if (buffer.FreeCapacity == 0)
+                    if (newLineBufferPosition >= newLine.Length)
                         goto exit;
                 }
             }
 
             exit:
-            return sb.Length > 0 ? sb.ToString() : null;
+            return length == 0L ? null : ToString(sequence.Slice(start, length));
         }
 
         /// <inheritdoc />
