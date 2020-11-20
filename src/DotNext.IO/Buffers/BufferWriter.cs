@@ -842,28 +842,22 @@ namespace DotNext.Buffers
         public static void WriteTimeSpan(this IBufferWriter<char> writer, TimeSpan value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
             => Write<TimeSpanFormatter>(writer, value, format, provider);
 
-        // TODO: Need writer for StringBuilder but it will be available in .NET Core 5
+        /// <summary>
+        /// Constructs the string from the buffer.
+        /// </summary>
+        /// <param name="writer">The buffer of characters.</param>
+        /// <returns>The string constructed from the buffer.</returns>
+        [Obsolete("Use BufferHelpers class instead", true)]
+        public static string BuildString(ArrayBufferWriter<char> writer)
+            => BufferHelpers.BuildString(writer);
 
         /// <summary>
         /// Constructs the string from the buffer.
         /// </summary>
         /// <param name="writer">The buffer of characters.</param>
         /// <returns>The string constructed from the buffer.</returns>
-        public static string BuildString(this ArrayBufferWriter<char> writer)
-        {
-            var span = writer.WrittenSpan;
-            return span.IsEmpty ? string.Empty : new string(span);
-        }
-
-        /// <summary>
-        /// Constructs the string from the buffer.
-        /// </summary>
-        /// <param name="writer">The buffer of characters.</param>
-        /// <returns>The string constructed from the buffer.</returns>
-        public static string BuildString(this MemoryWriter<char> writer)
-        {
-            var span = writer.WrittenMemory.Span;
-            return span.IsEmpty ? string.Empty : new string(span);
-        }
+        [Obsolete("Use BufferHelpers class instead", true)]
+        public static string BuildString(MemoryWriter<char> writer)
+            => BufferHelpers.BuildString(writer);
     }
 }

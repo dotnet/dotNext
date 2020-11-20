@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace DotNext.IO
 {
+    using static Buffers.BufferHelpers;
+
     /// <summary>
     /// Represents <see cref="TextReader"/> wrapper for <see cref="ReadOnlySequence{T}"/> type.
     /// </summary>
@@ -144,28 +146,12 @@ namespace DotNext.IO
         public override Task<int> ReadBlockAsync(char[] buffer, int index, int count)
             => ReadBlockAsync(buffer.AsMemory(index, count)).AsTask();
 
-        private static string ToString(ReadOnlySequence<char> sequence)
-        {
-            if (sequence.IsEmpty)
-                return string.Empty;
-
-            // optimal path where we can avoid allocation of the delegate instance
-            if (sequence.IsSingleSegment)
-                return new string(sequence.FirstSpan);
-
-            // TODO: Must be replaced with method pointer in future versions of .NET
-            return string.Create(checked((int)sequence.Length), sequence, ReadToEnd);
-
-            static void ReadToEnd(Span<char> output, ReadOnlySequence<char> input)
-                => input.CopyTo(output);
-        }
-
         /// <inheritdoc />
         public override string ReadToEnd()
         {
             var tail = sequence.Slice(position);
             position = sequence.End;
-            return ToString(tail);
+            return tail.BuildString();
         }
 
         /// <inheritdoc />
@@ -215,7 +201,7 @@ namespace DotNext.IO
             }
 
             exit:
-            return length == 0L ? null : ToString(sequence.Slice(start, length));
+            return length == 0L ? null : sequence.Slice(start, length).BuildString();
         }
 
         /// <inheritdoc />

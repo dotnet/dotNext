@@ -8,7 +8,7 @@ using static System.Globalization.CultureInfo;
 
 namespace DotNext.IO
 {
-    using static Buffers.BufferWriter;
+    using Buffers;
     using CharBufferWriter = Buffers.MemoryWriter<char>;
 
     internal sealed class TextBufferWriter<TWriter> : TextWriter
