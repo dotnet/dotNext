@@ -44,7 +44,7 @@ namespace DotNext.Buffers
         public static int StackallocThreshold
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => StackallocThresholdInBytes / Unsafe.SizeOf<T>();
+            get => Unsafe.SizeOf<T>() > StackallocThresholdInBytes ? 1 : StackallocThresholdInBytes / Unsafe.SizeOf<T>();
         }
 
         private readonly object? owner;
