@@ -125,11 +125,12 @@ namespace DotNext.Buffers
         /// Copies elements from the underlying span.
         /// </summary>
         /// <param name="output">The span used to write elements from the underlying span.</param>
-        /// <exception cref="EndOfStreamException">The size of <paramref name="output"/> is greater than <see cref="RemainingCount"/>.</exception>
-        public void Read(Span<T> output)
+        /// <returns>The number of obtained elements.</returns>
+        public int Read(Span<T> output)
         {
-            if (!TryRead(output))
-                throw new EndOfStreamException();
+            span.Slice(position).CopyTo(output, out var writtenCount);
+            position += writtenCount;
+            return writtenCount;
         }
 
         /// <summary>

@@ -277,12 +277,14 @@ namespace DotNext.Buffers
         /// Copies written content.
         /// </summary>
         /// <param name="output">The memory writer.</param>
-        /// <exception cref="InvalidOperationException"><paramref name="output"/> is too small.</exception>
-        public readonly void CopyTo(ref SpanWriter<T> output)
+        /// <returns>The actual number of copied elements.</returns>
+        public readonly int CopyTo(ref SpanWriter<T> output)
         {
             GetSegments(out var head, out var tail);
-            output.Write(head);
-            output.Write(tail);
+            int writtenCount;
+            writtenCount = output.Write(head);
+            writtenCount += output.Write(tail);
+            return writtenCount;
         }
 
         /// <summary>
@@ -292,15 +294,13 @@ namespace DotNext.Buffers
         /// The output span can be larger or smaller than <see cref="WrittenCount"/>.
         /// </remarks>
         /// <param name="output">The span of elemenents to modify.</param>
-        /// <exception cref="InvalidOperationException"><paramref name="output"/> is too small.</exception>
-        public readonly void CopyTo(Span<T> output)
+        /// <returns>The actual number of copied elements.</returns>
+        public readonly int CopyTo(Span<T> output)
         {
-            if (output.Length < position)
-                throw new ArgumentException(ExceptionMessages.NotEnoughMemory, nameof(output));
-
             GetSegments(out var head, out var tail);
-            head.CopyTo(output);
-            tail.CopyTo(output.Slice(head.Length));
+            head.CopyTo(output, out var count1);
+            tail.CopyTo(output.Slice(count1), out var count2);
+            return count1 + count2;
         }
 
         /// <summary>

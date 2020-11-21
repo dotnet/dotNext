@@ -51,7 +51,7 @@ namespace DotNext.Buffers
         {
             var writer = new SpanWriter<byte>(stackalloc byte[3]);
             var expected = new byte[] { 10, 20, 30 };
-            writer.Write(expected);
+            Equal(3, writer.Write(expected));
 
             var reader = new SpanReader<byte>(writer.Span);
             Equal(3, reader.RemainingCount);
@@ -67,23 +67,13 @@ namespace DotNext.Buffers
             Equal(new byte[] { 10 }, reader.ConsumedSpan.ToArray());
             Equal(new byte[] { 20, 30 }, reader.Read(2).ToArray());
 
-            var exceptionThrown = false;
-            try
-            {
-                reader.Read(new byte[2]);
-            }
-            catch (EndOfStreamException)
-            {
-                exceptionThrown = true;
-            }
-
-            True(exceptionThrown);
+            Equal(0, reader.Read(new byte[2]));
 
             reader.Reset();
             Equal(0, reader.ConsumedCount);
             
             var actual = new byte[3];
-            reader.Read(actual);
+            Equal(3, reader.Read(actual));
             Equal(expected, actual);
         }
 
@@ -127,17 +117,8 @@ namespace DotNext.Buffers
             False(reader.TryRead(out _));
             False(reader.TryRead(out Guid value));
 
-            exceptionThrown = false;
-            try
-            {
-                reader.Read(new byte[1]);
-            }
-            catch (EndOfStreamException)
-            {
-                exceptionThrown = true;
-            }
+            Equal(0, reader.Read(new byte[1]));
 
-            True(exceptionThrown);
             exceptionThrown = false;
             try
             {
@@ -174,17 +155,8 @@ namespace DotNext.Buffers
             False(writer.TrySlide(2, out _));
             False(writer.TryAdd(1));
 
-            exceptionThrown = false;
-            try
-            {
-                writer.Write(new byte[1]);
-            }
-            catch (EndOfStreamException)
-            {
-                exceptionThrown = true;
-            }
+            Equal(0, writer.Write(new byte[1]));
 
-            True(exceptionThrown);
             exceptionThrown = false;
 
             try
