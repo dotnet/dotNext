@@ -148,6 +148,17 @@ namespace DotNext.Buffers
         /// <exception cref="EndOfStreamException"><paramref name="count"/> is greater than <see cref="RemainingCount"/>.</exception>
         public ReadOnlySpan<T> Read(int count)
             => TryRead(count, out var result) ? result : throw new EndOfStreamException();
+
+        /// <summary>
+        /// Reads the rest of the memory block.
+        /// </summary>
+        /// <returns>The rest of the memory block.</returns>
+        public ReadOnlySpan<T> ReadToEnd()
+        {
+            var result = span.Slice(position);
+            position = span.Length;
+            return result;
+        }
     }
 
     /// <summary>

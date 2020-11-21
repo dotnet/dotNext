@@ -100,6 +100,7 @@ namespace DotNext.Buffers
             var reader = new SpanReader<byte>();
             Equal(0, reader.RemainingCount);
             Equal(0, reader.ConsumedCount);
+            Equal(Array.Empty<byte>(), reader.ReadToEnd().ToArray());
 
             var exceptionThrown = false;
             try
@@ -169,6 +170,16 @@ namespace DotNext.Buffers
             }
 
             True(exceptionThrown);
+        }
+
+        [Fact]
+        public static void ReadToEnd()
+        {
+            var reader = new SpanReader<int>(new[] { 10, 20, 30 });
+            Equal(new[] { 10, 20, 30 }, reader.ReadToEnd().ToArray());
+            reader.Reset();
+            Equal(10, reader.Read());
+            Equal(new[] { 20, 30}, reader.ReadToEnd().ToArray());
         }
     }
 }
