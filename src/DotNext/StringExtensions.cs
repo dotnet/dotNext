@@ -13,17 +13,12 @@ namespace DotNext
     /// </summary>
     public static class StringExtensions
     {
-        private static readonly SpanAction<char, string> CopyAndReverse;
+        private static readonly SpanAction<char, string> CopyAndReverse = CreateReversedString;
 
-        static StringExtensions()
+        private static void CreateReversedString(Span<char> output, string origin)
         {
-            CopyAndReverse = CreateReversedString;
-
-            static void CreateReversedString(Span<char> output, string origin)
-            {
-                origin.AsSpan().CopyTo(output);
-                output.Reverse();
-            }
+            origin.AsSpan().CopyTo(output);
+            output.Reverse();
         }
 
         /// <summary>
