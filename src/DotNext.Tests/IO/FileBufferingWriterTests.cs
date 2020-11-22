@@ -257,6 +257,44 @@ namespace DotNext.IO
             Equal(bytes, ms.WrittenSpan.ToArray());
         }
 
+        [Theory]
+        [InlineData(10)]
+        [InlineData(100)]
+        [InlineData(1000)]
+        public static void DrainToSpan(int threshold)
+        {
+            using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: false);
+            var bytes = new byte[500];
+            for (byte i = 0; i < byte.MaxValue; i++)
+                bytes[i] = i;
+
+            writer.Write(bytes, 0, byte.MaxValue);
+            writer.Write(bytes.AsSpan(byte.MaxValue));
+            Equal(bytes.Length, writer.Length);
+            var buffer = new byte[100];
+            Equal(buffer.Length, writer.CopyTo(buffer));
+            Equal(bytes[0..100], buffer);
+        }
+
+        [Theory]
+        [InlineData(10)]
+        [InlineData(100)]
+        [InlineData(1000)]
+        public static async Task DrainToMemoryAsync(int threshold)
+        {
+            using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: false);
+            var bytes = new byte[500];
+            for (byte i = 0; i < byte.MaxValue; i++)
+                bytes[i] = i;
+
+            writer.Write(bytes, 0, byte.MaxValue);
+            writer.Write(bytes.AsSpan(byte.MaxValue));
+            Equal(bytes.Length, writer.Length);
+            var buffer = new byte[100];
+            Equal(buffer.Length, await writer.CopyToAsync(buffer));
+            Equal(bytes[0..100], buffer);
+        }
+
         [Fact]
         public static void CtorExceptions()
         {
@@ -331,8 +369,7 @@ namespace DotNext.IO
         [Fact]
         public static void StressTest3()
         {
-            var buffer = new byte[1024 * 1024 * 10];    // 10 MB
-            new Random().NextBytes(buffer);
+            var buffer = RandomBytes(1024 * 1024 * 10);    // 10 MB
             using var writer = new FileBufferingWriter(asyncIO: false);
             writer.Write(buffer);
             False(writer.TryGetWrittenContent(out _));

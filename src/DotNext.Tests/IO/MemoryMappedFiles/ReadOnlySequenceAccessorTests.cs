@@ -14,8 +14,7 @@ namespace DotNext.IO.MemoryMappedFiles
         public static void IteratingOverSegments()
         {
             var tempFile = Path.GetTempFileName();
-            var content = new byte[1024];
-            new Random().NextBytes(content);
+            var content = RandomBytes(1024);
             using (var fs = new FileStream(tempFile, FileMode.Open, FileAccess.Write, FileShare.None))
             {
                 fs.Write(content);
