@@ -9,6 +9,15 @@ namespace DotNext.Buffers
     /// </summary>
     public static class BufferHelpers
     {
+        private static readonly SpanAction<char, IGrowableBuffer<char>> InitializeStringFromWriter = InitializeString;
+        private static readonly SpanAction<char, ReadOnlySequence<char>> InitializeStringFromSequence = InitializeString;
+
+        private static void InitializeString(Span<char> output, IGrowableBuffer<char> input)
+            => input.CopyTo(output);
+
+        private static void InitializeString(Span<char> output, ReadOnlySequence<char> input)
+            => input.CopyTo(output);
+
         /// <summary>
         /// Converts the sequence of memory blocks to <see cref="ReadOnlySequence{T}"/> data type.
         /// </summary>
@@ -70,10 +79,14 @@ namespace DotNext.Buffers
         /// </summary>
         /// <param name="writer">The buffer of characters.</param>
         /// <returns>The string constructed from the buffer.</returns>
-        public static string BuildString(this MemoryWriter<char> writer)
+        public static string BuildString(this IGrowableBuffer<char> writer)
         {
-            var span = writer.WrittenMemory.Span;
-            return span.IsEmpty ? string.Empty : new string(span);
+            var length = writer.WrittenCount;
+
+            if (length == 0L)
+                return string.Empty;
+
+            return string.Create(checked((int)length), writer, InitializeStringFromWriter);
         }
 
         /// <summary>
@@ -86,15 +99,10 @@ namespace DotNext.Buffers
             if (sequence.IsEmpty)
                 return string.Empty;
 
-            // optimal path where we can avoid allocation of the delegate instance
             if (sequence.IsSingleSegment)
                 return new string(sequence.FirstSpan);
 
-            // TODO: Must be replaced with method pointer in future versions of .NET
-            return string.Create(checked((int)sequence.Length), sequence, ReadToEnd);
-
-            static void ReadToEnd(Span<char> output, ReadOnlySequence<char> input)
-                => input.CopyTo(output);
+            return string.Create(checked((int)sequence.Length), sequence, InitializeStringFromSequence);
         }
     }
 }
