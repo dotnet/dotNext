@@ -149,7 +149,7 @@ namespace DotNext.Buffers
         public void Clear()
         {
             ThrowIfDisposed();
-            DisposeChunks();
+            ReleaseChunks();
             length = 0L;
         }
 
@@ -175,7 +175,7 @@ namespace DotNext.Buffers
         /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        private void DisposeChunks()
+        private void ReleaseChunks()
         {
             for (MemoryChunk? current = first, next; !(current is null); current = next)
             {
@@ -192,7 +192,7 @@ namespace DotNext.Buffers
         {
             if (disposing)
             {
-                DisposeChunks();
+                ReleaseChunks();
             }
 
             base.Dispose(disposing);
