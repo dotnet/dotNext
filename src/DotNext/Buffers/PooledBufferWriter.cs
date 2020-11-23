@@ -23,7 +23,7 @@ namespace DotNext.Buffers
             if (initialCapacity <= 0)
                 throw new ArgumentOutOfRangeException(nameof(initialCapacity));
             this.allocator = allocator;
-            buffer = this.allocator.Invoke(initialCapacity, false);
+            buffer = allocator.Invoke(initialCapacity, false);
         }
 
         /// <summary>
