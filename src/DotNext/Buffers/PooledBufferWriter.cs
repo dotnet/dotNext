@@ -30,7 +30,7 @@ namespace DotNext.Buffers
         /// Initializes a new writer with the default initial capacity.
         /// </summary>
         /// <param name="allocator">The allocator of internal buffer.</param>
-        public PooledBufferWriter(MemoryAllocator<T>? allocator)
+        public PooledBufferWriter(MemoryAllocator<T>? allocator = null)
         {
             this.allocator = allocator;
         }
