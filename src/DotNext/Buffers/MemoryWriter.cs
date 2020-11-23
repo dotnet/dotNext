@@ -226,7 +226,7 @@ namespace DotNext.Buffers
             if (sizeHint < 0)
                 throw new ArgumentOutOfRangeException(nameof(sizeHint));
             if (sizeHint == 0)
-                sizeHint = 1;
+                sizeHint = Math.Max(FreeCapacity, 1);
             if (sizeHint > FreeCapacity)
             {
                 int currentLength = Capacity, growBy = Math.Max(currentLength, sizeHint);
