@@ -2,7 +2,7 @@ using System;
 
 namespace DotNext.Buffers
 {
-    public partial class SequenceBuilder<T>
+    public partial class SparseBufferWriter<T>
     {
         internal sealed class MemoryChunk : Disposable
         {

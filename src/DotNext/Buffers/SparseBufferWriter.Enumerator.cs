@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers
 {
-    public partial class SequenceBuilder<T>
+    public partial class SparseBufferWriter<T>
     {
         /// <summary>
         /// Represents enumerator over memory segments.
