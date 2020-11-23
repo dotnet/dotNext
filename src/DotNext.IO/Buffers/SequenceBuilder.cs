@@ -78,7 +78,7 @@ namespace DotNext.Buffers
         public void Write(ReadOnlySpan<T> input)
         {
             ThrowIfDisposed();
-            if (first is null || last is null)
+            if (last is null)
                 first = last = new MemoryChunk(allocator, chunkSize);
 
             for (int writtenCount; !input.IsEmpty; length += writtenCount)
