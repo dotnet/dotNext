@@ -24,7 +24,7 @@ namespace DotNext.Buffers
 
             /// <inheritdoc />
             public readonly ReadOnlyMemory<T> Current
-                => current is null ? ReadOnlyMemory<T>.Empty : current.Memory;
+                => current is null ? ReadOnlyMemory<T>.Empty : current.WrittenMemory;
 
             /// <inheritdoc />
             readonly object IEnumerator.Current => Current;

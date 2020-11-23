@@ -4,18 +4,15 @@ namespace DotNext.Buffers
 {
     public partial class SparseBufferWriter<T>
     {
-        internal sealed class MemoryChunk : Disposable
+        internal abstract class MemoryChunk : Disposable
         {
-            private MemoryOwner<T> owner;
-            private int writtenCount;
-
-            internal MemoryChunk(MemoryAllocator<T>? allocator, int length, MemoryChunk? previous = null)
+            private protected MemoryChunk(MemoryChunk? previous)
             {
-                owner = allocator.Invoke(length, false);
-                writtenCount = 0;
                 if (!(previous is null))
                     previous.Next = this;
             }
+
+            internal abstract ReadOnlyMemory<T> WrittenMemory { get; }
 
             internal MemoryChunk? Next
             {
@@ -23,9 +20,44 @@ namespace DotNext.Buffers
                 private set;
             }
 
-            public ReadOnlyMemory<T> Memory => owner.Memory.Slice(0, writtenCount);
+            internal abstract int Write(ReadOnlySpan<T> input);
 
-            internal int Write(ReadOnlySpan<T> input)
+            protected override void Dispose(bool disposing)
+            {
+                if (disposing)
+                {
+                    Next = null;
+                }
+
+                base.Dispose(disposing);
+            }
+        }
+
+        private sealed class ImportedMemoryChunk : MemoryChunk
+        {
+            internal ImportedMemoryChunk(ReadOnlyMemory<T> memory, MemoryChunk? previous = null)
+                : base(previous) => WrittenMemory = memory;
+
+            internal override ReadOnlyMemory<T> WrittenMemory { get; }
+
+            internal override int Write(ReadOnlySpan<T> input) => 0;
+        }
+
+        private sealed class PooledMemoryChunk : MemoryChunk
+        {
+            private MemoryOwner<T> owner;
+            private int writtenCount;
+
+            internal PooledMemoryChunk(MemoryAllocator<T>? allocator, int length, MemoryChunk? previous = null)
+                : base(previous)
+            {
+                owner = allocator.Invoke(length, false);
+                writtenCount = 0;
+            }
+
+            internal override ReadOnlyMemory<T> WrittenMemory => owner.Memory.Slice(0, writtenCount);
+
+            internal override int Write(ReadOnlySpan<T> input)
             {
                 var output = owner.Memory.Span.Slice(writtenCount);
                 int count;
@@ -40,11 +72,6 @@ namespace DotNext.Buffers
 
             protected override void Dispose(bool disposing)
             {
-                if (disposing)
-                {
-                    Next = null;
-                }
-
                 owner.Dispose();
                 owner = default;
                 writtenCount = 0;

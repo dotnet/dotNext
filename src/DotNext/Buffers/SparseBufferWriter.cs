@@ -79,7 +79,7 @@ namespace DotNext.Buffers
         {
             ThrowIfDisposed();
             if (last is null)
-                first = last = new MemoryChunk(allocator, chunkSize);
+                first = last = new PooledMemoryChunk(allocator, chunkSize);
 
             for (int writtenCount; !input.IsEmpty; length += writtenCount)
             {
@@ -87,21 +87,53 @@ namespace DotNext.Buffers
 
                 // no more space in the last chunk, allocate a new one
                 if (writtenCount == 0)
-                    last = new MemoryChunk(allocator, chunkSize, last);
+                    last = new PooledMemoryChunk(allocator, chunkSize, last);
                 else
                     input = input.Slice(writtenCount);
             }
         }
 
         /// <summary>
+        /// Writes the block of memory to this builder.
+        /// </summary>
+        /// <param name="input">The memory block to be written to this builder.</param>
+        /// <param name="copyMemory"><see langword="true"/> to copy the content of the input buffer; <see langword="false"/> to import the memory block.</param>
+        /// <exception cref="ObjectDisposedException">The builder has been disposed.</exception>
+        public void Write(ReadOnlyMemory<T> input, bool copyMemory = true)
+        {
+            ThrowIfDisposed();
+            if (input.IsEmpty)
+                goto exit;
+
+            if (copyMemory)
+            {
+                Write(input.Span);
+            }
+            else if (last is null)
+            {
+                first = last = new ImportedMemoryChunk(input);
+                length += input.Length;
+            }
+            else
+            {
+                last = new ImportedMemoryChunk(input, last);
+                length += input.Length;
+            }
+
+            exit:
+            return;
+        }
+
+        /// <summary>
         /// Writes a sequence of memory blocks to this builder.
         /// </summary>
         /// <param name="sequence">A sequence of memory blocks.</param>
+        /// <param name="copyMemory"><see langword="true"/> to copy the content of the input buffer; <see langword="false"/> to import memory blocks.</param>
         /// <exception cref="ObjectDisposedException">The builder has been disposed.</exception>
-        public void Write(in ReadOnlySequence<T> sequence)
+        public void Write(in ReadOnlySequence<T> sequence, bool copyMemory = true)
         {
             foreach (var segment in sequence)
-                Write(segment.Span);
+                Write(segment, copyMemory);
         }
 
         /// <summary>
@@ -116,7 +148,7 @@ namespace DotNext.Buffers
             ThrowIfDisposed();
             for (MemoryChunk? current = first; !(current is null); current = current?.Next)
             {
-                var buffer = current.Memory.Span;
+                var buffer = current.WrittenMemory.Span;
                 writer(buffer, arg);
             }
         }
@@ -133,7 +165,7 @@ namespace DotNext.Buffers
             var total = 0;
             for (MemoryChunk? current = first; !(current is null) && !output.IsEmpty; current = current?.Next)
             {
-                var buffer = current.Memory.Span;
+                var buffer = current.WrittenMemory.Span;
                 buffer.CopyTo(output, out var writtenCount);
                 output = output.Slice(writtenCount);
                 total += writtenCount;
