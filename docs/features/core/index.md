@@ -251,3 +251,16 @@ ReadOnlySpan<byte> bytes = stackalloc byte[] {8, 16, 24};
 Span<char> hex = new stackalloc[bytes.Length * 2];
 Span.ToHex(bytes, hex); //now hex == 081018
 ```
+
+# Polling of Concurrent Collections
+[IProducerConsumerCollection&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.collections.concurrent.iproducerconsumercollection-1) is a common interface for concurrent collections in .NET library. Consumer of such collection uses `TryTake` or more specialized method provided by subclasses to obtain elements from the collection. For convenience, [Sequence](https://sakno.github.io/dotNext/api/DotNext.Collections.Generic.Sequence.html) static class offers `GetConsumer` extension method to obtain polling enumerable collection over elements in the concurrent collection so you can use classic **foreach** loop:
+```csharp
+using DotNext.Collections.Concurrent;
+using System.Collections.Concurrent;
+
+var queue = new ConcurrentQueue<int>();
+foreach (int item in queue.GetConsumer())
+{
+    // collection enumerator will call .TryDequeue(out int result) for each iteration of this loop
+}
+```
