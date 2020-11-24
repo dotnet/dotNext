@@ -50,10 +50,12 @@ Release Date: 11-11-2020
 * Added consuming enumerator for [IProducerConsumerCollection&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.collections.concurrent.iproducerconsumercollection-1)
 * Introduced `ServiceProviderFactory` class and its factory methods for producing [Service Providers](https://docs.microsoft.com/en-us/dotnet/api/system.iserviceprovider)
 * Significant performance improvements of `StringExtensions.Reverse` method
+* Introduced a new class `SparseBufferWriter<T>` in addition to existing buffer writes which acts as a growable buffer without memory reallocations
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.io/2.12.0">DotNext.IO 2.12.0</a>
 * Introduced `TextBufferReader` class inherited from [TextReader](https://docs.microsoft.com/en-us/dotnet/api/system.io.textreader) that can be used to read the text from [ReadOnlySequence&lt;char&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) or [ReadOnlyMemory&lt;char&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.readonlymemory-1)
+* Added `SequenceBuilder<T>` type for building [ReadOnlySequence&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) instances from the chunk of memory blocks
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.12.0">DotNext.Metaprogramming 2.12.0</a>
