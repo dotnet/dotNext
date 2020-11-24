@@ -12,6 +12,10 @@ namespace DotNext.Buffers
                     previous.Next = this;
             }
 
+            internal abstract int FreeCapacity { get; }
+
+            internal abstract Memory<T> FreeMemory { get; }
+
             internal abstract ReadOnlyMemory<T> WrittenMemory { get; }
 
             internal MemoryChunk? Next
@@ -21,6 +25,8 @@ namespace DotNext.Buffers
             }
 
             internal abstract int Write(ReadOnlySpan<T> input);
+
+            internal abstract void Advance(int count);
 
             protected override void Dispose(bool disposing)
             {
@@ -40,7 +46,13 @@ namespace DotNext.Buffers
 
             internal override ReadOnlyMemory<T> WrittenMemory { get; }
 
+            internal override int FreeCapacity => 0;
+
+            internal override Memory<T> FreeMemory => Memory<T>.Empty;
+
             internal override int Write(ReadOnlySpan<T> input) => 0;
+
+            internal override void Advance(int count) => throw new NotSupportedException();
         }
 
         private sealed class PooledMemoryChunk : MemoryChunk
@@ -55,11 +67,15 @@ namespace DotNext.Buffers
                 writtenCount = 0;
             }
 
+            internal override Memory<T> FreeMemory => owner.Memory.Slice(writtenCount);
+
+            internal override int FreeCapacity => owner.Length - writtenCount;
+
             internal override ReadOnlyMemory<T> WrittenMemory => owner.Memory.Slice(0, writtenCount);
 
             internal override int Write(ReadOnlySpan<T> input)
             {
-                var output = owner.Memory.Span.Slice(writtenCount);
+                var output = FreeMemory.Span;
                 int count;
                 if (input.IsEmpty || output.IsEmpty)
                     count = 0;
@@ -68,6 +84,14 @@ namespace DotNext.Buffers
 
                 writtenCount += count;
                 return count;
+            }
+
+            internal override void Advance(int count)
+            {
+                var length = checked(writtenCount + count);
+                if (length > owner.Length)
+                    throw new ArgumentOutOfRangeException(nameof(count));
+                writtenCount = length;
             }
 
             protected override void Dispose(bool disposing)

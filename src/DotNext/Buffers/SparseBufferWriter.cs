@@ -9,6 +9,10 @@ namespace DotNext.Buffers
     /// <summary>
     /// Represents builder of the sparse memory buffer.
     /// </summary>
+    /// <remarks>
+    /// All members of <see cref="IBufferWriter{T}"/> are explicitly implemented because their
+    /// usage can produce holes in the sparse buffer. To avoid holes, use public members only.
+    /// </remarks>
     /// <typeparam name="T">The type of the elements in the memory.</typeparam>
     /// <seealso cref="PooledArrayBufferWriter{T}"/>
     /// <seealso cref="PooledBufferWriter{T}"/>
