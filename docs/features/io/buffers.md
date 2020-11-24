@@ -38,8 +38,27 @@ ArraySegment<byte> result = writer.WrittenArray;
 
 Additionally, it implements [IList&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.ilist-1) interface so you can use it as fully-functional list which rents the memory instead of allocation on the heap.
 
+# Sparse Buffer
+[SparseBufferWriter&lt;T&gt;](../../api/DotNext.Buffers.SparseBufferWriter-1.yml) represents a writer for the buffer represented by a set of non-contiguous memory blocks. Its main advantage over previously described buffer types is a monotonic growth without reallocations. If the buffer has not enough space to place a new portion of data then it just allocates another contiguous buffer from the pool and attaches it to the end of the chain of buffers. Thus, the buffer growth has deterministic performance.
+
+Additionally, sparse buffer allows to import memory blocks without copying them to the rented buffer. For instance, a memory block represented by [ReadOnlyMemory&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.readonlymemory-1) can be intermixed with the memory blocks rented by the sparse buffer internally.
+```csharp
+using DotNext.Buffers;
+using System;
+
+var array = new byte[] { 10, 20, 30 };
+using var writer = new SparseBufferWriter<byte>();
+writer.Write(array.AsMemory(), false);  // false means that the memory block must be inserted into sparse buffer as-is without copying its content to the internal buffer
+```
+
+Sparse buffer writer also implements [IBufferWriter&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) interface as well as other buffer writers mentioned above. However, this interface is implemented explicitly and its methods should be used with care. Major drawback of this buffer type is that it can produce memory holes, i.e. unused memory segments in the middle of the buffer chunks. The holes can be caused by `IBufferWriter<T>.GetMemory(int)` or `IBufferWriter<T>.GetSpan(int)` implementations. Therefore these methods are implemented explicitly. All other public methods of `SparseBufferWriter<T>` class cannot cause memory holes.
+
+Suppose that sparse buffer has rented memory block of size _1024_ bytes, and _1000_ bytes of them already occupied. If you want to write a block of size _100_ bytes represented by [ReadOnlySpan&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.readonlyspan-1) then use `SparseBufferWriter<T>.Write(ReadOnlySpan<T>)` method. It writes the first _24_ bytes to the existing memory block and then rents a new segment to store the rest of the input buffer, _76_ bytes. Therefore, `Write` method cannot cause fragmentation of memory blocks. However, if we want to obtain a memory block for writing via `GetMemory(int)` method then sparse buffer cannot utilize _24_ bytes of free memory from the existing chunk because the returned buffer must be at least _100_ bytes of contiguous memory. In this case, sparse buffer rents a new chunk with the size of at least _100_ bytes and marks _24_ bytes from the previous chunk as unused.
+
+The implementation of `GetMemory(int)` and `GetSpan(int)` methods are optimized to reduce the number of such memory holes. However, due to nature of sparse buffer data structure, it is not possible in 100% cases. Nevertheless, such overhead can be acceptable because sparse buffer never reallocates the existing memory and may work faster than [PooledBufferWriter&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.PooledBufferWriter-1.html) which requires reallocation when rented memory block is not enough to place a new data.
+
 # String Buffer
-[StringBuilder](https://docs.microsoft.com/en-us/dotnet/api/system.text.stringbuilder) is a great tool from .NET standard library to construct strings dynamically. However, it uses heap-based allocation of chunks and increases GC workload. The solution is to use pooled memory for growing buffer and release it when no longer needed. This approach is implemented by `PooledBufferWriter<T>` and `PooledArrayBufferWriter<T>` classes as described above. But we need suitable methods for adding portions of data to the builder similar to the methods of `StringBuilder`. They are provided as extension methods declared in [BufferWriter](../../api/DotNext.Buffers.BufferWriter.yml) class for all objects implementing [IBufferWriter&lt;char&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) interface:
+[StringBuilder](https://docs.microsoft.com/en-us/dotnet/api/system.text.stringbuilder) is a great tool from .NET standard library to construct strings dynamically. However, it uses heap-based allocation of chunks and increases GC workload. The solution is to use pooled memory for growing buffer and release it when no longer needed. This approach is implemented by `PooledBufferWriter<T>`, `PooledArrayBufferWriter<T>` and `SparseBufferWriter<T>` classes as described above. But we need suitable methods for adding portions of data to the builder similar to the methods of `StringBuilder`. They are provided as extension methods declared in [BufferWriter](../../api/DotNext.Buffers.BufferWriter.yml) class for all objects implementing [IBufferWriter&lt;char&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) interface:
 ```csharp
 using DotNext.Buffers;
 
@@ -99,4 +118,13 @@ To enable usage of contiguous memory, just pass **true** to constructor in the e
 
 This type has the following limitations:
 * Incompatible with async methods
-* Focused on [Span&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.span-1) data type, there is no interop with types from [System.Collections.Generic](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic) namespace
+* Focused on [Span&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.span-1) data type, there is no interop with types from [System.Collections.Generic](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic) namespace.
+
+# What to choose?
+The following table describes the main differences between various growable buffer types:
+| Buffer Writer | When to use | Compatible with async methods | Space complexity (write operation) |
+| ---- | ---- | ---- | ---- |
+| `PooledArrayBufferWriter<T>` | General applicability when initial capacity is known | Yes | o(1), O(n) |
+| `PooledBufferWriter<T>` | If custom [memory allocator](https://sakno.github.io/dotNext/api/DotNext.Buffers.MemoryAllocator-1) is required. For instance, if you want to use [unmanaged memory pool](https://sakno.github.io/dotNext/api/DotNext.Buffers.UnmanagedMemoryPool-1) | Yes | o(1), O(n) |
+| `BufferWriterSlim<T>` | If you have knowledge about optimal size of initial buffer which can be allocated on the stack. In this case the writer allows to avoid renting the buffer and doesn't allocate itself on the managed heap | No | o(1), O(n) |
+| `SparseBufferWriter<T>` | If optimal size of initial buffer is not known and the length of the written data varies widely | Yes | o(1), O(1) |
