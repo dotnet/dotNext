@@ -54,3 +54,5 @@ new Func<byte[], Task>(async bytes =>
   }
 });
 ```
+
+This type of statement is allowed within async lambda expression only.
