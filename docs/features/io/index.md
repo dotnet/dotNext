@@ -28,7 +28,7 @@ var str = await fs.ReadStringAsync(StringLengthEncoding.Plain, Encoding.UTF8);
 
 String encoding and decoding methods support various length encoding styles using [StringLengthEncoding](../../api/DotNext.IO.StringLengthEncoding.yml) enum type. As a result, you can prefix string with its length automatically.
 
-# Segmenting streams
+# Segmenting Streams
 In some cases you may need to hide the entire stream from the callee for the reading operation. This can be necessary to protect underlying stream from accidental seeking. [StreamSegment](https://sakno.github.io/dotNext/api/DotNext.IO.StreamSegment.html) do the same for streams as [ArraySegment](https://docs.microsoft.com/en-us/dotnet/api/system.arraysegment-1) for arrays.
 
 > [!NOTE]
@@ -172,3 +172,6 @@ var i32 = ReadInt32LittleEndian(reader.Read(sizeof(int)));
 var i64 = ReadInt64LittleEndian(reader.Read(sizeof(long)));
 var g = reader.Read<Guid>();
 ```
+
+# Text Reader for ReadOnlySequence
+[ReadOnlySequence&lt;char&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) can be wrapped as an instance of [TextReader](https://docs.microsoft.com/en-us/dotnet/api/system.io.textreader) class to read strings and characters in more convenient way. To do that, you need to instantiate [](../../api/DotNext.IO.TextBufferReader.yml) class and pass the sequence to its constructor.
