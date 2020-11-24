@@ -84,11 +84,14 @@ namespace DotNext.Buffers
         {
             yield return new object[] { new PooledBufferWriter<char>(MemoryPool<char>.Shared.ToAllocator()) };
             yield return new object[] { new PooledArrayBufferWriter<char>() };
+            yield return new object[] { new SparseBufferWriter<char>() };
+            yield return new object[] { new SparseBufferWriter<char>(32) };
         }
 
         [Theory]
         [MemberData(nameof(CharWriters))]
-        public static void MutableStringBuffer(MemoryWriter<char> writer)
+        public static void MutableStringBuffer<TWriter>(TWriter writer)
+            where TWriter : class, IBufferWriter<char>, IGrowableBuffer<char>
         {
             using (writer)
             {
@@ -109,7 +112,7 @@ namespace DotNext.Buffers
 
                 var dt = DateTime.Now;
                 writer.WriteDateTime(dt, provider: InvariantCulture);
-                
+
                 var dto = DateTimeOffset.Now;
                 writer.WriteDateTimeOffset(dto, provider: InvariantCulture);
 
