@@ -58,9 +58,9 @@ namespace DotNext.Buffers
         void IBufferWriter<T>.Advance(int count)
         {
             ThrowIfDisposed();
-            if (last is null)
+            if (!(last is PooledMemoryChunk chunk))
                 throw new InvalidOperationException();
-            last.Advance(count);
+            chunk.Advance(count);
             length += count;
         }
     }

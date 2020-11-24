@@ -26,8 +26,6 @@ namespace DotNext.Buffers
 
             internal abstract int Write(ReadOnlySpan<T> input);
 
-            internal abstract void Advance(int count);
-
             protected override void Dispose(bool disposing)
             {
                 if (disposing)
@@ -51,8 +49,6 @@ namespace DotNext.Buffers
             internal override Memory<T> FreeMemory => Memory<T>.Empty;
 
             internal override int Write(ReadOnlySpan<T> input) => 0;
-
-            internal override void Advance(int count) => throw new NotSupportedException();
         }
 
         private sealed class PooledMemoryChunk : MemoryChunk
@@ -90,7 +86,7 @@ namespace DotNext.Buffers
                 return count;
             }
 
-            internal override void Advance(int count)
+            internal void Advance(int count)
             {
                 var length = checked(writtenCount + count);
                 if (length > owner.Length)
