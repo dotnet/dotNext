@@ -55,7 +55,7 @@ namespace DotNext.Threading
             /// <summary>
             /// Gets a value indicating that this object doesn't hold the lock.
             /// </summary>
-            public bool IsEmpty => lockedObject is null;
+            public readonly bool IsEmpty => lockedObject is null;
 
             /// <summary>
             /// Releases the acquired lock.
@@ -182,7 +182,7 @@ namespace DotNext.Threading
         /// <param name="token">The token that can be used to abort acquisition operation.</param>
         /// <returns>The task returning the acquired lock holder.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public Task<Holder> AcquireAsync(CancellationToken token) => AcquireAsync(InfiniteTimeSpan, token);
+        public readonly Task<Holder> AcquireAsync(CancellationToken token) => AcquireAsync(InfiniteTimeSpan, token);
 
         /// <summary>
         /// Acquires the lock asynchronously.

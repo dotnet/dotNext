@@ -87,21 +87,16 @@ namespace DotNext
         public static T[] Insert<T>(this T[] array, T element, long index)
         {
             if (index < 0 || index > array.LongLength)
-            {
                 throw new ArgumentOutOfRangeException(nameof(index));
-            }
-            else if (array.LongLength == 0L)
-            {
+
+            if (Intrinsics.GetLength(array) == default)
                 return new[] { element };
-            }
-            else
-            {
-                var result = new T[array.LongLength + 1];
-                Array.Copy(array, 0, result, 0, Math.Min(index + 1, array.LongLength));
-                Array.Copy(array, index, result, index + 1, array.LongLength - index);
-                result[index] = element;
-                return result;
-            }
+
+            var result = new T[array.LongLength + 1];
+            Array.Copy(array, 0, result, 0, Math.Min(index + 1, array.LongLength));
+            Array.Copy(array, index, result, index + 1, array.LongLength - index);
+            result[index] = element;
+            return result;
         }
 
         /// <summary>
@@ -115,20 +110,16 @@ namespace DotNext
         public static T[] RemoveAt<T>(this T[] array, long index)
         {
             if (index < 0L || index >= array.LongLength)
-            {
                 throw new ArgumentOutOfRangeException(nameof(index));
-            }
-            else if (array.LongLength == 1L)
-            {
+
+            // TODO: Replace with const nuint one = 1; in C# 9
+            if (Intrinsics.GetLength(array) == new UIntPtr(1))
                 return Array.Empty<T>();
-            }
-            else
-            {
-                var newStore = new T[array.LongLength - 1L];
-                Array.Copy(array, 0L, newStore, 0L, index);
-                Array.Copy(array, index + 1L, newStore, index, array.LongLength - index - 1L);
-                return newStore;
-            }
+
+            var newStore = new T[array.LongLength - 1L];
+            Array.Copy(array, 0L, newStore, 0L, index);
+            Array.Copy(array, index + 1L, newStore, index, array.LongLength - index - 1L);
+            return newStore;
         }
 
         private static T[] RemoveAll<T, TConsumer>(T[] array, in ValueFunc<T, bool> match, ref TConsumer callback)
@@ -147,19 +138,13 @@ namespace DotNext
             }
 
             if (array.LongLength - newLength == 0L)
-            {
                 return array;
-            }
-            else if (newLength == 0L)
-            {
+            if (newLength == 0L)
                 return Array.Empty<T>();
-            }
-            else
-            {
-                array = new T[newLength];
-                Array.Copy(tempArray, 0L, array, 0L, newLength);
-                return array;
-            }
+
+            array = new T[newLength];
+            Array.Copy(tempArray, 0L, array, 0L, newLength);
+            return array;
         }
 
         /// <summary>
@@ -243,7 +228,7 @@ namespace DotNext
         {
             if (startIndex >= input.LongLength || length == 0)
                 return Array.Empty<T>();
-            else if (startIndex == 0 && length == input.Length)
+            if (startIndex == 0 && length == input.Length)
                 return input;
             length = Math.Min(input.LongLength - startIndex, length);
             var result = new T[length];
@@ -274,19 +259,13 @@ namespace DotNext
         public static T[] RemoveLast<T>(this T[] input, long count)
         {
             if (count == 0L)
-            {
                 return input;
-            }
-            else if (count >= input.LongLength)
-            {
+            if (count >= input.LongLength)
                 return Array.Empty<T>();
-            }
-            else
-            {
-                var result = new T[input.LongLength - count];
-                Array.Copy(input, result, result.LongLength);
-                return result;
-            }
+
+            var result = new T[input.LongLength - count];
+            Array.Copy(input, result, result.LongLength);
+            return result;
         }
 
         /// <summary>
@@ -304,9 +283,9 @@ namespace DotNext
         {
             if (first is null || second is null)
                 return ReferenceEquals(first, second);
-            if (first.LongLength != second.LongLength)
+            if (Intrinsics.GetLength(first) != Intrinsics.GetLength(second))
                 return false;
-            if (first.LongLength == 0)
+            if (Intrinsics.GetLength(first) == default)
                 return true;
             return Intrinsics.EqualsAligned(ref As<T, byte>(ref first[0]), ref As<T, byte>(ref second[0]), first.LongLength * sizeof(T));
         }
@@ -432,8 +411,9 @@ namespace DotNext
                 return true;
             if (first is null)
                 return second is null;
-            if (second is null || first.LongLength != second.LongLength)
+            if (second is null || Intrinsics.GetLength(first) != Intrinsics.GetLength(second))
                 return false;
+
             return parallel ? EqualsParallel(first, second) : EqualsSequential(first, second);
         }
 
@@ -449,10 +429,11 @@ namespace DotNext
         {
             if (first is null)
                 return second is null ? 0 : -1;
-            else if (second is null)
+            if (second is null)
                 return 1;
-            else if (first.LongLength != second.LongLength)
+            if (first.LongLength != second.LongLength)
                 return first.LongLength.CompareTo(second.LongLength);
+
             return Intrinsics.Compare(ref As<T, byte>(ref first[0]), ref As<T, byte>(ref second[0]), first.LongLength * sizeof(T));
         }
     }

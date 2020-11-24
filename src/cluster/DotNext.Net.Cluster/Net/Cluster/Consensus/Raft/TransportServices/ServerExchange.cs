@@ -17,7 +17,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             ResignRequestReceived,
             HeartbeatRequestReceived,
             AppendEntriesReceived,
-
             ReadyToReceiveEntry,    // ready to receive next entry
             ReceivingEntry,   // log entry header is obtained, content is available
             EntryReceived,  // similar to ReceivingEntry but its content completely received

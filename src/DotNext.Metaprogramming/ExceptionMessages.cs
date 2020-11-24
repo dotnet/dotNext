@@ -64,5 +64,7 @@ namespace DotNext
         internal static string VoidLambda => (string)Resources.Get();
 
         internal static string CollectionExpected(Type type) => Resources.Get().Format(type.FullName);
+
+        internal static string AsyncEnumerableExpected => (string)Resources.Get();
     }
 }

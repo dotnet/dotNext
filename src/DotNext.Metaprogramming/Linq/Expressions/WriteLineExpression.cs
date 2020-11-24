@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace DotNext.Linq.Expressions
 {
@@ -59,11 +60,15 @@ namespace DotNext.Linq.Expressions
 
         private static MethodCallExpression WriteLineTo(MemberExpression stream, Expression value)
         {
-            var writeLineMethod = typeof(TextWriter).GetMethod(nameof(TextWriter.WriteLine), new[] { value.Type });
-            if (value.Type.IsValueType)
-                value = Convert(value, typeof(object));
-            if (writeLineMethod is null)
-                writeLineMethod = typeof(TextWriter).GetMethod(nameof(TextWriter.WriteLine), new[] { typeof(object) });
+            MethodInfo? writeLineMethod = typeof(TextWriter).GetMethod(nameof(TextWriter.WriteLine), new[] { value.Type });
+
+            // WriteLine method will always be resolved here because Type.DefaultBinder
+            // chooses TextWriter.WriteLine(object) if there is no exact match
+            System.Diagnostics.Debug.Assert(!(writeLineMethod is null));
+            var firstParam = writeLineMethod.GetParameters()[0].ParameterType;
+            if (firstParam != value.Type && value.Type.IsValueType)
+                value = Expression.Convert(value, typeof(object));
+
             return Call(stream, writeLineMethod, value);
         }
 

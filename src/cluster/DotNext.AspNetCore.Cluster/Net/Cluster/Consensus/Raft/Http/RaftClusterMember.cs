@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
-using static System.Threading.Timeout;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
@@ -52,7 +50,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         internal void Touch() => ChangeStatus(ClusterMemberStatus.Available);
 
-        [SuppressMessage("Reliability", "CA2000", Justification = "Response is disposed in finally block")]
         private async Task<TResult> SendAsync<TResult, TMessage>(TMessage message, CancellationToken token)
             where TMessage : HttpMessage, IHttpMessageReader<TResult>
         {

@@ -145,11 +145,11 @@ namespace DotNext.Runtime.InteropServices
                 throw new ArgumentOutOfRangeException(nameof(count));
             if (count == 0)
                 return;
-            var pointer = Address;
+            var pointer = this.value;
             do
             {
                 var actualCount = count.Truncate();
-                var span = new Span<T>(pointer.ToPointer(), actualCount);
+                var span = new Span<T>(pointer, actualCount);
                 span.Fill(value);
                 count -= actualCount;
                 pointer += actualCount;
@@ -200,7 +200,7 @@ namespace DotNext.Runtime.InteropServices
         {
             if (IsNull)
                 throw new NullPointerException();
-            else if (other.IsNull)
+            if (other.IsNull)
                 throw new ArgumentNullException(nameof(other));
             Intrinsics.Swap(value, other.value);
         }
@@ -280,7 +280,7 @@ namespace DotNext.Runtime.InteropServices
                 throw new ArgumentOutOfRangeException(nameof(offset));
             if (destination.LongLength == 0L || (offset + count) > destination.LongLength)
                 return 0L;
-            Intrinsics.Copy(in value[0], ref destination[0], count);
+            Intrinsics.Copy(in value[0], ref destination[offset], count);
             return count;
         }
 
@@ -370,7 +370,7 @@ namespace DotNext.Runtime.InteropServices
                 throw new ArgumentOutOfRangeException(nameof(offset));
             if (source.LongLength == 0L || (count + offset) > source.LongLength)
                 return 0L;
-            Intrinsics.Copy(in source[0], ref value[0], count);
+            Intrinsics.Copy(in source[offset], ref value[0], count);
             return count;
         }
 
@@ -471,17 +471,34 @@ namespace DotNext.Runtime.InteropServices
         }
 
         /// <summary>
-        /// Copies block of memory referenced by this pointer
+        /// Copies the block of memory referenced by this pointer
         /// into managed heap as array of bytes.
         /// </summary>
         /// <param name="length">Number of elements to copy.</param>
         /// <returns>A copy of memory block in the form of byte array.</returns>
         public unsafe byte[] ToByteArray(long length)
         {
-            if (IsNull)
+            if (IsNull || length == 0L)
                 return Array.Empty<byte>();
             var result = new byte[sizeof(T) * length];
             Intrinsics.Copy(in ((byte*)value)[0], ref result[0], length * sizeof(T));
+            return result;
+        }
+
+        /// <summary>
+        /// Copies the block of memory referenced by this pointer
+        /// into managed heap as array.
+        /// </summary>
+        /// <param name="length">The length of the memory block to be copied.</param>
+        /// <returns>The array containing elements from the memory block referenced by this pointer.</returns>
+        public unsafe T[] ToArray(long length)
+        {
+            if (IsNull || length == 0L)
+                return Array.Empty<T>();
+
+            // TODO: Replace with GC.AllocateUninitializedArray
+            var result = new T[length];
+            Intrinsics.Copy(in value[0], ref result[0], length);
             return result;
         }
 
@@ -510,7 +527,6 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>Reinterpreted pointer type.</returns>
         /// <exception cref="GenericArgumentException{U}">Type <typeparamref name="TOther"/> should be the same size or less than type <typeparamref name="T"/>.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [SuppressMessage("Usage", "CA2208", Justification = "The name of the generic parameter is correct")]
         public unsafe Pointer<TOther> As<TOther>()
             where TOther : unmanaged
             => sizeof(T) >= sizeof(TOther) ? new Pointer<TOther>(Address) : throw new GenericArgumentException<TOther>(ExceptionMessages.WrongTargetTypeSize, nameof(TOther));
@@ -659,12 +675,11 @@ namespace DotNext.Runtime.InteropServices
         {
             if (value == other.value)
                 return 0;
-            else if (IsNull)
+            if (IsNull)
                 throw new NullPointerException();
-            else if (other.IsNull)
+            if (other.IsNull)
                 throw new ArgumentNullException(nameof(other));
-            else
-                return Intrinsics.Compare(value, other, count * sizeof(T));
+            return Intrinsics.Compare(value, other, count * sizeof(T));
         }
 
         /// <summary>
@@ -850,7 +865,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="length">The number of elements in the memory.</param>
         /// <returns>The instance of memory owner.</returns>
         public unsafe IMemoryOwner<T> ToMemoryOwner(int length)
-            => value == null ? new Buffers.UnmanagedMemory<T>(IntPtr.Zero, 0) : new Buffers.UnmanagedMemory<T>(new IntPtr(value), length);
+            => IsNull ? new Buffers.UnmanagedMemory<T>(IntPtr.Zero, 0) : new Buffers.UnmanagedMemory<T>(new IntPtr(value), length);
 
         /// <summary>
         /// Obtains pointer to the memory represented by given memory handle.

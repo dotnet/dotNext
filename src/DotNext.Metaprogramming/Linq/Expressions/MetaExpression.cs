@@ -9,8 +9,8 @@ namespace DotNext.Linq.Expressions
 {
     internal sealed class MetaExpression : DynamicMetaObject
     {
-        private static readonly MethodInfo AsExpressionBuilderMethod = new Func<object, IExpressionBuilder<Expression>>(Unsafe.As<IExpressionBuilder<Expression>>).Method;
-        private static readonly MethodInfo AsExpressionMethod = new Func<object, Expression>(Unsafe.As<Expression>).Method;
+        private static readonly MethodInfo AsExpressionBuilderMethod = new Func<object?, IExpressionBuilder<Expression>?>(Unsafe.As<IExpressionBuilder<Expression>>).Method;
+        private static readonly MethodInfo AsExpressionMethod = new Func<object?, Expression?>(Unsafe.As<Expression>).Method;
         private static readonly MethodInfo BuildMethod = typeof(IExpressionBuilder<Expression>).GetMethod(nameof(IExpressionBuilder<Expression>.Build), BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
         private static readonly MethodInfo MakeUnaryMethod = new Func<ExpressionType, Expression, Type, UnaryExpression>(Expression.MakeUnary).Method;
         private static readonly MethodInfo MakeBinaryMethod = new Func<ExpressionType, Expression, Expression, BinaryExpression>(Expression.MakeBinary).Method;

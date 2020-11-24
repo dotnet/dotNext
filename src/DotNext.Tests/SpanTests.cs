@@ -107,9 +107,7 @@ namespace DotNext
         [InlineData(2048, false)]
         public static void ToHexConversion(int arraySize, bool lowercased)
         {
-            var data = new byte[arraySize];
-            var rnd = new Random();
-            rnd.NextBytes(data);
+            var data = RandomBytes(arraySize);
             Equal(ToHexSlow(data, lowercased), new ReadOnlySpan<byte>(data).ToHex(lowercased));
         }
 
@@ -154,9 +152,7 @@ namespace DotNext
         [InlineData(2048, false)]
         public static void FromHexConversion(int arraySize, bool lowercased)
         {
-            var data = new byte[arraySize];
-            var rnd = new Random();
-            rnd.NextBytes(data);
+            var data = RandomBytes(arraySize);
             ReadOnlySpan<char> hex = ToHexSlow(data, lowercased);
             Equal(data, hex.FromHex());
         }

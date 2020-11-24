@@ -38,30 +38,39 @@ namespace DotNext
         internal TValue GetUserData(IDictionary<long, object?> storage, [AllowNull]TValue defaultValue)
             => storage.TryGetValue(id, out var userData) && userData is TValue result ? result : defaultValue;
 
-        internal bool GetUserData(IDictionary<long, object?> storage, [NotNullWhen(true)]out TValue userData)
+        internal bool GetUserData(IDictionary<long, object?> storage, [MaybeNullWhen(false)]out TValue userData)
         {
             if (storage.TryGetValue(id, out var value) && value is TValue typedValue)
             {
                 userData = typedValue;
                 return true;
             }
-            else
-            {
-                userData = default!;
-                return false;
-            }
+
+            userData = default;
+            return false;
         }
 
         internal void SetUserData(IDictionary<long, object?> storage, TValue userData)
         {
             if (id == 0)
                 throw new ArgumentException(ExceptionMessages.InvalidUserDataSlot);
-            else
-                storage[id] = userData;
+            storage[id] = userData;
         }
 
         internal bool RemoveUserData(IDictionary<long, object?> storage)
             => storage.Remove(id);
+
+        internal bool RemoveUserData(Dictionary<long, object?> storage, [MaybeNullWhen(false)]out TValue userData)
+        {
+            if (storage.Remove(id, out var value) && value is TValue typedValue)
+            {
+                userData = typedValue;
+                return true;
+            }
+
+            userData = default;
+            return false;
+        }
 
         /// <summary>
         /// Checks whether the two data slots are the same.

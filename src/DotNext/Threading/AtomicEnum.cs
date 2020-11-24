@@ -112,7 +112,6 @@ namespace DotNext.Threading
         /// <param name="value">Initial value of the atomic boolean.</param>
         public AtomicEnum(TEnum value) => this.value = value.ToInt64();
 
-        [SuppressMessage("Usage", "CA1801", Justification = "context is required by .NET serialization framework")]
         private AtomicEnum(SerializationInfo info, StreamingContext context)
         {
             value = (long)info.GetValue(ValueSerData, typeof(long));

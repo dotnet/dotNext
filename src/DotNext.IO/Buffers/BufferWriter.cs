@@ -678,14 +678,14 @@ namespace DotNext.Buffers
         {
             for (int bufferSize = 0; ; )
             {
-                var span = writer.GetSpan(bufferSize);
-                if (value.TryFormat(span, out var charsWritten, format, provider))
+                var buffer = writer.GetSpan(bufferSize);
+                if (value.TryFormat(buffer, out var charsWritten, format, provider))
                 {
                     writer.Advance(charsWritten);
                     break;
                 }
 
-                bufferSize = bufferSize <= MaxBufferSize ? bufferSize * 2 : throw new InsufficientMemoryException();
+                bufferSize = bufferSize <= MaxBufferSize ? buffer.Length * 2 : throw new InsufficientMemoryException();
             }
         }
 
@@ -849,21 +849,17 @@ namespace DotNext.Buffers
         /// </summary>
         /// <param name="writer">The buffer of characters.</param>
         /// <returns>The string constructed from the buffer.</returns>
-        public static string BuildString(this ArrayBufferWriter<char> writer)
-        {
-            var span = writer.WrittenSpan;
-            return span.IsEmpty ? string.Empty : new string(span);
-        }
+        [Obsolete("Use BufferHelpers class instead", true)]
+        public static string BuildString(ArrayBufferWriter<char> writer)
+            => BufferHelpers.BuildString(writer);
 
         /// <summary>
         /// Constructs the string from the buffer.
         /// </summary>
         /// <param name="writer">The buffer of characters.</param>
         /// <returns>The string constructed from the buffer.</returns>
-        public static string BuildString(this MemoryWriter<char> writer)
-        {
-            var span = writer.WrittenMemory.Span;
-            return span.IsEmpty ? string.Empty : new string(span);
-        }
+        [Obsolete("Use BufferHelpers class instead", true)]
+        public static string BuildString(MemoryWriter<char> writer)
+            => BufferHelpers.BuildString(writer);
     }
 }

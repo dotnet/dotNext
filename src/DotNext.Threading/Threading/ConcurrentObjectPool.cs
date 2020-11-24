@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
@@ -191,7 +190,6 @@ namespace DotNext.Threading
         private readonly long lifetime;
         private AtomicReference<Rental?> last;
         private AtomicReference<Rental> current;
-        [SuppressMessage("Design", "IDE0032", Justification = "Volatile operations are applied directly to this field")]
         private int waitCount;
 
         /// <summary>
@@ -203,7 +201,6 @@ namespace DotNext.Threading
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="capacity"/> is less than zero.</exception>
         /// <exception cref="ArgumentException"><paramref name="factory"/> is empty.</exception>
         /// <seealso href="https://en.wikipedia.org/wiki/Shortest_job_next">Shortest Job First</seealso>
-        [SuppressMessage("Reliability", "CA2000", Justification = "Rental object is reusable and should not be destroyed in ctor")]
         public ConcurrentObjectPool(int capacity, ValueFunc<T> factory)
         {
             if (capacity < 1)
@@ -258,7 +255,6 @@ namespace DotNext.Threading
         /// <param name="objects">The objects to be placed into the pool.</param>
         /// <exception cref="ArgumentException"><paramref name="objects"/> is empty.</exception>
         /// <seealso href="https://en.wikipedia.org/wiki/Round-robin_scheduling">Round-robin</seealso>
-        [SuppressMessage("Reliability", "CA2000", Justification = "Rental object is reusable and should not be destroyed in ctor")]
         public ConcurrentObjectPool(IEnumerable<T> objects)
         {
             factory = default;

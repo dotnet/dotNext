@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.Tracing;
 using System.IO;
 using System.Threading;
 using System.Threading.Channels;
@@ -27,10 +28,8 @@ namespace DotNext.Threading.Channels
         private sealed class SingleReaderBuffer : IReadBuffer
         {
             private AtomicBoolean readyToRead;
-#pragma warning disable CS8618
             [AllowNull]
             private T value;
-#pragma warning restore CS8618
 
             void IReadBuffer.Add(T item)
             {
@@ -45,11 +44,9 @@ namespace DotNext.Threading.Channels
                     result = value;
                     return true;
                 }
-                else
-                {
-                    result = default!;
-                    return false;
-                }
+
+                result = default!;
+                return false;
             }
 
             void IReadBuffer.Clear() => value = default;
@@ -65,11 +62,12 @@ namespace DotNext.Threading.Channels
         private readonly IReadBuffer buffer;
         private readonly FileCreationOptions fileOptions;
         private readonly IChannelReader<T> reader;
+        private readonly IncrementingEventCounter? readRate;
         private AsyncLock readLock;
         private PartitionStream? readTopic;
         private ChannelCursor cursor;
 
-        internal PersistentChannelReader(IChannelReader<T> reader, bool singleReader)
+        internal PersistentChannelReader(IChannelReader<T> reader, bool singleReader, IncrementingEventCounter? readRate)
         {
             this.reader = reader;
             if (singleReader)
@@ -85,13 +83,23 @@ namespace DotNext.Threading.Channels
 
             fileOptions = new FileCreationOptions(FileMode.Open, FileAccess.Read, FileShare.ReadWrite, FileOptions.Asynchronous | FileOptions.SequentialScan);
             cursor = new ChannelCursor(reader.Location, StateFileName);
+            this.readRate = readRate;
         }
 
         public long Position => cursor.Position;
 
+        public override bool CanCount => true;
+
+        public override int Count => checked((int)(reader.WrittenCount - Position));
+
         private PartitionStream Partition => reader.GetOrCreatePartition(ref cursor, ref readTopic, fileOptions, true);
 
-        public override bool TryRead(out T item) => buffer.TryRead(out item);
+        public override bool TryRead(out T item)
+        {
+            var result = buffer.TryRead(out item);
+            readRate?.Increment();
+            return result;
+        }
 
         public override async ValueTask<T> ReadAsync(CancellationToken token)
         {
@@ -109,6 +117,7 @@ namespace DotNext.Threading.Channels
                 cursor.Advance(lookup.Position);
             }
 
+            readRate?.Increment();
             return result;
         }
 

@@ -16,6 +16,14 @@ namespace DotNext
     public abstract class Test : Assert
     {
         private protected static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(20);
+        private static readonly Random rng = new Random();
+
+        private protected static byte[] RandomBytes(int size)
+        {
+            var result = new byte[size];
+            rng.NextBytes(result);
+            return result;
+        }
 
         private protected static T SerializeDeserialize<T>(T value)
             where T : ISerializable

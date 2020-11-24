@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DotNext.Metaprogramming
 {
@@ -640,6 +642,36 @@ namespace DotNext.Metaprogramming
         }
 
         /// <summary>
+        /// Adds <c>await foreach</c> loop statement.
+        /// </summary>
+        /// <param name="collection">The expression providing enumerable collection.</param>
+        /// <param name="body">Loop body.</param>
+        /// <param name="cancellationToken">The expression of type <see cref="CancellationToken"/>.</param>
+        /// <param name="configureAwait"><see langword="true"/> to call <see cref="ValueTask.ConfigureAwait(bool)"/> with <see langword="false"/> argument when awaiting <see cref="IAsyncEnumerator{T}.MoveNextAsync"/> method.</param>
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-8#asynchronous-streams">Async Streams</seealso>
+        public static void AwaitForEach(Expression collection, Action<MemberExpression, LoopContext> body, Expression? cancellationToken = null, bool configureAwait = false)
+        {
+            using var statement = new AwaitForEachStatement(collection, cancellationToken, configureAwait);
+            statement.Place(body);
+        }
+
+        /// <summary>
+        /// Adds <c>await foreach</c> loop statement.
+        /// </summary>
+        /// <param name="collection">The expression providing enumerable collection.</param>
+        /// <param name="body">Loop body.</param>
+        /// <param name="cancellationToken">The expression of type <see cref="CancellationToken"/>.</param>
+        /// <param name="configureAwait"><see langword="true"/> to call <see cref="ValueTask.ConfigureAwait(bool)"/> with <see langword="false"/> argument when awaiting <see cref="IAsyncEnumerator{T}.MoveNextAsync"/> method.</param>
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-8#asynchronous-streams">Async Streams</seealso>
+        public static void AwaitForEach(Expression collection, Action<MemberExpression> body, Expression? cancellationToken = null, bool configureAwait = false)
+        {
+            using var statement = new AwaitForEachStatement(collection, cancellationToken, configureAwait);
+            statement.Place(body);
+        }
+
+        /// <summary>
         /// Adds <c>for</c> loop statement.
         /// </summary>
         /// <remarks>
@@ -750,6 +782,34 @@ namespace DotNext.Metaprogramming
         public static void Using(Expression resource, Action body)
         {
             using var statement = new UsingStatement(resource);
+            statement.Place(body);
+        }
+
+        /// <summary>
+        /// Adds <c>await using</c> statement.
+        /// </summary>
+        /// <param name="resource">The expression representing disposable resource.</param>
+        /// <param name="body">The body of the statement.</param>
+        /// <param name="configureAwait"><see langword="true"/> to call <see cref="ValueTask.ConfigureAwait(bool)"/> with <see langword="false"/> argument when awaiting <see cref="IAsyncDisposable.DisposeAsync"/> method.</param>
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        /// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-disposeasync#using-async-disposable">Using async disposable</seealso>
+        public static void AwaitUsing(Expression resource, Action<ParameterExpression> body, bool configureAwait = false)
+        {
+            using var statement = new AwaitUsingStatement(resource, configureAwait);
+            statement.Place(body);
+        }
+
+        /// <summary>
+        /// Adds <c>await using</c> statement.
+        /// </summary>
+        /// <param name="resource">The expression representing disposable resource.</param>
+        /// <param name="body">The body of the statement.</param>
+        /// <param name="configureAwait"><see langword="true"/> to call <see cref="ValueTask.ConfigureAwait(bool)"/> with <see langword="false"/> argument when awaiting <see cref="IAsyncDisposable.DisposeAsync"/> method.</param>
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        /// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-disposeasync#using-async-disposable">Using async disposable</seealso>
+        public static void AwaitUsing(Expression resource, Action body, bool configureAwait = false)
+        {
+            using var statement = new AwaitUsingStatement(resource, configureAwait);
             statement.Place(body);
         }
 

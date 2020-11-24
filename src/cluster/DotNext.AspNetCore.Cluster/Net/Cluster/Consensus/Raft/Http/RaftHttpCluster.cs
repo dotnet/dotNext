@@ -27,7 +27,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private readonly HttpVersion protocolVersion;
         private IPEndPoint? localMember;
 
-        [SuppressMessage("Reliability", "CA2000", Justification = "The member will be disposed in RaftCluster.Dispose method")]
         private RaftHttpCluster(RaftClusterMemberConfiguration config, IServiceProvider dependencies, out MemberCollectionBuilder members, Func<Action<RaftClusterMemberConfiguration, string>, IDisposable> configTracker)
             : base(config, out members)
         {

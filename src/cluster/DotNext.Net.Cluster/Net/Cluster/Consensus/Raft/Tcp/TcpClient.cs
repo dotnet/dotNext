@@ -207,13 +207,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
 
         protected override void Dispose(bool disposing)
         {
+            // set IsDisposed flag earlier to avoid ObjectDisposeException in Enqueue method
+            // when it attempts to release the lock
+            base.Dispose(disposing);
+
             if (disposing)
             {
                 Interlocked.Exchange(ref stream, null)?.Dispose();
                 accessLock.Dispose();
             }
-
-            base.Dispose(disposing);
         }
     }
 }

@@ -25,7 +25,7 @@ namespace DotNext.IO
     /// returned <see cref="Memory{T}"/> instance references bytes in memory. Otherwise,
     /// it references memory-mapped file.
     /// </remarks>
-    public sealed partial class FileBufferingWriter : Stream, IFlushableBufferWriter<byte>
+    public sealed partial class FileBufferingWriter : Stream, IFlushableBufferWriter<byte>, IGrowableBuffer<byte>
     {
         private sealed unsafe class MemoryMappedFileManager : MemoryManager<byte>
         {
@@ -233,6 +233,13 @@ namespace DotNext.IO
 
         /// <inheritdoc/>
         public override long Length => position + (fileBackend?.Length ?? 0L);
+
+        /// <inheritdoc />
+        long IGrowableBuffer<byte>.WrittenCount => Length;
+
+        /// <inheritdoc />
+        void IGrowableBuffer<byte>.CopyTo<TArg>(ReadOnlySpanAction<byte, TArg> callback, TArg arg)
+            => CopyTo(callback, arg);
 
         private bool IsReading => (readVersion & 1U) != 0U;
 
@@ -590,6 +597,106 @@ namespace DotNext.IO
             {
                 destination.Write(buffer.Memory.Span.Slice(0, position));
                 totalBytes += position;
+            }
+
+            return totalBytes;
+        }
+
+        /// <summary>
+        /// Drains buffered content synchronously.
+        /// </summary>
+        /// <param name="reader">The content reader.</param>
+        /// <param name="arg">The argument to be passed to the callback.</param>
+        /// <param name="bufferSize">The size, in bytes, of the buffer used to copy bytes.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <typeparam name="TArg">The type of the argument to be passed to the callback.</typeparam>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public void CopyTo<TArg>(ReadOnlySpanAction<byte, TArg> reader, TArg arg, int bufferSize = 1024, CancellationToken token = default)
+        {
+            if (fileBackend != null)
+            {
+                fileBackend.Position = 0L;
+                fileBackend.Read(reader, arg, bufferSize, token);
+            }
+
+            if (buffer.Length > 0 && position > 0)
+            {
+                reader(buffer.Memory.Span.Slice(0, position), arg);
+            }
+        }
+
+        /// <summary>
+        /// Drains buffered content asynchronously.
+        /// </summary>
+        /// <param name="reader">The content reader.</param>
+        /// <param name="arg">The argument to be passed to the callback.</param>
+        /// <param name="bufferSize">The size, in bytes, of the buffer used to copy bytes.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <typeparam name="TArg">The type of the argument to be passed to the callback.</typeparam>
+        /// <returns>The task representing asynchronous execution of the operation.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public async Task CopyToAsync<TArg>(ReadOnlySpanAction<byte, TArg> reader, TArg arg, int bufferSize = 1024, CancellationToken token = default)
+        {
+            if (fileBackend != null)
+            {
+                fileBackend.Position = 0L;
+                await fileBackend.ReadAsync(reader, arg, bufferSize, token).ConfigureAwait(false);
+            }
+
+            if (buffer.Length > 0 && position > 0)
+            {
+                reader(buffer.Memory.Span.Slice(0, position), arg);
+            }
+        }
+
+        /// <summary>
+        /// Drains buffered content to the memory block synchronously.
+        /// </summary>
+        /// <param name="output">The memory block used as a destination for copy operation.</param>
+        /// <returns>The actual number of copied elements.</returns>
+        public int CopyTo(Span<byte> output)
+        {
+            var totalBytes = 0;
+            if (fileBackend != null)
+            {
+                var currentPos = fileBackend.Position;
+                fileBackend.Position = 0L;
+                totalBytes = fileBackend.Read(output);
+                output = output.Slice(totalBytes);
+                fileBackend.Position = currentPos;
+            }
+
+            if (buffer.Length > 0 && position > 0 && !output.IsEmpty)
+            {
+                buffer.Memory.Span.Slice(0, position).CopyTo(output, out var subCount);
+                totalBytes += subCount;
+            }
+
+            return totalBytes;
+        }
+
+        /// <summary>
+        /// Drains buffered content to the memory block asynchronously.
+        /// </summary>
+        /// <param name="output">The memory block used as a destination for copy operation.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The actual number of copied elements.</returns>
+        public async Task<int> CopyToAsync(Memory<byte> output, CancellationToken token = default)
+        {
+            var totalBytes = 0;
+            if (fileBackend != null)
+            {
+                var currentPos = fileBackend.Position;
+                fileBackend.Position = 0L;
+                totalBytes = await fileBackend.ReadAsync(output, token).ConfigureAwait(false);
+                output = output.Slice(totalBytes);
+                fileBackend.Position = currentPos;
+            }
+
+            if (buffer.Length > 0 && position > 0 && !output.IsEmpty)
+            {
+                buffer.Memory.Span.Slice(0, position).CopyTo(output.Span, out var subCount);
+                totalBytes += subCount;
             }
 
             return totalBytes;

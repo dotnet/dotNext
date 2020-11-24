@@ -44,39 +44,47 @@ Documentation for older versions:
 * [1.x](https://sakno.github.io/dotNext/versions/1.x/index.html)
 
 # What's new
-Release Date: 11-01-2020
+Release Date: 11-11-2020
 
-<a href="https://www.nuget.org/packages/dotnext/2.11.0">DotNext 2.11.0</a>
-* Added `Span<T>.CopyTo` and `ReadOnlySpan<T>.CopyTo` extension methods to support cases when the source span can be larger than the destination
-* Added `Span.AsSpan` and `Span.AsReadOnlySpan` for value tuples
-* Deprecated [EnumerableTuple](https://sakno.github.io/dotNext/api/DotNext.EnumerableTuple-2.html) data type
-* Minor performance improvements
+<a href="https://www.nuget.org/packages/dotnext/2.12.0">DotNext 2.12.0</a>
+* Added consuming enumerator for [IProducerConsumerCollection&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.collections.concurrent.iproducerconsumercollection-1)
+* Introduced `ServiceProviderFactory` class and its factory methods for producing [Service Providers](https://docs.microsoft.com/en-us/dotnet/api/system.iserviceprovider)
+* Significant performance improvements of `StringExtensions.Reverse` method
+* Introduced a new class `SparseBufferWriter<T>` in addition to existing buffer writes which acts as a growable buffer without memory reallocations
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.11.0">DotNext.Metaprogramming 2.11.0</a>
-* Overloaded `CodeGenerator.AsyncLambda` supports _Pascal_-style return (issue [13](https://github.com/sakno/dotNext/issues/13))
-* Fixed suppression of exceptions raised by generated async lambda (issue [14](https://github.com/sakno/dotNext/issues/14))
-* Fixed invalid behavior of async lambda body rewriter (issue [17](https://github.com/sakno/dotNext/issues/17))
+<a href="https://www.nuget.org/packages/dotnext.io/2.12.0">DotNext.IO 2.12.0</a>
+* Introduced `TextBufferReader` class inherited from [TextReader](https://docs.microsoft.com/en-us/dotnet/api/system.io.textreader) that can be used to read the text from [ReadOnlySequence&lt;char&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) or [ReadOnlyMemory&lt;char&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.readonlymemory-1)
+* Added `SequenceBuilder<T>` type for building [ReadOnlySequence&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) instances from the chunk of memory blocks
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.reflection/2.11.0">DotNext.Reflection 2.11.0</a>
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.12.0">DotNext.Metaprogramming 2.12.0</a>
+* Added support of `await using` statement
+* Added support of `await foreach` statement
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.threading/2.11.0">DotNext.Threading 2.11.0</a>
+<a href="https://www.nuget.org/packages/dotnext.reflection/2.12.0">DotNext.Reflection 2.12.0</a>
+* More performance optimizations in code generation mechanism responsible for the method or constructor calls
+* Added ability to reflect abstract and interface methods
+* Added support of volatile access to the field via reflection
+
+<a href="https://www.nuget.org/packages/dotnext.threading/2.12.0">DotNext.Threading 2.12.0</a>
+* Addes support of `Count` and `CanCount` properties inherited from [ChannelReader&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.threading.channels.channelreader-1) by persistent channel reader
+* Added support of diagnostics counters for persistent channel
+* Fixed resuming of suspended callers in [AsyncTrigger](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncTrigger.html) class
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/2.11.0">DotNext.Unsafe 2.11.0</a>
+<a href="https://www.nuget.org/packages/dotnext.unsafe/2.12.0">DotNext.Unsafe 2.12.0</a>
+* Fixed ignoring of array offset in `ReadFrom` and `WriteTo` methods of [Pointer&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Runtime.InteropServices.Pointer-1.html) type
+* Added `ToArray` method to [Pointer&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Runtime.InteropServices.Pointer-1.html) type
+* Added indexer property to [IUnmanagedArray&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Runtime.InteropServices.IUnmanagedArray-1.html) interface
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/2.11.0">DotNext.Net.Cluster 2.11.0</a>
-* Added `requestTimeout` configuration property for TCP/UDP transports
-* Stabilized shutdown of Raft server for TCP/UDP transports
-* Added SSL support for TCP transport
-* Updated dependencies shipped with .NET Core 3.1.9
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/2.12.0">DotNext.Net.Cluster 2.12.0</a>
+* Updated dependencies shipped with .NET Core 3.1.10
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/2.11.0">DotNext.AspNetCore.Cluster 2.11.0</a>
-* Added `requestTimeout` and `rpcTimeout` configuration properties for precise control over timeouts used for communication between Raft nodes (issue [12](https://github.com/sakno/dotNext/issues/12))
-* Updated dependencies shipped with .NET Core 3.1.9
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/2.12.0">DotNext.AspNetCore.Cluster 2.12.0</a>
+* Updated dependencies shipped with .NET Core 3.1.10
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 

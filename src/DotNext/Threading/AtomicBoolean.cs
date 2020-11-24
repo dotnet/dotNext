@@ -27,7 +27,6 @@ namespace DotNext.Threading
         /// <param name="value">Initial value of the atomic boolean.</param>
         public AtomicBoolean(bool value) => this.value = value.ToInt32();
 
-        [SuppressMessage("Usage", "CA1801", Justification = "context is required by .NET serialization framework")]
         private AtomicBoolean(SerializationInfo info, StreamingContext context)
         {
             value = (int)info.GetValue(ValueSerData, typeof(int));

@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.Reflection;
 using Xunit;
+using static System.Globalization.CultureInfo;
+using static System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Reflection
 {
@@ -16,11 +19,18 @@ namespace DotNext.Reflection
             public unsafe void* UntypedPointerField;
         }
 
-        [Fact]
-        public static void StaticFieldGet()
+        private struct MyType
+        {
+            public int X, Y;
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public static void StaticFieldGet(bool volatileAccess)
         {
             var staticField = typeof(string).GetField(nameof(string.Empty));
-            var reader = staticField.Unreflect(BindingFlags.GetField);
+            var reader = staticField.Unreflect(volatileAccess, BindingFlags.GetField);
             Same(string.Empty, reader(null));
         }
 
@@ -32,14 +42,16 @@ namespace DotNext.Reflection
             Equal("Hello, world", reader(obj));
         }
 
-        [Fact]
-        public static void ObjectFieldGetSet()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public static void ObjectFieldGetSet(bool volatileAccess)
         {
             var field = typeof(MyClass).GetField(nameof(MyClass.ObjectField));
-            var reader = field.Unreflect(BindingFlags.GetField);
-            var writer = field.Unreflect(BindingFlags.SetField);
+            var reader = field.Unreflect(volatileAccess, BindingFlags.GetField);
+            var writer = field.Unreflect(volatileAccess, BindingFlags.SetField);
             ObjectFieldTest(reader, writer);
-            reader = writer = field.Unreflect();
+            reader = writer = field.Unreflect(volatileAccess);
             ObjectFieldTest(reader, writer);
         }
 
@@ -58,14 +70,16 @@ namespace DotNext.Reflection
             Equal(42, reader(obj));
         }
 
-        [Fact]
-        public static void ValueTypeFieldGetSet()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public static void ValueTypeFieldGetSet(bool volatileAccess)
         {
             var field = typeof(MyClass).GetField(nameof(MyClass.ValueTypeField));
-            var reader = field.Unreflect(BindingFlags.GetField);
-            var writer = field.Unreflect(BindingFlags.SetField);
+            var reader = field.Unreflect(volatileAccess, BindingFlags.GetField);
+            var writer = field.Unreflect(volatileAccess, BindingFlags.SetField);
             ValueTypeFieldTest(reader, writer);
-            reader = writer = field.Unreflect();
+            reader = writer = field.Unreflect(volatileAccess);
             ValueTypeFieldTest(reader, writer);
         }
 
@@ -78,15 +92,17 @@ namespace DotNext.Reflection
             Equal(new IntPtr(56), new IntPtr(Pointer.Unbox(reader(obj))));
         }
 
-        [Fact]
-        public static void TypedPointerFieldGetSet()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public static void TypedPointerFieldGetSet(bool volatileAccess)
         {
             var field = typeof(MyClass).GetField(nameof(MyClass.TypedPointerField));
             NotNull(field);
-            var reader = field.Unreflect(BindingFlags.GetField);
-            var writer = field.Unreflect(BindingFlags.SetField);
+            var reader = field.Unreflect(volatileAccess, BindingFlags.GetField);
+            var writer = field.Unreflect(volatileAccess, BindingFlags.SetField);
             TypedPointerFieldTest(reader, writer);
-            reader = writer = field.Unreflect();
+            reader = writer = field.Unreflect(volatileAccess);
             TypedPointerFieldTest(reader, writer);
         }
 
@@ -99,15 +115,17 @@ namespace DotNext.Reflection
             Equal(new IntPtr(56), new IntPtr(Pointer.Unbox(reader(obj))));
         }
 
-        [Fact]
-        public static unsafe void PointerFieldGetSet()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public static unsafe void PointerFieldGetSet(bool volatileAccess)
         {
             var field = typeof(MyClass).GetField(nameof(MyClass.UntypedPointerField));
             NotNull(field);
-            var reader = field.Unreflect(BindingFlags.GetField);
-            var writer = field.Unreflect(BindingFlags.SetField);
+            var reader = field.Unreflect(volatileAccess, BindingFlags.GetField);
+            var writer = field.Unreflect(volatileAccess, BindingFlags.SetField);
             PointerFieldTest(reader, writer);
-            reader = writer = field.Unreflect();
+            reader = writer = field.Unreflect(volatileAccess);
             PointerFieldTest(reader, writer);
         }
 
@@ -137,6 +155,41 @@ namespace DotNext.Reflection
         {
             var ctor = typeof(string).GetConstructor(new[] { typeof(char), typeof(int) }).Unreflect();
             Equal("aaa", ctor(null, 'a', 3));
+        }
+
+        [Fact]
+        public static void ModifyPropertyByRef()
+        {
+            object point = new Point();
+            var setter = point.GetType().GetProperty(nameof(Point.X)).SetMethod.Unreflect();
+            setter(point, 42);
+            Equal(42, Unbox<Point>(point).X);
+        }
+
+        [Fact]
+        public static void ModifyFieldByRef()
+        {
+            object value = new MyType();
+            var setter = value.GetType().GetField(nameof(MyType.X)).Unreflect(BindingFlags.SetField);
+            setter(value, 42);
+            Equal(42, Unbox<MyType>(value).X);
+        }
+
+        public static unsafe int* GetTypedPointer() => (int*)42;
+
+        [Fact]
+        public unsafe void ReturnTypedPointer()
+        {
+            var getTypedPointer = GetType().GetMethod(nameof(GetTypedPointer)).Unreflect();
+            True(((int*)42) == Pointer.Unbox(getTypedPointer(null)));
+        }
+
+        [Fact]
+        public static void UnreflectInterfaceMethod()
+        {
+            var toStringMethod = typeof(IFormattable).GetMethod("ToString").Unreflect();
+            object i = 42;
+            Equal("42", toStringMethod(i, null, InvariantCulture));
         }
     }
 }

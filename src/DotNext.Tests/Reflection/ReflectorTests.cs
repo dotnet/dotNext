@@ -1,6 +1,8 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using Xunit;
+using static System.Globalization.CultureInfo;
 using static System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Reflection
@@ -18,6 +20,16 @@ namespace DotNext.Reflection
             Function<(char, int), string> reflected2 = ctor.Unreflect<Function<(char, int), string>>();
             NotNull(reflected2);
             Equal("ccc", reflected2(('c', 3)));
+        }
+
+        [Fact]
+        public static void MutableInstanceMethodCall()
+        {
+            Procedure<object, ValueTuple<int>> setter = typeof(Point).GetProperty("X").SetMethod.Unreflect<Procedure<object, ValueTuple<int>>>();
+            NotNull(setter);
+            object point = new Point();
+            setter.Invoke(point, 42);
+            Equal(42, Unbox<Point>(point).X);
         }
 
         [Fact]
@@ -113,6 +125,19 @@ namespace DotNext.Reflection
             field = 56;
             Equal(instanceField, field);
             True(AreSame(ref field, ref instanceField));
+        }
+
+        [Fact]
+        public static void UnreflectInterfaceMethod()
+        {
+            Function<IFormattable, (string, IFormatProvider), string> typedToString = Type<IFormattable>.RequireMethod<(string, IFormatProvider), string>(nameof(IFormattable.ToString));
+            NotNull(typedToString);
+            IFormattable i = 42;
+            Equal("42", typedToString.Invoke(i, null, InvariantCulture));
+
+            Function<object, (object, object), object> untypedToString = typeof(IFormattable).GetMethod(nameof(IFormattable.ToString)).Unreflect<Function<object, (object, object), object>>();
+            NotNull(untypedToString);
+            Equal("42", untypedToString.Invoke(i, null, InvariantCulture));
         }
     }
 }

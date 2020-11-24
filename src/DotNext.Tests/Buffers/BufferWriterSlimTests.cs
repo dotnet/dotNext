@@ -32,7 +32,7 @@ namespace DotNext.Buffers
             Equal(30, builder[2]);
             Equal(40, builder[3]);
             Span<int> result = stackalloc int[5];
-            builder.CopyTo(result);
+            Equal(4, builder.CopyTo(result));
             Equal(new int[] { 10, 20, 30, 40, 0 }, result.ToArray());
 
             var exceptionThrown = false;
@@ -90,7 +90,7 @@ namespace DotNext.Buffers
             Equal(30, builder[2]);
             Equal(40, builder[3]);
             Span<int> result = stackalloc int[5];
-            builder.CopyTo(result);
+            Equal(4, builder.CopyTo(result));
             Equal(new int[] { 10, 20, 30, 40, 0 }, result.ToArray());
 
             builder.Clear(true);
@@ -184,7 +184,7 @@ namespace DotNext.Buffers
             builder.Write(expected);
 
             var writer = new SpanWriter<byte>(stackalloc byte[4]);
-            builder.CopyTo(ref writer);
+            Equal(4, builder.CopyTo(ref writer));
             Equal(expected, writer.Span.ToArray());
             Equal(expected, writer.WrittenSpan.ToArray());
         }

@@ -208,6 +208,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         ValueTask IAsyncDisposable.DisposeAsync()
         {
             remainingCount = -1;
+            GC.SuppressFinalize(this);
             return new ValueTask();
         }
     }

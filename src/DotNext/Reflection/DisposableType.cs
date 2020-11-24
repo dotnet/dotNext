@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace DotNext.Reflection
 {
@@ -9,8 +10,19 @@ namespace DotNext.Reflection
     /// </summary>
     public static class DisposableType
     {
+        private const BindingFlags PublicInstanceMethod = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
+
+        private static MethodInfo? GetDisposeMethod(Type type, Type disposableType, string disposeMethodName, Type returnType)
+        {
+            if (disposableType.IsAssignableFrom(type))
+                return disposableType.GetMethod(disposeMethodName, Type.EmptyTypes);
+
+            var candidate = type.GetMethod(disposeMethodName, PublicInstanceMethod, null, Type.EmptyTypes, null);
+            return candidate is null || candidate.IsGenericMethod || candidate.ReturnType != returnType ? null : candidate;
+        }
+
         /// <summary>
-        /// Gets Dispose method which implements dispose pattern.
+        /// Gets <c>Dispose</c> method which implements dispose pattern.
         /// </summary>
         /// <remarks>
         /// This method checks whether the type implements <see cref="IDisposable"/>.
@@ -19,13 +31,15 @@ namespace DotNext.Reflection
         /// </remarks>
         /// <param name="type">The type to inspect.</param>
         /// <returns>Dispose method; or <see langword="null"/>, if this method doesn't exist.</returns>
-        public static MethodInfo GetDisposeMethod(this Type type)
-        {
-            const string DisposeMethodName = nameof(IDisposable.Dispose);
-            const BindingFlags PublicInstanceMethod = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
-            return typeof(IDisposable).IsAssignableFrom(type) ?
-                typeof(IDisposable).GetMethod(DisposeMethodName) :
-                type.GetMethod(DisposeMethodName, PublicInstanceMethod, Type.DefaultBinder, Array.Empty<Type>(), Array.Empty<ParameterModifier>());
-        }
+        public static MethodInfo? GetDisposeMethod(this Type type)
+            => GetDisposeMethod(type, typeof(IDisposable), nameof(IDisposable.Dispose), typeof(void));
+
+        /// <summary>
+        /// Gets <c>DisposeAsync</c> method implementing async dispose pattern.
+        /// </summary>
+        /// <param name="type">The type to inspect.</param>
+        /// <returns>Dispose method; or <see langword="null"/>, if this method doesn't exist.</returns>
+        public static MethodInfo? GetDisposeAsyncMethod(this Type type)
+            => GetDisposeMethod(type, typeof(IAsyncDisposable), nameof(IAsyncDisposable.DisposeAsync), typeof(ValueTask));
     }
 }

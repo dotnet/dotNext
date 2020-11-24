@@ -13,7 +13,7 @@ namespace DotNext.Buffers
     /// Represents memory-backed output sink which <typeparamref name="T"/> data can be written.
     /// </summary>
     /// <typeparam name="T">The data type that can be written.</typeparam>
-    public abstract class MemoryWriter<T> : Disposable, IBufferWriter<T>, IConvertible<ReadOnlyMemory<T>>, IReadOnlyList<T>
+    public abstract class MemoryWriter<T> : Disposable, IBufferWriter<T>, IConvertible<ReadOnlyMemory<T>>, IReadOnlyList<T>, IGrowableBuffer<T>
     {
         // TODO: Should be renamed to BufferWriter
 
@@ -77,6 +77,24 @@ namespace DotNext.Buffers
                 ThrowIfDisposed();
                 return position;
             }
+        }
+
+        /// <inheritdoc />
+        long IGrowableBuffer<T>.WrittenCount => WrittenCount;
+
+        /// <inheritdoc />
+        void IGrowableBuffer<T>.Write(ReadOnlySpan<T> input)
+            => BuffersExtensions.Write(this, input);
+
+        /// <inheritdoc />
+        void IGrowableBuffer<T>.CopyTo<TState>(ReadOnlySpanAction<T, TState> callback, TState state)
+            => callback(WrittenMemory.Span, state);
+
+        /// <inheritdoc />
+        int IGrowableBuffer<T>.CopyTo(Span<T> output)
+        {
+            WrittenMemory.Span.CopyTo(output, out var writtenCount);
+            return writtenCount;
         }
 
         /// <summary>

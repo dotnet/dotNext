@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static System.Threading.Interlocked;
@@ -20,7 +19,6 @@ namespace DotNext.Threading
     /// than synchronized methods according with benchmarks.
     /// </remarks>
     [StructLayout(LayoutKind.Auto)]
-    [SuppressMessage("Performance", "CA1815", Justification = "This type is a container for atomic access and cannot be compared with other containers due to race conditions")]
     public struct Atomic<T> : IStrongBox, ICloneable
         where T : struct
     {
