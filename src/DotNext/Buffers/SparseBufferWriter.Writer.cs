@@ -5,6 +5,16 @@ namespace DotNext.Buffers
 {
     public partial class SparseBufferWriter<T> : IBufferWriter<T>
     {
+        private Memory<T> GetMemory()
+        {
+            if (last is null)
+                first = last = new PooledMemoryChunk(allocator, chunkSize);
+            else if (last.FreeCapacity == 0)
+                last = new PooledMemoryChunk(allocator, chunkSize, last);
+
+            return last.FreeMemory;
+        }
+
         private Memory<T> GetMemory(int sizeHint)
         {
             ThrowIfDisposed();
@@ -12,12 +22,26 @@ namespace DotNext.Buffers
                 throw new ArgumentOutOfRangeException(nameof(sizeHint));
 
             if (sizeHint == 0)
-                sizeHint = chunkSize;
+                return GetMemory();
 
             if (last is null)
+            {
                 first = last = new PooledMemoryChunk(allocator, sizeHint);
-            else if (last.FreeCapacity > sizeHint || sizeHint < 0)
+            }
+            else if (last.FreeCapacity == 0)
+            {
                 last = new PooledMemoryChunk(allocator, sizeHint, last);
+            }
+            else if (last.FreeCapacity < sizeHint)
+            {
+                // there are two possible cases:
+                // the last chunk has occupied elements - attach a new chunk (causes a hole in the memory)
+                // the last chunk has no occupied elements - realloc the memory
+                if (last is PooledMemoryChunk pooledChunk && pooledChunk.IsUnused)
+                    pooledChunk.Realloc(allocator, sizeHint);
+                else
+                    last = new PooledMemoryChunk(allocator, sizeHint, last);
+            }
 
             return last.FreeMemory;
         }

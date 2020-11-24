@@ -64,8 +64,12 @@ namespace DotNext.Buffers
                 : base(previous)
             {
                 owner = allocator.Invoke(length, false);
-                writtenCount = 0;
             }
+
+            /// <summary>
+            /// Indicates that the chunk has no occupied elements in the memory.
+            /// </summary>
+            internal bool IsUnused => writtenCount == 0;
 
             internal override Memory<T> FreeMemory => owner.Memory.Slice(writtenCount);
 
@@ -92,6 +96,12 @@ namespace DotNext.Buffers
                 if (length > owner.Length)
                     throw new ArgumentOutOfRangeException(nameof(count));
                 writtenCount = length;
+            }
+
+            internal void Realloc(MemoryAllocator<T>? allocator, int length)
+            {
+                owner.Dispose();
+                owner = allocator.Invoke(length, false);
             }
 
             protected override void Dispose(bool disposing)
