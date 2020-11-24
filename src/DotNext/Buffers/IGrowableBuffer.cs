@@ -13,7 +13,7 @@ namespace DotNext.Buffers
     /// implementation of this interface in your code.
     /// </remarks>
     /// <typeparam name="T">The type of the elements in the buffer.</typeparam>
-    public interface IGrowableBuffer<T> : IDisposable   // TODO: Must be replaced with shape in future versions of C#
+    public interface IGrowableBuffer<T> : IDisposable // TODO: Must be replaced with shape in future versions of C#
     {
         /// <summary>
         /// Gets the number of written elements.
