@@ -11,8 +11,8 @@ namespace DotNext
     public class RandomStringBenchmark
     {
         private const string AllowedChars = "1234567890abcdef";
-        private static readonly Random rnd = new Random();
-        private static readonly RandomNumberGenerator rng = RandomNumberGenerator.Create();
+        private readonly Random rnd = new Random();
+        private readonly RandomNumberGenerator rng = RandomNumberGenerator.Create();
 
         [Benchmark]
         public string GuidString() => Guid.NewGuid().ToString();
