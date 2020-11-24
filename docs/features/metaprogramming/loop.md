@@ -23,14 +23,40 @@ Lambda<Action<string>>(fun =>
 
 new Action<string>(str => 
 {
-    foreach(char ch in str)
+    foreach (char ch in str)
         Console.WriteLine(ch);
 });
 ```
 
 `ch` variable provides access to current element in the collection.
 
+# await foreach Loop
+**await foreach** statement allows to enumerate over elements in asynchronous streams implementing [IAsyncEnumerable&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.iasyncenumerable-1) interface. 
 
+```csharp
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using static DotNext.Metaprogramming.CodeGenerator;
+
+AsyncLambda<Func<IAsyncEnumerable<char>, Task>>(fun => 
+{
+    AwaitForEach(fun[0], ch =>
+    {
+        WriteLine(ch);
+    });
+});
+
+//generated code is
+
+new Func<IAsyncEnumerable<char>, Task>(async str => 
+{
+    await foreach (char ch in str)
+        Console.WriteLine(ch);
+});
+```
+
+This type of statement is allowed within async lambda expression only.
 
 # while Loop
 **while** loop statement is supported in two forms: _while-do_ or _do-while_. Both forms are representing regular **while** loop existing in most popular languages such as C#, C++ and C. 
@@ -56,7 +82,7 @@ Lambda<Fun<long, long>>((fun, result) =>
 new Func<long, long>(arg => 
 {
     var result = 1L;
-    while(arg > 1L)
+    while (arg > 1L)
         result *= arg--;
     return result;
 });
@@ -86,7 +112,7 @@ Lambda<Fun<long, long>>((fun, result) =>
 new Func<long, long>(arg => 
 {
     var result = 1L;
-    for(var i = arg; i > 1L; i--)
+    for (var i = arg; i > 1L; i--)
         result *= i;
     return result;
 });
@@ -117,7 +143,7 @@ Lambda<Fun<long, long>>((fun, result) =>
 new Func<long, long>(arg => 
 {
     var result = 1L;
-    while(true)
+    while (true)
         if(arg > 1L)
             result *= arg--;
         else
