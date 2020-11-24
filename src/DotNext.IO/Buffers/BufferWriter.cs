@@ -678,14 +678,14 @@ namespace DotNext.Buffers
         {
             for (int bufferSize = 0; ; )
             {
-                var span = writer.GetSpan(bufferSize);
-                if (value.TryFormat(span, out var charsWritten, format, provider))
+                var buffer = writer.GetSpan(bufferSize);
+                if (value.TryFormat(buffer, out var charsWritten, format, provider))
                 {
                     writer.Advance(charsWritten);
                     break;
                 }
 
-                bufferSize = bufferSize <= MaxBufferSize ? bufferSize * 2 : throw new InsufficientMemoryException();
+                bufferSize = bufferSize <= MaxBufferSize ? buffer.Length * 2 : throw new InsufficientMemoryException();
             }
         }
 
