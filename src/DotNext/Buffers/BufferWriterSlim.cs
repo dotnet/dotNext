@@ -99,7 +99,7 @@ namespace DotNext.Buffers
         public void Write(ReadOnlySpan<T> input)
         {
             if (input.IsEmpty)
-                goto exit;
+                return;
 
             var newSize = checked(position + input.Length);
             Span<T> output;
@@ -163,8 +163,6 @@ namespace DotNext.Buffers
 
             input.CopyTo(output.Slice(offset));
             position = newSize;
-            exit:
-            return;
         }
 
         /// <summary>
