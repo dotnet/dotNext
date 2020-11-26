@@ -124,11 +124,13 @@ namespace DotNext.Buffers
             Equal(10, builder[0]);
         }
 
-        [Fact]
-        public static void DrainToStream()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public static void DrainToStream(bool copyOnOverflow)
         {
             var expected = new byte[] { 10, 20, 30, 40, 50, 60, 70, 80 };
-            using var builder = new BufferWriterSlim<byte>(stackalloc byte[8], false);
+            using var builder = new BufferWriterSlim<byte>(stackalloc byte[8], copyOnOverflow);
             builder.Write(expected);
 
             using var ms = new MemoryStream(8);
@@ -137,11 +139,13 @@ namespace DotNext.Buffers
             Equal(expected, ms.ToArray());
         }
 
-        [Fact]
-        public static void DrainToBuffer()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public static void DrainToBuffer(bool copyOnOverflow)
         {
             var expected = new byte[] { 10, 20, 30, 40, 50, 60, 70, 80 };
-            using var builder = new BufferWriterSlim<byte>(stackalloc byte[8], false);
+            using var builder = new BufferWriterSlim<byte>(stackalloc byte[8], copyOnOverflow);
             builder.Write(expected);
 
             var writer = new ArrayBufferWriter<byte>();
