@@ -47,5 +47,12 @@ namespace DotNext.Buffers
             using var writer = new PooledArrayBufferWriter<int>(10);
             writer.Write(inputArray);
         }
+
+        [Benchmark]
+        public void AddRangeToSparseBuffer()
+        {
+            using var writer = new SparseBufferWriter<int>();
+            writer.Write(inputArray);
+        }
     }
 }
