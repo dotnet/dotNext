@@ -219,8 +219,7 @@ namespace DotNext.Buffers
                 current.Dispose();
             }
 
-            first = null;
-            last = null;
+            first = last = null;
         }
 
         /// <inheritdoc />
