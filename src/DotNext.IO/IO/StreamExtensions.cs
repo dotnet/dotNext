@@ -2683,7 +2683,7 @@ namespace DotNext.IO
         {
             if (destination is null)
                 throw new ArgumentNullException(nameof(destination));
-            if (bufferSize <= 0)
+            if (bufferSize < 0)
                 throw new ArgumentOutOfRangeException(nameof(bufferSize));
 
             var totalBytes = 0L;
@@ -2716,7 +2716,7 @@ namespace DotNext.IO
         {
             if (destination is null)
                 throw new ArgumentNullException(nameof(destination));
-            if (bufferSize <= 0)
+            if (bufferSize < 0)
                 throw new ArgumentOutOfRangeException(nameof(bufferSize));
 
             var totalBytes = 0L;
