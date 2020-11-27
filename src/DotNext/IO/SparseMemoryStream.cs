@@ -65,7 +65,7 @@ namespace DotNext.IO
         {
             for (ReadOnlyMemory<byte> currentBlock; !(current is null); offset = 0, current = current.Next, position += currentBlock.Length)
             {
-                await destination.WriteAsync(currentBlock = current.WrittenMemory.Slice(offset)).ConfigureAwait(false);
+                await destination.WriteAsync(currentBlock = current.WrittenMemory.Slice(offset), token).ConfigureAwait(false);
             }
         }
 

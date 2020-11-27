@@ -32,7 +32,7 @@ namespace DotNext.IO
         }
 
         public sealed override int Read(byte[] buffer, int offset, int count) => Read(buffer.AsSpan(offset, count));
-    
+
         public sealed override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken token)
         {
             Task<int> result;
