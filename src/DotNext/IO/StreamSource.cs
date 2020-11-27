@@ -97,6 +97,15 @@ namespace DotNext.IO
         }
 
         /// <summary>
+        /// Creates a stream over sparse memory.
+        /// </summary>
+        /// <param name="writer">Sparse memory buffer.</param>
+        /// <param name="readable"><see langword="true"/> to create readable stream; <see langword="false"/> to create writable stream.</param>
+        /// <returns>Sparse memory stream.</returns>
+        public static Stream AsStream(this SparseBufferWriter<byte> writer, bool readable)
+            => readable ? new SparseMemoryStream(writer) : AsStream(writer, null, null);
+
+        /// <summary>
         /// Returns writable stream that wraps the provided delegate for writing data.
         /// </summary>
         /// <param name="writer">The callback that is called automatically.</param>
