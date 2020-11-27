@@ -61,6 +61,8 @@ namespace DotNext.Buffers
         {
         }
 
+        internal MemoryChunk? FirstChunk => first;
+
         /// <summary>
         /// Gets the number of written elements.
         /// </summary>
@@ -150,7 +152,7 @@ namespace DotNext.Buffers
         public void CopyTo<TArg>(ReadOnlySpanAction<T, TArg> writer, TArg arg)
         {
             ThrowIfDisposed();
-            for (MemoryChunk? current = first; !(current is null); current = current?.Next)
+            for (MemoryChunk? current = first; !(current is null); current = current.Next)
             {
                 var buffer = current.WrittenMemory.Span;
                 writer(buffer, arg);
@@ -167,7 +169,7 @@ namespace DotNext.Buffers
         {
             ThrowIfDisposed();
             var total = 0;
-            for (MemoryChunk? current = first; !(current is null) && !output.IsEmpty; current = current?.Next)
+            for (MemoryChunk? current = first; !(current is null) && !output.IsEmpty; current = current.Next)
             {
                 var buffer = current.WrittenMemory.Span;
                 buffer.CopyTo(output, out var writtenCount);
