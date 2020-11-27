@@ -193,7 +193,15 @@ namespace DotNext.Buffers
 
         /// <inheritdoc />
         ReadOnlySequence<T> IConvertible<ReadOnlySequence<T>>.Convert()
-            => BufferHelpers.ToReadOnlySequence(this);
+        {
+            if (first is null)
+                return ReadOnlySequence<T>.Empty;
+
+            if (first.Next is null)
+                return new ReadOnlySequence<T>(first.WrittenMemory);
+
+            return BufferHelpers.ToReadOnlySequence(this);
+        }
 
         /// <summary>
         /// Gets enumerator over memory segments.
