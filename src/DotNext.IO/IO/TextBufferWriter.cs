@@ -64,7 +64,7 @@ namespace DotNext.IO
         public override void Write(char[] buffer, int index, int count)
             => Write(buffer.AsSpan(index, count));
 
-        public override void Write(char[] buffer) => Write(buffer.AsSpan());
+        public override void Write(char[] buffer) => Write(new ReadOnlySpan<char>(buffer));
 
         public override void Write(string value) => Write(value.AsSpan());
 
