@@ -105,7 +105,7 @@ namespace DotNext.IO
         public static Stream AsStream(this SparseBufferWriter<byte> writer, bool readable)
         {
             if (!readable)
-                return AsStream(writer, null, null);
+                return AsStream(WriteToBuffer, writer);
 
             var chunk = writer.FirstChunk;
             if (chunk is null)
@@ -115,6 +115,9 @@ namespace DotNext.IO
                 return AsStream(chunk.WrittenMemory);
 
             return new SparseMemoryStream(writer);
+
+            static void WriteToBuffer(ReadOnlySpan<byte> input, SparseBufferWriter<byte> output)
+                => output.Write(input);
         }
 
         /// <summary>
