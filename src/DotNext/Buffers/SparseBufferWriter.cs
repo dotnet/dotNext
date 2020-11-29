@@ -2,6 +2,7 @@ using System;
 using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.Buffers
@@ -16,6 +17,7 @@ namespace DotNext.Buffers
     /// <typeparam name="T">The type of the elements in the memory.</typeparam>
     /// <seealso cref="PooledArrayBufferWriter{T}"/>
     /// <seealso cref="PooledBufferWriter{T}"/>
+    [DebuggerDisplay("WrittenCount = {" + nameof(WrittenCount) + "}, FragmentedBytes = {" + nameof(FragmentedBytes) + "}")]
     public partial class SparseBufferWriter<T> : Disposable, IEnumerable<ReadOnlyMemory<T>>, IGrowableBuffer<T>, IConvertible<ReadOnlySequence<T>>
     {
         private readonly int chunkSize;
@@ -73,6 +75,22 @@ namespace DotNext.Buffers
             {
                 ThrowIfDisposed();
                 return length;
+            }
+        }
+
+        private long FragmentedBytes
+        {
+            get
+            {
+                var result = 0L;
+                for (MemoryChunk? current = first, next; !(current is null); current = next)
+                {
+                    next = current.Next;
+                    if (!(next is null) && next.WrittenMemory.Length > 0)
+                        result += current.FreeCapacity;
+                }
+
+                return result;
             }
         }
 
