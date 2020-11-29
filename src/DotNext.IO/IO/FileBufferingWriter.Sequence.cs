@@ -117,6 +117,7 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The factory of <see cref="ReadOnlySequence{T}"/> instances.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="segmentSize"/> is less than or equal to zero.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public async ValueTask<IReadOnlySequenceSource> GetWrittenContentAsync(int segmentSize, CancellationToken token = default)
         {
             if (segmentSize <= 0)
