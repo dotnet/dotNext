@@ -407,7 +407,7 @@ namespace DotNext.IO
                 {"Key2", "Value2"}
             };
             var formatter = new BinaryFormatter();
-            using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: false);
+            using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: true);
             formatter.Serialize(writer, dict);
             await using var source = await writer.GetWrittenContentAsStreamAsync();
             Equal(dict, formatter.Deserialize(source));
