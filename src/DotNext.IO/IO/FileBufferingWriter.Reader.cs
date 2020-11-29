@@ -164,7 +164,7 @@ namespace DotNext.IO
         /// <returns>Read-only stream representing the written content.</returns>
         /// <exception cref="InvalidOperationException">The stream is already obtained but not disposed.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public async ValueTask<Stream> GetWrittenContentAsStreamAsync(CancellationToken token)
+        public async ValueTask<Stream> GetWrittenContentAsStreamAsync(CancellationToken token = default)
         {
             if (IsReading)
                 throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);

@@ -380,6 +380,42 @@ namespace DotNext.IO
         [Theory]
         [InlineData(100)]
         [InlineData(1000)]
+        [InlineData(10000)]
+        public static void StressTest4(int threshold)
+        {
+            var dict = new Dictionary<string, string>
+            {
+                {"Key1", "Value1"},
+                {"Key2", "Value2"}
+            };
+            var formatter = new BinaryFormatter();
+            using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: false);
+            formatter.Serialize(writer, dict);
+            using var source = writer.GetWrittenContentAsStream();
+            Equal(dict, formatter.Deserialize(source));
+        }
+
+        [Theory]
+        [InlineData(100)]
+        [InlineData(1000)]
+        [InlineData(10000)]
+        public static async Task StressTest4Async(int threshold)
+        {
+            var dict = new Dictionary<string, string>
+            {
+                {"Key1", "Value1"},
+                {"Key2", "Value2"}
+            };
+            var formatter = new BinaryFormatter();
+            using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: false);
+            formatter.Serialize(writer, dict);
+            await using var source = await writer.GetWrittenContentAsStreamAsync();
+            Equal(dict, formatter.Deserialize(source));
+        }
+
+        [Theory]
+        [InlineData(100)]
+        [InlineData(1000)]
         public static void BufferedReadWrite(int threshold)
         {
             using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: false);
