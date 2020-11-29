@@ -82,7 +82,7 @@ namespace DotNext.IO
                 }
 
                 ptr = default;
-                writer.ReleaseReadLock(version);
+                writer?.ReleaseReadLock(version);
             }
         }
 

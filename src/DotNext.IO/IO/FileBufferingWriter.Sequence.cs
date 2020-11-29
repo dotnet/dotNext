@@ -87,7 +87,7 @@ namespace DotNext.IO
                     accessor = null;
                 }
 
-                writer.ReleaseReadLock(version);
+                writer?.ReleaseReadLock(version);
                 base.Dispose(disposing);
             }
         }
