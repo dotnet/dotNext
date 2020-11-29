@@ -161,6 +161,7 @@ namespace DotNext.IO
         /// <summary>
         /// Gets written content as read-only stream asynchronously.
         /// </summary>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>Read-only stream representing the written content.</returns>
         /// <exception cref="InvalidOperationException">The stream is already obtained but not disposed.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
