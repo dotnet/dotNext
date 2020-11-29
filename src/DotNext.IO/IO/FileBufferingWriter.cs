@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Diagnostics.Tracing;
 using System.IO;
 using System.IO.MemoryMappedFiles;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.MemoryMarshal;
@@ -27,12 +28,26 @@ namespace DotNext.IO
     /// </remarks>
     public sealed partial class FileBufferingWriter : Stream, IFlushableBufferWriter<byte>, IGrowableBuffer<byte>
     {
+        [StructLayout(LayoutKind.Auto)]
+        private readonly struct ReadSession : IDisposable
+        {
+            private readonly WeakReference refHolder;
+
+            internal ReadSession(WeakReference obj)
+                => refHolder = obj;
+
+            public void Dispose()
+            {
+                if (!(refHolder is null))
+                    refHolder.Target = null;
+            }
+        }
+
         private sealed unsafe class MemoryMappedFileManager : MemoryManager<byte>
         {
-            private readonly FileBufferingWriter writer;
             private readonly MemoryMappedFile mappedFile;
             private readonly MemoryMappedViewAccessor accessor;
-            private readonly uint version;
+            private ReadSession session;
             private byte* ptr;
 
             internal MemoryMappedFileManager(FileBufferingWriter writer, long offset, long length)
@@ -43,8 +58,7 @@ namespace DotNext.IO
                 accessor = mappedFile.CreateViewAccessor(offset, length, MemoryMappedFileAccess.ReadWrite);
                 accessor.SafeMemoryMappedViewHandle.AcquirePointer(ref ptr);
                 Debug.Assert(ptr != default);
-                this.writer = writer;
-                version = ++writer.readVersion;
+                session = writer.EnableReadMode(this);
                 Debug.Assert(writer.IsReading);
             }
 
@@ -79,31 +93,26 @@ namespace DotNext.IO
                     accessor.SafeMemoryMappedViewHandle.ReleasePointer();
                     accessor.Dispose();
                     mappedFile.Dispose();
+                    session.Dispose();
+                    session = default;
                 }
 
                 ptr = default;
-                writer?.ReleaseReadLock(version);
             }
         }
 
         private sealed class MemoryManager : MemoryManager<byte>
         {
-            private readonly uint version;
-            private readonly FileBufferingWriter? writer;
+            private ReadSession session;
             private Memory<byte> memory;
 
-            internal MemoryManager()
-            {
-                writer = null;
-                memory = default;
-            }
+            internal MemoryManager() => memory = default;
 
             internal MemoryManager(FileBufferingWriter writer, in Range range)
             {
                 var buffer = writer.buffer;
                 memory = buffer.Memory.Slice(0, writer.position)[range];
-                this.writer = writer;
-                version = ++writer.readVersion;
+                session = writer.EnableReadMode(this);
                 Debug.Assert(writer.IsReading);
             }
 
@@ -124,9 +133,9 @@ namespace DotNext.IO
                 if (disposing)
                 {
                     memory = default;
+                    session.Dispose();
+                    session = default;
                 }
-
-                writer?.ReleaseReadLock(version);
             }
         }
 
@@ -157,8 +166,9 @@ namespace DotNext.IO
         private int position;
         private FileStream? fileBackend;
 
-        // if (x & 1) != 0 then reading is active
-        private uint readVersion;
+        // If null or .Target is null then there is no active readers.
+        // Weak reference allows to track leaked readers when Dispose() was not called on them
+        private WeakReference? reader;
 
         /// <summary>
         /// Initializes a new writer.
@@ -241,14 +251,22 @@ namespace DotNext.IO
         void IGrowableBuffer<byte>.CopyTo<TArg>(ReadOnlySpanAction<byte, TArg> callback, TArg arg)
             => CopyTo(callback, arg);
 
-        private bool IsReading => (readVersion & 1U) != 0U;
+        private bool IsReading => reader?.Target != null;
 
-        private void ReleaseReadLock(uint current)
+        private ReadSession EnableReadMode(object obj)
         {
-            if (current == readVersion)
-                readVersion += 1U;
+            WeakReference refHolder;
+            if (reader is null)
+            {
+                refHolder = reader = new WeakReference(obj, false);
+            }
+            else
+            {
+                refHolder = reader;
+                refHolder.Target = obj;
+            }
 
-            Debug.Assert((readVersion & 1U) == 0U);
+            return new ReadSession(refHolder);
         }
 
         /// <summary>
@@ -833,6 +851,7 @@ namespace DotNext.IO
                 fileBackend = null;
                 buffer.Dispose();
                 buffer = default;
+                reader = null;
             }
 
             base.Dispose(disposing);

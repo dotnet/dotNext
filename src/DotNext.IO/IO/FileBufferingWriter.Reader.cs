@@ -10,10 +10,9 @@ namespace DotNext.IO
         private sealed class ReaderStream : Stream
         {
             private const long DoNotRestorePosition = long.MinValue;
-            private readonly FileBufferingWriter writer;
             private readonly Stream source;
             private readonly long initialPosition;
-            private uint version;
+            private ReadSession session;
 
             internal ReaderStream(FileBufferingWriter writer)
             {
@@ -28,8 +27,7 @@ namespace DotNext.IO
                     initialPosition = DoNotRestorePosition;
                 }
 
-                this.writer = writer;
-                version = ++writer.readVersion;
+                session = writer.EnableReadMode(this);
             }
 
             public override long Position
@@ -115,9 +113,10 @@ namespace DotNext.IO
                 if (disposing)
                 {
                     CleanupUnderlyingStream();
+                    session.Dispose();
+                    session = default;
                 }
 
-                writer?.ReleaseReadLock(version);
                 base.Dispose(disposing);
             }
 

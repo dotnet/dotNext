@@ -41,10 +41,9 @@ namespace DotNext.IO
         /// </summary>
         private sealed class ReadOnlySequenceSource : Disposable, IReadOnlySequenceSource
         {
-            private readonly FileBufferingWriter writer;
             private readonly Memory<byte> tail;
-            private readonly uint version;
             private ReadOnlySequenceAccessor? accessor;
+            private ReadSession session;
 
             internal ReadOnlySequenceSource(FileBufferingWriter writer, int segmentLength)
             {
@@ -53,8 +52,7 @@ namespace DotNext.IO
                 accessor = writer.fileBackend is null ?
                     null :
                     new ReadOnlySequenceAccessor(writer.fileBackend, segmentLength);
-                this.writer = writer;
-                version = ++writer.readVersion;
+                session = writer.EnableReadMode(this);
             }
 
             /// <summary>
@@ -85,9 +83,10 @@ namespace DotNext.IO
                 {
                     accessor?.Dispose();
                     accessor = null;
+                    session.Dispose();
+                    session = default;
                 }
 
-                writer?.ReleaseReadLock(version);
                 base.Dispose(disposing);
             }
         }
