@@ -117,7 +117,7 @@ namespace DotNext.IO
             {
                 const FileOptions withAsyncIO = FileOptions.Asynchronous | FileOptions.SequentialScan;
                 const FileOptions withoutAsyncIO = FileOptions.SequentialScan;
-                stream = new FileStream(fileBackend.Name, FileMode.Open, FileAccess.Read, FileShare.Read, FileBufferSize, fileBackend.IsAsync ? withAsyncIO : withoutAsyncIO);
+                stream = new FileStream(fileBackend.Name, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, FileBufferSize, fileBackend.IsAsync ? withAsyncIO : withoutAsyncIO);
             }
         }
 
