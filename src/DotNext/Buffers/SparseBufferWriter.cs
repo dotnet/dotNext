@@ -2,6 +2,7 @@ using System;
 using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.Buffers
@@ -16,6 +17,7 @@ namespace DotNext.Buffers
     /// <typeparam name="T">The type of the elements in the memory.</typeparam>
     /// <seealso cref="PooledArrayBufferWriter{T}"/>
     /// <seealso cref="PooledBufferWriter{T}"/>
+    [DebuggerDisplay("WrittenCount = {" + nameof(WrittenCount) + "}, FragmentedBytes = {" + nameof(FragmentedBytes) + "}")]
     public partial class SparseBufferWriter<T> : Disposable, IEnumerable<ReadOnlyMemory<T>>, IGrowableBuffer<T>, IConvertible<ReadOnlySequence<T>>
     {
         private readonly int chunkSize;
@@ -61,6 +63,8 @@ namespace DotNext.Buffers
         {
         }
 
+        internal MemoryChunk? FirstChunk => first;
+
         /// <summary>
         /// Gets the number of written elements.
         /// </summary>
@@ -71,6 +75,22 @@ namespace DotNext.Buffers
             {
                 ThrowIfDisposed();
                 return length;
+            }
+        }
+
+        private long FragmentedBytes
+        {
+            get
+            {
+                var result = 0L;
+                for (MemoryChunk? current = first, next; !(current is null); current = next)
+                {
+                    next = current.Next;
+                    if (!(next is null) && next.WrittenMemory.Length > 0)
+                        result += current.FreeCapacity;
+                }
+
+                return result;
             }
         }
 
@@ -150,7 +170,7 @@ namespace DotNext.Buffers
         public void CopyTo<TArg>(ReadOnlySpanAction<T, TArg> writer, TArg arg)
         {
             ThrowIfDisposed();
-            for (MemoryChunk? current = first; !(current is null); current = current?.Next)
+            for (MemoryChunk? current = first; !(current is null); current = current.Next)
             {
                 var buffer = current.WrittenMemory.Span;
                 writer(buffer, arg);
@@ -167,7 +187,7 @@ namespace DotNext.Buffers
         {
             ThrowIfDisposed();
             var total = 0;
-            for (MemoryChunk? current = first; !(current is null) && !output.IsEmpty; current = current?.Next)
+            for (MemoryChunk? current = first; !(current is null) && !output.IsEmpty; current = current.Next)
             {
                 var buffer = current.WrittenMemory.Span;
                 buffer.CopyTo(output, out var writtenCount);
@@ -191,7 +211,15 @@ namespace DotNext.Buffers
 
         /// <inheritdoc />
         ReadOnlySequence<T> IConvertible<ReadOnlySequence<T>>.Convert()
-            => BufferHelpers.ToReadOnlySequence(this);
+        {
+            if (first is null)
+                return ReadOnlySequence<T>.Empty;
+
+            if (first.Next is null)
+                return new ReadOnlySequence<T>(first.WrittenMemory);
+
+            return BufferHelpers.ToReadOnlySequence(this);
+        }
 
         /// <summary>
         /// Gets enumerator over memory segments.
@@ -219,8 +247,7 @@ namespace DotNext.Buffers
                 current.Dispose();
             }
 
-            first = null;
-            last = null;
+            first = last = null;
         }
 
         /// <inheritdoc />

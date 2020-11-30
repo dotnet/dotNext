@@ -1,6 +1,8 @@
 using System;
 using System.Buffers;
+using System.Diagnostics;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.MemoryMarshal;
@@ -82,7 +84,40 @@ namespace DotNext.IO
             flush ??= IFlushable.TryReflectFlushMethod(writer);
             flushAsync ??= IFlushable.TryReflectAsyncFlushMethod(writer);
 
-            return AsStream(Span.CopyTo<byte>, writer, flush, flushAsync);
+            var callback = writer is IGrowableBuffer<byte> ?
+                new ReadOnlySpanAction<byte, TWriter>(WriteToGrowableBuffer) :
+                new ReadOnlySpanAction<byte, TWriter>(Span.CopyTo<byte>);
+            return AsStream(callback, writer, flush, flushAsync);
+
+            static void WriteToGrowableBuffer(ReadOnlySpan<byte> input, TWriter output)
+            {
+                Debug.Assert(output is IGrowableBuffer<byte>);
+                Unsafe.As<IGrowableBuffer<byte>>(output).Write(input);
+            }
+        }
+
+        /// <summary>
+        /// Creates a stream over sparse memory.
+        /// </summary>
+        /// <param name="writer">Sparse memory buffer.</param>
+        /// <param name="readable"><see langword="true"/> to create readable stream; <see langword="false"/> to create writable stream.</param>
+        /// <returns>Sparse memory stream.</returns>
+        public static Stream AsStream(this SparseBufferWriter<byte> writer, bool readable)
+        {
+            if (!readable)
+                return AsStream(WriteToBuffer, writer);
+
+            var chunk = writer.FirstChunk;
+            if (chunk is null)
+                return Stream.Null;
+
+            if (chunk.Next is null)
+                return AsStream(chunk.WrittenMemory);
+
+            return new SparseMemoryStream(writer);
+
+            static void WriteToBuffer(ReadOnlySpan<byte> input, SparseBufferWriter<byte> output)
+                => output.Write(input);
         }
 
         /// <summary>

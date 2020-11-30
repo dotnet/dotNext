@@ -1,5 +1,6 @@
 using System;
 using System.Buffers;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -20,6 +21,7 @@ namespace DotNext.Buffers
     /// <seealso cref="PooledArrayBufferWriter{T}"/>
     /// <seealso cref="PooledBufferWriter{T}"/>
     [StructLayout(LayoutKind.Auto)]
+    [DebuggerDisplay("WrittenCount = {" + nameof(WrittenCount) + "}, FreeCapacity = {" + nameof(FreeCapacity) + "}, Overflow = {" + nameof(Overflow) + "}")]
     public ref struct BufferWriterSlim<T>
     {
         // TODO: Support of BinaryPrimitives should be added using function pointers in C# 9
@@ -54,6 +56,8 @@ namespace DotNext.Buffers
             position = 0;
             this.copyOnOverflow = copyOnOverflow;
         }
+
+        private int Overflow => Math.Max(0, position - initialBuffer.Length);
 
         /// <summary>
         /// Gets the amount of data written to the underlying memory so far.

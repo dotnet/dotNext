@@ -1,10 +1,13 @@
 using System;
 using System.Buffers;
+using System.Diagnostics;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Globalization.CultureInfo;
+using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.IO
 {
@@ -14,6 +17,7 @@ namespace DotNext.IO
     internal sealed class TextBufferWriter<TWriter> : TextWriter
         where TWriter : class, IBufferWriter<char>
     {
+        private readonly ReadOnlySpanAction<char, TWriter> writeImpl;
         private readonly TWriter writer;
         private readonly Action<TWriter>? flush;
         private readonly Func<TWriter, CancellationToken, Task>? flushAsync;
@@ -21,9 +25,24 @@ namespace DotNext.IO
         internal TextBufferWriter(TWriter writer, IFormatProvider? provider, Action<TWriter>? flush, Func<TWriter, CancellationToken, Task>? flushAsync)
             : base(provider ?? InvariantCulture)
         {
-            this.writer = writer ?? throw new ArgumentNullException(nameof(writer));
+            if (writer is null)
+                throw new ArgumentNullException(nameof(writer));
+
+            writeImpl = writer is IGrowableBuffer<char> ?
+                new ReadOnlySpanAction<char, TWriter>(WriteToGrowableBuffer) :
+                new ReadOnlySpanAction<char, TWriter>(WriteToBuffer);
+            this.writer = writer;
             this.flush = flush;
             this.flushAsync = flushAsync;
+
+            static void WriteToBuffer(ReadOnlySpan<char> input, TWriter output)
+                => output.Write(input);
+
+            static void WriteToGrowableBuffer(ReadOnlySpan<char> input, TWriter output)
+            {
+                Debug.Assert(output is IGrowableBuffer<char>);
+                Unsafe.As<IGrowableBuffer<char>>(output).Write(input);
+            }
         }
 
         public override Encoding Encoding => Encoding.UTF8;
@@ -55,16 +74,16 @@ namespace DotNext.IO
             }
         }
 
-        public override void Write(ReadOnlySpan<char> buffer) => writer.Write(buffer);
+        public override void Write(ReadOnlySpan<char> buffer) => writeImpl(buffer, writer);
 
-        public override void Write(char value) => writer.Write(value);
+        public override void Write(char value) => Write(CreateReadOnlySpan(ref value, 1));
 
         public override void Write(bool value) => Write(value ? bool.TrueString : bool.FalseString);
 
         public override void Write(char[] buffer, int index, int count)
-            => Write(buffer.AsSpan(index, count));
+            => Write(new ReadOnlySpan<char>(buffer, index, count));
 
-        public override void Write(char[] buffer) => Write(buffer.AsSpan());
+        public override void Write(char[] buffer) => Write(new ReadOnlySpan<char>(buffer));
 
         public override void Write(string value) => Write(value.AsSpan());
 

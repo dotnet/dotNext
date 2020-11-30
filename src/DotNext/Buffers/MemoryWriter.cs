@@ -2,6 +2,7 @@ using System;
 using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Tracing;
 
@@ -13,6 +14,7 @@ namespace DotNext.Buffers
     /// Represents memory-backed output sink which <typeparamref name="T"/> data can be written.
     /// </summary>
     /// <typeparam name="T">The data type that can be written.</typeparam>
+    [DebuggerDisplay("WrittenCount = {" + nameof(WrittenCount) + "}, FreeCapacity = {" + nameof(FreeCapacity) + "}")]
     public abstract class MemoryWriter<T> : Disposable, IBufferWriter<T>, IConvertible<ReadOnlyMemory<T>>, IReadOnlyList<T>, IGrowableBuffer<T>
     {
         // TODO: Should be renamed to BufferWriter
