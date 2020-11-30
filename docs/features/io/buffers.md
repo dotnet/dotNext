@@ -57,6 +57,16 @@ Suppose that sparse buffer has rented memory block of size _1024_ bytes, and _10
 
 The implementation of `GetMemory(int)` and `GetSpan(int)` methods are optimized to reduce the number of such memory holes. However, due to nature of sparse buffer data structure, it is not possible in 100% cases. Nevertheless, such overhead can be acceptable because sparse buffer never reallocates the existing memory and may work faster than [PooledBufferWriter&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.PooledBufferWriter-1.html) which requires reallocation when rented memory block is not enough to place a new data.
 
+Additionally, you can use [Stream](https://docs.microsoft.com/en-us/dotnet/api/system.io.stream)-based API to read from or write to the sparse buffer. [StreamSource](../../api/DotNext.IO.StreamSource.yml) provides `AsStream` extension method that can be used to create readable or writable stream over the buffer:
+```csharp
+using DotNext.Buffers;
+using DotNext.IO;
+
+using var buffer = new SparseBufferWriter<byte>();
+using Stream writable = buffer.AsStream(false); // create writable stream
+using Stream readable = buffer.AsStream(true);  // create readable stream
+```
+
 # String Buffer
 [StringBuilder](https://docs.microsoft.com/en-us/dotnet/api/system.text.stringbuilder) is a great tool from .NET standard library to construct strings dynamically. However, it uses heap-based allocation of chunks and increases GC workload. The solution is to use pooled memory for growing buffer and release it when no longer needed. This approach is implemented by `PooledBufferWriter<T>`, `PooledArrayBufferWriter<T>` and `SparseBufferWriter<T>` classes as described above. But we need suitable methods for adding portions of data to the builder similar to the methods of `StringBuilder`. They are provided as extension methods declared in [BufferWriter](../../api/DotNext.Buffers.BufferWriter.yml) class for all objects implementing [IBufferWriter&lt;char&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) interface:
 ```csharp
