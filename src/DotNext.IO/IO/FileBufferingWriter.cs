@@ -28,6 +28,8 @@ namespace DotNext.IO
     /// </remarks>
     public sealed partial class FileBufferingWriter : Stream, IFlushableBufferWriter<byte>, IGrowableBuffer<byte>
     {
+        private const int FileBufferSize = 1024;
+
         [StructLayout(LayoutKind.Auto)]
         private readonly struct ReadSession : IDisposable
         {
@@ -429,7 +431,7 @@ namespace DotNext.IO
         }
 
         private void EnsureBackingStore()
-            => fileBackend ??= new FileStream(Path.Combine(tempDir, Path.GetRandomFileName()), FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read, 1024, options);
+            => fileBackend ??= new FileStream(Path.Combine(tempDir, Path.GetRandomFileName()), FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read, FileBufferSize, options);
 
         /// <inheritdoc/>
         public override void Write(byte[] buffer, int offset, int count)

@@ -9,31 +9,19 @@ namespace DotNext.IO
     {
         private sealed class ReaderStream : Stream
         {
-            private const long DoNotRestorePosition = long.MinValue;
             private readonly Stream source;
-            private readonly long initialPosition;
             private ReadSession session;
 
             internal ReaderStream(FileBufferingWriter writer)
             {
-                source = writer.GetWrittenContentAsStream(out bool persisted);
-                if (persisted)
-                {
-                    initialPosition = source.Position;
-                    source.Position = 0L;
-                }
-                else
-                {
-                    initialPosition = DoNotRestorePosition;
-                }
-
+                writer.GetWrittenContentAsStream(out source);
                 session = writer.EnableReadMode(this);
             }
 
             public override long Position
             {
                 get => source.Position;
-                set => throw new NotSupportedException();
+                set => source.Position = value;
             }
 
             public override long Length => source.Length;
@@ -42,13 +30,13 @@ namespace DotNext.IO
                 => throw new NotSupportedException();
 
             public override long Seek(long offset, SeekOrigin origin)
-                => throw new NotSupportedException();
+                => source.Seek(offset, origin);
 
             public override bool CanRead => true;
 
             public override bool CanWrite => false;
 
-            public override bool CanSeek => false;
+            public override bool CanSeek => source.CanSeek;
 
             public override bool CanTimeout => source.CanTimeout;
 
@@ -100,19 +88,11 @@ namespace DotNext.IO
 
             public override void EndWrite(IAsyncResult ar) => throw new InvalidOperationException();
 
-            private void CleanupUnderlyingStream()
-            {
-                if (initialPosition == DoNotRestorePosition)
-                        source.Dispose();
-                else
-                    source.Position = initialPosition;
-            }
-
             protected override void Dispose(bool disposing)
             {
                 if (disposing)
                 {
-                    CleanupUnderlyingStream();
+                    source.Dispose();
                     session.Dispose();
                     session = default;
                 }
@@ -120,23 +100,25 @@ namespace DotNext.IO
                 base.Dispose(disposing);
             }
 
-            public override ValueTask DisposeAsync()
+            public override async ValueTask DisposeAsync()
             {
-                CleanupUnderlyingStream();
-                return base.DisposeAsync();
+                await source.DisposeAsync().ConfigureAwait(false);
+                await base.DisposeAsync().ConfigureAwait(false);
             }
         }
 
-        private Stream GetWrittenContentAsStream(out bool persisted)
+        private void GetWrittenContentAsStream(out Stream stream)
         {
             if (fileBackend is null)
             {
-                persisted = false;
-                return StreamSource.AsStream(buffer.Memory.Slice(0, position));
+                stream = StreamSource.AsStream(buffer.Memory.Slice(0, position));
             }
-
-            persisted = true;
-            return fileBackend;
+            else
+            {
+                const FileOptions withAsyncIO = FileOptions.Asynchronous | FileOptions.SequentialScan;
+                const FileOptions withoutAsyncIO = FileOptions.SequentialScan;
+                stream = new FileStream(fileBackend.Name, FileMode.Open, FileAccess.Read, FileShare.Read, FileBufferSize, fileBackend.IsAsync ? withAsyncIO : withoutAsyncIO);
+            }
         }
 
         /// <summary>
