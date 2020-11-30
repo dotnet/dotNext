@@ -107,6 +107,7 @@ string str = reader.ReadString(StringLengthEncoding.Plain, Encoding.UTF8);
 * Asynchronous serialization to stream and copying result to another stream synchronously
 * Synchronous serialization to stream and copying result to [PipeWriter](https://docs.microsoft.com/en-us/dotnet/api/system.io.pipelines.pipewriter) asynchronously
 * Bufferized write to another stream when it's not available immediately
+* Bufferize input data and read afterwards
 * Dynamic buffer should be represented as [Memory&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.memory-1)
 
 In other words, this class has many similarities with [FileBufferingWriteStream](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.webutilities.filebufferingwritestream). However, `FileBufferingWriter` has a few advantages:
@@ -114,6 +115,7 @@ In other words, this class has many similarities with [FileBufferingWriteStream]
 * Ability to use custom [MemoryAllocator&lt;T&gt;](../../api/DotNext.Buffers.MemoryAllocator-1.yml) for memory pooling
 * Selection between synchronous and asynchronous modes
 * Can drain content to [IBufferWriter&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1)
+* Ability to read written content as [Stream](https://docs.microsoft.com/en-us/dotnet/api/system.io.stream)
 * Ability to represent written content as [Memory&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.memory-1)
 * Ability to represent written content as [ReadOnlySequence&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) if it's too large for representation using `Memory<byte>` data type.
 
@@ -141,9 +143,23 @@ using var writer = new FileBufferingWriter();
 writer.Write(...);
 
 // The segment size to be mapped to the memory is 1 MB
-using (FileBufferingWriter.ReadOnlySequenceSource source = writer.GetWrittenContent(1024 * 1024))
+using (IReadOnlySequenceSource source = writer.GetWrittenContent(1024 * 1024))
 {
     ReadOnlySequence<byte> memory = source.Sequence;
+}
+```
+
+The last option is to use stream-based API to read the written content:
+```csharp
+using DotNext.IO;
+using System.IO;
+
+using var writer = new FileBufferingWriter();
+writer.Write(...);
+
+// read data from the stream
+using (Stream reader = writer.GetWrittenContentAsStream())
+{
 }
 ```
 
