@@ -56,6 +56,7 @@ Release Date: 11-11-2020
 <a href="https://www.nuget.org/packages/dotnext.io/2.12.0">DotNext.IO 2.12.0</a>
 * Introduced `TextBufferReader` class inherited from [TextReader](https://docs.microsoft.com/en-us/dotnet/api/system.io.textreader) that can be used to read the text from [ReadOnlySequence&lt;char&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) or [ReadOnlyMemory&lt;char&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.readonlymemory-1)
 * Added `SequenceBuilder<T>` type for building [ReadOnlySequence&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) instances from the chunk of memory blocks
+* Added `GetWrittenContentAsStream` and `GetWrittenContentAsStreamAsync` methods to [FileBufferingWriter](https://sakno.github.io/dotNext/api/DotNext.IO.FileBufferingWriter.html) class
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.12.0">DotNext.Metaprogramming 2.12.0</a>
