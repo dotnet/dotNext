@@ -89,25 +89,17 @@ Release Date: 11-11-2020
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
-# Release Policy
-* The libraries are versioned according with [Semantic Versioning 2.0](https://semver.org/).
-* Version 0.x and 1.x relies on .NET Standard 2.0
-* Version 2.x relies on .NET Standard 2.1
+# Release & Support Policy
+The libraries are versioned according with [Semantic Versioning 2.0](https://semver.org/).
 
-# Support Policy
 | Version | .NET compatibility | Support Level |
 | ---- | ---- | ---- |
 | 0.x | .NET Standard 2.0 | Not Supported |
-| 1.x | .NET Standard 2.0 | Maintenance |
-| 2.x | .NET Standard 2.1 | Active Development |
+| 1.x | .NET Standard 2.0 | Not Supported (since 12/20/2020) |
+| 2.x | .NET Standard 2.1 | Maintenance |
+| 3.x | .NET Standard 2.1, .NET 5 | Active Development |
 
 _Maintenance_ support level means that new releases will contain bug fixes only.
-
-[DotNext.AspNetCore.Cluster](https://www.nuget.org/packages/DotNext.AspNetCore.Cluster/) of version 1.x is no longer supported because of ASP.NET Core 2.2 end-of-life.
-
-[DotNext.Net.Cluster](https://www.nuget.org/packages/DotNext.Net.Cluster/) of version 1.x is no longer supported due to few reasons:
-1. Underlying implementation for ASP.NET Core is no longer supported
-1. Raft implementation is incomplete
 
 # Development Process
 Philosophy of development process:
