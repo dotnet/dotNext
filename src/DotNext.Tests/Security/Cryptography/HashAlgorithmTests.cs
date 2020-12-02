@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Pipelines;
 using System.Security.Cryptography;
@@ -8,6 +9,7 @@ using Xunit;
 namespace DotNext.Security.Cryptography
 {
     [ExcludeFromCodeCoverage]
+    [Obsolete("This test collection checks backward compatibility")]
     public sealed class HashAlgorithmTests : Test
     {
         [Fact]

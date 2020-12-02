@@ -16,6 +16,7 @@ namespace DotNext.Security.Cryptography
     /// to avoid memory allocations during hash computing.
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
+    [Obsolete("Use System.Security.Cryptography.IncrementalHash instead")]
     public readonly struct HashBuilder : ICryptoTransform, IDisposable
     {
         private delegate void HashMethod(HashAlgorithm algorithm, ReadOnlySpan<byte> bytes);

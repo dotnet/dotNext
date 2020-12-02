@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Globalization;
 using System.IO;
 using System.IO.Pipelines;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
@@ -24,6 +25,44 @@ namespace DotNext.IO.Pipelines
     public static class PipeExtensions
     {
         [StructLayout(LayoutKind.Auto)]
+        private struct IncrementalHashBuilder : IBufferReader<Missing>
+        {
+            private readonly IncrementalHash hash;
+            private readonly bool limited;
+            private int remainingBytes;
+
+            internal IncrementalHashBuilder(IncrementalHash hash, int? count)
+            {
+                this.hash = hash;
+                if (count.HasValue)
+                {
+                    limited = true;
+                    remainingBytes = count.GetValueOrDefault();
+                }
+                else
+                {
+                    limited = false;
+                    remainingBytes = int.MaxValue;
+                }
+            }
+
+            readonly int IBufferReader<Missing>.RemainingBytes => remainingBytes;
+
+            readonly Missing IBufferReader<Missing>.Complete() => Missing.Value;
+
+            void IBufferReader<Missing>.EndOfStream()
+                => remainingBytes = limited ? throw new EndOfStreamException() : 0;
+
+            void IBufferReader<Missing>.Append(ReadOnlySpan<byte> block, ref int consumedBytes)
+            {
+                hash.AppendData(block);
+                if (limited)
+                    remainingBytes -= block.Length;
+            }
+        }
+
+        [StructLayout(LayoutKind.Auto)]
+        [Obsolete]
         private struct HashReader : IBufferReader<HashBuilder>
         {
             private readonly HashBuilder builder;
@@ -41,7 +80,7 @@ namespace DotNext.IO.Pipelines
                 else
                 {
                     limited = false;
-                    remainingBytes = 4096;
+                    remainingBytes = int.MaxValue;
                 }
             }
 
@@ -93,15 +132,55 @@ namespace DotNext.IO.Pipelines
             return parser.RemainingBytes == 0 ? decoder.Decode(parser.Complete()) : throw new EndOfStreamException();
         }
 
+        [Obsolete]
         internal static async ValueTask ComputeHashAsync(this PipeReader reader, HashAlgorithm algorithm, int? count, Memory<byte> output, CancellationToken token)
         {
             using var builder = await reader.ReadAsync<HashBuilder, HashReader>(new HashReader(algorithm, count), token).ConfigureAwait(false);
             builder.Build(output.Span);
         }
 
+        private static async ValueTask<int> ComputeHashAsync(PipeReader reader, HashAlgorithmName name, int? count, Memory<byte> output, CancellationToken token)
+        {
+            using var hash = IncrementalHash.CreateHash(name);
+            await reader.ReadAsync<Missing, IncrementalHashBuilder>(new IncrementalHashBuilder(hash, count), token).ConfigureAwait(false);
+            if (!hash.TryGetHashAndReset(output.Span, out var bytesWritten))
+                throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(output));
+            return bytesWritten;
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static ValueTask<int> Read7BitEncodedIntAsync(this PipeReader reader, CancellationToken token)
             => reader.ReadAsync<int, SevenBitEncodedIntReader>(new SevenBitEncodedIntReader(5), token);
+
+        /// <summary>
+        /// Computes the hash for the pipe.
+        /// </summary>
+        /// <param name="reader">The pipe reader.</param>
+        /// <param name="name">The name of the hash algorithm.</param>
+        /// <param name="count">The number of bytes to be added to the hash.</param>
+        /// <param name="output">The buffer used to write the final hash.</param>
+        /// <param name="token">The token that can be used to cancel operation.</param>
+        /// <returns>The length of the final hash.</returns>
+        /// <exception cref="ArgumentException"><paramref name="output"/> is too small for the hash.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        public static ValueTask<int> ComputeHashAsync(this PipeReader reader, HashAlgorithmName name, int count, Memory<byte> output, CancellationToken token = default)
+            => ComputeHashAsync(reader, name, new int?(count), output, token);
+
+        /// <summary>
+        /// Computes the hash for the pipe.
+        /// </summary>
+        /// <param name="reader">The pipe reader.</param>
+        /// <param name="name">The name of the hash algorithm.</param>
+        /// <param name="output">The buffer used to write the final hash.</param>
+        /// <param name="token">The token that can be used to cancel operation.</param>
+        /// <returns>The length of the final hash.</returns>
+        /// <exception cref="ArgumentException"><paramref name="output"/> is too small for the hash.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<int> ComputeHashAsync(this PipeReader reader, HashAlgorithmName name, Memory<byte> output, CancellationToken token = default)
+            => ComputeHashAsync(reader, name, null, output, token);
+
+        // TODO: Add ComputeHashAsync overload with IncrementalHash type
 
         /// <summary>
         /// Decodes string asynchronously from pipe.
