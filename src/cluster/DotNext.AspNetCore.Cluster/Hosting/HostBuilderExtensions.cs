@@ -11,7 +11,7 @@ namespace DotNext.Hosting
     [CLSCompliant(false)]
     public static class HostBuilderExtensions
     {
-        private static void ApplyOptions(this HostOptions options, HostBuilderContext context, IServiceCollection services)
+        private static void ApplyOptions(this HostOptions options, IServiceCollection services)
             => services.AddSingleton<IOptions<HostOptions>>(new OptionsWrapper<HostOptions>(options));
 
         /// <summary>
