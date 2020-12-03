@@ -9,7 +9,7 @@ namespace DotNext.Reflection
     using static Collections.Generic.Sequence;
     using static Runtime.CompilerServices.ReflectionUtils;
 
-    public partial class Reflector
+    public static partial class Reflector
     {
         // TODO: Replace resultBuilder with method pointer in C# 9
         private static DynamicInvoker Unreflect<TMethod>(TMethod method, Func<Expression?, TMethod, IEnumerable<Expression>, Expression> resultBuilder)
