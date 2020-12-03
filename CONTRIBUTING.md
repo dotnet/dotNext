@@ -1,5 +1,7 @@
 Contribution to .NEXT
 ====
+[![Chat for Contributors](https://badges.gitter.im/dot_next/community.svg)](https://gitter.im/dot_next/community)
+
 You can contribute to .NEXT or its documentation with Pull Requests and issues. Follow the rules described in this document.
 
 ## Branching Model
