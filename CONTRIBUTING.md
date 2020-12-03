@@ -1,6 +1,6 @@
 Contribution to .NEXT
 ====
-[![Chat for Contributors](https://badges.gitter.im/dot_next/community.svg)](https://gitter.im/dot_next/community)
+[![Chat for Contributors](https://badges.gitter.im/dot_next/contrib.svg)](https://gitter.im/dot_next/contrib)
 
 You can contribute to .NEXT or its documentation with Pull Requests and issues. Follow the rules described in this document.
 
