@@ -7,7 +7,7 @@ namespace DotNext.Buffers
     /// <summary>
     /// Represents helper methods to work with various buffer representations.
     /// </summary>
-    public static class BufferHelpers
+    public static partial class BufferHelpers
     {
         private static readonly SpanAction<char, IGrowableBuffer<char>> InitializeStringFromWriter = InitializeString;
         private static readonly SpanAction<char, ReadOnlySequence<char>> InitializeStringFromSequence = InitializeString;
