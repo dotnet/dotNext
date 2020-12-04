@@ -15,7 +15,7 @@ namespace DotNext.IO
             internal ReaderStream(FileBufferingWriter writer)
             {
                 writer.GetWrittenContentAsStream(out source);
-                session = writer.EnableReadMode(this);
+                session = writer.EnterReadMode(this);
             }
 
             public override long Position

@@ -5,7 +5,7 @@ namespace DotNext.Reflection
 {
     using static Runtime.CompilerServices.ReflectionUtils;
 
-    public partial class Reflector
+    public static partial class Reflector
     {
         private static MemberExpression BuildFieldAccess(FieldInfo field, ParameterExpression target)
         {

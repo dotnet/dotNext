@@ -273,11 +273,9 @@ namespace DotNext.Buffers
         /// <param name="writer">The buffer writer.</param>
         /// <param name="value">The value to add.</param>
         /// <typeparam name="T">The type of elements in the buffer.</typeparam>
-        public static void Write<T>(this IBufferWriter<T> writer, T value)
-        {
-            writer.GetSpan(1)[0] = value;
-            writer.Advance(1);
-        }
+        [Obsolete("Use BufferHelpers.Write extension method instead", true)]
+        public static void Write<T>(IBufferWriter<T> writer, T value)
+            => BufferHelpers.Write(writer, value);
 
         /// <summary>
         /// Encodes 64-bit signed integer.
@@ -652,6 +650,7 @@ namespace DotNext.Buffers
         /// <param name="startIndex">Start index in the buffer.</param>
         /// <param name="count">The number of elements in the buffer. to write.</param>
         /// <typeparam name="T">The type of the elements in the buffer.</typeparam>
+        [Obsolete("Use BuffersExtensions.Write extension method instead")]
         public static void Write<T>(this IBufferWriter<T> writer, T[] buffer, int startIndex, int count)
             => writer.Write(buffer.AsSpan(startIndex, count));
 

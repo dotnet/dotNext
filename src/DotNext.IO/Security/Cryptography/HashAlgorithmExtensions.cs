@@ -1,6 +1,5 @@
 using System;
 using System.IO.Pipelines;
-using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,7 +25,7 @@ namespace DotNext.Security.Cryptography
         /// <exception cref="InvalidOperationException">Length of <paramref name="hash"/> is not enough to place the final hash.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="System.IO.EndOfStreamException">Unexpected end of stream.</exception>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [Obsolete("Use PipeExtensions.ComputeHashAsync extension method instead")]
         public static ValueTask ComputeHashAsync(this HashAlgorithm algorithm, PipeReader reader, int count, Memory<byte> hash, CancellationToken token = default)
             => reader.ComputeHashAsync(algorithm, count, hash, token);
 
@@ -40,7 +39,7 @@ namespace DotNext.Security.Cryptography
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="InvalidOperationException">Length of <paramref name="hash"/> is not enough to place the final hash.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [Obsolete("Use PipeExtensions.ComputeHashAsync extension method instead")]
         public static ValueTask ComputeHashAsync(this HashAlgorithm algorithm, PipeReader reader, Memory<byte> hash, CancellationToken token = default)
             => reader.ComputeHashAsync(algorithm, null, hash, token);
     }

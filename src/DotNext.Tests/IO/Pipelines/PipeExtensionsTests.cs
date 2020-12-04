@@ -3,7 +3,9 @@ using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Pipelines;
+using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -218,6 +220,36 @@ namespace DotNext.IO.Pipelines
             var buffer = new ArrayBufferWriter<byte>();
             Equal(3L, await pipe.Reader.CopyToAsync(buffer));
             Equal(new byte[] { 10, 20, 30 }, buffer.WrittenMemory.ToArray());
+        }
+
+        [Fact]
+        public static async Task HashEntirePipe()
+        {
+            byte[] data = { 1, 2, 3, 5, 8, 13 };
+            using var alg = new SHA256Managed();
+            var hash = new byte[alg.HashSize / 8];
+            var pipe = new Pipe();
+            ThreadPool.QueueUserWorkItem(async state =>
+            {
+                await pipe.Writer.WriteAsync(data);
+                pipe.Writer.Complete();
+            });
+            Equal(hash.Length, await pipe.Reader.ComputeHashAsync(HashAlgorithmName.SHA256, hash));
+            alg.Initialize();
+            Equal(hash, alg.ComputeHash(data));
+        }
+
+        [Fact]
+        public static async Task HashPipe()
+        {
+            byte[] data = { 1, 2, 3, 5, 8, 13 };
+            using var alg = new SHA256Managed();
+            var hash = new byte[alg.HashSize / 8];
+            var pipe = new Pipe();
+            await pipe.Writer.WriteAsync(data);
+            Equal(hash.Length, await pipe.Reader.ComputeHashAsync(HashAlgorithmName.SHA256, data.Length, hash));
+            alg.Initialize();
+            Equal(hash, alg.ComputeHash(data));
         }
     }
 }

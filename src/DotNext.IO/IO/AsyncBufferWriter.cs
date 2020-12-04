@@ -378,7 +378,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    writer.WriteTimeSpan(value, lengthFormat, in context, format);
+                    writer.WriteTimeSpan(value, lengthFormat, in context, format, provider);
                     result = FlushAsync(token);
                 }
                 catch (Exception e)

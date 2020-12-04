@@ -104,5 +104,18 @@ namespace DotNext.Buffers
 
             return string.Create(checked((int)sequence.Length), sequence, InitializeStringFromSequence);
         }
+
+        /// <summary>
+        /// Writes single element to the buffer.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to add.</param>
+        /// <typeparam name="T">The type of elements in the buffer.</typeparam>
+        public static void Write<T>(this IBufferWriter<T> writer, T value)
+        {
+            const int count = 1;
+            writer.GetSpan(count)[0] = value;
+            writer.Advance(count);
+        }
     }
 }
