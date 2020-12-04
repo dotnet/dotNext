@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Buffers;
 using System.Text;
 
 namespace DotNext.Text
@@ -33,15 +32,17 @@ namespace DotNext.Text
         /// <returns>The memory containing encoded characters.</returns>
         public static MemoryOwner<byte> GetBytes(this Encoding encoding, ReadOnlySpan<char> chars, MemoryAllocator<byte>? allocator = null)
         {
+            MemoryOwner<byte> owner;
             if (chars.IsEmpty)
-                return default;
+            {
+                owner = default;
+            }
+            else
+            {
+                owner = allocator.Invoke(encoding.GetByteCount(chars), true);
+                encoding.GetBytes(chars, owner.Memory.Span);
+            }
 
-            var lengthInBytes = encoding.GetByteCount(chars);
-            var owner = allocator is null ?
-                new MemoryOwner<byte>(ArrayPool<byte>.Shared, lengthInBytes) :
-                allocator(lengthInBytes);
-
-            encoding.GetBytes(chars, owner.Memory.Span);
             return owner;
         }
 
@@ -54,15 +55,17 @@ namespace DotNext.Text
         /// <returns>The memory containing decoded characters.</returns>
         public static MemoryOwner<char> GetChars(this Encoding encoding, ReadOnlySpan<byte> bytes, MemoryAllocator<char>? allocator = null)
         {
+            MemoryOwner<char> owner;
             if (bytes.IsEmpty)
-                return default;
+            {
+                owner = default;
+            }
+            else
+            {
+                owner = allocator.Invoke(encoding.GetCharCount(bytes), true);
+                encoding.GetChars(bytes, owner.Memory.Span);
+            }
 
-            var lengthInChars = encoding.GetCharCount(bytes);
-            var owner = allocator is null ?
-                new MemoryOwner<char>(ArrayPool<char>.Shared, lengthInChars) :
-                allocator(lengthInChars);
-
-            encoding.GetChars(bytes, owner.Memory.Span);
             return owner;
         }
     }
