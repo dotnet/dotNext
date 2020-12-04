@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class HashAlgorithmExtensions
    | .NEXT ">
-    <meta name="generator" content="docfx 2.56.4.0">
+    <meta name="generator" content="docfx 2.56.5.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -118,7 +118,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Security_Cryptography_HashAlgorithmExtensions_ComputeHashAsync_System_Security_Cryptography_HashAlgorithm_System_IO_Pipelines_PipeReader_System_Int32_System_Memory_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Security.Cryptography.HashAlgorithmExtensions.ComputeHashAsync(System.Security.Cryptography.HashAlgorithm%2CSystem.IO.Pipelines.PipeReader%2CSystem.Int32%2CSystem.Memory%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Security/Cryptography/HashAlgorithmExtensions.cs/#L29">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Security/Cryptography/HashAlgorithmExtensions.cs/#L28">View Source</a>
   </span>
   <a id="DotNext_Security_Cryptography_HashAlgorithmExtensions_ComputeHashAsync_" data-uid="DotNext.Security.Cryptography.HashAlgorithmExtensions.ComputeHashAsync*"></a>
   <h4 id="DotNext_Security_Cryptography_HashAlgorithmExtensions_ComputeHashAsync_System_Security_Cryptography_HashAlgorithm_System_IO_Pipelines_PipeReader_System_Int32_System_Memory_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.Security.Cryptography.HashAlgorithmExtensions.ComputeHashAsync(System.Security.Cryptography.HashAlgorithm,System.IO.Pipelines.PipeReader,System.Int32,System.Memory{System.Byte},System.Threading.CancellationToken)">ComputeHashAsync(HashAlgorithm, PipeReader, Int32, Memory&lt;Byte&gt;, CancellationToken)</h4>
@@ -127,7 +127,8 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ValueTask ComputeHashAsync(this HashAlgorithm algorithm, PipeReader reader, int count, Memory&lt;byte&gt; hash, CancellationToken token = default(CancellationToken))</code></pre>
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use PipeExtensions.ComputeHashAsync extension method instead&quot;)]
+public static ValueTask ComputeHashAsync(this HashAlgorithm algorithm, PipeReader reader, int count, Memory&lt;byte&gt; hash, CancellationToken token = default(CancellationToken))</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -218,7 +219,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Security_Cryptography_HashAlgorithmExtensions_ComputeHashAsync_System_Security_Cryptography_HashAlgorithm_System_IO_Pipelines_PipeReader_System_Memory_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Security.Cryptography.HashAlgorithmExtensions.ComputeHashAsync(System.Security.Cryptography.HashAlgorithm%2CSystem.IO.Pipelines.PipeReader%2CSystem.Memory%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Security/Cryptography/HashAlgorithmExtensions.cs/#L43">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Security/Cryptography/HashAlgorithmExtensions.cs/#L42">View Source</a>
   </span>
   <a id="DotNext_Security_Cryptography_HashAlgorithmExtensions_ComputeHashAsync_" data-uid="DotNext.Security.Cryptography.HashAlgorithmExtensions.ComputeHashAsync*"></a>
   <h4 id="DotNext_Security_Cryptography_HashAlgorithmExtensions_ComputeHashAsync_System_Security_Cryptography_HashAlgorithm_System_IO_Pipelines_PipeReader_System_Memory_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.Security.Cryptography.HashAlgorithmExtensions.ComputeHashAsync(System.Security.Cryptography.HashAlgorithm,System.IO.Pipelines.PipeReader,System.Memory{System.Byte},System.Threading.CancellationToken)">ComputeHashAsync(HashAlgorithm, PipeReader, Memory&lt;Byte&gt;, CancellationToken)</h4>
@@ -227,7 +228,8 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ValueTask ComputeHashAsync(this HashAlgorithm algorithm, PipeReader reader, Memory&lt;byte&gt; hash, CancellationToken token = default(CancellationToken))</code></pre>
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use PipeExtensions.ComputeHashAsync extension method instead&quot;)]
+public static ValueTask ComputeHashAsync(this HashAlgorithm algorithm, PipeReader reader, Memory&lt;byte&gt; hash, CancellationToken token = default(CancellationToken))</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -313,7 +315,7 @@
                     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Security_Cryptography_HashAlgorithmExtensions.md&amp;value=---%0Auid%3A%20DotNext.Security.Cryptography.HashAlgorithmExtensions%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Security/Cryptography/HashAlgorithmExtensions.cs/#L15" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Security/Cryptography/HashAlgorithmExtensions.cs/#L14" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

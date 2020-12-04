@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class DisposableType
    | .NEXT ">
-    <meta name="generator" content="docfx 2.56.4.0">
+    <meta name="generator" content="docfx 2.56.5.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -116,14 +116,64 @@ types implementing dispose pattern.</p>
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_DisposableType_GetDisposeAsyncMethod_System_Type_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.DisposableType.GetDisposeAsyncMethod(System.Type)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Reflection/DisposableType.cs/#L42">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_DisposableType_GetDisposeAsyncMethod_" data-uid="DotNext.Reflection.DisposableType.GetDisposeAsyncMethod*"></a>
+  <h4 id="DotNext_Reflection_DisposableType_GetDisposeAsyncMethod_System_Type_" data-uid="DotNext.Reflection.DisposableType.GetDisposeAsyncMethod(System.Type)">GetDisposeAsyncMethod(Type)</h4>
+  <div class="markdown level1 summary"><p>Gets <code>DisposeAsync</code> method implementing async dispose pattern.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static MethodInfo GetDisposeAsyncMethod(this Type type)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.type">Type</a></td>
+        <td><span class="parametername">type</span></td>
+        <td><p>The type to inspect.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.methodinfo">MethodInfo</a></td>
+        <td><p>Dispose method; or <span class="xref">null</span>, if this method doesn't exist.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_DisposableType_GetDisposeMethod_System_Type_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.DisposableType.GetDisposeMethod(System.Type)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Reflection/DisposableType.cs/#L22">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Reflection/DisposableType.cs/#L34">View Source</a>
   </span>
   <a id="DotNext_Reflection_DisposableType_GetDisposeMethod_" data-uid="DotNext.Reflection.DisposableType.GetDisposeMethod*"></a>
   <h4 id="DotNext_Reflection_DisposableType_GetDisposeMethod_System_Type_" data-uid="DotNext.Reflection.DisposableType.GetDisposeMethod(System.Type)">GetDisposeMethod(Type)</h4>
-  <div class="markdown level1 summary"><p>Gets Dispose method which implements dispose pattern.</p>
+  <div class="markdown level1 summary"><p>Gets <code>Dispose</code> method which implements dispose pattern.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -180,7 +230,7 @@ return public instance method with name Dispose.</p>
                     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_DisposableType.md&amp;value=---%0Auid%3A%20DotNext.Reflection.DisposableType%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Reflection/DisposableType.cs/#L10" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Reflection/DisposableType.cs/#L11" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

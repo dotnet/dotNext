@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class StreamExtensions
    | .NEXT ">
-    <meta name="generator" content="docfx 2.56.4.0">
+    <meta name="generator" content="docfx 2.56.5.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -209,7 +209,7 @@ writer, using a specified cancellation token.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static long CopyTo(this Stream source, IBufferWriter&lt;byte&gt; destination, int bufferSize = 1024, CancellationToken token = default(CancellationToken))</code></pre>
+    <pre><code class="lang-csharp hljs">public static long CopyTo(this Stream source, IBufferWriter&lt;byte&gt; destination, int bufferSize = 0, CancellationToken token = default(CancellationToken))</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -377,7 +377,7 @@ writer, using a specified cancellation token.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Task&lt;long&gt; CopyToAsync(this Stream source, IBufferWriter&lt;byte&gt; destination, int bufferSize = 1024, CancellationToken token = default(CancellationToken))</code></pre>
+    <pre><code class="lang-csharp hljs">public static Task&lt;long&gt; CopyToAsync(this Stream source, IBufferWriter&lt;byte&gt; destination, int bufferSize = 0, CancellationToken token = default(CancellationToken))</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">

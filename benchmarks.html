@@ -8,7 +8,7 @@
     <title>Benchmarks | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Benchmarks | .NEXT ">
-    <meta name="generator" content="docfx 2.56.4.0">
+    <meta name="generator" content="docfx 2.56.5.0">
     
     <link rel="shortcut icon" href="fav.ico">
     <link rel="stylesheet" href="styles/docfx.vendor.css">
@@ -74,11 +74,11 @@
 <tbody>
 <tr>
 <td>Host</td>
-<td>.NET Core 3.1.9 (CoreCLR 4.700.20.47201, CoreFX 4.700.20.47203), X64 RyuJIT</td>
+<td>.NET Core 3.1.10 (CoreCLR 4.700.20.51601, CoreFX 4.700.20.51901), X64 RyuJIT</td>
 </tr>
 <tr>
 <td>Job</td>
-<td>.NET Core 3.1.9 (CoreCLR 4.700.20.47201, CoreFX 4.700.20.47203), X64 RyuJIT</td>
+<td>.NET Core 3.1.10 (CoreCLR 4.700.20.51601, CoreFX 4.700.20.51901), X64 RyuJIT</td>
 </tr>
 <tr>
 <td>LaunchCount</td>
@@ -367,39 +367,39 @@ dotnet run -c Bench
 <tbody>
 <tr>
 <td>Direct call</td>
-<td>12.17 ns</td>
-<td>0.045 ns</td>
-<td>0.042 ns</td>
+<td>12.48 ns</td>
+<td>0.352 ns</td>
+<td>1.025 ns</td>
 </tr>
 <tr>
 <td>Reflection with DotNext using delegate type <code>MemberGetter&lt;IndexOfCalculator, int&gt;</code></td>
-<td>13.90 ns</td>
-<td>0.261 ns</td>
-<td>0.231 ns</td>
+<td>15.09 ns</td>
+<td>0.294 ns</td>
+<td>0.327 ns</td>
 </tr>
 <tr>
 <td>Reflection with DotNext using <code>DynamicInvoker</code></td>
-<td>22.14 ns</td>
-<td>0.442 ns</td>
-<td>0.648 ns</td>
+<td>24.16 ns</td>
+<td>0.469 ns</td>
+<td>0.688 ns</td>
 </tr>
 <tr>
 <td>Reflection with DotNext using delegate type <code>Function&lt;object, ValueTuple, object&gt;</code></td>
-<td>22.00 ns</td>
-<td>0.432 ns</td>
-<td>0.592 ns</td>
+<td>27.17 ns</td>
+<td>0.523 ns</td>
+<td>0.957 ns</td>
 </tr>
 <tr>
 <td><code>ObjectAccess</code> class from <em>FastMember</em> library</td>
-<td>52.58 ns</td>
-<td>0.073 ns</td>
-<td>0.065 ns</td>
+<td>55.84 ns</td>
+<td>1.083 ns</td>
+<td>1.013 ns</td>
 </tr>
 <tr>
 <td>.NET reflection</td>
-<td>161.02 ns</td>
-<td>0.736 ns</td>
-<td>0.689 ns</td>
+<td>183.45 ns</td>
+<td>2.580 ns</td>
+<td>2.414 ns</td>
 </tr>
 </tbody>
 </table>
@@ -569,38 +569,38 @@ dotnet run -c Bench
 <tbody>
 <tr>
 <td>Direct call</td>
-<td>133.9 ns</td>
-<td>0.71 ns</td>
-<td>0.66 ns</td>
-<td>133.8 ns</td>
+<td>127.5 ns</td>
+<td>0.74 ns</td>
+<td>0.65 ns</td>
+<td>127.2 ns</td>
 </tr>
 <tr>
 <td>Reflection with DotNext using delegate type <code>TryParseDelegate</code></td>
-<td>138.1 ns</td>
-<td>1.21 ns</td>
-<td>1.07 ns</td>
-<td>137.7 ns</td>
+<td>127.4 ns</td>
+<td>0.41 ns</td>
+<td>0.36 ns</td>
+<td>127.1 ns</td>
 </tr>
 <tr>
 <td>Reflection with DotNext using delegate type <code>Function&lt;(string text, decimal result), bool&gt;</code></td>
-<td>153.1 ns</td>
-<td>3.04 ns</td>
-<td>4.92 ns</td>
-<td>153.9 ns</td>
+<td>142.3 ns</td>
+<td>0.50 ns</td>
+<td>0.42 ns</td>
+<td>142.9 ns</td>
 </tr>
 <tr>
 <td>Reflection with DotNext using delegate type <code>Function&lt;(object text, object result), object&gt;</code></td>
-<td>163.6 ns</td>
-<td>0.39 ns</td>
-<td>0.35 ns</td>
-<td>163.7 ns</td>
+<td>154.8 ns</td>
+<td>2.70 ns</td>
+<td>2.40 ns</td>
+<td>155.1 ns</td>
 </tr>
 <tr>
 <td>.NET reflection</td>
-<td>586.3 ns</td>
-<td>11.59 ns</td>
-<td>32.50 ns</td>
-<td>573.6 ns</td>
+<td>516.0 ns</td>
+<td>4.61 ns</td>
+<td>4.09 ns</td>
+<td>514.13 ns</td>
 </tr>
 </tbody>
 </table>

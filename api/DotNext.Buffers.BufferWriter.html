@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class BufferWriter
    | .NEXT ">
-    <meta name="generator" content="docfx 2.56.4.0">
+    <meta name="generator" content="docfx 2.56.5.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -118,7 +118,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_BuildString_MemoryWriter_System_Char__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.BuildString(MemoryWriter%7BSystem.Char%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L863">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L860">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_BuildString_" data-uid="DotNext.Buffers.BufferWriter.BuildString*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_BuildString_MemoryWriter_System_Char__" data-uid="DotNext.Buffers.BufferWriter.BuildString(MemoryWriter{System.Char})">BuildString(MemoryWriter&lt;Char&gt;)</h4>
@@ -127,7 +127,8 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static string BuildString(this MemoryWriter&lt;char&gt; writer)</code></pre>
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use BufferHelpers class instead&quot;, true)]
+public static string BuildString(MemoryWriter&lt;char&gt; writer)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -168,7 +169,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_BuildString_System_Buffers_ArrayBufferWriter_System_Char__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.BuildString(System.Buffers.ArrayBufferWriter%7BSystem.Char%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L852">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L851">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_BuildString_" data-uid="DotNext.Buffers.BufferWriter.BuildString*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_BuildString_System_Buffers_ArrayBufferWriter_System_Char__" data-uid="DotNext.Buffers.BufferWriter.BuildString(System.Buffers.ArrayBufferWriter{System.Char})">BuildString(ArrayBufferWriter&lt;Char&gt;)</h4>
@@ -177,7 +178,8 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static string BuildString(this ArrayBufferWriter&lt;char&gt; writer)</code></pre>
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use BufferHelpers class instead&quot;, true)]
+public static string BuildString(ArrayBufferWriter&lt;char&gt; writer)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -227,7 +229,8 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void Write&lt;T&gt;(this IBufferWriter&lt;T&gt; writer, T value)</code></pre>
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use BufferHelpers.Write extension method instead&quot;, true)]
+public static void Write&lt;T&gt;(IBufferWriter&lt;T&gt; writer, T value)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -274,7 +277,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_Write__1_System_Buffers_IBufferWriter___0____0___System_Int32_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.Write%60%601(System.Buffers.IBufferWriter%7B%60%600%7D%2C%60%600%5B%5D%2CSystem.Int32%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L655">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L653">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_Write_" data-uid="DotNext.Buffers.BufferWriter.Write*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_Write__1_System_Buffers_IBufferWriter___0____0___System_Int32_System_Int32_" data-uid="DotNext.Buffers.BufferWriter.Write``1(System.Buffers.IBufferWriter{``0},``0[],System.Int32,System.Int32)">Write&lt;T&gt;(IBufferWriter&lt;T&gt;, T[], Int32, Int32)</h4>
@@ -283,7 +286,8 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void Write&lt;T&gt;(this IBufferWriter&lt;T&gt; writer, T[] buffer, int startIndex, int count)</code></pre>
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use BuffersExtensions.Write extension method instead&quot;)]
+public static void Write&lt;T&gt;(this IBufferWriter&lt;T&gt; writer, T[] buffer, int startIndex, int count)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -494,7 +498,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_WriteByte_System_Buffers_IBufferWriter_System_Byte__System_Byte_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext__System_ReadOnlySpan_System_Char__System_IFormatProvider_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteByte(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.Byte%2CDotNext.IO.StringLengthEncoding%2CDotNext.Text.EncodingContext%40%2CSystem.ReadOnlySpan%7BSystem.Char%7D%2CSystem.IFormatProvider%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L554">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L552">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_WriteByte_" data-uid="DotNext.Buffers.BufferWriter.WriteByte*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_WriteByte_System_Buffers_IBufferWriter_System_Byte__System_Byte_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext__System_ReadOnlySpan_System_Char__System_IFormatProvider_System_Int32_" data-uid="DotNext.Buffers.BufferWriter.WriteByte(System.Buffers.IBufferWriter{System.Byte},System.Byte,DotNext.IO.StringLengthEncoding,DotNext.Text.EncodingContext@,System.ReadOnlySpan{System.Char},System.IFormatProvider,System.Int32)">WriteByte(IBufferWriter&lt;Byte&gt;, Byte, StringLengthEncoding, EncodingContext, ReadOnlySpan&lt;Char&gt;, IFormatProvider, Int32)</h4>
@@ -564,7 +568,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_WriteByte_System_Buffers_IBufferWriter_System_Char__System_Byte_System_ReadOnlySpan_System_Char__System_IFormatProvider_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteByte(System.Buffers.IBufferWriter%7BSystem.Char%7D%2CSystem.Byte%2CSystem.ReadOnlySpan%7BSystem.Char%7D%2CSystem.IFormatProvider)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L699">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L698">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_WriteByte_" data-uid="DotNext.Buffers.BufferWriter.WriteByte*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_WriteByte_System_Buffers_IBufferWriter_System_Char__System_Byte_System_ReadOnlySpan_System_Char__System_IFormatProvider_" data-uid="DotNext.Buffers.BufferWriter.WriteByte(System.Buffers.IBufferWriter{System.Char},System.Byte,System.ReadOnlySpan{System.Char},System.IFormatProvider)">WriteByte(IBufferWriter&lt;Char&gt;, Byte, ReadOnlySpan&lt;Char&gt;, IFormatProvider)</h4>
@@ -616,7 +620,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_WriteDateTime_System_Buffers_IBufferWriter_System_Byte__System_DateTime_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext__System_ReadOnlySpan_System_Char__System_IFormatProvider_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteDateTime(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.DateTime%2CDotNext.IO.StringLengthEncoding%2CDotNext.Text.EncodingContext%40%2CSystem.ReadOnlySpan%7BSystem.Char%7D%2CSystem.IFormatProvider%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L618">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L616">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_WriteDateTime_" data-uid="DotNext.Buffers.BufferWriter.WriteDateTime*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_WriteDateTime_System_Buffers_IBufferWriter_System_Byte__System_DateTime_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext__System_ReadOnlySpan_System_Char__System_IFormatProvider_System_Int32_" data-uid="DotNext.Buffers.BufferWriter.WriteDateTime(System.Buffers.IBufferWriter{System.Byte},System.DateTime,DotNext.IO.StringLengthEncoding,DotNext.Text.EncodingContext@,System.ReadOnlySpan{System.Char},System.IFormatProvider,System.Int32)">WriteDateTime(IBufferWriter&lt;Byte&gt;, DateTime, StringLengthEncoding, EncodingContext, ReadOnlySpan&lt;Char&gt;, IFormatProvider, Int32)</h4>
@@ -686,7 +690,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_WriteDateTime_System_Buffers_IBufferWriter_System_Char__System_DateTime_System_ReadOnlySpan_System_Char__System_IFormatProvider_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteDateTime(System.Buffers.IBufferWriter%7BSystem.Char%7D%2CSystem.DateTime%2CSystem.ReadOnlySpan%7BSystem.Char%7D%2CSystem.IFormatProvider)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L792">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L791">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_WriteDateTime_" data-uid="DotNext.Buffers.BufferWriter.WriteDateTime*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_WriteDateTime_System_Buffers_IBufferWriter_System_Char__System_DateTime_System_ReadOnlySpan_System_Char__System_IFormatProvider_" data-uid="DotNext.Buffers.BufferWriter.WriteDateTime(System.Buffers.IBufferWriter{System.Char},System.DateTime,System.ReadOnlySpan{System.Char},System.IFormatProvider)">WriteDateTime(IBufferWriter&lt;Char&gt;, DateTime, ReadOnlySpan&lt;Char&gt;, IFormatProvider)</h4>
@@ -738,7 +742,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_WriteDateTimeOffset_System_Buffers_IBufferWriter_System_Byte__System_DateTimeOffset_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext__System_ReadOnlySpan_System_Char__System_IFormatProvider_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteDateTimeOffset(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.DateTimeOffset%2CDotNext.IO.StringLengthEncoding%2CDotNext.Text.EncodingContext%40%2CSystem.ReadOnlySpan%7BSystem.Char%7D%2CSystem.IFormatProvider%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L631">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L629">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_WriteDateTimeOffset_" data-uid="DotNext.Buffers.BufferWriter.WriteDateTimeOffset*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_WriteDateTimeOffset_System_Buffers_IBufferWriter_System_Byte__System_DateTimeOffset_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext__System_ReadOnlySpan_System_Char__System_IFormatProvider_System_Int32_" data-uid="DotNext.Buffers.BufferWriter.WriteDateTimeOffset(System.Buffers.IBufferWriter{System.Byte},System.DateTimeOffset,DotNext.IO.StringLengthEncoding,DotNext.Text.EncodingContext@,System.ReadOnlySpan{System.Char},System.IFormatProvider,System.Int32)">WriteDateTimeOffset(IBufferWriter&lt;Byte&gt;, DateTimeOffset, StringLengthEncoding, EncodingContext, ReadOnlySpan&lt;Char&gt;, IFormatProvider, Int32)</h4>
@@ -808,7 +812,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_WriteDateTimeOffset_System_Buffers_IBufferWriter_System_Char__System_DateTimeOffset_System_ReadOnlySpan_System_Char__System_IFormatProvider_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteDateTimeOffset(System.Buffers.IBufferWriter%7BSystem.Char%7D%2CSystem.DateTimeOffset%2CSystem.ReadOnlySpan%7BSystem.Char%7D%2CSystem.IFormatProvider)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L802">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L801">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_WriteDateTimeOffset_" data-uid="DotNext.Buffers.BufferWriter.WriteDateTimeOffset*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_WriteDateTimeOffset_System_Buffers_IBufferWriter_System_Char__System_DateTimeOffset_System_ReadOnlySpan_System_Char__System_IFormatProvider_" data-uid="DotNext.Buffers.BufferWriter.WriteDateTimeOffset(System.Buffers.IBufferWriter{System.Char},System.DateTimeOffset,System.ReadOnlySpan{System.Char},System.IFormatProvider)">WriteDateTimeOffset(IBufferWriter&lt;Char&gt;, DateTimeOffset, ReadOnlySpan&lt;Char&gt;, IFormatProvider)</h4>
@@ -860,7 +864,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_WriteDecimal_System_Buffers_IBufferWriter_System_Byte__System_Decimal_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext__System_ReadOnlySpan_System_Char__System_IFormatProvider_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteDecimal(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.Decimal%2CDotNext.IO.StringLengthEncoding%2CDotNext.Text.EncodingContext%40%2CSystem.ReadOnlySpan%7BSystem.Char%7D%2CSystem.IFormatProvider%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L567">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L565">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_WriteDecimal_" data-uid="DotNext.Buffers.BufferWriter.WriteDecimal*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_WriteDecimal_System_Buffers_IBufferWriter_System_Byte__System_Decimal_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext__System_ReadOnlySpan_System_Char__System_IFormatProvider_System_Int32_" data-uid="DotNext.Buffers.BufferWriter.WriteDecimal(System.Buffers.IBufferWriter{System.Byte},System.Decimal,DotNext.IO.StringLengthEncoding,DotNext.Text.EncodingContext@,System.ReadOnlySpan{System.Char},System.IFormatProvider,System.Int32)">WriteDecimal(IBufferWriter&lt;Byte&gt;, Decimal, StringLengthEncoding, EncodingContext, ReadOnlySpan&lt;Char&gt;, IFormatProvider, Int32)</h4>
@@ -930,7 +934,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_WriteDecimal_System_Buffers_IBufferWriter_System_Char__System_Decimal_System_ReadOnlySpan_System_Char__System_IFormatProvider_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteDecimal(System.Buffers.IBufferWriter%7BSystem.Char%7D%2CSystem.Decimal%2CSystem.ReadOnlySpan%7BSystem.Char%7D%2CSystem.IFormatProvider)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L812">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L811">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_WriteDecimal_" data-uid="DotNext.Buffers.BufferWriter.WriteDecimal*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_WriteDecimal_System_Buffers_IBufferWriter_System_Char__System_Decimal_System_ReadOnlySpan_System_Char__System_IFormatProvider_" data-uid="DotNext.Buffers.BufferWriter.WriteDecimal(System.Buffers.IBufferWriter{System.Char},System.Decimal,System.ReadOnlySpan{System.Char},System.IFormatProvider)">WriteDecimal(IBufferWriter&lt;Char&gt;, Decimal, ReadOnlySpan&lt;Char&gt;, IFormatProvider)</h4>
@@ -982,7 +986,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_WriteDouble_System_Buffers_IBufferWriter_System_Byte__System_Double_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext__System_ReadOnlySpan_System_Char__System_IFormatProvider_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteDouble(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.Double%2CDotNext.IO.StringLengthEncoding%2CDotNext.Text.EncodingContext%40%2CSystem.ReadOnlySpan%7BSystem.Char%7D%2CSystem.IFormatProvider%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L593">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L591">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_WriteDouble_" data-uid="DotNext.Buffers.BufferWriter.WriteDouble*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_WriteDouble_System_Buffers_IBufferWriter_System_Byte__System_Double_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext__System_ReadOnlySpan_System_Char__System_IFormatProvider_System_Int32_" data-uid="DotNext.Buffers.BufferWriter.WriteDouble(System.Buffers.IBufferWriter{System.Byte},System.Double,DotNext.IO.StringLengthEncoding,DotNext.Text.EncodingContext@,System.ReadOnlySpan{System.Char},System.IFormatProvider,System.Int32)">WriteDouble(IBufferWriter&lt;Byte&gt;, Double, StringLengthEncoding, EncodingContext, ReadOnlySpan&lt;Char&gt;, IFormatProvider, Int32)</h4>
@@ -1052,7 +1056,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_WriteDouble_System_Buffers_IBufferWriter_System_Char__System_Double_System_ReadOnlySpan_System_Char__System_IFormatProvider_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteDouble(System.Buffers.IBufferWriter%7BSystem.Char%7D%2CSystem.Double%2CSystem.ReadOnlySpan%7BSystem.Char%7D%2CSystem.IFormatProvider)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L832">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L831">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_WriteDouble_" data-uid="DotNext.Buffers.BufferWriter.WriteDouble*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_WriteDouble_System_Buffers_IBufferWriter_System_Char__System_Double_System_ReadOnlySpan_System_Char__System_IFormatProvider_" data-uid="DotNext.Buffers.BufferWriter.WriteDouble(System.Buffers.IBufferWriter{System.Char},System.Double,System.ReadOnlySpan{System.Char},System.IFormatProvider)">WriteDouble(IBufferWriter&lt;Char&gt;, Double, ReadOnlySpan&lt;Char&gt;, IFormatProvider)</h4>
@@ -1104,7 +1108,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_WriteGuid_System_Buffers_IBufferWriter_System_Byte__System_Guid_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext__System_ReadOnlySpan_System_Char__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteGuid(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.Guid%2CDotNext.IO.StringLengthEncoding%2CDotNext.Text.EncodingContext%40%2CSystem.ReadOnlySpan%7BSystem.Char%7D%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L605">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L603">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_WriteGuid_" data-uid="DotNext.Buffers.BufferWriter.WriteGuid*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_WriteGuid_System_Buffers_IBufferWriter_System_Byte__System_Guid_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext__System_ReadOnlySpan_System_Char__System_Int32_" data-uid="DotNext.Buffers.BufferWriter.WriteGuid(System.Buffers.IBufferWriter{System.Byte},System.Guid,DotNext.IO.StringLengthEncoding,DotNext.Text.EncodingContext@,System.ReadOnlySpan{System.Char},System.Int32)">WriteGuid(IBufferWriter&lt;Byte&gt;, Guid, StringLengthEncoding, EncodingContext, ReadOnlySpan&lt;Char&gt;, Int32)</h4>
@@ -1168,7 +1172,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_WriteGuid_System_Buffers_IBufferWriter_System_Char__System_Guid_System_ReadOnlySpan_System_Char__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteGuid(System.Buffers.IBufferWriter%7BSystem.Char%7D%2CSystem.Guid%2CSystem.ReadOnlySpan%7BSystem.Char%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L782">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L781">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_WriteGuid_" data-uid="DotNext.Buffers.BufferWriter.WriteGuid*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_WriteGuid_System_Buffers_IBufferWriter_System_Char__System_Guid_System_ReadOnlySpan_System_Char__" data-uid="DotNext.Buffers.BufferWriter.WriteGuid(System.Buffers.IBufferWriter{System.Char},System.Guid,System.ReadOnlySpan{System.Char})">WriteGuid(IBufferWriter&lt;Char&gt;, Guid, ReadOnlySpan&lt;Char&gt;)</h4>
@@ -1214,7 +1218,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_WriteInt16_System_Buffers_IBufferWriter_System_Byte__System_Int16_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext__System_ReadOnlySpan_System_Char__System_IFormatProvider_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteInt16(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.Int16%2CDotNext.IO.StringLengthEncoding%2CDotNext.Text.EncodingContext%40%2CSystem.ReadOnlySpan%7BSystem.Char%7D%2CSystem.IFormatProvider%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L513">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L511">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_WriteInt16_" data-uid="DotNext.Buffers.BufferWriter.WriteInt16*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_WriteInt16_System_Buffers_IBufferWriter_System_Byte__System_Int16_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext__System_ReadOnlySpan_System_Char__System_IFormatProvider_System_Int32_" data-uid="DotNext.Buffers.BufferWriter.WriteInt16(System.Buffers.IBufferWriter{System.Byte},System.Int16,DotNext.IO.StringLengthEncoding,DotNext.Text.EncodingContext@,System.ReadOnlySpan{System.Char},System.IFormatProvider,System.Int32)">WriteInt16(IBufferWriter&lt;Byte&gt;, Int16, StringLengthEncoding, EncodingContext, ReadOnlySpan&lt;Char&gt;, IFormatProvider, Int32)</h4>
@@ -1284,7 +1288,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_WriteInt16_System_Buffers_IBufferWriter_System_Byte__System_Int16_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteInt16(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.Int16%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L338">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L336">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_WriteInt16_" data-uid="DotNext.Buffers.BufferWriter.WriteInt16*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_WriteInt16_System_Buffers_IBufferWriter_System_Byte__System_Int16_System_Boolean_" data-uid="DotNext.Buffers.BufferWriter.WriteInt16(System.Buffers.IBufferWriter{System.Byte},System.Int16,System.Boolean)">WriteInt16(IBufferWriter&lt;Byte&gt;, Int16, Boolean)</h4>
@@ -1330,7 +1334,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_WriteInt16_System_Buffers_IBufferWriter_System_Char__System_Int16_System_ReadOnlySpan_System_Char__System_IFormatProvider_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteInt16(System.Buffers.IBufferWriter%7BSystem.Char%7D%2CSystem.Int16%2CSystem.ReadOnlySpan%7BSystem.Char%7D%2CSystem.IFormatProvider)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L720">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L719">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_WriteInt16_" data-uid="DotNext.Buffers.BufferWriter.WriteInt16*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_WriteInt16_System_Buffers_IBufferWriter_System_Char__System_Int16_System_ReadOnlySpan_System_Char__System_IFormatProvider_" data-uid="DotNext.Buffers.BufferWriter.WriteInt16(System.Buffers.IBufferWriter{System.Char},System.Int16,System.ReadOnlySpan{System.Char},System.IFormatProvider)">WriteInt16(IBufferWriter&lt;Char&gt;, Int16, ReadOnlySpan&lt;Char&gt;, IFormatProvider)</h4>
@@ -1382,7 +1386,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_WriteInt32_System_Buffers_IBufferWriter_System_Byte__System_Int32_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext__System_ReadOnlySpan_System_Char__System_IFormatProvider_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteInt32(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.Int32%2CDotNext.IO.StringLengthEncoding%2CDotNext.Text.EncodingContext%40%2CSystem.ReadOnlySpan%7BSystem.Char%7D%2CSystem.IFormatProvider%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L486">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L484">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_WriteInt32_" data-uid="DotNext.Buffers.BufferWriter.WriteInt32*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_WriteInt32_System_Buffers_IBufferWriter_System_Byte__System_Int32_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext__System_ReadOnlySpan_System_Char__System_IFormatProvider_System_Int32_" data-uid="DotNext.Buffers.BufferWriter.WriteInt32(System.Buffers.IBufferWriter{System.Byte},System.Int32,DotNext.IO.StringLengthEncoding,DotNext.Text.EncodingContext@,System.ReadOnlySpan{System.Char},System.IFormatProvider,System.Int32)">WriteInt32(IBufferWriter&lt;Byte&gt;, Int32, StringLengthEncoding, EncodingContext, ReadOnlySpan&lt;Char&gt;, IFormatProvider, Int32)</h4>
@@ -1452,7 +1456,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_WriteInt32_System_Buffers_IBufferWriter_System_Byte__System_Int32_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteInt32(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.Int32%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L313">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L311">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_WriteInt32_" data-uid="DotNext.Buffers.BufferWriter.WriteInt32*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_WriteInt32_System_Buffers_IBufferWriter_System_Byte__System_Int32_System_Boolean_" data-uid="DotNext.Buffers.BufferWriter.WriteInt32(System.Buffers.IBufferWriter{System.Byte},System.Int32,System.Boolean)">WriteInt32(IBufferWriter&lt;Byte&gt;, Int32, Boolean)</h4>
@@ -1498,7 +1502,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_WriteInt32_System_Buffers_IBufferWriter_System_Char__System_Int32_System_ReadOnlySpan_System_Char__System_IFormatProvider_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteInt32(System.Buffers.IBufferWriter%7BSystem.Char%7D%2CSystem.Int32%2CSystem.ReadOnlySpan%7BSystem.Char%7D%2CSystem.IFormatProvider)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L741">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L740">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_WriteInt32_" data-uid="DotNext.Buffers.BufferWriter.WriteInt32*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_WriteInt32_System_Buffers_IBufferWriter_System_Char__System_Int32_System_ReadOnlySpan_System_Char__System_IFormatProvider_" data-uid="DotNext.Buffers.BufferWriter.WriteInt32(System.Buffers.IBufferWriter{System.Char},System.Int32,System.ReadOnlySpan{System.Char},System.IFormatProvider)">WriteInt32(IBufferWriter&lt;Char&gt;, Int32, ReadOnlySpan&lt;Char&gt;, IFormatProvider)</h4>
@@ -1550,7 +1554,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_WriteInt64_System_Buffers_IBufferWriter_System_Byte__System_Int64_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext__System_ReadOnlySpan_System_Char__System_IFormatProvider_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteInt64(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.Int64%2CDotNext.IO.StringLengthEncoding%2CDotNext.Text.EncodingContext%40%2CSystem.ReadOnlySpan%7BSystem.Char%7D%2CSystem.IFormatProvider%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L459">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L457">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_WriteInt64_" data-uid="DotNext.Buffers.BufferWriter.WriteInt64*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_WriteInt64_System_Buffers_IBufferWriter_System_Byte__System_Int64_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext__System_ReadOnlySpan_System_Char__System_IFormatProvider_System_Int32_" data-uid="DotNext.Buffers.BufferWriter.WriteInt64(System.Buffers.IBufferWriter{System.Byte},System.Int64,DotNext.IO.StringLengthEncoding,DotNext.Text.EncodingContext@,System.ReadOnlySpan{System.Char},System.IFormatProvider,System.Int32)">WriteInt64(IBufferWriter&lt;Byte&gt;, Int64, StringLengthEncoding, EncodingContext, ReadOnlySpan&lt;Char&gt;, IFormatProvider, Int32)</h4>
@@ -1620,7 +1624,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_WriteInt64_System_Buffers_IBufferWriter_System_Byte__System_Int64_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteInt64(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.Int64%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L288">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L286">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_WriteInt64_" data-uid="DotNext.Buffers.BufferWriter.WriteInt64*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_WriteInt64_System_Buffers_IBufferWriter_System_Byte__System_Int64_System_Boolean_" data-uid="DotNext.Buffers.BufferWriter.WriteInt64(System.Buffers.IBufferWriter{System.Byte},System.Int64,System.Boolean)">WriteInt64(IBufferWriter&lt;Byte&gt;, Int64, Boolean)</h4>
@@ -1666,7 +1670,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_WriteInt64_System_Buffers_IBufferWriter_System_Char__System_Int64_System_ReadOnlySpan_System_Char__System_IFormatProvider_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteInt64(System.Buffers.IBufferWriter%7BSystem.Char%7D%2CSystem.Int64%2CSystem.ReadOnlySpan%7BSystem.Char%7D%2CSystem.IFormatProvider)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L762">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L761">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_WriteInt64_" data-uid="DotNext.Buffers.BufferWriter.WriteInt64*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_WriteInt64_System_Buffers_IBufferWriter_System_Char__System_Int64_System_ReadOnlySpan_System_Char__System_IFormatProvider_" data-uid="DotNext.Buffers.BufferWriter.WriteInt64(System.Buffers.IBufferWriter{System.Char},System.Int64,System.ReadOnlySpan{System.Char},System.IFormatProvider)">WriteInt64(IBufferWriter&lt;Char&gt;, Int64, ReadOnlySpan&lt;Char&gt;, IFormatProvider)</h4>
@@ -1718,7 +1722,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_WriteLine_System_Buffers_IBufferWriter_System_Char__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteLine(System.Buffers.IBufferWriter%7BSystem.Char%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L662">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L661">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_WriteLine_" data-uid="DotNext.Buffers.BufferWriter.WriteLine*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_WriteLine_System_Buffers_IBufferWriter_System_Char__" data-uid="DotNext.Buffers.BufferWriter.WriteLine(System.Buffers.IBufferWriter{System.Char})">WriteLine(IBufferWriter&lt;Char&gt;)</h4>
@@ -1752,7 +1756,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_WriteLine_System_Buffers_IBufferWriter_System_Char__System_ReadOnlySpan_System_Char__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteLine(System.Buffers.IBufferWriter%7BSystem.Char%7D%2CSystem.ReadOnlySpan%7BSystem.Char%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L670">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L669">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_WriteLine_" data-uid="DotNext.Buffers.BufferWriter.WriteLine*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_WriteLine_System_Buffers_IBufferWriter_System_Char__System_ReadOnlySpan_System_Char__" data-uid="DotNext.Buffers.BufferWriter.WriteLine(System.Buffers.IBufferWriter{System.Char},System.ReadOnlySpan{System.Char})">WriteLine(IBufferWriter&lt;Char&gt;, ReadOnlySpan&lt;Char&gt;)</h4>
@@ -1792,7 +1796,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_WriteSByte_System_Buffers_IBufferWriter_System_Byte__System_SByte_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext__System_ReadOnlySpan_System_Char__System_IFormatProvider_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteSByte(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.SByte%2CDotNext.IO.StringLengthEncoding%2CDotNext.Text.EncodingContext%40%2CSystem.ReadOnlySpan%7BSystem.Char%7D%2CSystem.IFormatProvider%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L540">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L538">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_WriteSByte_" data-uid="DotNext.Buffers.BufferWriter.WriteSByte*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_WriteSByte_System_Buffers_IBufferWriter_System_Byte__System_SByte_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext__System_ReadOnlySpan_System_Char__System_IFormatProvider_System_Int32_" data-uid="DotNext.Buffers.BufferWriter.WriteSByte(System.Buffers.IBufferWriter{System.Byte},System.SByte,DotNext.IO.StringLengthEncoding,DotNext.Text.EncodingContext@,System.ReadOnlySpan{System.Char},System.IFormatProvider,System.Int32)">WriteSByte(IBufferWriter&lt;Byte&gt;, SByte, StringLengthEncoding, EncodingContext, ReadOnlySpan&lt;Char&gt;, IFormatProvider, Int32)</h4>
@@ -1863,7 +1867,7 @@ public static void WriteSByte(this IBufferWriter&lt;byte&gt; writer, sbyte value
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_WriteSByte_System_Buffers_IBufferWriter_System_Char__System_SByte_System_ReadOnlySpan_System_Char__System_IFormatProvider_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteSByte(System.Buffers.IBufferWriter%7BSystem.Char%7D%2CSystem.SByte%2CSystem.ReadOnlySpan%7BSystem.Char%7D%2CSystem.IFormatProvider)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L709">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L708">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_WriteSByte_" data-uid="DotNext.Buffers.BufferWriter.WriteSByte*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_WriteSByte_System_Buffers_IBufferWriter_System_Char__System_SByte_System_ReadOnlySpan_System_Char__System_IFormatProvider_" data-uid="DotNext.Buffers.BufferWriter.WriteSByte(System.Buffers.IBufferWriter{System.Char},System.SByte,System.ReadOnlySpan{System.Char},System.IFormatProvider)">WriteSByte(IBufferWriter&lt;Char&gt;, SByte, ReadOnlySpan&lt;Char&gt;, IFormatProvider)</h4>
@@ -1916,7 +1920,7 @@ public static void WriteSByte(this IBufferWriter&lt;char&gt; writer, sbyte value
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_WriteSingle_System_Buffers_IBufferWriter_System_Byte__System_Single_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext__System_ReadOnlySpan_System_Char__System_IFormatProvider_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteSingle(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.Single%2CDotNext.IO.StringLengthEncoding%2CDotNext.Text.EncodingContext%40%2CSystem.ReadOnlySpan%7BSystem.Char%7D%2CSystem.IFormatProvider%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L580">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L578">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_WriteSingle_" data-uid="DotNext.Buffers.BufferWriter.WriteSingle*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_WriteSingle_System_Buffers_IBufferWriter_System_Byte__System_Single_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext__System_ReadOnlySpan_System_Char__System_IFormatProvider_System_Int32_" data-uid="DotNext.Buffers.BufferWriter.WriteSingle(System.Buffers.IBufferWriter{System.Byte},System.Single,DotNext.IO.StringLengthEncoding,DotNext.Text.EncodingContext@,System.ReadOnlySpan{System.Char},System.IFormatProvider,System.Int32)">WriteSingle(IBufferWriter&lt;Byte&gt;, Single, StringLengthEncoding, EncodingContext, ReadOnlySpan&lt;Char&gt;, IFormatProvider, Int32)</h4>
@@ -1986,7 +1990,7 @@ public static void WriteSByte(this IBufferWriter&lt;char&gt; writer, sbyte value
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_WriteSingle_System_Buffers_IBufferWriter_System_Char__System_Single_System_ReadOnlySpan_System_Char__System_IFormatProvider_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteSingle(System.Buffers.IBufferWriter%7BSystem.Char%7D%2CSystem.Single%2CSystem.ReadOnlySpan%7BSystem.Char%7D%2CSystem.IFormatProvider)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L822">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L821">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_WriteSingle_" data-uid="DotNext.Buffers.BufferWriter.WriteSingle*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_WriteSingle_System_Buffers_IBufferWriter_System_Char__System_Single_System_ReadOnlySpan_System_Char__System_IFormatProvider_" data-uid="DotNext.Buffers.BufferWriter.WriteSingle(System.Buffers.IBufferWriter{System.Char},System.Single,System.ReadOnlySpan{System.Char},System.IFormatProvider)">WriteSingle(IBufferWriter&lt;Char&gt;, Single, ReadOnlySpan&lt;Char&gt;, IFormatProvider)</h4>
@@ -2038,7 +2042,7 @@ public static void WriteSByte(this IBufferWriter&lt;char&gt; writer, sbyte value
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_WriteString_System_Buffers_IBufferWriter_System_Byte__System_ReadOnlySpan_System_Char__DotNext_Text_EncodingContext__System_Int32_System_Nullable_DotNext_IO_StringLengthEncoding__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteString(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.ReadOnlySpan%7BSystem.Char%7D%2CDotNext.Text.EncodingContext%40%2CSystem.Int32%2CSystem.Nullable%7BDotNext.IO.StringLengthEncoding%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L409">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L407">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_WriteString_" data-uid="DotNext.Buffers.BufferWriter.WriteString*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_WriteString_System_Buffers_IBufferWriter_System_Byte__System_ReadOnlySpan_System_Char__DotNext_Text_EncodingContext__System_Int32_System_Nullable_DotNext_IO_StringLengthEncoding__" data-uid="DotNext.Buffers.BufferWriter.WriteString(System.Buffers.IBufferWriter{System.Byte},System.ReadOnlySpan{System.Char},DotNext.Text.EncodingContext@,System.Int32,System.Nullable{DotNext.IO.StringLengthEncoding})">WriteString(IBufferWriter&lt;Byte&gt;, ReadOnlySpan&lt;Char&gt;, EncodingContext, Int32, Nullable&lt;StringLengthEncoding&gt;)</h4>
@@ -2096,7 +2100,7 @@ public static void WriteSByte(this IBufferWriter&lt;char&gt; writer, sbyte value
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_WriteTimeSpan_System_Buffers_IBufferWriter_System_Byte__System_TimeSpan_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext__System_ReadOnlySpan_System_Char__System_IFormatProvider_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteTimeSpan(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.TimeSpan%2CDotNext.IO.StringLengthEncoding%2CDotNext.Text.EncodingContext%40%2CSystem.ReadOnlySpan%7BSystem.Char%7D%2CSystem.IFormatProvider%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L644">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L642">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_WriteTimeSpan_" data-uid="DotNext.Buffers.BufferWriter.WriteTimeSpan*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_WriteTimeSpan_System_Buffers_IBufferWriter_System_Byte__System_TimeSpan_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext__System_ReadOnlySpan_System_Char__System_IFormatProvider_System_Int32_" data-uid="DotNext.Buffers.BufferWriter.WriteTimeSpan(System.Buffers.IBufferWriter{System.Byte},System.TimeSpan,DotNext.IO.StringLengthEncoding,DotNext.Text.EncodingContext@,System.ReadOnlySpan{System.Char},System.IFormatProvider,System.Int32)">WriteTimeSpan(IBufferWriter&lt;Byte&gt;, TimeSpan, StringLengthEncoding, EncodingContext, ReadOnlySpan&lt;Char&gt;, IFormatProvider, Int32)</h4>
@@ -2166,7 +2170,7 @@ public static void WriteSByte(this IBufferWriter&lt;char&gt; writer, sbyte value
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_WriteTimeSpan_System_Buffers_IBufferWriter_System_Char__System_TimeSpan_System_ReadOnlySpan_System_Char__System_IFormatProvider_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteTimeSpan(System.Buffers.IBufferWriter%7BSystem.Char%7D%2CSystem.TimeSpan%2CSystem.ReadOnlySpan%7BSystem.Char%7D%2CSystem.IFormatProvider)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L842">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L841">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_WriteTimeSpan_" data-uid="DotNext.Buffers.BufferWriter.WriteTimeSpan*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_WriteTimeSpan_System_Buffers_IBufferWriter_System_Char__System_TimeSpan_System_ReadOnlySpan_System_Char__System_IFormatProvider_" data-uid="DotNext.Buffers.BufferWriter.WriteTimeSpan(System.Buffers.IBufferWriter{System.Char},System.TimeSpan,System.ReadOnlySpan{System.Char},System.IFormatProvider)">WriteTimeSpan(IBufferWriter&lt;Char&gt;, TimeSpan, ReadOnlySpan&lt;Char&gt;, IFormatProvider)</h4>
@@ -2218,7 +2222,7 @@ public static void WriteSByte(this IBufferWriter&lt;char&gt; writer, sbyte value
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_WriteUInt16_System_Buffers_IBufferWriter_System_Byte__System_UInt16_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext__System_ReadOnlySpan_System_Char__System_IFormatProvider_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteUInt16(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.UInt16%2CDotNext.IO.StringLengthEncoding%2CDotNext.Text.EncodingContext%40%2CSystem.ReadOnlySpan%7BSystem.Char%7D%2CSystem.IFormatProvider%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L526">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L524">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_WriteUInt16_" data-uid="DotNext.Buffers.BufferWriter.WriteUInt16*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_WriteUInt16_System_Buffers_IBufferWriter_System_Byte__System_UInt16_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext__System_ReadOnlySpan_System_Char__System_IFormatProvider_System_Int32_" data-uid="DotNext.Buffers.BufferWriter.WriteUInt16(System.Buffers.IBufferWriter{System.Byte},System.UInt16,DotNext.IO.StringLengthEncoding,DotNext.Text.EncodingContext@,System.ReadOnlySpan{System.Char},System.IFormatProvider,System.Int32)">WriteUInt16(IBufferWriter&lt;Byte&gt;, UInt16, StringLengthEncoding, EncodingContext, ReadOnlySpan&lt;Char&gt;, IFormatProvider, Int32)</h4>
@@ -2289,7 +2293,7 @@ public static void WriteUInt16(this IBufferWriter&lt;byte&gt; writer, ushort val
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_WriteUInt16_System_Buffers_IBufferWriter_System_Byte__System_UInt16_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteUInt16(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.UInt16%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L350">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L348">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_WriteUInt16_" data-uid="DotNext.Buffers.BufferWriter.WriteUInt16*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_WriteUInt16_System_Buffers_IBufferWriter_System_Byte__System_UInt16_System_Boolean_" data-uid="DotNext.Buffers.BufferWriter.WriteUInt16(System.Buffers.IBufferWriter{System.Byte},System.UInt16,System.Boolean)">WriteUInt16(IBufferWriter&lt;Byte&gt;, UInt16, Boolean)</h4>
@@ -2336,7 +2340,7 @@ public static void WriteUInt16(this IBufferWriter&lt;byte&gt; writer, ushort val
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_WriteUInt16_System_Buffers_IBufferWriter_System_Char__System_UInt16_System_ReadOnlySpan_System_Char__System_IFormatProvider_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteUInt16(System.Buffers.IBufferWriter%7BSystem.Char%7D%2CSystem.UInt16%2CSystem.ReadOnlySpan%7BSystem.Char%7D%2CSystem.IFormatProvider)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L730">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L729">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_WriteUInt16_" data-uid="DotNext.Buffers.BufferWriter.WriteUInt16*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_WriteUInt16_System_Buffers_IBufferWriter_System_Char__System_UInt16_System_ReadOnlySpan_System_Char__System_IFormatProvider_" data-uid="DotNext.Buffers.BufferWriter.WriteUInt16(System.Buffers.IBufferWriter{System.Char},System.UInt16,System.ReadOnlySpan{System.Char},System.IFormatProvider)">WriteUInt16(IBufferWriter&lt;Char&gt;, UInt16, ReadOnlySpan&lt;Char&gt;, IFormatProvider)</h4>
@@ -2389,7 +2393,7 @@ public static void WriteUInt16(this IBufferWriter&lt;char&gt; writer, ushort val
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_WriteUInt32_System_Buffers_IBufferWriter_System_Byte__System_UInt32_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext__System_ReadOnlySpan_System_Char__System_IFormatProvider_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteUInt32(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.UInt32%2CDotNext.IO.StringLengthEncoding%2CDotNext.Text.EncodingContext%40%2CSystem.ReadOnlySpan%7BSystem.Char%7D%2CSystem.IFormatProvider%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L499">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L497">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_WriteUInt32_" data-uid="DotNext.Buffers.BufferWriter.WriteUInt32*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_WriteUInt32_System_Buffers_IBufferWriter_System_Byte__System_UInt32_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext__System_ReadOnlySpan_System_Char__System_IFormatProvider_System_Int32_" data-uid="DotNext.Buffers.BufferWriter.WriteUInt32(System.Buffers.IBufferWriter{System.Byte},System.UInt32,DotNext.IO.StringLengthEncoding,DotNext.Text.EncodingContext@,System.ReadOnlySpan{System.Char},System.IFormatProvider,System.Int32)">WriteUInt32(IBufferWriter&lt;Byte&gt;, UInt32, StringLengthEncoding, EncodingContext, ReadOnlySpan&lt;Char&gt;, IFormatProvider, Int32)</h4>
@@ -2460,7 +2464,7 @@ public static void WriteUInt32(this IBufferWriter&lt;byte&gt; writer, uint value
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_WriteUInt32_System_Buffers_IBufferWriter_System_Byte__System_UInt32_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteUInt32(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.UInt32%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L325">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L323">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_WriteUInt32_" data-uid="DotNext.Buffers.BufferWriter.WriteUInt32*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_WriteUInt32_System_Buffers_IBufferWriter_System_Byte__System_UInt32_System_Boolean_" data-uid="DotNext.Buffers.BufferWriter.WriteUInt32(System.Buffers.IBufferWriter{System.Byte},System.UInt32,System.Boolean)">WriteUInt32(IBufferWriter&lt;Byte&gt;, UInt32, Boolean)</h4>
@@ -2507,7 +2511,7 @@ public static void WriteUInt32(this IBufferWriter&lt;byte&gt; writer, uint value
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_WriteUInt32_System_Buffers_IBufferWriter_System_Char__System_UInt32_System_ReadOnlySpan_System_Char__System_IFormatProvider_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteUInt32(System.Buffers.IBufferWriter%7BSystem.Char%7D%2CSystem.UInt32%2CSystem.ReadOnlySpan%7BSystem.Char%7D%2CSystem.IFormatProvider)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L751">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L750">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_WriteUInt32_" data-uid="DotNext.Buffers.BufferWriter.WriteUInt32*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_WriteUInt32_System_Buffers_IBufferWriter_System_Char__System_UInt32_System_ReadOnlySpan_System_Char__System_IFormatProvider_" data-uid="DotNext.Buffers.BufferWriter.WriteUInt32(System.Buffers.IBufferWriter{System.Char},System.UInt32,System.ReadOnlySpan{System.Char},System.IFormatProvider)">WriteUInt32(IBufferWriter&lt;Char&gt;, UInt32, ReadOnlySpan&lt;Char&gt;, IFormatProvider)</h4>
@@ -2560,7 +2564,7 @@ public static void WriteUInt32(this IBufferWriter&lt;char&gt; writer, uint value
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_WriteUInt64_System_Buffers_IBufferWriter_System_Byte__System_UInt64_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext__System_ReadOnlySpan_System_Char__System_IFormatProvider_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteUInt64(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.UInt64%2CDotNext.IO.StringLengthEncoding%2CDotNext.Text.EncodingContext%40%2CSystem.ReadOnlySpan%7BSystem.Char%7D%2CSystem.IFormatProvider%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L472">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L470">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_WriteUInt64_" data-uid="DotNext.Buffers.BufferWriter.WriteUInt64*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_WriteUInt64_System_Buffers_IBufferWriter_System_Byte__System_UInt64_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext__System_ReadOnlySpan_System_Char__System_IFormatProvider_System_Int32_" data-uid="DotNext.Buffers.BufferWriter.WriteUInt64(System.Buffers.IBufferWriter{System.Byte},System.UInt64,DotNext.IO.StringLengthEncoding,DotNext.Text.EncodingContext@,System.ReadOnlySpan{System.Char},System.IFormatProvider,System.Int32)">WriteUInt64(IBufferWriter&lt;Byte&gt;, UInt64, StringLengthEncoding, EncodingContext, ReadOnlySpan&lt;Char&gt;, IFormatProvider, Int32)</h4>
@@ -2631,7 +2635,7 @@ public static void WriteUInt64(this IBufferWriter&lt;byte&gt; writer, ulong valu
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_WriteUInt64_System_Buffers_IBufferWriter_System_Byte__System_UInt64_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteUInt64(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.UInt64%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L300">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L298">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_WriteUInt64_" data-uid="DotNext.Buffers.BufferWriter.WriteUInt64*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_WriteUInt64_System_Buffers_IBufferWriter_System_Byte__System_UInt64_System_Boolean_" data-uid="DotNext.Buffers.BufferWriter.WriteUInt64(System.Buffers.IBufferWriter{System.Byte},System.UInt64,System.Boolean)">WriteUInt64(IBufferWriter&lt;Byte&gt;, UInt64, Boolean)</h4>
@@ -2678,7 +2682,7 @@ public static void WriteUInt64(this IBufferWriter&lt;byte&gt; writer, ulong valu
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriter_WriteUInt64_System_Buffers_IBufferWriter_System_Char__System_UInt64_System_ReadOnlySpan_System_Char__System_IFormatProvider_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteUInt64(System.Buffers.IBufferWriter%7BSystem.Char%7D%2CSystem.UInt64%2CSystem.ReadOnlySpan%7BSystem.Char%7D%2CSystem.IFormatProvider)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L772">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L771">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_WriteUInt64_" data-uid="DotNext.Buffers.BufferWriter.WriteUInt64*"></a>
   <h4 id="DotNext_Buffers_BufferWriter_WriteUInt64_System_Buffers_IBufferWriter_System_Char__System_UInt64_System_ReadOnlySpan_System_Char__System_IFormatProvider_" data-uid="DotNext.Buffers.BufferWriter.WriteUInt64(System.Buffers.IBufferWriter{System.Char},System.UInt64,System.ReadOnlySpan{System.Char},System.IFormatProvider)">WriteUInt64(IBufferWriter&lt;Char&gt;, UInt64, ReadOnlySpan&lt;Char&gt;, IFormatProvider)</h4>

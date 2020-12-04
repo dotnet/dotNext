@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class DataTransferObject
    | .NEXT ">
-    <meta name="generator" content="docfx 2.56.4.0">
+    <meta name="generator" content="docfx 2.56.5.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -115,10 +115,111 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_DataTransferObject_GetObjectDataAsync__2___1_System_Func_DotNext_IO_IAsyncBinaryReader_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask___0___System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.DataTransferObject.GetObjectDataAsync%60%602(%60%601%2CSystem.Func%7BDotNext.IO.IAsyncBinaryReader%2CSystem.Threading.CancellationToken%2CSystem.Threading.Tasks.ValueTask%7B%60%600%7D%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/DataTransferObject.cs/#L225">View Source</a>
+  </span>
+  <a id="DotNext_IO_DataTransferObject_GetObjectDataAsync_" data-uid="DotNext.IO.DataTransferObject.GetObjectDataAsync*"></a>
+  <h4 id="DotNext_IO_DataTransferObject_GetObjectDataAsync__2___1_System_Func_DotNext_IO_IAsyncBinaryReader_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask___0___System_Threading_CancellationToken_" data-uid="DotNext.IO.DataTransferObject.GetObjectDataAsync``2(``1,System.Func{DotNext.IO.IAsyncBinaryReader,System.Threading.CancellationToken,System.Threading.Tasks.ValueTask{``0}},System.Threading.CancellationToken)">GetObjectDataAsync&lt;TResult, TObject&gt;(TObject, Func&lt;IAsyncBinaryReader, CancellationToken, ValueTask&lt;TResult&gt;&gt;, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Converts data transfer object to another type.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ValueTask&lt;TResult&gt; GetObjectDataAsync&lt;TResult, TObject&gt;(this TObject dto, Func&lt;IAsyncBinaryReader, CancellationToken, ValueTask&lt;TResult&gt;&gt; parser, CancellationToken token = default(CancellationToken))
+
+    where TObject : IDataTransferObject</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TObject</span></td>
+        <td><span class="parametername">dto</span></td>
+        <td><p>Data transfer object to decode.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;<a class="xref" href="DotNext.IO.IAsyncBinaryReader.html">IAsyncBinaryReader</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;TResult&gt;&gt;</td>
+        <td><span class="parametername">parser</span></td>
+        <td><p>The parser instance.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;TResult&gt;</td>
+        <td><p>The converted DTO content.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TResult</span></td>
+        <td><p>The type of result.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">TObject</span></td>
+        <td><p>The type of the data transfer object.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_DataTransferObject_GetObjectDataAsync__2___1_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.DataTransferObject.GetObjectDataAsync%60%602(%60%601%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/DataTransferObject.cs/#L193">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/DataTransferObject.cs/#L210">View Source</a>
   </span>
   <a id="DotNext_IO_DataTransferObject_GetObjectDataAsync_" data-uid="DotNext.IO.DataTransferObject.GetObjectDataAsync*"></a>
   <h4 id="DotNext_IO_DataTransferObject_GetObjectDataAsync__2___1_System_Threading_CancellationToken_" data-uid="DotNext.IO.DataTransferObject.GetObjectDataAsync``2(``1,System.Threading.CancellationToken)">GetObjectDataAsync&lt;TResult, TObject&gt;(TObject, CancellationToken)</h4>
@@ -215,7 +316,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_DataTransferObject_ToByteArrayAsync__1___0_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.DataTransferObject.ToByteArrayAsync%60%601(%60%600%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/DataTransferObject.cs/#L166">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/DataTransferObject.cs/#L183">View Source</a>
   </span>
   <a id="DotNext_IO_DataTransferObject_ToByteArrayAsync_" data-uid="DotNext.IO.DataTransferObject.ToByteArrayAsync*"></a>
   <h4 id="DotNext_IO_DataTransferObject_ToByteArrayAsync__1___0_System_Threading_CancellationToken_" data-uid="DotNext.IO.DataTransferObject.ToByteArrayAsync``1(``0,System.Threading.CancellationToken)">ToByteArrayAsync&lt;TObject&gt;(TObject, CancellationToken)</h4>
@@ -305,7 +406,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_DataTransferObject_ToStringAsync__1___0_System_Text_Encoding_System_Int32_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.DataTransferObject.ToStringAsync%60%601(%60%600%2CSystem.Text.Encoding%2CSystem.Int32%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/DataTransferObject.cs/#L154">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/DataTransferObject.cs/#L171">View Source</a>
   </span>
   <a id="DotNext_IO_DataTransferObject_ToStringAsync_" data-uid="DotNext.IO.DataTransferObject.ToStringAsync*"></a>
   <h4 id="DotNext_IO_DataTransferObject_ToStringAsync__1___0_System_Text_Encoding_System_Int32_System_Threading_CancellationToken_" data-uid="DotNext.IO.DataTransferObject.ToStringAsync``1(``0,System.Text.Encoding,System.Int32,System.Threading.CancellationToken)">ToStringAsync&lt;TObject&gt;(TObject, Encoding, Int32, CancellationToken)</h4>
@@ -407,7 +508,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_DataTransferObject_ToStringAsync__1___0_System_Text_Encoding_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.DataTransferObject.ToStringAsync%60%601(%60%600%2CSystem.Text.Encoding%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/DataTransferObject.cs/#L140">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/DataTransferObject.cs/#L157">View Source</a>
   </span>
   <a id="DotNext_IO_DataTransferObject_ToStringAsync_" data-uid="DotNext.IO.DataTransferObject.ToStringAsync*"></a>
   <h4 id="DotNext_IO_DataTransferObject_ToStringAsync__1___0_System_Text_Encoding_System_Threading_CancellationToken_" data-uid="DotNext.IO.DataTransferObject.ToStringAsync``1(``0,System.Text.Encoding,System.Threading.CancellationToken)">ToStringAsync&lt;TObject&gt;(TObject, Encoding, CancellationToken)</h4>
@@ -503,7 +604,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_DataTransferObject_ToType__2___1_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.DataTransferObject.ToType%60%602(%60%601%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/DataTransferObject.cs/#L179">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/DataTransferObject.cs/#L196">View Source</a>
   </span>
   <a id="DotNext_IO_DataTransferObject_ToType_" data-uid="DotNext.IO.DataTransferObject.ToType*"></a>
   <h4 id="DotNext_IO_DataTransferObject_ToType__2___1_System_Threading_CancellationToken_" data-uid="DotNext.IO.DataTransferObject.ToType``2(``1,System.Threading.CancellationToken)">ToType&lt;TResult, TObject&gt;(TObject, CancellationToken)</h4>
@@ -598,7 +699,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_DataTransferObject_WriteToAsync__1___0_System_Buffers_IBufferWriter_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.DataTransferObject.WriteToAsync%60%601(%60%600%2CSystem.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/DataTransferObject.cs/#L127">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/DataTransferObject.cs/#L144">View Source</a>
   </span>
   <a id="DotNext_IO_DataTransferObject_WriteToAsync_" data-uid="DotNext.IO.DataTransferObject.WriteToAsync*"></a>
   <h4 id="DotNext_IO_DataTransferObject_WriteToAsync__1___0_System_Buffers_IBufferWriter_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.DataTransferObject.WriteToAsync``1(``0,System.Buffers.IBufferWriter{System.Byte},System.Threading.CancellationToken)">WriteToAsync&lt;TObject&gt;(TObject, IBufferWriter&lt;Byte&gt;, CancellationToken)</h4>
@@ -694,7 +795,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_DataTransferObject_WriteToAsync__1___0_System_IO_Pipelines_PipeWriter_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.DataTransferObject.WriteToAsync%60%601(%60%600%2CSystem.IO.Pipelines.PipeWriter%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/DataTransferObject.cs/#L114">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/DataTransferObject.cs/#L131">View Source</a>
   </span>
   <a id="DotNext_IO_DataTransferObject_WriteToAsync_" data-uid="DotNext.IO.DataTransferObject.WriteToAsync*"></a>
   <h4 id="DotNext_IO_DataTransferObject_WriteToAsync__1___0_System_IO_Pipelines_PipeWriter_System_Threading_CancellationToken_" data-uid="DotNext.IO.DataTransferObject.WriteToAsync``1(``0,System.IO.Pipelines.PipeWriter,System.Threading.CancellationToken)">WriteToAsync&lt;TObject&gt;(TObject, PipeWriter, CancellationToken)</h4>
@@ -790,7 +891,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_DataTransferObject_WriteToAsync__1___0_System_IO_Stream_System_Int32_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.DataTransferObject.WriteToAsync%60%601(%60%600%2CSystem.IO.Stream%2CSystem.Int32%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/DataTransferObject.cs/#L98">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/DataTransferObject.cs/#L115">View Source</a>
   </span>
   <a id="DotNext_IO_DataTransferObject_WriteToAsync_" data-uid="DotNext.IO.DataTransferObject.WriteToAsync*"></a>
   <h4 id="DotNext_IO_DataTransferObject_WriteToAsync__1___0_System_IO_Stream_System_Int32_System_Threading_CancellationToken_" data-uid="DotNext.IO.DataTransferObject.WriteToAsync``1(``0,System.IO.Stream,System.Int32,System.Threading.CancellationToken)">WriteToAsync&lt;TObject&gt;(TObject, Stream, Int32, CancellationToken)</h4>
@@ -892,7 +993,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_DataTransferObject_WriteToAsync__1___0_System_IO_Stream_System_Memory_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.DataTransferObject.WriteToAsync%60%601(%60%600%2CSystem.IO.Stream%2CSystem.Memory%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/DataTransferObject.cs/#L84">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/DataTransferObject.cs/#L101">View Source</a>
   </span>
   <a id="DotNext_IO_DataTransferObject_WriteToAsync_" data-uid="DotNext.IO.DataTransferObject.WriteToAsync*"></a>
   <h4 id="DotNext_IO_DataTransferObject_WriteToAsync__1___0_System_IO_Stream_System_Memory_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.DataTransferObject.WriteToAsync``1(``0,System.IO.Stream,System.Memory{System.Byte},System.Threading.CancellationToken)">WriteToAsync&lt;TObject&gt;(TObject, Stream, Memory&lt;Byte&gt;, CancellationToken)</h4>

@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class Sequence
    | .NEXT ">
-    <meta name="generator" content="docfx 2.56.4.0">
+    <meta name="generator" content="docfx 2.56.5.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -1690,7 +1690,7 @@ if sequence is empty.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_Sequence_GetAsyncEnumerator__1_System_Collections_Generic_IEnumerable___0__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Sequence.GetAsyncEnumerator%60%601(System.Collections.Generic.IEnumerable%7B%60%600%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Sequence.cs/#L336">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Sequence.AsyncEnumerator.cs/#L75">View Source</a>
   </span>
   <a id="DotNext_Collections_Generic_Sequence_GetAsyncEnumerator_" data-uid="DotNext.Collections.Generic.Sequence.GetAsyncEnumerator*"></a>
   <h4 id="DotNext_Collections_Generic_Sequence_GetAsyncEnumerator__1_System_Collections_Generic_IEnumerable___0__System_Threading_CancellationToken_" data-uid="DotNext.Collections.Generic.Sequence.GetAsyncEnumerator``1(System.Collections.Generic.IEnumerable{``0},System.Threading.CancellationToken)">GetAsyncEnumerator&lt;T&gt;(IEnumerable&lt;T&gt;, CancellationToken)</h4>
@@ -1753,6 +1753,72 @@ if sequence is empty.</p>
       <tr>
         <td><span class="parametername">T</span></td>
         <td><p>The type of the elements in the collection.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_Sequence_GetConsumer__1_System_Collections_Concurrent_IProducerConsumerCollection___0__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Sequence.GetConsumer%60%601(System.Collections.Concurrent.IProducerConsumerCollection%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Sequence.ConsumingEnumerable.cs/#L80">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Generic_Sequence_GetConsumer_" data-uid="DotNext.Collections.Generic.Sequence.GetConsumer*"></a>
+  <h4 id="DotNext_Collections_Generic_Sequence_GetConsumer__1_System_Collections_Concurrent_IProducerConsumerCollection___0__" data-uid="DotNext.Collections.Generic.Sequence.GetConsumer``1(System.Collections.Concurrent.IProducerConsumerCollection{``0})">GetConsumer&lt;T&gt;(IProducerConsumerCollection&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Gets consumer of thread-safe concurrent collection.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Sequence.ConsumingEnumerable&lt;T&gt; GetConsumer&lt;T&gt;(this IProducerConsumerCollection&lt;T&gt; collection)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.concurrent.iproducerconsumercollection-1">IProducerConsumerCollection</a>&lt;T&gt;</td>
+        <td><span class="parametername">collection</span></td>
+        <td><p>The concurrent collection.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Collections.Generic.Sequence.ConsumingEnumerable-1.html">Sequence.ConsumingEnumerable</a>&lt;T&gt;</td>
+        <td><p>The consumer in the form of enumerable collection.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of elements in the collection.</p>
 </td>
       </tr>
     </tbody>
@@ -2509,7 +2575,7 @@ if sequence is empty.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_Sequence_ToAsyncEnumerable__1_System_Collections_Generic_IEnumerable___0__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Sequence.ToAsyncEnumerable%60%601(System.Collections.Generic.IEnumerable%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Sequence.cs/#L326">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Sequence.AsyncEnumerator.cs/#L65">View Source</a>
   </span>
   <a id="DotNext_Collections_Generic_Sequence_ToAsyncEnumerable_" data-uid="DotNext.Collections.Generic.Sequence.ToAsyncEnumerable*"></a>
   <h4 id="DotNext_Collections_Generic_Sequence_ToAsyncEnumerable__1_System_Collections_Generic_IEnumerable___0__" data-uid="DotNext.Collections.Generic.Sequence.ToAsyncEnumerable``1(System.Collections.Generic.IEnumerable{``0})">ToAsyncEnumerable&lt;T&gt;(IEnumerable&lt;T&gt;)</h4>

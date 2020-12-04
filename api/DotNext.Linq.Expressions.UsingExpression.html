@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class UsingExpression
    | .NEXT ">
-    <meta name="generator" content="docfx 2.56.4.0">
+    <meta name="generator" content="docfx 2.56.5.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -73,7 +73,7 @@
   
   <h1 id="DotNext_Linq_Expressions_UsingExpression" data-uid="DotNext.Linq.Expressions.UsingExpression" class="text-break">Class UsingExpression
   </h1>
-  <div class="markdown level0 summary"><p>Represents <code>using</code> expression.</p>
+  <div class="markdown level0 summary"><p>Represents <code>using</code> or <code>await using</code> expression.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
@@ -1065,7 +1065,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UsingExpression_Body.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UsingExpression.Body%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UsingExpression.cs/#L66">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UsingExpression.cs/#L115">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UsingExpression_Body_" data-uid="DotNext.Linq.Expressions.UsingExpression.Body*"></a>
   <h4 id="DotNext_Linq_Expressions_UsingExpression_Body" data-uid="DotNext.Linq.Expressions.UsingExpression.Body">Body</h4>
@@ -1093,10 +1093,41 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UsingExpression_IsAwaitable.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UsingExpression.IsAwaitable%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UsingExpression.cs/#L110">View Source</a>
+  </span>
+  <a id="DotNext_Linq_Expressions_UsingExpression_IsAwaitable_" data-uid="DotNext.Linq.Expressions.UsingExpression.IsAwaitable*"></a>
+  <h4 id="DotNext_Linq_Expressions_UsingExpression_IsAwaitable" data-uid="DotNext.Linq.Expressions.UsingExpression.IsAwaitable">IsAwaitable</h4>
+  <div class="markdown level1 summary"><p>Indicates that this <code>using</code> block is asynchronous.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsAwaitable { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UsingExpression_Resource.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UsingExpression.Resource%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UsingExpression.cs/#L75">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UsingExpression.cs/#L124">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UsingExpression_Resource_" data-uid="DotNext.Linq.Expressions.UsingExpression.Resource*"></a>
   <h4 id="DotNext_Linq_Expressions_UsingExpression_Resource" data-uid="DotNext.Linq.Expressions.UsingExpression.Resource">Resource</h4>
@@ -1127,7 +1158,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UsingExpression_Type.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UsingExpression.Type%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UsingExpression.cs/#L80">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UsingExpression.cs/#L129">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UsingExpression_Type_" data-uid="DotNext.Linq.Expressions.UsingExpression.Type*"></a>
   <h4 id="DotNext_Linq_Expressions_UsingExpression_Type" data-uid="DotNext.Linq.Expressions.UsingExpression.Type">Type</h4>
@@ -1162,11 +1193,11 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UsingExpression_Create_System_Linq_Expressions_Expression_DotNext_Linq_Expressions_UsingExpression_Statement_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UsingExpression.Create(System.Linq.Expressions.Expression%2CDotNext.Linq.Expressions.UsingExpression.Statement)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UsingExpression.cs/#L47">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UsingExpression.cs/#L65">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UsingExpression_Create_" data-uid="DotNext.Linq.Expressions.UsingExpression.Create*"></a>
   <h4 id="DotNext_Linq_Expressions_UsingExpression_Create_System_Linq_Expressions_Expression_DotNext_Linq_Expressions_UsingExpression_Statement_" data-uid="DotNext.Linq.Expressions.UsingExpression.Create(System.Linq.Expressions.Expression,DotNext.Linq.Expressions.UsingExpression.Statement)">Create(Expression, UsingExpression.Statement)</h4>
-  <div class="markdown level1 summary"><p>Creates block of code associated with disposable resource.</p>
+  <div class="markdown level1 summary"><p>Creates a block of code associated with disposable resource.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -1215,14 +1246,146 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UsingExpression_Create_System_Linq_Expressions_Expression_System_Boolean_DotNext_Linq_Expressions_UsingExpression_Statement_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UsingExpression.Create(System.Linq.Expressions.Expression%2CSystem.Boolean%2CDotNext.Linq.Expressions.UsingExpression.Statement)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UsingExpression.cs/#L80">View Source</a>
+  </span>
+  <a id="DotNext_Linq_Expressions_UsingExpression_Create_" data-uid="DotNext.Linq.Expressions.UsingExpression.Create*"></a>
+  <h4 id="DotNext_Linq_Expressions_UsingExpression_Create_System_Linq_Expressions_Expression_System_Boolean_DotNext_Linq_Expressions_UsingExpression_Statement_" data-uid="DotNext.Linq.Expressions.UsingExpression.Create(System.Linq.Expressions.Expression,System.Boolean,DotNext.Linq.Expressions.UsingExpression.Statement)">Create(Expression, Boolean, UsingExpression.Statement)</h4>
+  <div class="markdown level1 summary"><p>Creates a block of code associated with asynchronously disposable resource.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static UsingExpression Create(Expression resource, bool configureAwait, UsingExpression.Statement body)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.expression">Expression</a></td>
+        <td><span class="parametername">resource</span></td>
+        <td><p>The disposable resource.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">configureAwait</span></td>
+        <td><p><span class="xref">true</span> to call <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask.configureawait#System_Threading_Tasks_ValueTask_ConfigureAwait_System_Boolean_">ConfigureAwait(Boolean)</a> with <span class="xref">false</span> argument when awaiting <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iasyncdisposable.disposeasync#System_IAsyncDisposable_DisposeAsync">DisposeAsync()</a> method.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Linq.Expressions.UsingExpression.Statement.html">UsingExpression.Statement</a></td>
+        <td><span class="parametername">body</span></td>
+        <td><p>The delegate used to construct the block of code.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Linq.Expressions.UsingExpression.html">UsingExpression</a></td>
+        <td><p>The constructed expression.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Linq_Expressions_UsingExpression_Create_System_Linq_Expressions_Expression_System_Boolean_DotNext_Linq_Expressions_UsingExpression_Statement__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Linq.Expressions.UsingExpression.html#DotNext_Linq_Expressions_UsingExpression_IsAwaitable">IsAwaitable</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UsingExpression_Create_System_Linq_Expressions_Expression_System_Boolean_System_Linq_Expressions_Expression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UsingExpression.Create(System.Linq.Expressions.Expression%2CSystem.Boolean%2CSystem.Linq.Expressions.Expression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UsingExpression.cs/#L104">View Source</a>
+  </span>
+  <a id="DotNext_Linq_Expressions_UsingExpression_Create_" data-uid="DotNext.Linq.Expressions.UsingExpression.Create*"></a>
+  <h4 id="DotNext_Linq_Expressions_UsingExpression_Create_System_Linq_Expressions_Expression_System_Boolean_System_Linq_Expressions_Expression_" data-uid="DotNext.Linq.Expressions.UsingExpression.Create(System.Linq.Expressions.Expression,System.Boolean,System.Linq.Expressions.Expression)">Create(Expression, Boolean, Expression)</h4>
+  <div class="markdown level1 summary"><p>Creates a block of code associated with asynchronously disposable resource.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static UsingExpression Create(Expression resource, bool configureAwait, Expression body)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.expression">Expression</a></td>
+        <td><span class="parametername">resource</span></td>
+        <td><p>The disposable resource.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">configureAwait</span></td>
+        <td><p><span class="xref">true</span> to call <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask.configureawait#System_Threading_Tasks_ValueTask_ConfigureAwait_System_Boolean_">ConfigureAwait(Boolean)</a> with <span class="xref">false</span> argument when awaiting <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iasyncdisposable.disposeasync#System_IAsyncDisposable_DisposeAsync">DisposeAsync()</a> method.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.expression">Expression</a></td>
+        <td><span class="parametername">body</span></td>
+        <td><p>The body of the statement.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Linq.Expressions.UsingExpression.html">UsingExpression</a></td>
+        <td><p>The constructed expression.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Linq_Expressions_UsingExpression_Create_System_Linq_Expressions_Expression_System_Boolean_System_Linq_Expressions_Expression__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Linq.Expressions.UsingExpression.html#DotNext_Linq_Expressions_UsingExpression_IsAwaitable">IsAwaitable</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UsingExpression_Create_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UsingExpression.Create(System.Linq.Expressions.Expression%2CSystem.Linq.Expressions.Expression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UsingExpression.cs/#L60">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UsingExpression.cs/#L93">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UsingExpression_Create_" data-uid="DotNext.Linq.Expressions.UsingExpression.Create*"></a>
   <h4 id="DotNext_Linq_Expressions_UsingExpression_Create_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_" data-uid="DotNext.Linq.Expressions.UsingExpression.Create(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression)">Create(Expression, Expression)</h4>
-  <div class="markdown level1 summary"><p>Creates block of code associated with disposable resource.</p>
+  <div class="markdown level1 summary"><p>Creates a block of code associated with disposable resource.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -1274,7 +1437,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UsingExpression_Reduce.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UsingExpression.Reduce%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UsingExpression.cs/#L99">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UsingExpression.cs/#L151">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UsingExpression_Reduce_" data-uid="DotNext.Linq.Expressions.UsingExpression.Reduce*"></a>
   <h4 id="DotNext_Linq_Expressions_UsingExpression_Reduce" data-uid="DotNext.Linq.Expressions.UsingExpression.Reduce">Reduce()</h4>
@@ -1309,7 +1472,7 @@ using Lowering technique.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UsingExpression_Update_System_Linq_Expressions_Expression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UsingExpression.Update(System.Linq.Expressions.Expression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UsingExpression.cs/#L87">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UsingExpression.cs/#L136">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_UsingExpression_Update_" data-uid="DotNext.Linq.Expressions.UsingExpression.Update*"></a>
   <h4 id="DotNext_Linq_Expressions_UsingExpression_Update_System_Linq_Expressions_Expression_" data-uid="DotNext.Linq.Expressions.UsingExpression.Update(System.Linq.Expressions.Expression)">Update(Expression)</h4>
@@ -1655,7 +1818,7 @@ using Lowering technique.</p>
                     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_UsingExpression.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.UsingExpression%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UsingExpression.cs/#L14" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/UsingExpression.cs/#L15" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

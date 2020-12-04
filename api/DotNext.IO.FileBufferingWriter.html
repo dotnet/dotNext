@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class FileBufferingWriter
    | .NEXT ">
-    <meta name="generator" content="docfx 2.56.4.0">
+    <meta name="generator" content="docfx 2.56.5.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -91,6 +91,7 @@ switch to file as its backing store.</p>
     <div><a class="xref" href="DotNext.Buffers.IFlushableBufferWriter-1.html">IFlushableBufferWriter</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</div>
     <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</div>
     <div><a class="xref" href="DotNext.IO.IFlushable.html">IFlushable</a></div>
+    <div><span class="xref">IGrowableBuffer</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -174,7 +175,7 @@ switch to file as its backing store.</p>
   <h6><strong>Assembly</strong>: DotNext.IO.dll</h6>
   <h5 id="DotNext_IO_FileBufferingWriter_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class FileBufferingWriter : Stream, IAsyncDisposable, IDisposable, IFlushableBufferWriter&lt;byte&gt;, IBufferWriter&lt;byte&gt;, IFlushable</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class FileBufferingWriter : Stream, IAsyncDisposable, IDisposable, IFlushableBufferWriter&lt;byte&gt;, IBufferWriter&lt;byte&gt;, IFlushable, IGrowableBuffer&lt;byte&gt;</code></pre>
   </div>
   <h5 id="DotNext_IO_FileBufferingWriter_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>This class can be used to write buffered content to a target <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a>
@@ -190,7 +191,7 @@ it references memory-mapped file.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter__ctor_System_Nullable_MemoryAllocator_System_Byte___System_Int32_System_Int32_System_String_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.%23ctor(System.Nullable%7BMemoryAllocator%7BSystem.Byte%7D%7D%2CSystem.Int32%2CSystem.Int32%2CSystem.String%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L177">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L189">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter__ctor_" data-uid="DotNext.IO.FileBufferingWriter.#ctor*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter__ctor_System_Nullable_MemoryAllocator_System_Byte___System_Int32_System_Int32_System_String_System_Boolean_" data-uid="DotNext.IO.FileBufferingWriter.#ctor(System.Nullable{MemoryAllocator{System.Byte}},System.Int32,System.Int32,System.String,System.Boolean)">FileBufferingWriter(Nullable&lt;MemoryAllocator&lt;Byte&gt;&gt;, Int32, Int32, String, Boolean)</h4>
@@ -273,7 +274,7 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_AllocationCounter.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.AllocationCounter%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L206">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L218">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_AllocationCounter_" data-uid="DotNext.IO.FileBufferingWriter.AllocationCounter*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_AllocationCounter" data-uid="DotNext.IO.FileBufferingWriter.AllocationCounter">AllocationCounter</h4>
@@ -304,7 +305,7 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_CanRead.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.CanRead%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L216">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L228">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_CanRead_" data-uid="DotNext.IO.FileBufferingWriter.CanRead*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_CanRead" data-uid="DotNext.IO.FileBufferingWriter.CanRead">CanRead</h4>
@@ -336,7 +337,7 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_CanSeek.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.CanSeek%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L219">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L231">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_CanSeek_" data-uid="DotNext.IO.FileBufferingWriter.CanSeek*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_CanSeek" data-uid="DotNext.IO.FileBufferingWriter.CanSeek">CanSeek</h4>
@@ -368,7 +369,7 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_CanTimeout.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.CanTimeout%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L225">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L237">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_CanTimeout_" data-uid="DotNext.IO.FileBufferingWriter.CanTimeout*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_CanTimeout" data-uid="DotNext.IO.FileBufferingWriter.CanTimeout">CanTimeout</h4>
@@ -400,7 +401,7 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_CanWrite.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.CanWrite%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L222">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L234">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_CanWrite_" data-uid="DotNext.IO.FileBufferingWriter.CanWrite*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_CanWrite" data-uid="DotNext.IO.FileBufferingWriter.CanWrite">CanWrite</h4>
@@ -432,7 +433,7 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_Length.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.Length%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L235">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L247">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_Length_" data-uid="DotNext.IO.FileBufferingWriter.Length*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_Length" data-uid="DotNext.IO.FileBufferingWriter.Length">Length</h4>
@@ -464,7 +465,7 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_Position.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.Position%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L228">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L240">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_Position_" data-uid="DotNext.IO.FileBufferingWriter.Position*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_Position" data-uid="DotNext.IO.FileBufferingWriter.Position">Position</h4>
@@ -498,7 +499,7 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_Advance_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.Advance(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L293">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L320">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_Advance_" data-uid="DotNext.IO.FileBufferingWriter.Advance*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_Advance_System_Int32_" data-uid="DotNext.IO.FileBufferingWriter.Advance(System.Int32)">Advance(Int32)</h4>
@@ -530,7 +531,7 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_BeginRead_System_Byte___System_Int32_System_Int32_System_AsyncCallback_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.BeginRead(System.Byte%5B%5D%2CSystem.Int32%2CSystem.Int32%2CSystem.AsyncCallback%2CSystem.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L494">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L521">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_BeginRead_" data-uid="DotNext.IO.FileBufferingWriter.BeginRead*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_BeginRead_System_Byte___System_Int32_System_Int32_System_AsyncCallback_System_Object_" data-uid="DotNext.IO.FileBufferingWriter.BeginRead(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)">BeginRead(Byte[], Int32, Int32, AsyncCallback, Object)</h4>
@@ -599,7 +600,7 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_BeginWrite_System_Byte___System_Int32_System_Int32_System_AsyncCallback_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.BeginWrite(System.Byte%5B%5D%2CSystem.Int32%2CSystem.Int32%2CSystem.AsyncCallback%2CSystem.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L422">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L449">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_BeginWrite_" data-uid="DotNext.IO.FileBufferingWriter.BeginWrite*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_BeginWrite_System_Byte___System_Int32_System_Int32_System_AsyncCallback_System_Object_" data-uid="DotNext.IO.FileBufferingWriter.BeginWrite(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)">BeginWrite(Byte[], Int32, Int32, AsyncCallback, Object)</h4>
@@ -668,7 +669,7 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_Clear.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.Clear%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L251">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L278">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_Clear_" data-uid="DotNext.IO.FileBufferingWriter.Clear*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_Clear" data-uid="DotNext.IO.FileBufferingWriter.Clear">Clear()</h4>
@@ -700,7 +701,7 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_CopyTo_System_Buffers_IBufferWriter_System_Byte__System_Int32_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.CopyTo(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.Int32%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L580">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L607">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_CopyTo_" data-uid="DotNext.IO.FileBufferingWriter.CopyTo*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_CopyTo_System_Buffers_IBufferWriter_System_Byte__System_Int32_System_Threading_CancellationToken_" data-uid="DotNext.IO.FileBufferingWriter.CopyTo(System.Buffers.IBufferWriter{System.Byte},System.Int32,System.Threading.CancellationToken)">CopyTo(IBufferWriter&lt;Byte&gt;, Int32, CancellationToken)</h4>
@@ -778,7 +779,7 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_CopyTo_System_IO_Stream_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.CopyTo(System.IO.Stream%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L532">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L559">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_CopyTo_" data-uid="DotNext.IO.FileBufferingWriter.CopyTo*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_CopyTo_System_IO_Stream_System_Int32_" data-uid="DotNext.IO.FileBufferingWriter.CopyTo(System.IO.Stream,System.Int32)">CopyTo(Stream, Int32)</h4>
@@ -817,10 +818,144 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
   <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream.copyto#System_IO_Stream_CopyTo_System_IO_Stream_System_Int32_">Stream.CopyTo(Stream, Int32)</a></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_CopyTo_System_Span_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.CopyTo(System.Span%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L677">View Source</a>
+  </span>
+  <a id="DotNext_IO_FileBufferingWriter_CopyTo_" data-uid="DotNext.IO.FileBufferingWriter.CopyTo*"></a>
+  <h4 id="DotNext_IO_FileBufferingWriter_CopyTo_System_Span_System_Byte__" data-uid="DotNext.IO.FileBufferingWriter.CopyTo(System.Span{System.Byte})">CopyTo(Span&lt;Byte&gt;)</h4>
+  <div class="markdown level1 summary"><p>Drains buffered content to the memory block synchronously.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int CopyTo(Span&lt;byte&gt; output)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">output</span></td>
+        <td><p>The memory block used as a destination for copy operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>The actual number of copied elements.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_CopyTo__1_System_Buffers_ReadOnlySpanAction_System_Byte___0____0_System_Int32_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.CopyTo%60%601(System.Buffers.ReadOnlySpanAction%7BSystem.Byte%2C%60%600%7D%2C%60%600%2CSystem.Int32%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L634">View Source</a>
+  </span>
+  <a id="DotNext_IO_FileBufferingWriter_CopyTo_" data-uid="DotNext.IO.FileBufferingWriter.CopyTo*"></a>
+  <h4 id="DotNext_IO_FileBufferingWriter_CopyTo__1_System_Buffers_ReadOnlySpanAction_System_Byte___0____0_System_Int32_System_Threading_CancellationToken_" data-uid="DotNext.IO.FileBufferingWriter.CopyTo``1(System.Buffers.ReadOnlySpanAction{System.Byte,``0},``0,System.Int32,System.Threading.CancellationToken)">CopyTo&lt;TArg&gt;(ReadOnlySpanAction&lt;Byte, TArg&gt;, TArg, Int32, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Drains buffered content synchronously.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void CopyTo&lt;TArg&gt;(ReadOnlySpanAction&lt;byte, TArg&gt; reader, TArg arg, int bufferSize = 1024, CancellationToken token = default(CancellationToken))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.readonlyspanaction-2">ReadOnlySpanAction</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>, TArg&gt;</td>
+        <td><span class="parametername">reader</span></td>
+        <td><p>The content reader.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TArg</span></td>
+        <td><span class="parametername">arg</span></td>
+        <td><p>The argument to be passed to the callback.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">bufferSize</span></td>
+        <td><p>The size, in bytes, of the buffer used to copy bytes.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TArg</span></td>
+        <td><p>The type of the argument to be passed to the callback.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_CopyToAsync_System_Buffers_IBufferWriter_System_Byte__System_Int32_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.CopyToAsync(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.Int32%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L554">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L581">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_CopyToAsync_" data-uid="DotNext.IO.FileBufferingWriter.CopyToAsync*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_CopyToAsync_System_Buffers_IBufferWriter_System_Byte__System_Int32_System_Threading_CancellationToken_" data-uid="DotNext.IO.FileBufferingWriter.CopyToAsync(System.Buffers.IBufferWriter{System.Byte},System.Int32,System.Threading.CancellationToken)">CopyToAsync(IBufferWriter&lt;Byte&gt;, Int32, CancellationToken)</h4>
@@ -898,7 +1033,7 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_CopyToAsync_System_IO_Stream_System_Int32_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.CopyToAsync(System.IO.Stream%2CSystem.Int32%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L513">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L540">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_CopyToAsync_" data-uid="DotNext.IO.FileBufferingWriter.CopyToAsync*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_CopyToAsync_System_IO_Stream_System_Int32_System_Threading_CancellationToken_" data-uid="DotNext.IO.FileBufferingWriter.CopyToAsync(System.IO.Stream,System.Int32,System.Threading.CancellationToken)">CopyToAsync(Stream, Int32, CancellationToken)</h4>
@@ -975,10 +1110,166 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_CopyToAsync_System_Memory_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.CopyToAsync(System.Memory%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L704">View Source</a>
+  </span>
+  <a id="DotNext_IO_FileBufferingWriter_CopyToAsync_" data-uid="DotNext.IO.FileBufferingWriter.CopyToAsync*"></a>
+  <h4 id="DotNext_IO_FileBufferingWriter_CopyToAsync_System_Memory_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.FileBufferingWriter.CopyToAsync(System.Memory{System.Byte},System.Threading.CancellationToken)">CopyToAsync(Memory&lt;Byte&gt;, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Drains buffered content to the memory block asynchronously.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;int&gt; CopyToAsync(Memory&lt;byte&gt; output, CancellationToken token = default(CancellationToken))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.memory-1">Memory</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">output</span></td>
+        <td><p>The memory block used as a destination for copy operation.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
+        <td><p>The actual number of copied elements.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_CopyToAsync__1_System_Buffers_ReadOnlySpanAction_System_Byte___0____0_System_Int32_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.CopyToAsync%60%601(System.Buffers.ReadOnlySpanAction%7BSystem.Byte%2C%60%600%7D%2C%60%600%2CSystem.Int32%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L658">View Source</a>
+  </span>
+  <a id="DotNext_IO_FileBufferingWriter_CopyToAsync_" data-uid="DotNext.IO.FileBufferingWriter.CopyToAsync*"></a>
+  <h4 id="DotNext_IO_FileBufferingWriter_CopyToAsync__1_System_Buffers_ReadOnlySpanAction_System_Byte___0____0_System_Int32_System_Threading_CancellationToken_" data-uid="DotNext.IO.FileBufferingWriter.CopyToAsync``1(System.Buffers.ReadOnlySpanAction{System.Byte,``0},``0,System.Int32,System.Threading.CancellationToken)">CopyToAsync&lt;TArg&gt;(ReadOnlySpanAction&lt;Byte, TArg&gt;, TArg, Int32, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Drains buffered content asynchronously.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task CopyToAsync&lt;TArg&gt;(ReadOnlySpanAction&lt;byte, TArg&gt; reader, TArg arg, int bufferSize = 1024, CancellationToken token = default(CancellationToken))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.readonlyspanaction-2">ReadOnlySpanAction</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>, TArg&gt;</td>
+        <td><span class="parametername">reader</span></td>
+        <td><p>The content reader.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TArg</span></td>
+        <td><span class="parametername">arg</span></td>
+        <td><p>The argument to be passed to the callback.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">bufferSize</span></td>
+        <td><p>The size, in bytes, of the buffer used to copy bytes.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td><p>The task representing asynchronous execution of the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TArg</span></td>
+        <td><p>The type of the argument to be passed to the callback.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.Dispose(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L721">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L848">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_Dispose_" data-uid="DotNext.IO.FileBufferingWriter.Dispose*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_Dispose_System_Boolean_" data-uid="DotNext.IO.FileBufferingWriter.Dispose(System.Boolean)">Dispose(Boolean)</h4>
@@ -1012,7 +1303,7 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_DisposeAsync.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.DisposeAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L735">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L863">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_DisposeAsync_" data-uid="DotNext.IO.FileBufferingWriter.DisposeAsync*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_DisposeAsync" data-uid="DotNext.IO.FileBufferingWriter.DisposeAsync">DisposeAsync()</h4>
@@ -1044,7 +1335,7 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_EndRead_System_IAsyncResult_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.EndRead(System.IAsyncResult)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L498">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L525">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_EndRead_" data-uid="DotNext.IO.FileBufferingWriter.EndRead*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_EndRead_System_IAsyncResult_" data-uid="DotNext.IO.FileBufferingWriter.EndRead(System.IAsyncResult)">EndRead(IAsyncResult)</h4>
@@ -1093,7 +1384,7 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_EndWrite_System_IAsyncResult_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.EndWrite(System.IAsyncResult)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L458">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L485">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_EndWrite_" data-uid="DotNext.IO.FileBufferingWriter.EndWrite*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_EndWrite_System_IAsyncResult_" data-uid="DotNext.IO.FileBufferingWriter.EndWrite(System.IAsyncResult)">EndWrite(IAsyncResult)</h4>
@@ -1127,7 +1418,7 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_Flush.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.Flush%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L462">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L489">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_Flush_" data-uid="DotNext.IO.FileBufferingWriter.Flush*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_Flush" data-uid="DotNext.IO.FileBufferingWriter.Flush">Flush()</h4>
@@ -1144,7 +1435,7 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_FlushAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.FlushAsync(System.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L466">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L493">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_FlushAsync_" data-uid="DotNext.IO.FileBufferingWriter.FlushAsync*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_FlushAsync_System_Threading_CancellationToken_" data-uid="DotNext.IO.FileBufferingWriter.FlushAsync(System.Threading.CancellationToken)">FlushAsync(CancellationToken)</h4>
@@ -1193,7 +1484,7 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_GetMemory_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.GetMemory(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L264">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L291">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_GetMemory_" data-uid="DotNext.IO.FileBufferingWriter.GetMemory*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_GetMemory_System_Int32_" data-uid="DotNext.IO.FileBufferingWriter.GetMemory(System.Int32)">GetMemory(Int32)</h4>
@@ -1240,7 +1531,7 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_GetSpan_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.GetSpan(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L289">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L316">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_GetSpan_" data-uid="DotNext.IO.FileBufferingWriter.GetSpan*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_GetSpan_System_Int32_" data-uid="DotNext.IO.FileBufferingWriter.GetSpan(System.Int32)">GetSpan(Int32)</h4>
@@ -1287,7 +1578,7 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_GetWrittenContent.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.GetWrittenContent%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L647">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L774">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_GetWrittenContent_" data-uid="DotNext.IO.FileBufferingWriter.GetWrittenContent*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_GetWrittenContent" data-uid="DotNext.IO.FileBufferingWriter.GetWrittenContent">GetWrittenContent()</h4>
@@ -1343,7 +1634,7 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_GetWrittenContent_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.GetWrittenContent(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.Sequence.cs/#L102">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.Sequence.cs/#L101">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_GetWrittenContent_" data-uid="DotNext.IO.FileBufferingWriter.GetWrittenContent*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_GetWrittenContent_System_Int32_" data-uid="DotNext.IO.FileBufferingWriter.GetWrittenContent(System.Int32)">GetWrittenContent(Int32)</h4>
@@ -1352,7 +1643,7 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public FileBufferingWriter.ReadOnlySequenceSource GetWrittenContent(int segmentSize)</code></pre>
+    <pre><code class="lang-csharp hljs">public IReadOnlySequenceSource&lt;byte&gt; GetWrittenContent(int segmentSize)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1382,7 +1673,7 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.IO.FileBufferingWriter.ReadOnlySequenceSource.html">FileBufferingWriter.ReadOnlySequenceSource</a></td>
+        <td><a class="xref" href="DotNext.Buffers.IReadOnlySequenceSource-1.html">IReadOnlySequenceSource</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
         <td><p>The factory of <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence&lt;T&gt;</a> instances.</p>
 </td>
       </tr>
@@ -1414,7 +1705,7 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_GetWrittenContent_System_Range_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.GetWrittenContent(System.Range)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L619">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L746">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_GetWrittenContent_" data-uid="DotNext.IO.FileBufferingWriter.GetWrittenContent*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_GetWrittenContent_System_Range_" data-uid="DotNext.IO.FileBufferingWriter.GetWrittenContent(System.Range)">GetWrittenContent(Range)</h4>
@@ -1487,6 +1778,125 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_GetWrittenContentAsStream.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.GetWrittenContentAsStream%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.Reader.cs/#L129">View Source</a>
+  </span>
+  <a id="DotNext_IO_FileBufferingWriter_GetWrittenContentAsStream_" data-uid="DotNext.IO.FileBufferingWriter.GetWrittenContentAsStream*"></a>
+  <h4 id="DotNext_IO_FileBufferingWriter_GetWrittenContentAsStream" data-uid="DotNext.IO.FileBufferingWriter.GetWrittenContentAsStream">GetWrittenContentAsStream()</h4>
+  <div class="markdown level1 summary"><p>Gets written content as read-only stream.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Stream GetWrittenContentAsStream()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
+        <td><p>Read-only stream representing the written content.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>The stream is already obtained but not disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_GetWrittenContentAsStreamAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.GetWrittenContentAsStreamAsync(System.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.Reader.cs/#L150">View Source</a>
+  </span>
+  <a id="DotNext_IO_FileBufferingWriter_GetWrittenContentAsStreamAsync_" data-uid="DotNext.IO.FileBufferingWriter.GetWrittenContentAsStreamAsync*"></a>
+  <h4 id="DotNext_IO_FileBufferingWriter_GetWrittenContentAsStreamAsync_System_Threading_CancellationToken_" data-uid="DotNext.IO.FileBufferingWriter.GetWrittenContentAsStreamAsync(System.Threading.CancellationToken)">GetWrittenContentAsStreamAsync(CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Gets written content as read-only stream asynchronously.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;Stream&gt; GetWrittenContentAsStreamAsync(CancellationToken token = default(CancellationToken))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a>&gt;</td>
+        <td><p>Read-only stream representing the written content.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>The stream is already obtained but not disposed.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_GetWrittenContentAsync_System_Int32_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.GetWrittenContentAsync(System.Int32%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
@@ -1499,7 +1909,7 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask&lt;FileBufferingWriter.ReadOnlySequenceSource&gt; GetWrittenContentAsync(int segmentSize, CancellationToken token = default(CancellationToken))</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;IReadOnlySequenceSource&lt;byte&gt;&gt; GetWrittenContentAsync(int segmentSize, CancellationToken token = default(CancellationToken))</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1535,7 +1945,7 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="DotNext.IO.FileBufferingWriter.ReadOnlySequenceSource.html">FileBufferingWriter.ReadOnlySequenceSource</a>&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="DotNext.Buffers.IReadOnlySequenceSource-1.html">IReadOnlySequenceSource</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;&gt;</td>
         <td><p>The factory of <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence&lt;T&gt;</a> instances.</p>
 </td>
       </tr>
@@ -1555,6 +1965,11 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
         <td><p><code data-dev-comment-type="paramref" class="paramref">segmentSize</code> is less than or equal to zero.</p>
 </td>
       </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
@@ -1562,7 +1977,7 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_GetWrittenContentAsync_System_Range_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.GetWrittenContentAsync(System.Range%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L660">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L787">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_GetWrittenContentAsync_" data-uid="DotNext.IO.FileBufferingWriter.GetWrittenContentAsync*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_GetWrittenContentAsync_System_Range_System_Threading_CancellationToken_" data-uid="DotNext.IO.FileBufferingWriter.GetWrittenContentAsync(System.Range,System.Threading.CancellationToken)">GetWrittenContentAsync(Range, CancellationToken)</h4>
@@ -1649,7 +2064,7 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_GetWrittenContentAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.GetWrittenContentAsync(System.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L690">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L817">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_GetWrittenContentAsync_" data-uid="DotNext.IO.FileBufferingWriter.GetWrittenContentAsync*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_GetWrittenContentAsync_System_Threading_CancellationToken_" data-uid="DotNext.IO.FileBufferingWriter.GetWrittenContentAsync(System.Threading.CancellationToken)">GetWrittenContentAsync(CancellationToken)</h4>
@@ -1728,7 +2143,7 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_Read_System_Byte___System_Int32_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.Read(System.Byte%5B%5D%2CSystem.Int32%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L478">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L505">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_Read_" data-uid="DotNext.IO.FileBufferingWriter.Read*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_Read_System_Byte___System_Int32_System_Int32_" data-uid="DotNext.IO.FileBufferingWriter.Read(System.Byte[],System.Int32,System.Int32)">Read(Byte[], Int32, Int32)</h4>
@@ -1787,7 +2202,7 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_Read_System_Span_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.Read(System.Span%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L482">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L509">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_Read_" data-uid="DotNext.IO.FileBufferingWriter.Read*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_Read_System_Span_System_Byte__" data-uid="DotNext.IO.FileBufferingWriter.Read(System.Span{System.Byte})">Read(Span&lt;Byte&gt;)</h4>
@@ -1836,7 +2251,7 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_ReadAsync_System_Byte___System_Int32_System_Int32_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.ReadAsync(System.Byte%5B%5D%2CSystem.Int32%2CSystem.Int32%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L486">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L513">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_ReadAsync_" data-uid="DotNext.IO.FileBufferingWriter.ReadAsync*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_ReadAsync_System_Byte___System_Int32_System_Int32_System_Threading_CancellationToken_" data-uid="DotNext.IO.FileBufferingWriter.ReadAsync(System.Byte[],System.Int32,System.Int32,System.Threading.CancellationToken)">ReadAsync(Byte[], Int32, Int32, CancellationToken)</h4>
@@ -1900,7 +2315,7 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_ReadAsync_System_Memory_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.ReadAsync(System.Memory%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L490">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L517">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_ReadAsync_" data-uid="DotNext.IO.FileBufferingWriter.ReadAsync*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_ReadAsync_System_Memory_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.FileBufferingWriter.ReadAsync(System.Memory{System.Byte},System.Threading.CancellationToken)">ReadAsync(Memory&lt;Byte&gt;, CancellationToken)</h4>
@@ -1954,7 +2369,7 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_ReadByte.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.ReadByte%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L474">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L501">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_ReadByte_" data-uid="DotNext.IO.FileBufferingWriter.ReadByte*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_ReadByte" data-uid="DotNext.IO.FileBufferingWriter.ReadByte">ReadByte()</h4>
@@ -1986,7 +2401,7 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_Seek_System_Int64_System_IO_SeekOrigin_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.Seek(System.Int64%2CSystem.IO.SeekOrigin)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L717">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L844">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_Seek_" data-uid="DotNext.IO.FileBufferingWriter.Seek*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_Seek_System_Int64_System_IO_SeekOrigin_" data-uid="DotNext.IO.FileBufferingWriter.Seek(System.Int64,System.IO.SeekOrigin)">Seek(Int64, SeekOrigin)</h4>
@@ -2040,7 +2455,7 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_SetLength_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.SetLength(System.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L502">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L529">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_SetLength_" data-uid="DotNext.IO.FileBufferingWriter.SetLength*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_SetLength_System_Int64_" data-uid="DotNext.IO.FileBufferingWriter.SetLength(System.Int64)">SetLength(Int64)</h4>
@@ -2074,7 +2489,7 @@ uses the value returned by <a class="xref" href="https://docs.microsoft.com/dotn
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_TryGetWrittenContent_System_ReadOnlyMemory_System_Byte___.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.TryGetWrittenContent(System.ReadOnlyMemory%7BSystem.Byte%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L704">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L831">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_TryGetWrittenContent_" data-uid="DotNext.IO.FileBufferingWriter.TryGetWrittenContent*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_TryGetWrittenContent_System_ReadOnlyMemory_System_Byte___" data-uid="DotNext.IO.FileBufferingWriter.TryGetWrittenContent(System.ReadOnlyMemory{System.Byte}@)">TryGetWrittenContent(out ReadOnlyMemory&lt;Byte&gt;)</h4>
@@ -2130,7 +2545,7 @@ to obtain the content.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_Write_System_Byte___System_Int32_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.Write(System.Byte%5B%5D%2CSystem.Int32%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L410">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L437">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_Write_" data-uid="DotNext.IO.FileBufferingWriter.Write*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_Write_System_Byte___System_Int32_System_Int32_" data-uid="DotNext.IO.FileBufferingWriter.Write(System.Byte[],System.Int32,System.Int32)">Write(Byte[], Int32, Int32)</h4>
@@ -2174,7 +2589,7 @@ to obtain the content.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_Write_System_ReadOnlySpan_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.Write(System.ReadOnlySpan%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L379">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L406">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_Write_" data-uid="DotNext.IO.FileBufferingWriter.Write*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_Write_System_ReadOnlySpan_System_Byte__" data-uid="DotNext.IO.FileBufferingWriter.Write(System.ReadOnlySpan{System.Byte})">Write(ReadOnlySpan&lt;Byte&gt;)</h4>
@@ -2208,7 +2623,7 @@ to obtain the content.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_WriteAsync_System_Byte___System_Int32_System_Int32_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.WriteAsync(System.Byte%5B%5D%2CSystem.Int32%2CSystem.Int32%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L414">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L441">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_WriteAsync_" data-uid="DotNext.IO.FileBufferingWriter.WriteAsync*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_WriteAsync_System_Byte___System_Int32_System_Int32_System_Threading_CancellationToken_" data-uid="DotNext.IO.FileBufferingWriter.WriteAsync(System.Byte[],System.Int32,System.Int32,System.Threading.CancellationToken)">WriteAsync(Byte[], Int32, Int32, CancellationToken)</h4>
@@ -2272,7 +2687,7 @@ to obtain the content.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_WriteAsync_System_ReadOnlyMemory_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.WriteAsync(System.ReadOnlyMemory%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L350">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L377">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_WriteAsync_" data-uid="DotNext.IO.FileBufferingWriter.WriteAsync*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_WriteAsync_System_ReadOnlyMemory_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.FileBufferingWriter.WriteAsync(System.ReadOnlyMemory{System.Byte},System.Threading.CancellationToken)">WriteAsync(ReadOnlyMemory&lt;Byte&gt;, CancellationToken)</h4>
@@ -2326,7 +2741,7 @@ to obtain the content.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_WriteByte_System_Byte_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.WriteByte(System.Byte)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L418">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L445">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_WriteByte_" data-uid="DotNext.IO.FileBufferingWriter.WriteByte*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_WriteByte_System_Byte_" data-uid="DotNext.IO.FileBufferingWriter.WriteByte(System.Byte)">WriteByte(Byte)</h4>
@@ -2370,6 +2785,9 @@ to obtain the content.</p>
   </div>
   <div>
       <a class="xref" href="DotNext.IO.IFlushable.html">IFlushable</a>
+  </div>
+  <div>
+      <span class="xref">IGrowableBuffer&lt;&gt;</span>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
@@ -2443,9 +2861,6 @@ to obtain the content.</p>
   </div>
   <div>
       <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_Write__1_System_Buffers_IBufferWriter___0__System_Buffers_ReadOnlySequence___0__System_Threading_CancellationToken_">BufferWriter.Write&lt;T&gt;(IBufferWriter&lt;T&gt;, ReadOnlySequence&lt;T&gt;, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_Write__1_System_Buffers_IBufferWriter___0____0_">BufferWriter.Write&lt;T&gt;(IBufferWriter&lt;T&gt;, T)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_WriteInt64_System_Buffers_IBufferWriter_System_Byte__System_Int64_System_Boolean_">BufferWriter.WriteInt64(IBufferWriter&lt;Byte&gt;, Int64, Boolean)</a>

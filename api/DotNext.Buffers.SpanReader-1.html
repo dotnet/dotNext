@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Struct SpanReader&lt;T&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.56.4.0">
+    <meta name="generator" content="docfx 2.56.5.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -336,7 +336,7 @@ underlying memory block.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_SpanReader_1_Read.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SpanReader%601.Read%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/SpanReader.cs/#L140">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/SpanReader.cs/#L141">View Source</a>
   </span>
   <a id="DotNext_Buffers_SpanReader_1_Read_" data-uid="DotNext.Buffers.SpanReader`1.Read*"></a>
   <h4 id="DotNext_Buffers_SpanReader_1_Read" data-uid="DotNext.Buffers.SpanReader`1.Read">Read()</h4>
@@ -384,7 +384,7 @@ underlying memory block.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_SpanReader_1_Read_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SpanReader%601.Read(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/SpanReader.cs/#L148">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/SpanReader.cs/#L149">View Source</a>
   </span>
   <a id="DotNext_Buffers_SpanReader_1_Read_" data-uid="DotNext.Buffers.SpanReader`1.Read*"></a>
   <h4 id="DotNext_Buffers_SpanReader_1_Read_System_Int32_" data-uid="DotNext.Buffers.SpanReader`1.Read(System.Int32)">Read(Int32)</h4>
@@ -459,7 +459,7 @@ underlying memory block.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void Read(Span&lt;T&gt; output)</code></pre>
+    <pre><code class="lang-csharp hljs">public int Read(Span&lt;T&gt; output)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -479,18 +479,50 @@ underlying memory block.</p>
       </tr>
     </tbody>
   </table>
-  <h5 class="exceptions">Exceptions</h5>
+  <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
         <th>Type</th>
-        <th>Condition</th>
+        <th>Description</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The size of <code data-dev-comment-type="paramref" class="paramref">output</code> is greater than <a class="xref" href="DotNext.Buffers.SpanReader-1.html#DotNext_Buffers_SpanReader_1_RemainingCount">RemainingCount</a>.</p>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>The number of obtained elements.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_SpanReader_1_ReadToEnd.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SpanReader%601.ReadToEnd%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/SpanReader.cs/#L156">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_SpanReader_1_ReadToEnd_" data-uid="DotNext.Buffers.SpanReader`1.ReadToEnd*"></a>
+  <h4 id="DotNext_Buffers_SpanReader_1_ReadToEnd" data-uid="DotNext.Buffers.SpanReader`1.ReadToEnd">ReadToEnd()</h4>
+  <div class="markdown level1 summary"><p>Reads the rest of the memory block.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ReadOnlySpan&lt;T&gt; ReadToEnd()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;T&gt;</td>
+        <td><p>The rest of the memory block.</p>
 </td>
       </tr>
     </tbody>

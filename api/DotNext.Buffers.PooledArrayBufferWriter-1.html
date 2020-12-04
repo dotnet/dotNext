@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class PooledArrayBufferWriter&lt;T&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.56.4.0">
+    <meta name="generator" content="docfx 2.56.5.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -85,11 +85,12 @@
   </div>
   <div classs="implements">
     <h5>Implements</h5>
-    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
     <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;T&gt;</div>
     <div><a class="xref" href="DotNext.IConvertible-1.html">IConvertible</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;T&gt;&gt;</div>
     <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1">IReadOnlyList</a>&lt;T&gt;</div>
     <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ireadonlycollection-1">IReadOnlyCollection</a>&lt;T&gt;</div>
+    <div><a class="xref" href="DotNext.Buffers.IGrowableBuffer-1.html">IGrowableBuffer</a>&lt;T&gt;</div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
     <div><a class="xref" href="DotNext.IConvertible-1.html">IConvertible</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.arraysegment-1">ArraySegment</a>&lt;T&gt;&gt;</div>
     <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ilist-1">IList</a>&lt;T&gt;</div>
     <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.icollection-1">ICollection</a>&lt;T&gt;</div>
@@ -109,6 +110,18 @@
     </div>
     <div>
       <a class="xref" href="DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_WrittenCount">MemoryWriter&lt;T&gt;.WrittenCount</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_DotNext_Buffers_IGrowableBuffer_T__WrittenCount">MemoryWriter&lt;T&gt;.IGrowableBuffer&lt;T&gt;.WrittenCount</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_DotNext_Buffers_IGrowableBuffer_T__Write_System_ReadOnlySpan__0__">MemoryWriter&lt;T&gt;.IGrowableBuffer&lt;T&gt;.Write(ReadOnlySpan&lt;T&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_DotNext_Buffers_IGrowableBuffer_T__CopyTo__1_System_Buffers_ReadOnlySpanAction__0___0____0_">MemoryWriter&lt;T&gt;.IGrowableBuffer&lt;T&gt;.CopyTo&lt;TArg&gt;(ReadOnlySpanAction&lt;T, TState&gt;, TState)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_DotNext_Buffers_IGrowableBuffer_T__CopyTo_System_Span__0__">MemoryWriter&lt;T&gt;.IGrowableBuffer&lt;T&gt;.CopyTo(Span&lt;T&gt;)</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_Add__0_">MemoryWriter&lt;T&gt;.Add(T)</a>
@@ -193,7 +206,7 @@
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Buffers_PooledArrayBufferWriter_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class PooledArrayBufferWriter&lt;T&gt; : MemoryWriter&lt;T&gt;, IDisposable, IBufferWriter&lt;T&gt;, IConvertible&lt;ReadOnlyMemory&lt;T&gt;&gt;, IReadOnlyList&lt;T&gt;, IReadOnlyCollection&lt;T&gt;, IConvertible&lt;ArraySegment&lt;T&gt;&gt;, IList&lt;T&gt;, ICollection&lt;T&gt;, IEnumerable&lt;T&gt;, IEnumerable</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class PooledArrayBufferWriter&lt;T&gt; : MemoryWriter&lt;T&gt;, IBufferWriter&lt;T&gt;, IConvertible&lt;ReadOnlyMemory&lt;T&gt;&gt;, IReadOnlyList&lt;T&gt;, IReadOnlyCollection&lt;T&gt;, IGrowableBuffer&lt;T&gt;, IDisposable, IConvertible&lt;ArraySegment&lt;T&gt;&gt;, IList&lt;T&gt;, ICollection&lt;T&gt;, IEnumerable&lt;T&gt;, IEnumerable</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1429,9 +1442,6 @@ as the array pooling mechanism.</p>
   </table>
   <h3 id="implements">Implements</h3>
   <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable">System.IDisposable</a>
-  </div>
-  <div>
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">System.Buffers.IBufferWriter&lt;T&gt;</a>
   </div>
   <div>
@@ -1442,6 +1452,12 @@ as the array pooling mechanism.</p>
   </div>
   <div>
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ireadonlycollection-1">System.Collections.Generic.IReadOnlyCollection&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Buffers.IGrowableBuffer-1.html">IGrowableBuffer&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable">System.IDisposable</a>
   </div>
   <div>
       <a class="xref" href="DotNext.IConvertible-1.html">IConvertible&lt;T&gt;</a>
@@ -1506,6 +1522,9 @@ as the array pooling mechanism.</p>
   </div>
   <div>
       <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_As__1___0_">ObjectExtensions.As&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Buffers.BufferHelpers.html#DotNext_Buffers_BufferHelpers_Write__1_System_Buffers_IBufferWriter___0____0_">BufferHelpers.Write&lt;T&gt;(IBufferWriter&lt;T&gt;, T)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_">LockAcquisition.AcquireReadLock&lt;T&gt;(T)</a>
@@ -1577,6 +1596,12 @@ as the array pooling mechanism.</p>
       <a class="xref" href="DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_Slice__1_System_Collections_Generic_IList___0__System_Range_">List.Slice&lt;T&gt;(IList&lt;T&gt;, Range)</a>
   </div>
   <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_ToAsyncEnumerable__1_System_Collections_Generic_IEnumerable___0__">Sequence.ToAsyncEnumerable&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_GetAsyncEnumerator__1_System_Collections_Generic_IEnumerable___0__System_Threading_CancellationToken_">Sequence.GetAsyncEnumerator&lt;T&gt;(IEnumerable&lt;T&gt;, CancellationToken)</a>
+  </div>
+  <div>
       <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_ForEach__1_System_Collections_Generic_IEnumerable___0__System_Action___0__">Sequence.ForEach&lt;T&gt;(IEnumerable&lt;T&gt;, Action&lt;T&gt;)</a>
   </div>
   <div>
@@ -1610,16 +1635,7 @@ as the array pooling mechanism.</p>
       <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_Append__1_System_Collections_Generic_IEnumerable___0____0___">Sequence.Append&lt;T&gt;(IEnumerable&lt;T&gt;, T[])</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_ToAsyncEnumerable__1_System_Collections_Generic_IEnumerable___0__">Sequence.ToAsyncEnumerable&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_GetAsyncEnumerator__1_System_Collections_Generic_IEnumerable___0__System_Threading_CancellationToken_">Sequence.GetAsyncEnumerator&lt;T&gt;(IEnumerable&lt;T&gt;, CancellationToken)</a>
-  </div>
-  <div>
       <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_Write__1_System_Buffers_IBufferWriter___0__System_Buffers_ReadOnlySequence___0__System_Threading_CancellationToken_">BufferWriter.Write&lt;T&gt;(IBufferWriter&lt;T&gt;, ReadOnlySequence&lt;T&gt;, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_Write__1_System_Buffers_IBufferWriter___0____0_">BufferWriter.Write&lt;T&gt;(IBufferWriter&lt;T&gt;, T)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_Write__1_System_Buffers_IBufferWriter___0____0___System_Int32_System_Int32_">BufferWriter.Write&lt;T&gt;(IBufferWriter&lt;T&gt;, T[], Int32, Int32)</a>

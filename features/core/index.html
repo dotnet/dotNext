@@ -8,7 +8,7 @@
     <title>Base Class Library Enhancements | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Base Class Library Enhancements | .NEXT ">
-    <meta name="generator" content="docfx 2.56.4.0">
+    <meta name="generator" content="docfx 2.56.5.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -259,6 +259,17 @@ dynamic result = await t.AsDynamic();
 ReadOnlySpan&lt;byte&gt; bytes = stackalloc byte[] {8, 16, 24};
 Span&lt;char&gt; hex = new stackalloc[bytes.Length * 2];
 Span.ToHex(bytes, hex); //now hex == 081018
+</code></pre>
+<h1 id="polling-of-concurrent-collections">Polling of Concurrent Collections</h1>
+<p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.concurrent.iproducerconsumercollection-1">IProducerConsumerCollection&lt;T&gt;</a> is a common interface for concurrent collections in .NET library. Consumer of such collection uses <code>TryTake</code> or more specialized method provided by subclasses to obtain elements from the collection. For convenience, <a href="https://sakno.github.io/dotNext/api/DotNext.Collections.Generic.Sequence.html">Sequence</a> static class offers <code>GetConsumer</code> extension method to obtain consuming enumerable collection over the elements in the concurrent collection so you can use classic <strong>foreach</strong> loop:</p>
+<pre><code class="lang-csharp">using DotNext.Collections.Concurrent;
+using System.Collections.Concurrent;
+
+var queue = new ConcurrentQueue&lt;int&gt;();
+foreach (int item in queue.GetConsumer())
+{
+    // collection enumerator will call .TryDequeue(out int result) for each iteration of this loop
+}
 </code></pre>
 </article>
           </div>

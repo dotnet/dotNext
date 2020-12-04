@@ -8,7 +8,7 @@
     <title>Using Statement | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Using Statement | .NEXT ">
-    <meta name="generator" content="docfx 2.56.4.0">
+    <meta name="generator" content="docfx 2.56.5.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -86,7 +86,7 @@ Lambda&lt;Action&lt;byte[]&gt;&gt;(fun =&gt;
 //the generated code is
 new Action&lt;byte&gt;(bytes =&gt;
 {
-    using(var s = new MemoryStream(bytes))
+    using (var s = new MemoryStream(bytes))
     {
         s.Flush();
     }
@@ -94,6 +94,30 @@ new Action&lt;byte&gt;(bytes =&gt;
 </code></pre>
 <p><code>stream</code> parameter represents disposable resource inside of <code>Using()</code> scope.</p>
 <p><em>Using</em> statement can accept any expression of type implementing <code>System.IDisposable</code> interface or having public instance method <code>Dispose()</code> without parameters.</p>
+<h2 id="async-disposable">Async Disposable</h2>
+<p><strong>await using</strong> statement in C# allows to control the lifetime of the resource implementing <a href="https://docs.microsoft.com/en-us/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a> interface. The same statement is supported by Metaprogramming library:</p>
+<pre><code class="lang-csharp">using System.IO;
+using System.Threading.Tasks;
+using static DotNext.Metaprogramming.CodeGenerator;
+
+AsyncLambda&lt;Func&lt;byte[], Task&gt;&gt;(fun =&gt; 
+{
+    AwaitUsing(typeof(MemoryStream).New(fun[0]), stream =&gt; 
+    {
+        Call(stream, nameof(MemoryStream.Flush));
+    });
+});
+
+//the generated code is
+new Func&lt;byte[], Task&gt;(async bytes =&gt; 
+{
+  await using (var s = new MemoryStream(bytes))
+  {
+      s.Flush();
+  }
+});
+</code></pre>
+<p>This type of statement is allowed within async lambda expression only.</p>
 </article>
           </div>
           

@@ -8,7 +8,7 @@
     <title>Collection Enhancements | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Collection Enhancements | .NEXT ">
-    <meta name="generator" content="docfx 2.56.4.0">
+    <meta name="generator" content="docfx 2.56.5.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -132,7 +132,7 @@ var str = array.ToString(&quot;,&quot;);  //str is 1,2,3
 <h1 id="iteration">Iteration</h1>
 <p>Iteration in functional style is possible using extension method <em>ForEach</em> which is applicable to any type implementing interface <code>IEnumerable&lt;T&gt;</code>.</p>
 <pre><code class="lang-csharp">using System;
-using DotNext;
+using DotNext.Collections.Generic;
 
 IEnumerable&lt;string&gt; list = new[] { &quot;a&quot;, &quot;b&quot;, &quot;c&quot; };
 list.ForEach(item =&gt; Console.WriteLine(item));
