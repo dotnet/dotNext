@@ -60,7 +60,7 @@ namespace DotNext.IO
                 accessor = mappedFile.CreateViewAccessor(offset, length, MemoryMappedFileAccess.ReadWrite);
                 accessor.SafeMemoryMappedViewHandle.AcquirePointer(ref ptr);
                 Debug.Assert(ptr != default);
-                session = writer.EnableReadMode(this);
+                session = writer.EnterReadMode(this);
                 Debug.Assert(writer.IsReading);
             }
 
@@ -114,7 +114,7 @@ namespace DotNext.IO
             {
                 var buffer = writer.buffer;
                 memory = buffer.Memory.Slice(0, writer.position)[range];
-                session = writer.EnableReadMode(this);
+                session = writer.EnterReadMode(this);
                 Debug.Assert(writer.IsReading);
             }
 
@@ -255,7 +255,7 @@ namespace DotNext.IO
 
         private bool IsReading => reader?.Target != null;
 
-        private ReadSession EnableReadMode(object obj)
+        private ReadSession EnterReadMode(object obj)
         {
             WeakReference refHolder;
             if (reader is null)

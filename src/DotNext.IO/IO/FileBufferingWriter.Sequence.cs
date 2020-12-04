@@ -52,7 +52,7 @@ namespace DotNext.IO
                 accessor = writer.fileBackend is null ?
                     null :
                     new ReadOnlySequenceAccessor(writer.fileBackend, segmentLength);
-                session = writer.EnableReadMode(this);
+                session = writer.EnterReadMode(this);
             }
 
             /// <summary>
