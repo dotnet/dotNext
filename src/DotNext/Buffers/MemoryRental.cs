@@ -44,7 +44,7 @@ namespace DotNext.Buffers
         public static int StackallocThreshold
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => StackallocThresholdInBytes / Unsafe.SizeOf<T>();
+            get => Unsafe.SizeOf<T>() > StackallocThresholdInBytes ? 1 : StackallocThresholdInBytes / Unsafe.SizeOf<T>();
         }
 
         private readonly object? owner;
@@ -135,7 +135,6 @@ namespace DotNext.Buffers
         /// </summary>
         /// <param name="span">The allocated memory to convert.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [SuppressMessage("Usage", "CA2225", Justification = "Accessible via constructor")]
         public static implicit operator MemoryRental<T>(Span<T> span)
             => new MemoryRental<T>(span);
 

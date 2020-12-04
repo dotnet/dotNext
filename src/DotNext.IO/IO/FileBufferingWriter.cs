@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Diagnostics.Tracing;
 using System.IO;
 using System.IO.MemoryMappedFiles;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.MemoryMarshal;
@@ -25,14 +26,30 @@ namespace DotNext.IO
     /// returned <see cref="Memory{T}"/> instance references bytes in memory. Otherwise,
     /// it references memory-mapped file.
     /// </remarks>
-    public sealed partial class FileBufferingWriter : Stream, IFlushableBufferWriter<byte>
+    public sealed partial class FileBufferingWriter : Stream, IFlushableBufferWriter<byte>, IGrowableBuffer<byte>
     {
+        private const int FileBufferSize = 1024;
+
+        [StructLayout(LayoutKind.Auto)]
+        private readonly struct ReadSession : IDisposable
+        {
+            private readonly WeakReference refHolder;
+
+            internal ReadSession(WeakReference obj)
+                => refHolder = obj;
+
+            public void Dispose()
+            {
+                if (!(refHolder is null))
+                    refHolder.Target = null;
+            }
+        }
+
         private sealed unsafe class MemoryMappedFileManager : MemoryManager<byte>
         {
-            private readonly FileBufferingWriter writer;
             private readonly MemoryMappedFile mappedFile;
             private readonly MemoryMappedViewAccessor accessor;
-            private readonly uint version;
+            private ReadSession session;
             private byte* ptr;
 
             internal MemoryMappedFileManager(FileBufferingWriter writer, long offset, long length)
@@ -43,8 +60,7 @@ namespace DotNext.IO
                 accessor = mappedFile.CreateViewAccessor(offset, length, MemoryMappedFileAccess.ReadWrite);
                 accessor.SafeMemoryMappedViewHandle.AcquirePointer(ref ptr);
                 Debug.Assert(ptr != default);
-                this.writer = writer;
-                version = ++writer.readVersion;
+                session = writer.EnterReadMode(this);
                 Debug.Assert(writer.IsReading);
             }
 
@@ -79,31 +95,26 @@ namespace DotNext.IO
                     accessor.SafeMemoryMappedViewHandle.ReleasePointer();
                     accessor.Dispose();
                     mappedFile.Dispose();
+                    session.Dispose();
+                    session = default;
                 }
 
                 ptr = default;
-                writer.ReleaseReadLock(version);
             }
         }
 
         private sealed class MemoryManager : MemoryManager<byte>
         {
-            private readonly uint version;
-            private readonly FileBufferingWriter? writer;
+            private ReadSession session;
             private Memory<byte> memory;
 
-            internal MemoryManager()
-            {
-                writer = null;
-                memory = default;
-            }
+            internal MemoryManager() => memory = default;
 
             internal MemoryManager(FileBufferingWriter writer, in Range range)
             {
                 var buffer = writer.buffer;
                 memory = buffer.Memory.Slice(0, writer.position)[range];
-                this.writer = writer;
-                version = ++writer.readVersion;
+                session = writer.EnterReadMode(this);
                 Debug.Assert(writer.IsReading);
             }
 
@@ -124,9 +135,9 @@ namespace DotNext.IO
                 if (disposing)
                 {
                     memory = default;
+                    session.Dispose();
+                    session = default;
                 }
-
-                writer?.ReleaseReadLock(version);
             }
         }
 
@@ -157,8 +168,9 @@ namespace DotNext.IO
         private int position;
         private FileStream? fileBackend;
 
-        // if (x & 1) != 0 then reading is active
-        private uint readVersion;
+        // If null or .Target is null then there is no active readers.
+        // Weak reference allows to track leaked readers when Dispose() was not called on them
+        private WeakReference? reader;
 
         /// <summary>
         /// Initializes a new writer.
@@ -234,14 +246,29 @@ namespace DotNext.IO
         /// <inheritdoc/>
         public override long Length => position + (fileBackend?.Length ?? 0L);
 
-        private bool IsReading => (readVersion & 1U) != 0U;
+        /// <inheritdoc />
+        long IGrowableBuffer<byte>.WrittenCount => Length;
 
-        private void ReleaseReadLock(uint current)
+        /// <inheritdoc />
+        void IGrowableBuffer<byte>.CopyTo<TArg>(ReadOnlySpanAction<byte, TArg> callback, TArg arg)
+            => CopyTo(callback, arg);
+
+        private bool IsReading => reader?.Target != null;
+
+        private ReadSession EnterReadMode(object obj)
         {
-            if (current == readVersion)
-                readVersion += 1U;
+            WeakReference refHolder;
+            if (reader is null)
+            {
+                refHolder = reader = new WeakReference(obj, false);
+            }
+            else
+            {
+                refHolder = reader;
+                refHolder.Target = obj;
+            }
 
-            Debug.Assert((readVersion & 1U) == 0U);
+            return new ReadSession(refHolder);
         }
 
         /// <summary>
@@ -404,7 +431,7 @@ namespace DotNext.IO
         }
 
         private void EnsureBackingStore()
-            => fileBackend ??= new FileStream(Path.Combine(tempDir, Path.GetRandomFileName()), FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read, 1024, options);
+            => fileBackend ??= new FileStream(Path.Combine(tempDir, Path.GetRandomFileName()), FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read, FileBufferSize, options);
 
         /// <inheritdoc/>
         public override void Write(byte[] buffer, int offset, int count)
@@ -595,6 +622,106 @@ namespace DotNext.IO
             return totalBytes;
         }
 
+        /// <summary>
+        /// Drains buffered content synchronously.
+        /// </summary>
+        /// <param name="reader">The content reader.</param>
+        /// <param name="arg">The argument to be passed to the callback.</param>
+        /// <param name="bufferSize">The size, in bytes, of the buffer used to copy bytes.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <typeparam name="TArg">The type of the argument to be passed to the callback.</typeparam>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public void CopyTo<TArg>(ReadOnlySpanAction<byte, TArg> reader, TArg arg, int bufferSize = 1024, CancellationToken token = default)
+        {
+            if (fileBackend != null)
+            {
+                fileBackend.Position = 0L;
+                fileBackend.Read(reader, arg, bufferSize, token);
+            }
+
+            if (buffer.Length > 0 && position > 0)
+            {
+                reader(buffer.Memory.Span.Slice(0, position), arg);
+            }
+        }
+
+        /// <summary>
+        /// Drains buffered content asynchronously.
+        /// </summary>
+        /// <param name="reader">The content reader.</param>
+        /// <param name="arg">The argument to be passed to the callback.</param>
+        /// <param name="bufferSize">The size, in bytes, of the buffer used to copy bytes.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <typeparam name="TArg">The type of the argument to be passed to the callback.</typeparam>
+        /// <returns>The task representing asynchronous execution of the operation.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public async Task CopyToAsync<TArg>(ReadOnlySpanAction<byte, TArg> reader, TArg arg, int bufferSize = 1024, CancellationToken token = default)
+        {
+            if (fileBackend != null)
+            {
+                fileBackend.Position = 0L;
+                await fileBackend.ReadAsync(reader, arg, bufferSize, token).ConfigureAwait(false);
+            }
+
+            if (buffer.Length > 0 && position > 0)
+            {
+                reader(buffer.Memory.Span.Slice(0, position), arg);
+            }
+        }
+
+        /// <summary>
+        /// Drains buffered content to the memory block synchronously.
+        /// </summary>
+        /// <param name="output">The memory block used as a destination for copy operation.</param>
+        /// <returns>The actual number of copied elements.</returns>
+        public int CopyTo(Span<byte> output)
+        {
+            var totalBytes = 0;
+            if (fileBackend != null)
+            {
+                var currentPos = fileBackend.Position;
+                fileBackend.Position = 0L;
+                totalBytes = fileBackend.Read(output);
+                output = output.Slice(totalBytes);
+                fileBackend.Position = currentPos;
+            }
+
+            if (buffer.Length > 0 && position > 0 && !output.IsEmpty)
+            {
+                buffer.Memory.Span.Slice(0, position).CopyTo(output, out var subCount);
+                totalBytes += subCount;
+            }
+
+            return totalBytes;
+        }
+
+        /// <summary>
+        /// Drains buffered content to the memory block asynchronously.
+        /// </summary>
+        /// <param name="output">The memory block used as a destination for copy operation.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The actual number of copied elements.</returns>
+        public async Task<int> CopyToAsync(Memory<byte> output, CancellationToken token = default)
+        {
+            var totalBytes = 0;
+            if (fileBackend != null)
+            {
+                var currentPos = fileBackend.Position;
+                fileBackend.Position = 0L;
+                totalBytes = await fileBackend.ReadAsync(output, token).ConfigureAwait(false);
+                output = output.Slice(totalBytes);
+                fileBackend.Position = currentPos;
+            }
+
+            if (buffer.Length > 0 && position > 0 && !output.IsEmpty)
+            {
+                buffer.Memory.Span.Slice(0, position).CopyTo(output.Span, out var subCount);
+                totalBytes += subCount;
+            }
+
+            return totalBytes;
+        }
+
         private static (long Offset, long Length) GetOffsetAndLength(in Range range, long length)
         {
             long start = range.Start.Value;
@@ -726,6 +853,7 @@ namespace DotNext.IO
                 fileBackend = null;
                 buffer.Dispose();
                 buffer = default;
+                reader = null;
             }
 
             base.Dispose(disposing);

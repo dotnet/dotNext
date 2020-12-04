@@ -37,19 +37,22 @@ namespace DotNext.IO.MemoryMappedFiles
 
             internal Segment Next(int length) => new Segment(Length + Offset, length);
 
-            public bool Equals(Segment other)
+            private bool Equals(in Segment other)
                 => Length == other.Length && Offset == other.Offset;
 
-            public override bool Equals(object other) => other is Segment window && Equals(window);
+            public bool Equals(Segment other)
+                => Equals(in other);
+
+            public override bool Equals(object other) => other is Segment window && Equals(in window);
 
             public override int GetHashCode()
                 => HashCode.Combine(Offset, Length);
 
             public static bool operator ==(in Segment x, in Segment y)
-                => x.Length == y.Length && x.Offset == y.Offset;
+                => x.Equals(in y);
 
             public static bool operator !=(in Segment x, in Segment y)
-                => x.Length != y.Length || x.Offset != y.Offset;
+                => !x.Equals(in y);
         }
 
         private sealed class MemoryManager : MemoryManager<byte>

@@ -40,7 +40,7 @@ namespace DotNext.Reflection
         public int NoReflection() => IndexOfCalc.IndexOf;
 
         [Benchmark]
-        public object UseObjectAccessor() => Accessor["IndexOf"];
+        public object UseObjectAccessor() => Accessor[nameof(IndexOfCalculator.IndexOf)];
 
         [Benchmark]
         public int UseFastTypedReflection() => StaticallyReflected(IndexOfCalc);

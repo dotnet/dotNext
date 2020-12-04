@@ -88,7 +88,6 @@ namespace DotNext
             exception = dispatchInfo;
         }
 
-        [SuppressMessage("Usage", "CA1801", Justification = "context is required by .NET serialization framework")]
         private Result(SerializationInfo info, StreamingContext context)
         {
             value = (T)info.GetValue(ValueSerData, typeof(T));

@@ -38,6 +38,19 @@ namespace DotNext.IO
             Equal(data, dest.ToArray());
         }
 
+        [Theory]
+        [MemberData(nameof(TestBuffers))]
+        public static void CopySparseMemory(ReadOnlySequence<byte> sequence)
+        {
+            using var dest = new MemoryStream();
+            using var buffer = new SparseBufferWriter<byte>();
+            buffer.Write(in sequence);
+            using var src = buffer.AsStream(true);
+            src.CopyTo(dest);
+            dest.Position = 0;
+            Equal(data, dest.ToArray());
+        }
+
         [Fact]
         public static void EmptyCopyTo()
         {
@@ -69,6 +82,19 @@ namespace DotNext.IO
             using var dest = new MemoryStream();
             using var src = sequence.AsStream();
 
+            await src.CopyToAsync(dest);
+            dest.Position = 0;
+            Equal(data, dest.ToArray());
+        }
+
+        [Theory]
+        [MemberData(nameof(TestBuffers))]
+        public static async Task CopySparseMemoryAsync(ReadOnlySequence<byte> sequence)
+        {
+            using var dest = new MemoryStream();
+            using var buffer = new SparseBufferWriter<byte>();
+            buffer.Write(in sequence);
+            using var src = buffer.AsStream(true);
             await src.CopyToAsync(dest);
             dest.Position = 0;
             Equal(data, dest.ToArray());
@@ -142,6 +168,18 @@ namespace DotNext.IO
 
         [Theory]
         [MemberData(nameof(TestBuffers))]
+        public static void ReadBlockFromSparseMemory(ReadOnlySequence<byte> sequence)
+        {
+            using var buffer = new SparseBufferWriter<byte>();
+            buffer.Write(in sequence);
+            using var src = buffer.AsStream(true);
+            Span<byte> dest = new byte[data.Length];
+            src.ReadBlock(dest);
+            Equal(data, dest.ToArray());
+        }
+
+        [Theory]
+        [MemberData(nameof(TestBuffers))]
         public static void ReadArray(ReadOnlySequence<byte> sequence)
         {
             using var src = sequence.AsStream();
@@ -170,6 +208,21 @@ namespace DotNext.IO
 
         [Theory]
         [MemberData(nameof(TestBuffers))]
+        public static async Task ReadBlockFromSparseMemoryAsync(ReadOnlySequence<byte> sequence)
+        {
+            using var buffer = new SparseBufferWriter<byte>();
+            buffer.Write(in sequence);
+            using var src = buffer.AsStream(true);
+            Equal(src.Length, sequence.Length);
+            Equal(0L, src.Position);
+            Memory<byte> dest = new byte[data.Length];
+            await src.ReadBlockAsync(dest);
+            Equal(src.Length, src.Position);
+            Equal(data, dest.ToArray());
+        }
+
+        [Theory]
+        [MemberData(nameof(TestBuffers))]
         public static async Task ReadArrayAsync(ReadOnlySequence<byte> sequence)
         {
             using var src = sequence.AsStream();
@@ -194,6 +247,18 @@ namespace DotNext.IO
             src.Seek(-1L, SeekOrigin.End);
             Equal(data[^1], src.ReadByte());
             Equal(-1, src.ReadByte());
+        }
+
+        [Theory]
+        [MemberData(nameof(TestBuffers))]
+        public static void ReadSingleByteFromSparseMemory(ReadOnlySequence<byte> sequence)
+        {
+            using var buffer = new SparseBufferWriter<byte>();
+            buffer.Write(in sequence);
+
+            var src = buffer.AsStream(true);
+            for (var i = 0; i < data.Length; i++)
+                Equal(data[i], src.ReadByte());
         }
 
         [Fact]

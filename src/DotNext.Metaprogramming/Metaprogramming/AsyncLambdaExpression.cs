@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
@@ -17,7 +16,6 @@ namespace DotNext.Metaprogramming
         private ParameterExpression? recursion;
         private ParameterExpression? lambdaResult;
 
-        [SuppressMessage("Usage", "CA2208", Justification = "The name of the generic parameter is correct")]
         internal AsyncLambdaExpression()
             : base(false)
         {

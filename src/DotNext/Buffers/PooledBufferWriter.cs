@@ -1,5 +1,4 @@
 using System;
-using System.Buffers;
 using System.Runtime.CompilerServices;
 
 namespace DotNext.Buffers
@@ -24,14 +23,14 @@ namespace DotNext.Buffers
             if (initialCapacity <= 0)
                 throw new ArgumentOutOfRangeException(nameof(initialCapacity));
             this.allocator = allocator;
-            buffer = this.allocator.Invoke(initialCapacity, false);
+            buffer = allocator.Invoke(initialCapacity, false);
         }
 
         /// <summary>
         /// Initializes a new writer with the default initial capacity.
         /// </summary>
         /// <param name="allocator">The allocator of internal buffer.</param>
-        public PooledBufferWriter(MemoryAllocator<T>? allocator)
+        public PooledBufferWriter(MemoryAllocator<T>? allocator = null)
         {
             this.allocator = allocator;
         }

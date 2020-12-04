@@ -72,13 +72,14 @@ namespace DotNext.Buffers
             if (allocator is null)
             {
                 result = new MemoryOwner<T>(ArrayPool<T>.Shared, length, exactSize);
-                goto exit;
+            }
+            else
+            {
+                result = allocator(length);
+                if (!exactSize)
+                    result.Expand();
             }
 
-            result = allocator(length);
-            if (!exactSize)
-                result.Expand();
-            exit:
             return result;
         }
 

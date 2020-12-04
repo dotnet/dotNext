@@ -18,6 +18,7 @@ namespace DotNext
         /// </summary>
         internal static readonly int BitwiseHashSalt = new Random().Next();
 
+        // TODO: Replace with method pointer in C# 9
         private interface IRandomStringGenerator
         {
             void NextString(Span<char> buffer, ReadOnlySpan<char> allowedChars);
@@ -61,6 +62,7 @@ namespace DotNext
             }
         }
 
+        // TODO: Need to use SkipInitAttribute here
         private static string NextString<TGenerator>(TGenerator generator, ReadOnlySpan<char> allowedChars, int length)
             where TGenerator : struct, IRandomStringGenerator
         {
@@ -158,7 +160,7 @@ namespace DotNext
         /// </summary>
         /// <param name="random">The source of random numbers.</param>
         /// <returns>A 32-bit signed integer that is in range [0, <see cref="int.MaxValue"/>].</returns>
-        public static unsafe int Next(this RandomNumberGenerator random)
+        public static int Next(this RandomNumberGenerator random)
             => random.Next<int>() & int.MaxValue; // remove sign bit. Abs function may cause OverflowException
 
         /// <summary>
@@ -178,7 +180,7 @@ namespace DotNext
         /// </summary>
         /// <param name="random">The source of random numbers.</param>
         /// <returns>Randomly generated floating-point number.</returns>
-        public static unsafe double NextDouble(this RandomNumberGenerator random)
+        public static double NextDouble(this RandomNumberGenerator random)
         {
             double result = random.Next();
 

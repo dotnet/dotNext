@@ -149,7 +149,6 @@ namespace DotNext
 
         private Enum(TEnum value) => Value = value;
 
-        [SuppressMessage("Usage", "CA1801", Justification = "context is required by .NET serialization framework")]
         private Enum(SerializationInfo info, StreamingContext context)
             => Value = (TEnum)info.GetValue(ValueSerData, typeof(TEnum));
 

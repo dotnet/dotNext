@@ -1,10 +1,10 @@
 using System;
+using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext
 {
-    using CharBuffer = Buffers.MemoryRental<char>;
     using CharSequence = Buffers.ChunkSequence<char>;
     using StringTemplate = Buffers.MemoryTemplate<char>;
 
@@ -13,6 +13,14 @@ namespace DotNext
     /// </summary>
     public static class StringExtensions
     {
+        private static readonly SpanAction<char, string> CopyAndReverse = CreateReversedString;
+
+        private static void CreateReversedString(Span<char> output, string origin)
+        {
+            origin.AsSpan().CopyTo(output);
+            output.Reverse();
+        }
+
         /// <summary>
         /// Returns alternative string if first string argument
         /// is <see langword="null"/> or empty.
@@ -36,12 +44,8 @@ namespace DotNext
         /// <returns>The string in inverse order of characters.</returns>
         public static string Reverse(this string str)
         {
-            if (str.Length == 0)
-                return str;
-            using CharBuffer result = str.Length <= CharBuffer.StackallocThreshold ? stackalloc char[str.Length] : new CharBuffer(str.Length);
-            str.AsSpan().CopyTo(result.Span);
-            result.Span.Reverse();
-            return new string(result.Span);
+            var length = str.Length;
+            return length > 0 ? string.Create(length, str, CopyAndReverse) : string.Empty;
         }
 
         /// <summary>
@@ -50,8 +54,9 @@ namespace DotNext
         /// <param name="strA">String A. Can be <see langword="null"/>.</param>
         /// <param name="strB">String B. Can be <see langword="null"/>.</param>
         /// <returns><see langword="true"/>, if the first string is equal to the second string; otherwise, <see langword="false"/>.</returns>
+        [Obsolete("Use string.Equals(string, string, StringComparison) static method instead")]
         public static bool IsEqualIgnoreCase(this string? strA, string? strB)
-            => string.Compare(strA, strB, StringComparison.OrdinalIgnoreCase) == 0;
+            => string.Equals(strA, strB, StringComparison.OrdinalIgnoreCase);
 
         /// <summary>
         /// Trims the source string to specified length if it exceeds it.

@@ -257,6 +257,44 @@ namespace DotNext.IO
             Equal(bytes, ms.WrittenSpan.ToArray());
         }
 
+        [Theory]
+        [InlineData(10)]
+        [InlineData(100)]
+        [InlineData(1000)]
+        public static void DrainToSpan(int threshold)
+        {
+            using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: false);
+            var bytes = new byte[500];
+            for (byte i = 0; i < byte.MaxValue; i++)
+                bytes[i] = i;
+
+            writer.Write(bytes, 0, byte.MaxValue);
+            writer.Write(bytes.AsSpan(byte.MaxValue));
+            Equal(bytes.Length, writer.Length);
+            var buffer = new byte[100];
+            Equal(buffer.Length, writer.CopyTo(buffer));
+            Equal(bytes[0..100], buffer);
+        }
+
+        [Theory]
+        [InlineData(10)]
+        [InlineData(100)]
+        [InlineData(1000)]
+        public static async Task DrainToMemoryAsync(int threshold)
+        {
+            using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: false);
+            var bytes = new byte[500];
+            for (byte i = 0; i < byte.MaxValue; i++)
+                bytes[i] = i;
+
+            writer.Write(bytes, 0, byte.MaxValue);
+            writer.Write(bytes.AsSpan(byte.MaxValue));
+            Equal(bytes.Length, writer.Length);
+            var buffer = new byte[100];
+            Equal(buffer.Length, await writer.CopyToAsync(buffer));
+            Equal(bytes[0..100], buffer);
+        }
+
         [Fact]
         public static void CtorExceptions()
         {
@@ -331,13 +369,48 @@ namespace DotNext.IO
         [Fact]
         public static void StressTest3()
         {
-            var buffer = new byte[1024 * 1024 * 10];    // 10 MB
-            new Random().NextBytes(buffer);
+            var buffer = RandomBytes(1024 * 1024 * 10);    // 10 MB
             using var writer = new FileBufferingWriter(asyncIO: false);
             writer.Write(buffer);
             False(writer.TryGetWrittenContent(out _));
             using var content = writer.GetWrittenContent();
             True(buffer.AsSpan().SequenceEqual(content.Memory.Span));
+        }
+
+        [Theory]
+        [InlineData(100)]
+        [InlineData(1000)]
+        [InlineData(10000)]
+        public static void StressTest4(int threshold)
+        {
+            var dict = new Dictionary<string, string>
+            {
+                {"Key1", "Value1"},
+                {"Key2", "Value2"}
+            };
+            var formatter = new BinaryFormatter();
+            using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: false);
+            formatter.Serialize(writer, dict);
+            using var source = writer.GetWrittenContentAsStream();
+            Equal(dict, formatter.Deserialize(source));
+        }
+
+        [Theory]
+        [InlineData(100)]
+        [InlineData(1000)]
+        [InlineData(10000)]
+        public static async Task StressTest4Async(int threshold)
+        {
+            var dict = new Dictionary<string, string>
+            {
+                {"Key1", "Value1"},
+                {"Key2", "Value2"}
+            };
+            var formatter = new BinaryFormatter();
+            using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: true);
+            formatter.Serialize(writer, dict);
+            await using var source = await writer.GetWrittenContentAsStreamAsync();
+            Equal(dict, formatter.Deserialize(source));
         }
 
         [Theory]

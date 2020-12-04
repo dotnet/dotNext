@@ -7,14 +7,14 @@
     <Authors>Roman Sakno</Authors>
     <Company />
     <Product>.NEXT Family of Libraries</Product>
-    <Version>2.11.0</Version>
+    <Version>2.12.0</Version>
     <AssemblyName>DotNext.IO</AssemblyName>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://sakno.github.io/dotNext/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/sakno/dotNext.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>.netstandard;io;pipe;encoding;decoding;buffer;pipelines;stream;readstring;writestring</PackageTags>
-    <Copyright>Copyright © Roman Sakno 2019</Copyright>
+    <Copyright>Copyright © Roman Sakno 2020</Copyright>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Description>Common API surface for decoding and encoding data from/to stream or I/O pipe.</Description>
     <PackageIcon>logo.png</PackageIcon>
@@ -49,8 +49,8 @@
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.0" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
-    <PackageReference Include="System.IO.Pipelines" Version="4.7.3" />
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.1" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
+    <PackageReference Include="System.IO.Pipelines" Version="5.0.0" />
     <PackageReference Include="Fody" Version="6.3.0" PrivateAssets="all" />
     <PackageReference Include="InlineIL.Fody" Version="1.6.0" PrivateAssets="all" />
   </ItemGroup>
@@ -60,7 +60,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="DotNext" Version="[2.11.0, 3)" />
+    <PackageReference Include="DotNext" Version="[2.12.0, 3)" />
   </ItemGroup>
 
   <ItemGroup>

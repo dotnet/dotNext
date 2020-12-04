@@ -229,7 +229,6 @@ namespace DotNext
             return NotEmptyValue;
         }
 
-        [SuppressMessage("Usage", "CA1801", Justification = "context is required by .NET serialization framework")]
         private Optional(SerializationInfo info, StreamingContext context)
         {
             value = (T)info.GetValue(ValueSerData, typeof(T));

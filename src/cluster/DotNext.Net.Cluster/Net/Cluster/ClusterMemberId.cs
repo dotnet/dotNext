@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
@@ -23,7 +22,6 @@ namespace DotNext.Net.Cluster
         private readonly Guid address;
         private readonly int port, length, family;
 
-        [SuppressMessage("Usage", "CA1801", Justification = "context is required by .NET serialization framework")]
         private ClusterMemberId(SerializationInfo info, StreamingContext context)
         {
             address = (Guid)info.GetValue(AddressSerData, typeof(Guid));

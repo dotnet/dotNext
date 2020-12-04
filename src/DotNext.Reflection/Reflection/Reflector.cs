@@ -1,17 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
 namespace DotNext.Reflection
 {
-    using static Runtime.CompilerServices.PointerHelpers;
-
     /// <summary>
     /// Provides access to fast reflection routines.
     /// </summary>
-    public static class Reflector
+    public static partial class Reflector
     {
         private static MemberInfo? MemberOf(LambdaExpression exprTree) => exprTree.Body switch
         {
@@ -82,66 +79,6 @@ namespace DotNext.Reflection
         public static Field<T, TValue> Unreflect<T, TValue>(this FieldInfo field)
             where T : notnull => Field<T, TValue>.GetOrCreate(field);
 
-        private static MemberExpression BuildFieldAccess(FieldInfo field, ParameterExpression target)
-        {
-            Expression? owner;
-            if (field.IsStatic)
-                owner = null;
-            else if (field.DeclaringType.IsValueType)
-                owner = Expression.Unbox(target, field.DeclaringType);
-            else
-                owner = Expression.Convert(target, field.DeclaringType);
-
-            return Expression.Field(owner, field);
-        }
-
-        private static Expression BuildGetter(MemberExpression field)
-        {
-            Expression fieldAccess = field;
-            if (fieldAccess.Type.IsPointer)
-                fieldAccess = Wrap(fieldAccess);
-            if (fieldAccess.Type.IsValueType)
-                fieldAccess = Expression.Convert(fieldAccess, typeof(object));
-            return fieldAccess;
-        }
-
-        private static DynamicInvoker BuildGetter(FieldInfo field)
-        {
-            var target = Expression.Parameter(typeof(object));
-            var arguments = Expression.Parameter(typeof(object[]));
-            return Expression.Lambda<DynamicInvoker>(BuildGetter(BuildFieldAccess(field, target)), target, arguments).Compile();
-        }
-
-        private static Expression BuildSetter(MemberExpression field, ParameterExpression arguments)
-        {
-            Expression valueArg = Expression.ArrayIndex(arguments, Expression.Constant(0));
-            if (field.Type.IsPointer)
-                valueArg = Unwrap(valueArg, field.Type);
-            if (valueArg.Type != field.Type)
-                valueArg = Expression.Convert(valueArg, field.Type);
-            return Expression.Block(typeof(object), Expression.Assign(field, valueArg), Expression.Default(typeof(object)));
-        }
-
-        private static DynamicInvoker BuildSetter(FieldInfo field)
-        {
-            var target = Expression.Parameter(typeof(object));
-            var arguments = Expression.Parameter(typeof(object[]));
-            return Expression.Lambda<DynamicInvoker>(BuildSetter(BuildFieldAccess(field, target), arguments), target, arguments).Compile();
-        }
-
-        private static DynamicInvoker BuildInvoker(FieldInfo field)
-        {
-            var target = Expression.Parameter(typeof(object));
-            var arguments = Expression.Parameter(typeof(object[]));
-            var fieldAccess = BuildFieldAccess(field, target);
-            var body = Expression.Condition(
-                Expression.Equal(Expression.ArrayLength(arguments), Expression.Constant(0)),
-                BuildGetter(fieldAccess),
-                BuildSetter(fieldAccess, arguments),
-                typeof(object));
-            return Expression.Lambda<DynamicInvoker>(body, target, arguments).Compile();
-        }
-
         /// <summary>
         /// Creates dynamic invoker for the field.
         /// </summary>
@@ -156,115 +93,34 @@ namespace DotNext.Reflection
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="flags"/> is invalid.</exception>
         /// <exception cref="NotSupportedException">The type of <paramref name="field"/> is ref-like value type.</exception>
         public static DynamicInvoker Unreflect(this FieldInfo field, BindingFlags flags = BindingFlags.GetField | BindingFlags.SetField)
+            => Unreflect(field, false, flags);  // TODO: Must be merged into single method with optional volatileAccess parameter
+
+        /// <summary>
+        /// Creates dynamic invoker for the field.
+        /// </summary>
+        /// <remarks>
+        /// This method doesn't cache the result so the caller is responsible for storing delegate to the field or cache.
+        /// <paramref name="flags"/> supports the following combination of values: <see cref="BindingFlags.GetField"/>, <see cref="BindingFlags.SetField"/> or
+        /// both.
+        /// </remarks>
+        /// <param name="field">The field to unreflect.</param>
+        /// <param name="volatileAccess"><see langword="true"/> to generate volatile access to the field.</param>
+        /// <param name="flags">Describes the access to the field using invoker.</param>
+        /// <returns>The delegate that can be used to access field value.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="flags"/> is invalid.</exception>
+        /// <exception cref="NotSupportedException">The type of <paramref name="field"/> is ref-like value type.</exception>
+        public static DynamicInvoker Unreflect(this FieldInfo field, bool volatileAccess, BindingFlags flags = BindingFlags.GetField | BindingFlags.SetField)
         {
             if (field.FieldType.IsByRefLike)
                 throw new NotSupportedException();
+
             return flags switch
             {
-                BindingFlags.GetField => BuildGetter(field),
-                BindingFlags.SetField => BuildSetter(field),
-                BindingFlags.GetField | BindingFlags.SetField => BuildInvoker(field),
+                BindingFlags.GetField => BuildFieldGetter(field, volatileAccess),
+                BindingFlags.SetField => BuildFieldSetter(field, volatileAccess),
+                BindingFlags.GetField | BindingFlags.SetField => BuildFieldAccess(field, volatileAccess),
                 _ => throw new ArgumentOutOfRangeException(nameof(flags))
             };
-        }
-
-        private static DynamicInvoker Unreflect<TMethod>(TMethod method, Func<Expression?, TMethod, IEnumerable<Expression>, Expression> resultBuilder)
-            where TMethod : MethodBase
-        {
-            var target = Expression.Parameter(typeof(object));
-            var arguments = Expression.Parameter(typeof(object[]));
-            Expression? thisArg;
-            if (method.IsStatic || method.MemberType == MemberTypes.Constructor)
-                thisArg = null;
-            else if (method.DeclaringType.IsValueType)
-                thisArg = Expression.Unbox(target, method.DeclaringType);
-            else
-                thisArg = Expression.Convert(target, method.DeclaringType);
-
-            ICollection<Expression> arglist = new LinkedList<Expression>(), prologue = new LinkedList<Expression>(), epilogue = new LinkedList<Expression>();
-            ICollection<ParameterExpression> tempVars = new LinkedList<ParameterExpression>();
-
-            // handle parameters
-            foreach (var parameter in method.GetParameters())
-            {
-                Expression argument = Expression.ArrayAccess(arguments, Expression.Constant(parameter.Position));
-                if (parameter.ParameterType.IsByRefLike)
-                {
-                    throw new NotSupportedException();
-                }
-                else if (parameter.ParameterType.IsByRef)
-                {
-                    var parameterType = parameter.ParameterType.GetElementType();
-
-                    // value type parameter can be passed as unboxed reference
-                    if (parameterType.IsValueType)
-                    {
-                        argument = Expression.Unbox(argument, parameterType);
-                    }
-                    else
-                    {
-                        var tempVar = Expression.Variable(parameterType);
-                        tempVars.Add(tempVar);
-                        prologue.Add(Expression.Assign(tempVar, parameterType.IsPointer ? Unwrap(argument, parameterType.GetElementType()) : Expression.Convert(argument, parameterType)));
-                        if (parameterType.IsPointer)
-                            epilogue.Add(Expression.Assign(argument, Wrap(tempVar)));
-                        else if (parameterType.IsValueType)
-                            epilogue.Add(Expression.Assign(argument, Expression.Convert(tempVar, typeof(object))));
-                        else
-                            epilogue.Add(Expression.Assign(argument, tempVar));
-                        argument = tempVar;
-                    }
-                }
-                else if (parameter.ParameterType.IsPointer)
-                {
-                    argument = Unwrap(argument, parameter.ParameterType);
-                }
-                else
-                {
-                    argument = Expression.Convert(argument, parameter.ParameterType);
-                }
-
-                arglist.Add(argument);
-            }
-
-            // construct body of the method
-            Expression result = resultBuilder(thisArg, method, arglist);
-            if (result.Type.IsByRefLike)
-                throw new NotSupportedException();
-            else if (result.Type == typeof(void))
-                epilogue.Add(Expression.Default(typeof(object)));
-            else if (result.Type.IsPointer)
-                result = Wrap(result);
-            else if (result.Type.IsValueType)
-                result = Expression.Convert(result, typeof(object));
-
-            // construct lambda expression
-            bool useTailCall;
-            if (epilogue.Count == 0)
-            {
-                useTailCall = true;
-            }
-            else if (result.Type == typeof(void))
-            {
-                result = Expression.Block(typeof(object), tempVars, prologue.Append(result).Concat(epilogue));
-                useTailCall = false;
-            }
-            else
-            {
-                var resultVar = Expression.Variable(typeof(object));
-                tempVars.Add(resultVar);
-                result = Expression.Assign(resultVar, result);
-                epilogue.Add(resultVar);
-                result = Expression.Block(typeof(object), tempVars, prologue.Append(result).Concat(epilogue));
-                useTailCall = false;
-            }
-
-            // help GC
-            arglist.Clear();
-            prologue.Clear();
-            epilogue.Clear();
-            tempVars.Clear();
-            return Expression.Lambda<DynamicInvoker>(result, useTailCall, target, arguments).Compile();
         }
 
         /// <summary>
@@ -276,9 +132,6 @@ namespace DotNext.Reflection
         public static DynamicInvoker Unreflect(this MethodInfo method)
             => Unreflect(method, Expression.Call);
 
-        private static Expression New(Expression? thisArg, ConstructorInfo ctor, IEnumerable<Expression> args)
-            => Expression.New(ctor, args);
-
         /// <summary>
         /// Creates dynamic invoker for the constructor.
         /// </summary>
@@ -286,6 +139,11 @@ namespace DotNext.Reflection
         /// <returns>The delegate that can be used to create an object instance.</returns>
         /// <exception cref="NotSupportedException">The type of parameter is ref-like value type.</exception>
         public static DynamicInvoker Unreflect(this ConstructorInfo ctor)
-            => Unreflect(ctor, New);
+        {
+            return Unreflect(ctor, New);
+
+            static Expression New(Expression? thisArg, ConstructorInfo ctor, IEnumerable<Expression> args)
+                => Expression.New(ctor, args);
+        }
     }
 }

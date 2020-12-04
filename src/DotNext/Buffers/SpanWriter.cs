@@ -81,7 +81,7 @@ namespace DotNext.Buffers
             if (!input.TryCopyTo(span.Slice(position)))
                 return false;
 
-            position = position + input.Length;
+            position += input.Length;
             return true;
         }
 
@@ -89,11 +89,12 @@ namespace DotNext.Buffers
         /// Copies the elements to the underlying span.
         /// </summary>
         /// <param name="input">The span of elements to copy from.</param>
-        /// <exception cref="EndOfStreamException">Remaining space in the underlying span is not enough to place all elements from <paramref name="input"/>.</exception>
-        public void Write(ReadOnlySpan<T> input)
+        /// <returns>The number of written elements.</returns>
+        public int Write(ReadOnlySpan<T> input)
         {
-            if (!TryWrite(input))
-                throw new EndOfStreamException(ExceptionMessages.NotEnoughMemory);
+            input.CopyTo(span.Slice(position), out var writtenCount);
+            position += writtenCount;
+            return writtenCount;
         }
 
         /// <summary>

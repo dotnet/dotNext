@@ -45,7 +45,7 @@ namespace DotNext.Threading
             /// <summary>
             /// Indicates that this object doesn't hold the lock.
             /// </summary>
-            public bool IsEmpty => lockedObject is null;
+            public readonly bool IsEmpty => lockedObject is null;
 
             /// <summary>
             /// Releases the acquired lock.

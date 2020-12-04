@@ -6,6 +6,7 @@ using Xunit;
 namespace DotNext.Security.Cryptography
 {
     [ExcludeFromCodeCoverage]
+    [Obsolete("This test collection is for backward compatibility only")]
     public sealed class HashBuilderTests : Test
     {
         [Fact]

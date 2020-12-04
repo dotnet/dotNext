@@ -2679,11 +2679,11 @@ namespace DotNext.IO
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="bufferSize"/> is negative or zero.</exception>
         /// <exception cref="NotSupportedException"><paramref name="source"/> doesn't support reading.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static async Task<long> CopyToAsync(this Stream source, IBufferWriter<byte> destination, int bufferSize = 1024, CancellationToken token = default)
+        public static async Task<long> CopyToAsync(this Stream source, IBufferWriter<byte> destination, int bufferSize = 0, CancellationToken token = default)
         {
             if (destination is null)
                 throw new ArgumentNullException(nameof(destination));
-            if (bufferSize <= 0)
+            if (bufferSize < 0)
                 throw new ArgumentOutOfRangeException(nameof(bufferSize));
 
             var totalBytes = 0L;
@@ -2712,11 +2712,11 @@ namespace DotNext.IO
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="bufferSize"/> is negative or zero.</exception>
         /// <exception cref="NotSupportedException"><paramref name="source"/> doesn't support reading.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static long CopyTo(this Stream source, IBufferWriter<byte> destination, int bufferSize = 1024, CancellationToken token = default)
+        public static long CopyTo(this Stream source, IBufferWriter<byte> destination, int bufferSize = 0, CancellationToken token = default)
         {
             if (destination is null)
                 throw new ArgumentNullException(nameof(destination));
-            if (bufferSize <= 0)
+            if (bufferSize < 0)
                 throw new ArgumentOutOfRangeException(nameof(bufferSize));
 
             var totalBytes = 0L;

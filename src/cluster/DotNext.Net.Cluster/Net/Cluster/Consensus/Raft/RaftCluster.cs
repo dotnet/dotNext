@@ -679,7 +679,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        [SuppressMessage("Reliability", "CA2000", Justification = "The instance returned by StartLeading is the same as 'this'")]
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's a member of internal interface")]
         async void IRaftStateMachine.MoveToLeaderState(IRaftClusterMember newLeader)
         {

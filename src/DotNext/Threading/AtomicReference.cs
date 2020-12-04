@@ -403,7 +403,6 @@ namespace DotNext.Threading
         /// <param name="value">Initial value to be placed into container.</param>
         public AtomicReference(T value) => this.value = value;
 
-        [SuppressMessage("Usage", "CA1801", Justification = "context is required by .NET serialization framework")]
         private AtomicReference(SerializationInfo info, StreamingContext context)
         {
             value = (T)info.GetValue(ValueSerData, typeof(T));

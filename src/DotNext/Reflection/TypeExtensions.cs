@@ -124,6 +124,9 @@ namespace DotNext.Reflection
             if (type.IsGenericTypeDefinition || !genericDefinition.IsGenericTypeDefinition)
                 return null;
 
+            if (type.IsConstructedGenericType && type.GetGenericTypeDefinition() == genericDefinition)
+                return type;
+
             if (genericDefinition.IsSealed)
                 return IsGenericInstanceOf(type) ? type : null;
 

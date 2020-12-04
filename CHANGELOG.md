@@ -1,6 +1,10 @@
 Release Notes
 ====
 
+# 11-11-2020
+<a href="https://www.nuget.org/packages/dotnext.reflection/2.11.2">DotNext.Reflection 2.11.2</a>
+* More performance optimizations in code generation mechanism responsible for construction dynamic method or constructor calls
+
 # 11-08-2020
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.11.1">DotNext.Metaprogramming 2.11.1</a>
 * Fixed issue [19](https://github.com/sakno/dotNext/issues/19)

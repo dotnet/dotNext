@@ -18,7 +18,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>A task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        [SuppressMessage("Reliability", "CA2000", Justification = "DisposeAsync used instead of Dispose")]
         public async Task CreateBackupAsync(Stream output, CancellationToken token = default)
         {
             ZipArchive? archive = null;
@@ -56,7 +55,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>A task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        [SuppressMessage("Reliability", "CA2000", Justification = "DisposeAsync used instead of Dispose")]
         public static async Task RestoreFromBackupAsync(Stream backup, DirectoryInfo destination, CancellationToken token = default)
         {
             // cleanup directory

@@ -36,15 +36,14 @@ namespace DotNext.IO
         }
 
         /// <summary>
-        /// Represents source of <see cref="ReadOnlySequence{T}"/> that
+        /// The source of <see cref="ReadOnlySequence{T}"/> that
         /// represents written content.
         /// </summary>
-        public sealed class ReadOnlySequenceSource : Disposable, IReadOnlySequenceSource
+        private sealed class ReadOnlySequenceSource : Disposable, IReadOnlySequenceSource
         {
-            private readonly FileBufferingWriter writer;
             private readonly Memory<byte> tail;
-            private readonly uint version;
             private ReadOnlySequenceAccessor? accessor;
+            private ReadSession session;
 
             internal ReadOnlySequenceSource(FileBufferingWriter writer, int segmentLength)
             {
@@ -53,8 +52,7 @@ namespace DotNext.IO
                 accessor = writer.fileBackend is null ?
                     null :
                     new ReadOnlySequenceAccessor(writer.fileBackend, segmentLength);
-                this.writer = writer;
-                version = ++writer.readVersion;
+                session = writer.EnterReadMode(this);
             }
 
             /// <summary>
@@ -85,9 +83,10 @@ namespace DotNext.IO
                 {
                     accessor?.Dispose();
                     accessor = null;
+                    session.Dispose();
+                    session = default;
                 }
 
-                writer.ReleaseReadLock(version);
                 base.Dispose(disposing);
             }
         }
@@ -99,7 +98,7 @@ namespace DotNext.IO
         /// <returns>The factory of <see cref="ReadOnlySequence{T}"/> instances.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="segmentSize"/> is less than or equal to zero.</exception>
         /// <exception cref="InvalidOperationException">The memory manager is already obtained but not disposed.</exception>
-        public ReadOnlySequenceSource GetWrittenContent(int segmentSize)
+        public IReadOnlySequenceSource GetWrittenContent(int segmentSize)
         {
             if (segmentSize <= 0)
                 throw new ArgumentOutOfRangeException(nameof(segmentSize));
@@ -117,7 +116,8 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The factory of <see cref="ReadOnlySequence{T}"/> instances.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="segmentSize"/> is less than or equal to zero.</exception>
-        public async ValueTask<ReadOnlySequenceSource> GetWrittenContentAsync(int segmentSize, CancellationToken token = default)
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public async ValueTask<IReadOnlySequenceSource> GetWrittenContentAsync(int segmentSize, CancellationToken token = default)
         {
             if (segmentSize <= 0)
                 throw new ArgumentOutOfRangeException(nameof(segmentSize));

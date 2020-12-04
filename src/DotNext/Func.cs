@@ -77,6 +77,20 @@ namespace DotNext
         /// </remarks>
         public static Func<T, T> Identity<T>() => Identity<T, T>();
 
+#nullable disable
+        private static T Convert<T>(this object obj) => (T)obj;
+#nullable restore
+
+        /// <summary>
+        /// Constructs <see cref="Func{T}"/> returning the same
+        /// instance each call.
+        /// </summary>
+        /// <param name="obj">The object to be returned from the delegate.</param>
+        /// <typeparam name="T">The type of the object to be returned from the delegate.</typeparam>
+        /// <returns>The delegate returning <paramref name="obj"/> each call.</returns>
+        public static Func<T> Constant<T>(T obj)
+            => obj.Convert<T>;
+
         /// <summary>
         /// Converts <see cref="Func{T, Boolean}"/> into predicate.
         /// </summary>
