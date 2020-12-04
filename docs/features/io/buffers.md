@@ -132,6 +132,7 @@ This type has the following limitations:
 
 # What to choose?
 The following table describes the main differences between various growable buffer types:
+
 | Buffer Writer | When to use | Compatible with async methods | Space complexity (write operation) |
 | ---- | ---- | ---- | ---- |
 | `PooledArrayBufferWriter<T>` | General applicability when initial capacity is known | Yes | o(1), O(n) |
