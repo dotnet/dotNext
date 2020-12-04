@@ -45,7 +45,7 @@ Documentation for older versions:
 * [1.x](https://sakno.github.io/dotNext/versions/1.x/index.html)
 
 # What's new
-Release Date: 11-11-2020
+Release Date: 12-04-2020
 
 <a href="https://www.nuget.org/packages/dotnext/2.12.0">DotNext 2.12.0</a>
 * Added consuming enumerator for [IProducerConsumerCollection&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.collections.concurrent.iproducerconsumercollection-1)
