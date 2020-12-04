@@ -180,13 +180,43 @@ ReadOnlySpan&lt;byte&gt; result = builder.WrittenSpan;    // throw NotSupportedE
 <li>Focused on <a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span&lt;T&gt;</a> data type, there is no interop with types from <a href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic">System.Collections.Generic</a> namespace.</li>
 </ul>
 <h1 id="what-to-choose">What to choose?</h1>
-<p>The following table describes the main differences between various growable buffer types:
-| Buffer Writer | When to use | Compatible with async methods | Space complexity (write operation) |
-| ---- | ---- | ---- | ---- |
-| <code>PooledArrayBufferWriter&lt;T&gt;</code> | General applicability when initial capacity is known | Yes | o(1), O(n) |
-| <code>PooledBufferWriter&lt;T&gt;</code> | If custom <a href="https://sakno.github.io/dotNext/api/DotNext.Buffers.MemoryAllocator-1">memory allocator</a> is required. For instance, if you want to use <a href="https://sakno.github.io/dotNext/api/DotNext.Buffers.UnmanagedMemoryPool-1">unmanaged memory pool</a> | Yes | o(1), O(n) |
-| <code>BufferWriterSlim&lt;T&gt;</code> | If you have knowledge about optimal size of initial buffer which can be allocated on the stack. In this case the writer allows to avoid renting the buffer and doesn't allocate itself on the managed heap | No | o(1), O(n) |
-| <code>SparseBufferWriter&lt;T&gt;</code> | If optimal size of initial buffer is not known and the length of the written data varies widely | Yes | o(1), O(1) |</p>
+<p>The following table describes the main differences between various growable buffer types:</p>
+<table>
+<thead>
+<tr>
+<th>Buffer Writer</th>
+<th>When to use</th>
+<th>Compatible with async methods</th>
+<th>Space complexity (write operation)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PooledArrayBufferWriter&lt;T&gt;</code></td>
+<td>General applicability when initial capacity is known</td>
+<td>Yes</td>
+<td>o(1), O(n)</td>
+</tr>
+<tr>
+<td><code>PooledBufferWriter&lt;T&gt;</code></td>
+<td>If custom <a href="https://sakno.github.io/dotNext/api/DotNext.Buffers.MemoryAllocator-1">memory allocator</a> is required. For instance, if you want to use <a href="https://sakno.github.io/dotNext/api/DotNext.Buffers.UnmanagedMemoryPool-1">unmanaged memory pool</a></td>
+<td>Yes</td>
+<td>o(1), O(n)</td>
+</tr>
+<tr>
+<td><code>BufferWriterSlim&lt;T&gt;</code></td>
+<td>If you have knowledge about optimal size of initial buffer which can be allocated on the stack. In this case the writer allows to avoid renting the buffer and doesn't allocate itself on the managed heap</td>
+<td>No</td>
+<td>o(1), O(n)</td>
+</tr>
+<tr>
+<td><code>SparseBufferWriter&lt;T&gt;</code></td>
+<td>If optimal size of initial buffer is not known and the length of the written data varies widely</td>
+<td>Yes</td>
+<td>o(1), O(1)</td>
+</tr>
+</tbody>
+</table>
 </article>
           </div>
           
