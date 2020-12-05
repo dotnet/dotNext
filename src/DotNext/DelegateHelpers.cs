@@ -6,28 +6,15 @@ using System.Threading;
 
 namespace DotNext
 {
-    using Runtime.CompilerServices;
-
     /// <summary>
     /// Represents various extensions of delegates.
     /// </summary>
-    [BeforeFieldInit(true)]
     public static partial class DelegateHelpers
     {
-        private static readonly Predicate<Assembly>? IsCollectible;
-        private static readonly SendOrPostCallback SendOrPostInvoker;
-        private static readonly Action<Action> ActionInvoker;
+        private static readonly SendOrPostCallback SendOrPostInvoker = UnsafeInvoke;
+        private static readonly Action<Action> ActionInvoker = UnsafeInvoke;
 
-        static DelegateHelpers()
-        {
-            // TODO: Should be replaced with direct call without reflection in .NET Core 5
-            var isCollectibleGetter = typeof(Assembly).GetProperty("IsCollectible", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)?.GetMethod;
-            IsCollectible = isCollectibleGetter?.CreateDelegate<Predicate<Assembly>>();
-            SendOrPostInvoker = UnsafeInvoke;
-            ActionInvoker = UnsafeInvoke;
-
-            static void UnsafeInvoke(object action) => Unsafe.As<Action>(action).Invoke();
-        }
+        private static void UnsafeInvoke(object action) => Unsafe.As<Action>(action).Invoke();
 
         private static MethodInfo GetMethod<TDelegate>(Expression<TDelegate> expression)
             where TDelegate : Delegate
@@ -130,13 +117,5 @@ namespace DotNext
 
         internal static void InvokeInThreadPool(this Action action)
             => ThreadPool.QueueUserWorkItem(ActionInvoker, action, false);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool CanBeUnloaded(Assembly assembly)
-            => assembly.IsDynamic || assembly.ReflectionOnly || (IsCollectible?.Invoke(assembly) ?? false);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static bool IsRegularDelegate(Delegate d)
-            => (d.Method.Attributes & MethodAttributes.Static) == 0 || d.Target != null || CanBeUnloaded(d.Method.Module.Assembly);
     }
 }
