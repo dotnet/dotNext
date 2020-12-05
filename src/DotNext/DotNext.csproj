@@ -15,7 +15,7 @@
     <RepositoryUrl>https://github.com/sakno/dotNext.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>extensions;.netstandard;performance;hashcode;randomstring;valuetype;delegate</PackageTags>
-    <Copyright>Copyright © Roman Sakno 2020</Copyright>
+    <Copyright>Copyright © Roman Sakno 2021</Copyright>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	<Description>Provides various extensions of .NET Base Class Library</Description>
     <PackageIcon>logo.png</PackageIcon>
