@@ -459,11 +459,11 @@ namespace DotNext
         /// Returns textual representation of this object.
         /// </summary>
         /// <returns>The textual representation of this object.</returns>
-        public override string ToString() => kind switch
+        public override string? ToString() => kind switch
         {
             UndefinedValue => "<Undefined>",
             NullValue => "<Null>",
-            _ => value!.ToString()
+            _ => value?.ToString()
         };
 
         /// <summary>
@@ -482,7 +482,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">Other value to compare.</param>
         /// <returns><see langword="true"/> if <see cref="Value"/> is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(T other) => HasValue && EqualityComparer<T>.Default.Equals(value, other);
+        public bool Equals(T? other) => HasValue && EqualityComparer<T>.Default.Equals(value, other);
 
         private bool Equals(in Optional<T> other)
         {
