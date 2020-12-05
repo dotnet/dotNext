@@ -71,8 +71,7 @@ namespace DotNext.Runtime
         /// <typeparam name="T">The type for which default value should be obtained.</typeparam>
         /// <returns>The default value of type <typeparamref name="T"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [return: MaybeNull]
-        public static T DefaultOf<T>()
+        public static T? DefaultOf<T>()
         {
             DeclareLocals(true, new Var(typeof(T)));
             Ldloc_0();
@@ -214,19 +213,13 @@ namespace DotNext.Runtime
         [return: MaybeNull]
         internal static T NullAwareCast<T>(object? obj)
         {
-            const string notNull = "notNull";
-            Push(obj);
-            Push(IsNullable<T>());
-            Brtrue(notNull);
-            Isinst<T>();
-            Dup();
-            Brtrue(notNull);
-            Pop();
-            Newobj(Constructor(Type<InvalidCastException>()));
-            Emit.Throw();
-            MarkLabel(notNull);
-            Unbox_Any<T>();
-            return Return<T>();
+            if (IsNullable<T>())
+                goto success;
+            if (obj is not T)
+                throw new InvalidCastException();
+
+            success:
+            return (T)obj;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
