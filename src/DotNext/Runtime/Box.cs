@@ -3,14 +3,14 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace DotNext.Runtime.CompilerServices
+namespace DotNext.Runtime
 {
     /// <summary>
     /// Typed representation of the boxed value type.
     /// </summary>
     /// <typeparam name="T">The value type to be boxed.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct Box<T> : IEquatable<Box<T>> // TODO: Move to Runtime namespace
+    public readonly struct Box<T> : IEquatable<Box<T>>
         where T : struct
     {
         private readonly object value;
