@@ -210,8 +210,7 @@ namespace DotNext.Runtime
         [return: NotNull]
         public static T Cast<T>(object? obj) => obj is null ? throw new InvalidCastException() : (T)obj;
 
-        [return: MaybeNull]
-        internal static T NullAwareCast<T>(object? obj)
+        internal static T? NullAwareCast<T>(object? obj)
         {
             if (IsNullable<T>())
                 goto success;
