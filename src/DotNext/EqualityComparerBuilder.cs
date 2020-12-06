@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -34,7 +35,12 @@ namespace DotNext
         [SuppressMessage("Performance", "CA1819", Justification = "Property is write-only")]
         public string[] ExcludedFields
         {
-            set => excludedFields = new HashSet<string>(value);
+#if NETSTANDARD2_1
+            set
+#else
+            init
+#endif
+            => excludedFields = new HashSet<string>(value);
         }
 
         private bool IsIncluded(FieldInfo field) => excludedFields is null || !excludedFields.Contains(field.Name);
@@ -45,21 +51,26 @@ namespace DotNext
         /// <value><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</value>
         public bool SaltedHashCode
         {
-            set => salted = value;
+#if NETSTANDARD2_1
+            set
+#else
+            init
+#endif
+            => salted = value;
         }
 
         private sealed class ConstructedEqualityComparer : IEqualityComparer<T>
         {
-            private readonly Func<T, T, bool> equality;
+            private readonly Func<T?, T?, bool> equality;
             private readonly Func<T, int> hashCode;
 
-            internal ConstructedEqualityComparer(Func<T, T, bool> equality, Func<T, int> hashCode)
+            internal ConstructedEqualityComparer(Func<T?, T?, bool> equality, Func<T, int> hashCode)
             {
                 this.equality = equality;
                 this.hashCode = hashCode;
             }
 
-            bool IEqualityComparer<T>.Equals(T x, T y) => equality(x, y);
+            bool IEqualityComparer<T>.Equals(T? x, T? y) => equality(x, y);
 
             int IEqualityComparer<T>.GetHashCode(T obj) => hashCode(obj);
         }
@@ -69,7 +80,9 @@ namespace DotNext
             var method = typeof(BitwiseComparer<>)
                 .MakeGenericType(first.Type)
                 .GetMethod(nameof(BitwiseComparer<int>.Equals), BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly)
-                .MakeGenericMethod(second.Type);
+                ?.MakeGenericMethod(second.Type);
+
+            Debug.Assert(method is not null);
             return Expression.Call(method, first, second);
         }
 
@@ -78,6 +91,8 @@ namespace DotNext
             var method = typeof(BitwiseComparer<>)
                 .MakeGenericType(expr.Type)
                 .GetMethod(nameof(BitwiseComparer<int>.GetHashCode), new[] { expr.Type.MakeByRefType(), typeof(bool) });
+
+            Debug.Assert(method is not null);
             return Expression.Call(method, expr, salted);
         }
 
@@ -93,24 +108,29 @@ namespace DotNext
 
         private static MethodCallExpression EqualsMethodForArrayElementType(MemberExpression fieldX, MemberExpression fieldY)
         {
-            var method = EqualsMethodForArrayElementType(fieldX.Type.GetElementType());
+            Debug.Assert(fieldX.Type.IsSZArray);
+            var method = EqualsMethodForArrayElementType(fieldX.Type.GetElementType()!);
             return Expression.Call(method, fieldX, fieldY);
         }
 
         private static MethodInfo HashCodeMethodForArrayElementType(Type itemType)
         {
             var arrayType = Type.MakeGenericMethodParameter(0).MakeArrayType();
-            return itemType.IsValueType ?
+            var result = itemType.IsValueType ?
                   typeof(OneDimensionalArray)
                           .GetMethod(nameof(OneDimensionalArray.BitwiseHashCode), 1, PublicStaticFlags, null, new[] { arrayType, typeof(bool) }, null)!
                           .MakeGenericMethod(itemType) :
                   typeof(Seq)
                           .GetMethod(nameof(Seq.SequenceHashCode), new[] { typeof(IEnumerable<object>), typeof(bool) });
+
+            Debug.Assert(result is not null);
+            return result;
         }
 
         private static MethodCallExpression HashCodeMethodForArrayElementType(Expression expr, ConstantExpression salted)
         {
-            var method = HashCodeMethodForArrayElementType(expr.Type.GetElementType());
+            Debug.Assert(expr.Type.IsSZArray);
+            var method = HashCodeMethodForArrayElementType(expr.Type.GetElementType()!);
             return Expression.Call(method, expr, salted);
         }
 
@@ -123,7 +143,7 @@ namespace DotNext
             }
         }
 
-        private Func<T, T, bool> BuildEquals()
+        private Func<T?, T?, bool> BuildEquals()
         {
             if (!RuntimeFeature.IsDynamicCodeSupported)
                 throw new PlatformNotSupportedException();
@@ -131,7 +151,7 @@ namespace DotNext
             if (x.Type.IsPrimitive)
                 return EqualityComparer<T>.Default.Equals;
             if (x.Type.IsSZArray)
-                return EqualsMethodForArrayElementType(x.Type.GetElementType()).CreateDelegate<Func<T, T, bool>>();
+                return EqualsMethodForArrayElementType(x.Type.GetElementType()!).CreateDelegate<Func<T?, T?, bool>>();
 
             var y = Expression.Parameter(x.Type);
 
@@ -157,8 +177,16 @@ namespace DotNext
             }
 
             if (x.Type.IsClass)
-                expr = Expression.OrElse(Expression.ReferenceEqual(x, y), expr);
-            return Expression.Lambda<Func<T, T, bool>>(expr, false, x, y).Compile();
+            {
+                var referenceEquality = Expression.ReferenceEqual(x, y);
+                expr = expr is null ? referenceEquality : Expression.OrElse(referenceEquality, expr);
+            }
+            else if (expr is null)
+            {
+                expr = Expression.Constant(true, typeof(bool));
+            }
+
+            return Expression.Lambda<Func<T?, T?, bool>>(expr, false, x, y).Compile();
         }
 
         private Func<T, int> BuildGetHashCode()
@@ -168,7 +196,7 @@ namespace DotNext
             Expression expr;
             var inputParam = Expression.Parameter(typeof(T));
             if (inputParam.Type.IsPrimitive)
-                return EqualityComparer<T>.Default.GetHashCode;
+                return EqualityComparer<T>.Default.GetHashCode!;
             if (inputParam.Type.IsSZArray)
             {
                 expr = HashCodeMethodForArrayElementType(inputParam, Expression.Constant(salted));
@@ -186,7 +214,7 @@ namespace DotNext
                     expr = Expression.Field(inputParam, field);
                     if (field.FieldType.IsPointer)
                     {
-                        expr = Expression.Call(typeof(Intrinsics).GetMethod(nameof(Intrinsics.PointerHashCode), BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.NonPublic), expr);
+                        expr = Expression.Call(typeof(Intrinsics).GetMethod(nameof(Intrinsics.PointerHashCode), BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.NonPublic)!, expr);
                     }
                     else if (field.FieldType.IsPrimitive)
                     {
@@ -225,7 +253,7 @@ namespace DotNext
         /// <param name="equals">The implementation of equality check.</param>
         /// <param name="hashCode">The implementation of hash code.</param>
         /// <exception cref="PlatformNotSupportedException">Dynamic code generation is not supported by underlying CLR implementation.</exception>
-        public void Build(out Func<T, T, bool> equals, out Func<T, int> hashCode)
+        public void Build(out Func<T?, T?, bool> equals, out Func<T, int> hashCode)
         {
             equals = BuildEquals();
             hashCode = BuildGetHashCode();
