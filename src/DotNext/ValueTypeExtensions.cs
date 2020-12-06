@@ -11,14 +11,6 @@ namespace DotNext
     /// </summary>
     public static class ValueTypeExtensions
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static string ToString<T>(T value, IFormatProvider? provider = null)
-            where T : struct, IConvertible => value.ToString(provider);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static string ToString<T>(T value, string format, IFormatProvider? provider = null)
-            where T : struct, IFormattable => value.ToString(format, provider);
-
         /// <summary>
         /// Checks whether the specified value is equal to one
         /// of the specified values.
