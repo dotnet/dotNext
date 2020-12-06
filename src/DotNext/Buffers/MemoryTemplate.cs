@@ -103,9 +103,9 @@ namespace DotNext.Buffers
         /// The first argument of the action indicates placeholder index.
         /// </param>
         /// <typeparam name="TWriter">The type of the buffer writer.</typeparam>
-        public void Render<TWriter>(TWriter output, Action<int, TWriter> rewriter)
+        public unsafe void Render<TWriter>(TWriter output, Action<int, TWriter> rewriter)
             where TWriter : class, IBufferWriter<T>
-            => Render(output, rewriter, Span.CopyTo<T>);
+            => Render(output, rewriter, new (&Span.CopyTo<T>));
 
         /// <summary>
         /// Replaces all placeholders in the template with custom content.
@@ -117,7 +117,7 @@ namespace DotNext.Buffers
         /// </param>
         /// <param name="output">The action responsible for writing unmodified segments from the original template.</param>
         /// <typeparam name="TArg">The type of the argument to be passed to <paramref name="rewriter"/> and <paramref name="output"/>.</typeparam>
-        public void Render<TArg>(TArg arg, Action<int, TArg> rewriter, ReadOnlySpanAction<T, TArg> output)
+        public void Render<TArg>(TArg arg, Action<int, TArg> rewriter, in ValueReadOnlySpanAction<T, TArg> output)
         {
             ReadOnlySpan<T> source = template.Span;
             var placeholder = firstOccurence;
@@ -129,7 +129,7 @@ namespace DotNext.Buffers
                 }
                 else
                 {
-                    output(source.Slice(offset, cursor - offset), arg);
+                    output.Invoke(source.Slice(offset, cursor - offset), arg);
                 }
             }
         }
@@ -178,8 +178,8 @@ namespace DotNext.Buffers
         /// <param name="template">The string template.</param>
         /// <param name="output">The string builder used to write rendered template.</param>
         /// <param name="replacement">An array of actual values used to replace placeholders.</param>
-        public static void Render(this in MemoryTemplate<char> template, StringBuilder output, params string[] replacement)
-            => template.Render(output, replacement.Rewrite, Span.CopyTo);
+        public static unsafe void Render(this in MemoryTemplate<char> template, StringBuilder output, params string[] replacement)
+            => template.Render(output, replacement.Rewrite, new (&Span.CopyTo));
 
         private static void Rewrite(this string[] replacement, int index, IBufferWriter<char> output)
             => output.Write(replacement[index]);
@@ -208,7 +208,7 @@ namespace DotNext.Buffers
         /// <param name="template">The string template.</param>
         /// <param name="output">The text writer used to write rendered template.</param>
         /// <param name="replacement">An array of actual values used to replace placeholders.</param>
-        public static void Render(this in MemoryTemplate<char> template, TextWriter output, params string[] replacement)
-            => template.Render(output, replacement.Rewrite, Span.CopyTo);
+        public static unsafe void Render(this in MemoryTemplate<char> template, TextWriter output, params string[] replacement)
+            => template.Render(output, replacement.Rewrite, new (&Span.CopyTo));
     }
 }
