@@ -12,7 +12,7 @@ using static System.Runtime.InteropServices.MemoryMarshal;
 namespace DotNext.IO
 {
     using Buffers;
-    using CharBufferWriter = Buffers.MemoryWriter<char>;
+    using CharBufferWriter = Buffers.BufferWriter<char>;
 
     internal sealed class TextBufferWriter<TWriter> : TextWriter
         where TWriter : class, IBufferWriter<char>

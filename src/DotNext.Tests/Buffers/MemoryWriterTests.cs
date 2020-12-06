@@ -13,7 +13,7 @@ namespace DotNext.Buffers
     [ExcludeFromCodeCoverage]
     public sealed class MemoryWriterTests : Test
     {
-        private static void WriteReadUsingSpan(MemoryWriter<byte> writer)
+        private static void WriteReadUsingSpan(BufferWriter<byte> writer)
         {
             True(writer.WrittenMemory.IsEmpty);
             Equal(0, writer.WrittenCount);
@@ -44,7 +44,7 @@ namespace DotNext.Buffers
             Equal(60, result[5]);
         }
 
-        private static void WriteReadUsingMemory(MemoryWriter<byte> writer)
+        private static void WriteReadUsingMemory(BufferWriter<byte> writer)
         {
             True(writer.WrittenMemory.IsEmpty);
             Equal(0, writer.WrittenCount);

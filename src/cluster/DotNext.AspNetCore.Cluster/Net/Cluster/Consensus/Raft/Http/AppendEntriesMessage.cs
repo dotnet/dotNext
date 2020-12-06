@@ -171,7 +171,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             internal int Count => entries.Count;
 
-            private static void WriteHeader(MemoryWriter<char> builder, string headerName, string headerValue)
+            private static void WriteHeader(BufferWriter<char> builder, string headerName, string headerValue)
             {
                 builder.Write(headerName);
                 builder.Write(": ");
@@ -179,7 +179,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 builder.Write(CrLf);
             }
 
-            private static ValueTask EncodeHeadersToStreamAsync(Stream output, MemoryWriter<char> builder, TEntry entry, bool writeDivider, string boundary, EncodingContext context, Memory<byte> buffer)
+            private static ValueTask EncodeHeadersToStreamAsync(Stream output, BufferWriter<char> builder, TEntry entry, bool writeDivider, string boundary, EncodingContext context, Memory<byte> buffer)
             {
                 if (writeDivider)
                 {

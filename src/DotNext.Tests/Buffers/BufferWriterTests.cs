@@ -132,7 +132,7 @@ namespace DotNext.Buffers
 
         [Theory]
         [MemberData(nameof(ByteWriters))]
-        public static void EncodeAsString(MemoryWriter<byte> writer, Encoding encoding)
+        public static void EncodeAsString(BufferWriter<byte> writer, Encoding encoding)
         {
             var encodingContext = new EncodingContext(encoding, true);
             using (writer)

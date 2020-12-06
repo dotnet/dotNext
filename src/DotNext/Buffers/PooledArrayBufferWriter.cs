@@ -13,7 +13,7 @@ namespace DotNext.Buffers
     /// This class provides additional methods for access to array segments in contrast to <see cref="PooledBufferWriter{T}"/>.
     /// </remarks>
     /// <typeparam name="T">The data type that can be written.</typeparam>
-    public sealed class PooledArrayBufferWriter<T> : MemoryWriter<T>, IConvertible<ArraySegment<T>>, IList<T>
+    public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, IConvertible<ArraySegment<T>>, IList<T>
     {
         private readonly ArrayPool<T> pool;
         private T[] buffer;

@@ -858,7 +858,7 @@ namespace DotNext.Buffers
         /// <param name="writer">The buffer of characters.</param>
         /// <returns>The string constructed from the buffer.</returns>
         [Obsolete("Use BufferHelpers class instead", true)]
-        public static string BuildString(MemoryWriter<char> writer)
+        public static string BuildString(BufferWriter<char> writer)
             => BufferHelpers.BuildString(writer);
     }
 }
