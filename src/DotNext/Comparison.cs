@@ -13,10 +13,9 @@ namespace DotNext
         /// </summary>
         /// <typeparam name="T">The type of the object to compare.</typeparam>
         /// <param name="comparison">The delegate representing comparison method.</param>
-        /// <param name="wrap"><see langword="true"/> to wrap <paramref name="comparison"/> into this delegate; <see langword="false"/> to extract method pointer without holding reference to the passed delegate.</param>
         /// <returns>The value delegate represeting comparison method.</returns>
-        public static ValueFunc<T, T, int> AsValueFunc<T>(this Comparison<T> comparison, bool wrap = false)
-            => new ValueFunc<T, T, int>(Unsafe.As<Func<T, T, int>>(comparison), wrap);
+        public static ValueFunc<T, T, int> AsValueFunc<T>(this Comparison<T> comparison)
+            => new ValueFunc<T, T, int>(Unsafe.As<Func<T, T, int>>(comparison));
 
         /// <summary>
         /// Restricts a <paramref name="value" /> in specific range.
