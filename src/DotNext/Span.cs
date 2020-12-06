@@ -136,7 +136,7 @@ namespace DotNext
         /// <returns>32-bit hash code of the array content.</returns>
         public static int BitwiseHashCode<T>(this ReadOnlySpan<T> span, int hash, Func<int, int, int> hashFunction, bool salted = true)
             where T : unmanaged
-            => BitwiseHashCode(span, hash, new ValueFunc<int, int, int>(hashFunction, true), salted);
+            => BitwiseHashCode(span, hash, new ValueFunc<int, int, int>(hashFunction), salted);
 
         /// <summary>
         /// Computes bitwise hash code for the memory identified by the given span using custom hash function.
@@ -166,7 +166,7 @@ namespace DotNext
         /// <returns>64-bit hash code of the array content.</returns>
         public static long BitwiseHashCode64<T>(this ReadOnlySpan<T> span, long hash, Func<long, long, long> hashFunction, bool salted = true)
             where T : unmanaged
-            => BitwiseHashCode64(span, hash, new ValueFunc<long, long, long>(hashFunction, true), salted);
+            => BitwiseHashCode64(span, hash, new ValueFunc<long, long, long>(hashFunction), salted);
 
         /// <summary>
         /// Computes bitwise hash code for the memory identified by the given span.
@@ -301,7 +301,7 @@ namespace DotNext
         /// <param name="comparison">The comparer used for sorting.</param>
         /// <typeparam name="T">The type of the elements.</typeparam>
         public static void Sort<T>(this Span<T> span, Comparison<T> comparison)
-            => Sort(span, comparison.AsValueFunc(true));
+            => Sort(span, comparison.AsValueFunc());
 
         /// <summary>
         /// Trims the span to specified length if it exceeds it.
@@ -359,7 +359,7 @@ namespace DotNext
         /// <param name="startIndex">The search starting position.</param>
         /// <param name="comparer">The comparer used to compare the expected value and the actual value from the span.</param>
         /// <returns>The zero-based index position of <paramref name="value"/> from the start of the given span if that value is found, or -1 if it is not.</returns>
-        public static int IndexOf<T>(this ReadOnlySpan<T> span, T value, int startIndex, Func<T, T, bool> comparer) => IndexOf(span, value, startIndex, new ValueFunc<T, T, bool>(comparer, true));
+        public static int IndexOf<T>(this ReadOnlySpan<T> span, T value, int startIndex, Func<T, T, bool> comparer) => IndexOf(span, value, startIndex, new ValueFunc<T, T, bool>(comparer));
 
         /// <summary>
         /// Iterates over elements of the span.
@@ -382,7 +382,7 @@ namespace DotNext
         /// <typeparam name="T">The type of the elements.</typeparam>
         /// <param name="span">The span to iterate.</param>
         /// <param name="action">The action to be applied for each element of the span.</param>
-        public static void ForEach<T>(this Span<T> span, RefAction<T, int> action) => ForEach(span, new ValueRefAction<T, int>(action, true));
+        public static void ForEach<T>(this Span<T> span, RefAction<T, int> action) => ForEach(span, new ValueRefAction<T, int>(action));
 
         /// <summary>
         /// Converts set of bytes into hexadecimal representation.
