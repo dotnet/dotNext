@@ -49,16 +49,6 @@ namespace DotNext
         }
 
         /// <summary>
-        /// Compares two string using <see cref="StringComparison.OrdinalIgnoreCase" />.
-        /// </summary>
-        /// <param name="strA">String A. Can be <see langword="null"/>.</param>
-        /// <param name="strB">String B. Can be <see langword="null"/>.</param>
-        /// <returns><see langword="true"/>, if the first string is equal to the second string; otherwise, <see langword="false"/>.</returns>
-        [Obsolete("Use string.Equals(string, string, StringComparison) static method instead")]
-        public static bool IsEqualIgnoreCase(this string? strA, string? strB)
-            => string.Equals(strA, strB, StringComparison.OrdinalIgnoreCase);
-
-        /// <summary>
         /// Trims the source string to specified length if it exceeds it.
         /// If source string is less that <paramref name="maxLength" /> then the source string returned.
         /// </summary>
@@ -68,24 +58,6 @@ namespace DotNext
         [return: NotNullIfNotNull("str")]
         public static string? TrimLength(this string? str, int maxLength)
             => str is null || str.Length <= maxLength ? str : str.Substring(0, maxLength);
-
-        /// <summary>
-        /// Split a string into several substrings, each has a length not greater the specified one.
-        /// </summary>
-        /// <param name="str">The string to split.</param>
-        /// <param name="chunkSize">The maximum length of the substring in the sequence.</param>
-        /// <returns>The sequence of substrings.</returns>
-        [Obsolete("Use ReadOnlyMemory<T>.Slice instead", true)]
-        public static CharSequence Split(string str, int chunkSize) => new CharSequence(str.AsMemory(), chunkSize);
-
-        /// <summary>
-        /// Gets managed pointer to the first character in the string.
-        /// </summary>
-        /// <param name="str">The string data.</param>
-        /// <returns>The managed pointer to the first character in the string.</returns>
-        [Obsolete("Use String.GetPinnableReference method instead")]
-        public static ref readonly char GetRawData(string str)
-            => ref GetReference(str.AsSpan());
 
         /// <summary>
         /// Extracts substring from the given string.

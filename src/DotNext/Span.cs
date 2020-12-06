@@ -461,38 +461,6 @@ namespace DotNext
         }
 
         /// <summary>
-        /// Reads the value of blittable type
-        /// from the block of memory and advances the original span.
-        /// </summary>
-        /// <param name="bytes">The block of memory.</param>
-        /// <typeparam name="T">The blittable type.</typeparam>
-        /// <returns>The deserialized value.</returns>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="bytes"/> is smaller than <typeparamref name="T"/>.</exception>
-        [Obsolete("Use SpanReader<T> type instead")]
-        public static unsafe T Read<T>(ref ReadOnlySpan<byte> bytes)
-            where T : unmanaged
-        {
-            var result = MemoryMarshal.Read<T>(bytes);
-            bytes = bytes.Slice(sizeof(T));
-            return result;
-        }
-
-        /// <summary>
-        /// Copies the value of blittable type to the specified block of memory.
-        /// </summary>
-        /// <param name="value">The value to copy to the destination memory block.</param>
-        /// <param name="output">The block of memory.</param>
-        /// <typeparam name="T">The blittable type.</typeparam>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="output"/> is smaller than <typeparamref name="T"/>.</exception>
-        [Obsolete("Use SpanWriter<T> type instead")]
-        public static unsafe void Write<T>(in T value, ref Span<byte> output)
-            where T : unmanaged
-        {
-            AsReadOnlyBytes(value).CopyTo(output);
-            output = output.Slice(sizeof(T));
-        }
-
-        /// <summary>
         /// Converts contiguous memory identified by the specified pointer
         /// into <see cref="Span{T}"/>.
         /// </summary>

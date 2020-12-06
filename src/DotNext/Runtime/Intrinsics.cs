@@ -339,18 +339,6 @@ namespace DotNext.Runtime
         }
 
         /// <summary>
-        /// Gets a reference to the array element with restricted mutability.
-        /// </summary>
-        /// <typeparam name="T">The type of array elements.</typeparam>
-        /// <param name="array">The array object.</param>
-        /// <param name="index">The index of the array element.</param>
-        /// <returns>The reference to the array element with restricted mutability.</returns>
-        /// <seealso cref="GetReadonlyRef{I, O}(I[], long)"/>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [Obsolete("Use overloaded method that allows to specify return type explicitly")]
-        public static ref readonly T GetReadonlyRef<T>(T[] array, long index) => ref array[index];
-
-        /// <summary>
         /// Allows to reinterpret managed pointer to array element.
         /// </summary>
         /// <typeparam name="T">The type of array elements.</typeparam>
@@ -368,23 +356,6 @@ namespace DotNext.Runtime
             Readonly();
             Ldelema<TBase>();
             return ref ReturnRef<TBase>();
-        }
-
-        /// <summary>
-        /// Determines whether the specified managed pointer is <see langword="null"/>.
-        /// </summary>
-        /// <param name="value">The managed pointer to check.</param>
-        /// <typeparam name="T">The type of the managed pointer.</typeparam>
-        /// <returns><see langword="true"/>, if the specified managed pointer is <see langword="null"/>; otherwise, <see langword="false"/>.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [Obsolete("Use Unsafe.IsNullRef method instead", false)]
-        public static bool IsNull<T>(in T value)
-        {
-            PushInRef(in value);
-            Ldnull();
-            Conv_I();
-            Ceq();
-            return Return<bool>();
         }
 
         /// <summary>
