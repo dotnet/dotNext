@@ -234,15 +234,6 @@ namespace DotNext
         /// <remarks>
         /// The property <see cref="IsUndefined"/> of returned object is always <see langword="true"/>.
         /// </remarks>
-        [Obsolete("Use None static property instead")]
-        public static Optional<T> Empty => None;
-
-        /// <summary>
-        /// Represents optional container without value.
-        /// </summary>
-        /// <remarks>
-        /// The property <see cref="IsUndefined"/> of returned object is always <see langword="true"/>.
-        /// </remarks>
         public static Optional<T> None => default;
 
         /// <summary>
