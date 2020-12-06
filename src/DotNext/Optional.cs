@@ -295,7 +295,7 @@ namespace DotNext
                     isNull = true;
                     return false;
                 case NotEmptyValue:
-                    Debug.Assert(value != null);
+                    Debug.Assert(value is not null);
                     isNull = false;
                     return true;
             }

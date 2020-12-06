@@ -29,7 +29,7 @@ namespace DotNext.Dynamic
         private static Expression Bind(object targetValue, Expression target, LabelTarget returnLabel)
         {
             PropertyInfo? property = targetValue.GetType().GetProperty(PropertyName, PropertyFlags);
-            Debug.Assert(!(property is null));
+            Debug.Assert(property is not null);
             target = BindProperty(property, target, out var restrictions);
 
             target = Expression.Return(returnLabel, target);
