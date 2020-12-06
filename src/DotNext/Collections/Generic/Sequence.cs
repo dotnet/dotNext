@@ -37,7 +37,7 @@ namespace DotNext.Collections.Generic
         /// <typeparam name="T">Type of elements in the collection.</typeparam>
         /// <param name="collection">A collection to enumerate. Cannot be <see langword="null"/>.</param>
         /// <param name="action">An action to applied for each element.</param>
-        public static void ForEach<T>(this IEnumerable<T> collection, Action<T> action) => ForEach(collection, new ValueAction<T>(action, true));
+        public static void ForEach<T>(this IEnumerable<T> collection, Action<T> action) => ForEach(collection, new ValueAction<T>(action));
 
         /// <summary>
         /// Applies specified action to each collection element.
@@ -61,7 +61,7 @@ namespace DotNext.Collections.Generic
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The enumeration has been canceled.</exception>
         public static ValueTask ForEachAsync<T>(this IEnumerable<T> collection, Func<T, CancellationToken, ValueTask> action, CancellationToken token = default)
-            => ForEachAsync(collection, new ValueFunc<T, CancellationToken, ValueTask>(action, true), token);
+            => ForEachAsync(collection, new ValueFunc<T, CancellationToken, ValueTask>(action), token);
 
         /// <summary>
         /// Applies the specified asynchronous action to each collection element.
@@ -133,7 +133,7 @@ namespace DotNext.Collections.Generic
         /// <returns>The first element in the sequence that matches to the specified filter; or empty value.</returns>
         public static Optional<T> FirstOrEmpty<T>(this IEnumerable<T> seq, Predicate<T> filter)
             where T : notnull
-            => FirstOrEmpty(seq, filter.AsValueFunc(true));
+            => FirstOrEmpty(seq, filter.AsValueFunc());
 
         /// <summary>
         /// Bypasses a specified number of elements in a sequence.
