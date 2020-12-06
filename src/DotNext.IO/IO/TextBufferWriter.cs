@@ -14,10 +14,10 @@ namespace DotNext.IO
     using Buffers;
     using CharBufferWriter = Buffers.BufferWriter<char>;
 
-    internal sealed class TextBufferWriter<TWriter> : TextWriter
+    internal sealed unsafe class TextBufferWriter<TWriter> : TextWriter
         where TWriter : class, IBufferWriter<char>
     {
-        private readonly ReadOnlySpanAction<char, TWriter> writeImpl;
+        private readonly delegate*<ReadOnlySpan<char>, TWriter, void> writeImpl;
         private readonly TWriter writer;
         private readonly Action<TWriter>? flush;
         private readonly Func<TWriter, CancellationToken, Task>? flushAsync;
@@ -29,14 +29,12 @@ namespace DotNext.IO
                 throw new ArgumentNullException(nameof(writer));
 
             writeImpl = writer is IGrowableBuffer<char> ?
-                new ReadOnlySpanAction<char, TWriter>(WriteToGrowableBuffer) :
-                new ReadOnlySpanAction<char, TWriter>(WriteToBuffer);
+                &WriteToGrowableBuffer :
+                &BufferWriter.CopyTo<char, TWriter>;
+
             this.writer = writer;
             this.flush = flush;
             this.flushAsync = flushAsync;
-
-            static void WriteToBuffer(ReadOnlySpan<char> input, TWriter output)
-                => output.Write(input);
 
             static void WriteToGrowableBuffer(ReadOnlySpan<char> input, TWriter output)
             {
