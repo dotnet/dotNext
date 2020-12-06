@@ -5,7 +5,6 @@ using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext
 {
-    using CharSequence = Buffers.ChunkSequence<char>;
     using StringTemplate = Buffers.MemoryTemplate<char>;
 
     /// <summary>
