@@ -22,7 +22,7 @@ namespace DotNext.Reflection
         {
             var delegateType = typeof(TDelegate);
             return delegateType.IsSealed ?
-                delegateType.GetMethod(InvokeMethodName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly)
+                delegateType.GetMethod(InvokeMethodName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly)!
                 : throw new GenericArgumentException<TDelegate>(ExceptionMessages.ConcreteDelegateExpected);
         }
     }
