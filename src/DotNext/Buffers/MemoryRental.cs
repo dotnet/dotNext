@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Buffers;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -17,8 +16,7 @@ namespace DotNext.Buffers
     /// arbitrary <see cref="MemoryPool{T}"/> or <see cref="ArrayPool{T}.Shared"/>. Arbitrary
     /// <see cref="ArrayPool{T}"/> is not supported because default <see cref="ArrayPool{T}.Shared"/>
     /// is optimized for per-CPU core allocation which is perfectly for situation when the same
-    /// thread is responsible for renting and releasing array. Otherwise, it's recommended to
-    /// use <see cref="ArrayRental{T}"/>.
+    /// thread is responsible for renting and releasing array.
     /// </remarks>
     /// <example>
     /// <code>
