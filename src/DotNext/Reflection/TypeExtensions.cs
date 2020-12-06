@@ -66,7 +66,7 @@ namespace DotNext.Reflection
         /// <returns>Read-only collection of base types and, optionally, all implemented interfaces.</returns>
         public static IEnumerable<Type> GetBaseTypes(this Type type, bool includeTopLevel = false, bool includeInterfaces = false)
         {
-            for (var lookup = includeTopLevel ? type : type.BaseType; !(lookup is null); lookup = lookup.BaseType)
+            for (var lookup = includeTopLevel ? type : type.BaseType; lookup is not null; lookup = lookup.BaseType)
                 yield return lookup;
             if (includeInterfaces)
             {
@@ -163,7 +163,7 @@ namespace DotNext.Reflection
         /// </code>
         /// </example>
         public static bool IsGenericInstanceOf(this Type type, Type genericDefinition)
-            => !(FindGenericInstance(type, genericDefinition) is null);
+            => FindGenericInstance(type, genericDefinition) is not null;
 
         /// <summary>
         /// Returns actual generic arguments passed into generic type definition implemented by the input type.

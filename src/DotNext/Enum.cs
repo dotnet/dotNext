@@ -76,7 +76,7 @@ namespace DotNext
         /// </summary>
         /// <param name="name">The name of a constant in <typeparamref name="TEnum"/>.</param>
         /// <returns><see langword="true"/> if a constant in <typeparamref name="TEnum"/> has a name equal to <paramref name="name"/>; otherwise, <see langword="false"/>.</returns>
-        public static bool IsDefined(string name) => !(GetField(name) is null);
+        public static bool IsDefined(string name) => GetField(name) is not null;
 
         /// <summary>
         /// Gets enum member by its value.

@@ -65,7 +65,7 @@ namespace DotNext.Reflection
                 return GetValueTaskType(taskType);
 
             var result = taskType.FindGenericInstance(typeof(Task<>));
-            if (!(result is null))
+            if (result is not null)
                 return result.GetGenericArguments()[0];
 
             if (typeof(Task).IsAssignableFrom(taskType))

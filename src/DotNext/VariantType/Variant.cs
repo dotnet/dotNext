@@ -198,7 +198,7 @@ namespace DotNext.VariantType
         /// Indicates that variant value is non-<see langword="null"/> value.
         /// </summary>
         /// <param name="variant">The variant value to convert.</param>
-        public static bool operator true(Variant<T1, T2> variant) => !(variant.value is null);
+        public static bool operator true(Variant<T1, T2> variant) => variant.value is not null;
 
         /// <summary>
         /// Indicates that variant value is <see langword="null"/> value.
@@ -395,7 +395,7 @@ namespace DotNext.VariantType
         /// Indicates that variant value is non-<see langword="null"/> value.
         /// </summary>
         /// <param name="variant">The variant value to check.</param>
-        public static bool operator true(Variant<T1, T2, T3> variant) => !(variant.value is null);
+        public static bool operator true(Variant<T1, T2, T3> variant) => variant.value is not null;
 
         /// <summary>
         /// Indicates that variant value is <see langword="null"/> value.
@@ -622,7 +622,7 @@ namespace DotNext.VariantType
         /// Indicates that variant value is non-<see langword="null"/> value.
         /// </summary>
         /// <param name="variant">The variant value to check.</param>
-        public static bool operator true(Variant<T1, T2, T3, T4> variant) => !(variant.value is null);
+        public static bool operator true(Variant<T1, T2, T3, T4> variant) => variant.value is not null;
 
         /// <summary>
         /// Indicates that variant value is <see langword="null"/> value.

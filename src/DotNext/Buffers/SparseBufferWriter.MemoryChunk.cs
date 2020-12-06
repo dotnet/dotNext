@@ -8,7 +8,7 @@ namespace DotNext.Buffers
         {
             private protected MemoryChunk(MemoryChunk? previous)
             {
-                if (!(previous is null))
+                if (previous is not null)
                     previous.Next = this;
             }
 

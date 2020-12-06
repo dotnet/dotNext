@@ -83,10 +83,10 @@ namespace DotNext.Buffers
             get
             {
                 var result = 0L;
-                for (MemoryChunk? current = first, next; !(current is null); current = next)
+                for (MemoryChunk? current = first, next; current is not null; current = next)
                 {
                     next = current.Next;
-                    if (!(next is null) && next.WrittenMemory.Length > 0)
+                    if (next is not null && next.WrittenMemory.Length > 0)
                         result += current.FreeCapacity;
                 }
 
@@ -170,7 +170,7 @@ namespace DotNext.Buffers
         public void CopyTo<TArg>(in ValueReadOnlySpanAction<T, TArg> writer, TArg arg)
         {
             ThrowIfDisposed();
-            for (MemoryChunk? current = first; !(current is null); current = current.Next)
+            for (MemoryChunk? current = first; current is not null; current = current.Next)
             {
                 var buffer = current.WrittenMemory.Span;
                 writer.Invoke(buffer, arg);
@@ -187,7 +187,7 @@ namespace DotNext.Buffers
         {
             ThrowIfDisposed();
             var total = 0;
-            for (MemoryChunk? current = first; !(current is null) && !output.IsEmpty; current = current.Next)
+            for (MemoryChunk? current = first; current is not null && !output.IsEmpty; current = current.Next)
             {
                 var buffer = current.WrittenMemory.Span;
                 buffer.CopyTo(output, out var writtenCount);
@@ -241,7 +241,7 @@ namespace DotNext.Buffers
 
         private void ReleaseChunks()
         {
-            for (MemoryChunk? current = first, next; !(current is null); current = next)
+            for (MemoryChunk? current = first, next; current is not null; current = next)
             {
                 next = current.Next;
                 current.Dispose();

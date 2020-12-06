@@ -101,7 +101,7 @@ namespace DotNext
         {
             foreach (var obj in objects)
             {
-                if (!(obj is null))
+                if (obj is not null)
                     await obj.DisposeAsync().ConfigureAwait(false);
             }
         }
