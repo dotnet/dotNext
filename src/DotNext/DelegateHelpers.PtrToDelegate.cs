@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.Runtime.CompilerServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
@@ -751,6 +752,92 @@ namespace DotNext
             Push(ptr);
             Newobj(Constructor(Type<Func<T1, T2, T3, T4, T5, T6, TResult>>(), Type<object>(), Type<IntPtr>()));
             return Return<Func<T1, T2, T3, T4, T5, T6, TResult>>();
+        }
+
+        /// <summary>
+        /// Converts static method represented by the pointer to the open delegate of type <see cref="ReadOnlySpanAction{T, TArg}"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the objects in the read-only span.</typeparam>
+        /// <typeparam name="TArg">The type of the object that represents the state.</typeparam>
+        /// <param name="ptr">The function pointer.</param>
+        /// <returns>The delegate instance; or <see langword="null"/> if <paramref name="ptr"/> is zero.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static unsafe ReadOnlySpanAction<T, TArg>? CreateDelegate<T, TArg>(delegate*<ReadOnlySpan<T>, TArg, void> ptr)
+        {
+            if (ptr == null)
+                return null;
+
+            Ldnull();
+            Push(ptr);
+            Newobj(Constructor(Type<ReadOnlySpanAction<T, TArg>>(), Type<object>(), Type<IntPtr>()));
+            return Return<ReadOnlySpanAction<T, TArg>>();
+        }
+
+        /// <summary>
+        /// Converts static method represented by the pointer to the closed delegate of type <see cref="ReadOnlySpanAction{T, TArg}"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the implicitly capture object.</typeparam>
+        /// <typeparam name="TItem">The type of the objects in the read-only span.</typeparam>
+        /// <typeparam name="TArg">The type of the object that represents the state.</typeparam>
+        /// <param name="ptr">The function pointer.</param>
+        /// <param name="obj">The object to be passed as first argument implicitly.</param>
+        /// <returns>The delegate instance; or <see langword="null"/> if <paramref name="ptr"/> is zero.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static unsafe ReadOnlySpanAction<TItem, TArg>? CreateDelegate<T, TItem, TArg>(delegate*<T, ReadOnlySpan<TItem>, TArg, void> ptr, T obj)
+            where T : class?
+        {
+            if (ptr == null)
+                return null;
+
+            Push(obj);
+            Push(ptr);
+            Newobj(Constructor(Type<ReadOnlySpanAction<TItem, TArg>>(), Type<object>(), Type<IntPtr>()));
+            return Return<ReadOnlySpanAction<TItem, TArg>>();
+        }
+
+        /// <summary>
+        /// Converts static method represented by the pointer to the open delegate of type <see cref="SpanAction{T, TArg}"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the objects in the read-only span.</typeparam>
+        /// <typeparam name="TArg">The type of the object that represents the state.</typeparam>
+        /// <param name="ptr">The function pointer.</param>
+        /// <returns>The delegate instance; or <see langword="null"/> if <paramref name="ptr"/> is zero.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static unsafe SpanAction<T, TArg>? CreateDelegate<T, TArg>(delegate*<Span<T>, TArg, void> ptr)
+        {
+            if (ptr == null)
+                return null;
+
+            Ldnull();
+            Push(ptr);
+            Newobj(Constructor(Type<SpanAction<T, TArg>>(), Type<object>(), Type<IntPtr>()));
+            return Return<SpanAction<T, TArg>>();
+        }
+
+        /// <summary>
+        /// Converts static method represented by the pointer to the closed delegate of type <see cref="SpanAction{T, TArg}"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the implicitly capture object.</typeparam>
+        /// <typeparam name="TItem">The type of the objects in the read-only span.</typeparam>
+        /// <typeparam name="TArg">The type of the object that represents the state.</typeparam>
+        /// <param name="ptr">The function pointer.</param>
+        /// <param name="obj">The object to be passed as first argument implicitly.</param>
+        /// <returns>The delegate instance; or <see langword="null"/> if <paramref name="ptr"/> is zero.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static unsafe SpanAction<TItem, TArg>? CreateDelegate<T, TItem, TArg>(delegate*<T, Span<TItem>, TArg, void> ptr, T obj)
+            where T : class?
+        {
+            if (ptr == null)
+                return null;
+
+            Push(obj);
+            Push(ptr);
+            Newobj(Constructor(Type<SpanAction<TItem, TArg>>(), Type<object>(), Type<IntPtr>()));
+            return Return<SpanAction<TItem, TArg>>();
         }
     }
 }
