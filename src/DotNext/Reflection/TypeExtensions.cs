@@ -83,7 +83,7 @@ namespace DotNext.Reflection
         /// <returns>The method that overrides <paramref name="abstractMethod"/>.</returns>
         public static MethodInfo? Devirtualize(this Type type, MethodInfo abstractMethod)
         {
-            if (abstractMethod.IsFinal || !abstractMethod.IsVirtual)
+            if (abstractMethod.IsFinal || !abstractMethod.IsVirtual || abstractMethod.DeclaringType is null)
                 return abstractMethod;
             if (type.IsInterface)
                 goto exit;
@@ -140,12 +140,10 @@ namespace DotNext.Reflection
             }
             else
             {
-                while (!(type is null))
+                for (Type? lookup = type; lookup is not null; lookup = lookup.BaseType)
                 {
-                    if (IsGenericInstanceOf(type))
-                        return type;
-                    else
-                        type = type.BaseType;
+                    if (IsGenericInstanceOf(lookup))
+                        return lookup;
                 }
             }
 
