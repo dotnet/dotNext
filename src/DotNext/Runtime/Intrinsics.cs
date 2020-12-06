@@ -896,7 +896,7 @@ namespace DotNext.Runtime
         /// <returns>The length of the array as native unsigned integer.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
-        public static UIntPtr GetLength(Array array)
+        public static nuint GetLength(Array array)
         {
             Push(array);
             Ldlen();
