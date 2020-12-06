@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -38,8 +39,8 @@ namespace DotNext.IO
         {
             if (!buffer.IsEmpty)
             {
-                using var rental = new ArrayRental<byte>(buffer.Length);
-                buffer.CopyTo(rental.Span);
+                using var rental = new MemoryOwner<byte>(ArrayPool<byte>.Shared, buffer.Length);
+                buffer.CopyTo(rental.Memory.Span);
                 using var source = new CancellationTokenSource(timeout);
                 using var task = WriteAsync(rental.Memory, source.Token).AsTask();
                 task.Wait(source.Token);
