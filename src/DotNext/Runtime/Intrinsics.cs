@@ -687,7 +687,7 @@ namespace DotNext.Runtime
         /// <returns>Hash code of the memory block.</returns>
         [CLSCompliant(false)]
         public static unsafe long GetHashCode64([In] void* source, long length, long hash, Func<long, long, long> hashFunction, bool salted = true)
-            => GetHashCode64(source, length, hash, new ValueFunc<long, long, long>(hashFunction, true), salted);
+            => GetHashCode64(source, length, hash, new ValueFunc<long, long, long>(hashFunction), salted);
 
         /// <summary>
         /// Computes 64-bit hash code for the block of memory, 64-bit version.
@@ -736,7 +736,7 @@ namespace DotNext.Runtime
         /// <returns>Hash code of the memory block.</returns>
         [CLSCompliant(false)]
         public static unsafe int GetHashCode32([In] void* source, long length, int hash, Func<int, int, int> hashFunction, bool salted = true)
-            => GetHashCode32(source, length, hash, new ValueFunc<int, int, int>(hashFunction, true), salted);
+            => GetHashCode32(source, length, hash, new ValueFunc<int, int, int>(hashFunction), salted);
 
         internal static unsafe int GetHashCode32([In] ref byte source, long length, int hash, in ValueFunc<int, int, int> hashFunction, bool salted)
         {
