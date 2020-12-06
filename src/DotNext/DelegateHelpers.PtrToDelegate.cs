@@ -261,6 +261,18 @@ namespace DotNext
             return Return<Action<T1, T2>>();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static unsafe Converter<TInput, TOutput>? CreateConverter<TInput, TOutput>(delegate*<TInput, TOutput> ptr)
+        {
+            if (ptr == null)
+                return null;
+
+            Ldnull();
+            Push(ptr);
+            Newobj(Constructor(Type<Converter<TInput, TOutput>>(), Type<object>(), Type<IntPtr>()));
+            return Return<Converter<TInput, TOutput>>();
+        }
+
         /// <summary>
         /// Converts static method represented by the pointer to the open delegate of type <see cref="Func{T, TResult}"/>.
         /// </summary>
