@@ -173,6 +173,9 @@ namespace DotNext.Buffers
             set => this[index] = value;
         }
 
+        /// <inheritdoc/>
+        void ICollection<T>.Clear() => Clear(false);
+
         /// <summary>
         /// Gets the total amount of space within the underlying memory.
         /// </summary>
@@ -220,12 +223,6 @@ namespace DotNext.Buffers
             if (buffer.Length > 0)
                 pool.Return(buffer, RuntimeHelpers.IsReferenceOrContainsReferences<T>());
         }
-
-        /// <summary>
-        /// Clears the data written to the underlying buffer.
-        /// </summary>
-        /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
-        public override void Clear() => Clear(false);   // TODO: Remove this method in future
 
         /// <summary>
         /// Clears the data written to the underlying memory.

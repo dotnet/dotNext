@@ -93,6 +93,9 @@ namespace DotNext.Buffers
             => callback.Invoke(WrittenMemory.Span, state);
 
         /// <inheritdoc />
+        void IGrowableBuffer<T>.Clear() => Clear();
+
+        /// <inheritdoc />
         int IGrowableBuffer<T>.CopyTo(Span<T> output)
         {
             WrittenMemory.Span.CopyTo(output, out var writtenCount);
@@ -168,15 +171,9 @@ namespace DotNext.Buffers
         /// <summary>
         /// Clears the data written to the underlying memory.
         /// </summary>
-        /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
-        public virtual void Clear() => Clear(false);
-
-        /// <summary>
-        /// Clears the data written to the underlying memory.
-        /// </summary>
         /// <param name="reuseBuffer"><see langword="true"/> to reuse the internal buffer; <see langword="false"/> to destroy the internal buffer.</param>
         /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
-        public abstract void Clear(bool reuseBuffer);
+        public abstract void Clear(bool reuseBuffer = false);
 
         /// <summary>
         /// Notifies this writer that <paramref name="count"/> of data items were written.
