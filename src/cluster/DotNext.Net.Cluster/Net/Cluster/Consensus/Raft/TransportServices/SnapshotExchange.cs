@@ -3,8 +3,6 @@ using System.IO.Pipelines;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using static System.Buffers.Binary.BinaryPrimitives;
-using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
@@ -31,11 +29,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             var reader = new SpanReader<byte>(input);
 
-            remotePort = ReadUInt16LittleEndian(reader.Read(sizeof(ushort)));
-            term = ReadInt64LittleEndian(reader.Read(sizeof(long)));
-            snapshotIndex = ReadInt64LittleEndian(reader.Read(sizeof(long)));
-            length = ReadInt64LittleEndian(reader.Read(sizeof(long)));
-            snapshotTerm = ReadInt64LittleEndian(reader.Read(sizeof(long)));
+            remotePort = reader.ReadUInt16(true);
+            term = reader.ReadInt64(true);
+            snapshotIndex = reader.ReadInt64(true);
+            length = reader.ReadInt64(true);
+            snapshotTerm = reader.ReadInt64(true);
             timestamp = reader.Read<DateTimeOffset>();
 
             return reader.ConsumedCount;
@@ -45,11 +43,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             var writer = new SpanWriter<byte>(output);
 
-            WriteUInt16LittleEndian(writer.Slide(sizeof(ushort)), myPort);
-            WriteInt64LittleEndian(writer.Slide(sizeof(long)), term);
-            WriteInt64LittleEndian(writer.Slide(sizeof(long)), snapshotIndex);
-            WriteInt64LittleEndian(writer.Slide(sizeof(long)), snapshot.Length.GetValueOrDefault(-1));
-            WriteInt64LittleEndian(writer.Slide(sizeof(long)), snapshot.Term);
+            writer.WriteUInt16(myPort, true);
+            writer.WriteInt64(term, true);
+            writer.WriteInt64(snapshotIndex, true);
+            writer.WriteInt64(snapshot.Length.GetValueOrDefault(-1), true);
+            writer.WriteInt64(snapshot.Term, true);
             writer.Write(snapshot.Timestamp);
 
             return writer.WrittenCount;
