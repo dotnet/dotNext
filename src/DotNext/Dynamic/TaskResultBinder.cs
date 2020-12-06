@@ -17,6 +17,7 @@ namespace DotNext.Dynamic
 
         private static Expression BindProperty(PropertyInfo resultProperty, Expression target, out Expression restrictions)
         {
+            Debug.Assert(resultProperty.DeclaringType is not null);
             restrictions = Expression.TypeIs(target, resultProperty.DeclaringType);
 
             // reinterpret reference type without casting because it is protected by restriction
