@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -1837,6 +1838,262 @@ namespace DotNext
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent different methods; otherwise, <see langword="false"/>.</returns>
         public static bool operator !=(in ValueRefFunc<T, TArgs, TResult> first, in ValueRefFunc<T, TArgs, TResult> second)
+            => !first.Equals(in second);
+    }
+
+    /// <summary>
+    /// Represents a value delegate compatible with <see cref="ReadOnlySpanAction{T, TArg}"/> delegate type.
+    /// </summary>
+    /// <remarks>
+    /// This method pointer is intended to call managed methods only.
+    /// </remarks>
+    [StructLayout(LayoutKind.Auto)]
+    public readonly unsafe struct ValueReadOnlySpanAction<T, TArg> : IValueDelegate<ReadOnlySpanAction<T, TArg>>, IEquatable<ValueReadOnlySpanAction<T, TArg>>
+    {
+        private readonly delegate*<ReadOnlySpan<T>, TArg, void> methodPtr;
+        private readonly ReadOnlySpanAction<T, TArg>? action;
+
+        /// <summary>
+        /// Wraps delegate instance.
+        /// </summary>
+        /// <param name="action">The delegate representing the method.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null"/>.</exception>
+        public ValueReadOnlySpanAction(ReadOnlySpanAction<T, TArg> action)
+        {
+            this.action = action ?? throw new ArgumentNullException(nameof(action));
+            methodPtr = null;
+        }
+
+        /// <summary>
+        /// Wraps function pointer.
+        /// </summary>
+        /// <param name="action">The pointer to the static method.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action"/> is zero.</exception>
+        [CLSCompliant(false)]
+        public ValueReadOnlySpanAction(delegate*<ReadOnlySpan<T>, TArg, void> action)
+        {
+            if (action == null)
+                throw new ArgumentNullException(nameof(action));
+            methodPtr = action;
+            this.action = null;
+        }
+
+        /// <summary>
+        /// Indicates that this delegate doesn't refer to any method.
+        /// </summary>
+        public bool IsEmpty => action is null && methodPtr == null;
+
+        /// <summary>
+        /// Gets the object on which the current pointer invokes the method.
+        /// </summary>
+        public object? Target => action?.Target;
+
+        /// <summary>
+        /// Converts this pointer into <see cref="Action"/>.
+        /// </summary>
+        /// <returns>The delegate created from this method pointer; or <see langword="null"/> if this pointer is zero.</returns>
+        public ReadOnlySpanAction<T, TArg>? ToDelegate() => action ?? DelegateHelpers.CreateDelegate(methodPtr);
+
+        /// <summary>
+        /// Invokes method by pointer.
+        /// </summary>
+        /// <param name="span">A read-only span of objects.</param>
+        /// <param name="arg">A state object.</param>
+        public void Invoke(ReadOnlySpan<T> span, TArg arg)
+        {
+            if (methodPtr == null)
+                action!(span, arg);
+            else
+                methodPtr(span, arg);
+        }
+
+        /// <inheritdoc/>
+        object? ICallable.DynamicInvoke(params object?[] args)
+        {
+            Invoke(new ReadOnlySpan<T>((T[]?)args[0]), Intrinsics.NullAwareCast<TArg>(args[1])!);
+            return null;
+        }
+
+        /// <summary>
+        /// Converts this pointer into <see cref="Action"/>.
+        /// </summary>
+        /// <param name="pointer">The pointer to convert.</param>
+        /// <returns>The delegate created from this method pointer.</returns>
+        public static explicit operator ReadOnlySpanAction<T, TArg>?(in ValueReadOnlySpanAction<T, TArg> pointer) => pointer.ToDelegate();
+
+        /// <summary>
+        /// Computes hash code of this pointer.
+        /// </summary>
+        /// <returns>The hash code of this pointer.</returns>
+        public override int GetHashCode() => action?.GetHashCode() ?? Intrinsics.PointerHashCode(methodPtr);
+
+        private bool Equals(in ValueReadOnlySpanAction<T, TArg> other)
+            => methodPtr == other.methodPtr && Equals(action, other.action);
+
+        /// <summary>
+        /// Determines whether this object points to the same method as other object.
+        /// </summary>
+        /// <param name="other">The pointer to compare.</param>
+        /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
+        public bool Equals(ValueReadOnlySpanAction<T, TArg> other) => Equals(in other);
+
+        /// <summary>
+        /// Determines whether this object points to the same method as other object.
+        /// </summary>
+        /// <param name="other">The object implementing <see cref="ICallable{D}"/> to compare.</param>
+        /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
+        public override bool Equals(object? other) => other is ValueReadOnlySpanAction<T, TArg> action && Equals(in action);
+
+        /// <summary>
+        /// Obtains pointer value in HEX format.
+        /// </summary>
+        /// <returns>The address represented by pointer.</returns>
+        public override string ToString() => action?.ToString() ?? new IntPtr(methodPtr).ToString("X");
+
+        /// <summary>
+        /// Determines whether the pointers represent the same method.
+        /// </summary>
+        /// <param name="first">The first pointer to compare.</param>
+        /// <param name="second">The second pointer to compare.</param>
+        /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
+        public static bool operator ==(in ValueReadOnlySpanAction<T, TArg> first, in ValueReadOnlySpanAction<T, TArg> second)
+            => first.Equals(in second);
+
+        /// <summary>
+        /// Determines whether the pointers represent different methods.
+        /// </summary>
+        /// <param name="first">The first pointer to compare.</param>
+        /// <param name="second">The second pointer to compare.</param>
+        /// <returns><see langword="true"/> if both pointers represent different methods; otherwise, <see langword="false"/>.</returns>
+        public static bool operator !=(in ValueReadOnlySpanAction<T, TArg> first, in ValueReadOnlySpanAction<T, TArg> second)
+            => !first.Equals(in second);
+    }
+
+    /// <summary>
+    /// Represents a value delegate compatible with <see cref="SpanAction{T, TArg}"/> delegate type.
+    /// </summary>
+    /// <remarks>
+    /// This method pointer is intended to call managed methods only.
+    /// </remarks>
+    [StructLayout(LayoutKind.Auto)]
+    public readonly unsafe struct ValueSpanAction<T, TArg> : IValueDelegate<SpanAction<T, TArg>>, IEquatable<ValueSpanAction<T, TArg>>
+    {
+        private readonly delegate*<Span<T>, TArg, void> methodPtr;
+        private readonly SpanAction<T, TArg>? action;
+
+        /// <summary>
+        /// Wraps delegate instance.
+        /// </summary>
+        /// <param name="action">The delegate representing the method.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null"/>.</exception>
+        public ValueSpanAction(SpanAction<T, TArg> action)
+        {
+            this.action = action ?? throw new ArgumentNullException(nameof(action));
+            methodPtr = null;
+        }
+
+        /// <summary>
+        /// Wraps function pointer.
+        /// </summary>
+        /// <param name="action">The pointer to the static method.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action"/> is zero.</exception>
+        [CLSCompliant(false)]
+        public ValueSpanAction(delegate*<Span<T>, TArg, void> action)
+        {
+            if (action == null)
+                throw new ArgumentNullException(nameof(action));
+            methodPtr = action;
+            this.action = null;
+        }
+
+        /// <summary>
+        /// Indicates that this delegate doesn't refer to any method.
+        /// </summary>
+        public bool IsEmpty => action is null && methodPtr == null;
+
+        /// <summary>
+        /// Gets the object on which the current pointer invokes the method.
+        /// </summary>
+        public object? Target => action?.Target;
+
+        /// <summary>
+        /// Converts this pointer into <see cref="Action"/>.
+        /// </summary>
+        /// <returns>The delegate created from this method pointer; or <see langword="null"/> if this pointer is zero.</returns>
+        public SpanAction<T, TArg>? ToDelegate() => action ?? DelegateHelpers.CreateDelegate(methodPtr);
+
+        /// <summary>
+        /// Invokes method by pointer.
+        /// </summary>
+        /// <param name="span">A read-only span of objects.</param>
+        /// <param name="arg">A state object.</param>
+        public void Invoke(Span<T> span, TArg arg)
+        {
+            if (methodPtr == null)
+                action!(span, arg);
+            else
+                methodPtr(span, arg);
+        }
+
+        /// <inheritdoc/>
+        object? ICallable.DynamicInvoke(params object?[] args)
+        {
+            Invoke(new Span<T>((T[]?)args[0]), Intrinsics.NullAwareCast<TArg>(args[1])!);
+            return null;
+        }
+
+        /// <summary>
+        /// Converts this pointer into <see cref="Action"/>.
+        /// </summary>
+        /// <param name="pointer">The pointer to convert.</param>
+        /// <returns>The delegate created from this method pointer.</returns>
+        public static explicit operator SpanAction<T, TArg>?(in ValueSpanAction<T, TArg> pointer) => pointer.ToDelegate();
+
+        /// <summary>
+        /// Computes hash code of this pointer.
+        /// </summary>
+        /// <returns>The hash code of this pointer.</returns>
+        public override int GetHashCode() => action?.GetHashCode() ?? Intrinsics.PointerHashCode(methodPtr);
+
+        private bool Equals(in ValueSpanAction<T, TArg> other)
+            => methodPtr == other.methodPtr && Equals(action, other.action);
+
+        /// <summary>
+        /// Determines whether this object points to the same method as other object.
+        /// </summary>
+        /// <param name="other">The pointer to compare.</param>
+        /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
+        public bool Equals(ValueSpanAction<T, TArg> other) => Equals(in other);
+
+        /// <summary>
+        /// Determines whether this object points to the same method as other object.
+        /// </summary>
+        /// <param name="other">The object implementing <see cref="ICallable{D}"/> to compare.</param>
+        /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
+        public override bool Equals(object? other) => other is ValueSpanAction<T, TArg> action && Equals(in action);
+
+        /// <summary>
+        /// Obtains pointer value in HEX format.
+        /// </summary>
+        /// <returns>The address represented by pointer.</returns>
+        public override string ToString() => action?.ToString() ?? new IntPtr(methodPtr).ToString("X");
+
+        /// <summary>
+        /// Determines whether the pointers represent the same method.
+        /// </summary>
+        /// <param name="first">The first pointer to compare.</param>
+        /// <param name="second">The second pointer to compare.</param>
+        /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
+        public static bool operator ==(in ValueSpanAction<T, TArg> first, in ValueSpanAction<T, TArg> second)
+            => first.Equals(in second);
+
+        /// <summary>
+        /// Determines whether the pointers represent different methods.
+        /// </summary>
+        /// <param name="first">The first pointer to compare.</param>
+        /// <param name="second">The second pointer to compare.</param>
+        /// <returns><see langword="true"/> if both pointers represent different methods; otherwise, <see langword="false"/>.</returns>
+        public static bool operator !=(in ValueSpanAction<T, TArg> first, in ValueSpanAction<T, TArg> second)
             => !first.Equals(in second);
     }
 }
