@@ -295,7 +295,7 @@ namespace DotNext
         /// <param name="slot">The slot identifying user data.</param>
         /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
         /// <returns>The data associated with the slot.</returns>
-        public TValue GetOrSet<TValue>(UserDataSlot<TValue> slot, Func<TValue> valueFactory) => GetOrSet(slot, new ValueFunc<TValue>(valueFactory, true));
+        public TValue GetOrSet<TValue>(UserDataSlot<TValue> slot, Func<TValue> valueFactory) => GetOrSet(slot, new ValueFunc<TValue>(valueFactory));
 
         /// <summary>
         /// Gets existing user data or creates a new data and return it.
@@ -307,7 +307,7 @@ namespace DotNext
         /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
         /// <returns>The data associated with the slot.</returns>
         public TValue GetOrSet<T, TValue>(UserDataSlot<TValue> slot, T arg, Func<T, TValue> valueFactory)
-            => GetOrSet(slot, arg, new ValueFunc<T, TValue>(valueFactory, true));
+            => GetOrSet(slot, arg, new ValueFunc<T, TValue>(valueFactory));
 
         /// <summary>
         /// Gets existing user data or creates a new data and return it.
@@ -321,7 +321,7 @@ namespace DotNext
         /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
         /// <returns>The data associated with the slot.</returns>
         public TValue GetOrSet<T1, T2, TValue>(UserDataSlot<TValue> slot, T1 arg1, T2 arg2, Func<T1, T2, TValue> valueFactory)
-            => GetOrSet(slot, arg1, arg2, new ValueFunc<T1, T2, TValue>(valueFactory, true));
+            => GetOrSet(slot, arg1, arg2, new ValueFunc<T1, T2, TValue>(valueFactory));
 
         /// <summary>
         /// Gets existing user data or creates a new data and return it.
@@ -460,7 +460,7 @@ namespace DotNext
         /// Returns textual representation of this storage.
         /// </summary>
         /// <returns>The textual representation of this storage.</returns>
-        public override string ToString() => source.ToString();
+        public override string? ToString() => source?.ToString();
 
         /// <summary>
         /// Determines whether two stores are for the same object.
