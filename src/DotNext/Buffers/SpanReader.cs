@@ -150,6 +150,52 @@ namespace DotNext.Buffers
             => TryRead(count, out var result) ? result : throw new EndOfStreamException();
 
         /// <summary>
+        /// Decodes the value from the block of memory.
+        /// </summary>
+        /// <param name="reader">The decoder.</param>
+        /// <param name="count">The numbers of elements to read.</param>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="reader"/> is zero.</exception>
+        /// <exception cref="EndOfStreamException"><paramref name="count"/> is greater than <see cref="RemainingCount"/>.</exception>
+        [CLSCompliant(false)]
+        public unsafe TResult Read<TResult>(delegate*<ReadOnlySpan<T>, TResult> reader, int count)
+        {
+            if (reader == null)
+                throw new ArgumentNullException(nameof(reader));
+
+            if (!TryRead(count, out var buffer))
+                throw new EndOfStreamException();
+
+            return reader(buffer);
+        }
+
+        /// <summary>
+        /// Attempts to decode the value from the block of memory.
+        /// </summary>
+        /// <param name="reader">The decoder.</param>
+        /// <param name="count">The numbers of elements to read.</param>
+        /// <param name="result">The decoded value.</param>
+        /// <typeparam name="TResult"><see langword="true"/> if the value is decoded successfully; otherwise, <see langword="false"/>.</typeparam>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"><paramref name="reader"/> is zero.</exception>
+        [CLSCompliant(false)]
+        public unsafe bool TryRead<TResult>(delegate*<ReadOnlySpan<T>, TResult> reader, int count, [MaybeNullWhen(false)] out TResult result)
+        {
+            if (reader == null)
+                throw new ArgumentNullException(nameof(reader));
+
+            if (TryRead(count, out var buffer))
+            {
+                result = reader(buffer);
+                return true;
+            }
+
+            result = default;
+            return false;
+        }
+
+        /// <summary>
         /// Reads the rest of the memory block.
         /// </summary>
         /// <returns>The rest of the memory block.</returns>
