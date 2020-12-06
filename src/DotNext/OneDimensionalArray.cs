@@ -74,7 +74,7 @@ namespace DotNext
         /// <param name="array">An array to iterate.</param>
         /// <param name="action">An action to be applied for each element.</param>
         public static void ForEach<T>(this T[] array, RefAction<T, long> action)
-            => ForEach(array, new ValueRefAction<T, long>(action, true));
+            => ForEach(array, new ValueRefAction<T, long>(action));
 
         /// <summary>
         /// Insert a new element into array and return modified array.
@@ -194,7 +194,7 @@ namespace DotNext
         /// <param name="callback">The delegate that is used to accept removed items.</param>
         /// <returns>A modified array with removed elements.</returns>
         public static T[] RemoveAll<T>(this T[] array, Predicate<T> match, Action<T> callback)
-            => RemoveAll(array, match.AsValueFunc(true), new ValueAction<T>(callback, true));
+            => RemoveAll(array, match.AsValueFunc(true), new ValueAction<T>(callback));
 
         internal static T[] New<T>(long length) => length == 0L ? Array.Empty<T>() : new T[length];
 
@@ -325,7 +325,7 @@ namespace DotNext
         /// <returns>32-bit hash code of the array content.</returns>
         public static int BitwiseHashCode<T>(this T[] array, int hash, Func<int, int, int> hashFunction, bool salted = true)
             where T : unmanaged
-            => BitwiseHashCode(array, hash, new ValueFunc<int, int, int>(hashFunction, true), salted);
+            => BitwiseHashCode(array, hash, new ValueFunc<int, int, int>(hashFunction), salted);
 
         /// <summary>
         /// Computes bitwise hash code for the array content using custom hash function.
@@ -351,7 +351,7 @@ namespace DotNext
         /// <returns>64-bit hash code of the array content.</returns>
         public static long BitwiseHashCode64<T>(this T[] array, long hash, Func<long, long, long> hashFunction, bool salted = true)
             where T : unmanaged
-            => BitwiseHashCode64(array, hash, new ValueFunc<long, long, long>(hashFunction, true), salted);
+            => BitwiseHashCode64(array, hash, new ValueFunc<long, long, long>(hashFunction), salted);
 
         /// <summary>
         /// Computes bitwise hash code for the array content.
