@@ -2335,16 +2335,6 @@ namespace DotNext.IO
         }
 
         /// <summary>
-        /// Reads exact number of bytes.
-        /// </summary>
-        /// <param name="stream">The stream to read from.</param>
-        /// <param name="output">A region of memory. When this method returns, the contents of this region are replaced by the bytes read from the current source.</param>
-        /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
-        [Obsolete("Use ReadBlock extension method instead")]
-        public static void ReadBytes(Stream stream, Span<byte> output)
-            => ReadBlock(stream, output);
-
-        /// <summary>
         /// Deserializes the value type from the stream.
         /// </summary>
         /// <param name="stream">The stream to read from.</param>
@@ -2377,19 +2367,6 @@ namespace DotNext.IO
                     throw new EndOfStreamException();
             }
         }
-
-        /// <summary>
-        /// Reads exact number of bytes asynchronously.
-        /// </summary>
-        /// <param name="stream">The stream to read from.</param>
-        /// <param name="output">A region of memory. When this method returns, the contents of this region are replaced by the bytes read from the current source.</param>
-        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
-        /// <returns>The task representing asynchronous execution of this method.</returns>
-        /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        [Obsolete("Use ReadBlockAsync extension method instead")]
-        public static ValueTask ReadBytesAsync(Stream stream, Memory<byte> output, CancellationToken token = default)
-            => ReadBlockAsync(stream, output, token);
 
         /// <summary>
         /// Asynchronously deserializes the value type from the stream.
