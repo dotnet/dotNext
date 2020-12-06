@@ -188,9 +188,8 @@ namespace DotNext
         /// </summary>
         /// <typeparam name="T">The type of the object to check.</typeparam>
         /// <param name="predicate">The predicate.</param>
-        /// <param name="wrap"><see langword="true"/> to wrap <paramref name="predicate"/> into this delegate; <see langword="false"/> to extract method pointer without holding reference to the passed delegate.</param>
         /// <returns>The value delegate representing predicate.</returns>
-        public static ValueFunc<T, bool> AsValueFunc<T>(this Predicate<T> predicate, bool wrap = false)
-            => new ValueFunc<T, bool>(As<Func<T, bool>>(predicate), wrap);
+        public static ValueFunc<T, bool> AsValueFunc<T>(this Predicate<T> predicate)
+            => new ValueFunc<T, bool>(As<Func<T, bool>>(predicate));
     }
 }

@@ -412,7 +412,7 @@ namespace DotNext
         /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
         /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
         /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="None"/>.</returns>
-        public Optional<TResult> Convert<TResult>(Converter<T, TResult> mapper) => Convert(mapper.AsValueFunc(true));
+        public Optional<TResult> Convert<TResult>(Converter<T, TResult> mapper) => Convert(mapper.AsValueFunc());
 
         /// <summary>
         /// If a value is present, apply the provided mapping function to it, and if the result is
@@ -430,7 +430,7 @@ namespace DotNext
         /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
         /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
         /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="None"/>.</returns>
-        public Optional<TResult> Convert<TResult>(Converter<T, Optional<TResult>> mapper) => Convert(mapper.AsValueFunc(true));
+        public Optional<TResult> Convert<TResult>(Converter<T, Optional<TResult>> mapper) => Convert(mapper.AsValueFunc());
 
         /// <summary>
         /// If a value is present, and the value matches the given predicate,
@@ -446,7 +446,7 @@ namespace DotNext
         /// </summary>
         /// <param name="condition">A predicate to apply to the value, if present.</param>
         /// <returns>An Optional describing the value of this Optional if a value is present and the value matches the given predicate, otherwise an empty Optional.</returns>
-        public Optional<T> If(Predicate<T> condition) => If(condition.AsValueFunc(true));
+        public Optional<T> If(Predicate<T> condition) => If(condition.AsValueFunc());
 
         /// <summary>
         /// Returns textual representation of this object.

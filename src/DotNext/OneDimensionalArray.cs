@@ -172,7 +172,7 @@ namespace DotNext
         /// <param name="count">The number of elements removed from this list.</param>
         /// <returns>A modified array with removed elements.</returns>
         public static T[] RemoveAll<T>(this T[] array, Predicate<T> match, out long count)
-            => RemoveAll(array, match.AsValueFunc(true), out count);
+            => RemoveAll(array, match.AsValueFunc(), out count);
 
         /// <summary>
         /// Removes all the elements that match the conditions defined by the specified predicate.
@@ -194,7 +194,7 @@ namespace DotNext
         /// <param name="callback">The delegate that is used to accept removed items.</param>
         /// <returns>A modified array with removed elements.</returns>
         public static T[] RemoveAll<T>(this T[] array, Predicate<T> match, Action<T> callback)
-            => RemoveAll(array, match.AsValueFunc(true), new ValueAction<T>(callback));
+            => RemoveAll(array, match.AsValueFunc(), new ValueAction<T>(callback));
 
         internal static T[] New<T>(long length) => length == 0L ? Array.Empty<T>() : new T[length];
 
