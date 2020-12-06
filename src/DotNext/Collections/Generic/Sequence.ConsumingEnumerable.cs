@@ -24,7 +24,7 @@ namespace DotNext.Collections.Generic
             {
                 private readonly IProducerConsumerCollection<T>? collection;
 
-                private T current;
+                private T? current;
 
                 internal Enumerator(IProducerConsumerCollection<T>? collection)
                 {
@@ -35,7 +35,7 @@ namespace DotNext.Collections.Generic
                 /// <summary>
                 /// Gets consumed item from the underlying collection.
                 /// </summary>
-                public readonly T Current => current;
+                public readonly T Current => current!;
 
                 /// <inheritdoc />
                 readonly object? IEnumerator.Current => Current;
