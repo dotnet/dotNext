@@ -54,7 +54,7 @@ namespace DotNext.Generic
         /// Extracts constant value.
         /// </summary>
         /// <param name="const">The constant value holder.</param>
-        [return: MaybeNull]
-        public static implicit operator T(Constant<T>? @const) => @const is null ? default : @const.Value;
+        [return: NotNullIfNotNull("const")]
+        public static implicit operator T?(Constant<T>? @const) => @const is null ? default : @const.Value;
     }
 }
