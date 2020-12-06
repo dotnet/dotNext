@@ -11,7 +11,7 @@ namespace DotNext
     /// </summary>
     public static partial class DelegateHelpers
     {
-        private static readonly SendOrPostCallback SendOrPostInvoker = UnsafeInvoke;
+        private static readonly SendOrPostCallback SendOrPostInvoker = UnsafeInvoke!;
         private static readonly Action<Action> ActionInvoker = UnsafeInvoke;
 
         private static void UnsafeInvoke(object action) => Unsafe.As<Action>(action).Invoke();
@@ -21,10 +21,10 @@ namespace DotNext
             => expression.Body switch
             {
                 MethodCallExpression expr => expr.Method,
-                MemberExpression expr when expr.Member is PropertyInfo property => property.GetMethod,
-                BinaryExpression expr => expr.Method,
-                IndexExpression expr => expr.Indexer.GetMethod,
-                UnaryExpression expr => expr.Method,
+                MemberExpression expr when expr.Member is PropertyInfo property && property.CanRead => property.GetMethod!,
+                BinaryExpression expr when expr.Method is not null => expr.Method,
+                IndexExpression expr when expr.Indexer is not null && expr.Indexer.CanRead => expr.Indexer.GetMethod!,
+                UnaryExpression expr when expr.Method is not null => expr.Method,
                 _ => throw new ArgumentException(ExceptionMessages.InvalidExpressionTree, nameof(expression))
             };
 
@@ -50,7 +50,7 @@ namespace DotNext
         public static Action<T, TValue> CreateOpenDelegate<T, TValue>(Expression<Func<T, TValue>> properyExpr)
             where T : class
             => properyExpr.Body is MemberExpression expr && expr.Member is PropertyInfo property && property.CanWrite ?
-                property.SetMethod.CreateDelegate<Action<T, TValue>>() :
+                property.SetMethod!.CreateDelegate<Action<T, TValue>>() :
                 throw new ArgumentException(ExceptionMessages.InvalidExpressionTree, nameof(properyExpr));
 
         /// <summary>
@@ -59,12 +59,9 @@ namespace DotNext
         /// <param name="expression">The expression tree containing instance method, property, operator call.</param>
         /// <typeparam name="TDelegate">The type of the delegate describing expression tree.</typeparam>
         /// <returns>The factory of closed delegate.</returns>
-        public static Func<object, TDelegate>? CreateClosedDelegateFactory<TDelegate>(Expression<TDelegate> expression)
+        public static Func<object, TDelegate> CreateClosedDelegateFactory<TDelegate>(Expression<TDelegate> expression)
             where TDelegate : Delegate
-        {
-            var method = GetMethod(expression);
-            return method is null ? null : new Func<object, TDelegate>(method.CreateDelegate<TDelegate>);
-        }
+            => new (GetMethod(expression).CreateDelegate<TDelegate>);
 
         /// <summary>
         /// Performs contravariant conversion
