@@ -15,22 +15,6 @@ namespace DotNext.Buffers
     {
         private readonly ArrayPool<T>? pool;
         private readonly T[] array;
-        private readonly bool clearArray;   // TODO: Remove this field in the next major version
-
-        /// <summary>
-        /// Obtains a new array from array pool.
-        /// </summary>
-        /// <param name="pool">Array pool.</param>
-        /// <param name="minimumLength">The minimum length of the array.</param>
-        /// <param name="clearArray">Indicates whether the contents of the array should be cleared after calling of <see cref="Dispose()"/>.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="pool"/> is <see langword="null"/>.</exception>
-        public ArrayRental(ArrayPool<T> pool, int minimumLength, bool clearArray)
-        {
-            this.pool = pool ?? throw new ArgumentNullException(nameof(pool));
-            array = pool.Rent(minimumLength);
-            this.clearArray = clearArray;
-            Length = minimumLength;
-        }
 
         /// <summary>
         /// Obtains a new array from array pool.
@@ -39,18 +23,10 @@ namespace DotNext.Buffers
         /// <param name="minimumLength">The minimum length of the array.</param>
         /// <exception cref="ArgumentNullException"><paramref name="pool"/> is <see langword="null"/>.</exception>
         public ArrayRental(ArrayPool<T> pool, int minimumLength)
-            : this(pool, minimumLength, RuntimeHelpers.IsReferenceOrContainsReferences<T>())
         {
-        }
-
-        /// <summary>
-        /// Obtains a new array from <see cref="ArrayPool{T}.Shared"/>.
-        /// </summary>
-        /// <param name="minimumLength">The minimum length of the array.</param>
-        /// <param name="clearArray">Indicates whether the contents of the array should be cleared after calling of <see cref="Dispose()"/>.</param>
-        public ArrayRental(int minimumLength, bool clearArray)
-            : this(ArrayPool<T>.Shared, minimumLength, clearArray)
-        {
+            this.pool = pool ?? throw new ArgumentNullException(nameof(pool));
+            array = pool.Rent(minimumLength);
+            Length = minimumLength;
         }
 
         /// <summary>
@@ -58,7 +34,7 @@ namespace DotNext.Buffers
         /// </summary>
         /// <param name="minimumLength">The minimum length of the array.</param>
         public ArrayRental(int minimumLength)
-            : this(minimumLength, RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+            : this(ArrayPool<T>.Shared, minimumLength)
         {
         }
 
@@ -73,7 +49,6 @@ namespace DotNext.Buffers
         {
             this.array = array ?? throw new ArgumentNullException(nameof(array));
             Length = length <= array.Length ? length : throw new ArgumentOutOfRangeException(nameof(length));
-            clearArray = false;
             pool = null;
         }
 
@@ -164,6 +139,6 @@ namespace DotNext.Buffers
         /// <summary>
         /// Returns the array back to the pool.
         /// </summary>
-        public void Dispose() => pool?.Return(array, clearArray);
+        public void Dispose() => pool?.Return(array, RuntimeHelpers.IsReferenceOrContainsReferences<T>());
     }
 }
