@@ -17,8 +17,6 @@ namespace DotNext.Buffers
     [DebuggerDisplay("WrittenCount = {" + nameof(WrittenCount) + "}, FreeCapacity = {" + nameof(FreeCapacity) + "}")]
     public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, IConvertible<ReadOnlyMemory<T>>, IReadOnlyList<T>, IGrowableBuffer<T>
     {
-        // TODO: Should be renamed to BufferWriter
-
         /// <summary>
         /// Represents default initial buffer size.
         /// </summary>
