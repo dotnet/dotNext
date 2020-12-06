@@ -167,13 +167,13 @@ namespace DotNext.Buffers
         /// <param name="arg">The argument to be passed to the callback.</param>
         /// <typeparam name="TArg">The type of the argument to tbe passed to the callback.</typeparam>
         /// <exception cref="ObjectDisposedException">The builder has been disposed.</exception>
-        public void CopyTo<TArg>(ReadOnlySpanAction<T, TArg> writer, TArg arg)
+        public void CopyTo<TArg>(in ValueReadOnlySpanAction<T, TArg> writer, TArg arg)
         {
             ThrowIfDisposed();
             for (MemoryChunk? current = first; !(current is null); current = current.Next)
             {
                 var buffer = current.WrittenMemory.Span;
-                writer(buffer, arg);
+                writer.Invoke(buffer, arg);
             }
         }
 

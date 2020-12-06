@@ -52,7 +52,7 @@ namespace DotNext.Buffers
         /// <param name="arg">The argument to be passed to the callback.</param>
         /// <typeparam name="TArg">The type of the object that represents the state.</typeparam>
         /// <exception cref="ObjectDisposedException">The writer has been disposed.</exception>
-        void CopyTo<TArg>(ReadOnlySpanAction<T, TArg> callback, TArg arg);
+        void CopyTo<TArg>(in ValueReadOnlySpanAction<T, TArg> callback, TArg arg);
 
         /// <summary>
         /// Copies the contents of this writer to the specified memory block.

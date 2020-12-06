@@ -1,10 +1,8 @@
 using System;
 using System.Buffers;
 using System.Diagnostics;
-using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace DotNext.Buffers
 {
@@ -232,8 +230,8 @@ namespace DotNext.Buffers
         /// Copies written content to the specified buffer writer.
         /// </summary>
         /// <param name="output">The buffer writer.</param>
-        public readonly void CopyTo(IBufferWriter<T> output)
-            => CopyTo(DotNext.Span.CopyTo, output); // TODO: Must be rewritten using function pointer
+        public readonly unsafe void CopyTo(IBufferWriter<T> output)
+            => CopyTo(new (&DotNext.Span.CopyTo), output);
 
         private readonly void GetSegments(out ReadOnlySpan<T> head, out ReadOnlySpan<T> tail)
         {
@@ -263,16 +261,16 @@ namespace DotNext.Buffers
         /// <typeparam name="TArg">The type of the argument to be passed to the callback.</typeparam>
         /// <param name="action">The callback accepting written content. Can be called more than once.</param>
         /// <param name="arg">The argument to be passed to the callback.</param>
-        public readonly void CopyTo<TArg>(ReadOnlySpanAction<T, TArg> action, TArg arg)
+        public readonly void CopyTo<TArg>(in ValueReadOnlySpanAction<T, TArg> action, TArg arg)
         {
             GetSegments(out var head, out var tail);
 
             if (!head.IsEmpty)
             {
-                action(head, arg);
+                action.Invoke(head, arg);
                 if (!tail.IsEmpty)
                 {
-                    action(tail, arg);
+                    action.Invoke(tail, arg);
                 }
             }
         }
@@ -315,37 +313,5 @@ namespace DotNext.Buffers
             extraBuffer.Dispose();
             this = default;
         }
-    }
-
-    /// <summary>
-    /// Provides extension methods for <see cref="BufferWriterSlim{T}"/> type.
-    /// </summary>
-    public static class BufferWriterSlim
-    {
-        // TODO: Must be rewritten using function pointer
-
-        /// <summary>
-        /// Copies written bytes to the stream.
-        /// </summary>
-        /// <param name="builder">The buffer builder.</param>
-        /// <param name="output">The output stream.</param>
-        public static void CopyTo(this in BufferWriterSlim<byte> builder, Stream output)
-            => builder.CopyTo(Span.CopyTo, output);
-
-        /// <summary>
-        /// Copies written characters to the text stream.
-        /// </summary>
-        /// <param name="builder">The buffer builder.</param>
-        /// <param name="output">The output stream.</param>
-        public static void CopyTo(this in BufferWriterSlim<char> builder, TextWriter output)
-            => builder.CopyTo(Span.CopyTo, output);
-
-        /// <summary>
-        /// Copies written characters to string builder.
-        /// </summary>
-        /// <param name="builder">The buffer builder.</param>
-        /// <param name="output">The string builder.</param>
-        public static void CopyTo(this in BufferWriterSlim<char> builder, StringBuilder output)
-            => builder.CopyTo(Span.CopyTo, output);
     }
 }
