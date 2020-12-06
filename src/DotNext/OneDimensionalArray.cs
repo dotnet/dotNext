@@ -112,8 +112,8 @@ namespace DotNext
             if (index < 0L || index >= array.LongLength)
                 throw new ArgumentOutOfRangeException(nameof(index));
 
-            // TODO: Replace with const nuint one = 1; in C# 9
-            if (Intrinsics.GetLength(array) == new UIntPtr(1))
+            const nuint one = 1;
+            if (Intrinsics.GetLength(array) == one)
                 return Array.Empty<T>();
 
             var newStore = new T[array.LongLength - 1L];
