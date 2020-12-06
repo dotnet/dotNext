@@ -63,7 +63,7 @@ namespace DotNext.IO
         /// <param name="flushAsync">Optiona asynchronous flush action.</param>
         /// <typeparam name="TArg">The type of the object that represents the state.</typeparam>
         /// <returns>The writable stream wrapping the callback.</returns>
-        public static Stream AsStream<TArg>(this ReadOnlySpanAction<byte, TArg> writer, TArg arg, Action<TArg>? flush = null, Func<TArg, CancellationToken, Task>? flushAsync = null)
+        public static Stream AsStream<TArg>(this ValueReadOnlySpanAction<byte, TArg> writer, TArg arg, Action<TArg>? flush = null, Func<TArg, CancellationToken, Task>? flushAsync = null)
             => new SpanWriterStream<TArg>(writer, arg, flush, flushAsync);
 
         /// <summary>
@@ -74,16 +74,17 @@ namespace DotNext.IO
         /// <param name="flush">Optional synchronous flush action.</param>
         /// <param name="flushAsync">Optiona asynchronous flush action.</param>
         /// <returns>The writable stream wrapping buffer writer.</returns>
-        public static Stream AsStream<TWriter>(this TWriter writer, Action<TWriter>? flush = null, Func<TWriter, CancellationToken, Task>? flushAsync = null)
+        public static unsafe Stream AsStream<TWriter>(this TWriter writer, Action<TWriter>? flush = null, Func<TWriter, CancellationToken, Task>? flushAsync = null)
             where TWriter : class, IBufferWriter<byte>
         {
             flush ??= IFlushable.TryReflectFlushMethod(writer);
             flushAsync ??= IFlushable.TryReflectAsyncFlushMethod(writer);
 
-            var callback = writer is IGrowableBuffer<byte> ?
-                new ReadOnlySpanAction<byte, TWriter>(WriteToGrowableBuffer) :
-                new ReadOnlySpanAction<byte, TWriter>(Span.CopyTo<byte>);
-            return AsStream(callback, writer, flush, flushAsync);
+            delegate*<ReadOnlySpan<byte>, TWriter, void> callback = writer is IGrowableBuffer<byte> ?
+                &WriteToGrowableBuffer :
+                &Span.CopyTo<byte>;
+
+            return AsStream(new ValueReadOnlySpanAction<byte, TWriter>(callback), writer, flush, flushAsync);
 
             static void WriteToGrowableBuffer(ReadOnlySpan<byte> input, TWriter output)
             {
@@ -98,10 +99,10 @@ namespace DotNext.IO
         /// <param name="writer">Sparse memory buffer.</param>
         /// <param name="readable"><see langword="true"/> to create readable stream; <see langword="false"/> to create writable stream.</param>
         /// <returns>Sparse memory stream.</returns>
-        public static Stream AsStream(this SparseBufferWriter<byte> writer, bool readable)
+        public static unsafe Stream AsStream(this SparseBufferWriter<byte> writer, bool readable)
         {
             if (!readable)
-                return AsStream(WriteToBuffer, writer);
+                return AsStream(new ValueReadOnlySpanAction<byte, SparseBufferWriter<byte>>(&WriteToBuffer), writer);
 
             var chunk = writer.FirstChunk;
             if (chunk is null)
