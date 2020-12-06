@@ -129,7 +129,7 @@ namespace DotNext.Buffers
         /// <summary>
         /// Determines whether this memory is empty.
         /// </summary>
-        public bool IsEmpty => Length == 0;
+        public bool IsEmpty => length == 0;
 
         /// <summary>
         /// Gets the memory belonging to this owner.
@@ -140,7 +140,7 @@ namespace DotNext.Buffers
             get
             {
                 Memory<T> result;
-                if (array != null)
+                if (array is not null)
                     result = new Memory<T>(array);
                 else if (owner is IMemoryOwner<T> memory)
                     result = memory.Memory;
@@ -149,6 +149,26 @@ namespace DotNext.Buffers
 
                 return result.Slice(0, length);
             }
+        }
+
+        /// <summary>
+        /// Tries to get an array segment from the underlying memory buffer.
+        /// </summary>
+        /// <param name="segment">The array segment retrieved from the underlying memory buffer.</param>
+        /// <returns><see langword="true"/> if the method call succeeds; <see langword="false"/> otherwise.</returns>
+        public bool TryGetArray(out ArraySegment<T> segment)
+        {
+            if (array is not null)
+            {
+                segment = new ArraySegment<T>(array, 0, length);
+                return true;
+            }
+
+            if (owner is IMemoryOwner<T> memory)
+                return MemoryMarshal.TryGetArray(memory.Memory, out segment);
+
+            segment = default;
+            return false;
         }
 
         /// <inheritdoc/>
@@ -165,7 +185,7 @@ namespace DotNext.Buffers
             {
                 if (index < 0 || index >= length)
                     goto invalid_index;
-                if (array != null)
+                if (array is not null)
                     return ref array[index];
                 if (owner is IMemoryOwner<T> memory)
                     return ref Unsafe.Add(ref MemoryMarshal.GetReference(memory.Memory.Span), index);
