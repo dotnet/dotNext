@@ -34,7 +34,7 @@ namespace DotNext.Collections.Generic
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The enumeration has been canceled.</exception>
         public static ValueTask ForEachAsync<T>(this IAsyncEnumerable<T> collection, Action<T> action, CancellationToken token = default)
-            => ForEachAsync(collection, new ValueAction<T>(action, true), token);
+            => ForEachAsync(collection, new ValueAction<T>(action), token);
 
         /// <summary>
         /// Applies specified action to each collection element asynchronously.
@@ -61,7 +61,7 @@ namespace DotNext.Collections.Generic
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The enumeration has been canceled.</exception>
         public static ValueTask ForEachAsync<T>(this IAsyncEnumerable<T> collection, Func<T, CancellationToken, ValueTask> action, CancellationToken token = default)
-            => ForEachAsync(collection, new ValueFunc<T, CancellationToken, ValueTask>(action, true), token);
+            => ForEachAsync(collection, new ValueFunc<T, CancellationToken, ValueTask>(action), token);
 
         /// <summary>
         /// Obtains first value type in the sequence; or <see langword="null"/>
@@ -126,7 +126,7 @@ namespace DotNext.Collections.Generic
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static ValueTask<Optional<T>> FirstOrEmptyAsync<T>(this IAsyncEnumerable<T> seq, Predicate<T> filter, CancellationToken token = default)
             where T : notnull
-            => FirstOrEmptyAsync(seq, filter.AsValueFunc(true), token);
+            => FirstOrEmptyAsync(seq, filter.AsValueFunc(), token);
 
         /// <summary>
         /// Bypasses a specified number of elements in a sequence.

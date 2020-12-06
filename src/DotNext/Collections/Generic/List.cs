@@ -130,7 +130,7 @@ namespace DotNext.Collections.Generic
         /// <param name="input">A list to convert. Cannot be <see langword="null"/>.</param>
         /// <param name="mapper">Element mapping function.</param>
         /// <returns>An array of list items.</returns>
-        public static TOutput[] ToArray<TInput, TOutput>(this IList<TInput> input, Converter<TInput, TOutput> mapper) => ToArray(input, mapper.AsValueFunc(true));
+        public static TOutput[] ToArray<TInput, TOutput>(this IList<TInput> input, Converter<TInput, TOutput> mapper) => ToArray(input, mapper.AsValueFunc());
 
         /// <summary>
         /// Converts list into array and perform mapping for each
@@ -159,7 +159,7 @@ namespace DotNext.Collections.Generic
         /// <param name="mapper">Index-aware element mapping function.</param>
         /// <returns>An array of list items.</returns>
         public static TOutput[] ToArray<TInput, TOutput>(this IList<TInput> input, Func<int, TInput, TOutput> mapper)
-            => ToArray(input, new ValueFunc<int, TInput, TOutput>(mapper, true));
+            => ToArray(input, new ValueFunc<int, TInput, TOutput>(mapper));
 
         /// <summary>
         /// Returns lazily converted read-only list.
@@ -180,7 +180,7 @@ namespace DotNext.Collections.Generic
         /// <typeparam name="TOutput">Type of items in the target list.</typeparam>
         /// <returns>Lazily converted read-only list.</returns>
         public static ReadOnlyListView<TInput, TOutput> Convert<TInput, TOutput>(this IReadOnlyList<TInput> list, Converter<TInput, TOutput> converter)
-            => Convert(list, converter.AsValueFunc(true));
+            => Convert(list, converter.AsValueFunc());
 
         /// <summary>
         /// Constructs read-only list with single item in it.
