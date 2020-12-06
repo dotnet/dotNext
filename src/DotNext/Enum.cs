@@ -27,9 +27,9 @@ namespace DotNext
                 values = Enum.GetValues(enumType);
                 for (var i = 0L; i < values.LongLength; i++)
                 {
-                    var boxedValue = values.GetValue(i);
+                    var boxedValue = values.GetValue(i)!;
                     var value = (TEnum)boxedValue;
-                    this[value] = Enum.GetName(enumType, boxedValue);
+                    this[value] = Enum.GetName(enumType, boxedValue)!;
 
                     // detect min and max
                     min = value.CompareTo(min) < 0 ? value : min;
@@ -150,7 +150,7 @@ namespace DotNext
         private Enum(TEnum value) => Value = value;
 
         private Enum(SerializationInfo info, StreamingContext context)
-            => Value = (TEnum)info.GetValue(ValueSerData, typeof(TEnum));
+            => Value = (TEnum)info.GetValue(ValueSerData, typeof(TEnum))!;
 
         private FieldInfo? Field
             => EnumMapping.TryGetValue(Value, out var name) ? GetField(name) : null;
@@ -215,7 +215,7 @@ namespace DotNext
         /// <summary>
         /// Represents name of the enum member.
         /// </summary>
-        public string Name => EnumMapping.TryGetValue(Value, out var name) ? name : ValueTypeExtensions.ToString(Value);
+        public string Name => EnumMapping.TryGetValue(Value, out var name) ? name : Value.ToString();
 
         /// <summary>
         /// Converts typed enum wrapper into actual enum value.
@@ -269,7 +269,7 @@ namespace DotNext
         public override string ToString() => Name;
 
         /// <inheritdoc/>
-        string IFormattable.ToString(string format, IFormatProvider provider) => ValueTypeExtensions.ToString(Value, format, provider);
+        string IFormattable.ToString(string? format, IFormatProvider? provider) => Value.ToString(format);
 
         /// <summary>
         /// Determines whether two enum members are equal.
