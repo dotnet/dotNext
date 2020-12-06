@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 namespace DotNext.IO
 {
     using static Buffers.BufferReader;
+    using static Pipelines.ResultExtensions;
+    using BufferWriter = Buffers.BufferWriter;
     using DecodingContext = Text.DecodingContext;
 
     /// <summary>
@@ -342,7 +344,13 @@ namespace DotNext.IO
         /// <param name="output">The output stream receiving object content.</param>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        Task CopyToAsync(Stream output, CancellationToken token = default); // TODO: This method should have default implementation
+        Task CopyToAsync(Stream output, CancellationToken token = default)
+        {
+            return CopyToAsync(CopyToStream, output, token);
+
+            static ValueTask CopyToStream(ReadOnlyMemory<byte> input, Stream output, CancellationToken token)
+                => output.WriteAsync(input, token);
+        }
 
         /// <summary>
         /// Copies the content to the specified pipe writer.
@@ -351,7 +359,16 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel operation.</param>
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        Task CopyToAsync(PipeWriter output, CancellationToken token = default); // TODO: This method should have default implementation
+        Task CopyToAsync(PipeWriter output, CancellationToken token = default)
+        {
+            return CopyToAsync(CopyToPipe, output, token);
+
+            static async ValueTask CopyToPipe(ReadOnlyMemory<byte> input, PipeWriter output, CancellationToken token)
+            {
+                var result = await output.WriteAsync(input, token).ConfigureAwait(false);
+                result.ThrowIfCancellationRequested(token);
+            }
+        }
 
         /// <summary>
         /// Copies the content to the specified buffer.
@@ -360,12 +377,8 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel operation.</param>
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        async Task CopyToAsync(IBufferWriter<byte> writer, CancellationToken token = default)
-        {
-            using var stream = writer.AsStream();
-            await CopyToAsync(stream, token).ConfigureAwait(false);
-            await stream.FlushAsync(token).ConfigureAwait(false);
-        }
+        Task CopyToAsync(IBufferWriter<byte> writer, CancellationToken token = default)
+            => CopyToAsync(BufferWriter.CopyTo, writer, token);
 
         /// <summary>
         /// Reads the entire content using the specified delegate.
@@ -376,12 +389,8 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel operation.</param>
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        async Task CopyToAsync<TArg>(ReadOnlySpanAction<byte, TArg> consumer, TArg arg, CancellationToken token = default)
-        {
-            // TODO: This method should not have default implementation
-            using var stream = consumer.AsStream(arg);
-            await CopyToAsync(stream, token).ConfigureAwait(false);
-        }
+        Task CopyToAsync<TArg>(ReadOnlySpanAction<byte, TArg> consumer, TArg arg, CancellationToken token = default)
+            => CopyToAsync(consumer.Invoke, arg, token);
 
         /// <summary>
         /// Reads the entire content using the specified delegate.
@@ -392,12 +401,7 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel operation.</param>
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        async Task CopyToAsync<TArg>(Func<ReadOnlyMemory<byte>, TArg, CancellationToken, ValueTask> consumer, TArg arg, CancellationToken token = default)
-        {
-            // TODO: This method should not have default implementation
-            using var stream = consumer.AsStream(arg);
-            await CopyToAsync(stream, token).ConfigureAwait(false);
-        }
+        Task CopyToAsync<TArg>(Func<ReadOnlyMemory<byte>, TArg, CancellationToken, ValueTask> consumer, TArg arg, CancellationToken token = default);
 
         /// <summary>
         /// Creates default implementation of binary reader for the stream.

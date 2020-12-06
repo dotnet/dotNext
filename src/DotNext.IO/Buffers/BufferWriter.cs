@@ -269,16 +269,6 @@ namespace DotNext.Buffers
         }
 
         /// <summary>
-        /// Writes single element to the buffer.
-        /// </summary>
-        /// <param name="writer">The buffer writer.</param>
-        /// <param name="value">The value to add.</param>
-        /// <typeparam name="T">The type of elements in the buffer.</typeparam>
-        [Obsolete("Use BufferHelpers.Write extension method instead", true)]
-        public static void Write<T>(IBufferWriter<T> writer, T value)
-            => BufferHelpers.Write(writer, value);
-
-        /// <summary>
         /// Encodes 64-bit signed integer.
         /// </summary>
         /// <param name="writer">The buffer writer.</param>
@@ -644,18 +634,6 @@ namespace DotNext.Buffers
             => Write<TimeSpanFormatter>(writer, value, lengthFormat, in context, format, provider, bufferSize);
 
         /// <summary>
-        /// Writes the array to the buffer.
-        /// </summary>
-        /// <param name="writer">The buffer writer.</param>
-        /// <param name="buffer">The buffer to write.</param>
-        /// <param name="startIndex">Start index in the buffer.</param>
-        /// <param name="count">The number of elements in the buffer. to write.</param>
-        /// <typeparam name="T">The type of the elements in the buffer.</typeparam>
-        [Obsolete("Use BuffersExtensions.Write extension method instead")]
-        public static void Write<T>(this IBufferWriter<T> writer, T[] buffer, int startIndex, int count)
-            => writer.Write(buffer.AsSpan(startIndex, count));
-
-        /// <summary>
         /// Writes line termination symbols to the buffer.
         /// </summary>
         /// <param name="writer">The buffer writer.</param>
@@ -844,22 +822,8 @@ namespace DotNext.Buffers
 
         // TODO: Need writer for StringBuilder but it will be available in .NET Core 5
 
-        /// <summary>
-        /// Constructs the string from the buffer.
-        /// </summary>
-        /// <param name="writer">The buffer of characters.</param>
-        /// <returns>The string constructed from the buffer.</returns>
-        [Obsolete("Use BufferHelpers class instead", true)]
-        public static string BuildString(ArrayBufferWriter<char> writer)
-            => BufferHelpers.BuildString(writer);
-
-        /// <summary>
-        /// Constructs the string from the buffer.
-        /// </summary>
-        /// <param name="writer">The buffer of characters.</param>
-        /// <returns>The string constructed from the buffer.</returns>
-        [Obsolete("Use BufferHelpers class instead", true)]
-        public static string BuildString(BufferWriter<char> writer)
-            => BufferHelpers.BuildString(writer);
+        internal static void CopyTo<T, TWriter>(ReadOnlySpan<T> input, TWriter output)
+            where TWriter : class, IBufferWriter<T>
+            => output.Write(input);
     }
 }
