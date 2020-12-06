@@ -274,7 +274,7 @@ namespace DotNext.Threading
         public static Task BeginInvoke(this Action<object?> action, object? state, AsyncCallback? callback, TaskCreationOptions options = TaskCreationOptions.None, TaskScheduler? scheduler = null)
         {
             var task = Task.Factory.StartNew(action, state, CancellationToken.None, options, scheduler ?? TaskScheduler.Default);
-            if (callback != null)
+            if (callback is not null)
                 task.OnCompleted(callback);
 
             return task;
@@ -293,7 +293,7 @@ namespace DotNext.Threading
         public static Task BeginInvoke(this Action<object?, CancellationToken> action, object? state, AsyncCallback? callback, TaskCreationOptions options = TaskCreationOptions.None, TaskScheduler? scheduler = null, CancellationToken token = default)
         {
             var task = Task.Factory.StartNew(s => action(s, token), state, token, options, scheduler ?? TaskScheduler.Default);
-            if (callback != null)
+            if (callback is not null)
                 task.OnCompleted(callback);
 
             return task;
@@ -312,7 +312,7 @@ namespace DotNext.Threading
         public static Task<TResult> BeginInvoke<TResult>(this Func<object?, TResult> function, object? state, AsyncCallback? callback, TaskCreationOptions options = TaskCreationOptions.None, TaskScheduler? scheduler = null)
         {
             var task = Task<TResult>.Factory.StartNew(function, state, CancellationToken.None, options, scheduler ?? TaskScheduler.Default);
-            if (callback != null)
+            if (callback is not null)
                 task.OnCompleted(callback);
 
             return task;
@@ -332,7 +332,7 @@ namespace DotNext.Threading
         public static Task<TResult> BeginInvoke<TResult>(this Func<object?, CancellationToken, TResult> function, object? state, AsyncCallback? callback, TaskCreationOptions options = TaskCreationOptions.None, TaskScheduler? scheduler = null, CancellationToken token = default)
         {
             var task = Task<TResult>.Factory.StartNew(s => function(s, token), state, token, options, scheduler ?? TaskScheduler.Default);
-            if (callback != null)
+            if (callback is not null)
                 task.OnCompleted(callback);
 
             return task;

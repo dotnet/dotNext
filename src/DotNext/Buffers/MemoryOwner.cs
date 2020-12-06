@@ -113,7 +113,7 @@ namespace DotNext.Buffers
         {
             int length;
 
-            if (array != null)
+            if (array is not null)
                 length = array.Length;
             else if (owner is IMemoryOwner<T> memory)
                 length = memory.Memory.Length;

@@ -144,7 +144,7 @@ namespace DotNext.Runtime.CompilerServices
         [MethodImpl(MethodImplOptions.Synchronized)]
         private void Complete(Exception?[]? errors)
         {
-            if (errors != null)
+            if (errors is not null)
                 exceptions = new AggregateException(errors.SkipNulls());
             totalCount.VolatileWrite(CompletedState);
             Complete();

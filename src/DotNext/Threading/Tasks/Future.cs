@@ -92,7 +92,7 @@ namespace DotNext.Threading.Tasks
             internal static Action Create(Action callback)
             {
                 SynchronizationContext? context = SynchronizationContext.Current;
-                if (context != null)
+                if (context is not null)
                     return new Continuation(callback, context).Invoke;
                 var scheduler = TaskScheduler.Current;
                 if (ReferenceEquals(scheduler, TaskScheduler.Default))

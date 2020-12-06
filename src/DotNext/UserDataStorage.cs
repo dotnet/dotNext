@@ -151,7 +151,7 @@ namespace DotNext
                     try
                     {
                         userData = valueFactory.Invoke();
-                        if (userData != null)
+                        if (userData is not null)
                             slot.SetUserData(this, userData);
                     }
                     finally
@@ -431,7 +431,7 @@ namespace DotNext
             if (obj is IContainer support)
                 obj = support.Source;
             var source = GetStorage();
-            if (source != null)
+            if (source is not null)
             {
                 if (obj is BackingStorage destination)
                     source.CopyTo(destination);

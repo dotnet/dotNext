@@ -797,7 +797,7 @@ namespace DotNext.Runtime
         /// <returns><see langword="true"/> if <paramref name="obj"/> is not <see langword="null"/> and of type <typeparamref name="T"/>; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsExactTypeOf<T>(object? obj)
-            => obj != null && obj.GetType() == typeof(T);
+            => obj is not null && obj.GetType() == typeof(T);
 
         /// <summary>
         /// Throws arbitrary object as exception.

@@ -58,10 +58,10 @@ namespace DotNext.IO
             var task = WriteWithTimeoutAsync(buffer.AsMemory(offset, count));
 
             // attach state only if it's necessary
-            if (state != null)
+            if (state is not null)
                 task = task.AttachState(state);
 
-            if (callback != null)
+            if (callback is not null)
             {
                 if (task.IsCompleted)
                     callback(task);
