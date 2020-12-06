@@ -23,7 +23,12 @@ namespace DotNext.IO
         /// <param name="writable">Determines whether the stream supports writing.</param>
         /// <returns>The stream representing the array segment.</returns>
         public static Stream AsStream(this ArraySegment<byte> segment, bool writable = false)
-            => new MemoryStream(segment.Array, segment.Offset, segment.Count, writable, false);
+        {
+            if (segment.Array.IsNullOrEmpty())
+                return Stream.Null;
+
+            return new MemoryStream(segment.Array, segment.Offset, segment.Count, writable, false);
+        }
 
         /// <summary>
         /// Converts read-only sequence of bytes to a read-only stream.
@@ -48,15 +53,6 @@ namespace DotNext.IO
         /// <returns>The stream over memory of bytes.</returns>
         public static Stream AsStream(this ReadOnlyMemory<byte> memory)
             => AsStream(new ReadOnlySequence<byte>(memory));
-
-        /// <summary>
-        /// Gets written content as a read-only stream.
-        /// </summary>
-        /// <param name="writer">The buffer writer.</param>
-        /// <returns>The stream representing written bytes.</returns>
-        [Obsolete("Use DotNext.IO.StreamSource.AsStream in combination with WrittenArray or WrittenMemory property instead", true)]
-        public static Stream GetWrittenBytesAsStream(PooledArrayBufferWriter<byte> writer)
-            => AsStream(writer.WrittenArray);
 
         /// <summary>
         /// Returns writable stream that wraps the provided delegate for writing data.
