@@ -271,7 +271,7 @@ namespace DotNext
         /// </summary>
         /// <param name="value">Extracted value.</param>
         /// <returns><see langword="true"/> if value is present; otherwise, <see langword="false"/>.</returns>
-        public bool TryGet([NotNullWhen(true)]out T value)
+        public bool TryGet([MaybeNullWhen(false)]out T value)
         {
             value = this.value!;
             return HasValue;
@@ -537,7 +537,7 @@ namespace DotNext
         /// </summary>
         /// <param name="value">The value to convert.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator Optional<T>([AllowNull]T value) => new Optional<T>(value);
+        public static implicit operator Optional<T>(T? value) => new Optional<T>(value);
 
         /// <summary>
         /// Extracts value stored in the Optional container.
