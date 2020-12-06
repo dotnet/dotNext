@@ -80,12 +80,10 @@ namespace DotNext
         /// <returns>The converted <paramref name="value"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
-        public static UIntPtr ToUIntPtr(this IntPtr value)
-        {
-            Push(value);
-            Conv_U();
-            return Return<UIntPtr>();
-        }
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
+        public static UIntPtr ToUIntPtr(this IntPtr value) => (nuint)(nint)value;
 
         /// <summary>
         /// Converts <see cref="UIntPtr"/> into <see cref="IntPtr"/>
@@ -319,12 +317,7 @@ namespace DotNext
         /// <returns>The result of adding <paramref name="x"/> and <paramref name="y"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IntPtr Add(this IntPtr x, IntPtr y)
-        {
-            Push(x);
-            Push(y);
-            Emit.Add();
-            return Return<IntPtr>();
-        }
+            => (nint)x + y;
 
         /// <summary>
         /// Adds two specified native integers.
