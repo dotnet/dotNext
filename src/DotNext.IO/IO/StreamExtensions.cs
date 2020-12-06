@@ -215,7 +215,7 @@ namespace DotNext.IO
             {
                 for (var charBufferSize = InitialCharBufferSize * 2; ; charBufferSize = charBufferSize <= MaxBufferSize ? charBufferSize * 2 : throw new InsufficientMemoryException())
                 {
-                    using var owner = DefaultAllocator.Invoke(charBufferSize, false);
+                    using var owner = DefaultCharAllocator.Invoke(charBufferSize, false);
                     if (WriteString(stream, value, charBuffer, lengthFormat, encoding, format, provider))
                         break;
                     charBufferSize = owner.Length;
@@ -500,12 +500,12 @@ namespace DotNext.IO
         public static async ValueTask WriteStringAsync(this Stream stream, ReadOnlyMemory<char> value, Encoding encoding, StringLengthEncoding? lengthFormat = null, CancellationToken token = default)
         {
             var bytesCount = encoding.GetByteCount(value.Span);
-            using var buffer = new ArrayRental<byte>(bytesCount);
+            using var buffer = DefaultByteAllocator.Invoke(bytesCount, true);
             await stream.WriteLengthAsync(bytesCount, lengthFormat, buffer.Memory, token).ConfigureAwait(false);
             if (bytesCount == 0)
                 return;
 
-            encoding.GetBytes(value.Span, buffer.Span);
+            encoding.GetBytes(value.Span, buffer.Memory.Span);
             await stream.WriteAsync(buffer.Memory, token).ConfigureAwait(false);
         }
 
@@ -514,7 +514,7 @@ namespace DotNext.IO
         {
             for (var charBufferSize = InitialCharBufferSize; ; charBufferSize = charBufferSize <= MaxBufferSize ? charBufferSize * 2 : throw new InsufficientMemoryException())
             {
-                using var owner = DefaultAllocator.Invoke(charBufferSize, false);
+                using var owner = DefaultCharAllocator.Invoke(charBufferSize, false);
 
                 if (value.TryFormat(owner.Memory.Span, out var charsWritten, format, provider))
                 {
@@ -529,7 +529,7 @@ namespace DotNext.IO
         private static async ValueTask WriteAsync<T>(Stream stream, T value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
             where T : struct, ISpanFormattable
         {
-            using var owner = new ArrayRental<byte>(DefaultBufferSize);
+            using var owner = DefaultByteAllocator.Invoke(DefaultBufferSize, false);
             await WriteAsync(stream, value, lengthFormat, context, owner.Memory, format, provider, token).ConfigureAwait(false);
         }
 
@@ -1534,9 +1534,9 @@ namespace DotNext.IO
             var length = await ReadLengthAsync(stream, lengthFormat, buffer, token).ConfigureAwait(false);
             if (length == 0)
                 throw new EndOfStreamException();
-            using var result = new ArrayRental<char>(length);
-            length = await ReadStringAsync(stream, result.Memory, context, buffer, token).ConfigureAwait(false);
-            return decoder.Decode(result.Span.Slice(0, length));
+            using var result = DefaultCharAllocator.Invoke(length, true);
+            await ReadStringAsync(stream, result.Memory, context, buffer, token).ConfigureAwait(false);
+            return decoder.Decode(result.Memory.Span);
         }
 
         private static async ValueTask<TResult> ReadAsync<TResult, TDecoder>(Stream stream, TDecoder decoder, StringLengthEncoding lengthFormat, DecodingContext context, CancellationToken token)
@@ -1544,20 +1544,20 @@ namespace DotNext.IO
             where TDecoder : ISpanDecoder<TResult>
         {
             int length;
-            ArrayRental<byte> buffer;
-            using (buffer = new ArrayRental<byte>(BufferSizeForLength))
+            MemoryOwner<byte> buffer;
+            using (buffer = DefaultByteAllocator.Invoke(BufferSizeForLength, false))
                 length = await ReadLengthAsync(stream, lengthFormat, buffer.Memory, token).ConfigureAwait(false);
             if (length == 0)
                 throw new EndOfStreamException();
-            using var result = new ArrayRental<char>(length);
-            using (buffer = new ArrayRental<byte>(length))
+            using var result = DefaultCharAllocator.Invoke(length, true);
+            using (buffer = DefaultByteAllocator.Invoke(length, false))
             {
-                length = await ReadStringAsync(stream, result.Memory, context, buffer.Memory, token).ConfigureAwait(false);
-                return decoder.Decode(result.Span.Slice(0, length));
+                await ReadStringAsync(stream, result.Memory, context, buffer.Memory, token).ConfigureAwait(false);
+                return decoder.Decode(result.Memory.Span);
             }
         }
 
-        private static async ValueTask<int> ReadStringAsync(this Stream stream, Memory<char> result, DecodingContext context, Memory<byte> buffer, CancellationToken token = default)
+        private static async ValueTask ReadStringAsync(this Stream stream, Memory<char> result, DecodingContext context, Memory<byte> buffer, CancellationToken token = default)
         {
             var maxChars = context.Encoding.GetMaxCharCount(buffer.Length);
             if (maxChars == 0)
@@ -1571,8 +1571,6 @@ namespace DotNext.IO
                     throw new EndOfStreamException();
                 length -= n;
             }
-
-            return resultOffset;
         }
 
         /// <summary>
@@ -1595,9 +1593,9 @@ namespace DotNext.IO
         {
             if (length == 0)
                 return string.Empty;
-            using var result = new ArrayRental<char>(length);
-            length = await ReadStringAsync(stream, result.Memory, context, buffer, token).ConfigureAwait(false);
-            return new string(result.Span.Slice(0, length));
+            using var result = DefaultCharAllocator.Invoke(length, true);
+            await ReadStringAsync(stream, result.Memory, context, buffer, token).ConfigureAwait(false);
+            return new string(result.Memory.Span);
         }
 
         /// <summary>
@@ -1634,12 +1632,17 @@ namespace DotNext.IO
         {
             if (length == 0)
                 return string.Empty;
-            using var bytesBuffer = new ArrayRental<byte>(length);
-            using var charBuffer = new ArrayRental<char>(length);
-            if (bytesBuffer.Length != await stream.ReadAsync(bytesBuffer.Memory, token).ConfigureAwait(false))
-                throw new EndOfStreamException();
-            var charCount = encoding.GetChars(bytesBuffer.Span, charBuffer.Span);
-            return new string(charBuffer.Span.Slice(0, charCount));
+
+            using var charBuffer = DefaultCharAllocator.Invoke(length, true);
+            int charCount;
+
+            using (var bytesBuffer = DefaultByteAllocator.Invoke(length, true))
+            {
+                await stream.ReadBlockAsync(bytesBuffer.Memory, token).ConfigureAwait(false);
+                charCount = encoding.GetChars(bytesBuffer.Memory.Span, charBuffer.Memory.Span);
+            }
+
+            return new string(charBuffer.Memory.Span.Slice(0, charCount));
         }
 
         /// <summary>
@@ -1659,7 +1662,7 @@ namespace DotNext.IO
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
         public static async ValueTask<string> ReadStringAsync(this Stream stream, StringLengthEncoding lengthFormat, Encoding encoding, CancellationToken token = default)
         {
-            using var lengthDecodingBuffer = new ArrayRental<byte>(BufferSizeForLength);
+            using var lengthDecodingBuffer = DefaultByteAllocator.Invoke(BufferSizeForLength, false);
             return await ReadStringAsync(stream, await stream.ReadLengthAsync(lengthFormat, lengthDecodingBuffer.Memory, token).ConfigureAwait(false), encoding, token).ConfigureAwait(false);
         }
 
@@ -2417,9 +2420,9 @@ namespace DotNext.IO
         public static async ValueTask<T> ReadAsync<T>(this Stream stream, CancellationToken token = default)
             where T : unmanaged
         {
-            using var buffer = new ArrayRental<byte>(Unsafe.SizeOf<T>());
+            using var buffer = DefaultByteAllocator.Invoke(Unsafe.SizeOf<T>(), true);
             await stream.ReadBlockAsync(buffer.Memory, token).ConfigureAwait(false);
-            return MemoryMarshal.Read<T>(buffer.Span);
+            return MemoryMarshal.Read<T>(buffer.Memory.Span);
         }
 
         /// <summary>
@@ -2458,7 +2461,7 @@ namespace DotNext.IO
         public static async ValueTask WriteAsync<T>(this Stream stream, T value, CancellationToken token = default)
             where T : unmanaged
         {
-            using var buffer = new ArrayRental<byte>(Unsafe.SizeOf<T>());
+            using var buffer = DefaultByteAllocator.Invoke(Unsafe.SizeOf<T>(), false);
             await WriteAsync(stream, value, buffer.Memory, token).ConfigureAwait(false);
         }
 
@@ -2553,13 +2556,47 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel operation.</param>
         /// <exception cref="ArgumentException"><paramref name="buffer"/> is empty.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static void Read<TArg>(this Stream stream, ReadOnlySpanAction<byte, TArg> reader, TArg arg, Span<byte> buffer, CancellationToken token = default)
+        public static void Read<TArg>(this Stream stream, in ValueReadOnlySpanAction<byte, TArg> reader, TArg arg, Span<byte> buffer, CancellationToken token = default)
         {
             if (buffer.IsEmpty)
                 throw new ArgumentException(ExceptionMessages.BufferTooSmall);
 
             for (int count; (count = stream.Read(buffer)) > 0; token.ThrowIfCancellationRequested())
-                reader(buffer.Slice(0, count), arg);
+                reader.Invoke(buffer.Slice(0, count), arg);
+        }
+
+        /// <summary>
+        /// Reads the entire content using the specified delegate.
+        /// </summary>
+        /// <typeparam name="TArg">The type of the argument to be passed to the content reader.</typeparam>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="reader">The content reader.</param>
+        /// <param name="arg">The argument to be passed to the content reader.</param>
+        /// <param name="buffer">The buffer allocated by the caller.</param>
+        /// <param name="token">The token that can be used to cancel operation.</param>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> is empty.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static void Read<TArg>(this Stream stream, ReadOnlySpanAction<byte, TArg> reader, TArg arg, Span<byte> buffer, CancellationToken token = default)
+            => Read(stream, new ValueReadOnlySpanAction<byte, TArg>(reader), arg, buffer, token);
+
+        /// <summary>
+        /// Reads the entire content using the specified delegate.
+        /// </summary>
+        /// <typeparam name="TArg">The type of the argument to be passed to the content reader.</typeparam>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="reader">The content reader.</param>
+        /// <param name="arg">The argument to be passed to the content reader.</param>
+        /// <param name="bufferSize">The size of the buffer used to read data.</param>
+        /// <param name="token">The token that can be used to cancel operation.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="bufferSize"/> is less than or equal to zero.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static void Read<TArg>(this Stream stream, in ValueReadOnlySpanAction<byte, TArg> reader, TArg arg, int bufferSize = DefaultBufferSize, CancellationToken token = default)
+        {
+            if (bufferSize <= 0)
+                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+
+            using var owner = bufferSize <= MemoryRental<byte>.StackallocThreshold ? new MemoryRental<byte>(stackalloc byte[bufferSize]) : new MemoryRental<byte>(bufferSize);
+            Read(stream, in reader, arg, owner.Span, token);
         }
 
         /// <summary>
@@ -2574,13 +2611,7 @@ namespace DotNext.IO
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="bufferSize"/> is less than or equal to zero.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static void Read<TArg>(this Stream stream, ReadOnlySpanAction<byte, TArg> reader, TArg arg, int bufferSize = DefaultBufferSize, CancellationToken token = default)
-        {
-            if (bufferSize <= 0)
-                throw new ArgumentOutOfRangeException(nameof(bufferSize));
-
-            using var owner = bufferSize <= MemoryRental<byte>.StackallocThreshold ? new MemoryRental<byte>(stackalloc byte[bufferSize]) : new MemoryRental<byte>(bufferSize);
-            Read(stream, reader, arg, owner.Span, token);
-        }
+            => Read(stream, new ValueReadOnlySpanAction<byte, TArg>(reader), arg, bufferSize, token);
 
         /// <summary>
         /// Reads the entire content using the specified delegate.
@@ -2620,7 +2651,7 @@ namespace DotNext.IO
             if (bufferSize <= 0)
                 throw new ArgumentOutOfRangeException(nameof(bufferSize));
 
-            using var owner = new ArrayRental<byte>(bufferSize);
+            using var owner = DefaultByteAllocator.Invoke(bufferSize, false);
             await ReadAsync(stream, reader, arg, owner.Memory, token).ConfigureAwait(false);
         }
 
@@ -2662,7 +2693,7 @@ namespace DotNext.IO
             if (bufferSize <= 0)
                 throw new ArgumentOutOfRangeException(nameof(bufferSize));
 
-            using var owner = new ArrayRental<byte>(bufferSize);
+            using var owner = DefaultByteAllocator.Invoke(bufferSize, false);
             await ReadAsync(stream, reader, arg, owner.Memory, token).ConfigureAwait(false);
         }
 

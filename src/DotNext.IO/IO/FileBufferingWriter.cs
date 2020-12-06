@@ -250,8 +250,8 @@ namespace DotNext.IO
         long IGrowableBuffer<byte>.WrittenCount => Length;
 
         /// <inheritdoc />
-        void IGrowableBuffer<byte>.CopyTo<TArg>(ReadOnlySpanAction<byte, TArg> callback, TArg arg)
-            => CopyTo(callback, arg);
+        void IGrowableBuffer<byte>.CopyTo<TArg>(in ValueReadOnlySpanAction<byte, TArg> callback, TArg arg)
+            => CopyTo(in callback, arg);
 
         private bool IsReading => reader?.Target != null;
 
@@ -631,19 +631,31 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <typeparam name="TArg">The type of the argument to be passed to the callback.</typeparam>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public void CopyTo<TArg>(ReadOnlySpanAction<byte, TArg> reader, TArg arg, int bufferSize = 1024, CancellationToken token = default)
+        public void CopyTo<TArg>(in ValueReadOnlySpanAction<byte, TArg> reader, TArg arg, int bufferSize = 1024, CancellationToken token = default)
         {
             if (fileBackend != null)
             {
                 fileBackend.Position = 0L;
-                fileBackend.Read(reader, arg, bufferSize, token);
+                fileBackend.Read(in reader, arg, bufferSize, token);
             }
 
             if (buffer.Length > 0 && position > 0)
             {
-                reader(buffer.Memory.Span.Slice(0, position), arg);
+                reader.Invoke(buffer.Memory.Span.Slice(0, position), arg);
             }
         }
+
+        /// <summary>
+        /// Drains buffered content synchronously.
+        /// </summary>
+        /// <param name="reader">The content reader.</param>
+        /// <param name="arg">The argument to be passed to the callback.</param>
+        /// <param name="bufferSize">The size, in bytes, of the buffer used to copy bytes.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <typeparam name="TArg">The type of the argument to be passed to the callback.</typeparam>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public void CopyTo<TArg>(ReadOnlySpanAction<byte, TArg> reader, TArg arg, int bufferSize = 1024, CancellationToken token = default)
+            => CopyTo(new ValueReadOnlySpanAction<byte, TArg>(reader), arg, bufferSize, token);
 
         /// <summary>
         /// Drains buffered content asynchronously.

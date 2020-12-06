@@ -83,9 +83,9 @@ namespace DotNext.IO
         public override void Write(char[] buffer, int index, int count)
             => Write(new ReadOnlySpan<char>(buffer, index, count));
 
-        public override void Write(char[] buffer) => Write(new ReadOnlySpan<char>(buffer));
+        public override void Write(char[]? buffer) => Write(new ReadOnlySpan<char>(buffer));
 
-        public override void Write(string value) => Write(value.AsSpan());
+        public override void Write(string? value) => Write(value.AsSpan());
 
         public override void Write(decimal value)
             => writer.WriteDecimal(value, string.Empty, FormatProvider);
@@ -209,7 +209,7 @@ namespace DotNext.IO
             return result;
         }
 
-        public override Task WriteAsync(string value)
+        public override Task WriteAsync(string? value)
         {
             var result = Task.CompletedTask;
             try
@@ -259,7 +259,7 @@ namespace DotNext.IO
                 case ArrayBufferWriter<char> buffer:
                     return buffer.BuildString();
                 default:
-                    return writer.ToString();
+                    return writer.ToString() ?? string.Empty;
             }
         }
     }

@@ -56,12 +56,12 @@ namespace DotNext.IO
         }
 
         /// <inheritdoc />
-        void IByteBufferWriter.CopyTo<TArg>(ReadOnlySpanAction<byte, TArg> callback, TArg arg)
+        void IByteBufferWriter.CopyTo<TArg>(in ValueReadOnlySpanAction<byte, TArg> callback, TArg arg)
         {
             if (pool is null)
                 throw new ObjectDisposedException(GetType().Name);
             if (Position > 0L)
-                callback(WrittenSpan, arg);
+                callback.Invoke(WrittenSpan, arg);
         }
 
         /// <summary>

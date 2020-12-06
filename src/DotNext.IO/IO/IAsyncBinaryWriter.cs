@@ -9,9 +9,8 @@ using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.IO
 {
-    using static Buffers.BufferReader;
+    using Buffers;
     using static Pipelines.ResultExtensions;
-    using ByteBuffer = Buffers.ArrayRental<byte>;
     using EncodingContext = Text.EncodingContext;
 
     /// <summary>
@@ -31,8 +30,8 @@ namespace DotNext.IO
         async ValueTask WriteAsync<T>(T value, CancellationToken token = default)
             where T : unmanaged
         {
-            using var buffer = new ByteBuffer(Unsafe.SizeOf<T>());
-            Span.AsReadOnlyBytes(value).CopyTo(buffer.Span);
+            using var buffer = BufferWriter.DefaultByteAllocator.Invoke(Unsafe.SizeOf<T>(), true);
+            Span.AsReadOnlyBytes(value).CopyTo(buffer.Memory.Span);
             await WriteAsync(buffer.Memory, token).ConfigureAwait(false);
         }
 
@@ -266,7 +265,7 @@ namespace DotNext.IO
         async Task CopyFromAsync(Stream input, CancellationToken token = default)
         {
             const int defaultBufferSize = 512;
-            using var buffer = new ByteBuffer(defaultBufferSize);
+            using var buffer = BufferWriter.DefaultByteAllocator.Invoke(defaultBufferSize, false);
             for (int count; (count = await input.ReadAsync(buffer.Memory, token).ConfigureAwait(false)) > 0; )
                 await WriteAsync(buffer.Memory.Slice(0, count), token).ConfigureAwait(false);
         }

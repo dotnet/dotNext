@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.IO
 {
-    using ByteBuffer = Buffers.ArrayRental<byte>;
+    using ByteBuffer = Buffers.MemoryOwner<byte>;
     using ByteBufferWriter = Buffers.PooledArrayBufferWriter<byte>;
     using PipeBinaryWriter = Pipelines.PipeBinaryWriter;
 
@@ -115,7 +115,7 @@ namespace DotNext.IO
         public static async ValueTask WriteToAsync<TObject>(this TObject dto, Stream output, int bufferSize = DefaultBufferSize, CancellationToken token = default)
             where TObject : notnull, IDataTransferObject
         {
-            using var buffer = new ByteBuffer(bufferSize);
+            using var buffer = new ByteBuffer(ArrayPool<byte>.Shared, bufferSize);
             await WriteToAsync(dto, output, buffer.Memory, token).ConfigureAwait(false);
         }
 

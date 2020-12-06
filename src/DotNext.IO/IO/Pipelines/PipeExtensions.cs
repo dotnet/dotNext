@@ -3,7 +3,6 @@ using System.Buffers;
 using System.Globalization;
 using System.IO;
 using System.IO.Pipelines;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
@@ -15,7 +14,6 @@ using Missing = System.Reflection.Missing;
 namespace DotNext.IO.Pipelines
 {
     using Buffers;
-    using Security.Cryptography;
     using Text;
     using static Buffers.BufferReader;
 
@@ -61,44 +59,6 @@ namespace DotNext.IO.Pipelines
             }
         }
 
-        [StructLayout(LayoutKind.Auto)]
-        [Obsolete]
-        private struct HashReader : IBufferReader<HashBuilder>
-        {
-            private readonly HashBuilder builder;
-            private readonly bool limited;
-            private int remainingBytes;
-
-            internal HashReader(HashAlgorithm algorithm, int? count)
-            {
-                builder = new HashBuilder(algorithm);
-                if (count.HasValue)
-                {
-                    limited = true;
-                    remainingBytes = count.GetValueOrDefault();
-                }
-                else
-                {
-                    limited = false;
-                    remainingBytes = int.MaxValue;
-                }
-            }
-
-            readonly int IBufferReader<HashBuilder>.RemainingBytes => remainingBytes;
-
-            readonly HashBuilder IBufferReader<HashBuilder>.Complete() => builder;
-
-            void IBufferReader<HashBuilder>.EndOfStream()
-                => remainingBytes = limited ? throw new EndOfStreamException() : 0;
-
-            void IBufferReader<HashBuilder>.Append(ReadOnlySpan<byte> block, ref int consumedBytes)
-            {
-                builder.Add(block);
-                if (limited)
-                    remainingBytes -= block.Length;
-            }
-        }
-
         private static async ValueTask<TResult> ReadAsync<TResult, TParser>(this PipeReader reader, TParser parser, CancellationToken token)
             where TParser : struct, IBufferReader<TResult>
         {
@@ -132,18 +92,15 @@ namespace DotNext.IO.Pipelines
             return parser.RemainingBytes == 0 ? decoder.Decode(parser.Complete()) : throw new EndOfStreamException();
         }
 
-        [Obsolete]
-        internal static async ValueTask ComputeHashAsync(this PipeReader reader, HashAlgorithm algorithm, int? count, Memory<byte> output, CancellationToken token)
-        {
-            using var builder = await reader.ReadAsync<HashBuilder, HashReader>(new HashReader(algorithm, count), token).ConfigureAwait(false);
-            builder.Build(output.Span);
-        }
-
         private static async ValueTask<int> ComputeHashAsync(PipeReader reader, HashAlgorithmName name, int? count, Memory<byte> output, CancellationToken token)
         {
             using var hash = IncrementalHash.CreateHash(name);
             await reader.ReadAsync<Missing, IncrementalHashBuilder>(new IncrementalHashBuilder(hash, count), token).ConfigureAwait(false);
+#if NETSTANDARD2_1
             if (!hash.TryGetHashAndReset(output.Span, out var bytesWritten))
+#else
+            if (!hash.TryGetCurrentHash(output.Span, out var bytesWritten))
+#endif
                 throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(output));
             return bytesWritten;
         }

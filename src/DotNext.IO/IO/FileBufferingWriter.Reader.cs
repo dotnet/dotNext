@@ -49,7 +49,7 @@ namespace DotNext.IO
             public override int Read(byte[] buffer, int offset, int count)
                 => source.Read(buffer, offset, count);
 
-            public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback callback, object? state)
+            public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
                 => source.BeginRead(buffer, offset, count, callback, state);
 
             public override int EndRead(IAsyncResult asyncResult)

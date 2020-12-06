@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.IO
 {
-    using ByteBuffer = Buffers.ArrayRental<byte>;
-    using ByteBufferWriter = Buffers.PooledArrayBufferWriter<byte>;
+    using Buffers;
 
     /// <summary>
     /// Represents structured data unit that can be transferred over wire.
@@ -72,7 +71,7 @@ namespace DotNext.IO
             where TDecoder : notnull, IDecoder<TResult>
         {
             const int bufferSize = 1024;
-            var buffer = new ByteBuffer(bufferSize);
+            var buffer = BufferWriter.DefaultByteAllocator.Invoke(bufferSize, false);
             try
             {
                 return await transformation.ReadAsync(new AsyncStreamBinaryReader(input, buffer.Memory), token).ConfigureAwait(false);
@@ -115,21 +114,15 @@ namespace DotNext.IO
         async ValueTask<TResult> GetObjectDataAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token = default)
             where TDecoder : notnull, IDecoder<TResult>
         {
-            ByteBufferWriter writer;
-            if (Length.TryGetValue(out var length))
+            using PooledArrayBufferWriter<byte> writer = Length switch
             {
-                writer = length <= int.MaxValue ? new ByteBufferWriter((int)length) : throw new InsufficientMemoryException();
-            }
-            else
-            {
-                writer = new ByteBufferWriter();
-            }
+                null => new PooledArrayBufferWriter<byte>(),
+                long length and <= int.MaxValue => new PooledArrayBufferWriter<byte>((int)length),
+                _ => throw new InsufficientMemoryException()
+            };
 
-            using (writer)
-            {
-                await WriteToAsync(new AsyncBufferWriter(writer), token).ConfigureAwait(false);
-                return await parser.ReadAsync(new SequenceBinaryReader(writer.WrittenMemory), token).ConfigureAwait(false);
-            }
+            await WriteToAsync(new AsyncBufferWriter(writer), token).ConfigureAwait(false);
+            return await parser.ReadAsync(new SequenceBinaryReader(writer.WrittenMemory), token).ConfigureAwait(false);
         }
     }
 }
