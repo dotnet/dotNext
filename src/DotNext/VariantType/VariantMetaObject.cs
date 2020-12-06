@@ -13,7 +13,7 @@ namespace DotNext.VariantType
             valueExpression = Expression.Property(Expression.TypeAs(parameter, typeof(IVariant)), typeof(IVariant), nameof(IVariant.Value));
         }
 
-        public new IVariant Value => Unsafe.As<IVariant>(base.Value);
+        public new IVariant? Value => Unsafe.As<IVariant>(base.Value);
 
         protected abstract DynamicMetaObject VariantValue { get; }
 
@@ -62,7 +62,7 @@ namespace DotNext.VariantType
             : base(parameter, variant, out var valueExpression)
         {
             VariantValue = variant.Value is null ?
-                new DynamicMetaObject(valueExpression, Restrictions, null) :
+                new DynamicMetaObject(valueExpression, Restrictions, null!) :
                 new DynamicMetaObject(Expression.Convert(valueExpression, variant.Value.GetType()), Restrictions, variant.Value);
         }
 
