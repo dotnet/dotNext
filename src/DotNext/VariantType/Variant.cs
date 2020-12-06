@@ -73,7 +73,7 @@ namespace DotNext.VariantType
         /// <param name="mapper2">The converter for the second possible type.</param>
         /// <returns>Conversion result; or <see cref="Optional{T}.None"/> if stored value is <see langword="null"/>.</returns>
         public Optional<TResult> Convert<TResult>(Converter<T1, TResult> mapper1, Converter<T2, TResult> mapper2)
-            => Convert(mapper1.AsValueFunc(true), mapper2.AsValueFunc(true));
+            => Convert(mapper1.AsValueFunc(), mapper2.AsValueFunc());
 
         /// <summary>
         /// Converts this variant value into another value.
@@ -104,7 +104,7 @@ namespace DotNext.VariantType
         public Variant<TResult1, TResult2> Convert<TResult1, TResult2>(Converter<T1, TResult1> mapper1, Converter<T2, TResult2> mapper2)
             where TResult1 : class
             where TResult2 : class
-            => Convert(mapper1.AsValueFunc(true), mapper2.AsValueFunc(true));
+            => Convert(mapper1.AsValueFunc(), mapper2.AsValueFunc());
 
         /// <summary>
         /// Change order of type parameters.
