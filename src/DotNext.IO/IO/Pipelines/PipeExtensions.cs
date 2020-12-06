@@ -681,18 +681,6 @@ namespace DotNext.IO.Pipelines
         /// <param name="reader">The pipe reader.</param>
         /// <param name="output">The block of memory to fill from the pipe.</param>
         /// <param name="token">The token that can be used to cancel operation.</param>
-        /// <returns>The task representing asynchronous state of the operation.</returns>
-        /// <exception cref="EndOfStreamException">Reader doesn't have enough data.</exception>
-        [Obsolete("Use ReadBlockAsync extension method instead")]
-        public static ValueTask ReadAsync(PipeReader reader, Memory<byte> output, CancellationToken token = default)
-            => ReadBlockAsync(reader, output, token);
-
-        /// <summary>
-        /// Reads the block of memory.
-        /// </summary>
-        /// <param name="reader">The pipe reader.</param>
-        /// <param name="output">The block of memory to fill from the pipe.</param>
-        /// <param name="token">The token that can be used to cancel operation.</param>
         /// <returns>The actual number of copied bytes.</returns>
         public static ValueTask<int> CopyToAsync(this PipeReader reader, Memory<byte> output, CancellationToken token = default)
             => ReadAsync<int, MemoryReader>(reader, new MemoryReader(output), token);
