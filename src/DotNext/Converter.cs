@@ -92,9 +92,8 @@ namespace DotNext
         /// <typeparam name="TInput">The type of object that is to be converted.</typeparam>
         /// <typeparam name="TOutput">The result of conversion.</typeparam>
         /// <param name="converter">The type the input object is to be converted to.</param>
-        /// <param name="wrap"><see langword="true"/> to wrap <paramref name="converter"/> into this delegate; <see langword="false"/> to extract method pointer without holding reference to the passed delegate.</param>
         /// <returns>The value delegate representing converter.</returns>
-        public static ValueFunc<TInput, TOutput> AsValueFunc<TInput, TOutput>(this Converter<TInput, TOutput> converter, bool wrap = false)
-            => new ValueFunc<TInput, TOutput>(Unsafe.As<Func<TInput, TOutput>>(converter), wrap);
+        public static ValueFunc<TInput, TOutput> AsValueFunc<TInput, TOutput>(this Converter<TInput, TOutput> converter)
+            => new ValueFunc<TInput, TOutput>(Unsafe.As<Func<TInput, TOutput>>(converter));
     }
 }
