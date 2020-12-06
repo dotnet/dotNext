@@ -15,7 +15,7 @@ namespace DotNext.Buffers
     /// </summary>
     /// <typeparam name="T">The data type that can be written.</typeparam>
     [DebuggerDisplay("WrittenCount = {" + nameof(WrittenCount) + "}, FreeCapacity = {" + nameof(FreeCapacity) + "}")]
-    public abstract class MemoryWriter<T> : Disposable, IBufferWriter<T>, IConvertible<ReadOnlyMemory<T>>, IReadOnlyList<T>, IGrowableBuffer<T>
+    public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, IConvertible<ReadOnlyMemory<T>>, IReadOnlyList<T>, IGrowableBuffer<T>
     {
         // TODO: Should be renamed to BufferWriter
 
@@ -34,7 +34,7 @@ namespace DotNext.Buffers
         /// <summary>
         /// Initializes a new memory writer.
         /// </summary>
-        private protected MemoryWriter()
+        private protected BufferWriter()
         {
         }
 
