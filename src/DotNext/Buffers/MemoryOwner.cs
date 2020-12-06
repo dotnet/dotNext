@@ -185,7 +185,7 @@ namespace DotNext.Buffers
                     disposable.Dispose();
                     break;
                 case ArrayPool<T> pool:
-                    pool.Return(array, RuntimeHelpers.IsReferenceOrContainsReferences<T>());
+                    pool.Return(array!, RuntimeHelpers.IsReferenceOrContainsReferences<T>());
                     break;
             }
         }
