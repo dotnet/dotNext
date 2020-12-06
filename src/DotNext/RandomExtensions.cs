@@ -40,7 +40,9 @@ namespace DotNext
             }
         }
 
+#if !NETSTANDARD2_1
         [SkipLocalsInit]
+#endif
         private static unsafe string NextString<TGenerator>(TGenerator generator, delegate*<TGenerator, Span<char>, ReadOnlySpan<char>, void> impl, ReadOnlySpan<char> allowedChars, int length)
             where TGenerator : class
         {

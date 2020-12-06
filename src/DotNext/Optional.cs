@@ -466,7 +466,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">Other value to compare.</param>
         /// <returns><see langword="true"/> if <see cref="Value"/> is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(T? other) => HasValue && EqualityComparer<T>.Default.Equals(value, other);
+        public bool Equals(T? other) => HasValue && EqualityComparer<T?>.Default.Equals(value, other);
 
         private bool Equals(in Optional<T> other)
         {
@@ -478,7 +478,7 @@ namespace DotNext
                 case NotEmptyValue + NullValue:
                     return false;
                 case NotEmptyValue + NotEmptyValue:
-                    return EqualityComparer<T>.Default.Equals(value, other.value);
+                    return EqualityComparer<T?>.Default.Equals(value, other.value);
             }
         }
 

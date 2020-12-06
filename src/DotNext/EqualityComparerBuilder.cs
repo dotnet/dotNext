@@ -149,7 +149,7 @@ namespace DotNext
                 throw new PlatformNotSupportedException();
             var x = Expression.Parameter(typeof(T));
             if (x.Type.IsPrimitive)
-                return EqualityComparer<T>.Default.Equals;
+                return EqualityComparer<T?>.Default.Equals;
             if (x.Type.IsSZArray)
                 return EqualsMethodForArrayElementType(x.Type.GetElementType()!).CreateDelegate<Func<T?, T?, bool>>();
 
