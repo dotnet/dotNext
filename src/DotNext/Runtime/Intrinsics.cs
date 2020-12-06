@@ -186,15 +186,6 @@ namespace DotNext.Runtime
             }
         }
 
-        internal static TItem GetTupleItem<T, TItem>(ref T tuple, int index)
-            where T : struct, ITuple
-        {
-            if (index < 0 || index >= tuple.Length)
-                throw new ArgumentOutOfRangeException(nameof(index));
-
-            return Unsafe.Add(ref Unsafe.As<T, TItem>(ref tuple), index);
-        }
-
         /// <summary>
         /// Provides unified behavior of type cast for reference and value types.
         /// </summary>
@@ -911,13 +902,10 @@ namespace DotNext.Runtime
         /// <typeparam name="T">The type of the elements in the array.</typeparam>
         /// <returns>The array element.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T GetElement<T>(T[] array, IntPtr index)
-        {
-            Push(array);
-            Push(index);
-            Ldelem_Any<T>();
-            return Return<T>();
-        }
+#if !NETSTANDARD2_1
+        [Obsolete("Use C# to access array element using nint data type")]
+#endif
+        public static T GetElement<T>(T[] array, nint index) => array[index];
 
         /// <summary>
         /// Gets the address of the array element.
@@ -927,13 +915,10 @@ namespace DotNext.Runtime
         /// <typeparam name="T">The type of the elements in the array.</typeparam>
         /// <returns>The reference to the array element.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ref T GetElementReference<T>(T[] array, IntPtr index)
-        {
-            Push(array);
-            Push(index);
-            Ldelema<T>();
-            return ref ReturnRef<T>();
-        }
+#if !NETSTANDARD2_1
+        [Obsolete("Use C# to access array element using nint data type")]
+#endif
+        public static ref T GetElementReference<T>(T[] array, nint index) => ref array[index];
 
         /// <summary>
         /// Gets an element of the array by its index.
@@ -944,14 +929,10 @@ namespace DotNext.Runtime
         /// <returns>The array element.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
-        public static T GetElement<T>(T[] array, UIntPtr index)
-        {
-            Push(array);
-            Push(index);
-            Conv_Ovf_I_Un();
-            Ldelem_Any<T>();
-            return Return<T>();
-        }
+#if !NETSTANDARD2_1
+        [Obsolete("Use C# to access array element using nint data type")]
+#endif
+        public static T GetElement<T>(T[] array, nuint index) => GetElement(array, checked((nint)index));
 
         /// <summary>
         /// Gets the address of the array element.
@@ -962,14 +943,10 @@ namespace DotNext.Runtime
         /// <returns>The reference to the array element.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
-        public static ref T GetElementReference<T>(T[] array, UIntPtr index)
-        {
-            Push(array);
-            Push(index);
-            Conv_Ovf_I_Un();
-            Ldelema<T>();
-            return ref ReturnRef<T>();
-        }
+#if !NETSTANDARD2_1
+        [Obsolete("Use C# to access array element using nint data type")]
+#endif
+        public static ref T GetElementReference<T>(T[] array, nuint index) => ref GetElementReference<T>(array, checked((nint)index));
 
         /// <summary>
         /// Converts two bits to 32-bit signed integer.
