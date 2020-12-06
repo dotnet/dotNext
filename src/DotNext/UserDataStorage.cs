@@ -227,7 +227,7 @@ namespace DotNext
         {
             if (source is BackingStorage storage)
                 return storage;
-            return UserData.TryGetValue(source, out storage) ? storage : null;
+            return UserData.TryGetValue(source, out storage!) ? storage : null;
         }
 
         private BackingStorage GetOrCreateStorage()
@@ -241,8 +241,7 @@ namespace DotNext
         /// <param name="defaultValue">Default value to be returned if no user data contained in this collection.</param>
         /// <returns>User data.</returns>
         [return: NotNullIfNotNull("defaultValue")]
-        [return: MaybeNull]
-        public TValue Get<TValue>(UserDataSlot<TValue> slot, [AllowNull]TValue defaultValue)
+        public TValue? Get<TValue>(UserDataSlot<TValue> slot, TValue? defaultValue)
         {
             var storage = GetStorage();
             return storage is null ? defaultValue : storage.Get(slot!, defaultValue);
@@ -254,8 +253,7 @@ namespace DotNext
         /// <typeparam name="TValue">Type of data.</typeparam>
         /// <param name="slot">The slot identifying user data.</param>
         /// <returns>User data; or <c>default(V)</c> if there is no user data associated with <paramref name="slot"/>.</returns>
-        [return: MaybeNull]
-        public TValue Get<TValue>(UserDataSlot<TValue> slot)
+        public TValue? Get<TValue>(UserDataSlot<TValue> slot)
         {
             var storage = GetStorage();
             return storage is null ? default : storage.Get(slot!, default);
