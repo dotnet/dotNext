@@ -198,7 +198,7 @@ namespace DotNext
         /// Obtains pointer to the method that returns <see langword="null"/> if <typeparamref name="TResult"/>
         /// is reference type or initialized value type if <typeparamref name="TResult"/> is value type.
         /// </summary>
-        public static ValueFunc<TResult> DefaultValueProvider => new ValueFunc<TResult>(&Intrinsics.DefaultOf<TResult>);
+        public static ValueFunc<TResult?> DefaultValueProvider => new ValueFunc<TResult?>(&Intrinsics.DefaultOf<TResult>);
 
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
