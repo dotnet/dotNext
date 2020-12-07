@@ -745,7 +745,8 @@ namespace DotNext.Metaprogramming
         /// <typeparam name="TException">The exception to be thrown.</typeparam>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void Throw<TException>()
-            where TException : Exception, new() => Throw(Expression.New(typeof(TException).GetConstructor(Array.Empty<Type>())));
+            where TException : Exception, new()
+            => Throw(Expression.New(typeof(TException)));
 
         /// <summary>
         /// Adds re-throw statement.
