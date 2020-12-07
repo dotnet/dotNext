@@ -1149,6 +1149,7 @@ namespace DotNext.Linq.Expressions
         public static MethodCallExpression New(this Expression type, params Expression[] args)
         {
             var activate = typeof(Activator).GetMethod(nameof(Activator.CreateInstance), new[] { typeof(Type), typeof(object[]) });
+            Debug.Assert(activate is not null);
             return Expression.Call(activate, type, Expression.NewArrayInit(typeof(object), args));
         }
 
@@ -1389,7 +1390,9 @@ namespace DotNext.Linq.Expressions
         {
             var exception = Expression.Parameter(typeof(Exception));
             var ctor = typeof(Result<>).MakeGenericType(expression.Type).GetConstructor(new[] { expression.Type });
+            Debug.Assert(ctor?.DeclaringType is not null);
             var fallbackCtor = ctor.DeclaringType.GetConstructor(new[] { typeof(Exception) });
+            Debug.Assert(fallbackCtor is not null);
             return Expression.TryCatch(
                 Expression.New(ctor, expression),
                 Expression.Catch(exception, Expression.New(fallbackCtor, exception)));
