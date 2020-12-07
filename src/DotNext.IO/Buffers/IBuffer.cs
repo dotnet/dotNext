@@ -37,9 +37,7 @@ namespace DotNext.Buffers
         private readonly MemoryOwner<T> buffer;
 
         internal ArrayBuffer(int length)
-        {
-            buffer = new MemoryOwner<T>(ArrayPool<T>.Shared, length);
-        }
+            => buffer = new MemoryOwner<T>(ArrayPool<T>.Shared, length);
 
         int IBuffer<T>.Length => buffer.Length;
 
