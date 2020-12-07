@@ -23,3 +23,4 @@ VoidLambda=Lambda function has void return type
 ExpressionTypeExpected=Expression should be of {0} type
 CollectionExpected=Type {0} should have Length/Count property, indexer or Slice method
 AsyncEnumerableExpected=Collection expression doesn't implement IAsyncEnumerable<T>
+VariableNameIsNullOrEmpty=Local variable must have a name

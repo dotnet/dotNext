@@ -114,7 +114,12 @@ namespace DotNext.Metaprogramming
         public void AddStatement(Expression statement)
             => last = first is null || last is null ? first = new StatementNode(statement) : last.CreateNext(statement);
 
-        public void DeclareVariable(ParameterExpression variable) => variables.Add(variable.Name, variable);
+        public void DeclareVariable(ParameterExpression variable)
+        {
+            if (string.IsNullOrEmpty(variable.Name))
+                throw new ArgumentException(ExceptionMessages.VariableNameIsNullOrEmpty, nameof(variable));
+            variables.Add(variable.Name, variable);
+        }
 
         private protected Expression Build()
         {
