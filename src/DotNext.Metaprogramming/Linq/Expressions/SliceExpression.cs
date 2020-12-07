@@ -102,8 +102,8 @@ namespace DotNext.Linq.Expressions
         private static MethodCallExpression SubArray(Expression array, Expression range)
         {
             MethodInfo? subArray = typeof(RuntimeHelpers).GetMethod(nameof(RuntimeHelpers.GetSubArray), 1, new[] { Type.MakeGenericMethodParameter(0).MakeArrayType(), typeof(Range) });
-            Debug.Assert(!(subArray is null));
-            subArray = subArray.MakeGenericMethod(array.Type.GetElementType());
+            Debug.Assert(subArray is not null);
+            subArray = subArray.MakeGenericMethod(array.Type.GetElementType()!);
             return Call(subArray, array, range.Reduce());
         }
 
