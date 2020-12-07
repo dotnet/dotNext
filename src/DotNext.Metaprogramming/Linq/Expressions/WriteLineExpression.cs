@@ -75,18 +75,21 @@ namespace DotNext.Linq.Expressions
         private MethodCallExpression WriteLineToOut()
         {
             var outProperty = typeof(Console).GetProperty(nameof(Console.Out));
+            System.Diagnostics.Debug.Assert(outProperty is not null);
             return WriteLineTo(Property(null, outProperty), value);
         }
 
         private MethodCallExpression WriteLineToError()
         {
             var outProperty = typeof(Console).GetProperty(nameof(Console.Error));
+            System.Diagnostics.Debug.Assert(outProperty is not null);
             return WriteLineTo(Property(null, outProperty), value);
         }
 
         private MethodCallExpression WriteLineToDebug()
         {
             var writeLineMethod = typeof(System.Diagnostics.Debug).GetMethod(nameof(System.Diagnostics.Debug.WriteLine), new[] { typeof(object) });
+            System.Diagnostics.Debug.Assert(writeLineMethod is not null);
             return Call(writeLineMethod, value.Type.IsValueType ? Convert(value, typeof(object)) : value);
         }
 
