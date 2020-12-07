@@ -16,8 +16,6 @@ namespace DotNext.IO
     internal readonly struct AsyncBufferWriter : IAsyncBinaryWriter
     {
         private readonly IBufferWriter<byte> writer;
-
-        // TODO: Should be replaced with function pointer in C# 9
         private readonly Func<IBufferWriter<byte>, CancellationToken, Task>? flush;
 
         internal AsyncBufferWriter(IBufferWriter<byte> writer)
