@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 
@@ -25,9 +27,14 @@ namespace DotNext.Runtime.CompilerServices
             internal void Insert(Expression expr)
             {
                 if (nodeOrList.First.TryGet(out var list))
+                {
                     nodeOrList = list.AddLast(expr);
+                }
                 else if (nodeOrList.Second.TryGet(out var node))
+                {
+                    Debug.Assert(node.List is not null);
                     nodeOrList = node.List.AddAfter(node, expr);
+                }
             }
         }
 
@@ -69,10 +76,13 @@ namespace DotNext.Runtime.CompilerServices
             }
         }
 
-        internal static Expression Wrap(Expression expr)
+        [return: NotNullIfNotNull("expr")]
+        internal static Expression? Wrap(Expression? expr)
         {
             switch (expr)
             {
+                case null:
+                    return null;
                 case TryExpression seh:
                     return seh;
                 case BlockExpression block:
@@ -95,13 +105,19 @@ namespace DotNext.Runtime.CompilerServices
             => loop = loop.Update(loop.BreakLabel, loop.ContinueLabel, Wrap(loop.Body));
 
         internal static void Rewrite(ref BlockExpression block)
-            => block = block.Update(block.Variables, block.Expressions.Select(Wrap));
+            => block = block.Update(block.Variables, block.Expressions.Select(Wrap)!);
 
         internal static void Rewrite(ref SwitchExpression @switch)
             => @switch = @switch.Update(@switch.SwitchValue, @switch.Cases.Select(c => c.Update(c.TestValues, Wrap(c.Body))), Wrap(@switch.DefaultBody));
 
         private static CodeInsertionPoint CaptureRewritePoint(LinkedList<Expression> codeBlock)
-            => codeBlock.First is null ? new CodeInsertionPoint(codeBlock) : new CodeInsertionPoint(codeBlock.Last);
+        {
+            if (codeBlock.First is null)
+                return new CodeInsertionPoint(codeBlock);
+
+            Debug.Assert(codeBlock.Last is not null);
+            return new CodeInsertionPoint(codeBlock.Last);
+        }
 
         internal DotNext.CodeInsertionPoint PrologueCodeInserter() => CaptureRewritePoint(prologue).Insert;
 

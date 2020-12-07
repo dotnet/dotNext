@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Runtime.ExceptionServices;
 
@@ -14,11 +15,9 @@ namespace DotNext.Runtime.CompilerServices
 
         internal static Expression Dispatch(ParameterExpression exceptionHolder)
         {
-            var capture = Call(
-                null,
-                typeof(ExceptionDispatchInfo).GetMethod(nameof(ExceptionDispatchInfo.Capture), new[] { typeof(Exception) }),
-                exceptionHolder);
-            return capture.Call(nameof(ExceptionDispatchInfo.Throw));
+            var captureMethod = typeof(ExceptionDispatchInfo).GetMethod(nameof(ExceptionDispatchInfo.Capture), new[] { typeof(Exception) });
+            Debug.Assert(captureMethod is not null);
+            return Call(null, captureMethod, exceptionHolder).Call(nameof(ExceptionDispatchInfo.Throw));
         }
 
         internal override Expression Reduce(ParameterExpression stateMachine)

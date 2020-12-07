@@ -13,9 +13,14 @@ namespace DotNext.Runtime.CompilerServices
             labelReplacement = new Dictionary<LabelTarget, LabelTarget>();
         }
 
-        protected override LabelTarget VisitLabelTarget(LabelTarget node)
+        protected override LabelTarget? VisitLabelTarget(LabelTarget? node)
         {
-            if (!labelReplacement.TryGetValue(node, out var targetCopy))
+            LabelTarget? targetCopy;
+            if (node is null)
+            {
+                targetCopy = null;
+            }
+            else if (!labelReplacement.TryGetValue(node, out targetCopy))
             {
                 targetCopy = Expression.Label(node.Type, node.Name);
                 labelReplacement.Add(node, targetCopy);

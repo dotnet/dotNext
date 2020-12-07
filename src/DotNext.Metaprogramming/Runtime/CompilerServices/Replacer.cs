@@ -15,9 +15,9 @@ namespace DotNext.Runtime.CompilerServices
         internal void Replace(Expression expected, Expression actual)
             => replacement.Add(expected, actual);
 
-        public override Expression Visit(Expression node)
+        public override Expression? Visit(Expression? node)
         {
-            if (!(node is null) && replacement.TryGetValue(node, out var newNode))
+            if (node is not null && replacement.TryGetValue(node, out var newNode))
                 node = newNode;
             return base.Visit(node);
         }
