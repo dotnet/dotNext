@@ -37,6 +37,8 @@ namespace DotNext.Reflection
         {
             Equal(typeof(string), typeof(MyList).GetItemType(out var enumerable));
             Equal(typeof(IEnumerable<string>), enumerable);
+            Equal(typeof(int), typeof(int[]).GetItemType(out enumerable));
+            Equal(typeof(IEnumerable<int>), enumerable);
         }
 
         private struct ManagedStruct
