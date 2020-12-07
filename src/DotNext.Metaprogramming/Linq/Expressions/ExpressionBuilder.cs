@@ -755,7 +755,7 @@ namespace DotNext.Linq.Expressions
         /// <returns>An expression representing static method call.</returns>
         public static MethodCallExpression CallStatic(this Type type, string methodName, params Expression[] arguments)
         {
-            MethodInfo? method = type.GetMethod(methodName, BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly, null, Array.ConvertAll(arguments, GetType), Array.Empty<ParameterModifier>());
+            MethodInfo? method = type.GetMethod(methodName, BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly, null, Array.ConvertAll(arguments, GetType), null);
             return method is null ?
                 throw new MissingMethodException(type.FullName, methodName) :
                 Expression.Call(method, arguments);
