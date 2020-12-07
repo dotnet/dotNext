@@ -29,6 +29,24 @@ namespace DotNext.IO
         private const int InitialCharBufferSize = 128;
         private const int DefaultBufferSize = 256;
 
+        // this struct is required to call function pointer in async method
+        [StructLayout(LayoutKind.Auto)]
+        private readonly unsafe struct SpanFormattable<T>
+            where T : struct, IFormattable
+        {
+            private readonly T value;
+            private readonly delegate*<in T, Span<char>, out int, ReadOnlySpan<char>, IFormatProvider?, bool> formatter;
+        
+            internal SpanFormattable(T value, delegate*<in T, Span<char>, out int, ReadOnlySpan<char>, IFormatProvider?, bool> formatter)
+            {
+                this.value = value;
+                this.formatter = formatter;
+            }
+
+            internal bool TryFormat(Memory<char> output, out int charsWritten, string? format, IFormatProvider? provider)
+                => formatter(in value, output.Span, out charsWritten, format.AsSpan(), provider);
+        }
+
         [StructLayout(LayoutKind.Auto)]
         private readonly struct StreamWriter : SevenBitEncodedInt.IWriter
         {
@@ -196,27 +214,27 @@ namespace DotNext.IO
             stream.Write(buffer.Span);
         }
 
-        private static bool WriteString<T>(Stream stream, T value, Span<char> buffer, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format, IFormatProvider? provider)
-            where T : struct, ISpanFormattable
+        private static unsafe bool WriteString<T>(Stream stream, in T value, delegate*<in T, Span<char>, out int, ReadOnlySpan<char>, IFormatProvider?, bool> formatter, Span<char> buffer, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format, IFormatProvider? provider)
+            where T : struct, IFormattable
         {
-            if (!value.TryFormat(buffer, out var charsWritten, format, provider))
+            if (!formatter(in value, buffer, out var charsWritten, format, provider))
                 return false;
 
             WriteString(stream, buffer.Slice(0, charsWritten), encoding, lengthFormat);
             return true;
         }
 
-        private static void Write<T>(Stream stream, T value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format, IFormatProvider? provider)
-            where T : struct, ISpanFormattable
+        private static unsafe void Write<T>(Stream stream, in T value, delegate*<in T, Span<char>, out int, ReadOnlySpan<char>, IFormatProvider?, bool> formatter, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format, IFormatProvider? provider)
+            where T : struct, IFormattable
         {
             // attempt to allocate char buffer on the stack
             Span<char> charBuffer = stackalloc char[InitialCharBufferSize];
-            if (!WriteString(stream, value, charBuffer, lengthFormat, encoding, format, provider))
+            if (!WriteString(stream, in value, formatter, charBuffer, lengthFormat, encoding, format, provider))
             {
                 for (var charBufferSize = InitialCharBufferSize * 2; ; charBufferSize = charBufferSize <= MaxBufferSize ? charBufferSize * 2 : throw new InsufficientMemoryException())
                 {
                     using var owner = DefaultCharAllocator.Invoke(charBufferSize, false);
-                    if (WriteString(stream, value, charBuffer, lengthFormat, encoding, format, provider))
+                    if (WriteString(stream, in value, formatter, charBuffer, lengthFormat, encoding, format, provider))
                         break;
                     charBufferSize = owner.Length;
                 }
@@ -232,8 +250,8 @@ namespace DotNext.IO
         /// <param name="encoding">The string encoding.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static void WriteByte(this Stream stream, byte value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write<ByteFormatter>(stream, value, lengthFormat, encoding, format, provider);
+        public static unsafe void WriteByte(this Stream stream, byte value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(stream, in value, &TryFormat, lengthFormat, encoding, format, provider);
 
         /// <summary>
         /// Encodes 8-bit signed integer as a string.
@@ -245,8 +263,8 @@ namespace DotNext.IO
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         [CLSCompliant(false)]
-        public static void WriteSByte(this Stream stream, sbyte value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write<SByteFormatter>(stream, value, lengthFormat, encoding, format, provider);
+        public static unsafe void WriteSByte(this Stream stream, sbyte value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(stream, in value, &TryFormat, lengthFormat, encoding, format, provider);
 
         /// <summary>
         /// Encodes 16-bit signed integer as a string.
@@ -257,8 +275,8 @@ namespace DotNext.IO
         /// <param name="encoding">The string encoding.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static void WriteInt16(this Stream stream, short value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write<Int16Formatter>(stream, value, lengthFormat, encoding, format, provider);
+        public static unsafe void WriteInt16(this Stream stream, short value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(stream, in value, &TryFormat, lengthFormat, encoding, format, provider);
 
         /// <summary>
         /// Encodes 16-bit unsigned integer as a string.
@@ -270,8 +288,8 @@ namespace DotNext.IO
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         [CLSCompliant(false)]
-        public static void WriteUInt16(this Stream stream, ushort value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write<UInt16Formatter>(stream, value, lengthFormat, encoding, format, provider);
+        public static unsafe void WriteUInt16(this Stream stream, ushort value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(stream, in value, &TryFormat, lengthFormat, encoding, format, provider);
 
         /// <summary>
         /// Encodes 32-bit signed integer as a string.
@@ -282,8 +300,8 @@ namespace DotNext.IO
         /// <param name="encoding">The string encoding.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static void WriteInt32(this Stream stream, int value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write<Int32Formatter>(stream, value, lengthFormat, encoding, format, provider);
+        public static unsafe void WriteInt32(this Stream stream, int value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(stream, in value, &TryFormat, lengthFormat, encoding, format, provider);
 
         /// <summary>
         /// Encodes 32-bit unsigned integer as a string.
@@ -295,8 +313,8 @@ namespace DotNext.IO
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         [CLSCompliant(false)]
-        public static void WriteUInt32(this Stream stream, uint value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write<UInt32Formatter>(stream, value, lengthFormat, encoding, format, provider);
+        public static unsafe void WriteUInt32(this Stream stream, uint value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(stream, in value, &TryFormat, lengthFormat, encoding, format, provider);
 
         /// <summary>
         /// Encodes 64-bit signed integer as a string.
@@ -307,8 +325,8 @@ namespace DotNext.IO
         /// <param name="encoding">The string encoding.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static void WriteInt64(this Stream stream, long value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write<Int64Formatter>(stream, value, lengthFormat, encoding, format, provider);
+        public static unsafe void WriteInt64(this Stream stream, long value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(stream, in value, &TryFormat, lengthFormat, encoding, format, provider);
 
         /// <summary>
         /// Encodes 64-bit unsigned integer as a string.
@@ -320,8 +338,8 @@ namespace DotNext.IO
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         [CLSCompliant(false)]
-        public static void WriteUInt64(this Stream stream, ulong value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write<UInt64Formatter>(stream, value, lengthFormat, encoding, format, provider);
+        public static unsafe void WriteUInt64(this Stream stream, ulong value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(stream, in value, &TryFormat, lengthFormat, encoding, format, provider);
 
         /// <summary>
         /// Encodes single-precision floating-point number as a string.
@@ -332,8 +350,8 @@ namespace DotNext.IO
         /// <param name="encoding">The string encoding.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static void WriteSingle(this Stream stream, float value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write<SingleFormatter>(stream, value, lengthFormat, encoding, format, provider);
+        public static unsafe void WriteSingle(this Stream stream, float value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(stream, in value, &TryFormat, lengthFormat, encoding, format, provider);
 
         /// <summary>
         /// Encodes double-precision floating-point number as a string.
@@ -344,8 +362,8 @@ namespace DotNext.IO
         /// <param name="encoding">The string encoding.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static void WriteDouble(this Stream stream, double value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write<DoubleFormatter>(stream, value, lengthFormat, encoding, format, provider);
+        public static unsafe void WriteDouble(this Stream stream, double value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(stream, in value, &TryFormat, lengthFormat, encoding, format, provider);
 
         /// <summary>
         /// Encodes <see cref="decimal"/> as a string.
@@ -356,8 +374,8 @@ namespace DotNext.IO
         /// <param name="encoding">The string encoding.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static void WriteDecimal(this Stream stream, decimal value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write<DecimalFormatter>(stream, value, lengthFormat, encoding, format, provider);
+        public static unsafe void WriteDecimal(this Stream stream, in decimal value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(stream, in value, &TryFormat, lengthFormat, encoding, format, provider);
 
         /// <summary>
         /// Encodes <see cref="Guid"/> as a string.
@@ -367,8 +385,8 @@ namespace DotNext.IO
         /// <param name="lengthFormat">String length encoding format.</param>
         /// <param name="encoding">The string encoding.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
-        public static void WriteGuid(this Stream stream, Guid value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default)
-            => Write<GuidFormatter>(stream, value, lengthFormat, encoding, format, null);
+        public static unsafe void WriteGuid(this Stream stream, in Guid value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default)
+            => Write(stream, in value, &TryFormat, lengthFormat, encoding, format, null);
 
         /// <summary>
         /// Encodes <see cref="DateTime"/> as a string.
@@ -379,8 +397,8 @@ namespace DotNext.IO
         /// <param name="encoding">The string encoding.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static void WriteDateTime(this Stream stream, DateTime value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write<DateTimeFormatter>(stream, value, lengthFormat, encoding, format, provider);
+        public static unsafe void WriteDateTime(this Stream stream, DateTime value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(stream, in value, &TryFormat, lengthFormat, encoding, format, provider);
 
         /// <summary>
         /// Encodes <see cref="DateTimeOffset"/> as a string.
@@ -391,8 +409,8 @@ namespace DotNext.IO
         /// <param name="encoding">The string encoding.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static void WriteDateTimeOffset(this Stream stream, DateTimeOffset value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write<DateTimeOffsetFormatter>(stream, value, lengthFormat, encoding, format, provider);
+        public static unsafe void WriteDateTimeOffset(this Stream stream, DateTimeOffset value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(stream, in value, &TryFormat, lengthFormat, encoding, format, provider);
 
         /// <summary>
         /// Encodes <see cref="TimeSpan"/> as a string.
@@ -403,8 +421,8 @@ namespace DotNext.IO
         /// <param name="encoding">The string encoding.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static void WriteTimeSpan(this Stream stream, TimeSpan value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-            => Write<TimeSpanFormatter>(stream, value, lengthFormat, encoding, format, provider);
+        public static unsafe void WriteTimeSpan(this Stream stream, TimeSpan value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(stream, in value, &TryFormat, lengthFormat, encoding, format, provider);
 
         private static ValueTask WriteLengthAsync(this Stream stream, ReadOnlySpan<char> value, Encoding encoding, StringLengthEncoding? lengthFormat, Memory<byte> buffer, CancellationToken token)
         {
@@ -509,14 +527,14 @@ namespace DotNext.IO
             await stream.WriteAsync(buffer.Memory, token).ConfigureAwait(false);
         }
 
-        private static async ValueTask WriteAsync<T>(Stream stream, T value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format, IFormatProvider? provider, CancellationToken token)
-            where T : struct, ISpanFormattable
+        private static async ValueTask WriteAsync<T>(Stream stream, SpanFormattable<T> value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format, IFormatProvider? provider, CancellationToken token)
+            where T : struct, IFormattable
         {
             for (var charBufferSize = InitialCharBufferSize; ; charBufferSize = charBufferSize <= MaxBufferSize ? charBufferSize * 2 : throw new InsufficientMemoryException())
             {
                 using var owner = DefaultCharAllocator.Invoke(charBufferSize, false);
 
-                if (value.TryFormat(owner.Memory.Span, out var charsWritten, format, provider))
+                if (value.TryFormat(owner.Memory, out var charsWritten, format, provider))
                 {
                     await WriteStringAsync(stream, owner.Memory.Slice(0, charsWritten), context, buffer, lengthFormat, token).ConfigureAwait(false);
                     break;
@@ -526,8 +544,8 @@ namespace DotNext.IO
             }
         }
 
-        private static async ValueTask WriteAsync<T>(Stream stream, T value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
-            where T : struct, ISpanFormattable
+        private static async ValueTask WriteAsync<T>(Stream stream, SpanFormattable<T> value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+            where T : struct, IFormattable
         {
             using var owner = DefaultByteAllocator.Invoke(DefaultBufferSize, false);
             await WriteAsync(stream, value, lengthFormat, context, owner.Memory, format, provider, token).ConfigureAwait(false);
@@ -547,8 +565,8 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static ValueTask WriteByteAsync(this Stream stream, byte value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-            => WriteAsync<ByteFormatter>(stream, value, lengthFormat, context, buffer, format, provider, token);
+        public static unsafe ValueTask WriteByteAsync(this Stream stream, byte value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(stream, new SpanFormattable<byte>(value, &TryFormat), lengthFormat, context, buffer, format, provider, token);
 
         /// <summary>
         /// Encodes 8-bit unsigned integer as a string.
@@ -563,8 +581,8 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static ValueTask WriteByteAsync(this Stream stream, byte value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-            => WriteAsync<ByteFormatter>(stream, value, lengthFormat, context, format, provider, token);
+        public static unsafe ValueTask WriteByteAsync(this Stream stream, byte value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(stream, new SpanFormattable<byte>(value, &TryFormat), lengthFormat, context, format, provider, token);
 
         /// <summary>
         /// Encodes 8-bit signed integer as a string.
@@ -581,8 +599,8 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
         [CLSCompliant(false)]
-        public static ValueTask WriteSByteAsync(this Stream stream, sbyte value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-            => WriteAsync<SByteFormatter>(stream, value, lengthFormat, context, buffer, format, provider, token);
+        public static unsafe ValueTask WriteSByteAsync(this Stream stream, sbyte value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(stream, new SpanFormattable<sbyte>(value, &TryFormat), lengthFormat, context, buffer, format, provider, token);
 
         /// <summary>
         /// Encodes 8-bit unsigned integer as a string.
@@ -598,8 +616,8 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
         [CLSCompliant(false)]
-        public static ValueTask WriteSByteAsync(this Stream stream, sbyte value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-            => WriteAsync<SByteFormatter>(stream, value, lengthFormat, context, format, provider, token);
+        public static unsafe ValueTask WriteSByteAsync(this Stream stream, sbyte value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(stream, new SpanFormattable<sbyte>(value, &TryFormat), lengthFormat, context, format, provider, token);
 
         /// <summary>
         /// Encodes 16-bit signed integer as a string.
@@ -615,8 +633,8 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static ValueTask WriteInt16Async(this Stream stream, short value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-            => WriteAsync<Int16Formatter>(stream, value, lengthFormat, context, buffer, format, provider, token);
+        public static unsafe ValueTask WriteInt16Async(this Stream stream, short value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(stream, new SpanFormattable<short>(value, &TryFormat), lengthFormat, context, buffer, format, provider, token);
 
         /// <summary>
         /// Encodes 16-bit signed integer as a string.
@@ -631,8 +649,8 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static ValueTask WriteInt16Async(this Stream stream, short value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-            => WriteAsync<Int16Formatter>(stream, value, lengthFormat, context, format, provider, token);
+        public static unsafe ValueTask WriteInt16Async(this Stream stream, short value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(stream, new SpanFormattable<short>(value, &TryFormat), lengthFormat, context, format, provider, token);
 
         /// <summary>
         /// Encodes 16-bit unsigned integer as a string.
@@ -649,8 +667,8 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
         [CLSCompliant(false)]
-        public static ValueTask WriteUInt16Async(this Stream stream, ushort value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-            => WriteAsync<UInt16Formatter>(stream, value, lengthFormat, context, buffer, format, provider, token);
+        public static unsafe ValueTask WriteUInt16Async(this Stream stream, ushort value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(stream, new SpanFormattable<ushort>(value, &TryFormat), lengthFormat, context, buffer, format, provider, token);
 
         /// <summary>
         /// Encodes 16-bit unsigned integer as a string.
@@ -666,8 +684,8 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
         [CLSCompliant(false)]
-        public static ValueTask WriteUInt16Async(this Stream stream, ushort value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-            => WriteAsync<UInt16Formatter>(stream, value, lengthFormat, context, format, provider, token);
+        public static unsafe ValueTask WriteUInt16Async(this Stream stream, ushort value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(stream, new SpanFormattable<ushort>(value, &TryFormat), lengthFormat, context, format, provider, token);
 
         /// <summary>
         /// Encodes 32-bit signed integer as a string.
@@ -683,8 +701,8 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static ValueTask WriteInt32Async(this Stream stream, int value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-            => WriteAsync<Int32Formatter>(stream, value, lengthFormat, context, buffer, format, provider, token);
+        public static unsafe ValueTask WriteInt32Async(this Stream stream, int value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(stream, new SpanFormattable<int>(value, &TryFormat), lengthFormat, context, buffer, format, provider, token);
 
         /// <summary>
         /// Encodes 16-bit signed integer as a string.
@@ -699,8 +717,8 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static ValueTask WriteInt32Async(this Stream stream, int value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-            => WriteAsync<Int32Formatter>(stream, value, lengthFormat, context, format, provider, token);
+        public static unsafe ValueTask WriteInt32Async(this Stream stream, int value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(stream, new SpanFormattable<int>(value, &TryFormat), lengthFormat, context, format, provider, token);
 
         /// <summary>
         /// Encodes 32-bit unsigned integer as a string.
@@ -717,8 +735,8 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
         [CLSCompliant(false)]
-        public static ValueTask WriteUInt32Async(this Stream stream, uint value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-            => WriteAsync<UInt32Formatter>(stream, value, lengthFormat, context, buffer, format, provider, token);
+        public static unsafe ValueTask WriteUInt32Async(this Stream stream, uint value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(stream, new SpanFormattable<uint>(value, &TryFormat), lengthFormat, context, buffer, format, provider, token);
 
         /// <summary>
         /// Encodes 16-bit unsigned integer as a string.
@@ -734,8 +752,8 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
         [CLSCompliant(false)]
-        public static ValueTask WriteUInt32Async(this Stream stream, uint value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-            => WriteAsync<UInt32Formatter>(stream, value, lengthFormat, context, format, provider, token);
+        public static unsafe ValueTask WriteUInt32Async(this Stream stream, uint value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(stream, new SpanFormattable<uint>(value, &TryFormat), lengthFormat, context, format, provider, token);
 
         /// <summary>
         /// Encodes 64-bit signed integer as a string.
@@ -751,8 +769,8 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static ValueTask WriteInt64Async(this Stream stream, long value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-            => WriteAsync<Int64Formatter>(stream, value, lengthFormat, context, buffer, format, provider, token);
+        public static unsafe ValueTask WriteInt64Async(this Stream stream, long value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(stream, new SpanFormattable<long>(value, &TryFormat), lengthFormat, context, buffer, format, provider, token);
 
         /// <summary>
         /// Encodes 64-bit signed integer as a string.
@@ -767,8 +785,8 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static ValueTask WriteInt64Async(this Stream stream, long value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-            => WriteAsync<Int64Formatter>(stream, value, lengthFormat, context, format, provider, token);
+        public static unsafe ValueTask WriteInt64Async(this Stream stream, long value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(stream, new SpanFormattable<long>(value, &TryFormat), lengthFormat, context, format, provider, token);
 
         /// <summary>
         /// Encodes 64-bit unsigned integer as a string.
@@ -785,8 +803,8 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
         [CLSCompliant(false)]
-        public static ValueTask WriteUInt64Async(this Stream stream, ulong value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-            => WriteAsync<UInt64Formatter>(stream, value, lengthFormat, context, buffer, format, provider, token);
+        public static unsafe ValueTask WriteUInt64Async(this Stream stream, ulong value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(stream, new SpanFormattable<ulong>(value, &TryFormat), lengthFormat, context, buffer, format, provider, token);
 
         /// <summary>
         /// Encodes 64-bit unsigned integer as a string.
@@ -802,8 +820,8 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
         [CLSCompliant(false)]
-        public static ValueTask WriteUInt64Async(this Stream stream, ulong value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-            => WriteAsync<UInt64Formatter>(stream, value, lengthFormat, context, format, provider, token);
+        public static unsafe ValueTask WriteUInt64Async(this Stream stream, ulong value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(stream, new SpanFormattable<ulong>(value, &TryFormat), lengthFormat, context, format, provider, token);
 
         /// <summary>
         /// Encodes single-precision floating-point number as a string.
@@ -819,8 +837,8 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static ValueTask WriteSingleAsync(this Stream stream, float value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-            => WriteAsync<SingleFormatter>(stream, value, lengthFormat, context, buffer, format, provider, token);
+        public static unsafe ValueTask WriteSingleAsync(this Stream stream, float value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(stream, new SpanFormattable<float>(value, &TryFormat), lengthFormat, context, buffer, format, provider, token);
 
         /// <summary>
         /// Encodes single-precision floating-pointer number as a string.
@@ -835,8 +853,8 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static ValueTask WriteSingleAsync(this Stream stream, float value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-            => WriteAsync<SingleFormatter>(stream, value, lengthFormat, context, format, provider, token);
+        public static unsafe ValueTask WriteSingleAsync(this Stream stream, float value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(stream, new SpanFormattable<float>(value, &TryFormat), lengthFormat, context, format, provider, token);
 
         /// <summary>
         /// Encodes double-precision floating-point number as a string.
@@ -852,8 +870,8 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static ValueTask WriteDoubleAsync(this Stream stream, double value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-            => WriteAsync<DoubleFormatter>(stream, value, lengthFormat, context, buffer, format, provider, token);
+        public static unsafe ValueTask WriteDoubleAsync(this Stream stream, double value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(stream, new SpanFormattable<double>(value, &TryFormat), lengthFormat, context, buffer, format, provider, token);
 
         /// <summary>
         /// Encodes double-precision floating-pointer number as a string.
@@ -868,8 +886,8 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static ValueTask WriteDoubleAsync(this Stream stream, double value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-            => WriteAsync<DoubleFormatter>(stream, value, lengthFormat, context, format, provider, token);
+        public static unsafe ValueTask WriteDoubleAsync(this Stream stream, double value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(stream, new SpanFormattable<double>(value, &TryFormat), lengthFormat, context, format, provider, token);
 
         /// <summary>
         /// Encodes double-precision floating-point number as a string.
@@ -885,8 +903,8 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static ValueTask WriteDecimalAsync(this Stream stream, decimal value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-            => WriteAsync<DecimalFormatter>(stream, value, lengthFormat, context, buffer, format, provider, token);
+        public static unsafe ValueTask WriteDecimalAsync(this Stream stream, decimal value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(stream, new SpanFormattable<decimal>(value, &TryFormat), lengthFormat, context, buffer, format, provider, token);
 
         /// <summary>
         /// Encodes double-precision floating-pointer number as a string.
@@ -901,8 +919,8 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static ValueTask WriteDecimalAsync(this Stream stream, decimal value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-            => WriteAsync<DecimalFormatter>(stream, value, lengthFormat, context, format, provider, token);
+        public static unsafe ValueTask WriteDecimalAsync(this Stream stream, decimal value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(stream, new SpanFormattable<decimal>(value, &TryFormat), lengthFormat, context, format, provider, token);
 
         /// <summary>
         /// Encodes <see cref="Guid"/> as a string.
@@ -917,8 +935,8 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static ValueTask WriteGuidAsync(this Stream stream, Guid value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, CancellationToken token = default)
-            => WriteAsync<GuidFormatter>(stream, value, lengthFormat, context, buffer, format, null, token);
+        public static unsafe ValueTask WriteGuidAsync(this Stream stream, Guid value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, CancellationToken token = default)
+            => WriteAsync(stream, new SpanFormattable<Guid>(value, &TryFormat), lengthFormat, context, buffer, format, null, token);
 
         /// <summary>
         /// Encodes <see cref="Guid"/> as a string.
@@ -932,8 +950,8 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static ValueTask WriteGuidAsync(this Stream stream, Guid value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, CancellationToken token = default)
-            => WriteAsync<GuidFormatter>(stream, value, lengthFormat, context, format, null, token);
+        public static unsafe ValueTask WriteGuidAsync(this Stream stream, Guid value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, CancellationToken token = default)
+            => WriteAsync(stream, new SpanFormattable<Guid>(value, &TryFormat), lengthFormat, context, format, null, token);
 
         /// <summary>
         /// Encodes <see cref="DateTime"/> as a string.
@@ -949,8 +967,8 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static ValueTask WriteDateTimeAsync(this Stream stream, DateTime value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-            => WriteAsync<DateTimeFormatter>(stream, value, lengthFormat, context, buffer, format, provider, token);
+        public static unsafe ValueTask WriteDateTimeAsync(this Stream stream, DateTime value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(stream, new SpanFormattable<DateTime>(value, &TryFormat), lengthFormat, context, buffer, format, provider, token);
 
         /// <summary>
         /// Encodes <see cref="DateTime"/> as a string.
@@ -965,8 +983,8 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static ValueTask WriteDateTimeAsync(this Stream stream, DateTime value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-            => WriteAsync<DateTimeFormatter>(stream, value, lengthFormat, context, format, provider, token);
+        public static unsafe ValueTask WriteDateTimeAsync(this Stream stream, DateTime value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(stream, new SpanFormattable<DateTime>(value, &TryFormat), lengthFormat, context, format, provider, token);
 
         /// <summary>
         /// Encodes <see cref="DateTimeOffset"/> as a string.
@@ -982,8 +1000,8 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static ValueTask WriteDateTimeOffsetAsync(this Stream stream, DateTimeOffset value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-            => WriteAsync<DateTimeOffsetFormatter>(stream, value, lengthFormat, context, buffer, format, provider, token);
+        public static unsafe ValueTask WriteDateTimeOffsetAsync(this Stream stream, DateTimeOffset value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(stream, new SpanFormattable<DateTimeOffset>(value, &TryFormat), lengthFormat, context, buffer, format, provider, token);
 
         /// <summary>
         /// Encodes <see cref="DateTimeOffset"/> as a string.
@@ -998,8 +1016,8 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static ValueTask WriteDateTimeOffsetAsync(this Stream stream, DateTimeOffset value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-            => WriteAsync<DateTimeOffsetFormatter>(stream, value, lengthFormat, context, format, provider, token);
+        public static unsafe ValueTask WriteDateTimeOffsetAsync(this Stream stream, DateTimeOffset value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(stream, new SpanFormattable<DateTimeOffset>(value, &TryFormat), lengthFormat, context, format, provider, token);
 
         /// <summary>
         /// Encodes <see cref="TimeSpan"/> as a string.
@@ -1015,8 +1033,8 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static ValueTask WriteTimeSpanAsync(this Stream stream, TimeSpan value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-            => WriteAsync<TimeSpanFormatter>(stream, value, lengthFormat, context, buffer, format, provider, token);
+        public static unsafe ValueTask WriteTimeSpanAsync(this Stream stream, TimeSpan value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(stream, new SpanFormattable<TimeSpan>(value, &TryFormat), lengthFormat, context, buffer, format, provider, token);
 
         /// <summary>
         /// Encodes <see cref="TimeSpan"/> as a string.
@@ -1031,8 +1049,8 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static ValueTask WriteTimeSpanAsync(this Stream stream, TimeSpan value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-            => WriteAsync<TimeSpanFormatter>(stream, value, lengthFormat, context, format, provider, token);
+        public static unsafe ValueTask WriteTimeSpanAsync(this Stream stream, TimeSpan value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(stream, new SpanFormattable<TimeSpan>(value, &TryFormat), lengthFormat, context, format, provider, token);
 
         /// <summary>
         /// Writes sequence of bytes to the underlying stream synchronously.
