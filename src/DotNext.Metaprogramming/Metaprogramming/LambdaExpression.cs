@@ -84,7 +84,7 @@ namespace DotNext.Metaprogramming
             {
                 if (returnType == typeof(void))
                     return null;
-                else if (lambdaResult is null)
+                if (lambdaResult is null)
                     DeclareVariable(lambdaResult = Expression.Variable(returnType, "result"));
                 return lambdaResult;
             }
@@ -96,7 +96,7 @@ namespace DotNext.Metaprogramming
                 returnLabel = Expression.Label("leave");
             if (result is null)
                 result = Expression.Default(returnType);
-            result = returnType == typeof(void) ? (Expression)Expression.Return(returnLabel) : Expression.Block(Expression.Assign(Result, result), Expression.Return(returnLabel));
+            result = returnType == typeof(void) ? Expression.Return(returnLabel) : Expression.Block(Expression.Assign(Result!, result), Expression.Return(returnLabel));
             return result;
         }
 
