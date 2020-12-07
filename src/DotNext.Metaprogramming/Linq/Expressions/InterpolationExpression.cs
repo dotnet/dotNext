@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq.Expressions;
 using FormattableStringFactory = System.Runtime.CompilerServices.FormattableStringFactory;
 
@@ -18,21 +19,21 @@ namespace DotNext.Linq.Expressions
             FormattableString,
         }
 
-        private static Expression GetArgument(object arg) => arg switch
-        {
-            null => Constant(null, typeof(object)),
-            Expression expr => expr,
-            _ => Constant(arg),
-        };
-
         private readonly Expression[] arguments;
         private readonly Kind kind;
 
-        private InterpolationExpression(string format, object[] arguments, Kind kind)
+        private InterpolationExpression(string format, object?[] arguments, Kind kind)
         {
             this.arguments = Array.ConvertAll(arguments, GetArgument);
             Format = format;
             this.kind = kind;
+
+            static Expression GetArgument(object? arg) => arg switch
+            {
+                null => Constant(null, typeof(object)),
+                Expression expr => expr,
+                _ => Constant(arg),
+            };
         }
 
         private InterpolationExpression(FormattableString str, Kind kind)
@@ -94,15 +95,19 @@ namespace DotNext.Linq.Expressions
                     return Constant(Format);
                 case 1:
                     var formatMethod = typeof(string).GetMethod(nameof(string.Format), new[] { typeof(string), typeof(object) });
+                    Debug.Assert(formatMethod is not null);
                     return Call(formatMethod, Constant(Format), arguments[0]);
                 case 2:
                     formatMethod = typeof(string).GetMethod(nameof(string.Format), new[] { typeof(string), typeof(object), typeof(object) });
+                    Debug.Assert(formatMethod is not null);
                     return Call(formatMethod, Constant(Format), arguments[0], arguments[1]);
                 case 3:
                     formatMethod = typeof(string).GetMethod(nameof(string.Format), new[] { typeof(string), typeof(object), typeof(object), typeof(object) });
+                    Debug.Assert(formatMethod is not null);
                     return Call(formatMethod, Constant(Format), arguments[0], arguments[1], arguments[2]);
                 default:
                     formatMethod = typeof(string).GetMethod(nameof(string.Format), new[] { typeof(string), typeof(object[]) });
+                    Debug.Assert(formatMethod is not null);
                     return Call(formatMethod, Constant(Format), NewArrayInit(typeof(object), arguments));
             }
         }
