@@ -22,7 +22,6 @@ namespace DotNext.Buffers
     [DebuggerDisplay("WrittenCount = {" + nameof(WrittenCount) + "}, FreeCapacity = {" + nameof(FreeCapacity) + "}, Overflow = {" + nameof(Overflow) + "}")]
     public ref struct BufferWriterSlim<T>
     {
-        // TODO: Support of BinaryPrimitives should be added using function pointers in C# 9
         private readonly Span<T> initialBuffer;
         private readonly MemoryAllocator<T>? allocator;
         private readonly bool copyOnOverflow;
