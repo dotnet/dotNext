@@ -20,7 +20,7 @@ namespace DotNext.Linq.Expressions
         public RefAnyValExpression(ParameterExpression typedRef, Type referenceType)
         {
             TypedReferenceVar = typedRef.Type == typeof(TypedReference) ? typedRef : throw new ArgumentException(ExceptionMessages.TypedReferenceExpected, nameof(typedRef));
-            ReferenceType = referenceType.IsByRef ? referenceType.GetElementType() : referenceType;
+            ReferenceType = referenceType.IsByRef ? referenceType.GetElementType()! : referenceType;
         }
 
         /// <summary>
