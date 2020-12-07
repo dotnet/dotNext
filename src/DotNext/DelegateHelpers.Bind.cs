@@ -4,6 +4,18 @@ namespace DotNext
 {
     public static partial class DelegateHelpers
     {
+        private static unsafe TOutput Bind<TInput, TOutput, T>(TInput d, T obj, delegate*<TInput, T, TOutput> closureFactory)
+            where TInput : MulticastDelegate
+            where TOutput : MulticastDelegate
+            where T : class
+        {
+            if (obj is null)
+                throw new ArgumentNullException(nameof(obj));
+            return d.Target is null ?
+                ChangeType<TOutput, TargetRewriter>(d, new TargetRewriter(obj)) :
+                closureFactory(d, obj);
+        }
+
         /// <summary>
         /// Produces delegate which first parameter is implicitly bound to the given object.
         /// </summary>
@@ -12,16 +24,9 @@ namespace DotNext
         /// <param name="obj">The object to be passed implicitly as the first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
         /// <returns>The delegate targeting the specified object.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
-        public static Action Bind<T>(this Action<T> action, T obj)
+        public static unsafe Action Bind<T>(this Action<T> action, T obj)
             where T : class
-        {
-            // TODO: Should be generalized using function pointer in C# 9
-            if (obj is null)
-                throw new ArgumentNullException(nameof(obj));
-            if (action.Target is null)
-                return ChangeType<Action, TargetRewriter>(action, new TargetRewriter(obj));
-            return Closure<T>.Create(action, obj);
-        }
+            => Bind<Action<T>, Action, T>(action, obj, &Closure<T>.Create);
 
         /// <summary>
         /// Produces delegate which first parameter is implicitly bound to the given object.
@@ -32,15 +37,9 @@ namespace DotNext
         /// <param name="obj">The object to be passed implicitly as the first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
         /// <returns>The delegate targeting the specified object.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
-        public static Func<TResult> Bind<T, TResult>(this Func<T, TResult> func, T obj)
+        public static unsafe Func<TResult> Bind<T, TResult>(this Func<T, TResult> func, T obj)
             where T : class
-        {
-            if (obj is null)
-                throw new ArgumentNullException(nameof(obj));
-            if (func.Target is null)
-                return ChangeType<Func<TResult>, TargetRewriter>(func, new TargetRewriter(obj));
-            return Closure<T>.Create(func, obj);
-        }
+            => Bind<Func<T, TResult>, Func<TResult>, T>(func, obj, &Closure<T>.Create);
 
         /// <summary>
         /// Produces delegate which first parameter is implicitly bound to the given object.
@@ -52,15 +51,9 @@ namespace DotNext
         /// <param name="obj">The object to be passed implicitly as the first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
         /// <returns>The delegate targeting the specified object.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
-        public static Func<T2, TResult> Bind<T1, T2, TResult>(this Func<T1, T2, TResult> func, T1 obj)
+        public static unsafe Func<T2, TResult> Bind<T1, T2, TResult>(this Func<T1, T2, TResult> func, T1 obj)
             where T1 : class
-        {
-            if (obj is null)
-                throw new ArgumentNullException(nameof(obj));
-            if (func.Target is null)
-                return ChangeType<Func<T2, TResult>, TargetRewriter>(func, new TargetRewriter(obj));
-            return Closure<T1>.Create(func, obj);
-        }
+            => Bind<Func<T1, T2, TResult>, Func<T2, TResult>, T1>(func, obj, &Closure<T1>.Create);
 
         /// <summary>
         /// Produces delegate which first parameter is implicitly bound to the given object.
@@ -71,15 +64,9 @@ namespace DotNext
         /// <param name="obj">The object to be passed implicitly as the first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
         /// <returns>The delegate targeting the specified object.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
-        public static Action<T2> Bind<T1, T2>(this Action<T1, T2> action, T1 obj)
+        public static unsafe Action<T2> Bind<T1, T2>(this Action<T1, T2> action, T1 obj)
             where T1 : class
-        {
-            if (obj is null)
-                throw new ArgumentNullException(nameof(obj));
-            if (action.Target is null)
-                return ChangeType<Action<T2>, TargetRewriter>(action, new TargetRewriter(obj));
-            return Closure<T1>.Create(action, obj);
-        }
+            => Bind<Action<T1, T2>, Action<T2>, T1>(action, obj, &Closure<T1>.Create);
 
         /// <summary>
         /// Produces delegate which first parameter is implicitly bound to the given object.
@@ -92,15 +79,9 @@ namespace DotNext
         /// <param name="obj">The object to be passed implicitly as the first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
         /// <returns>The delegate targeting the specified object.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
-        public static Func<T2, T3, TResult> Bind<T1, T2, T3, TResult>(this Func<T1, T2, T3, TResult> func, T1 obj)
+        public static unsafe Func<T2, T3, TResult> Bind<T1, T2, T3, TResult>(this Func<T1, T2, T3, TResult> func, T1 obj)
             where T1 : class
-        {
-            if (obj is null)
-                throw new ArgumentNullException(nameof(obj));
-            if (func.Target is null)
-                return ChangeType<Func<T2, T3, TResult>, TargetRewriter>(func, new TargetRewriter(obj));
-            return Closure<T1>.Create(func, obj);
-        }
+            => Bind<Func<T1, T2, T3, TResult>, Func<T2, T3, TResult>, T1>(func, obj, &Closure<T1>.Create);
 
         /// <summary>
         /// Produces delegate which first parameter is implicitly bound to the given object.
@@ -112,15 +93,9 @@ namespace DotNext
         /// <param name="obj">The object to be passed implicitly as the first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
         /// <returns>The delegate targeting the specified object.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
-        public static Action<T2, T3> Bind<T1, T2, T3>(this Action<T1, T2, T3> action, T1 obj)
+        public static unsafe Action<T2, T3> Bind<T1, T2, T3>(this Action<T1, T2, T3> action, T1 obj)
             where T1 : class
-        {
-            if (obj is null)
-                throw new ArgumentNullException(nameof(obj));
-            if (action.Target is null)
-                return ChangeType<Action<T2, T3>, TargetRewriter>(action, new TargetRewriter(obj));
-            return Closure<T1>.Create(action, obj);
-        }
+            => Bind<Action<T1, T2, T3>, Action<T2, T3>, T1>(action, obj, &Closure<T1>.Create);
 
         /// <summary>
         /// Produces delegate which first parameter is implicitly bound to the given object.
@@ -134,15 +109,9 @@ namespace DotNext
         /// <param name="obj">The object to be passed implicitly as the first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
         /// <returns>The delegate targeting the specified object.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
-        public static Func<T2, T3, T4, TResult> Bind<T1, T2, T3, T4, TResult>(this Func<T1, T2, T3, T4, TResult> func, T1 obj)
+        public static unsafe Func<T2, T3, T4, TResult> Bind<T1, T2, T3, T4, TResult>(this Func<T1, T2, T3, T4, TResult> func, T1 obj)
             where T1 : class
-        {
-            if (obj is null)
-                throw new ArgumentNullException(nameof(obj));
-            if (func.Target is null)
-                return ChangeType<Func<T2, T3, T4, TResult>, TargetRewriter>(func, new TargetRewriter(obj));
-            return Closure<T1>.Create(func, obj);
-        }
+            => Bind<Func<T1, T2, T3, T4, TResult>, Func<T2, T3, T4, TResult>, T1>(func, obj, &Closure<T1>.Create);
 
         /// <summary>
         /// Produces delegate which first parameter is implicitly bound to the given object.
@@ -155,15 +124,9 @@ namespace DotNext
         /// <param name="obj">The object to be passed implicitly as the first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
         /// <returns>The delegate targeting the specified object.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
-        public static Action<T2, T3, T4> Bind<T1, T2, T3, T4>(this Action<T1, T2, T3, T4> action, T1 obj)
+        public static unsafe Action<T2, T3, T4> Bind<T1, T2, T3, T4>(this Action<T1, T2, T3, T4> action, T1 obj)
             where T1 : class
-        {
-            if (obj is null)
-                throw new ArgumentNullException(nameof(obj));
-            if (action.Target is null)
-                return ChangeType<Action<T2, T3, T4>, TargetRewriter>(action, new TargetRewriter(obj));
-            return Closure<T1>.Create(action, obj);
-        }
+            => Bind<Action<T1, T2, T3, T4>, Action<T2, T3, T4>, T1>(action, obj, &Closure<T1>.Create);
 
         /// <summary>
         /// Produces delegate which first parameter is implicitly bound to the given object.
@@ -178,15 +141,9 @@ namespace DotNext
         /// <param name="obj">The object to be passed implicitly as the first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
         /// <returns>The delegate targeting the specified object.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
-        public static Func<T2, T3, T4, T5, TResult> Bind<T1, T2, T3, T4, T5, TResult>(this Func<T1, T2, T3, T4, T5, TResult> func, T1 obj)
+        public static unsafe Func<T2, T3, T4, T5, TResult> Bind<T1, T2, T3, T4, T5, TResult>(this Func<T1, T2, T3, T4, T5, TResult> func, T1 obj)
             where T1 : class
-        {
-            if (obj is null)
-                throw new ArgumentNullException(nameof(obj));
-            if (func.Target is null)
-                return ChangeType<Func<T2, T3, T4, T5, TResult>, TargetRewriter>(func, new TargetRewriter(obj));
-            return Closure<T1>.Create(func, obj);
-        }
+            => Bind<Func<T1, T2, T3, T4, T5, TResult>, Func<T2, T3, T4, T5, TResult>, T1>(func, obj, &Closure<T1>.Create);
 
         /// <summary>
         /// Produces delegate which first parameter is implicitly bound to the given object.
@@ -200,14 +157,8 @@ namespace DotNext
         /// <param name="obj">The object to be passed implicitly as the first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
         /// <returns>The delegate targeting the specified object.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
-        public static Action<T2, T3, T4, T5> Bind<T1, T2, T3, T4, T5>(this Action<T1, T2, T3, T4, T5> action, T1 obj)
+        public static unsafe Action<T2, T3, T4, T5> Bind<T1, T2, T3, T4, T5>(this Action<T1, T2, T3, T4, T5> action, T1 obj)
             where T1 : class
-        {
-            if (obj is null)
-                throw new ArgumentNullException(nameof(obj));
-            if (action.Target is null)
-                return ChangeType<Action<T2, T3, T4, T5>, TargetRewriter>(action, new TargetRewriter(obj));
-            return Closure<T1>.Create(action, obj);
-        }
+            => Bind<Action<T1, T2, T3, T4, T5>, Action<T2, T3, T4, T5>, T1>(action, obj, &Closure<T1>.Create);
     }
 }
