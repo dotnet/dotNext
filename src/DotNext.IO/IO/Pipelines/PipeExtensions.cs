@@ -137,8 +137,6 @@ namespace DotNext.IO.Pipelines
         public static ValueTask<int> ComputeHashAsync(this PipeReader reader, HashAlgorithmName name, Memory<byte> output, CancellationToken token = default)
             => ComputeHashAsync(reader, name, null, output, token);
 
-        // TODO: Add ComputeHashAsync overload with IncrementalHash type
-
         /// <summary>
         /// Decodes string asynchronously from pipe.
         /// </summary>
