@@ -131,7 +131,7 @@ namespace DotNext.IO
             if (IsReading)
                 throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
 
-            if (!(fileBackend is null))
+            if (fileBackend is not null)
             {
                 PersistBuffer();
                 fileBackend.Flush(true);
@@ -152,7 +152,7 @@ namespace DotNext.IO
             if (IsReading)
                 throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
 
-            if (!(fileBackend is null))
+            if (fileBackend is not null)
             {
                 await PersistBufferAsync(token).ConfigureAwait(false);
                 await fileBackend.FlushAsync(token).ConfigureAwait(false);

@@ -40,7 +40,7 @@ namespace DotNext.IO
 
             public void Dispose()
             {
-                if (!(refHolder is null))
+                if (refHolder is not null)
                     refHolder.Target = null;
             }
         }
