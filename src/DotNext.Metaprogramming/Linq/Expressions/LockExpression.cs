@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Threading;
 
@@ -96,7 +97,9 @@ namespace DotNext.Linq.Expressions
         public override Expression Reduce()
         {
             var monitorEnter = typeof(Monitor).GetMethod(nameof(Monitor.Enter), new[] { typeof(object) });
+            Debug.Assert(monitorEnter is not null);
             var monitorExit = typeof(Monitor).GetMethod(nameof(Monitor.Exit), new[] { typeof(object) });
+            Debug.Assert(monitorExit is not null);
             var body = TryFinally(Body, Call(monitorExit, SyncRoot));
             return assignment is null ?
                     Block(Call(monitorEnter, SyncRoot), body) :
