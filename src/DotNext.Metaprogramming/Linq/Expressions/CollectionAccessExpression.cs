@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
 
 namespace DotNext.Linq.Expressions
 {
+    using static Reflection.CollectionType;
     using static Reflection.TypeExtensions;
 
     /// <summary>
@@ -112,7 +114,15 @@ namespace DotNext.Linq.Expressions
         /// <summary>
         /// Gets result type of asynchronous operation.
         /// </summary>
-        public override Type Type => indexer?.PropertyType ?? Collection.Type.GetElementType();
+        public override Type Type
+        {
+            get
+            {
+                var result = indexer?.PropertyType ?? Collection.Type.GetItemType();
+                Debug.Assert(result is not null);
+                return result;
+            }
+        }
 
         private static Expression ArrayAccess(Expression array, Expression index)
             => ArrayIndex(array, ItemIndexExpression.GetOffset(index, ArrayLength(array)));
