@@ -8,7 +8,6 @@ using static InlineIL.IL;
 using static InlineIL.IL.Emit;
 using static InlineIL.MethodRef;
 using static InlineIL.TypeRef;
-using Var = InlineIL.LocalVar;
 
 namespace DotNext.Runtime
 {
@@ -45,13 +44,8 @@ namespace DotNext.Runtime
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsNullable<T>()
         {
-            const string DefaultVar = "default";
-            DeclareLocals(true, new Var(DefaultVar, typeof(T)));
-            Ldloc(DefaultVar);
-            Box<T>();
-            Ldnull();
-            Ceq();
-            return Return<bool>();
+            Unsafe.SkipInit(out T value);
+            return value is null;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -73,9 +67,8 @@ namespace DotNext.Runtime
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T? DefaultOf<T>()
         {
-            DeclareLocals(true, new Var(typeof(T)));
-            Ldloc_0();
-            return Return<T>();
+            Unsafe.SkipInit(out T result);
+            return result;
         }
 
         /// <summary>
@@ -113,13 +106,10 @@ namespace DotNext.Runtime
             Ret();
 
             MarkLabel(slowPath);
-            Dup();
-            Initobj<TResult>();
             PushInRef(in input);
             Ldobj<T>();
             Stobj<T>();
             Ret();
-            throw Unreachable();    // output must be defined within scope
         }
 
         /// <summary>
@@ -155,7 +145,7 @@ namespace DotNext.Runtime
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static RuntimeTypeHandle TypeOf<T>()
         {
-            Ldtoken(typeof(T));
+            Ldtoken(Type<T>());
             return Return<RuntimeTypeHandle>();
         }
 
@@ -198,8 +188,9 @@ namespace DotNext.Runtime
         /// <returns>The result of conversion.</returns>
         /// <exception cref="InvalidCastException"><paramref name="obj"/> is <see langword="null"/> or not of type <typeparamref name="T"/>.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [return: NotNull]
-        public static T Cast<T>(object? obj) => obj is null ? throw new InvalidCastException() : (T)obj;
+        public static T Cast<T>(object? obj)
+            where T : notnull
+            => obj is null ? throw new InvalidCastException() : (T)obj;
 
         internal static T? NullAwareCast<T>(object? obj)
         {
@@ -213,7 +204,7 @@ namespace DotNext.Runtime
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static unsafe int PointerHashCode(void* pointer)
+        internal static unsafe int PointerHashCode([In] void* pointer)
         {
             Ldarga(nameof(pointer));
             Call(Method(Type<UIntPtr>(), nameof(UIntPtr.GetHashCode)));
@@ -227,7 +218,7 @@ namespace DotNext.Runtime
         /// <param name="value">The object whose address is obtained.</param>
         /// <returns>An address of the given object.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static IntPtr AddressOf<T>(in T value)
+        public static nint AddressOf<T>(in T value)
         {
             PushInRef(in value);
             Conv_I();
@@ -279,7 +270,7 @@ namespace DotNext.Runtime
         /// <param name="length">The length of the first and second memory blocks.</param>
         /// <returns>Comparison result which has the semantics as return type of <see cref="IComparable.CompareTo(object)"/>.</returns>
         [CLSCompliant(false)]
-        public static unsafe int Compare(void* first, void* second, long length)
+        public static unsafe int Compare([In] void* first, [In] void* second, long length)
             => Compare(ref Unsafe.AsRef<byte>(first), ref Unsafe.AsRef<byte>(second), length);
 
         internal static unsafe bool EqualsAligned(ref byte first, ref byte second, long length)
@@ -326,7 +317,7 @@ namespace DotNext.Runtime
         /// <param name="length">Length of first and second memory blocks, in bytes.</param>
         /// <returns><see langword="true"/>, if both memory blocks have the same data; otherwise, <see langword="false"/>.</returns>
         [CLSCompliant(false)]
-        public static unsafe bool Equals(void* first, void* second, long length)
+        public static unsafe bool Equals([In] void* first, [In] void* second, long length)
         {
             var result = true;
             for (int count; length > 0L && result; length -= count, first = Unsafe.Add<byte>(first, count), second = Unsafe.Add<byte>(first, count))
@@ -399,7 +390,7 @@ namespace DotNext.Runtime
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
         [SuppressMessage("StyleCop.CSharp.ReadabilityRules", "SA1107", Justification = "Unaligned is a prefix instruction")]
-        public static unsafe void CopyUnaligned<T>(T* input, T* output)
+        public static unsafe void CopyUnaligned<T>([In] T* input, [Out] T* output)
             where T : unmanaged
         {
             Push(output);
@@ -416,7 +407,7 @@ namespace DotNext.Runtime
         /// <param name="output">The reference to the destination location.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
-        public static unsafe void Copy<T>(T* input, T* output)
+        public static unsafe void Copy<T>([In] T* input, [Out] T* output)
             where T : unmanaged
             => Copy(in input[0], out output[0]);
 
@@ -442,9 +433,12 @@ namespace DotNext.Runtime
         /// <typeparam name="T">The type of the element.</typeparam>
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe void Copy<T>(in T source, ref T destination, long count) // TODO: destination should be out parameter
+        public static unsafe void Copy<T>(in T source, out T destination, long count)
             where T : unmanaged
-            => Copy(ref Unsafe.As<T, byte>(ref Unsafe.AsRef(source)), ref Unsafe.As<T, byte>(ref destination), checked(count * sizeof(T)));
+        {
+            Unsafe.SkipInit(out destination);
+            Copy(ref Unsafe.As<T, byte>(ref Unsafe.AsRef(in source)), ref Unsafe.As<T, byte>(ref destination), checked(count * sizeof(T)));
+        }
 
         /// <summary>
         /// Swaps two values.
@@ -553,17 +547,12 @@ namespace DotNext.Runtime
         /// <param name="address">The pointer to the memory to be cleared.</param>
         /// <param name="length">The length of the memory to be cleared, in bytes.</param>
         [CLSCompliant(false)]
-        public static unsafe void ClearBits(void* address, long length)
+        public static unsafe void ClearBits([In, Out] void* address, long length)
         {
             for (int count; length > 0L; length -= count, address = Unsafe.Add<byte>(address, count))
             {
                 count = length.Truncate();
-                Push(address);
-                Ldc_I4_0();
-                Conv_U4();
-                Push(count);
-                Conv_U4();
-                Initblk();
+                Unsafe.InitBlock(address, 0, (uint)count);
             }
         }
 
