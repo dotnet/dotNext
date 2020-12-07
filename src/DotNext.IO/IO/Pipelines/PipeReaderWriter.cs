@@ -105,6 +105,112 @@ namespace DotNext.IO.Pipelines
     [StructLayout(LayoutKind.Auto)]
     internal readonly struct PipeBinaryWriter : IAsyncBinaryWriter
     {
+        private interface IWriter
+        {
+            ValueTask<FlushResult> Invoke(PipeWriter pipe, CancellationToken token);
+        }
+
+        [StructLayout(LayoutKind.Auto)]
+        private readonly unsafe struct Writer<TArg> : IWriter
+            where TArg : struct
+        {
+            private readonly TArg arg;
+            private readonly delegate*<PipeWriter, TArg, CancellationToken, ValueTask<FlushResult>> writer;
+
+            internal Writer(TArg arg, delegate*<PipeWriter, TArg, CancellationToken, ValueTask<FlushResult>> writer)
+            {
+                this.arg = arg;
+                this.writer = writer;
+            }
+
+            public ValueTask<FlushResult> Invoke(PipeWriter pipe, CancellationToken token)
+                => writer(pipe, arg, token);
+        }
+
+        [StructLayout(LayoutKind.Auto)]
+        private readonly unsafe struct Writer<T1, T2> : IWriter
+        {
+            private readonly T1 arg1;
+            private readonly T2 arg2;
+            private readonly delegate*<PipeWriter, T1, T2, CancellationToken, ValueTask<FlushResult>> writer;
+
+            internal Writer(T1 arg1, T2 arg2, delegate*<PipeWriter, T1, T2, CancellationToken, ValueTask<FlushResult>> writer)
+            {
+                this.arg1 = arg1;
+                this.arg2 = arg2;
+                this.writer = writer;
+            }
+
+            public ValueTask<FlushResult> Invoke(PipeWriter pipe, CancellationToken token)
+                => writer(pipe, arg1, arg2, token);
+        }
+
+        [StructLayout(LayoutKind.Auto)]
+        private readonly unsafe struct Writer<T1, T2, T3> : IWriter
+        {
+            private readonly T1 arg1;
+            private readonly T2 arg2;
+            private readonly T3 arg3;
+            private readonly delegate*<PipeWriter, T1, T2, T3, CancellationToken, ValueTask<FlushResult>> writer;
+
+            internal Writer(T1 arg1, T2 arg2, T3 arg3, delegate*<PipeWriter, T1, T2, T3, CancellationToken, ValueTask<FlushResult>> writer)
+            {
+                this.arg1 = arg1;
+                this.arg2 = arg2;
+                this.arg3 = arg3;
+                this.writer = writer;
+            }
+
+            public ValueTask<FlushResult> Invoke(PipeWriter pipe, CancellationToken token)
+                => writer(pipe, arg1, arg2, arg3, token);
+        }
+
+        [StructLayout(LayoutKind.Auto)]
+        private readonly unsafe struct Writer<T1, T2, T3, T4> : IWriter
+        {
+            private readonly T1 arg1;
+            private readonly T2 arg2;
+            private readonly T3 arg3;
+            private readonly T4 arg4;
+            private readonly delegate*<PipeWriter, T1, T2, T3, T4, CancellationToken, ValueTask<FlushResult>> writer;
+
+            internal Writer(T1 arg1, T2 arg2, T3 arg3, T4 arg4, delegate*<PipeWriter, T1, T2, T3, T4, CancellationToken, ValueTask<FlushResult>> writer)
+            {
+                this.arg1 = arg1;
+                this.arg2 = arg2;
+                this.arg3 = arg3;
+                this.arg4 = arg4;
+                this.writer = writer;
+            }
+
+            public ValueTask<FlushResult> Invoke(PipeWriter pipe, CancellationToken token)
+                => writer(pipe, arg1, arg2, arg3, arg4, token);
+        }
+
+        [StructLayout(LayoutKind.Auto)]
+        private readonly unsafe struct Writer<T1, T2, T3, T4, T5> : IWriter
+        {
+            private readonly T1 arg1;
+            private readonly T2 arg2;
+            private readonly T3 arg3;
+            private readonly T4 arg4;
+            private readonly T5 arg5;
+            private readonly delegate*<PipeWriter, T1, T2, T3, T4, T5, CancellationToken, ValueTask<FlushResult>> writer;
+
+            internal Writer(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, delegate*<PipeWriter, T1, T2, T3, T4, T5, CancellationToken, ValueTask<FlushResult>> writer)
+            {
+                this.arg1 = arg1;
+                this.arg2 = arg2;
+                this.arg3 = arg3;
+                this.arg4 = arg4;
+                this.arg5 = arg5;
+                this.writer = writer;
+            }
+
+            public ValueTask<FlushResult> Invoke(PipeWriter pipe, CancellationToken token)
+                => writer(pipe, arg1, arg2, arg3, arg4, arg5, token);
+        }
+
         private readonly PipeWriter output;
         private readonly int stringLengthThreshold;
         private readonly int stringEncodingBufferSize;
@@ -116,200 +222,80 @@ namespace DotNext.IO.Pipelines
             stringEncodingBufferSize = encodingBufferSize;
         }
 
-        public ValueTask WriteAsync<T>(T value, CancellationToken token)
+        private static async ValueTask WriteAsync<TWriter>(PipeWriter output, TWriter writer, CancellationToken token)
+            where TWriter : struct, IWriter
+        {
+            var result = await writer.Invoke(output, token).ConfigureAwait(false);
+            result.ThrowIfCancellationRequested(token);
+        }
+
+        public unsafe ValueTask WriteAsync<T>(T value, CancellationToken token)
             where T : unmanaged
-        {
-            return WriteAsync(output, value, token);
+            => WriteAsync(output, new Writer<T>(value, &PipeExtensions.WriteAsync), token);
 
-            static async ValueTask WriteAsync(PipeWriter output, T value, CancellationToken token)
-            {
-                var result = await output.WriteAsync(value, token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested(token);
-            }
+        public unsafe ValueTask WriteAsync(ReadOnlyMemory<byte> input, CancellationToken token)
+        {
+            return WriteAsync(output, new Writer<ReadOnlyMemory<byte>>(input, &WriteBlockAsync), token);
+
+            static ValueTask<FlushResult> WriteBlockAsync(PipeWriter output, ReadOnlyMemory<byte> input, CancellationToken token)
+                => output.WriteAsync(input, token);
         }
 
-        public ValueTask WriteAsync(ReadOnlyMemory<byte> input, CancellationToken token)
-        {
-            return WriteAsync(output, input, token);
-
-            static async ValueTask WriteAsync(PipeWriter output, ReadOnlyMemory<byte> input, CancellationToken token)
-            {
-                var result = await output.WriteAsync(input, token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested(token);
-            }
-        }
-
-        public ValueTask WriteAsync(ReadOnlyMemory<char> chars, EncodingContext context, StringLengthEncoding? lengthFormat, CancellationToken token)
+        public unsafe ValueTask WriteAsync(ReadOnlyMemory<char> chars, EncodingContext context, StringLengthEncoding? lengthFormat, CancellationToken token)
         {
             if (chars.Length > stringLengthThreshold)
-            {
                 return output.WriteStringAsync(chars, context, lengthFormat: lengthFormat, token: token);
-            }
 
-            return WriteAndFlushOnceAsync(output, chars, context, lengthFormat, token);
+            return WriteAsync(output, new Writer<ReadOnlyMemory<char>, EncodingContext, StringLengthEncoding?>(chars, context, lengthFormat, &WriteAndFlushOnceAsync), token);
 
-            static async ValueTask WriteAndFlushOnceAsync(PipeWriter output, ReadOnlyMemory<char> chars, EncodingContext context, StringLengthEncoding? lengthFormat, CancellationToken token)
+            static ValueTask<FlushResult> WriteAndFlushOnceAsync(PipeWriter output, ReadOnlyMemory<char> chars, EncodingContext context, StringLengthEncoding? lengthFormat, CancellationToken token)
             {
                 output.WriteString(chars.Span, context, lengthFormat: lengthFormat);
-                var result = await output.FlushAsync(token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested(token);
+                return output.FlushAsync(token);
             }
         }
 
-        // TODO: Can be optimized using function pointers in C# 9
-        ValueTask IAsyncBinaryWriter.WriteByteAsync(byte value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
-        {
-            return WriteAsync(output, value, lengthFormat, context, format, provider, token);
+        unsafe ValueTask IAsyncBinaryWriter.WriteByteAsync(byte value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+            => WriteAsync(output, new Writer<byte, StringLengthEncoding, EncodingContext, string?, IFormatProvider?>(value, lengthFormat, context, format, provider, &PipeExtensions.WriteByteAsync), token);
 
-            static async ValueTask WriteAsync(PipeWriter output, byte value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
-            {
-                var result = await output.WriteByteAsync(value, lengthFormat, context, format, provider, token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested();
-            }
-        }
+        unsafe ValueTask IAsyncBinaryWriter.WriteInt16Async(short value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+            => WriteAsync(output, new Writer<short, StringLengthEncoding, EncodingContext, string?, IFormatProvider?>(value, lengthFormat, context, format, provider, &PipeExtensions.WriteInt16Async), token);
 
-        ValueTask IAsyncBinaryWriter.WriteInt16Async(short value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
-        {
-            return WriteAsync(output, value, lengthFormat, context, format, provider, token);
+        unsafe ValueTask IAsyncBinaryWriter.WriteInt32Async(int value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+            => WriteAsync(output, new Writer<int, StringLengthEncoding, EncodingContext, string?, IFormatProvider?>(value, lengthFormat, context, format, provider, &PipeExtensions.WriteInt32Async), token);
 
-            static async ValueTask WriteAsync(PipeWriter output, short value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
-            {
-                var result = await output.WriteInt16Async(value, lengthFormat, context, format, provider, token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested(token);
-            }
-        }
+        unsafe ValueTask IAsyncBinaryWriter.WriteInt64Async(long value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+            => WriteAsync(output, new Writer<long, StringLengthEncoding, EncodingContext, string?, IFormatProvider?>(value, lengthFormat, context, format, provider, &PipeExtensions.WriteInt64Async), token);
 
-        ValueTask IAsyncBinaryWriter.WriteInt32Async(int value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
-        {
-            return WriteAsync(output, value, lengthFormat, context, format, provider, token);
+        unsafe ValueTask IAsyncBinaryWriter.WriteSingleAsync(float value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+            => WriteAsync(output, new Writer<float, StringLengthEncoding, EncodingContext, string?, IFormatProvider?>(value, lengthFormat, context, format, provider, &PipeExtensions.WriteSingleAsync), token);
 
-            static async ValueTask WriteAsync(PipeWriter output, int value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
-            {
-                var result = await output.WriteInt32Async(value, lengthFormat, context, format, provider, token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested();
-            }
-        }
+        unsafe ValueTask IAsyncBinaryWriter.WriteDoubleAsync(double value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+            => WriteAsync(output, new Writer<double, StringLengthEncoding, EncodingContext, string?, IFormatProvider?>(value, lengthFormat, context, format, provider, &PipeExtensions.WriteDoubleAsync), token);
 
-        ValueTask IAsyncBinaryWriter.WriteInt64Async(long value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
-        {
-            return WriteAsync(output, value, lengthFormat, context, format, provider, token);
+        unsafe ValueTask IAsyncBinaryWriter.WriteDecimalAsync(decimal value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+            => WriteAsync(output, new Writer<decimal, StringLengthEncoding, EncodingContext, string?, IFormatProvider?>(value, lengthFormat, context, format, provider, &PipeExtensions.WriteDecimalAsync), token);
 
-            static async ValueTask WriteAsync(PipeWriter output, long value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
-            {
-                var result = await output.WriteInt64Async(value, lengthFormat, context, format, provider, token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested(token);
-            }
-        }
+        unsafe ValueTask IAsyncBinaryWriter.WriteGuidAsync(Guid value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, CancellationToken token)
+            => WriteAsync(output, new Writer<Guid, StringLengthEncoding, EncodingContext, string?>(value, lengthFormat, context, format, &PipeExtensions.WriteGuidAsync), token);
 
-        ValueTask IAsyncBinaryWriter.WriteSingleAsync(float value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
-        {
-            return WriteAsync(output, value, lengthFormat, context, format, provider, token);
+        unsafe ValueTask IAsyncBinaryWriter.WriteDateTimeAsync(DateTime value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+            => WriteAsync(output, new Writer<DateTime, StringLengthEncoding, EncodingContext, string?, IFormatProvider?>(value, lengthFormat, context, format, provider, &PipeExtensions.WriteDateTimeAsync), token);
 
-            static async ValueTask WriteAsync(PipeWriter output, float value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
-            {
-                var result = await output.WriteSingleAsync(value, lengthFormat, context, format, provider, token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested(token);
-            }
-        }
+        unsafe ValueTask IAsyncBinaryWriter.WriteDateTimeOffsetAsync(DateTimeOffset value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+            => WriteAsync(output, new Writer<DateTimeOffset, StringLengthEncoding, EncodingContext, string?, IFormatProvider?>(value, lengthFormat, context, format, provider, &PipeExtensions.WriteDateTimeOffsetAsync), token);
 
-        ValueTask IAsyncBinaryWriter.WriteDoubleAsync(double value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
-        {
-            return WriteAsync(output, value, lengthFormat, context, format, provider, token);
+        unsafe ValueTask IAsyncBinaryWriter.WriteTimeSpanAsync(TimeSpan value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+            => WriteAsync(output, new Writer<TimeSpan, StringLengthEncoding, EncodingContext, string?, IFormatProvider?>(value, lengthFormat, context, format, provider, &PipeExtensions.WriteTimeSpanAsync), token);
 
-            static async ValueTask WriteAsync(PipeWriter output, double value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
-            {
-                var result = await output.WriteDoubleAsync(value, lengthFormat, context, format, provider, token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested(token);
-            }
-        }
+        unsafe ValueTask IAsyncBinaryWriter.WriteInt16Async(short value, bool littleEndian, CancellationToken token)
+            => WriteAsync(output, new Writer<short, bool>(value, littleEndian, &PipeExtensions.WriteInt16Async), token);
 
-        ValueTask IAsyncBinaryWriter.WriteDecimalAsync(decimal value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
-        {
-            return WriteAsync(output, value, lengthFormat, context, format, provider, token);
+        unsafe ValueTask IAsyncBinaryWriter.WriteInt32Async(int value, bool littleEndian, CancellationToken token)
+            => WriteAsync(output, new Writer<int, bool>(value, littleEndian, &PipeExtensions.WriteInt32Async), token);
 
-            static async ValueTask WriteAsync(PipeWriter output, decimal value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
-            {
-                var result = await output.WriteDecimalAsync(value, lengthFormat, context, format, provider, token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested(token);
-            }
-        }
-
-        ValueTask IAsyncBinaryWriter.WriteGuidAsync(Guid value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, CancellationToken token)
-        {
-            return WriteAsync(output, value, lengthFormat, context, format, token);
-
-            static async ValueTask WriteAsync(PipeWriter output, Guid value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, CancellationToken token)
-            {
-                var result = await output.WriteGuidAsync(value, lengthFormat, context, format, token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested(token);
-            }
-        }
-
-        ValueTask IAsyncBinaryWriter.WriteDateTimeAsync(DateTime value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
-        {
-            return WriteAsync(output, value, lengthFormat, context, format, provider, token);
-
-            static async ValueTask WriteAsync(PipeWriter output, DateTime value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
-            {
-                var result = await output.WriteDateTimeAsync(value, lengthFormat, context, format, provider, token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested(token);
-            }
-        }
-
-        ValueTask IAsyncBinaryWriter.WriteDateTimeOffsetAsync(DateTimeOffset value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
-        {
-            return WriteAsync(output, value, lengthFormat, context, format, provider, token);
-
-            static async ValueTask WriteAsync(PipeWriter output, DateTimeOffset value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
-            {
-                var result = await output.WriteDateTimeOffsetAsync(value, lengthFormat, context, format, provider, token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested(token);
-            }
-        }
-
-        ValueTask IAsyncBinaryWriter.WriteTimeSpanAsync(TimeSpan value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
-        {
-            return WriteAsync(output, value, lengthFormat, context, format, provider, token);
-
-            static async ValueTask WriteAsync(PipeWriter output, TimeSpan value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
-            {
-                var result = await output.WriteTimeSpanAsync(value, lengthFormat, context, format, provider, token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested(token);
-            }
-        }
-
-        ValueTask IAsyncBinaryWriter.WriteInt16Async(short value, bool littleEndian, CancellationToken token)
-        {
-            return WriteAsync(output, value, littleEndian, token);
-
-            static async ValueTask WriteAsync(PipeWriter output, short value, bool littleEndian, CancellationToken token)
-            {
-                var result = await output.WriteInt16Async(value, littleEndian, token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested(token);
-            }
-        }
-
-        ValueTask IAsyncBinaryWriter.WriteInt32Async(int value, bool littleEndian, CancellationToken token)
-        {
-            return WriteAsync(output, value, littleEndian, token);
-
-            static async ValueTask WriteAsync(PipeWriter output, int value, bool littleEndian, CancellationToken token)
-            {
-                var result = await output.WriteInt32Async(value, littleEndian, token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested(token);
-            }
-        }
-
-        ValueTask IAsyncBinaryWriter.WriteInt64Async(long value, bool littleEndian, CancellationToken token)
-        {
-            return WriteAsync(output, value, littleEndian, token);
-
-            static async ValueTask WriteAsync(PipeWriter output, long value, bool littleEndian, CancellationToken token)
-            {
-                var result = await output.WriteInt64Async(value, littleEndian, token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested(token);
-            }
-        }
+        unsafe ValueTask IAsyncBinaryWriter.WriteInt64Async(long value, bool littleEndian, CancellationToken token)
+            => WriteAsync(output, new Writer<long, bool>(value, littleEndian, &PipeExtensions.WriteInt64Async), token);
 
         Task IAsyncBinaryWriter.CopyFromAsync(Stream input, CancellationToken token)
             => input.CopyToAsync(output, token);
