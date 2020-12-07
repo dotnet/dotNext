@@ -452,22 +452,24 @@ namespace DotNext.Metaprogramming
         public MatchBuilder Case(string memberName1, Expression memberValue1, string memberName2, Expression memberValue2, string memberName3, Expression memberValue3, Func<MemberExpression, MemberExpression, MemberExpression, Expression> body)
             => Case(StructuralPattern(new[] { (memberName1, memberValue1), (memberName2, memberValue2), (memberName3, memberValue3) }), value => body(Expression.PropertyOrField(value, memberName1), Expression.PropertyOrField(value, memberName2), Expression.PropertyOrField(value, memberName3)));
 
-        private static (string, Expression) GetMemberPattern(object @this, string memberName, Type memberType, Func<object, object> valueProvider)
+        private static (string, Expression) GetMemberPattern(object @this, string memberName, Type memberType, Func<object, object?> valueProvider)
         {
             var value = valueProvider(@this);
-            if (value is null)
-                return (memberName, Expression.Default(memberType));
-            else if (value is Expression expr)
-                return (memberName, expr);
-            else
-                return (memberName, Expression.Constant(value, memberType));
+            return value switch
+            {
+                null => (memberName, Expression.Default(memberType)),
+                Expression expr => (memberName, expr),
+                _ => (memberName, Expression.Constant(value, memberType))
+            };
         }
 
         private static IEnumerable<(string, Expression)> GetProperties(object structPattern)
         {
             const BindingFlags PublicInstance = BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Instance;
             foreach (var property in structPattern.GetType().GetProperties(PublicInstance))
-                yield return GetMemberPattern(structPattern, property.Name, property.PropertyType, property.GetValue);
+                if (property.CanRead)
+                    yield return GetMemberPattern(structPattern, property.Name, property.PropertyType, property.GetValue);
+
             foreach (var field in structPattern.GetType().GetFields(PublicInstance))
                 yield return GetMemberPattern(structPattern, field.Name, field.FieldType, field.GetValue);
         }
