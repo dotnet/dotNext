@@ -121,6 +121,17 @@ namespace DotNext.Buffers
         /// <param name="isLittleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
         public static unsafe void WriteDouble(this ref BufferWriterSlim<byte> builder, double value, bool isLittleEndian)
             => Write<double>(ref builder, isLittleEndian ? &WriteDoubleLittleEndian : &WriteDoubleBigEndian, value);
+
+        /// <summary>
+        /// Writes the contents of string builder to the buffer.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="input">The string builder.</param>
+        public static void Write(this ref BufferWriterSlim<char> writer, StringBuilder input)
+        {
+            foreach (var chunk in input.GetChunks())
+                writer.Write(chunk.Span);
+        }
 #endif
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Text;
 using static System.Buffers.Binary.BinaryPrimitives;
 
 namespace DotNext.Buffers
@@ -123,6 +124,17 @@ namespace DotNext.Buffers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void WriteDouble(this ref SpanWriter<byte> writer, double value, bool isLittleEndian)
             => writer.Write(isLittleEndian ? &WriteDoubleLittleEndian : &WriteDoubleBigEndian, value, sizeof(double));
+
+        /// <summary>
+        /// Writes the contents of string builder to the buffer.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="input">The string builder.</param>
+        public static void Write(this ref SpanWriter<char> writer, StringBuilder input)
+        {
+            foreach (var chunk in input.GetChunks())
+                writer.Write(chunk.Span);
+        }
 #endif
     }
 }

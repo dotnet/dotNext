@@ -1,6 +1,7 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Text;
 
 namespace DotNext.Buffers
 {
@@ -117,5 +118,18 @@ namespace DotNext.Buffers
             writer.GetSpan(count)[0] = value;
             writer.Advance(count);
         }
+
+#if !NETSTANDARD2_1
+        /// <summary>
+        /// Writes the contents of string builder to the buffer.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="input">The string builder.</param>
+        public static void Write(this IBufferWriter<char> writer, StringBuilder input)
+        {
+            foreach (var chunk in input.GetChunks())
+                writer.Write(chunk.Span);
+        }
+#endif
     }
 }
