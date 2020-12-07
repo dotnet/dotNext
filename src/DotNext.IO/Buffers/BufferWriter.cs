@@ -619,8 +619,6 @@ namespace DotNext.Buffers
         public static unsafe void WriteTimeSpan(this IBufferWriter<char> writer, TimeSpan value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
             => Write(writer, in value, &TryFormat, format, provider);
 
-        // TODO: Need writer for StringBuilder but it will be available in .NET Core 5
-
         internal static void CopyTo<T, TWriter>(ReadOnlySpan<T> input, TWriter output)
             where TWriter : class, IBufferWriter<T>
             => output.Write(input);
