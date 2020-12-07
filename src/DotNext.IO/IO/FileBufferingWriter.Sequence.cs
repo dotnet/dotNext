@@ -123,7 +123,7 @@ namespace DotNext.IO
             if (IsReading)
                 throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
 
-            if (fileBackend != null)
+            if (fileBackend is not null)
                 await fileBackend.FlushAsync(token).ConfigureAwait(false);
 
             return new ReadOnlySequenceSource(this, segmentSize);

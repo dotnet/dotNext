@@ -202,8 +202,8 @@ namespace DotNext.IO.MemoryMappedFiles
                 remainingLength -= segmentLength;
             }
 
-            Debug.Assert(first != null);
-            Debug.Assert(last != null);
+            Debug.Assert(first is not null);
+            Debug.Assert(last is not null);
             return (first, last);
         }
 
@@ -244,7 +244,7 @@ namespace DotNext.IO.MemoryMappedFiles
                 segment.SafeMemoryMappedViewHandle.AcquirePointer(ref ptr);
             }
 
-            Debug.Assert(segment != null);
+            Debug.Assert(segment is not null);
             return ptr + segment.PointerOffset;
         }
 

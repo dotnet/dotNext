@@ -55,7 +55,7 @@ namespace DotNext.IO
             internal MemoryMappedFileManager(FileBufferingWriter writer, long offset, long length)
             {
                 Debug.Assert(length <= int.MaxValue);
-                Debug.Assert(writer.fileBackend != null);
+                Debug.Assert(writer.fileBackend is not null);
                 mappedFile = CreateMemoryMappedFile(writer.fileBackend);
                 accessor = mappedFile.CreateViewAccessor(offset, length, MemoryMappedFileAccess.ReadWrite);
                 accessor.SafeMemoryMappedViewHandle.AcquirePointer(ref ptr);
@@ -253,7 +253,7 @@ namespace DotNext.IO
         void IGrowableBuffer<byte>.CopyTo<TArg>(in ValueReadOnlySpanAction<byte, TArg> callback, TArg arg)
             => CopyTo(in callback, arg);
 
-        private bool IsReading => reader?.Target != null;
+        private bool IsReading => reader?.Target is not null;
 
         private ReadSession EnterReadMode(object obj)
         {
@@ -352,7 +352,7 @@ namespace DotNext.IO
             if (buffer.Length > 0 && position > 0)
             {
                 EnsureBackingStore();
-                Debug.Assert(fileBackend != null);
+                Debug.Assert(fileBackend is not null);
                 await fileBackend.WriteAsync(buffer.Memory.Slice(0, position), token).ConfigureAwait(false);
                 buffer.Dispose();
                 buffer = default;
@@ -365,7 +365,7 @@ namespace DotNext.IO
             if (buffer.Length > 0 && position > 0)
             {
                 EnsureBackingStore();
-                Debug.Assert(fileBackend != null);
+                Debug.Assert(fileBackend is not null);
                 fileBackend.Write(buffer.Memory.Span.Slice(0, position));
                 buffer.Dispose();
                 buffer = default;
@@ -396,7 +396,7 @@ namespace DotNext.IO
                 case MemoryEvaluationResult.PersistAll:
                     await PersistBufferAsync(token).ConfigureAwait(false);
                     EnsureBackingStore();
-                    Debug.Assert(fileBackend != null);
+                    Debug.Assert(fileBackend is not null);
                     await fileBackend.WriteAsync(buffer, token).ConfigureAwait(false);
                     break;
             }
@@ -424,7 +424,7 @@ namespace DotNext.IO
                 case MemoryEvaluationResult.PersistAll:
                     PersistBuffer();
                     EnsureBackingStore();
-                    Debug.Assert(fileBackend != null);
+                    Debug.Assert(fileBackend is not null);
                     fileBackend.Write(buffer);
                     break;
             }
@@ -455,10 +455,10 @@ namespace DotNext.IO
                 task = WriteAsync(buffer, offset, count, CancellationToken.None);
 
                 // attach state only if it's necessary
-                if (state != null)
+                if (state is not null)
                     task = task.ContinueWith(Continuation, state, CancellationToken.None, TaskContinuationOptions.None, TaskScheduler.Default);
 
-                if (callback != null)
+                if (callback is not null)
                 {
                     if (task.IsCompleted)
                         callback(task);
@@ -539,7 +539,7 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public override async Task CopyToAsync(Stream destination, int bufferSize, CancellationToken token)
         {
-            if (fileBackend != null)
+            if (fileBackend is not null)
             {
                 fileBackend.Position = 0L;
                 await fileBackend.CopyToAsync(destination, bufferSize, token).ConfigureAwait(false);
@@ -558,7 +558,7 @@ namespace DotNext.IO
         /// <param name="bufferSize">The size, in bytes, of the buffer used to copy bytes.</param>
         public override void CopyTo(Stream destination, int bufferSize)
         {
-            if (fileBackend != null)
+            if (fileBackend is not null)
             {
                 fileBackend.Position = 0L;
                 fileBackend.CopyTo(destination, bufferSize);
@@ -581,7 +581,7 @@ namespace DotNext.IO
         public async Task<long> CopyToAsync(IBufferWriter<byte> destination, int bufferSize = 1024, CancellationToken token = default)
         {
             var totalBytes = 0L;
-            if (fileBackend != null)
+            if (fileBackend is not null)
             {
                 fileBackend.Position = 0L;
                 totalBytes += await fileBackend.CopyToAsync(destination, bufferSize, token).ConfigureAwait(false);
@@ -607,7 +607,7 @@ namespace DotNext.IO
         public long CopyTo(IBufferWriter<byte> destination, int bufferSize = 1024, CancellationToken token = default)
         {
             var totalBytes = 0L;
-            if (fileBackend != null)
+            if (fileBackend is not null)
             {
                 fileBackend.Position = 0L;
                 totalBytes += fileBackend.CopyTo(destination, bufferSize, token);
@@ -633,7 +633,7 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public void CopyTo<TArg>(in ValueReadOnlySpanAction<byte, TArg> reader, TArg arg, int bufferSize = 1024, CancellationToken token = default)
         {
-            if (fileBackend != null)
+            if (fileBackend is not null)
             {
                 fileBackend.Position = 0L;
                 fileBackend.Read(in reader, arg, bufferSize, token);
@@ -669,7 +669,7 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public async Task CopyToAsync<TArg>(ReadOnlySpanAction<byte, TArg> reader, TArg arg, int bufferSize = 1024, CancellationToken token = default)
         {
-            if (fileBackend != null)
+            if (fileBackend is not null)
             {
                 fileBackend.Position = 0L;
                 await fileBackend.ReadAsync(reader, arg, bufferSize, token).ConfigureAwait(false);
@@ -689,7 +689,7 @@ namespace DotNext.IO
         public int CopyTo(Span<byte> output)
         {
             var totalBytes = 0;
-            if (fileBackend != null)
+            if (fileBackend is not null)
             {
                 var currentPos = fileBackend.Position;
                 fileBackend.Position = 0L;
@@ -716,7 +716,7 @@ namespace DotNext.IO
         public async Task<int> CopyToAsync(Memory<byte> output, CancellationToken token = default)
         {
             var totalBytes = 0;
-            if (fileBackend != null)
+            if (fileBackend is not null)
             {
                 var currentPos = fileBackend.Position;
                 fileBackend.Position = 0L;
@@ -874,7 +874,7 @@ namespace DotNext.IO
         /// <inheritdoc/>
         public override async ValueTask DisposeAsync()
         {
-            if (fileBackend != null)
+            if (fileBackend is not null)
             {
                 await fileBackend.DisposeAsync().ConfigureAwait(false);
                 fileBackend = null;

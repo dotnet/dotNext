@@ -35,7 +35,7 @@ namespace DotNext.Text
         /// in separated async flow or thread.
         /// </summary>
         /// <returns>The independent copy of this context.</returns>
-        public DecodingContext Copy() => new DecodingContext(encoding, decoder != null);
+        public DecodingContext Copy() => new DecodingContext(encoding, decoder is not null);
 
         /// <inheritdoc/>
         object ICloneable.Clone() => Copy();

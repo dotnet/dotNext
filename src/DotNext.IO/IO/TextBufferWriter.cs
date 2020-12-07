@@ -49,7 +49,7 @@ namespace DotNext.IO
         {
             if (flush is null)
             {
-                if (flushAsync != null)
+                if (flushAsync is not null)
                     flushAsync(writer, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
             }
             else
