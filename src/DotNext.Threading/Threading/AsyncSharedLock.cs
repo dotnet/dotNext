@@ -70,7 +70,6 @@ namespace DotNext.Threading
             WaitNode ILockManager<WaitNode>.CreateNode(WaitNode? tail) => tail is null ? new WaitNode() : new WaitNode(tail);
         }
 
-        private static readonly Func<AsyncSharedLock, bool> IsLockHeldPredicate = DelegateHelpers.CreateOpenDelegate<Func<AsyncSharedLock, bool>>(l => l.IsLockHeld);
         private readonly Box<State> state;
 
         /// <summary>
@@ -234,7 +233,11 @@ namespace DotNext.Threading
         /// Otherwise, it waits for calling of <see cref="Release()"/> or <see cref="Downgrade"/> method.
         /// </remarks>
         /// <returns>The task representing graceful shutdown of this lock.</returns>
-        public ValueTask DisposeAsync()
-            => IsDisposed ? new ValueTask() : DisposeAsync(this, IsLockHeldPredicate);
+        public unsafe ValueTask DisposeAsync()
+        {
+            return IsDisposed ? new ValueTask() : DisposeAsync(this, &CheckLockState);
+
+            static bool CheckLockState(AsyncSharedLock obj) => obj.IsLockHeld;
+        }
     }
 }

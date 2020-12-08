@@ -229,8 +229,7 @@ namespace DotNext.Threading
             return disposeNode.Task;
         }
 
-        // TODO: Replace Func with method pointer
-        private protected static ValueTask DisposeAsync<T>(T synchronizer, Func<T, bool> lockStateChecker)
+        private protected static unsafe ValueTask DisposeAsync<T>(T synchronizer, delegate*<T, bool> lockStateChecker)
             where T : QueuedSynchronizer
         {
             lock (synchronizer)
