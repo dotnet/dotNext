@@ -221,8 +221,7 @@ namespace DotNext.Reflection
     /// <typeparam name="TOperand">Type of operand.</typeparam>
     /// <typeparam name="TResult">Type of operator result.</typeparam>
     /// <returns>Result of unary operation.</returns>
-    [return: MaybeNull]
-    public delegate TResult Operator<TOperand, out TResult>(in TOperand operand);
+    public delegate TResult? Operator<TOperand, out TResult>(in TOperand operand);
 
     /// <summary>
     /// Represents binary operator.
@@ -233,6 +232,5 @@ namespace DotNext.Reflection
     /// <typeparam name="T2">Type of second operand.</typeparam>
     /// <typeparam name="TResult">Type of operator result.</typeparam>
     /// <returns>Result of binary operator.</returns>
-    [return: MaybeNull]
-    public delegate TResult Operator<T1, T2, out TResult>(in T1 first, in T2 second);
+    public delegate TResult? Operator<T1, T2, out TResult>(in T1 first, in T2 second);
 }

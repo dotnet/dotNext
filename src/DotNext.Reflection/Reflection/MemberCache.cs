@@ -8,6 +8,7 @@ namespace DotNext.Reflection
     using ReaderWriterSpinLock = Threading.ReaderWriterSpinLock;
 
     internal abstract class Cache<TKey, TValue>
+        where TKey : notnull
         where TValue : class
     {
         /*

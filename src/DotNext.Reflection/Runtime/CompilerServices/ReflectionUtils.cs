@@ -23,7 +23,10 @@ namespace DotNext.Runtime.CompilerServices
             Debug.Assert(expression.Type.IsPointer);
             if (expression.Type == typeof(void*))
                 return Expression.Call(typeof(Pointer), nameof(Pointer.Box), Type.EmptyTypes, expression, Expression.Constant(typeof(void*)));
-            return Expression.Call(typeof(ReflectionUtils), nameof(Wrap), new[] { expression.Type.GetElementType() }, expression);
+
+            var pointerType = expression.Type.GetElementType();
+            Debug.Assert(pointerType is not null);
+            return Expression.Call(typeof(ReflectionUtils), nameof(Wrap), new[] { pointerType }, expression);
         }
 
         internal static Expression Unwrap(Expression expression, Type expectedType)
@@ -31,7 +34,10 @@ namespace DotNext.Runtime.CompilerServices
             Debug.Assert(expectedType.IsPointer);
             if (expectedType == typeof(void*))
                 return Expression.Call(typeof(Pointer), nameof(Pointer.Unbox), Type.EmptyTypes, expression);
-            return Expression.Call(typeof(ReflectionUtils), nameof(Unwrap), new[] { expectedType.GetElementType() }, expression);
+
+            var pointerType = expression.Type.GetElementType();
+            Debug.Assert(pointerType is not null);
+            return Expression.Call(typeof(ReflectionUtils), nameof(Unwrap), new[] { pointerType }, expression);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -51,7 +57,9 @@ namespace DotNext.Runtime.CompilerServices
             if (expression.Type == typeof(void*))
                 return Expression.Call(typeof(ReflectionUtils), nameof(VolatileReadPointer), Type.EmptyTypes, expression);
 
-            return Expression.Call(typeof(ReflectionUtils), nameof(VolatileReadPointer), new[] { expression.Type.GetElementType() }, expression);
+            var pointerType = expression.Type.GetElementType();
+            Debug.Assert(pointerType is not null);
+            return Expression.Call(typeof(ReflectionUtils), nameof(VolatileReadPointer), new[] { pointerType }, expression);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -109,7 +117,9 @@ namespace DotNext.Runtime.CompilerServices
             if (expression.Type == typeof(void*))
                 return Expression.Call(typeof(ReflectionUtils), nameof(VolatileWritePointer), Type.EmptyTypes, expression, value);
 
-            return Expression.Call(typeof(ReflectionUtils), nameof(VolatileWritePointer), new[] { expression.Type.GetElementType() }, expression, value);
+            var pointerType = expression.Type.GetElementType();
+            Debug.Assert(pointerType is not null);
+            return Expression.Call(typeof(ReflectionUtils), nameof(VolatileWritePointer), new[] { pointerType }, expression, value);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
@@ -41,11 +42,20 @@ namespace DotNext.Reflection
         {
             IEnumerable<Type> types;
             if (target.IsValueType)
+            {
                 types = Seq.Singleton(target);
+            }
             else if (target.IsByRef)
-                types = Seq.Singleton(target.GetElementType());
+            {
+                var underlyingType = target.GetElementType();
+                Debug.Assert(underlyingType is not null);
+                types = Seq.Singleton(underlyingType);
+            }
             else
+            {
                 types = target.GetBaseTypes(includeTopLevel: true, includeInterfaces: true);
+            }
+
             return GetMethods(types, InstanceMethods);
         }
 

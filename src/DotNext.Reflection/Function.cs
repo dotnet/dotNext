@@ -12,8 +12,7 @@ namespace DotNext
     /// <typeparam name="TArgs">Type of structure with function arguments allocated on the stack.</typeparam>
     /// <typeparam name="TResult">Type of function return value.</typeparam>
     /// <returns>Function return value.</returns>
-    [return: MaybeNull]
-    public delegate TResult Function<TArgs, out TResult>(in TArgs arguments)
+    public delegate TResult? Function<TArgs, out TResult>(in TArgs arguments)
         where TArgs : struct;
 
     /// <summary>
@@ -26,8 +25,7 @@ namespace DotNext
     /// <typeparam name="TArgs">Type of structure with function arguments allocated on the stack.</typeparam>
     /// <typeparam name="TResult">Type of function return value.</typeparam>
     /// <returns>Function return value.</returns>
-    [return: MaybeNull]
-    public delegate TResult Function<T, TArgs, out TResult>([DisallowNull]in T @this, in TArgs arguments)
+    public delegate TResult? Function<T, TArgs, out TResult>([DisallowNull]in T @this, in TArgs arguments)
         where TArgs : struct;
 
     /// <summary>
@@ -48,8 +46,7 @@ namespace DotNext
                 this.target = target;
             }
 
-            [return: MaybeNull]
-            internal TResult Invoke(in TArgs arguments) => function(target, arguments);
+            internal TResult? Invoke(in TArgs arguments) => function(target, arguments);
         }
 
         /// <summary>
@@ -90,7 +87,7 @@ namespace DotNext
         /// <typeparam name="TResult">Type of function return value.</typeparam>
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Result<TResult> TryInvoke<TArgs, TResult>(this Function<TArgs, TResult> function, in TArgs arguments)
+        public static Result<TResult?> TryInvoke<TArgs, TResult>(this Function<TArgs, TResult> function, in TArgs arguments)
             where TArgs : struct
         {
             try
@@ -99,7 +96,7 @@ namespace DotNext
             }
             catch (Exception e)
             {
-                return new Result<TResult>(e);
+                return new Result<TResult?>(e);
             }
         }
 
@@ -114,7 +111,7 @@ namespace DotNext
         /// <typeparam name="TResult">Type of function return value.</typeparam>
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Result<TResult> TryInvoke<T, TArgs, TResult>(this Function<T, TArgs, TResult> function, [DisallowNull]in T @this, in TArgs arguments)
+        public static Result<TResult?> TryInvoke<T, TArgs, TResult>(this Function<T, TArgs, TResult> function, [DisallowNull]in T @this, in TArgs arguments)
             where TArgs : struct
         {
             try
@@ -123,7 +120,7 @@ namespace DotNext
             }
             catch (Exception e)
             {
-                return new Result<TResult>(e);
+                return new Result<TResult?>(e);
             }
         }
 

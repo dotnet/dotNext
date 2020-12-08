@@ -23,7 +23,7 @@ namespace DotNext.Reflection
 
         public override string Name => expression.ToString();
 
-        public override Type ReflectedType => DeclaringType.ReflectedType;
+        public override Type? ReflectedType => DeclaringType.ReflectedType;
 
         public override object[] GetCustomAttributes(bool inherit) => Array.Empty<object>();
 
@@ -44,7 +44,7 @@ namespace DotNext.Reflection
         public override string ToString() => expression.ToString();
 
         public bool Equals(BuiltinOperatorInfo? other)
-            => !(other is null) && expression == other.expression && DeclaringType == other.DeclaringType;
+            => other is not null && expression == other.expression && DeclaringType == other.DeclaringType;
 
         public override bool Equals(object? other) => Equals(other as BuiltinOperatorInfo);
 

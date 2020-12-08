@@ -1,4 +1,6 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
@@ -17,7 +19,7 @@ namespace DotNext.Runtime.CompilerServices
     public readonly struct Awaitable<T, [Constraint(typeof(Awaiter<>))] TAwaiter>
         where TAwaiter : ICriticalNotifyCompletion
     {
-        private static readonly Operator<T, TAwaiter> GetAwaiterMethod = Type<T>.Method.Require<Operator<T, TAwaiter>>(nameof(Task.GetAwaiter), MethodLookup.Instance)!;
+        private static readonly Operator<T, TAwaiter> GetAwaiterMethod = Type<T>.Method.Require<Operator<T, TAwaiter>>(nameof(Task.GetAwaiter), MethodLookup.Instance);
 
         static Awaitable() => Concept.Assert<Awaiter<TAwaiter>>();
 
@@ -33,6 +35,7 @@ namespace DotNext.Runtime.CompilerServices
         /// Gets awaiter used to await asynchronous result represented by type <typeparamref name="T"/>.
         /// </summary>
         /// <returns>An awaiter instance.</returns>
+        /// <exception cref="InvalidOperationException"><typeparamref name="TAwaiter"/> returned by <typeparamref name="T"/> is <see langword="null"/>.</exception>
         public Awaiter<TAwaiter> GetAwaiter() => new Awaiter<TAwaiter>(GetAwaiter(in awaitable));
 
         /// <summary>
@@ -46,8 +49,10 @@ namespace DotNext.Runtime.CompilerServices
         /// </summary>
         /// <param name="obj">The object representing asynchronous computing.</param>
         /// <returns>An awaiter instance.</returns>
+        /// <exception cref="InvalidOperationException"><typeparamref name="TAwaiter"/> returned by <typeparamref name="T"/> is <see langword="null"/>.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static TAwaiter GetAwaiter(in T obj) => GetAwaiterMethod(in obj)!;
+        [return: NotNull]
+        public static TAwaiter GetAwaiter(in T obj) => GetAwaiterMethod(in obj) ?? throw new InvalidOperationException(ExceptionMessages.AwaiterMustNotBeNull);
     }
 
     /// <summary>
@@ -62,7 +67,7 @@ namespace DotNext.Runtime.CompilerServices
     public readonly struct Awaitable<T, [Constraint(typeof(Awaiter<,>))] TAwaiter, TResult>
         where TAwaiter : ICriticalNotifyCompletion
     {
-        private static readonly Operator<T, TAwaiter> GetAwaiterMethod = Type<T>.Method.Require<Operator<T, TAwaiter>>(nameof(Task.GetAwaiter), MethodLookup.Instance)!;
+        private static readonly Operator<T, TAwaiter> GetAwaiterMethod = Type<T>.Method.Require<Operator<T, TAwaiter>>(nameof(Task.GetAwaiter), MethodLookup.Instance);
 
         static Awaitable() => Concept.Assert<Awaiter<TAwaiter, TResult>>();
 
@@ -78,6 +83,7 @@ namespace DotNext.Runtime.CompilerServices
         /// Gets awaiter used to await asynchronous result represented by type <typeparamref name="T"/>.
         /// </summary>
         /// <returns>An awaiter instance.</returns>
+        /// <exception cref="InvalidOperationException"><typeparamref name="TAwaiter"/> returned by <typeparamref name="T"/> is <see langword="null"/>.</exception>
         public Awaiter<TAwaiter, TResult> GetAwaiter() => new Awaiter<TAwaiter, TResult>(GetAwaiter(in awaitable));
 
         /// <summary>
@@ -91,7 +97,9 @@ namespace DotNext.Runtime.CompilerServices
         /// </summary>
         /// <param name="obj">The object representing asynchronous computing.</param>
         /// <returns>An awaiter instance.</returns>
+        /// <exception cref="InvalidOperationException"><typeparamref name="TAwaiter"/> returned by <typeparamref name="T"/> is <see langword="null"/>.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static TAwaiter GetAwaiter(in T obj) => GetAwaiterMethod(in obj)!;
+        [return: NotNull]
+        public static TAwaiter GetAwaiter(in T obj) => GetAwaiterMethod(in obj) ?? throw new InvalidOperationException(ExceptionMessages.AwaiterMustNotBeNull);
     }
 }
