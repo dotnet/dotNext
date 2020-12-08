@@ -31,13 +31,8 @@ namespace DotNext.Threading
 
             internal bool IsValid(in int version) => valid && this.version == Unsafe.AsRef(in version).VolatileRead();
 
-            /// <summary>
-            /// Determines whether this stamp represents the same version of the lock state
-            /// as the given stamp.
-            /// </summary>
-            /// <param name="other">The lock stamp to compare.</param>
-            /// <returns><see langword="true"/> of this stamp is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-            public bool Equals(LockStamp other) => version == other.version && valid == other.valid;
+            private bool Equals(in LockStamp other)
+                => version == other.version && valid == other.valid;
 
             /// <summary>
             /// Determines whether this stamp represents the same version of the lock state
@@ -45,7 +40,15 @@ namespace DotNext.Threading
             /// </summary>
             /// <param name="other">The lock stamp to compare.</param>
             /// <returns><see langword="true"/> of this stamp is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-            public override bool Equals(object? other) => other is LockStamp stamp && Equals(stamp);
+            public bool Equals(LockStamp other) => Equals(in other);
+
+            /// <summary>
+            /// Determines whether this stamp represents the same version of the lock state
+            /// as the given stamp.
+            /// </summary>
+            /// <param name="other">The lock stamp to compare.</param>
+            /// <returns><see langword="true"/> of this stamp is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
+            public override bool Equals(object? other) => other is LockStamp stamp && Equals(in stamp);
 
             /// <summary>
             /// Computes hash code for this stamp.
@@ -61,7 +64,7 @@ namespace DotNext.Threading
             /// <param name="second">The second lock stamp to compare.</param>
             /// <returns><see langword="true"/> of <paramref name="first"/> stamp is equal to <paramref name="second"/>; otherwise, <see langword="false"/>.</returns>
             public static bool operator ==(in LockStamp first, in LockStamp second)
-                => first.version == second.version && first.valid == second.valid;
+                => first.Equals(in second);
 
             /// <summary>
             /// Determines whether the first stamp represents the different version of the lock state
@@ -71,7 +74,7 @@ namespace DotNext.Threading
             /// <param name="second">The second lock stamp to compare.</param>
             /// <returns><see langword="true"/> of <paramref name="first"/> stamp is not equal to <paramref name="second"/>; otherwise, <see langword="false"/>.</returns>
             public static bool operator !=(in LockStamp first, in LockStamp second)
-                => first.version != second.version || first.valid ^ second.valid;
+                => !first.Equals(in second);
         }
 
         private const int WriteLockState = int.MinValue;
