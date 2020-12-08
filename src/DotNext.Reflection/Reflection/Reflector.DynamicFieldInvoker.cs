@@ -10,7 +10,7 @@ namespace DotNext.Reflection
         private static MemberExpression BuildFieldAccess(FieldInfo field, ParameterExpression target)
         {
             Expression? owner;
-            if (field.IsStatic)
+            if (field.IsStatic || field.DeclaringType is null)
                 owner = null;
             else if (field.DeclaringType.IsValueType)
                 owner = Expression.Unbox(target, field.DeclaringType);

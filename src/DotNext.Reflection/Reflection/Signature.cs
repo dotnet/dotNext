@@ -50,6 +50,7 @@ namespace DotNext.Reflection
         {
             Debug.Assert(actualParameter.IsByRef);
             var elementType = actualParameter.GetElementType();
+            Debug.Assert(elementType is not null);
 
             // for value type
             // object local = args.param;
@@ -83,6 +84,7 @@ namespace DotNext.Reflection
         {
             Debug.Assert(actualParameter.IsByRef);
             var elementType = actualParameter.GetElementType();
+            Debug.Assert(elementType is not null);
 
             // for value type use unboxed reference to value type
             if (elementType.IsValueType)

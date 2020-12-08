@@ -88,8 +88,8 @@ namespace DotNext.Reflection
                         method = typeof(BitwiseComparer<>)
                             .MakeGenericType(RuntimeType)
                             .GetMethod(nameof(BitwiseComparer<int>.Equals), BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public)
-                            .MakeGenericMethod(RuntimeType);
-                        Debug.Assert(!(method is null));
+                            ?.MakeGenericMethod(RuntimeType);
+                        Debug.Assert(method is not null);
                         equalsOp = Lambda<Operator<T, T, bool>>(Call(null, method, inputParam, secondParam), inputParam, secondParam).Compile();
                     }
                 }
@@ -101,7 +101,11 @@ namespace DotNext.Reflection
 
                 // equality checker
                 if (equalsOp is null)
-                    equalsOp = Lambda<Operator<T, T, bool>>(Call(null, typeof(object).GetMethod(nameof(Equals), BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly), inputParam, secondParam), inputParam, secondParam).Compile();
+                {
+                    var equalsMethod = typeof(object).GetMethod(nameof(Equals), BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
+                    Debug.Assert(equalsMethod is not null);
+                    equalsOp = Lambda<Operator<T, T, bool>>(Call(null, equalsMethod, inputParam, secondParam), inputParam, secondParam).Compile();
+                }
             }
 
             Equals = equalsOp;

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -18,7 +19,7 @@ namespace DotNext.Reflection
             var target = Expression.Parameter(typeof(object));
             var arguments = Expression.Parameter(typeof(object[]));
             Expression? thisArg;
-            if (method.IsStatic || method.MemberType == MemberTypes.Constructor)
+            if (method.IsStatic || method.MemberType == MemberTypes.Constructor || method.DeclaringType is null)
                 thisArg = null;
             else if (method.DeclaringType.IsValueType)
                 thisArg = Expression.Unbox(target, method.DeclaringType);
@@ -39,6 +40,7 @@ namespace DotNext.Reflection
                 else if (parameter.ParameterType.IsByRef)
                 {
                     var parameterType = parameter.ParameterType.GetElementType();
+                    Debug.Assert(parameterType is not null);
 
                     // value type parameter can be passed as unboxed reference
                     if (parameterType.IsValueType)

@@ -27,8 +27,8 @@ namespace DotNext.Reflection
         internal static MissingConstructorException Create<TSignature>()
             where TSignature : Delegate
         {
-            var (parameters, target) = DelegateType.GetInvokeMethod<TSignature>().Decompose(method => method.GetParameterTypes(), method => method.ReturnType);
-            return new MissingConstructorException(target, parameters);
+            var invokeMethod = DelegateType.GetInvokeMethod<TSignature>();
+            return new MissingConstructorException(invokeMethod.ReturnType, invokeMethod.GetParameterTypes());
         }
 
         internal static MissingConstructorException Create<T, TArgs>()
