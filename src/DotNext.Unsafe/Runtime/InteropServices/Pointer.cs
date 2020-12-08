@@ -257,7 +257,7 @@ namespace DotNext.Runtime.InteropServices
                 throw new NullPointerException(ExceptionMessages.NullSource);
             if (destination.IsNull)
                 throw new ArgumentNullException(nameof(destination), ExceptionMessages.NullDestination);
-            Intrinsics.Copy(in value[0], ref destination.value[0], count);
+            Intrinsics.Copy(in value[0], out destination.value[0], count);
         }
 
         /// <summary>
@@ -280,7 +280,7 @@ namespace DotNext.Runtime.InteropServices
                 throw new ArgumentOutOfRangeException(nameof(offset));
             if (destination.LongLength == 0L || (offset + count) > destination.LongLength)
                 return 0L;
-            Intrinsics.Copy(in value[0], ref destination[offset], count);
+            Intrinsics.Copy(in value[0], out destination[offset], count);
             return count;
         }
 
@@ -370,7 +370,7 @@ namespace DotNext.Runtime.InteropServices
                 throw new ArgumentOutOfRangeException(nameof(offset));
             if (source.LongLength == 0L || (count + offset) > source.LongLength)
                 return 0L;
-            Intrinsics.Copy(in source[offset], ref value[0], count);
+            Intrinsics.Copy(in source[offset], out value[0], count);
             return count;
         }
 
@@ -481,7 +481,7 @@ namespace DotNext.Runtime.InteropServices
             if (IsNull || length == 0L)
                 return Array.Empty<byte>();
             var result = new byte[sizeof(T) * length];
-            Intrinsics.Copy(in ((byte*)value)[0], ref result[0], length * sizeof(T));
+            Intrinsics.Copy(in ((byte*)value)[0], out result[0], length * sizeof(T));
             return result;
         }
 
@@ -498,7 +498,7 @@ namespace DotNext.Runtime.InteropServices
 
             // TODO: Replace with GC.AllocateUninitializedArray
             var result = new T[length];
-            Intrinsics.Copy(in value[0], ref result[0], length);
+            Intrinsics.Copy(in value[0], out result[0], length);
             return result;
         }
 
@@ -630,7 +630,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Content hash code.</returns>
         public int BitwiseHashCode(long count, int hash, Func<int, int, int> hashFunction, bool salted = true)
-            => BitwiseHashCode(count, hash, new ValueFunc<int, int, int>(hashFunction, true), salted);
+            => BitwiseHashCode(count, hash, new ValueFunc<int, int, int>(hashFunction), salted);
 
         /// <summary>
         /// Computes 32-bit hash code for the block of memory identified by this pointer.
@@ -663,7 +663,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Content hash code.</returns>
         public long BitwiseHashCode64(long count, long hash, Func<long, long, long> hashFunction, bool salted = true)
-            => BitwiseHashCode64(count, hash, new ValueFunc<long, long, long>(hashFunction, true), salted);
+            => BitwiseHashCode64(count, hash, new ValueFunc<long, long, long>(hashFunction), salted);
 
         /// <summary>
         /// Bitwise comparison of two memory blocks.
