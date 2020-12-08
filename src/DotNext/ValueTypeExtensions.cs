@@ -83,7 +83,8 @@ namespace DotNext
 #if !NETSTANDARD2_1
         [Obsolete("Use nint and nuint data types in C#")]
 #endif
-        public static UIntPtr ToUIntPtr(this IntPtr value) => (nuint)(nint)value;
+        public static UIntPtr ToUIntPtr(this IntPtr value)
+            => (nuint)(nint)value;
 
         /// <summary>
         /// Converts <see cref="UIntPtr"/> into <see cref="IntPtr"/>
@@ -94,12 +95,11 @@ namespace DotNext
         /// <exception cref="OverflowException"><paramref name="value"/> is less than zero.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
         public static UIntPtr ToUIntPtrChecked(this IntPtr value)
-        {
-            Push(value);
-            Conv_Ovf_U();
-            return Return<UIntPtr>();
-        }
+            => checked((nuint)(nint)value);
 
         /// <summary>
         /// Converts <see cref="bool"/> into <see cref="int"/>.
@@ -141,12 +141,11 @@ namespace DotNext
         /// <returns>The converted <paramref name="value"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
         public static IntPtr ToIntPtr(this UIntPtr value)
-        {
-            Push(value);
-            Conv_I();
-            return Return<IntPtr>();
-        }
+            => (nint)(nuint)value;
 
         /// <summary>
         /// Converts <see cref="UIntPtr"/> into <see cref="IntPtr"/>
@@ -157,12 +156,11 @@ namespace DotNext
         /// <exception cref="OverflowException"><paramref name="value"/> is greater than the maximum positive signed native integer.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
         public static IntPtr ToIntPtrChecked(this UIntPtr value)
-        {
-            Push(value);
-            Conv_Ovf_I_Un();
-            return Return<IntPtr>();
-        }
+            => checked((nint)(nuint)value);
 
         /// <summary>
         /// Determines whether the native integer is less than the specified value.
@@ -171,13 +169,11 @@ namespace DotNext
         /// <param name="comparand">he value that is compared by value to <paramref name="value"/>.</param>
         /// <returns><see langword="true"/> if <paramref name="value"/> is less than <paramref name="comparand"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
         public static bool LessThan(this IntPtr value, IntPtr comparand)
-        {
-            Push(value);
-            Push(comparand);
-            Clt();
-            return Return<bool>();
-        }
+            => (nint)value < comparand;
 
         /// <summary>
         /// Determines whether the native integer is greater than the specified value.
@@ -186,13 +182,11 @@ namespace DotNext
         /// <param name="comparand">he value that is compared by value to <paramref name="value"/>.</param>
         /// <returns><see langword="true"/> if <paramref name="value"/> is greater than <paramref name="comparand"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
         public static bool GreaterThan(this IntPtr value, IntPtr comparand)
-        {
-            Push(value);
-            Push(comparand);
-            Cgt();
-            return Return<bool>();
-        }
+            => (nint)value > comparand;
 
         /// <summary>
         /// Determines whether the native integer is greater than or equal to specified value.
@@ -201,15 +195,11 @@ namespace DotNext
         /// <param name="comparand">he value that is compared by value to <paramref name="value"/>.</param>
         /// <returns><see langword="true"/> if <paramref name="value"/> is greater than or equal to <paramref name="comparand"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
         public static bool GreaterThanOrEqual(this IntPtr value, IntPtr comparand)
-        {
-            Push(value);
-            Push(comparand);
-            Clt();
-            Ldc_I4_0();
-            Ceq();
-            return Return<bool>();
-        }
+            => (nint)value >= comparand;
 
         /// <summary>
         /// Determines whether the native integer is less than or equal to specified value.
@@ -218,15 +208,11 @@ namespace DotNext
         /// <param name="comparand">he value that is compared by value to <paramref name="value"/>.</param>
         /// <returns><see langword="true"/> if <paramref name="value"/> is less than or equal to <paramref name="comparand"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
         public static bool LessThanOrEqual(this IntPtr value, IntPtr comparand)
-        {
-            Push(value);
-            Push(comparand);
-            Cgt();
-            Ldc_I4_0();
-            Ceq();
-            return Return<bool>();
-        }
+            => (nint)value <= comparand;
 
         /// <summary>
         /// Determines whether the native integer is less than the specified value.

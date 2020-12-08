@@ -99,13 +99,13 @@ namespace DotNext.Threading
         /// Negates currently stored value atomically.
         /// </summary>
         /// <returns>Negation result.</returns>
-        public bool NegateAndGet() => UpdateAndGet(new ValueFunc<bool, bool>(Negate));
+        public unsafe bool NegateAndGet() => UpdateAndGet(new ValueFunc<bool, bool>(&Negate));
 
         /// <summary>
         /// Negates currently stored value atomically.
         /// </summary>
         /// <returns>The original value before negation.</returns>
-        public bool GetAndNegate() => GetAndUpdate(new ValueFunc<bool, bool>(Negate));
+        public unsafe bool GetAndNegate() => GetAndUpdate(new ValueFunc<bool, bool>(&Negate));
 
         /// <summary>
         /// Modifies the current value atomically.

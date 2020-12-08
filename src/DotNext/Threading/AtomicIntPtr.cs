@@ -1,8 +1,6 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using static InlineIL.IL;
-using static InlineIL.IL.Emit;
 
 namespace DotNext.Threading
 {
@@ -31,12 +29,7 @@ namespace DotNext.Threading
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IntPtr VolatileRead(ref this IntPtr value)
-        {
-            Push(ref value);
-            Volatile();
-            Ldind_I();
-            return Return<IntPtr>();
-        }
+            => Volatile.Read(ref value);
 
         /// <summary>
         /// Writes the specified value to the specified field. On systems that require it,
@@ -51,13 +44,7 @@ namespace DotNext.Threading
         /// </param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void VolatileWrite(ref this IntPtr value, IntPtr newValue)
-        {
-            Push(ref value);
-            Push(newValue);
-            Volatile();
-            Stind_I();
-            Ret();
-        }
+            => Volatile.Write(ref value, newValue);
 
         /// <summary>
         /// Atomically increments the referenced value by one.
@@ -66,7 +53,11 @@ namespace DotNext.Threading
         /// <returns>Incremented value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe IntPtr IncrementAndGet(ref this IntPtr value)
-            => AccumulateAndGet(ref value, new IntPtr(1), new ValueFunc<IntPtr, IntPtr, IntPtr>(&ValueTypeExtensions.Add));
+        {
+            return UpdateAndGet(ref value, new ValueFunc<nint, nint>(&Increment));
+
+            static nint Increment(nint value) => value + 1;
+        }
 
         /// <summary>
         /// Atomically decrements the referenced value by one.
@@ -75,7 +66,11 @@ namespace DotNext.Threading
         /// <returns>Decremented value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe IntPtr DecrementAndGet(ref this IntPtr value)
-            => AccumulateAndGet(ref value, new IntPtr(-1), new ValueFunc<IntPtr, IntPtr, IntPtr>(&ValueTypeExtensions.Add));
+        {
+            return UpdateAndGet(ref value, new ValueFunc<nint, nint>(&Decrement));
+
+            static nint Decrement(nint value) => value - 1;
+        }
 
         /// <summary>
         /// Adds two native integers and replaces referenced storage with the sum,
@@ -85,7 +80,12 @@ namespace DotNext.Threading
         /// <param name="operand">The value to be added to the currently stored integer.</param>
         /// <returns>Result of sum operation.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe IntPtr Add(ref this IntPtr value, IntPtr operand) => AccumulateAndGet(ref value, operand, new ValueFunc<IntPtr, IntPtr, IntPtr>(&ValueTypeExtensions.Add));
+        public static unsafe IntPtr Add(ref this IntPtr value, IntPtr operand)
+        {
+            return AccumulateAndGet(ref value, operand, new ValueFunc<nint, nint, nint>(&Add));
+
+            static nint Add(nint x, nint y) => x + y;
+        }
 
         /// <summary>
         /// Atomically sets the referenced value to the given updated value if the current value == the expected value.
