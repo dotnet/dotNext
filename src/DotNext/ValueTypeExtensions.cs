@@ -6,6 +6,8 @@ using static InlineIL.IL.Emit;
 
 namespace DotNext
 {
+    using Intrinsics = Runtime.Intrinsics;
+
     /// <summary>
     /// Various extensions for value types.
     /// </summary>
@@ -50,7 +52,7 @@ namespace DotNext
         public static bool IsOneOf<T>(this T value, params T[] values)
             where T : struct, IEquatable<T>
         {
-            for (var i = 0L; i < values.LongLength; i++)
+            for (nint i = 0; i < Intrinsics.GetLength(values); i++)
             {
                 if (values[i].Equals(value))
                     return true;

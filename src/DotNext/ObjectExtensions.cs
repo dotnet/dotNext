@@ -4,6 +4,8 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext
 {
+    using Intrinsics = Runtime.Intrinsics;
+
     /// <summary>
     /// Various extension methods for reference types.
     /// </summary>
@@ -71,7 +73,7 @@ namespace DotNext
         public static bool IsOneOf<T>(this T value, params T?[] values)
             where T : class
         {
-            for (var i = 0L; i < values.LongLength; i++)
+            for (nint i = 0; i < Intrinsics.GetLength(values); i++)
             {
                 if (Equals(values[i], value))
                     return true;

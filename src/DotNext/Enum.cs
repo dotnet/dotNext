@@ -7,6 +7,8 @@ using System.Runtime.Serialization;
 
 namespace DotNext
 {
+    using Intrinsics = Runtime.Intrinsics;
+
     /// <summary>
     /// Provides strongly typed way to reflect enum type.
     /// </summary>
@@ -25,7 +27,7 @@ namespace DotNext
                 min = max = default;
                 var enumType = typeof(TEnum);
                 values = Enum.GetValues(enumType);
-                for (var i = 0L; i < values.LongLength; i++)
+                for (nint i = 0; i < Intrinsics.GetLength(values); i++)
                 {
                     var boxedValue = values.GetValue(i)!;
                     var value = (TEnum)boxedValue;
