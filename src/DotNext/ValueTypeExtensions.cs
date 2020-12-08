@@ -86,7 +86,7 @@ namespace DotNext
         [Obsolete("Use nint and nuint data types in C#")]
 #endif
         public static UIntPtr ToUIntPtr(this IntPtr value)
-            => (nuint)(nint)value;
+            => unchecked((nuint)(nint)value);
 
         /// <summary>
         /// Converts <see cref="UIntPtr"/> into <see cref="IntPtr"/>
@@ -147,7 +147,7 @@ namespace DotNext
         [Obsolete("Use nint and nuint data types in C#")]
 #endif
         public static IntPtr ToIntPtr(this UIntPtr value)
-            => (nint)(nuint)value;
+            => unchecked((nint)(nuint)value);
 
         /// <summary>
         /// Converts <see cref="UIntPtr"/> into <see cref="IntPtr"/>
@@ -224,13 +224,11 @@ namespace DotNext
         /// <returns><see langword="true"/> if <paramref name="value"/> is less than <paramref name="comparand"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
         public static bool LessThan(this UIntPtr value, UIntPtr comparand)
-        {
-            Push(value);
-            Push(comparand);
-            Clt_Un();
-            return Return<bool>();
-        }
+            => (nuint)value < comparand;
 
         /// <summary>
         /// Determines whether the native integer is greater than the specified value.
@@ -240,13 +238,11 @@ namespace DotNext
         /// <returns><see langword="true"/> if <paramref name="value"/> is greater than <paramref name="comparand"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
         public static bool GreaterThan(this UIntPtr value, UIntPtr comparand)
-        {
-            Push(value);
-            Push(comparand);
-            Cgt_Un();
-            return Return<bool>();
-        }
+            => (nuint)value > comparand;
 
         /// <summary>
         /// Determines whether the native integer is greater than or equal to specified value.
@@ -256,15 +252,11 @@ namespace DotNext
         /// <returns><see langword="true"/> if <paramref name="value"/> is greater than or equal to <paramref name="comparand"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
         public static bool GreaterThanOrEqual(this UIntPtr value, UIntPtr comparand)
-        {
-            Push(value);
-            Push(comparand);
-            Clt_Un();
-            Ldc_I4_0();
-            Ceq();
-            return Return<bool>();
-        }
+            => (nuint)value >= comparand;
 
         /// <summary>
         /// Determines whether the native integer is less than or equal to specified value.
@@ -274,15 +266,11 @@ namespace DotNext
         /// <returns><see langword="true"/> if <paramref name="value"/> is less than or equal to <paramref name="comparand"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
         public static bool LessThanOrEqual(this UIntPtr value, UIntPtr comparand)
-        {
-            Push(value);
-            Push(comparand);
-            Cgt_Un();
-            Ldc_I4_0();
-            Ceq();
-            return Return<bool>();
-        }
+            => (nuint)value < comparand;
 
         /// <summary>
         /// Negates native integer value.
@@ -290,12 +278,11 @@ namespace DotNext
         /// <param name="value">The value to negate.</param>
         /// <returns>The negated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
         public static IntPtr Negate(this IntPtr value)
-        {
-            Push(value);
-            Neg();
-            return Return<IntPtr>();
-        }
+            => -(nint)value;
 
         /// <summary>
         /// Adds two specified native integers.
@@ -304,8 +291,11 @@ namespace DotNext
         /// <param name="y">The second value to add.</param>
         /// <returns>The result of adding <paramref name="x"/> and <paramref name="y"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
         public static IntPtr Add(this IntPtr x, IntPtr y)
-            => (nint)x + y;
+            => unchecked((nint)x + y);
 
         /// <summary>
         /// Adds two specified native integers.
@@ -315,13 +305,11 @@ namespace DotNext
         /// <returns>The result of adding <paramref name="x"/> and <paramref name="y"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
         public static UIntPtr Add(this UIntPtr x, UIntPtr y)
-        {
-            Push(x);
-            Push(y);
-            Emit.Add();
-            return Return<UIntPtr>();
-        }
+            => unchecked((nuint)x + y);
 
         /// <summary>
         /// Adds two specified native integers.
@@ -331,13 +319,11 @@ namespace DotNext
         /// <returns>The result of adding <paramref name="x"/> and <paramref name="y"/>.</returns>
         /// <exception cref="OverflowException">The result of an operation is outside the bounds of the <see cref="IntPtr"/> data type.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
         public static IntPtr AddChecked(this IntPtr x, IntPtr y)
-        {
-            Push(x);
-            Push(y);
-            Add_Ovf();
-            return Return<IntPtr>();
-        }
+            => checked((nint)x + y);
 
         /// <summary>
         /// Adds two specified native integers.
@@ -348,13 +334,11 @@ namespace DotNext
         /// <exception cref="OverflowException">The result of an operation is outside the bounds of the <see cref="UIntPtr"/> data type.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
         public static UIntPtr AddChecked(this UIntPtr x, UIntPtr y)
-        {
-            Push(x);
-            Push(y);
-            Add_Ovf_Un();
-            return Return<UIntPtr>();
-        }
+            => checked((nuint)x + y);
 
         /// <summary>
         /// Subtracts two native integers.
@@ -363,13 +347,11 @@ namespace DotNext
         /// <param name="y">The subtrahend.</param>
         /// <returns>The result of subtracting <paramref name="y"/> from <paramref name="x"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
         public static IntPtr Subtract(this IntPtr x, IntPtr y)
-        {
-            Push(x);
-            Push(y);
-            Sub();
-            return Return<IntPtr>();
-        }
+            => unchecked((nint)x - y);
 
         /// <summary>
         /// Subtracts two native integers.
@@ -379,13 +361,11 @@ namespace DotNext
         /// <returns>The result of subtracting <paramref name="y"/> from <paramref name="x"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
         public static UIntPtr Subtract(this UIntPtr x, UIntPtr y)
-        {
-            Push(x);
-            Push(y);
-            Sub();
-            return Return<UIntPtr>();
-        }
+            => unchecked((nuint)x - y);
 
         /// <summary>
         /// Subtracts two native integers.
@@ -395,13 +375,11 @@ namespace DotNext
         /// <returns>The result of subtracting <paramref name="y"/> from <paramref name="x"/>.</returns>
         /// <exception cref="OverflowException">The result of an operation is outside the bounds of the <see cref="IntPtr"/> data type.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
         public static IntPtr SubtractChecked(this IntPtr x, IntPtr y)
-        {
-            Push(x);
-            Push(y);
-            Sub_Ovf();
-            return Return<IntPtr>();
-        }
+            => checked((nint)x - y);
 
         /// <summary>
         /// Subtracts two native integers.
@@ -412,13 +390,11 @@ namespace DotNext
         /// <exception cref="OverflowException">The result of an operation is outside the bounds of the <see cref="UIntPtr"/> data type.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
         public static UIntPtr SubtractChecked(this UIntPtr x, UIntPtr y)
-        {
-            Push(x);
-            Push(y);
-            Sub_Ovf_Un();
-            return Return<UIntPtr>();
-        }
+            => checked((nuint)x - y);
 
         /// <summary>
         /// Multiplies two specified native integers.
@@ -427,13 +403,11 @@ namespace DotNext
         /// <param name="y">The second value to mulitply.</param>
         /// <returns>The result of multiplying <paramref name="x"/> by <paramref name="y"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
         public static IntPtr Multiply(this IntPtr x, IntPtr y)
-        {
-            Push(x);
-            Push(y);
-            Mul();
-            return Return<IntPtr>();
-        }
+            => unchecked((nint)x * y);
 
         /// <summary>
         /// Multiplies two specified native integers.
@@ -443,13 +417,11 @@ namespace DotNext
         /// <returns>The result of multiplying <paramref name="x"/> by <paramref name="y"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
         public static UIntPtr Multiply(this UIntPtr x, UIntPtr y)
-        {
-            Push(x);
-            Push(y);
-            Mul();
-            return Return<UIntPtr>();
-        }
+            => unchecked((nuint)x * y);
 
         /// <summary>
         /// Multiplies two specified native integers.
@@ -459,13 +431,11 @@ namespace DotNext
         /// <returns>The result of multiplying <paramref name="x"/> by <paramref name="y"/>.</returns>
         /// <exception cref="OverflowException">The result of an operation is outside the bounds of the <see cref="IntPtr"/> data type.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
         public static IntPtr MultiplyChecked(this IntPtr x, IntPtr y)
-        {
-            Push(x);
-            Push(y);
-            Mul_Ovf();
-            return Return<IntPtr>();
-        }
+            => checked((nint)x * y);
 
         /// <summary>
         /// Multiplies two specified native integers.
@@ -476,13 +446,11 @@ namespace DotNext
         /// <exception cref="OverflowException">The result of an operation is outside the bounds of the <see cref="IntPtr"/> data type.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
         public static UIntPtr MultiplyChecked(this UIntPtr x, UIntPtr y)
-        {
-            Push(x);
-            Push(y);
-            Mul_Ovf_Un();
-            return Return<UIntPtr>();
-        }
+            => checked((nuint)x * y);
 
         /// <summary>
         /// Divides two specified native integers.
@@ -492,13 +460,11 @@ namespace DotNext
         /// <returns>The result of dividing <paramref name="x"/> by <paramref name="y"/>.</returns>
         /// <exception cref="DivideByZeroException"><paramref name="y"/> is equal to <see cref="IntPtr.Zero"/>.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
         public static IntPtr Divide(this IntPtr x, IntPtr y)
-        {
-            Push(x);
-            Push(y);
-            Div();
-            return Return<IntPtr>();
-        }
+            => (nint)x / y;
 
         /// <summary>
         /// Divides two values and returns the remainder.
@@ -508,13 +474,11 @@ namespace DotNext
         /// <returns>The remainder.</returns>
         /// <exception cref="DivideByZeroException"><paramref name="y"/> is equal to <see cref="IntPtr.Zero"/>.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
         public static IntPtr Remainder(this IntPtr x, IntPtr y)
-        {
-            Push(x);
-            Push(y);
-            Rem();
-            return Return<IntPtr>();
-        }
+            => (nint)x % y;
 
         /// <summary>
         /// Divides two specified native integers.
@@ -524,13 +488,11 @@ namespace DotNext
         /// <returns>The result of dividing <paramref name="x"/> by <paramref name="y"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
         public static UIntPtr Divide(this UIntPtr x, UIntPtr y)
-        {
-            Push(x);
-            Push(y);
-            Div_Un();
-            return Return<UIntPtr>();
-        }
+            => (nuint)x / y;
 
         /// <summary>
         /// Divides two values and returns the remainder.
@@ -541,13 +503,11 @@ namespace DotNext
         /// <exception cref="DivideByZeroException"><paramref name="y"/> is equal to <see cref="UIntPtr.Zero"/>.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
         public static UIntPtr Remainder(this UIntPtr x, UIntPtr y)
-        {
-            Push(x);
-            Push(y);
-            Rem_Un();
-            return Return<UIntPtr>();
-        }
+            => (nuint)x % y;
 
         /// <summary>
         /// Computes the bitwise XOR of two native integer values.
@@ -556,13 +516,11 @@ namespace DotNext
         /// <param name="y">The second operand.</param>
         /// <returns>The bitwise XOR.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
         public static IntPtr Xor(this IntPtr x, IntPtr y)
-        {
-            Push(x);
-            Push(y);
-            Emit.Xor();
-            return Return<IntPtr>();
-        }
+            => (nint)x ^ y;
 
         /// <summary>
         /// Computes the bitwise XOR of two native integer values.
@@ -572,13 +530,11 @@ namespace DotNext
         /// <returns>The bitwise XOR.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
         public static UIntPtr Xor(this UIntPtr x, UIntPtr y)
-        {
-            Push(x);
-            Push(y);
-            Emit.Xor();
-            return Return<UIntPtr>();
-        }
+            => (nuint)x ^ y;
 
         /// <summary>
         /// Computes the bitwise AND of two native integer values.
@@ -588,13 +544,11 @@ namespace DotNext
         /// <returns>The bitwise AND.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
         public static UIntPtr And(this UIntPtr x, UIntPtr y)
-        {
-            Push(x);
-            Push(y);
-            Emit.And();
-            return Return<UIntPtr>();
-        }
+            => (nuint)x & y;
 
         /// <summary>
         /// Computes the bitwise AND of two native integer values.
@@ -603,13 +557,11 @@ namespace DotNext
         /// <param name="y">The second operand.</param>
         /// <returns>The bitwise AND.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
         public static IntPtr And(this IntPtr x, IntPtr y)
-        {
-            Push(x);
-            Push(y);
-            Emit.And();
-            return Return<IntPtr>();
-        }
+            => (nint)x & y;
 
         /// <summary>
         /// Computes the bitwise OR of two native integer values.
@@ -618,13 +570,11 @@ namespace DotNext
         /// <param name="y">The second operand.</param>
         /// <returns>The bitwise OR.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
         public static IntPtr Or(this IntPtr x, IntPtr y)
-        {
-            Push(x);
-            Push(y);
-            Emit.Or();
-            return Return<IntPtr>();
-        }
+            => (nint)x | y;
 
         /// <summary>
         /// Computes the bitwise OR of two native integer values.
@@ -634,13 +584,11 @@ namespace DotNext
         /// <returns>The bitwise OR.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
         public static UIntPtr Or(this UIntPtr x, UIntPtr y)
-        {
-            Push(x);
-            Push(y);
-            Emit.Or();
-            return Return<UIntPtr>();
-        }
+            => (nuint)x | y;
 
         /// <summary>
         /// Computes the bitwise complement of native integer value.
@@ -648,12 +596,11 @@ namespace DotNext
         /// <param name="value">The operand.</param>
         /// <returns>The result of bitwise complement.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
         public static IntPtr OnesComplement(this IntPtr value)
-        {
-            Push(value);
-            Not();
-            return Return<IntPtr>();
-        }
+            => ~(nint)value;
 
         /// <summary>
         /// Computes the bitwise complement of native integer value.
@@ -662,12 +609,11 @@ namespace DotNext
         /// <returns>The result of bitwise complement.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
         public static UIntPtr OnesComplement(this UIntPtr value)
-        {
-            Push(value);
-            Not();
-            return Return<UIntPtr>();
-        }
+            => ~(nuint)value;
 
         /// <summary>
         /// Shifts native integer value to the left by a specified number of bits.
@@ -676,23 +622,11 @@ namespace DotNext
         /// <param name="bits">The numbers of bits to shift.</param>
         /// <returns>The modified value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static IntPtr LeftShift(this IntPtr value, IntPtr bits)
-        {
-            Push(value);
-            Push(bits);
-            Shl();
-            return Return<IntPtr>();
-        }
-
-        /// <summary>
-        /// Shifts native integer value to the left by a specified number of bits.
-        /// </summary>
-        /// <param name="value">The value to shift.</param>
-        /// <param name="bits">The numbers of bits to shift.</param>
-        /// <returns>The modified value.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
         public static IntPtr LeftShift(this IntPtr value, int bits)
-            => LeftShift(value, new IntPtr(bits));
+            => (nint)value << bits;
 
         /// <summary>
         /// Shifts native integer value to the right by a specified number of bits.
@@ -701,23 +635,11 @@ namespace DotNext
         /// <param name="bits">The numbers of bits to shift.</param>
         /// <returns>The modified value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static IntPtr RightShift(this IntPtr value, IntPtr bits)
-        {
-            Push(value);
-            Push(bits);
-            Shr();
-            return Return<IntPtr>();
-        }
-
-        /// <summary>
-        /// Shifts native integer value to the right by a specified number of bits.
-        /// </summary>
-        /// <param name="value">The value to shift.</param>
-        /// <param name="bits">The numbers of bits to shift.</param>
-        /// <returns>The modified value.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
         public static IntPtr RightShift(this IntPtr value, int bits)
-            => RightShift(value, new IntPtr(bits));
+            => (nint)value >> bits;
 
         /// <summary>
         /// Shifts native integer value to the left by a specified number of bits.
@@ -727,24 +649,11 @@ namespace DotNext
         /// <returns>The modified value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
-        public static UIntPtr LeftShift(this UIntPtr value, IntPtr bits)
-        {
-            Push(value);
-            Push(bits);
-            Shl();
-            return Return<UIntPtr>();
-        }
-
-        /// <summary>
-        /// Shifts native integer value to the left by a specified number of bits.
-        /// </summary>
-        /// <param name="value">The value to shift.</param>
-        /// <param name="bits">The numbers of bits to shift.</param>
-        /// <returns>The modified value.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [CLSCompliant(false)]
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
         public static UIntPtr LeftShift(this UIntPtr value, int bits)
-            => LeftShift(value, new IntPtr(bits));
+            => (nuint)value << bits;
 
         /// <summary>
         /// Shifts native integer value to the right by a specified number of bits.
@@ -754,24 +663,11 @@ namespace DotNext
         /// <returns>The modified value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
-        public static UIntPtr RightShift(this UIntPtr value, IntPtr bits)
-        {
-            Push(value);
-            Push(bits);
-            Shr();
-            return Return<UIntPtr>();
-        }
-
-        /// <summary>
-        /// Shifts native integer value to the right by a specified number of bits.
-        /// </summary>
-        /// <param name="value">The value to shift.</param>
-        /// <param name="bits">The numbers of bits to shift.</param>
-        /// <returns>The modified value.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [CLSCompliant(false)]
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
         public static UIntPtr RightShift(this UIntPtr value, int bits)
-            => RightShift(value, new IntPtr(bits));
+            => (nuint)value >> bits;
 
         /// <summary>
         /// Increments native integer by 1.
@@ -779,7 +675,10 @@ namespace DotNext
         /// <param name="value">The value to increment.</param>
         /// <returns>The incremented value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static IntPtr Increment(this IntPtr value) => Add(value, new IntPtr(1));
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
+        public static IntPtr Increment(this IntPtr value) => (nint)value + 1;
 
         /// <summary>
         /// Decrements native integer by 1.
@@ -787,7 +686,10 @@ namespace DotNext
         /// <param name="value">The value to increment.</param>
         /// <returns>The decremented value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static IntPtr Decrement(this IntPtr value) => Subtract(value, new IntPtr(1));
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
+        public static IntPtr Decrement(this IntPtr value) => (nint)value - 1;
 
         /// <summary>
         /// Increments native integer by 1.
@@ -796,7 +698,10 @@ namespace DotNext
         /// <returns>The incremented value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
-        public static UIntPtr Increment(this UIntPtr value) => Add(value, new UIntPtr(1));
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
+        public static UIntPtr Increment(this UIntPtr value) => (nuint)value + 1;
 
         /// <summary>
         /// Decrements native integer by 1.
@@ -805,37 +710,10 @@ namespace DotNext
         /// <returns>The decremented value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
-        public static UIntPtr Decrement(this UIntPtr value) => Subtract(value, new UIntPtr(1));
-
-        /// <summary>
-        /// Throws <see cref="ArithmeticException"/> if the value
-        /// is "not a number" (NaN), positive or negative infinity.
-        /// </summary>
-        /// <param name="value">The value to check.</param>
-        /// <returns>The value that is equal to <paramref name="value"/>.</returns>
-        /// <exception cref="ArithmeticException"><paramref name="value"/> is not a number.</exception>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float EnsureFinite(this float value)
-        {
-            Push(value);
-            Ckfinite();
-            return Return<float>();
-        }
-
-        /// <summary>
-        /// Throws <see cref="ArithmeticException"/> if the value
-        /// is "not a number" (NaN), positive or negative infinity.
-        /// </summary>
-        /// <param name="value">The value to check.</param>
-        /// <returns>The value that is equal to <paramref name="value"/>.</returns>
-        /// <exception cref="ArithmeticException"><paramref name="value"/> is not a number.</exception>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static double EnsureFinite(this double value)
-        {
-            Push(value);
-            Ckfinite();
-            return Return<double>();
-        }
+#if !NETSTANDARD2_1
+        [Obsolete("Use nint and nuint data types in C#")]
+#endif
+        public static UIntPtr Decrement(this UIntPtr value) => (nuint)value - 1;
 
         /// <summary>
         /// Truncates 64-bit signed integer.
