@@ -20,7 +20,7 @@ namespace DotNext.Threading
     /// <seealso href="https://github.com/dotnet/corefx/issues/5940">BeginInvoke throws NotSupportedException</seealso>
     public static class AsyncDelegate
     {
-        private sealed unsafe class AsyncDelegateInvoker<TDelegate, TContext>
+        private sealed unsafe class InvocationWorkItem<TDelegate, TContext>
             where TDelegate : MulticastDelegate
         {
             private readonly CancellationToken token;
@@ -28,7 +28,7 @@ namespace DotNext.Threading
             private readonly TContext context;
             private readonly delegate*<TDelegate, in TContext, void> invoker;
 
-            internal AsyncDelegateInvoker(TDelegate invocationList, delegate*<TDelegate, in TContext, void> invoker, in TContext context, CancellationToken token)
+            internal InvocationWorkItem(TDelegate invocationList, delegate*<TDelegate, in TContext, void> invoker, in TContext context, CancellationToken token)
             {
                 this.token = token;
                 this.invocationList = invocationList;
@@ -101,7 +101,7 @@ namespace DotNext.Threading
             if (token.IsCancellationRequested)
                 return Task.FromCanceled(token);
 
-            return Task.Factory.StartNew(new AsyncDelegateInvoker<TDelegate, TContext>(@delegate, invoker, context, token).Invoke, token, TaskCreationOptions.None, TaskScheduler.Default);
+            return Task.Factory.StartNew(new InvocationWorkItem<TDelegate, TContext>(@delegate, invoker, context, token).Invoke, token, TaskCreationOptions.None, TaskScheduler.Default);
         }
 
         /// <summary>
