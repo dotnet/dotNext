@@ -148,11 +148,11 @@ namespace DotNext.Reflection
                 if ((expectedArguments[i] = NormalizeArgument(actualParameters[i], expectedArguments[i], out var localVar, out var pro, out var epi)) is null)
                     return false;
 
-                if (!(localVar is null))
+                if (localVar is not null)
                     locals.Add(localVar);
-                if (!(pro is null))
+                if (pro is not null)
                     prologue.Add(pro);
-                if (!(epi is null))
+                if (epi is not null)
                     epilogue.Add(epi);
             }
 

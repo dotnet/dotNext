@@ -62,7 +62,7 @@ namespace DotNext.Reflection
                     method = typeof(BitwiseComparer<>)
                                 .MakeGenericType(RuntimeType)
                                 .GetMethod(nameof(BitwiseComparer<int>.GetHashCode), new[] { RuntimeType.MakeByRefType(), typeof(bool) });
-                    Debug.Assert(!(method is null));
+                    Debug.Assert(method is not null);
                     GetHashCode = Lambda<Operator<T, int>>(Call(null, method, inputParam, Constant(true)), inputParam).Compile();
                 }
                 else
@@ -77,7 +77,7 @@ namespace DotNext.Reflection
                     if (typeof(IEquatable<T>).IsAssignableFrom(RuntimeType))
                     {
                         method = typeof(IEquatable<T>).GetMethod(nameof(IEquatable<T>.Equals), BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-                        Debug.Assert(!(method is null));
+                        Debug.Assert(method is not null);
                         equalsOp = Lambda<Operator<T, T, bool>>(Call(inputParam, method, secondParam), inputParam, secondParam).Compile();
                     }
 
