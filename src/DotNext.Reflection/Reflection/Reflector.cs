@@ -26,16 +26,6 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="exprTree">Expression tree.</param>
         /// <typeparam name="TMember">Type of member to reflect.</typeparam>
-        /// <returns>Reflected member; or <see langword="null"/>, if lambda expression doesn't reference a member.</returns>
-        [Obsolete("Use overloaded generic method that allows to specify delegate type explicitly")]
-        public static TMember? MemberOf<TMember>(Expression<Action> exprTree)
-            where TMember : MemberInfo => MemberOf<TMember, Action>(exprTree);
-
-        /// <summary>
-        /// Extracts member metadata from expression tree.
-        /// </summary>
-        /// <param name="exprTree">Expression tree.</param>
-        /// <typeparam name="TMember">Type of member to reflect.</typeparam>
         /// <typeparam name="TDelegate">The type of lambda expression.</typeparam>
         /// <returns>Reflected member; or <see langword="null"/>, if lambda expression doesn't reference a member.</returns>
         public static TMember? MemberOf<TMember, TDelegate>(Expression<TDelegate> exprTree)

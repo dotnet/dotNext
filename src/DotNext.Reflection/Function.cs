@@ -64,21 +64,6 @@ namespace DotNext
             => new Closure<T, TArgs, TResult>(function, @this).Invoke;
 
         /// <summary>
-        /// Converts <see cref="Function{T, A, R}"/> into <see cref="Function{A, R}"/> through
-        /// capturing of the first argument of <see cref="Function{T, A, R}"/> delegate.
-        /// </summary>
-        /// <typeparam name="T">Type of instance to be passed into underlying method.</typeparam>
-        /// <typeparam name="TArgs">Type of structure with function arguments allocated on the stack.</typeparam>
-        /// <typeparam name="TResult">Type of function return value.</typeparam>
-        /// <param name="function">The function to be converted.</param>
-        /// <param name="this">The first argument to be captured.</param>
-        /// <returns>The function instance.</returns>
-        [Obsolete("Use Bind method instead", true)]
-        public static Function<TArgs, TResult> Capture<T, TArgs, TResult>(Function<T, TArgs, TResult> function, [DisallowNull]T @this)
-            where TArgs : struct
-            => Bind(function, @this);
-
-        /// <summary>
         /// Invokes function without throwing exception in case of its failure.
         /// </summary>
         /// <param name="function">The function to invoke.</param>

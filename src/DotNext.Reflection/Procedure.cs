@@ -58,20 +58,6 @@ namespace DotNext
             => new Closure<T, TArgs>(procedure, @this).Invoke;
 
         /// <summary>
-        /// Converts <see cref="Procedure{T, A}"/> into <see cref="Procedure{A}"/> through
-        /// capturing of the first argument of <see cref="Procedure{T, A}"/> delegate.
-        /// </summary>
-        /// <typeparam name="T">Type of instance to be passed into underlying method.</typeparam>
-        /// <typeparam name="TArgs">Type of structure with procedure arguments allocated on the stack.</typeparam>
-        /// <param name="procedure">The procedure to be converted.</param>
-        /// <param name="this">The first argument to be captured.</param>
-        /// <returns>The procedure instance.</returns>
-        [Obsolete("Use Bind method instead", true)]
-        public static Procedure<TArgs> Capture<T, TArgs>(Procedure<T, TArgs> procedure, [DisallowNull]T @this)
-            where TArgs : struct
-            => Bind(procedure, @this);
-
-        /// <summary>
         /// Allocates list of arguments on the stack.
         /// </summary>
         /// <typeparam name="TArgs">The type representing list of arguments.</typeparam>
