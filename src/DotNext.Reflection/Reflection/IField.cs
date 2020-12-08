@@ -24,8 +24,7 @@ namespace DotNext.Reflection
         /// Obtains managed pointer to the static field.
         /// </summary>
         /// <value>The managed pointer to the static field.</value>
-        [MaybeNull]
-        ref TValue Value { get; }
+        ref TValue? Value { get; }
     }
 
     /// <summary>
@@ -40,7 +39,6 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="this">A reference to <c>this</c> parameter.</param>
         /// <returns>The managed pointer to the instance field.</returns>
-        [MaybeNull]
-        ref TValue this[[DisallowNull]in T @this] { get; }
+        ref TValue? this[[DisallowNull]in T @this] { get; }
     }
 }

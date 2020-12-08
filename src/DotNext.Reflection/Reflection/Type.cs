@@ -23,8 +23,7 @@ namespace DotNext.Reflection
         /// <summary>
         /// Returns default value for this type.
         /// </summary>
-        [MaybeNull]
-        public static T Default => Intrinsics.DefaultOf<T>();
+        public static T? Default => Intrinsics.DefaultOf<T>();
 
         /// <summary>
         /// Provides smart hash code computation.

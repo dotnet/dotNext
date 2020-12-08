@@ -45,7 +45,7 @@ namespace DotNext.Reflection
                 try
                 {
                     item = Create(cacheKey);
-                    if (item != null)
+                    if (item is not null)
                         elements.Add(cacheKey, item);
                 }
                 finally
