@@ -30,9 +30,9 @@ namespace DotNext
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is less than 0 or greater than length of <paramref name="left"/> array.</exception>
         public static T[] Concat<T>(this T[] left, T[] right, long startIndex)
         {
-            if (startIndex < 0 || startIndex > left.Length)
+            if (startIndex < 0 || startIndex > Intrinsics.GetLength(left))
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
-            var result = new T[startIndex + right.Length];
+            var result = new T[startIndex + right.LongLength];
             Array.Copy(left, result, startIndex);
             Array.Copy(right, 0L, result, startIndex, right.Length);
             return result;
@@ -45,7 +45,7 @@ namespace DotNext
         /// <param name="array">The array to check.</param>
         /// <returns><see langword="true"/>, if array is <see langword="null"/> or empty.</returns>
         public static bool IsNullOrEmpty<T>([NotNullWhen(false)]this T[]? array)
-            => array is null || Intrinsics.GetLength(array) == default;
+            => array is null || Intrinsics.GetLength(array) == 0;
 
         /// <summary>
         /// Applies specific action to each array element.
@@ -59,7 +59,7 @@ namespace DotNext
         /// <param name="action">An action to be applied for each element.</param>
         public static void ForEach<T>(this T[] array, in ValueRefAction<T, long> action)
         {
-            for (var i = 0L; i < array.LongLength; i++)
+            for (nint i = 0; i < Intrinsics.GetLength(array); i++)
                 action.Invoke(ref array[i], i);
         }
 
@@ -89,13 +89,19 @@ namespace DotNext
             if (index < 0 || index > array.LongLength)
                 throw new ArgumentOutOfRangeException(nameof(index));
 
-            if (Intrinsics.GetLength(array) == default)
-                return new[] { element };
+            T[] result;
+            if (Intrinsics.GetLength(array) == 0)
+            {
+                result = new[] { element };
+            }
+            else
+            {
+                result = new T[array.LongLength + 1];
+                Array.Copy(array, 0, result, 0, Math.Min(index + 1, array.LongLength));
+                Array.Copy(array, index, result, index + 1, array.LongLength - index);
+                result[index] = element;
+            }
 
-            var result = new T[array.LongLength + 1];
-            Array.Copy(array, 0, result, 0, Math.Min(index + 1, array.LongLength));
-            Array.Copy(array, index, result, index + 1, array.LongLength - index);
-            result[index] = element;
             return result;
         }
 
@@ -109,26 +115,27 @@ namespace DotNext
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is incorrect.</exception>
         public static T[] RemoveAt<T>(this T[] array, long index)
         {
-            if (index < 0L || index >= array.LongLength)
+            var length = Intrinsics.GetLength(array);
+            if (index < 0L || index >= length)
                 throw new ArgumentOutOfRangeException(nameof(index));
 
-            const nuint one = 1;
-            if (Intrinsics.GetLength(array) == one)
+            if (length == 1)
                 return Array.Empty<T>();
 
-            var newStore = new T[array.LongLength - 1L];
+            var newStore = new T[length - 1];
             Array.Copy(array, 0L, newStore, 0L, index);
-            Array.Copy(array, index + 1L, newStore, index, array.LongLength - index - 1L);
+            Array.Copy(array, index + 1L, newStore, index, length - index - 1L);
             return newStore;
         }
 
         private static T[] RemoveAll<T, TConsumer>(T[] array, in ValueFunc<T, bool> match, ref TConsumer callback)
             where TConsumer : struct, IConsumer<T>
         {
-            if (array.LongLength == 0L)
+            var length = Intrinsics.GetLength(array);
+            if (length == 0)
                 return array;
-            var newLength = 0L;
-            var tempArray = new T[array.LongLength];
+            nint newLength = 0;
+            var tempArray = new T[length];
             foreach (var item in array)
             {
                 if (match.Invoke(item))
@@ -137,9 +144,10 @@ namespace DotNext
                     tempArray[newLength++] = item;
             }
 
-            if (array.LongLength - newLength == 0L)
+            if (length - newLength == 0)
                 return array;
-            if (newLength == 0L)
+
+            if (newLength == 0)
                 return Array.Empty<T>();
 
             array = new T[newLength];
@@ -209,10 +217,13 @@ namespace DotNext
         {
             if (count == 0L)
                 return input;
-            if (count >= input.LongLength)
+
+            var length = Intrinsics.GetLength(input);
+            if (count >= length)
                 return Array.Empty<T>();
-            var result = new T[input.LongLength - count];
-            Array.Copy(input, count, result, 0, result.LongLength);
+
+            var result = new T[length - count];
+            Array.Copy(input, count, result, 0, length);
             return result;
         }
 
@@ -226,10 +237,12 @@ namespace DotNext
         /// <returns>A new sliced array.</returns>
         public static T[] Slice<T>(this T[] input, long startIndex, long length)
         {
-            if (startIndex >= input.LongLength || length == 0)
+            if (startIndex >= Intrinsics.GetLength(input) || length == 0L)
                 return Array.Empty<T>();
+
             if (startIndex == 0 && length == input.Length)
                 return input;
+
             length = Math.Min(input.LongLength - startIndex, length);
             var result = new T[length];
             Array.Copy(input, startIndex, result, 0, length);
@@ -260,10 +273,12 @@ namespace DotNext
         {
             if (count == 0L)
                 return input;
-            if (count >= input.LongLength)
+
+            var length = Intrinsics.GetLength(input);
+            if (count >= length)
                 return Array.Empty<T>();
 
-            var result = new T[input.LongLength - count];
+            var result = new T[length - count];
             Array.Copy(input, result, result.LongLength);
             return result;
         }
@@ -285,7 +300,7 @@ namespace DotNext
                 return ReferenceEquals(first, second);
             if (Intrinsics.GetLength(first) != Intrinsics.GetLength(second))
                 return false;
-            if (Intrinsics.GetLength(first) == default)
+            if (Intrinsics.GetLength(first) == 0)
                 return true;
             return Intrinsics.EqualsAligned(ref As<T, byte>(ref first[0]), ref As<T, byte>(ref second[0]), first.LongLength * sizeof(T));
         }
@@ -395,7 +410,7 @@ namespace DotNext
         {
             static bool EqualsSequential(object?[] first, object?[] second)
             {
-                for (var i = 0L; i < first.LongLength; i++)
+                for (nint i = 0; i < Intrinsics.GetLength(first); i++)
                 {
                     if (!Equals(first[i], second[i]))
                         return false;
