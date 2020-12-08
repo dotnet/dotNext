@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Runtime.InteropServices;
 
@@ -27,11 +28,15 @@ namespace DotNext.Runtime.CompilerServices
         internal Expression MakeGoto()
         {
             if (Failure is null)
+            {
+                Debug.Assert(Successful is not null);
                 return Expression.Goto(Successful);
-            else if (Successful is null)
+            }
+
+            if (Successful is null)
                 return Expression.Goto(Failure);
-            else
-                return Expression.Condition(new HasNoExceptionExpression(), Expression.Goto(Successful), Expression.Goto(Failure));
+
+            return Expression.Condition(new HasNoExceptionExpression(), Expression.Goto(Successful), Expression.Goto(Failure));
         }
 
         internal bool Equals(in StateTransition other)

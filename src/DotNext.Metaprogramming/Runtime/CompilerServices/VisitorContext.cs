@@ -78,12 +78,13 @@ namespace DotNext.Runtime.CompilerServices
             }
         }
 
-        private void AttachLabel(LabelTarget target)
+        private void AttachLabel(LabelTarget? target)
         {
-            if (target is null)
-                return;
-            ExpressionAttributes.Get(CurrentStatement)?.Labels.Add(target);
-            target.GetUserData().GetOrSet(StateIdPlaceholder).StateId = stateId;
+            if (target is not null)
+            {
+                ExpressionAttributes.Get(CurrentStatement)?.Labels.Add(target);
+                target.GetUserData().GetOrSet(StateIdPlaceholder).StateId = stateId;
+            }
         }
 
         internal TOutput Rewrite<TInput, TOutput, TAttributes>(TInput expression, Converter<TInput, TOutput> rewriter, Action<TAttributes>? initializer = null)

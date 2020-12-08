@@ -57,7 +57,7 @@ namespace DotNext.Runtime.CompilerServices
             }
 
             // generate finally block
-            Expression fault = new FinallyStatement(Content.Finally ?? Content.Fault, previousState, finallyLabel ?? FaultLabel);
+            Expression fault = new FinallyStatement(Content.Finally ?? Content.Fault ?? Expression.Empty(), previousState, finallyLabel ?? FaultLabel);
             fault = visitor.Visit(fault);
             return tryBody.AddEpilogue(false, handlers).AddEpilogue(false, fault);
         }
