@@ -12,8 +12,7 @@ namespace DotNext.Reflection
 
     public static partial class Reflector
     {
-        // TODO: Replace resultBuilder with method pointer in C# 9
-        private static DynamicInvoker Unreflect<TMethod>(TMethod method, Func<Expression?, TMethod, IEnumerable<Expression>, Expression> resultBuilder)
+        private static unsafe DynamicInvoker Unreflect<TMethod>(TMethod method, delegate*<Expression?, TMethod, IEnumerable<Expression>, Expression> resultBuilder)
             where TMethod : MethodBase
         {
             var target = Expression.Parameter(typeof(object));
