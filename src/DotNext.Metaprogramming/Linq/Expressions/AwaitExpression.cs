@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -47,8 +48,8 @@ namespace DotNext.Linq.Expressions
             return result;
         }
 
-        internal static bool IsAwaiterHolder(ParameterExpression variable)
-            => variable.GetUserData().Get(IsAwaiterVarSlot);
+        internal static bool IsAwaiterHolder([NotNullWhen(true)] ParameterExpression? variable)
+            => variable?.GetUserData().Get(IsAwaiterVarSlot) ?? false;
 
         internal MethodCallExpression GetAwaiter { get; }
 

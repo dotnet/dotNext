@@ -47,7 +47,6 @@ namespace DotNext.Runtime.CompilerServices
         /// </summary>
         public uint StateId
         {
-            [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
             readonly get;
             private set;
         }
@@ -58,7 +57,6 @@ namespace DotNext.Runtime.CompilerServices
         /// </summary>
         /// <param name="newState">The identifier of the async state machine representing guarded code.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         public void EnterGuardedCode(uint newState)
         {
             StateId = newState;
@@ -70,7 +68,6 @@ namespace DotNext.Runtime.CompilerServices
         /// </summary>
         /// <param name="previousState">The identifier of the async state machine before invocation of <see cref="EnterGuardedCode(uint)"/>.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         public void ExitGuardedCode(uint previousState)
         {
             StateId = previousState;
@@ -84,7 +81,6 @@ namespace DotNext.Runtime.CompilerServices
         /// <typeparam name="TException">Type of expression to be caught.</typeparam>
         /// <param name="restoredException">Reference to the captured exception.</param>
         /// <returns><see langword="true"/>, if caught exception is of type <typeparamref name="TException"/>; otherwise, <see langword="false"/>.</returns>
-        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         public bool TryRecover<TException>([NotNullWhen(true)] out TException? restoredException)
             where TException : Exception
         {
@@ -106,14 +102,12 @@ namespace DotNext.Runtime.CompilerServices
         public readonly bool HasNoException
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
             get => exception is null;
         }
 
         /// <summary>
         /// Re-throws capture exception.
         /// </summary>
-        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public readonly void Rethrow() => exception?.Throw();
 
         void IAsyncStateMachine.MoveNext()
@@ -174,7 +168,6 @@ namespace DotNext.Runtime.CompilerServices
         /// Turns this state machine into final state.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         public void Complete() => StateId = IAsyncStateMachine<TState>.FinalState;
 
         private ValueTask Start()
@@ -238,7 +231,6 @@ namespace DotNext.Runtime.CompilerServices
         /// </summary>
         public uint StateId
         {
-            [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
             readonly get;
             private set;
         }
@@ -249,7 +241,6 @@ namespace DotNext.Runtime.CompilerServices
         /// </summary>
         /// <param name="newState">The identifier of the async machine state representing guarded code.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         public void EnterGuardedCode(uint newState)
         {
             StateId = newState;
@@ -261,7 +252,6 @@ namespace DotNext.Runtime.CompilerServices
         /// </summary>
         /// <param name="previousState">The identifier of the async state machine before invocation of <see cref="EnterGuardedCode(uint)"/>.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         public void ExitGuardedCode(uint previousState)
         {
             StateId = previousState;
@@ -275,7 +265,6 @@ namespace DotNext.Runtime.CompilerServices
         /// <typeparam name="TException">Type of expression to be caught.</typeparam>
         /// <param name="restoredException">Reference to the captured exception.</param>
         /// <returns><see langword="true"/>, if caught exception is of type <typeparamref name="TException"/>; otherwise, <see langword="false"/>.</returns>
-        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         public bool TryRecover<TException>([NotNullWhen(true)]out TException? restoredException)
             where TException : Exception
         {
@@ -297,14 +286,12 @@ namespace DotNext.Runtime.CompilerServices
         public readonly bool HasNoException
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
             get => exception is null;
         }
 
         /// <summary>
         /// Re-throws capture exception.
         /// </summary>
-        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public readonly void Rethrow() => exception?.Throw();
 
         private ValueTask<TResult> Start()
@@ -328,7 +315,6 @@ namespace DotNext.Runtime.CompilerServices
         public TResult Result
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
             set
             {
                 StateId = IAsyncStateMachine<TState>.FinalState;
