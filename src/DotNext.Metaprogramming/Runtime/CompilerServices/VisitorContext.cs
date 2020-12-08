@@ -47,7 +47,7 @@ namespace DotNext.Runtime.CompilerServices
             return null;
         }
 
-        internal bool IsInFinally => !(FindStatement<FinallyStatement>() is null);
+        internal bool IsInFinally => FindStatement<FinallyStatement>() is not null;
 
         internal bool HasAwait
         {

@@ -94,7 +94,7 @@ namespace DotNext.Linq.Expressions
                 if (defaultMember is null)
                     continue;
                 PropertyInfo? property = lookup.GetProperty(defaultMember.MemberName, PublicInstance);
-                if (!(property is null))
+                if (property is not null)
                     yield return property;
             }
         }

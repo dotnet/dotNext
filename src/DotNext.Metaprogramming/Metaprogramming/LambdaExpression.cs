@@ -102,18 +102,18 @@ namespace DotNext.Metaprogramming
 
         private new Expression<TDelegate> Build()
         {
-            if (!(returnLabel is null))
+            if (returnLabel is not null)
                 AddStatement(Expression.Label(returnLabel));
 
             // last instruction should be always a result of a function
-            if (!(lambdaResult is null))
+            if (lambdaResult is not null)
                 AddStatement(lambdaResult);
 
             // rewrite body
             var body = Expression.Block(returnType, Variables, this);
 
             // build lambda expression
-            if (!(recursion is null))
+            if (recursion is not null)
             {
                 body = Expression.Block(
                     Seq.Singleton(recursion),

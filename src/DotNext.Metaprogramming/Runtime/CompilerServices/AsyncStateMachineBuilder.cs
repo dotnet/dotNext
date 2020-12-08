@@ -481,7 +481,7 @@ namespace DotNext.Runtime.CompilerServices
 
         private Expression<TDelegate> Build(LambdaExpression stateMachineMethod)
         {
-            Assert(stateMachine != null);
+            Assert(stateMachine is not null);
             var stateVariable = Expression.Variable(GetStateField(stateMachine).Type);
             var parameters = methodBuilder.Parameters;
             ICollection<Expression> newBody = new LinkedList<Expression>();
@@ -523,7 +523,7 @@ namespace DotNext.Runtime.CompilerServices
                 slots = builder.Build(sm.Build, out _);
             }
 
-            Assert(sm.StateMachine != null);
+            Assert(sm.StateMachine is not null);
             stateMachine = sm.StateMachine;
             return slots;
         }
@@ -551,7 +551,7 @@ namespace DotNext.Runtime.CompilerServices
 
         protected override Expression VisitExtension(Expression node)
         {
-            Assert(stateMachine != null);
+            Assert(stateMachine is not null);
             return node switch
             {
                 StatePlaceholderExpression placeholder => placeholder.Reduce(),

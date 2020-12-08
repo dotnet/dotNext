@@ -30,7 +30,7 @@ namespace DotNext.Linq.Expressions
             if (configureAwait)
             {
                 MethodInfo? configureMethod = expression.Type.GetMethod(nameof(Task.ConfigureAwait), PublicInstanceMethod, Type.DefaultBinder, new[] { typeof(bool) }, null);
-                if (!(configureMethod is null))
+                if (configureMethod is not null)
                     expression = expression.Call(configureMethod, false.Const());
             }
 

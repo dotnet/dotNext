@@ -215,7 +215,7 @@ namespace DotNext.Linq.Expressions
             {
                 moveNextCall = moveNextCall.Await(configureAwait);
                 disposeMethod = enumeratorVar.Type.GetDisposeAsyncMethod();
-                Debug.Assert(!(disposeMethod is null));
+                Debug.Assert(disposeMethod is not null);
                 disposeCall = Call(enumeratorVar, disposeMethod).Await(configureAwait);
             }
             else

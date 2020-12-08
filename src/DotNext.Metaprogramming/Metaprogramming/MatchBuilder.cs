@@ -518,13 +518,13 @@ namespace DotNext.Metaprogramming
 
             // handle patterns
             ICollection<Expression> instructions = new LinkedList<Expression>();
-            if (!(assignment is null))
+            if (assignment is not null)
                 instructions.Add(assignment);
             foreach (var pattern in patterns)
                 instructions.Add(pattern(endOfMatch));
 
             // handle default
-            if (!(defaultCase is null))
+            if (defaultCase is not null)
                 instructions.Add(Expression.Goto(endOfMatch, defaultCase(value)));
 
             // setup label as last instruction

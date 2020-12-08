@@ -64,7 +64,7 @@ namespace DotNext.Linq.Expressions
 
             // WriteLine method will always be resolved here because Type.DefaultBinder
             // chooses TextWriter.WriteLine(object) if there is no exact match
-            System.Diagnostics.Debug.Assert(!(writeLineMethod is null));
+            System.Diagnostics.Debug.Assert(writeLineMethod is not null);
             var firstParam = writeLineMethod.GetParameters()[0].ParameterType;
             if (firstParam != value.Type && value.Type.IsValueType)
                 value = Expression.Convert(value, typeof(object));

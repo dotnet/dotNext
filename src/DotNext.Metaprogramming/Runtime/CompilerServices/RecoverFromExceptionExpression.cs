@@ -23,7 +23,7 @@ namespace DotNext.Runtime.CompilerServices
         internal override Expression Reduce(ParameterExpression stateMachine)
         {
             MethodInfo? tryRecover = stateMachine.Type.GetMethod(nameof(AsyncStateMachine<ValueTuple>.TryRecover));
-            Debug.Assert(!(tryRecover is null));
+            Debug.Assert(tryRecover is not null);
             tryRecover = tryRecover.MakeGenericMethod(Receiver.Type);
             return stateMachine.Call(tryRecover, Receiver);
         }

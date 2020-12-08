@@ -256,12 +256,12 @@ namespace DotNext.Linq.Expressions
         {
             // handle nullable value type
             Type? underlyingType = Nullable.GetUnderlyingType(operand.Type);
-            if (!(underlyingType is null))
+            if (underlyingType is not null)
                 return operand.Property(nameof(Nullable<int>.HasValue)).Not();
 
             // handle optional type
             underlyingType = Optional.GetUnderlyingType(operand.Type);
-            if (!(underlyingType is null))
+            if (underlyingType is not null)
                 return operand.Property(nameof(Optional<int>.HasValue)).Not();
 
             // handle reference type or value type
@@ -280,12 +280,12 @@ namespace DotNext.Linq.Expressions
         {
             // handle nullable value type
             Type? underlyingType = Nullable.GetUnderlyingType(operand.Type);
-            if (!(underlyingType is null))
+            if (underlyingType is not null)
                 return operand.Property(nameof(Nullable<int>.HasValue));
 
             // handle optional type
             underlyingType = Optional.GetUnderlyingType(operand.Type);
-            if (!(underlyingType is null))
+            if (underlyingType is not null)
                 return operand.Property(nameof(Optional<int>.HasValue));
 
             // handle reference type or value type

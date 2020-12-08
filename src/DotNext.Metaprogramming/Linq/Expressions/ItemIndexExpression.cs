@@ -84,7 +84,7 @@ namespace DotNext.Linq.Expressions
         public override Expression Reduce()
         {
             ConstructorInfo? ctor = typeof(Index).GetConstructor(new[] { typeof(int), typeof(bool) });
-            Debug.Assert(!(ctor is null));
+            Debug.Assert(ctor is not null);
             return New(ctor, conversionRequired ? Convert(Value, typeof(int)) : Value, Constant(IsFromEnd));
         }
 
