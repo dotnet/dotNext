@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
@@ -62,12 +63,16 @@ namespace DotNext.Threading
             get
             {
                 var t = task;
-                return t?.Status switch
+                switch (t?.Status)
                 {
-                    TaskStatus.RanToCompletion => new Result<T>(t.Result),
-                    TaskStatus.Faulted => new Result<T>(t.Exception),
-                    _ => new Result<T>?()
-                };
+                    case TaskStatus.RanToCompletion:
+                        return new Result<T>(t.Result);
+                    case TaskStatus.Faulted:
+                        Debug.Assert(t.Exception is not null);
+                        return new Result<T>(t.Exception);
+                    default:
+                        return new Result<T>?();
+                }
             }
         }
 

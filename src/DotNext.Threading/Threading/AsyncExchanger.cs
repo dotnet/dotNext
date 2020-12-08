@@ -210,7 +210,7 @@ namespace DotNext.Threading
 
             return point.Task.ContinueWith(SuppressFaultOrCancellation, point, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
 
-            static void SuppressFaultOrCancellation(Task<T> task, object state)
+            static void SuppressFaultOrCancellation(Task<T> task, object? state)
                 => (state as IDisposable)?.Dispose();
         }
 

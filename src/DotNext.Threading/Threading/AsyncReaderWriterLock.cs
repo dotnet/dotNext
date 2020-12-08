@@ -7,6 +7,7 @@ using static System.Threading.Timeout;
 
 namespace DotNext.Threading
 {
+    using Runtime;
     using Runtime.CompilerServices;
 
     /// <summary>

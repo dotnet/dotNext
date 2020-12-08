@@ -18,7 +18,7 @@ namespace DotNext.Threading.Channels
 
         private interface IReadBuffer
         {
-            bool TryRead([NotNullWhen(true)]out T result);
+            bool TryRead([MaybeNullWhen(false)]out T result);
 
             void Add(T item);
 
@@ -56,7 +56,7 @@ namespace DotNext.Threading.Channels
         {
             void IReadBuffer.Add(T item) => Enqueue(item);
 
-            bool IReadBuffer.TryRead(out T result) => TryDequeue(out result);
+            bool IReadBuffer.TryRead([MaybeNullWhen(false)]out T result) => TryDequeue(out result);
         }
 
         private readonly IReadBuffer buffer;
@@ -94,7 +94,7 @@ namespace DotNext.Threading.Channels
 
         private PartitionStream Partition => reader.GetOrCreatePartition(ref cursor, ref readTopic, fileOptions, true);
 
-        public override bool TryRead(out T item)
+        public override bool TryRead([MaybeNullWhen(false)]out T item)
         {
             var result = buffer.TryRead(out item);
             readRate?.Increment();

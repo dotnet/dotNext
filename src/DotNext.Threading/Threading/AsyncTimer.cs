@@ -240,7 +240,7 @@ namespace DotNext.Threading
             base.Dispose(disposing);
         }
 
-        private void Dispose(Task parent, object state)
+        private void Dispose(Task parent, object? state)
         {
             (state as IDisposable)?.Dispose();
             Dispose();

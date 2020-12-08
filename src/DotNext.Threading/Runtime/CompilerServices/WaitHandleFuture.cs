@@ -31,7 +31,7 @@ namespace DotNext.Runtime.CompilerServices
         private WaitHandleFuture(bool successful) => state = successful ? SuccessfulState : TimedOutState;
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        private void Complete(object state, bool timedOut)
+        private void Complete(object? state, bool timedOut)
         {
             handle?.Unregister(null);
             this.state = timedOut ? TimedOutState : SuccessfulState;
