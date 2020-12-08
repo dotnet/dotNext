@@ -3,6 +3,7 @@
   <PropertyGroup>
 	  <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>DotNext</RootNamespace>
+    <EnableNETAnalyzers>false</EnableNETAnalyzers>
     <Version>3.0.0</Version>
     <IsPackable>false</IsPackable>
     <Authors>Roman Sakno</Authors>
