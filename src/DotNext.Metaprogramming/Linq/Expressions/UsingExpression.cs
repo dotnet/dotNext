@@ -157,7 +157,7 @@ namespace DotNext.Linq.Expressions
             }
 
             return assignment is null ?
-                MakeTry(Type, Body, Block(typeof(void), disposeCall, Assign(Resource, Default(Resource.Type))), null, null).As<Expression>() :
+                MakeTry(Type, Body, Block(typeof(void), disposeCall, Assign(Resource, Default(Resource.Type))), null, null) :
                 Block(Type, Seq.Singleton(Resource), assignment, TryFinally(Body, disposeCall));
         }
     }

@@ -265,7 +265,7 @@ namespace DotNext.Linq.Expressions
                 return operand.Property(nameof(Optional<int>.HasValue)).Not();
 
             // handle reference type or value type
-            return operand.Type.IsValueType || operand.Type.IsPointer ? (Expression)Const<bool>(false) : Expression.ReferenceEqual(operand, Expression.Constant(null, operand.Type));
+            return operand.Type.IsValueType || operand.Type.IsPointer ? Const<bool>(false) : Expression.ReferenceEqual(operand, Expression.Constant(null, operand.Type));
         }
 
         /// <summary>
@@ -289,7 +289,7 @@ namespace DotNext.Linq.Expressions
                 return operand.Property(nameof(Optional<int>.HasValue));
 
             // handle reference type or value type
-            return operand.Type.IsValueType || operand.Type.IsPointer ? (Expression)Const<bool>(true) : Expression.ReferenceNotEqual(operand, Expression.Constant(null, operand.Type));
+            return operand.Type.IsValueType || operand.Type.IsPointer ? Const<bool>(true) : Expression.ReferenceNotEqual(operand, Expression.Constant(null, operand.Type));
         }
 
         /// <summary>
@@ -772,7 +772,7 @@ namespace DotNext.Linq.Expressions
         /// <param name="indicies">Indexer indicies.</param>
         /// <returns>Property access expression.</returns>
         public static Expression Property(this Expression instance, PropertyInfo property, params Expression[] indicies)
-            => indicies.LongLength == 0 ? (Expression)Expression.Property(instance, property) : Expression.Property(instance, property, indicies);
+            => indicies.LongLength == 0 ? Expression.Property(instance, property) : Expression.Property(instance, property, indicies);
 
         /// <summary>
         /// Constructs instance property or indexer access expression declared in the given interface or base type.
