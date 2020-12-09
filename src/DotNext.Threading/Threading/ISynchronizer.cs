@@ -20,6 +20,6 @@ namespace DotNext.Threading
         /// <summary>
         /// Indicates that one or more asynchronous callers are suspended.
         /// </summary>
-        bool HasWaiters { get; }
+        bool HasAnticipants { get; }
     }
 }

@@ -28,7 +28,7 @@ namespace DotNext.Threading
         bool IAsyncEvent.IsSet => countdown.IsSet;
 
         /// <inheritdoc/>
-        bool ISynchronizer.HasWaiters => !countdown.IsSet;
+        bool ISynchronizer.HasAnticipants => !countdown.IsSet;
 
         /// <summary>
         /// Initializes a new Barrier withe given number of participating tasks.

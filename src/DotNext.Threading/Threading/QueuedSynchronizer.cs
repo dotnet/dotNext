@@ -84,7 +84,7 @@ namespace DotNext.Threading
         }
 
         /// <inheritdoc/>
-        bool ISynchronizer.HasWaiters => head is not null;
+        bool ISynchronizer.HasAnticipants => head is not null;
 
         [MethodImpl(MethodImplOptions.Synchronized)]
         private protected bool RemoveNode(WaitNode node)
