@@ -47,19 +47,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             writer.WriteInt64(StreamId, true);
         }
 
-        public bool Equals(CorrelationId other)
+        private bool Equals(in CorrelationId other)
             => ApplicationId == other.ApplicationId && StreamId == other.StreamId;
 
-        public override bool Equals(object other) => other is CorrelationId id && Equals(id);
+        public bool Equals(CorrelationId other) => Equals(in other);
+
+        public override bool Equals(object? other) => other is CorrelationId id && Equals(in id);
 
         public override int GetHashCode() => HashCode.Combine(ApplicationId, StreamId);
 
         public override string ToString() => $"App Id={ApplicationId:X}, Stream Id={StreamId:X}";
 
         public static bool operator ==(in CorrelationId x, in CorrelationId y)
-            => x.ApplicationId == y.ApplicationId && x.StreamId == y.StreamId;
+            => x.Equals(in y);
 
         public static bool operator !=(in CorrelationId x, in CorrelationId y)
-            => x.ApplicationId != y.ApplicationId || x.StreamId != y.StreamId;
+            => !x.Equals(in y);
     }
 }

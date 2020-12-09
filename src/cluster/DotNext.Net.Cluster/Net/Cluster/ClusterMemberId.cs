@@ -54,13 +54,7 @@ namespace DotNext.Net.Cluster
             family = reader.Read<int>();
         }
 
-        /// <summary>
-        /// Determines whether the current identifier is equal
-        /// to another identifier.
-        /// </summary>
-        /// <param name="other">The identifier to compare.</param>
-        /// <returns><see langword="true"/> if this identifier is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(ClusterMemberId other)
+        private bool Equals(in ClusterMemberId other)
             => address == other.address && port == other.port && length == other.length && family == other.family;
 
         /// <summary>
@@ -69,7 +63,15 @@ namespace DotNext.Net.Cluster
         /// </summary>
         /// <param name="other">The identifier to compare.</param>
         /// <returns><see langword="true"/> if this identifier is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object? other) => other is ClusterMemberId id && Equals(id);
+        public bool Equals(ClusterMemberId other) => Equals(in other);
+
+        /// <summary>
+        /// Determines whether the current identifier is equal
+        /// to another identifier.
+        /// </summary>
+        /// <param name="other">The identifier to compare.</param>
+        /// <returns><see langword="true"/> if this identifier is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
+        public override bool Equals(object? other) => other is ClusterMemberId id && Equals(in id);
 
         /// <summary>
         /// Gets the hash code of this identifier.
@@ -104,7 +106,7 @@ namespace DotNext.Net.Cluster
         /// <param name="y">The second identifier to compare.</param>
         /// <returns><see langword="true"/> if both identifiers are equal; otherwise, <see langword="false"/>.</returns>
         public static bool operator ==(in ClusterMemberId x, in ClusterMemberId y)
-            => x.address == y.address && x.port == y.port && x.length == y.length && x.family == y.family;
+            => x.Equals(in y);
 
         /// <summary>
         /// Determines whether the two identifiers are not equal.
@@ -113,7 +115,7 @@ namespace DotNext.Net.Cluster
         /// <param name="y">The second identifier to compare.</param>
         /// <returns><see langword="true"/> if both identifiers are not equal; otherwise, <see langword="false"/>.</returns>
         public static bool operator !=(in ClusterMemberId x, in ClusterMemberId y)
-            => x.address != y.address || x.port != y.port || x.length != y.length || x.family != y.family;
+            => !x.Equals(in y);
 
         /// <inheritdoc/>
         void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)

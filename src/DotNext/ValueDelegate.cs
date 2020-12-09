@@ -274,7 +274,7 @@ namespace DotNext
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent different methods; otherwise, <see langword="false"/>.</returns>
         public static bool operator !=(in ValueFunc<TResult> first, in ValueFunc<TResult> second)
-            => !first.Equals(second);
+            => !first.Equals(in second);
     }
 
     /// <summary>
@@ -661,7 +661,7 @@ namespace DotNext
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent different methods; otherwise, <see langword="false"/>.</returns>
         public static bool operator !=(in ValueFunc<T1, T2, TResult> first, in ValueFunc<T1, T2, TResult> second)
-            => !first.Equals(second);
+            => !first.Equals(in second);
     }
 
     /// <summary>
