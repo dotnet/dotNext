@@ -36,7 +36,7 @@ namespace DotNext.Threading.Tasks
                 RunContinuationsAsynchronously = runContinuationsAsynchronously
             };
 
-            flags = continueOnCapturedContext ? ValueTaskSourceOnCompletedFlags.FlowExecutionContext | ValueTaskSourceOnCompletedFlags.UseSchedulingContext : ValueTaskSourceOnCompletedFlags.None;
+            flags = continueOnCapturedContext ? ValueTaskSourceOnCompletedFlags.UseSchedulingContext : ValueTaskSourceOnCompletedFlags.None;
         }
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace DotNext.Threading.Tasks
                 RunContinuationsAsynchronously = runContinuationsAsynchronously
             };
 
-            flags = continueOnCapturedContext ? ValueTaskSourceOnCompletedFlags.FlowExecutionContext | ValueTaskSourceOnCompletedFlags.UseSchedulingContext : ValueTaskSourceOnCompletedFlags.None;
+            flags = continueOnCapturedContext ? ValueTaskSourceOnCompletedFlags.UseSchedulingContext : ValueTaskSourceOnCompletedFlags.None;
         }
 
         /// <summary>
