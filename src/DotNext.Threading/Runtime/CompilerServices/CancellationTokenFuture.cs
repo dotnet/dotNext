@@ -43,7 +43,7 @@ namespace DotNext.Runtime.CompilerServices
         /// <summary>
         /// Indicates that underlying token is canceled.
         /// </summary>
-        public override bool IsCompleted => state != null;
+        public override bool IsCompleted => state is not null;
 
         /// <summary>
         /// Retrieves awaiter for underlying wait handle.

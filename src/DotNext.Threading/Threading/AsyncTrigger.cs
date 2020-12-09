@@ -172,7 +172,7 @@ namespace DotNext.Threading
         bool IAsyncEvent.Signal()
         {
             ThrowIfDisposed();
-            var queueNotEmpty = head != null;
+            var queueNotEmpty = head is not null;
             ResumePendingCallers();
             return queueNotEmpty;
         }

@@ -164,7 +164,7 @@ namespace DotNext.Threading
             get
             {
                 var task = timerTask;
-                return task != null && !task.Task.IsCompleted;
+                return task is not null && !task.Task.IsCompleted;
             }
         }
 
@@ -230,7 +230,7 @@ namespace DotNext.Threading
             if (disposing)
             {
                 var timerTask = Interlocked.Exchange(ref this.timerTask, null);
-                if (timerTask != null)
+                if (timerTask is not null)
                 {
                     TrySetDisposedException(timerTask);
                     timerTask.Dispose();
