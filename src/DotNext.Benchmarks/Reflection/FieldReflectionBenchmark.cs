@@ -1,6 +1,7 @@
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Order;
+using System;
 using System.Reflection;
 using FastMember;
 
@@ -17,16 +18,16 @@ namespace DotNext.Reflection
 
         private static readonly FieldInfo ValueField = typeof(MyType).GetField(nameof(MyType.Value));
         private static readonly MyType Instance = new MyType { Value = "Hello, world!" };
-        private static readonly DynamicInvoker DynamicFieldGetter = ValueField.Unreflect(false, BindingFlags.GetField);
-        private static readonly DynamicInvoker DynamicFieldGetterVolatile = ValueField.Unreflect(true, BindingFlags.GetField);
+        private static readonly DynamicInvoker DynamicFieldGetter = ValueField.Unreflect(BindingFlags.GetField, false);
+        private static readonly DynamicInvoker DynamicFieldGetterVolatile = ValueField.Unreflect(BindingFlags.GetField, true);
         private static readonly ObjectAccessor FieldAccessor = ObjectAccessor.Create(Instance);
         private static readonly MemberGetter<MyType, string> StronglyTypedAccessor = ValueField.Unreflect<MyType, string>();
     
         [Benchmark]
-        public object GetFieldUsingDynamicInvoker() => DynamicFieldGetter(Instance);
+        public object GetFieldUsingDynamicInvoker() => DynamicFieldGetter(Instance, Span<object>.Empty);
 
         [Benchmark]
-        public object GetFieldUsingDynamicInvokerVolatile() => DynamicFieldGetterVolatile(Instance);
+        public object GetFieldUsingDynamicInvokerVolatile() => DynamicFieldGetterVolatile(Instance, Span<object>.Empty);
 
         [Benchmark]
         public object GetFieldUsingFastMemberLibrary() => FieldAccessor[nameof(MyType.Value)];

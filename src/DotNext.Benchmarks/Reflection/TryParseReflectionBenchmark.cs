@@ -28,7 +28,11 @@ namespace DotNext.Reflection
         public bool NoReflection() => decimal.TryParse(StringValue, out var _);
 
         [Benchmark]
-        public object UseDynamicInvoker() => Invoker.Invoke(null, StringValue, decimal.Zero);
+        public object UseDynamicInvoker()
+        {
+            (object, object) args = (StringValue, decimal.Zero);
+            return Invoker(null, args.AsSpan());
+        }
 
         [Benchmark]
         public object UseReflection() => ReflectedMethod.Invoke(null, new object[] { StringValue, decimal.Zero });
