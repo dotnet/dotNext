@@ -128,7 +128,7 @@ namespace DotNext.Runtime.InteropServices
         /// Determines whether this pointer is aligned
         /// to the size of <typeparamref name="T"/>.
         /// </summary>
-        public unsafe bool IsAligned => new IntPtr(value).Remainder(new IntPtr(sizeof(T))) == default;
+        public unsafe bool IsAligned => Address / sizeof(T) == 0;
 
         /// <summary>
         /// Fills the elements of the array with a specified value.
@@ -206,10 +206,10 @@ namespace DotNext.Runtime.InteropServices
         }
 
         /// <inheritdoc/>
-        unsafe object IStrongBox.Value
+        unsafe object? IStrongBox.Value
         {
             get => *value;
-            set => *this.value = (T)value;
+            set => *this.value = (T)value!;
         }
 
         internal unsafe MemoryHandle Pin(long elementIndex)
@@ -505,7 +505,7 @@ namespace DotNext.Runtime.InteropServices
         /// <summary>
         /// Gets pointer address.
         /// </summary>
-        public unsafe IntPtr Address
+        public unsafe nint Address
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => new IntPtr(value);
@@ -705,8 +705,8 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="offset">The offset to add.</param>
         /// <returns>A new pointer that reflects the addition of offset to pointer.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe Pointer<T> operator +(Pointer<T> pointer, IntPtr offset)
-            => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.Address.Add(offset));
+        public static unsafe Pointer<T> operator +(Pointer<T> pointer, nint offset)
+            => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.Address + offset);
 
         /// <summary>
         /// Subtracts an offset from the value of a pointer.
@@ -731,8 +731,8 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="offset">The offset to subtract.</param>
         /// <returns>A new pointer that reflects the subtraction of offset from pointer.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe Pointer<T> operator -(Pointer<T> pointer, IntPtr offset)
-            => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.Address.Subtract(offset));
+        public static unsafe Pointer<T> operator -(Pointer<T> pointer, nint offset)
+            => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.Address - offset);
 
         /// <summary>
         /// Adds an offset to the value of a pointer.
