@@ -624,6 +624,48 @@ namespace DotNext.Runtime
         }
 
         /// <summary>
+        /// Computes 64-bit hash code for the vector.
+        /// </summary>
+        /// <param name="getter">The pointer to the function responsible for providing data from the vector.</param>
+        /// <param name="count">The number of elements in the vector.</param>
+        /// <param name="arg">The argument to be passed to the data getter.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <typeparam name="T">The type of the argument to be passed to the vector accessor.</typeparam>
+        /// <returns>The computed hash.</returns>
+        public static long GetHashCode64<T>(Func<T, int, long> getter, int count, T arg, bool salted = true)
+        {
+            if (getter == null)
+                throw new ArgumentNullException(nameof(getter));
+
+            var hash = FNV1a64.Offset;
+            for (var i = 0; i < count; i++)
+                hash = FNV1a64.GetHashCode(hash, getter(arg, i));
+
+            return salted ? FNV1a64.GetHashCode(hash, RandomExtensions.BitwiseHashSalt) : hash;
+        }
+
+        /// <summary>
+        /// Computes 32-bit hash code for the vector.
+        /// </summary>
+        /// <param name="getter">The pointer to the function responsible for providing data from the vector.</param>
+        /// <param name="count">The number of elements in the vector.</param>
+        /// <param name="arg">The argument to be passed to the data getter.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <typeparam name="T">The type of the argument to be passed to the vector accessor.</typeparam>
+        /// <returns>The computed hash.</returns>
+        public static int GetHashCode32<T>(Func<T, int, int> getter, int count, T arg, bool salted = true)
+        {
+            if (getter == null)
+                throw new ArgumentNullException(nameof(getter));
+
+            var hash = FNV1a32.Offset;
+            for (var i = 0; i < count; i++)
+                hash = FNV1a32.GetHashCode(hash, getter(arg, i));
+
+            return salted ? FNV1a32.GetHashCode(hash, RandomExtensions.BitwiseHashSalt) : hash;
+        }
+
+        /// <summary>
         /// Computes 64-bit hash code for the block of memory, 64-bit version.
         /// </summary>
         /// <remarks>
