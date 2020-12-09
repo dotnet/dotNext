@@ -32,9 +32,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
             public CancellationToken Token => timeoutTokenSource.Token;
 
-            internal static void Cancel(ref Channel channel, bool throwOnFirstException)
-                => channel.timeoutTokenSource.Cancel(throwOnFirstException);
-
             public void Dispose()
             {
                 cancellation.Dispose();
@@ -43,7 +40,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             }
         }
 
-        private readonly RefAction<Channel, bool> cancellationInvoker;
         private readonly IExchangePool exchanges;
         private readonly INetworkTransport.ChannelPool<Channel> channels;
         private readonly Action<object?> cancellationHandler;
@@ -54,7 +50,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         {
             channels = new INetworkTransport.ChannelPool<Channel>(backlog);
             cancellationHandler = channels.CancellationRequested;
-            cancellationInvoker = Channel.Cancel;
             exchanges = exchangePoolFactory(backlog);
         }
 
