@@ -43,7 +43,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 client.Enqueue(exchange, timeoutSource.Token);
                 return await exchange.Task.ConfigureAwait(false);
             }
-            catch (Exception e) when (!(e is OperationCanceledException) || !token.IsCancellationRequested)
+            catch (Exception e) when (e is not OperationCanceledException || !token.IsCancellationRequested)
             {
                 Logger.MemberUnavailable(Endpoint, e);
                 ChangeStatus(ClusterMemberStatus.Unavailable);

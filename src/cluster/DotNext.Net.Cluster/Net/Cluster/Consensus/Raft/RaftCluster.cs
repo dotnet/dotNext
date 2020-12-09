@@ -127,7 +127,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         current = current.Next;
                     else
                         started = true;
-                    return !(current is null);
+                    return current is not null;
                 }
 
                 /// <summary>
@@ -639,7 +639,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             else
             {
                 var leader = Leader;
-                return !(leader is null) && await leader.ResignAsync(token).ConfigureAwait(false);
+                return leader is not null && await leader.ResignAsync(token).ConfigureAwait(false);
             }
         }
 

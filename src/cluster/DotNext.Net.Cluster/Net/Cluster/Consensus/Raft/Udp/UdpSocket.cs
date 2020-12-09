@@ -215,7 +215,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             {
                 using (channel)
                 {
-                    if (!(error is null))
+                    if (error is not null)
                         channel.Exchange.OnException(error);
                 }
             }
