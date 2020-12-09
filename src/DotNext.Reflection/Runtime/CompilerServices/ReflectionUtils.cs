@@ -126,13 +126,13 @@ namespace DotNext.Runtime.CompilerServices
         public static object? Get(in Span<object?> span, int index) => span[index];
 
         internal static MethodCallExpression Get(ParameterExpression span, ConstantExpression index)
-            => Expression.Call(typeof(ReflectionUtils), nameof(Get), new [] { typeof(Span<object>).MakeByRefType(), typeof(int) }, span, index);
+            => Expression.Call(typeof(ReflectionUtils), nameof(Get), Type.EmptyTypes, span, index);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Set(in Span<object?> span, int index, object? value) => span[index] = value;
 
         internal static MethodCallExpression Set(ParameterExpression span, ConstantExpression index, Expression value)
-            => Expression.Call(typeof(ReflectionUtils), nameof(Set), new [] { typeof(Span<object>).MakeByRefType(), typeof(int), typeof(object) }, span, index, value);
+            => Expression.Call(typeof(ReflectionUtils), nameof(Set), Type.EmptyTypes, span, index, value);
 
         internal static MemberExpression SpanLength(ParameterExpression span)
             => Expression.Property(span, nameof(Span<object>.Length));
