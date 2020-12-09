@@ -56,6 +56,41 @@ namespace DotNext.IO
         ValueTask WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
             where TWriter : IAsyncBinaryWriter;
 
+        private static void ResetStream(Stream stream, bool resetStream)
+        {
+            if (resetStream && stream.CanSeek)
+                stream.Seek(0L, SeekOrigin.Begin);
+        }
+
+        /// <summary>
+        /// Decodes the stream.
+        /// </summary>
+        /// <param name="input">The stream to decode.</param>
+        /// <param name="transformation">The decoder.</param>
+        /// <param name="resetStream"><see langword="true"/> to reset stream position after decoding.</param>
+        /// <param name="buffer">The temporary buffer.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <typeparam name="TResult">The type of result.</typeparam>
+        /// <typeparam name="TDecoder">The type of parser.</typeparam>
+        /// <returns>The decoded stream.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> is empty.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        protected static async ValueTask<TResult> DecodeAsync<TResult, TDecoder>(Stream input, TDecoder transformation, bool resetStream, Memory<byte> buffer, CancellationToken token)
+            where TDecoder : notnull, IDecoder<TResult>
+        {
+            if (buffer.IsEmpty)
+                throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
+
+            try
+            {
+                return await transformation.ReadAsync(new AsyncStreamBinaryAccessor(input, buffer), token).ConfigureAwait(false);
+            }
+            finally
+            {
+                ResetStream(input, resetStream);
+            }
+        }
+
         /// <summary>
         /// Decodes the stream.
         /// </summary>
@@ -71,7 +106,7 @@ namespace DotNext.IO
         protected static async ValueTask<TResult> DecodeAsync<TResult, TDecoder>(Stream input, TDecoder transformation, bool resetStream, MemoryAllocator<byte>? allocator, CancellationToken token)
             where TDecoder : notnull, IDecoder<TResult>
         {
-            const int bufferSize = 1024;
+            const int bufferSize = 256;
             var buffer = allocator.Invoke(bufferSize, false);
             try
             {
@@ -80,8 +115,7 @@ namespace DotNext.IO
             finally
             {
                 buffer.Dispose();
-                if (resetStream && input.CanSeek)
-                    input.Seek(0L, SeekOrigin.Begin);
+                ResetStream(input, resetStream);
             }
         }
 
