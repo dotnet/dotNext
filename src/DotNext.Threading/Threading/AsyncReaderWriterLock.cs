@@ -423,7 +423,7 @@ namespace DotNext.Threading
         {
             var readLock = head as ReadLockNode;
             ref var currentState = ref state.Value;
-            for (WaitNode? next; !(readLock is null); readLock = next as ReadLockNode)
+            for (WaitNode? next; readLock is not null; readLock = next as ReadLockNode)
             {
                 next = readLock.Next;
 

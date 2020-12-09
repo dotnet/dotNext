@@ -79,7 +79,7 @@ namespace DotNext.Threading
         private void ResumePendingCallers()
         {
             // triggers only stateless nodes
-            for (WaitNode? current = head, next; !(current is null); current = next)
+            for (WaitNode? current = head, next; current is not null; current = next)
             {
                 next = current.Next;
                 if (IsExactTypeOf<WaitNode>(current))
@@ -94,10 +94,10 @@ namespace DotNext.Threading
         private void ResumePendingCallers<TState>(TState state)
             where TState : class
         {
-            for (WaitNode? current = head, next; !(current is null); current = next)
+            for (WaitNode? current = head, next; current is not null; current = next)
             {
                 next = current.Next;
-                if (!(current is ConditionalNode conditional) || conditional.CheckCondition(state))
+                if (current is not ConditionalNode conditional || conditional.CheckCondition(state))
                 {
                     current.Complete();
                     RemoveNode(current);

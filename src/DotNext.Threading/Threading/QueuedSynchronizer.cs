@@ -36,9 +36,9 @@ namespace DotNext.Threading
 
             internal void DetachNode()
             {
-                if (!(previous is null))
+                if (previous is not null)
                     previous.next = next;
-                if (!(next is null))
+                if (next is not null)
                     next.previous = previous;
                 next = previous = null;
             }
@@ -84,7 +84,7 @@ namespace DotNext.Threading
         }
 
         /// <inheritdoc/>
-        bool ISynchronizer.HasWaiters => !(head is null);
+        bool ISynchronizer.HasWaiters => head is not null;
 
         [MethodImpl(MethodImplOptions.Synchronized)]
         private protected bool RemoveNode(WaitNode node)
@@ -174,7 +174,7 @@ namespace DotNext.Threading
         {
             if (!token.IsCancellationRequested)
                 throw new ArgumentOutOfRangeException(nameof(token));
-            for (WaitNode? current = head, next; !(current is null); current = next)
+            for (WaitNode? current = head, next; current is not null; current = next)
             {
                 next = current.CleanupAndGotoNext();
                 current.TrySetCanceled(token);
@@ -201,7 +201,7 @@ namespace DotNext.Threading
         {
             var e = new ObjectDisposedException(GetType().Name);
 
-            for (WaitNode? current = head, next; !(current is null); current = next)
+            for (WaitNode? current = head, next; current is not null; current = next)
             {
                 next = current.CleanupAndGotoNext();
                 if (current is DisposeAsyncNode disposeNode)

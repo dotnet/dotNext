@@ -82,7 +82,7 @@ namespace DotNext.Threading
         {
             ThrowIfDisposed();
             manager.Increment();
-            for (WaitNode? current = head, next; !(current is null) && manager.Count > 0L; manager.Decrement(), current = next)
+            for (WaitNode? current = head, next; current is not null && manager.Count > 0L; manager.Decrement(), current = next)
             {
                 next = current.Next;
                 RemoveNode(current);
