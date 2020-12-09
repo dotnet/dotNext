@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 namespace DotNext.Net.Cluster
 {
     using Buffers;
+    using Intrinsics = Runtime.Intrinsics;
 
     /// <summary>
     /// Represents unique identifier of cluster member.
@@ -18,6 +19,8 @@ namespace DotNext.Net.Cluster
         private const string PortSerData = "P";
         private const string LengthSerData = "L";
         private const string FamilySerData = "F";
+        private static readonly Func<SocketAddress, int, long> SocketAddressByteGetter64 = GetAddressByteAsInt64;
+        private static readonly Func<SocketAddress, int, int> SocketAddressByteGetter32 = GetAddressByteAsInt32;
 
         private readonly Guid address;
         private readonly int port, length, family;
@@ -30,7 +33,7 @@ namespace DotNext.Net.Cluster
             family = info.GetInt32(FamilySerData);
         }
 
-        internal ClusterMemberId(IPEndPoint endpoint)
+        private ClusterMemberId(IPEndPoint endpoint)
         {
             address = default;
             var bytes = Span.AsBytes(ref address);
@@ -39,6 +42,32 @@ namespace DotNext.Net.Cluster
             port = endpoint.Port;
             family = (int)endpoint.AddressFamily;
         }
+
+        private ClusterMemberId(DnsEndPoint endpoint)
+        {
+            var hostHash = Span.BitwiseHashCode64(endpoint.Host.AsSpan(), false);
+            Intrinsics.Bitcast(in hostHash, out address);
+
+            length = endpoint.Host.Length;
+            port = endpoint.Port;
+            family = (int)endpoint.AddressFamily;
+        }
+
+        private ClusterMemberId(SocketAddress address)
+        {
+            var hash = Intrinsics.GetHashCode64(SocketAddressByteGetter64, address.Size, address, false);
+            Intrinsics.Bitcast(in hash, out this.address);
+
+            port = Intrinsics.GetHashCode32(SocketAddressByteGetter32, address.Size, address, false);
+            family = (int)address.Family;
+            length = address.Size;
+        }
+
+        private static long GetAddressByteAsInt64(SocketAddress address, int index)
+            => address[index];
+
+        private static int GetAddressByteAsInt32(SocketAddress address, int index)
+            => address[index];
 
         /// <summary>
         /// Initializes a new unique identifier from set of bytes.
@@ -53,6 +82,18 @@ namespace DotNext.Net.Cluster
             length = reader.Read<int>();
             family = reader.Read<int>();
         }
+
+        /// <summary>
+        /// Constructs cluster member id from its endpoint address.
+        /// </summary>
+        /// <param name="ep">The address of the cluster member.</param>
+        /// <returns>The identifier of the cluster member.</returns>
+        public static ClusterMemberId FromEndPoint(EndPoint ep) => ep switch
+        {
+            IPEndPoint ip => new ClusterMemberId(ip),
+            DnsEndPoint dns => new ClusterMemberId(dns),
+            _ => new ClusterMemberId(ep.Serialize())
+        };
 
         private bool Equals(in ClusterMemberId other)
             => address == other.address && port == other.port && length == other.length && family == other.family;
