@@ -100,7 +100,7 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static ValueTask WriteToAsync<TObject>(this TObject dto, Stream output, Memory<byte> buffer, CancellationToken token = default)
             where TObject : notnull, IDataTransferObject
-            => dto.WriteToAsync(new AsyncStreamBinaryWriter(output, buffer), token);
+            => dto.WriteToAsync(new AsyncStreamBinaryAccessor(output, buffer), token);
 
         /// <summary>
         /// Copies the object content to the specified stream.

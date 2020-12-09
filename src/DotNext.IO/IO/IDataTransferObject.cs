@@ -74,7 +74,7 @@ namespace DotNext.IO
             var buffer = BufferWriter.DefaultByteAllocator.Invoke(bufferSize, false);
             try
             {
-                return await transformation.ReadAsync(new AsyncStreamBinaryReader(input, buffer.Memory), token).ConfigureAwait(false);
+                return await transformation.ReadAsync(new AsyncStreamBinaryAccessor(input, buffer.Memory), token).ConfigureAwait(false);
             }
             finally
             {

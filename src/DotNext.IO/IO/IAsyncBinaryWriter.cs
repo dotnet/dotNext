@@ -336,7 +336,7 @@ namespace DotNext.IO
         /// <exception cref="ArgumentNullException"><paramref name="output"/> is <see langword="null"/>.</exception>
         /// <exception cref="ArgumentException"><paramref name="buffer"/> is empty.</exception>
         public static IAsyncBinaryWriter Create(Stream output, Memory<byte> buffer)
-            => new AsyncStreamBinaryWriter(output, buffer);
+            => new AsyncStreamBinaryAccessor(output, buffer);
 
         /// <summary>
         /// Creates default implementation of binary writer for the pipe.
