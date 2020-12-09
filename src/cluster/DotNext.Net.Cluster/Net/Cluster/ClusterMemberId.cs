@@ -24,7 +24,7 @@ namespace DotNext.Net.Cluster
 
         private ClusterMemberId(SerializationInfo info, StreamingContext context)
         {
-            address = (Guid)info.GetValue(AddressSerData, typeof(Guid));
+            address = (Guid)info.GetValue(AddressSerData, typeof(Guid))!;
             port = info.GetInt32(PortSerData);
             length = info.GetInt32(LengthSerData);
             family = info.GetInt32(FamilySerData);
