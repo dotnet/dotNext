@@ -55,16 +55,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         [StructLayout(LayoutKind.Auto)]
         protected ref struct MemberHolder
         {
-            private readonly LinkedListNode<TMember> node;
+            private readonly LinkedListNode<TMember>? node;
 
-            internal MemberHolder(LinkedListNode<TMember> node)
+            internal MemberHolder(LinkedListNode<TMember>? node)
                 => this.node = node;
 
             /// <summary>
             /// Gets actual cluster member.
             /// </summary>
             /// <exception cref="InvalidOperationException">The member is already removed.</exception>
-            public TMember Member => node is null ? throw new InvalidOperationException() : node.Value;
+            public TMember Member => node?.Value ?? throw new InvalidOperationException();
 
             /// <summary>
             /// Removes the current member from the list.
@@ -76,17 +76,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <exception cref="InvalidOperationException">Attempt to remove local node; or node is already removed.</exception>
             public TMember Remove()
             {
-                if (node is null || node.Value is null)
+                if (node is null || node.Value is null || node.List is null)
                     throw new InvalidOperationException();
-                if (node.Value.IsRemote)
-                {
-                    node.List.Remove(node);
-                    var member = node.Value;
-                    node.Value = null!;
-                    return member;
-                }
 
-                throw new InvalidOperationException(ExceptionMessages.CannotRemoveLocalNode);
+                if (!node.Value.IsRemote)
+                    throw new InvalidOperationException(ExceptionMessages.CannotRemoveLocalNode);
+
+                node.List.Remove(node);
+                var member = node.Value;
+                node.Value = null!;
+                return member;
             }
 
             /// <summary>
@@ -108,7 +107,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             [StructLayout(LayoutKind.Auto)]
             public ref struct Enumerator
             {
-                private LinkedListNode<TMember> current;
+                private LinkedListNode<TMember>? current;
                 private bool started;
 
                 internal Enumerator(LinkedList<TMember> members)
@@ -124,7 +123,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 public bool MoveNext()
                 {
                     if (started)
-                        current = current.Next;
+                        current = current?.Next;
                     else
                         started = true;
                     return current is not null;
@@ -462,18 +461,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         /// <summary>
-        /// Handles InstallSnapshot message received from remote cluster member.
-        /// </summary>
-        /// <param name="sender">The sender of the snapshot message.</param>
-        /// <param name="senderTerm">Term value provided by InstallSnapshot message sender.</param>
-        /// <param name="snapshot">The snapshot to be installed into local audit trail.</param>
-        /// <param name="snapshotIndex">The index of the last log entry included in the snapshot.</param>
-        /// <returns><see langword="true"/> if snapshot is installed successfully; <see langword="false"/> if snapshot is outdated.</returns>
-        [Obsolete("Use ReceiveSnapshotAsync method instead")]
-        protected Task<Result<bool>> ReceiveSnapshot(TMember sender, long senderTerm, IRaftLogEntry snapshot, long snapshotIndex)
-            => ReceiveSnapshotAsync(sender, senderTerm, snapshot, snapshotIndex, CancellationToken.None);
-
-        /// <summary>
         /// Handles AppendEntries message received from remote cluster member.
         /// </summary>
         /// <typeparam name="TEntry">The actual type of the log entry returned by the supplier.</typeparam>
@@ -520,22 +507,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 tokenSource?.Dispose();
             }
         }
-
-        /// <summary>
-        /// Handles AppendEntries message received from remote cluster member.
-        /// </summary>
-        /// <typeparam name="TEntry">The actual type of the log entry returned by the supplier.</typeparam>
-        /// <param name="sender">The sender of the replica message.</param>
-        /// <param name="senderTerm">Term value provided by Heartbeat message sender.</param>
-        /// <param name="entries">The stateful function that provides entries to be committed locally.</param>
-        /// <param name="prevLogIndex">Index of log entry immediately preceding new ones.</param>
-        /// <param name="prevLogTerm">Term of <paramref name="prevLogIndex"/> entry.</param>
-        /// <param name="commitIndex">The last entry known to be committed on the sender side.</param>
-        /// <returns><see langword="true"/> if log entry is committed successfully; <see langword="false"/> if preceding is not present in local audit trail.</returns>
-        [Obsolete("Use ReceiveEntriesAsync method instead")]
-        protected Task<Result<bool>> ReceiveEntries<TEntry>(TMember sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex)
-            where TEntry : IRaftLogEntry
-            => ReceiveEntriesAsync(sender, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, CancellationToken.None);
 
         /// <summary>
         /// Votes for the new candidate.
@@ -589,18 +560,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         /// <summary>
-        /// Votes for the new candidate.
-        /// </summary>
-        /// <param name="sender">The vote sender.</param>
-        /// <param name="senderTerm">Term value provided by sender of the request.</param>
-        /// <param name="lastLogIndex">Index of candidate's last log entry.</param>
-        /// <param name="lastLogTerm">Term of candidate's last log entry.</param>
-        /// <returns><see langword="true"/> if local node accepts new leader in the cluster; otherwise, <see langword="false"/>.</returns>
-        [Obsolete("Use ReceiveVoteAsync method instead")]
-        protected Task<Result<bool>> ReceiveVote(TMember sender, long senderTerm, long lastLogIndex, long lastLogTerm)
-            => ReceiveVoteAsync(sender, senderTerm, lastLogIndex, lastLogTerm, CancellationToken.None);
-
-        /// <summary>
         /// Revokes leadership of the local node.
         /// </summary>
         /// <param name="token">The token that can be used to cancel the operation.</param>
@@ -642,13 +601,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return leader is not null && await leader.ResignAsync(token).ConfigureAwait(false);
             }
         }
-
-        /// <summary>
-        /// Revokes leadership of the local node.
-        /// </summary>
-        /// <returns><see langword="true"/>, if leadership is revoked successfully; otherwise, <see langword="false"/>.</returns>
-        [Obsolete("Use ReceiveResignAsync method instead")]
-        protected Task<bool> ReceiveResign() => ReceiveResignAsync(CancellationToken.None);
 
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's a member of internal interface")]
         async void IRaftStateMachine.MoveToFollowerState(bool randomizeTimeout, long? newTerm)

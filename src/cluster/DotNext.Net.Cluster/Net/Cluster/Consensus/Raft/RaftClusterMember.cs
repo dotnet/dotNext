@@ -65,17 +65,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Cancels pending requests scheduled for this member.
         /// </summary>
-        [Obsolete("Use CancelPendingRequestsAsync method instead")]
-        public virtual void CancelPendingRequests()
-        {
-        }
-
-        /// <summary>
-        /// Cancels pending requests scheduled for this member.
-        /// </summary>
         /// <returns>The task representing asynchronous execution of this method.</returns>
-        public virtual ValueTask CancelPendingRequestsAsync()
-            => new ValueTask(Task.Factory.StartNew(CancelPendingRequests, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Current));
+        public abstract ValueTask CancelPendingRequestsAsync();
 
         private protected void ChangeStatus(ClusterMemberStatus newState)
             => IClusterMember.OnMemberStatusChanged(this, ref status, newState, MemberStatusChanged);
