@@ -656,7 +656,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private ValueTask ForceCompaction(CancellationToken token)
         {
             SnapshotBuilder? builder;
-            if (state.CommitIndex - snapshot.Index > recordsPerPartition && (builder = CreateSnapshotBuilder()) != null)
+            if (state.CommitIndex - snapshot.Index > recordsPerPartition && (builder = CreateSnapshotBuilder()) is not null)
             {
                 try
                 {

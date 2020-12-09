@@ -94,7 +94,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 foreach (Stream? reader in readers)
                 {
-                    if (reader != null)
+                    if (reader is not null)
                         await reader.DisposeAsync().ConfigureAwait(false);
                 }
 

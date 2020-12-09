@@ -220,7 +220,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         private async Task NextEntryAsync(ReadOnlyMemory<byte> input, CancellationToken token)
         {
             currentIndex = ReadInt32LittleEndian(input.Span);
-            if (writeSession != null)
+            if (writeSession is not null)
             {
                 AbortIO();
                 await writeSession.ConfigureAwait(false);

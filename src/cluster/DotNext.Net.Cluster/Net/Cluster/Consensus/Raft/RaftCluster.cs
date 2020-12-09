@@ -360,7 +360,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             using (await transitionSync.AcquireAsync(token).ConfigureAwait(false))
             {
                 var currentState = Interlocked.Exchange(ref state, null);
-                Assert(currentState != null);
+                Assert(currentState is not null);
                 await currentState.StopAsync().ConfigureAwait(false);
                 currentState.Dispose();
             }

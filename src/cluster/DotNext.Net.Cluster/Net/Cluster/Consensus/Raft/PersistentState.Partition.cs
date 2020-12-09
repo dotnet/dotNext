@@ -213,7 +213,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool TryGetPartition(long recordIndex, [NotNullWhen(true)]ref Partition? partition)
-            => partition != null && recordIndex >= partition.FirstIndex && recordIndex <= partition.LastIndex || partitionTable.TryGetValue(PartitionOf(recordIndex), out partition);
+            => partition is not null && recordIndex >= partition.FirstIndex && recordIndex <= partition.LastIndex || partitionTable.TryGetValue(PartitionOf(recordIndex), out partition);
 
         private bool TryGetPartition(long recordIndex, [NotNullWhen(true)]ref Partition? partition, out bool switched)
         {

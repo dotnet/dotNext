@@ -148,7 +148,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 votingCancellation.Dispose();
                 var task = Interlocked.Exchange(ref votingTask, null);
-                if (task != null && task.IsCompleted)
+                if (task is not null && task.IsCompleted)
                     task.Dispose();
             }
 

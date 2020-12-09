@@ -129,13 +129,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         private async void HandleConnection(Socket remoteClient, CancellationToken token)
         {
             var sslOptions = SslOptions;
-            var stream = new ServerNetworkStream(remoteClient, sslOptions != null);
+            var stream = new ServerNetworkStream(remoteClient, sslOptions is not null);
             var buffer = AllocTransmissionBlock();
             var exchange = exchangeFactory();
             Interlocked.Increment(ref connections);
             try
             {
-                if (sslOptions != null)
+                if (sslOptions is not null)
                     await stream.Authenticate(sslOptions, token).ConfigureAwait(false);
 
                 while (stream.Connected && !IsDisposed)
