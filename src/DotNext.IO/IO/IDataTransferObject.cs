@@ -62,16 +62,17 @@ namespace DotNext.IO
         /// <param name="input">The stream to decode.</param>
         /// <param name="transformation">The decoder.</param>
         /// <param name="resetStream"><see langword="true"/> to reset stream position after decoding.</param>
+        /// <param name="allocator">The allocator of temporary buffer.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <typeparam name="TResult">The type of result.</typeparam>
         /// <typeparam name="TDecoder">The type of parser.</typeparam>
         /// <returns>The decoded stream.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        protected static async ValueTask<TResult> DecodeAsync<TResult, TDecoder>(Stream input, TDecoder transformation, bool resetStream, CancellationToken token)
+        protected static async ValueTask<TResult> DecodeAsync<TResult, TDecoder>(Stream input, TDecoder transformation, bool resetStream, MemoryAllocator<byte>? allocator, CancellationToken token)
             where TDecoder : notnull, IDecoder<TResult>
         {
             const int bufferSize = 1024;
-            var buffer = BufferWriter.DefaultByteAllocator.Invoke(bufferSize, false);
+            var buffer = allocator.Invoke(bufferSize, false);
             try
             {
                 return await transformation.ReadAsync(new AsyncStreamBinaryAccessor(input, buffer.Memory), token).ConfigureAwait(false);
@@ -83,6 +84,21 @@ namespace DotNext.IO
                     input.Seek(0L, SeekOrigin.Begin);
             }
         }
+
+        /// <summary>
+        /// Decodes the stream.
+        /// </summary>
+        /// <param name="input">The stream to decode.</param>
+        /// <param name="transformation">The decoder.</param>
+        /// <param name="resetStream"><see langword="true"/> to reset stream position after decoding.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <typeparam name="TResult">The type of result.</typeparam>
+        /// <typeparam name="TDecoder">The type of parser.</typeparam>
+        /// <returns>The decoded stream.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        protected static ValueTask<TResult> DecodeAsync<TResult, TDecoder>(Stream input, TDecoder transformation, bool resetStream, CancellationToken token)
+            where TDecoder : notnull, IDecoder<TResult>
+            => DecodeAsync<TResult, TDecoder>(input, transformation, resetStream, BufferWriter.DefaultByteAllocator, token);
 
         /// <summary>
         /// Decodes the data using pipe reader.
