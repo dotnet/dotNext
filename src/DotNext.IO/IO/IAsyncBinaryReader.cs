@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 namespace DotNext.IO
 {
     using static Buffers.BufferReader;
+    using static Buffers.MemoryAllocator;
     using static Pipelines.ResultExtensions;
     using BufferWriter = Buffers.BufferWriter;
-    using ByteBuffer = Buffers.MemoryOwner<byte>;
     using DecodingContext = Text.DecodingContext;
 
     /// <summary>
@@ -327,7 +327,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
         async ValueTask<string> ReadStringAsync(int length, DecodingContext context, CancellationToken token = default)
         {
-            using var buffer = new ByteBuffer(ArrayPool<byte>.Shared, length);
+            using var buffer = Buffers.BufferWriter.DefaultByteAllocator.Invoke(length, true);
             await ReadAsync(buffer.Memory, token).ConfigureAwait(false);
             return context.Encoding.GetString(buffer.Memory.Span);
         }
