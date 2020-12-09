@@ -101,7 +101,7 @@ namespace DotNext.Runtime.InteropServices
         /// Constructs pointer from <see cref="IntPtr"/> value.
         /// </summary>
         /// <param name="ptr">The pointer value.</param>
-        public unsafe Pointer(IntPtr ptr)
+        public unsafe Pointer(nint ptr)
             : this((T*)ptr)
         {
         }
@@ -111,7 +111,7 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="ptr">The pointer value.</param>
         [CLSCompliant(false)]
-        public unsafe Pointer(UIntPtr ptr)
+        public unsafe Pointer(nuint ptr)
             : this((T*)ptr)
         {
         }
@@ -314,7 +314,7 @@ namespace DotNext.Runtime.InteropServices
             }
         }
 
-        private static async ValueTask WriteToSteamAsync(IntPtr source, long length, Stream destination, CancellationToken token)
+        private static async ValueTask WriteToSteamAsync(nint source, long length, Stream destination, CancellationToken token)
         {
             while (length > 0L)
             {
@@ -411,7 +411,7 @@ namespace DotNext.Runtime.InteropServices
             }
         }
 
-        private static async ValueTask<long> ReadFromStreamAsync(Stream source, IntPtr destination, long length, CancellationToken token)
+        private static async ValueTask<long> ReadFromStreamAsync(Stream source, nint destination, long length, CancellationToken token)
         {
             var total = 0L;
             while (length > 0L)
@@ -843,7 +843,7 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="ptr">The pointer to be converted.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator IntPtr(Pointer<T> ptr) => ptr.Address;
+        public static implicit operator nint(Pointer<T> ptr) => ptr.Address;
 
         /// <inheritdoc/>
         IntPtr IConvertible<IntPtr>.Convert() => Address;
@@ -854,7 +854,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="ptr">The pointer to be converted.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
-        public static unsafe implicit operator UIntPtr(Pointer<T> ptr) => new UIntPtr(ptr.value);
+        public static unsafe implicit operator nuint(Pointer<T> ptr) => new UIntPtr(ptr.value);
 
         /// <inheritdoc/>
         unsafe UIntPtr IConvertible<UIntPtr>.Convert() => new UIntPtr(value);
@@ -865,7 +865,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="length">The number of elements in the memory.</param>
         /// <returns>The instance of memory owner.</returns>
         public unsafe IMemoryOwner<T> ToMemoryOwner(int length)
-            => IsNull ? new Buffers.UnmanagedMemory<T>(IntPtr.Zero, 0) : new Buffers.UnmanagedMemory<T>(new IntPtr(value), length);
+            => IsNull ? new Buffers.UnmanagedMemory<T>(0, 0) : new Buffers.UnmanagedMemory<T>(new IntPtr(value), length);
 
         /// <summary>
         /// Obtains pointer to the memory represented by given memory handle.
