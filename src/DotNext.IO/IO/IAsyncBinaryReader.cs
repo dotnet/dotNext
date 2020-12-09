@@ -11,6 +11,7 @@ namespace DotNext.IO
     using static Buffers.BufferReader;
     using static Pipelines.ResultExtensions;
     using BufferWriter = Buffers.BufferWriter;
+    using ByteBuffer = Buffers.MemoryOwner<byte>;
     using DecodingContext = Text.DecodingContext;
 
     /// <summary>
@@ -324,7 +325,12 @@ namespace DotNext.IO
         /// <returns>The decoded string.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-        ValueTask<string> ReadStringAsync(int length, DecodingContext context, CancellationToken token = default);
+        async ValueTask<string> ReadStringAsync(int length, DecodingContext context, CancellationToken token = default)
+        {
+            using var buffer = new ByteBuffer(ArrayPool<byte>.Shared, length);
+            await ReadAsync(buffer.Memory, token).ConfigureAwait(false);
+            return context.Encoding.GetString(buffer.Memory.Span);
+        }
 
         /// <summary>
         /// Decodes the string.
