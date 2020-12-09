@@ -121,5 +121,20 @@ namespace DotNext.Runtime.CompilerServices
             Debug.Assert(pointerType is not null);
             return Expression.Call(typeof(ReflectionUtils), nameof(VolatileWritePointer), new[] { pointerType }, expression, value);
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static object? Get(in Span<object?> span, int index) => span[index];
+
+        internal static MethodCallExpression Get(ParameterExpression span, ConstantExpression index)
+            => Expression.Call(typeof(ReflectionUtils), nameof(Get), new [] { typeof(Span<object>).MakeByRefType(), typeof(int) }, span, index);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Set(in Span<object?> span, int index, object? value) => span[index] = value;
+
+        internal static MethodCallExpression Set(ParameterExpression span, ConstantExpression index, Expression value)
+            => Expression.Call(typeof(ReflectionUtils), nameof(Set), new [] { typeof(Span<object>).MakeByRefType(), typeof(int), typeof(object) }, span, index, value);
+
+        internal static MemberExpression SpanLength(ParameterExpression span)
+            => Expression.Property(span, nameof(Span<object>.Length));
     }
 }
