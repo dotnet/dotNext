@@ -82,7 +82,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 where TDecoder : notnull, IDataTransferObject.IDecoder<TResult>
             {
                 Reset();
-                return IDataTransferObject.DecodeAsync<TResult, TDecoder>(content, parser, false, token);
+                return IDataTransferObject.DecodeAsync<TResult, TDecoder>(content, parser, false, buffer, token);
             }
         }
     }
