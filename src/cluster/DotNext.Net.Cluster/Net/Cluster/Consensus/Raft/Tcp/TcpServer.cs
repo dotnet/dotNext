@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
@@ -55,6 +56,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                     var (headers, request) = await ReadPacket(buffer, token).ConfigureAwait(false);
                     timeoutTracker = CancellationTokenSource.CreateLinkedTokenSource(token);
                     timeoutTracker.CancelAfter(receiveTimeout);
+                    Debug.Assert(RemoteEndPoint is not null);
                     while (await exchange.ProcessInboundMessageAsync(headers, request, RemoteEndPoint, timeoutTracker.Token).ConfigureAwait(false))
                     {
                         bool waitForInput;
@@ -182,6 +184,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                         await args.Task.ConfigureAwait(false);
                     else if (args.SocketError != SocketError.Success)
                         throw new SocketException((int)args.SocketError);
+
+                    Debug.Assert(args.AcceptSocket is not null);
                     ConfigureSocket(args.AcceptSocket, LingerOption, Ttl);
                     ThreadPool.QueueUserWorkItem(HandleConnection, (args.AcceptSocket, token), false);
                     args.Reset();

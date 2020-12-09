@@ -27,7 +27,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
 
             internal bool Connected => Socket.Connected;
 
-            internal EndPoint RemoteEndPoint => Socket.RemoteEndPoint;
+            internal EndPoint? RemoteEndPoint => Socket.RemoteEndPoint;
         }
 
         private protected class PacketStream : Disposable
@@ -56,7 +56,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
 
             internal bool Connected => transport.Connected;
 
-            private protected EndPoint RemoteEndPoint => transport.RemoteEndPoint;
+            private protected EndPoint? RemoteEndPoint => transport.RemoteEndPoint;
 
             private protected ValueTask WritePacket(PacketHeaders headers, Memory<byte> buffer, int count, CancellationToken token)
             {

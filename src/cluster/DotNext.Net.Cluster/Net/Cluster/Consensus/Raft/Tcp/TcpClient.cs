@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Security;
@@ -12,6 +13,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
     using Buffers;
     using Threading;
     using TransportServices;
+    using Intrinsics = Runtime.Intrinsics;
 
     /*
         This implementation doesn't support multiplexing over single TCP
@@ -49,6 +51,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 int count;
                 bool waitForInput;
                 ReadOnlyMemory<byte> response;
+                Debug.Assert(RemoteEndPoint is not null);
                 do
                 {
                     (headers, count, waitForInput) = await exchange.CreateOutboundMessageAsync(AdjustToPayload(buffer), token).ConfigureAwait(false);
@@ -81,8 +84,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
 
         internal TimeSpan ConnectTimeout { get; set; }
 
-        private static void CancelConnectAsync(object args)
-            => Socket.CancelConnectAsync((SocketAsyncEventArgs)args);
+        private static void CancelConnectAsync(object? args)
+            => Socket.CancelConnectAsync(Intrinsics.Cast<SocketAsyncEventArgs>(args));
 
         private static async Task<ClientNetworkStream> ConnectAsync(IPEndPoint endPoint, LingerOption linger, byte ttl, SslClientAuthenticationOptions? sslOptions, TimeSpan timeout, CancellationToken token)
         {
@@ -105,6 +108,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 throw new SocketException((int)args.SocketError);
             }
 
+            Debug.Assert(args.ConnectSocket is not null);
             ConfigureSocket(args.ConnectSocket, linger, ttl);
             ClientNetworkStream result;
 

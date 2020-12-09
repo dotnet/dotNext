@@ -19,7 +19,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         ValueTaskSourceStatus IValueTaskSource.GetStatus(short token)
             => taskSource.GetStatus(token);
 
-        void IValueTaskSource.OnCompleted(Action<object> continuation, object state, short token, ValueTaskSourceOnCompletedFlags flags)
+        void IValueTaskSource.OnCompleted(Action<object?> continuation, object? state, short token, ValueTaskSourceOnCompletedFlags flags)
             => taskSource.OnCompleted(continuation, state, token, flags);
 
         internal virtual void Reset() => taskSource.Reset();

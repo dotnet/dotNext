@@ -21,7 +21,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             private readonly IExchange exchange;
             private readonly CancellationTokenRegistration cancellation;
 
-            internal Channel(IExchange exchange, Action<object> cancellationCallback, CorrelationId id, CancellationToken token)
+            internal Channel(IExchange exchange, Action<object?> cancellationCallback, CorrelationId id, CancellationToken token)
             {
                 this.exchange = exchange;
                 cancellation = token.CanBeCanceled ? token.Register(cancellationCallback, id) : default;
@@ -36,7 +36,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             public void Dispose() => cancellation.Dispose();
         }
 
-        private readonly Action<object> cancellationHandler;
+        private readonly Action<object?> cancellationHandler;
 
         // I/O management
         private readonly long applicationId;

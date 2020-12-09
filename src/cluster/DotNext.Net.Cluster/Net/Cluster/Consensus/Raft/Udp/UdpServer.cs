@@ -20,7 +20,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             private readonly CancellationTokenSource timeoutTokenSource;
             private readonly CancellationTokenRegistration cancellation;
 
-            internal Channel(IExchange exchange, IExchangePool exchanges, TimeSpan timeout, Action<object> cancellationCallback, CorrelationId id)
+            internal Channel(IExchange exchange, IExchangePool exchanges, TimeSpan timeout, Action<object?> cancellationCallback, CorrelationId id)
             {
                 this.exchange = exchange;
                 timeoutTokenSource = new CancellationTokenSource(timeout);
@@ -46,7 +46,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         private readonly RefAction<Channel, bool> cancellationInvoker;
         private readonly IExchangePool exchanges;
         private readonly INetworkTransport.ChannelPool<Channel> channels;
-        private readonly Action<object> cancellationHandler;
+        private readonly Action<object?> cancellationHandler;
         private TimeSpan receiveTimeout;
 
         internal UdpServer(IPEndPoint address, int backlog, MemoryAllocator<byte> allocator, Func<int, IExchangePool> exchangePoolFactory, ILoggerFactory loggerFactory)

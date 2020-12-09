@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
     internal sealed class ExchangePool : ConcurrentBag<IReusableExchange>, IExchangePool, IDisposable
     {
-        bool IExchangePool.TryRent(out IExchange exchange)
+        bool IExchangePool.TryRent([MaybeNullWhen(false)] out IExchange exchange)
         {
             var result = TryTake(out var serverExchange);
             exchange = serverExchange;

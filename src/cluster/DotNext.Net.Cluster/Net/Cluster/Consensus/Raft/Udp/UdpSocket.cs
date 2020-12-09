@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Sockets;
@@ -102,7 +103,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
         private protected abstract void EndReceive(SocketAsyncEventArgs args);
 
-        private void EndReceive(object sender, SocketAsyncEventArgs args)
+        private void EndReceive(object? sender, SocketAsyncEventArgs args)
         {
             switch (args.SocketError)
             {
@@ -179,6 +180,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             bool stateFlag;
             var error = default(Exception);
             var ep = args.RemoteEndPoint;
+            Debug.Assert(ep is not null);
 
             // handle received packet
             try

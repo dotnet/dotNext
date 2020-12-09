@@ -40,31 +40,31 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         internal static void VotingCompleted(this ILogger logger, int votes)
             => logger.LogDebug(Resources.GetString("VotingCompleted"), votes);
 
-        internal static void VoteGranted(this ILogger logger, IPEndPoint member)
+        internal static void VoteGranted(this ILogger logger, EndPoint member)
             => logger.LogDebug(Resources.GetString("VoteGranted"), member);
 
-        internal static void VoteRejected(this ILogger logger, IPEndPoint member)
+        internal static void VoteRejected(this ILogger logger, EndPoint member)
             => logger.LogDebug(Resources.GetString("VoteRejected"), member);
 
-        internal static void MemberUnavailable(this ILogger logger, IPEndPoint member)
+        internal static void MemberUnavailable(this ILogger logger, EndPoint member)
             => logger.LogDebug(Resources.GetString("MemberUnavailable"), member);
 
-        internal static void MemberUnavailable(this ILogger logger, IPEndPoint member, Exception e)
+        internal static void MemberUnavailable(this ILogger logger, EndPoint member, Exception e)
             => logger.LogWarning(Resources.GetString("MemberUnavailable"), member, e);
 
         internal static void TimeoutReset(this ILogger logger)
             => logger.LogDebug(Resources.GetString("TimeoutReset"));
 
-        internal static void ReplicationStarted(this ILogger logger, IPEndPoint member, long index)
+        internal static void ReplicationStarted(this ILogger logger, EndPoint member, long index)
             => logger.LogDebug(Resources.GetString("ReplicationStarted"), member, index);
 
-        internal static void ReplicaSize(this ILogger logger, IPEndPoint member, int count, long index, long term)
+        internal static void ReplicaSize(this ILogger logger, EndPoint? member, int count, long index, long term)
             => logger.LogDebug(Resources.GetString("ReplicaSize"), member, count, index, term);
 
-        internal static void ReplicationSuccessful(this ILogger logger, IPEndPoint member, long index)
+        internal static void ReplicationSuccessful(this ILogger logger, EndPoint member, long index)
             => logger.LogDebug(Resources.GetString("ReplicationSuccessful"), member, index);
 
-        internal static void ReplicationFailed(this ILogger logger, IPEndPoint member, long index)
+        internal static void ReplicationFailed(this ILogger logger, EndPoint member, long index)
             => logger.LogInformation(Resources.GetString("ReplicationFailed"), member, index);
 
         internal static void CommitFailed(this ILogger logger, int quorum, long commitIndex)
@@ -78,7 +78,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         internal static string SnapshotInstallationFailed => (string)Resources.Get();
 
-        internal static void PacketDropped<T>(this ILogger logger, T packetId, EndPoint endPoint)
+        internal static void PacketDropped<T>(this ILogger logger, T packetId, EndPoint? endPoint)
             where T : struct
             => logger.LogError(Resources.GetString("PacketDropped"), packetId.ToString(), endPoint);
 
