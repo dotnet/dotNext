@@ -226,7 +226,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Task FlushAsync(Partition? partition) => partition is null ? Task.CompletedTask : partition.FlushAsync();
 
-        private void GetOrCreatePartition(long recordIndex, out Partition partition)
+        private void GetOrCreatePartition(long recordIndex, [NotNull] out Partition? partition)
         {
             var partitionNumber = PartitionOf(recordIndex);
             if (!partitionTable.TryGetValue(partitionNumber, out partition))
@@ -240,6 +240,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private Task GetOrCreatePartitionAsync(long recordIndex, [NotNull]ref Partition? partition)
         {
             Task flushTask;
+
             if (partition is null || recordIndex < partition.FirstIndex || recordIndex > partition.LastIndex)
             {
                 flushTask = FlushAsync(partition);

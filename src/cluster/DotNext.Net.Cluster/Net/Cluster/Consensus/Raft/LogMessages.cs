@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Resources;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using static System.Globalization.CultureInfo;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using Resources;
+
     [SuppressMessage("Globalization", "CA1304", Justification = "This is culture-specific resource strings")]
     [SuppressMessage("Globalization", "CA1305", Justification = "This is culture-specific resource strings")]
     internal static class LogMessages
@@ -77,12 +76,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         internal static void InstallingSnapshot(this ILogger logger, long snapshotIndex)
             => logger.LogDebug(Resources.GetString("InstallingSnapshot"), snapshotIndex);
 
-        internal static string SnapshotInstallationFailed => Resources.GetString("SnapshotInstallationFailed");
-
-        internal static Task PrintLockInfoTitle(this TextWriter output) => output.WriteLineAsync(Resources.GetString("LockInfoTitle"));
-
-        internal static Task PrintLockInfo(this TextWriter output, string lockName, string owner, in Guid version, DateTimeOffset creationTime, TimeSpan leaseTime)
-            => output.WriteLineAsync(string.Format(Resources.GetString("LockInfo"), lockName, owner, version.ToString(), creationTime.ToString(InvariantCulture), leaseTime.ToString()));
+        internal static string SnapshotInstallationFailed => (string)Resources.Get();
 
         internal static void PacketDropped<T>(this ILogger logger, T packetId, EndPoint endPoint)
             where T : struct

@@ -51,7 +51,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly AsyncSharedLock syncRoot;
         private readonly IRaftLogEntry initialEntry;
         private readonly long initialSize;
-        private readonly MemoryAllocator<LogEntry> entryPool;
+        private readonly MemoryAllocator<LogEntry>? entryPool;
         private readonly MemoryAllocator<LogEntryMetadata>? metadataPool;
         private readonly StreamSegment nullSegment;
         private readonly int bufferSize;
@@ -95,7 +95,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 if (long.TryParse(file.Name, out var partitionNumber))
                 {
-                    var partition = new Partition(file.Directory, bufferSize, recordsPerPartition, partitionNumber, metadataPool, sessionManager.Capacity);
+                    var partition = new Partition(file.Directory!, bufferSize, recordsPerPartition, partitionNumber, metadataPool, sessionManager.Capacity);
                     partition.PopulateCache(sessionManager.WriteSession);
                     partitionTable[partitionNumber] = partition;
                 }
@@ -152,7 +152,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             ValueTask<TResult> result;
             if (partitionTable.Count > 0)
             {
-                using var list = entryPool((int)length);
+                using var list = entryPool.Invoke((int)length, true);
                 var listIndex = 0;
                 for (Partition? partition = null; startIndex <= endIndex; list[listIndex++] = entry, startIndex++)
                 {
@@ -564,7 +564,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
                 // take the next partition if startIndex is not a beginning of the calculated partition
                 partitionNumber += (remainder > 0L).ToInt32();
-                for (Partition partition; partitionTable.TryGetValue(partitionNumber, out partition); partitionNumber++)
+                for (Partition? partition; partitionTable.TryGetValue(partitionNumber, out partition); partitionNumber++)
                 {
                     var fileName = partition.Name;
                     partitionTable.Remove(partitionNumber);
