@@ -46,11 +46,32 @@ namespace DotNext.IO
         ValueTask<byte> IAsyncBinaryReader.ReadByteAsync(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
             => StreamExtensions.ReadByteAsync(stream, lengthFormat, context, buffer, style, provider, token);
 
+        async ValueTask<short> IAsyncBinaryReader.ReadInt16Async(bool littleEndian, CancellationToken token)
+        {
+            var result = await StreamExtensions.ReadAsync<short>(stream, buffer, token).ConfigureAwait(false);
+            result.ReverseIfNeeded(littleEndian);
+            return result;
+        }
+
         ValueTask<short> IAsyncBinaryReader.ReadInt16Async(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
             => StreamExtensions.ReadInt16Async(stream, lengthFormat, context, buffer, style, provider, token);
 
+        async ValueTask<int> IAsyncBinaryReader.ReadInt32Async(bool littleEndian, CancellationToken token)
+        {
+            var result = await StreamExtensions.ReadAsync<int>(stream, buffer, token).ConfigureAwait(false);
+            result.ReverseIfNeeded(littleEndian);
+            return result;
+        }
+
         ValueTask<int> IAsyncBinaryReader.ReadInt32Async(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
             => StreamExtensions.ReadInt32Async(stream, lengthFormat, context, buffer, style, provider, token);
+
+        async ValueTask<long> IAsyncBinaryReader.ReadInt64Async(bool littleEndian, CancellationToken token)
+        {
+            var result = await StreamExtensions.ReadAsync<long>(stream, buffer, token).ConfigureAwait(false);
+            result.ReverseIfNeeded(littleEndian);
+            return result;
+        }
 
         ValueTask<long> IAsyncBinaryReader.ReadInt64Async(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
             => StreamExtensions.ReadInt64Async(stream, lengthFormat, context, buffer, style, provider, token);
