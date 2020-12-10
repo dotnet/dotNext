@@ -12,7 +12,6 @@ using static System.Runtime.InteropServices.MemoryMarshal;
 namespace DotNext.IO
 {
     using Buffers;
-    using CharBufferWriter = Buffers.BufferWriter<char>;
 
     internal sealed unsafe class TextBufferWriter<TWriter> : TextWriter
         where TWriter : class, IBufferWriter<char>
