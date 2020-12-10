@@ -17,27 +17,31 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             8 bytes = CommitIndex
             8 bytes = LastApplied
             8 bytes = LastIndex
-            4 bytes = Node port
-            4 bytes = Address Length
+            1 byte = presence of cluster member id
+            sizeof(ClusterMemberId) = last vote
             octet string = IP Address (16 bytes for IPv6)
          */
         private sealed class NodeState : Disposable
         {
             internal static readonly Func<NodeState, long, bool> IsCommittedPredicate = IsCommitted;
 
+            private const byte True = 1;
+            private const byte False = 0;
             private const string FileName = "node.state";
             private const long Capacity = 128;
             private const long TermOffset = 0L;
             private const long CommitIndexOffset = TermOffset + sizeof(long);
             private const long LastAppliedOffset = CommitIndexOffset + sizeof(long);
             private const long LastIndexOffset = LastAppliedOffset + sizeof(long);
-            private const long PortOffset = LastIndexOffset + sizeof(long);
-            private const long AddressLengthOffset = PortOffset + sizeof(int);
-            private const long AddressOffset = AddressLengthOffset + sizeof(int);
+            private const long LastVotePresenceOffset = LastIndexOffset + sizeof(long);
+            private const long LastVoteOffset = LastVotePresenceOffset + sizeof(byte);
+
             private readonly MemoryMappedFile mappedFile;
             private readonly MemoryMappedViewAccessor stateView;
             private AsyncLock syncRoot;
-            private volatile IPEndPoint? votedFor;
+
+            // boxed ClusterMemberId or null if there is not last vote stored
+            private volatile object? votedFor;
             private long term, commitIndex, lastIndex, lastApplied;  // volatile
 
             internal NodeState(DirectoryInfo location, AsyncLock writeLock)
@@ -49,17 +53,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 commitIndex = stateView.ReadInt64(CommitIndexOffset);
                 lastIndex = stateView.ReadInt64(LastIndexOffset);
                 lastApplied = stateView.ReadInt64(LastAppliedOffset);
-                var port = stateView.ReadInt32(PortOffset);
-                var length = stateView.ReadInt32(AddressLengthOffset);
-                if (length == 0)
+                var hasLastVote = ValueTypeExtensions.ToBoolean(stateView.ReadByte(LastVotePresenceOffset));
+                if (hasLastVote)
                 {
-                    votedFor = null;
-                }
-                else
-                {
-                    var address = new byte[length];
-                    stateView.ReadArray(AddressOffset, address, 0, length);
-                    votedFor = new IPEndPoint(new IPAddress(address), port);
+                    stateView.Read(LastVoteOffset, out ClusterMemberId votedFor);
+                    this.votedFor = votedFor;
                 }
             }
 
@@ -120,31 +118,27 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
             }
 
-            internal bool IsVotedFor(IPEndPoint? member)
-            {
-                var lastVote = votedFor;
-                return lastVote is null || Equals(lastVote, member);
-            }
+            internal bool IsVotedFor(ClusterMemberId? expected)
+                => votedFor is not ClusterMemberId actual || (expected.HasValue && actual.Equals(expected.GetValueOrDefault()));
 
-            internal async ValueTask UpdateVotedForAsync(IPEndPoint? member)
+            internal async ValueTask UpdateVotedForAsync(ClusterMemberId? member)
             {
                 using (await syncRoot.AcquireAsync(CancellationToken.None).ConfigureAwait(false))
                 {
-                    if (member is null)
+                    if (member.TryGetValue(out var votedFor))
                     {
-                        stateView.Write(PortOffset, 0);
-                        stateView.Write(AddressLengthOffset, 0);
+                        stateView.Write(LastVotePresenceOffset, True);
+                        stateView.Write(LastVoteOffset, ref votedFor);
+                        this.votedFor = votedFor;
                     }
                     else
                     {
-                        stateView.Write(PortOffset, member.Port);
-                        var address = member.Address.GetAddressBytes();
-                        stateView.Write(AddressLengthOffset, address.Length);
-                        stateView.WriteArray(AddressOffset, address, 0, address.Length);
+                        stateView.Write(LastVotePresenceOffset, False);
+                        this.votedFor = null;
                     }
 
                     stateView.Flush();
-                    votedFor = member;
+
                 }
             }
 

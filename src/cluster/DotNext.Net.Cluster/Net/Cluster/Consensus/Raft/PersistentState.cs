@@ -839,7 +839,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         ref readonly IRaftLogEntry IAuditTrail<IRaftLogEntry>.First => ref initialEntry;
 
         /// <inheritdoc/>
-        bool IPersistentState.IsVotedFor(IRaftClusterMember? member) => state.IsVotedFor(member?.Endpoint);
+        bool IPersistentState.IsVotedFor(IRaftClusterMember? member) => state.IsVotedFor(member?.Id);
 
         /// <summary>
         /// Gets the current term.
@@ -853,7 +853,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         ValueTask IPersistentState.UpdateTermAsync(long term) => state.UpdateTermAsync(term);
 
         /// <inheritdoc/>
-        ValueTask IPersistentState.UpdateVotedForAsync(IRaftClusterMember? member) => state.UpdateVotedForAsync(member?.Endpoint);
+        ValueTask IPersistentState.UpdateVotedForAsync(IRaftClusterMember? member) => state.UpdateVotedForAsync(member?.Id);
 
         /// <summary>
         /// Releases all resources associated with this audit trail.

@@ -45,7 +45,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         private static bool IsMatchedByEndPoint(RaftClusterMember member, EndPoint endPoint)
-            => member.Endpoint.Equals(endPoint);
+            => member.EndPoint.Equals(endPoint);
 
         /// <summary>
         /// Starts serving local member.

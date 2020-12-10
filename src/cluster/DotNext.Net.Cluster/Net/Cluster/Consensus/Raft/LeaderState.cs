@@ -55,7 +55,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal ValueTask<Result<bool>> Start(IAuditTrail<IRaftLogEntry> auditTrail)
             {
-                logger.ReplicationStarted(member.Endpoint, currentIndex);
+                logger.ReplicationStarted(member.EndPoint, currentIndex);
                 return currentIndex >= member.NextIndex ?
                     auditTrail.ReadAsync<Replicator, Result<bool>>(this, member.NextIndex, token) :
                     ReadAsync<IRaftLogEntry, IRaftLogEntry[]>(Array.Empty<IRaftLogEntry>(), null, token);
@@ -71,13 +71,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     // analyze result and decrease node index when it is out-of-sync with the current node
                     if (result.Value)
                     {
-                        logger.ReplicationSuccessful(member.Endpoint, member.NextIndex);
+                        logger.ReplicationSuccessful(member.EndPoint, member.NextIndex);
                         member.NextIndex.VolatileWrite(currentIndex + 1);
                         result = result.SetValue(replicatedWithCurrentTerm);
                     }
                     else
                     {
-                        logger.ReplicationFailed(member.Endpoint, member.NextIndex.UpdateAndGet(in IndexDecrement));
+                        logger.ReplicationFailed(member.EndPoint, member.NextIndex.UpdateAndGet(in IndexDecrement));
                     }
 
                     SetResult(result);
@@ -112,7 +112,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
                 else
                 {
-                    logger.ReplicaSize(member.Endpoint, entries.Count, precedingIndex, precedingTerm);
+                    logger.ReplicaSize(member.EndPoint, entries.Count, precedingIndex, precedingTerm);
                     replicationAwaiter = member.AppendEntriesAsync<TEntry, TList>(term, entries, precedingIndex, precedingTerm, commitIndex, token).ConfigureAwait(false).GetAwaiter();
                 }
 

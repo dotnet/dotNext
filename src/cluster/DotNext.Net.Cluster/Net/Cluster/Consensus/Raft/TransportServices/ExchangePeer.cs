@@ -45,7 +45,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             }
             catch (Exception e) when (e is not OperationCanceledException || !token.IsCancellationRequested)
             {
-                Logger.MemberUnavailable(Endpoint, e);
+                Logger.MemberUnavailable(EndPoint, e);
                 ChangeStatus(ClusterMemberStatus.Unavailable);
                 throw new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, e);
             }
