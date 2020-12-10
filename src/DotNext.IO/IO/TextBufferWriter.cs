@@ -249,16 +249,6 @@ namespace DotNext.IO
         }
 
         public override string ToString()
-        {
-            switch (writer)
-            {
-                case CharBufferWriter buffer:
-                    return buffer.BuildString();
-                case ArrayBufferWriter<char> buffer:
-                    return buffer.BuildString();
-                default:
-                    return writer.ToString() ?? string.Empty;
-            }
-        }
+            => writer is IGrowableBuffer<char> buffer ? buffer.BuildString() : writer.ToString() ?? string.Empty;
     }
 }
