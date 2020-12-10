@@ -392,7 +392,7 @@ namespace DotNext.IO
                 Task result;
                 if (token.IsCancellationRequested)
                 {
-                    result = Task.CompletedTask;
+                    result = Task.FromCanceled(token);
                 }
                 else
                 {
