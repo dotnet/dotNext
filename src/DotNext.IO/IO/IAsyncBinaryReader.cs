@@ -384,7 +384,32 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         Task CopyToAsync(IBufferWriter<byte> writer, CancellationToken token = default)
-            => CopyToAsync(BufferWriter.CopyTo, writer, token);
+        {
+            return CopyToAsync(Write, writer, token);
+
+            static ValueTask Write(ReadOnlyMemory<byte> input, IBufferWriter<byte> writer, CancellationToken token)
+            {
+                Task result;
+                if (token.IsCancellationRequested)
+                {
+                    result = Task.CompletedTask;
+                }
+                else
+                {
+                    result = Task.CompletedTask;
+                    try
+                    {
+                        writer.Write(input.Span);
+                    }
+                    catch (Exception e)
+                    {
+                        result = Task.FromException(e);
+                    }
+                }
+
+                return new ValueTask(result);
+            }
+        }
 
         /// <summary>
         /// Reads the entire content using the specified delegate.

@@ -618,9 +618,5 @@ namespace DotNext.Buffers
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         public static unsafe void WriteTimeSpan(this IBufferWriter<char> writer, TimeSpan value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
             => Write(writer, in value, &TryFormat, format, provider);
-
-        internal static void CopyTo<T, TWriter>(ReadOnlySpan<T> input, TWriter output)
-            where TWriter : class, IBufferWriter<T>
-            => output.Write(input);
     }
 }
