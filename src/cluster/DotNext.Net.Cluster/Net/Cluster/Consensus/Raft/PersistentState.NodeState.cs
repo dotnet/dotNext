@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.IO.MemoryMappedFiles;
-using System.Net;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -118,29 +118,37 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
             }
 
-            internal bool IsVotedFor(ClusterMemberId? expected)
-                => votedFor is not ClusterMemberId actual || (expected.HasValue && actual.Equals(expected.GetValueOrDefault()));
+            internal bool IsVotedFor(in ClusterMemberId expected)
+            {
+                var actual = votedFor;
 
-            internal async ValueTask UpdateVotedForAsync(ClusterMemberId? member)
+                // avoid placing value type on the stack
+                return actual is null || Unsafe.Unbox<ClusterMemberId>(actual) == expected;
+            }
+
+            private async ValueTask UpdateVotedForAsync(ClusterMemberId member)
             {
                 using (await syncRoot.AcquireAsync(CancellationToken.None).ConfigureAwait(false))
                 {
-                    if (member.TryGetValue(out var votedFor))
-                    {
-                        stateView.Write(LastVotePresenceOffset, True);
-                        stateView.Write(LastVoteOffset, ref votedFor);
-                        this.votedFor = votedFor;
-                    }
-                    else
-                    {
-                        stateView.Write(LastVotePresenceOffset, False);
-                        this.votedFor = null;
-                    }
-
+                    stateView.Write(LastVotePresenceOffset, True);
+                    stateView.Write(LastVoteOffset, ref member);
+                    this.votedFor = member;
                     stateView.Flush();
-
                 }
             }
+
+            private async ValueTask UpdateVotedForAsync()
+            {
+                using (await syncRoot.AcquireAsync(CancellationToken.None).ConfigureAwait(false))
+                {
+                    stateView.Write(LastVotePresenceOffset, False);
+                    this.votedFor = null;
+                    stateView.Flush();
+                }
+            }
+
+            internal ValueTask UpdateVotedForAsync(ClusterMemberId? member)
+                => member.HasValue ? UpdateVotedForAsync(member.GetValueOrDefault()) : UpdateVotedForAsync();
 
             protected override void Dispose(bool disposing)
             {

@@ -839,7 +839,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         ref readonly IRaftLogEntry IAuditTrail<IRaftLogEntry>.First => ref initialEntry;
 
         /// <inheritdoc/>
-        bool IPersistentState.IsVotedFor(IRaftClusterMember? member) => state.IsVotedFor(member?.Id);
+        bool IPersistentState.IsVotedFor(IRaftClusterMember member) => state.IsVotedFor(member.Id);
 
         /// <summary>
         /// Gets the current term.

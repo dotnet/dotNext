@@ -15,7 +15,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <param name="member">The cluster member to check.</param>
         /// <returns><see langword="true"/> if the local member granted its vote for the specified remote member; otherwise, <see langword="false"/>.</returns>
-        bool IsVotedFor(IRaftClusterMember? member);
+        bool IsVotedFor(IRaftClusterMember member);
 
         /// <summary>
         /// Reads Term value associated with the local member
