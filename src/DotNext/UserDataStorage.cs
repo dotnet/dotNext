@@ -104,8 +104,16 @@ namespace DotNext
             {
                 BackingStorage copy;
                 lockState.EnterReadLock();
-                copy = new BackingStorage(this);
-                lockState.ExitReadLock();
+
+                try
+                {
+                    copy = new BackingStorage(this);
+                }
+                finally
+                {
+                    lockState.ExitReadLock();
+                }
+
                 return copy;
             }
 
@@ -113,24 +121,36 @@ namespace DotNext
             {
                 lockState.EnterReadLock();
                 dest.lockState.EnterWriteLock();
-                dest.Clear();
-                dest.AddAll(this);
-                dest.lockState.ExitWriteLock();
-                lockState.ExitReadLock();
+                try
+                {
+                    dest.Clear();
+                    dest.AddAll(this);
+                }
+                finally
+                {
+                    dest.lockState.ExitWriteLock();
+                    lockState.ExitReadLock();
+                }
             }
 
             [return: NotNullIfNotNull("defaultValue")]
-            [return: MaybeNull]
-            internal TValue Get<TValue>(UserDataSlot<TValue> slot, [AllowNull]TValue defaultValue)
+            internal TValue? Get<TValue>(UserDataSlot<TValue> slot, TValue? defaultValue)
             {
+                TValue? result;
                 lockState.EnterReadLock();
-                var result = slot.GetUserData(this, defaultValue);
-                lockState.ExitReadLock();
+                try
+                {
+                    result = slot.GetUserData(this, defaultValue);
+                }
+                finally
+                {
+                    lockState.ExitReadLock();
+                }
+
                 return result;
             }
 
-            [return: MaybeNull]
-            internal TValue GetOrSet<TValue, TSupplier>(UserDataSlot<TValue> slot, ref TSupplier valueFactory)
+            internal TValue? GetOrSet<TValue, TSupplier>(UserDataSlot<TValue> slot, ref TSupplier valueFactory)
                 where TSupplier : struct, ISupplier<TValue>
             {
                 // fast path - read lock is required

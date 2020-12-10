@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
@@ -173,7 +172,7 @@ namespace DotNext
         /// </summary>
         /// <param name="value">Extracted value.</param>
         /// <returns><see langword="true"/> if value is present; otherwise, <see langword="false"/>.</returns>
-        public bool TryGet([MaybeNull]out T value)
+        public bool TryGet(out T value)
         {
             value = this.value;
             return exception is null;
@@ -235,7 +234,6 @@ namespace DotNext
         /// Extracts actual result.
         /// </summary>
         /// <param name="result">The result object.</param>
-        [return: MaybeNull]
         public static explicit operator T(in Result<T> result) => result.Value;
 
         /// <summary>
