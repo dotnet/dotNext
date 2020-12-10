@@ -16,7 +16,7 @@ namespace DotNext.IO
     internal sealed unsafe class TextBufferWriter<TWriter> : TextWriter
         where TWriter : class, IBufferWriter<char>
     {
-        private readonly delegate*<ReadOnlySpan<char>, TWriter, void> writeImpl;
+        private readonly delegate*<TWriter, ReadOnlySpan<char>, void> writeImpl;
         private readonly TWriter writer;
         private readonly Action<TWriter>? flush;
         private readonly Func<TWriter, CancellationToken, Task>? flushAsync;
@@ -29,13 +29,13 @@ namespace DotNext.IO
 
             writeImpl = writer is IGrowableBuffer<char> ?
                 &WriteToGrowableBuffer :
-                &BufferWriter.CopyTo<char, TWriter>;
+                &BuffersExtensions.Write<char>;
 
             this.writer = writer;
             this.flush = flush;
             this.flushAsync = flushAsync;
 
-            static void WriteToGrowableBuffer(ReadOnlySpan<char> input, TWriter output)
+            static void WriteToGrowableBuffer(TWriter output, ReadOnlySpan<char> input)
             {
                 Debug.Assert(output is IGrowableBuffer<char>);
                 Unsafe.As<IGrowableBuffer<char>>(output).Write(input);
@@ -71,7 +71,7 @@ namespace DotNext.IO
             }
         }
 
-        public override void Write(ReadOnlySpan<char> buffer) => writeImpl(buffer, writer);
+        public override void Write(ReadOnlySpan<char> buffer) => writeImpl(writer, buffer);
 
         public override void WriteLine() => Write(new ReadOnlySpan<char>(CoreNewLine));
 
@@ -325,7 +325,7 @@ namespace DotNext.IO
                 return;
 
             foreach (var chunk in sb.GetChunks())
-                writeImpl(chunk.Span, writer);
+                Write(chunk.Span);
         }
 
         public override void WriteLine(StringBuilder? sb)
