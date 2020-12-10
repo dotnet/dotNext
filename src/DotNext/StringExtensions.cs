@@ -1,6 +1,7 @@
 using System;
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext
@@ -90,5 +91,13 @@ namespace DotNext
         /// <returns>The compiled template that can be used to replace all placeholders with their original values.</returns>
         public static StringTemplate AsTemplate(this string template, char placeholder)
             => new StringTemplate(template.AsMemory(), CreateReadOnlySpan(ref placeholder, 1));
+
+        /// <summary>
+        /// Checks whether the growable string is <see langword="null"/> or empty.
+        /// </summary>
+        /// <param name="builder">The builder to check.</param>
+        /// <returns><<see langword="true"/>, if builder is <see langword="null"/> or empty.</returns>
+        public static bool IsNullOrEmpty([NotNullWhen(false)] this StringBuilder? builder)
+            => builder is null || builder.Length == 0;
     }
 }
