@@ -9,7 +9,7 @@ using Xunit;
 
 namespace DotNext
 {
-    using ChunkSequence = Buffers.ChunkSequence;
+    using static Buffers.BufferHelpers;
 
     [ExcludeFromCodeCoverage]
     [LogBeforeAfterTest]
@@ -50,6 +50,6 @@ namespace DotNext
         }
 
         private protected static ReadOnlySequence<T> ToReadOnlySequence<T>(ReadOnlyMemory<T> memory, int chunkSize)
-            => ChunkSequence.ToReadOnlySequence(Split(memory, chunkSize));
+            => Split(memory, chunkSize).ToReadOnlySequence();
     }
 }
