@@ -17,7 +17,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     {
         private const string UserAgent = "Raft.NET";
 
-        private static readonly Version Http1 = new Version(1, 1), Http2 = new Version(2, 0), Http3 = new Version(3, 0);
+        private static readonly Version Http3 = new Version(3, 0);
         private readonly Uri resourcePath;
         private readonly IHostingContext context;
         private AtomicEnum<ClusterMemberStatus> status;
@@ -57,10 +57,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             switch (ProtocolVersion)
             {
                 case HttpVersion.Http1:
-                    request.Version = Http1;
+                    request.Version = System.Net.HttpVersion.Version11;
                     break;
                 case HttpVersion.Http2:
-                    request.Version = Http2;
+                    request.Version = System.Net.HttpVersion.Version20;
                     break;
                 case HttpVersion.Http3:
                     request.Version = Http3;
