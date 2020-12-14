@@ -58,7 +58,7 @@ namespace DotNext.Net
                     }
 
                     // add host address hint if it is available
-                    if (!(hint is null))
+                    if (hint is not null)
                         result.Add(new IPEndPoint(hint, endpoint.Port));
                 }
             }

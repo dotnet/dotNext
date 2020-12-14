@@ -39,6 +39,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             If cache returns the same value for this message then it was not added previously; otherwise, it is different message but with the same id
          */
         internal bool IsDuplicated(HttpMessage message)
-            => AddOrGetExisting(message.Id, valuePlaceholder, DateTimeOffset.Now + expiration) != null;
+            => AddOrGetExisting(message.Id, valuePlaceholder, DateTimeOffset.Now + expiration) is not null;
     }
 }

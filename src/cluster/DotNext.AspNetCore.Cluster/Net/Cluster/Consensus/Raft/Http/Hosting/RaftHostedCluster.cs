@@ -54,7 +54,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
             internal IHost BuildHost()
             {
                 var builder = new HostBuilder().ConfigureWebHost(Configure);
-                if (parentHostOptions != null)
+                if (parentHostOptions is not null)
                     builder = builder.UseHostOptions(parentHostOptions);
 
                 return builder.Build();

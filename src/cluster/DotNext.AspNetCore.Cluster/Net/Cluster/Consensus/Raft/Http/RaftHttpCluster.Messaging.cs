@@ -79,7 +79,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         async Task IOutputChannel.SendSignalAsync(IMessage message, CancellationToken token)
         {
-            Assert(localMember != null);
+            Assert(localMember is not null);
 
             // keep the same message between retries for correct identification of duplicate messages
             var signal = new CustomMessage(localMember, message, true) { RespectLeadership = true };
