@@ -19,7 +19,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     {
         private sealed class ClusterMemberMock : IRaftClusterMember
         {
-            internal ClusterMemberMock(IPEndPoint endpoint) => Endpoint = endpoint;
+            internal ClusterMemberMock(IPEndPoint endpoint) => EndPoint = endpoint;
 
             Task<Result<bool>> IRaftClusterMember.VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
                 => throw new NotImplementedException();
@@ -32,9 +32,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             ref long IRaftClusterMember.NextIndex => throw new NotImplementedException();
 
-            void IRaftClusterMember.CancelPendingRequests() => throw new NotImplementedException();
+            ValueTask IRaftClusterMember.CancelPendingRequestsAsync() => new ValueTask(Task.FromException(new NotImplementedException()));
 
-            public IPEndPoint Endpoint { get; }
+            public EndPoint EndPoint { get; }
 
             bool IClusterMember.IsLeader => false;
 
@@ -53,13 +53,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             Task<bool> IClusterMember.ResignAsync(CancellationToken token) => throw new NotImplementedException();
 
-            public bool Equals(IClusterMember other) => Equals(Endpoint, other?.Endpoint);
+            public bool Equals(IClusterMember other) => Equals(EndPoint, other?.EndPoint);
 
             public override bool Equals(object other) => Equals(other as IClusterMember);
 
-            public override int GetHashCode() => Endpoint.GetHashCode();
+            public override int GetHashCode() => EndPoint.GetHashCode();
 
-            public override string ToString() => Endpoint.ToString();
+            public override string ToString() => EndPoint.ToString();
         }
 
         private sealed class Int64LogEntry : BinaryTransferObject, IRaftLogEntry

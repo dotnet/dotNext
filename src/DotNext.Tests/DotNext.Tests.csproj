@@ -3,6 +3,7 @@
   <PropertyGroup>
 	  <TargetFrameworks>net5.0;netcoreapp3.1</TargetFrameworks>
     <RootNamespace>DotNext</RootNamespace>
+    <LangVersion>latest</LangVersion>
     <EnableNETAnalyzers>false</EnableNETAnalyzers>
     <Version>3.0.0</Version>
     <IsPackable>false</IsPackable>
@@ -30,15 +31,18 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="System.Resources.Extensions" Version="4.7.1" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\VisualBasicElements\VisualBasicElements.vbproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
     <ProjectReference Include="..\cluster\DotNext.AspNetCore.Cluster\DotNext.AspNetCore.Cluster.csproj">
       <SetTargetFramework>TargetFramework=netcoreapp3.1</SetTargetFramework>
+    </ProjectReference>
+    <ProjectReference Include="..\cluster\DotNext.Net.Cluster\DotNext.Net.Cluster.csproj">
+      <SetTargetFramework>TargetFramework=netcoreapp3.1</SetTargetFramework>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNext.IO\DotNext.IO.csproj">
+      <SetTargetFramework>TargetFramework=netstandard2.1</SetTargetFramework>
     </ProjectReference>
     <ProjectReference Include="..\DotNext.Reflection\DotNext.Reflection.csproj">
       <SetTargetFramework>TargetFramework=netstandard2.1</SetTargetFramework>
@@ -59,6 +63,12 @@
 
   <ItemGroup Condition="'$(TargetFramework)' != 'netcoreapp3.1'">
     <ProjectReference Include="..\cluster\DotNext.AspNetCore.Cluster\DotNext.AspNetCore.Cluster.csproj">
+      <SetTargetFramework>TargetFramework=net5.0</SetTargetFramework>
+    </ProjectReference>
+    <ProjectReference Include="..\cluster\DotNext.Net.Cluster\DotNext.Net.Cluster.csproj">
+      <SetTargetFramework>TargetFramework=net5.0</SetTargetFramework>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNext.IO\DotNext.IO.csproj">
       <SetTargetFramework>TargetFramework=net5.0</SetTargetFramework>
     </ProjectReference>
     <ProjectReference Include="..\DotNext.Reflection\DotNext.Reflection.csproj">

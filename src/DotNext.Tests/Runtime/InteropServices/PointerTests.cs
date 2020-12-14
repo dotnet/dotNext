@@ -186,7 +186,7 @@ namespace DotNext.Runtime.InteropServices
             Equal(new IntPtr(12), ptr.Value);
             False(ptr.CompareAndSetValue(new IntPtr(10), new IntPtr(20)));
             Equal(new IntPtr(12), ptr.Value);
-            Func<IntPtr, IntPtr, IntPtr> sum = ValueTypeExtensions.Add;
+            Func<nint, nint, nint> sum = static (x, y) => x + y;
             Equal(new IntPtr(32), ptr.AccumulateAndGetValue(new IntPtr(20), sum));
             Equal(new IntPtr(32), ptr.Value);
             Equal(new IntPtr(32), ptr.GetAndAccumulateValue(new IntPtr(8), sum));
@@ -258,11 +258,11 @@ namespace DotNext.Runtime.InteropServices
         [Fact]
         public static unsafe void VolatileReadWriteUIntPtr()
         {
-            Pointer<UIntPtr> ptr = stackalloc UIntPtr[3];
+            Pointer<nuint> ptr = stackalloc UIntPtr[3];
             ptr.VolatileWrite(new UIntPtr(1));
-            Equal(new UIntPtr(1), ptr.Value);
-            ptr.Value = ptr.Value.AddChecked(new UIntPtr(10));
-            Equal(new UIntPtr(11), ptr.Value);
+            Equal(new UIntPtr(1), (UIntPtr)ptr.Value);
+            ptr.Value = ptr.Value + 10;
+            Equal(new UIntPtr(11), (UIntPtr)ptr.Value);
             Equal(new UIntPtr(11), ptr.VolatileRead());
         }
 
@@ -325,7 +325,7 @@ namespace DotNext.Runtime.InteropServices
             fixed (ushort* p = array)
             {
                 var ptr = new Pointer<ushort>(p);
-                Equal(new IntPtr(p), ptr.Address);
+                Equal(new IntPtr(p), (IntPtr)ptr.Address);
                 ptr.Value = 20;
                 Equal(20, array[0]);
                 Equal(20, ptr.Value);
@@ -347,7 +347,7 @@ namespace DotNext.Runtime.InteropServices
             fixed (ushort* p = array)
             {
                 var ptr = new Pointer<ushort>(p);
-                Equal(new IntPtr(p), ptr.Address);
+                Equal(new IntPtr(p), (IntPtr)ptr.Address);
                 ptr.Set(20);
                 Equal(20, array[0]);
                 Equal(20, ptr.Get(0));
@@ -513,7 +513,7 @@ namespace DotNext.Runtime.InteropServices
             ptr.Value = 42;
             var obj = ptr.GetBoxedPointer();
             IsType<Pointer>(obj);
-            Equal(ptr.Address, new IntPtr(Pointer.Unbox(obj)));
+            Equal((IntPtr)ptr.Address, new IntPtr(Pointer.Unbox(obj)));
         }
     }
 }

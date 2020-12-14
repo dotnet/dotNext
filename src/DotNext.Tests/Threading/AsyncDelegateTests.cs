@@ -8,8 +8,6 @@ using Xunit;
 
 namespace DotNext.Threading
 {
-    using AsyncDelegateFuture = Runtime.CompilerServices.AsyncDelegateFuture;
-
     [ExcludeFromCodeCoverage]
     public sealed class AsyncDelegateTests : Test
     {
@@ -47,7 +45,6 @@ namespace DotNext.Threading
             action += acc.Throw;
             action += acc.IncBy3;
             await ThrowsAsync<AggregateException>(async () => await action.InvokeAsync());
-            await ThrowsAsync<AggregateException>(action.InvokeAsync().AsTask);
         }
 
         [Fact]
@@ -80,18 +77,17 @@ namespace DotNext.Threading
                     method = method.MakeGenericMethod(types);
                 //check success scenario
                 args[0] = Expression.Lambda(actionType, successValue, parameters).Compile();
-                var result = (AsyncDelegateFuture)method.Invoke(null, args);
+                var result = (Task)method.Invoke(null, args);
                 await result;
-                await result.AsTask();
                 //check cancellation
                 args[args.LongLength - 1L] = new CancellationToken(true);
-                result = (AsyncDelegateFuture)method.Invoke(null, args);
-                await ThrowsAsync<TaskCanceledException>(result.AsTask);
+                result = (Task)method.Invoke(null, args);
+                await ThrowsAsync<TaskCanceledException>(Func.Constant(result));
                 //check failure
                 args[args.LongLength - 1L] = new CancellationToken(false);
                 args[0] = Expression.Lambda(actionType, failedValue, parameters).Compile();
-                result = (AsyncDelegateFuture)method.Invoke(null, args);
-                await ThrowsAsync<AggregateException>(result.AsTask);
+                result = (Task)method.Invoke(null, args);
+                await ThrowsAsync<AggregateException>(Func.Constant(result));
             }
         }
     }

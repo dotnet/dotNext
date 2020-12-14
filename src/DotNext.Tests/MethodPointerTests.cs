@@ -63,11 +63,10 @@ namespace DotNext
         }
 
         [Fact]
-        public void StaticMethodAsClosedFunctionPtr()
+        public static unsafe void StaticMethodAsClosedFunctionPtr()
         {
-            var method = GetType().GetMethod(nameof(Dup), BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly);
             var obj = "123";
-            var ptr = new ValueFunc<string>(method.CreateDelegate<Func<string>>(obj));
+            var ptr = new ValueFunc<string>(DelegateHelpers.CreateDelegate<string, string>(&Dup, obj));
             False(ptr.IsEmpty);
             Equal("123123", ptr.Invoke());
             Equal("123123", DynamicInvoke(ptr));
@@ -98,13 +97,13 @@ namespace DotNext
         }
 
         [Fact]
-        public void ParameterlessPointer()
+        public static unsafe void ParameterlessPointer()
         {
-            var ptr = new ValueFunc<object>(GetType().GetMethod(nameof(CreateObject), BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.NonPublic));
+            var ptr = new ValueFunc<object>(&CreateObject);
             False(ptr.IsEmpty);
             NotNull(ptr.Invoke());
             NotNull(DynamicInvoke(ptr));
-            ptr = new ValueFunc<object>(GetType().GetMethod(nameof(CreateObject), BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.NonPublic));
+            ptr = new ValueFunc<object>(&CreateObject);
             var d = ptr.ToDelegate();
             NotNull(d.Invoke());
         }
@@ -153,31 +152,6 @@ namespace DotNext
         }
 
         [Fact]
-        public static void OpenInstanceMethod()
-        {
-            var method = typeof(StringBuilder).GetMethod(nameof(ToString), Type.EmptyTypes);
-            var ptr = new ValueFunc<StringBuilder, string>(method);
-            Null(ptr.Target);
-            False(ptr.IsEmpty);
-            var builder = new StringBuilder("Hello, world!");
-            Equal("Hello, world!", ptr.Invoke(builder));
-            Equal("Hello, world!", DynamicInvoke(ptr, builder));
-        }
-
-        [Fact]
-        public static void InterfaceMethod()
-        {
-            var method = typeof(ICounter).GetMethod(nameof(ICounter.Increment));
-            var ptr = new ValueAction<ICounter>(method);
-            var counter = new Counter() { Value = 42 };
-            ptr.Invoke(counter);
-            Equal(43, counter.Value);
-            Null(DynamicInvoke(ptr, counter));
-            Equal(44, counter.Value);
-        }
-
-
-        [Fact]
         public static void NullPtr()
         {
             Throws<NullReferenceException>(new ValueAction().Invoke);
@@ -196,7 +170,7 @@ namespace DotNext
         [Fact]
         public static void ConverterAsFunc()
         {
-            var ptr = new Converter<int, string>(ToString).AsValueFunc(true);
+            var ptr = new Converter<int, string>(ToString).AsValueFunc();
             Equal("42", ptr.Invoke(42));
             Equal("42", DynamicInvoke(ptr, 42));
         }
@@ -213,14 +187,6 @@ namespace DotNext
             var converter = (Converter<int, bool>)predicate;
             True(converter.Invoke(-1));
             False(converter.Invoke(0));
-        }
-
-        [Fact]
-        public static void AugmentedValueFuncConstruction()
-        {
-            var ptr = ValueFuncFactory.CreateSumFunction();
-            NotSame(ptr.ToDelegate(), ptr.ToDelegate());
-            Equal(42UL, ptr.Invoke(40UL, 2UL));
         }
 
         private static void ComputeSum(ref long x, long y)
@@ -258,7 +224,7 @@ namespace DotNext
         public static void RefActionInstanceCall()
         {
             var method = typeof(StructForTest).GetMethod(nameof(StructForTest.Add), new[] { typeof(long) });
-            var action = new ValueRefAction<StructForTest, long>(method);
+            var action = new ValueRefAction<StructForTest, long>(method.CreateDelegate<RefAction<StructForTest, long>>());
             var i = new StructForTest { Value = 12L };
             action.Invoke(ref i, 30L);
             Equal(42L, i.Value);
@@ -268,7 +234,7 @@ namespace DotNext
         public static void ComparisonDelegate()
         {
             Comparison<int> cmp = (x, y) => x.CompareTo(y);
-            var func = cmp.AsValueFunc(true);
+            var func = cmp.AsValueFunc();
             False(func.IsEmpty);
             True(func.Invoke(1, 2) < 0);
             NotNull(DynamicInvoke(func, 1, 2));
