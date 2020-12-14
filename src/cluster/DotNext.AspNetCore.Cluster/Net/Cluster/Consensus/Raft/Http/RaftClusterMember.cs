@@ -35,7 +35,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             this.context = context;
             status = new AtomicEnum<ClusterMemberStatus>(ClusterMemberStatus.Unknown);
             BaseAddress = remoteMember;
-            Endpoint = remoteMember.ToEndPoint() ?? throw new UriFormatException(ExceptionMessages.UnresolvedHostName(remoteMember.Host));
+            EndPoint = remoteMember.ToEndPoint() ?? throw new UriFormatException(ExceptionMessages.UnresolvedHostName(remoteMember.Host));
             DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(UserAgent, (GetType().Assembly.GetName().Version ?? new Version()).ToString()));
         }
 
@@ -53,7 +53,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private async Task<TResult> SendAsync<TResult, TMessage>(TMessage message, CancellationToken token)
             where TMessage : HttpMessage, IHttpMessageReader<TResult>
         {
-            context.Logger.SendingRequestToMember(Endpoint, message.MessageType);
+            context.Logger.SendingRequestToMember(EndPoint, message.MessageType);
             var request = new HttpRequestMessage { RequestUri = resourcePath };
             switch (ProtocolVersion)
             {
@@ -98,7 +98,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             {
                 if (response is null)
                 {
-                    context.Logger.MemberUnavailable(Endpoint, e);
+                    context.Logger.MemberUnavailable(EndPoint, e);
                     ChangeStatus(ClusterMemberStatus.Unavailable);
                     throw new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, e);
                 }
@@ -107,7 +107,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
             catch (OperationCanceledException e) when (!token.IsCancellationRequested)
             {
-                context.Logger.MemberUnavailable(Endpoint, e);
+                context.Logger.MemberUnavailable(EndPoint, e);
                 ChangeStatus(ClusterMemberStatus.Unavailable);
                 throw new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, e);
             }
@@ -126,7 +126,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         }
 
         Task<Result<bool>> IRaftClusterMember.VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
-            => Endpoint.Equals(context.LocalEndpoint)
+            => EndPoint.Equals(context.LocalEndpoint)
                 ? Task.FromResult(new Result<bool>(term, true))
                 : SendAsync<Result<bool>, RequestVoteMessage>(new RequestVoteMessage(context.LocalEndpoint, term, lastLogIndex, lastLogTerm), token);
 
@@ -141,35 +141,37 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             long commitIndex,
             CancellationToken token)
         {
-            if (Endpoint.Equals(context.LocalEndpoint))
+            if (EndPoint.Equals(context.LocalEndpoint))
                 return Task.FromResult(new Result<bool>(term, true));
             return SendAsync<Result<bool>, AppendEntriesMessage<TEntry, TList>>(new AppendEntriesMessage<TEntry, TList>(context.LocalEndpoint, term, prevLogIndex, prevLogTerm, commitIndex, entries), token);
         }
 
         Task<Result<bool>> IRaftClusterMember.InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
         {
-            if (Endpoint.Equals(context.LocalEndpoint))
+            if (EndPoint.Equals(context.LocalEndpoint))
                 return Task.FromResult(new Result<bool>(term, true));
             return SendAsync<Result<bool>, InstallSnapshotMessage>(new InstallSnapshotMessage(context.LocalEndpoint, term, snapshotIndex, snapshot), token);
         }
 
         async ValueTask<IReadOnlyDictionary<string, string>> IClusterMember.GetMetadataAsync(bool refresh, CancellationToken token)
         {
-            if (Endpoint.Equals(context.LocalEndpoint))
+            if (EndPoint.Equals(context.LocalEndpoint))
                 return context.Metadata;
             if (metadata is null || refresh)
                 metadata = await SendAsync<MemberMetadata, MetadataMessage>(new MetadataMessage(context.LocalEndpoint), token).ConfigureAwait(false);
             return metadata;
         }
 
-        public IPEndPoint Endpoint { get; }
+        public IPEndPoint EndPoint { get; }
+
+        EndPoint IClusterMember.EndPoint => EndPoint;
 
         bool IClusterMember.IsLeader => context.IsLeader(this);
 
-        public bool IsRemote => !Endpoint.Equals(context.LocalEndpoint);
+        public bool IsRemote => !EndPoint.Equals(context.LocalEndpoint);
 
         ClusterMemberStatus IClusterMember.Status
-            => Endpoint.Equals(context.LocalEndpoint) ? ClusterMemberStatus.Available : status.Value;
+            => EndPoint.Equals(context.LocalEndpoint) ? ClusterMemberStatus.Available : status.Value;
 
         internal Task<TResponse> SendMessageAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, bool respectLeadership, CancellationToken token)
             => SendAsync<TResponse, CustomMessage<TResponse>>(new CustomMessage<TResponse>(context.LocalEndpoint, message, responseReader) { RespectLeadership = respectLeadership }, token);
@@ -178,7 +180,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             => SendMessageAsync(message, responseReader, false, token);
 
         internal Task SendSignalAsync(CustomMessage message, CancellationToken token) =>
-            SendAsync<IMessage, CustomMessage>(message, token);
+            SendAsync<IMessage?, CustomMessage>(message, token);
 
         Task ISubscriber.SendSignalAsync(IMessage message, bool requiresConfirmation, CancellationToken token)
         {
@@ -188,6 +190,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         ref long IRaftClusterMember.NextIndex => ref nextIndex;
 
-        public override string ToString() => BaseAddress.ToString();
+        public override string? ToString() => BaseAddress?.ToString();
     }
 }

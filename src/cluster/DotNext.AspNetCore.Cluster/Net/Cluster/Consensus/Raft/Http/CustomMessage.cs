@@ -15,9 +15,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using IO;
     using Messaging;
-    using NullMessage = Threading.Tasks.CompletedTask<Messaging.IMessage, Generic.DefaultConst<Messaging.IMessage>>;
+    using NullMessage = Threading.Tasks.CompletedTask<Messaging.IMessage?, Generic.DefaultConst<Messaging.IMessage>>;
 
-    internal class CustomMessage : HttpMessage, IHttpMessageWriter<IMessage>, IHttpMessageReader<IMessage>
+    internal class CustomMessage : HttpMessage, IHttpMessageWriter<IMessage>, IHttpMessageReader<IMessage?>
     {
         // request - represents custom message name
         private const string MessageNameHeader = "X-Raft-Message-Name";
@@ -135,14 +135,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             => SaveResponse(response, message, token);
 
         // do not parse response because this is one-way message
-        Task<IMessage> IHttpMessageReader<IMessage>.ParseResponse(HttpResponseMessage response, CancellationToken token) => NullMessage.Task;
+        Task<IMessage?> IHttpMessageReader<IMessage?>.ParseResponse(HttpResponseMessage response, CancellationToken token) => NullMessage.Task;
 
         private protected static async Task<T> ParseResponse<T>(HttpResponseMessage response, MessageReader<T> reader, CancellationToken token)
         {
-            var contentType = new ContentType(response.Content.Headers.ContentType.ToString());
+            var contentType = response.Content.Headers.ContentType?.ToString();
             var name = ParseHeader<IEnumerable<string>>(MessageNameHeader, response.Headers.TryGetValues);
             using var content = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
-            return await reader(new InboundMessageContent(content, name, contentType, response.Content.Headers.ContentLength), token).ConfigureAwait(false);
+            return await reader(new InboundMessageContent(content, name, string.IsNullOrEmpty(contentType) ? new ContentType() : new ContentType(contentType), response.Content.Headers.ContentLength), token).ConfigureAwait(false);
         }
     }
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -90,6 +90,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 // remove members
                 foreach (var holder in members)
                 {
+                    Debug.Assert(holder.Member.BaseAddress is not null);
                     if (configuration.Members.Contains(holder.Member.BaseAddress))
                     {
                         existingMembers.Add(holder.Member.BaseAddress);
@@ -139,7 +140,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             // detect local member
             var localMember = FindMember(LocalMemberFinder) ?? throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
-            this.localMember = localMember.Endpoint;
+            this.localMember = localMember.EndPoint;
             configurator?.Initialize(this, metadata);
             return base.StartAsync(token);
         }

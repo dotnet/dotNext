@@ -50,7 +50,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                     }
                     else if (leader.IsRemote)
                     {
-                        return redirection(context.Response, new UriBuilder(context.Request.GetEncodedUrl()) { Host = leader.Endpoint.Address.ToString(), Port = applicationPortHint ?? context.Connection.LocalPort }.Uri);
+                        return redirection(context.Response, new UriBuilder(context.Request.GetEncodedUrl()) { Host = leader.EndPoint.Address.ToString(), Port = applicationPortHint ?? context.Connection.LocalPort }.Uri);
                     }
                 }
 

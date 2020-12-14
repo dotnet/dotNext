@@ -34,7 +34,7 @@ namespace DotNext.ComponentModel
             switch (value)
             {
                 case PathString path:
-                    return path.Value;
+                    return path.Value!;
                 default:
                     throw new NotSupportedException();
             }

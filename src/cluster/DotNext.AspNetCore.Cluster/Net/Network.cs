@@ -11,7 +11,8 @@ namespace DotNext.Net
 
     internal static class Network
     {
-        internal static bool IsIn(this IPAddress address, IPNetwork network) => network.Contains(address);
+        internal static bool IsIn(this IPAddress? address, IPNetwork network)
+            => address is not null && network.Contains(address);
 
         internal static IPEndPoint? ToEndPoint(this Uri memberUri)
         {
