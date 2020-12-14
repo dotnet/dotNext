@@ -23,6 +23,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
                 case HttpVersion.Http2:
                     options.Protocols = HttpProtocols.Http2;
                     break;
+                case HttpVersion.Http3:
+#if NETCOREAPP3_1
+                    options.Protocols = (HttpProtocols)4;
+#else
+                    options.Protocols = HttpProtocols.Http3;
+#endif
+                    break;
             }
         }
 
