@@ -124,7 +124,7 @@ namespace DotNext.Reflection
         /// <returns>The result of member invocation.</returns>
         public static object? Invoke(this DynamicInvoker invoker, object? target, object? arg1, object? arg2, object? arg3, object? arg4, object? arg5, object? arg6)
         {
-            var args = (arg1, arg2, arg3, arg4, arg5);
+            var args = (arg1, arg2, arg3, arg4, arg5, arg6);
             return invoker(target, Span.AsSpan(ref args));
         }
     }
