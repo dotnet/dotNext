@@ -96,7 +96,7 @@ namespace DotNext
         /// Checks whether the growable string is <see langword="null"/> or empty.
         /// </summary>
         /// <param name="builder">The builder to check.</param>
-        /// <returns><<see langword="true"/>, if builder is <see langword="null"/> or empty.</returns>
+        /// <returns><see langword="true"/>, if builder is <see langword="null"/> or empty.</returns>
         public static bool IsNullOrEmpty([NotNullWhen(false)] this StringBuilder? builder)
             => builder is null || builder.Length == 0;
     }
