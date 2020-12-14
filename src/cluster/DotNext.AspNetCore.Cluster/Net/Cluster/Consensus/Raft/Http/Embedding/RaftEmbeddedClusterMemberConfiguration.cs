@@ -6,12 +6,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
 
     internal sealed class RaftEmbeddedClusterMemberConfiguration : RaftClusterMemberConfiguration
     {
+        internal const string DefaultResourcePath = "/cluster-consensus/raft";
+
         static RaftEmbeddedClusterMemberConfiguration() => PathStringConverter.Register();
 
         /// <summary>
         /// Gets or sets HTTP resource path used to capture
         /// consensus protocol messages.
         /// </summary>
-        public PathString ResourcePath { get; set; } = new PathString("/cluster-consensus/raft");
+        public PathString ResourcePath { get; set; } = new PathString(DefaultResourcePath);
     }
 }
