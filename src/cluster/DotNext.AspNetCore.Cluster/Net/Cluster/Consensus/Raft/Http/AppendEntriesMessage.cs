@@ -1,5 +1,7 @@
 using System;
+using System.Buffers;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
@@ -40,9 +42,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             internal ReceivedLogEntry(MultipartSection section)
                 : base(section.Body, true)
             {
-                HeadersReader<StringValues> headers = section.Headers.TryGetValue;
+                HeadersReader<StringValues> headers = GetHeaders(section).TryGetValue;
                 Term = ParseHeader(RequestVoteMessage.RecordTermHeader, headers, Int64Parser);
                 Timestamp = ParseHeader(HeaderNames.LastModified, headers, DateTimeParser);
+
+                static IReadOnlyDictionary<string, StringValues> GetHeaders(MultipartSection section)
+                {
+                    IReadOnlyDictionary<string, StringValues>? headers = section.Headers;
+                    return headers ?? ImmutableDictionary<string, StringValues>.Empty;
+                }
             }
 
             public long Term { get; }
@@ -197,11 +205,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 return output.WriteStringAsync(builder.WrittenMemory, context, buffer);
             }
 
-            protected override async Task SerializeToStreamAsync(Stream stream, TransportContext context)
+            protected override async Task SerializeToStreamAsync(Stream stream, TransportContext? context)
             {
                 const int maxChars = 128;   // it is empiric value measured using Console.WriteLine(builder.Length)
                 EncodingContext encodingContext = DefaultHttpEncoding;
-                using (var encodingBuffer = new ArrayRental<byte>(DefaultHttpEncoding.GetMaxByteCount(maxChars)))
+                using (var encodingBuffer = new MemoryOwner<byte>(ArrayPool<byte>.Shared, DefaultHttpEncoding.GetMaxByteCount(maxChars)))
                 using (var builder = new PooledArrayBufferWriter<char>(maxChars))
                 {
                     builder.Write(DoubleDash);
