@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	  <TargetFramework>net5.0</TargetFramework>
+	  <TargetFrameworks>net5.0;netcoreapp3.1</TargetFrameworks>
     <RootNamespace>DotNext</RootNamespace>
     <EnableNETAnalyzers>false</EnableNETAnalyzers>
     <Version>3.0.0</Version>
