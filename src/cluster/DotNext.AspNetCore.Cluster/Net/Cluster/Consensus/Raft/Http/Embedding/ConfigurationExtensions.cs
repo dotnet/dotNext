@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -36,7 +37,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
         /// to application services and establishes network communication with other cluster members.
         /// </summary>
         /// <remarks>
-        /// Should be called exactly after <see cref="GenericHostWebHostBuilderExtensions.ConfigureWebHost"/>
+        /// Should be called exactly after <see cref="GenericHostWebHostBuilderExtensions.ConfigureWebHost(IHostBuilder, Action{IWebHostBuilder})"/>
         /// or <see cref="GenericHostBuilderExtensions.ConfigureWebHostDefaults"/>.
         /// </remarks>
         /// <param name="builder">The host builder.</param>
@@ -52,7 +53,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
         /// to application services and establishes network communication with other cluster members.
         /// </summary>
         /// <remarks>
-        /// Should be called exactly after <see cref="GenericHostWebHostBuilderExtensions.ConfigureWebHost"/>
+        /// Should be called exactly after <see cref="GenericHostWebHostBuilderExtensions.ConfigureWebHost(IHostBuilder, Action{IWebHostBuilder})"/>
         /// or <see cref="GenericHostBuilderExtensions.ConfigureWebHostDefaults"/>.
         /// </remarks>
         /// <param name="builder">The host builder.</param>
@@ -69,7 +70,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
         /// to application services and establishes network communication with other cluster members.
         /// </summary>
         /// <remarks>
-        /// Should be called exactly after <see cref="GenericHostWebHostBuilderExtensions.ConfigureWebHost"/>
+        /// Should be called exactly after <see cref="GenericHostWebHostBuilderExtensions.ConfigureWebHost(IHostBuilder, Action{IWebHostBuilder})"/>
         /// or <see cref="GenericHostBuilderExtensions.ConfigureWebHostDefaults"/>.
         /// </remarks>
         /// <param name="builder">The host builder.</param>
