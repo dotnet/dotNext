@@ -1,4 +1,5 @@
-﻿using DotNext.Net.Cluster.Consensus.Raft;
+﻿using DotNext.IO;
+using DotNext.Net.Cluster.Consensus.Raft;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Threading;
@@ -12,12 +13,18 @@ namespace RaftNode
     {
         internal const string LogLocation = "logLocation";
 
+        private readonly struct Int64Decoder : IDataTransferObject.IDecoder<long>
+        {
+            ValueTask<long> IDataTransferObject.IDecoder<long>.ReadAsync<TReader>(TReader reader, CancellationToken token)
+                => reader.ReadAsync<long>(token);
+        }
+
         private sealed class SimpleSnapshotBuilder : SnapshotBuilder
         {
             private long value;
 
             protected override async ValueTask ApplyAsync(LogEntry entry)
-                => value = await entry.ReadAsync<long>().ConfigureAwait(false);
+                => value = await entry.GetObjectDataAsync<long, Int64Decoder>(new Int64Decoder(), default).ConfigureAwait(false);
 
             public override ValueTask WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
                 => writer.WriteAsync(value, token);
@@ -39,7 +46,7 @@ namespace RaftNode
 
         private async ValueTask UpdateValue(LogEntry entry)
         {
-            var value = await entry.ReadAsync<long>().ConfigureAwait(false);
+            var value = await entry.GetObjectDataAsync<long, Int64Decoder>(new Int64Decoder(), default).ConfigureAwait(false);
             content.VolatileWrite(value);
             Console.WriteLine($"Accepting value {value}");
         }

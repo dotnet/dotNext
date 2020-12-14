@@ -10,7 +10,7 @@ namespace RaftNode
         {
         }
 
-        internal void Handler(object sender, ConsoleCancelEventArgs e)
+        internal void Handler(object? sender, ConsoleCancelEventArgs e)
         {
             e.Cancel = true;
             Set();

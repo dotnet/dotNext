@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Net.Security;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
@@ -111,7 +110,7 @@ namespace RaftNode
                 var options = new SslOptions();
                 options.ServerOptions.ServerCertificate = LoadCertificate();
                 options.ClientOptions.TargetHost = "localhost";
-                options.ClientOptions.RemoteCertificateValidationCallback = AllowAnyCert;
+                options.ClientOptions.RemoteCertificateValidationCallback = RaftClientHandlerFactory.AllowCertificate;
                 return options;
             }
         }
@@ -161,8 +160,5 @@ namespace RaftNode
             ms.Seek(0, SeekOrigin.Begin);
             return new X509Certificate2(ms.ToArray(), "1234");
         }
-
-        private static bool AllowAnyCert(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
-            => true;
     }
 }
