@@ -69,6 +69,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 refreshEvent.Dispose();
                 trackerCancellation.Dispose();
                 tracker = null;
+                Metrics = null;
             }
 
             base.Dispose(disposing);

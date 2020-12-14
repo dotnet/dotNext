@@ -80,5 +80,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Gets metadata associated with local cluster member.
         /// </summary>
         public IDictionary<string, string> Metadata { get; }
+
+        /// <summary>
+        /// Gets or sets a value indicating that the cluster member
+        /// represents standby node which is never become a leader.
+        /// </summary>
+        public bool IsStandby { get; set; }
     }
 }

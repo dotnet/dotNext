@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -165,6 +166,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         protected delegate void MemberCollectionMutator(MemberCollectionBuilder members);
 
         private readonly bool allowPartitioning;
+        private readonly bool standbyNode;
         private readonly ElectionTimeout electionTimeoutProvider;
         private readonly CancellationTokenSource transitionCancellation;
         private readonly double heartbeatThreshold;
@@ -194,6 +196,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             transitionCancellation = new CancellationTokenSource();
             auditTrail = new ConsensusOnlyState();
             heartbeatThreshold = config.HeartbeatThreshold;
+            standbyNode = config.IsStandby;
         }
 
         private static bool IsLocalMember(TMember member) => !member.IsRemote;
@@ -324,8 +327,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             await auditTrail.InitializeAsync(token).ConfigureAwait(false);
 
-            // start node in Follower state
-            state = new FollowerState(this) { Metrics = Metrics }.StartServing(TimeSpan.FromMilliseconds(electionTimeout), Token);
+            // start active node in Follower state;
+            // otherwise use ephemeral state
+            state = standbyNode ?
+                new StandbyState(this) :
+                new FollowerState(this) { Metrics = Metrics }.StartServing(TimeSpan.FromMilliseconds(electionTimeout), Token);
         }
 
         private async Task CancelPendingRequestsAsync()
@@ -538,6 +544,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     follower.Refresh();
                 }
+                else if (state is StandbyState)
+                {
+                    Metrics?.ReportHeartbeat();
+                }
                 else
                 {
                     goto reject;
@@ -566,6 +576,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns><see langword="true"/>, if leadership is revoked successfully; otherwise, <see langword="false"/>.</returns>
         protected async Task<bool> ReceiveResignAsync(CancellationToken token)
         {
+            if (standbyNode)
+                goto resign_denied;
+
             var lockHolder = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
             var tokenSource = token.LinkTo(Token);
             try
@@ -578,14 +591,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     Leader = null;
                     return true;
                 }
-
-                return false;
             }
             finally
             {
                 tokenSource?.Dispose();
                 lockHolder.Dispose();
             }
+
+            resign_denied:
+            return false;
         }
 
         /// <inheritdoc/>
@@ -605,6 +619,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's a member of internal interface")]
         async void IRaftStateMachine.MoveToFollowerState(bool randomizeTimeout, long? newTerm)
         {
+            Debug.Assert(state is not StandbyState);
             using var lockHolder = await transitionSync.TryAcquireAsync(Token).ConfigureAwait(false);
             if (lockHolder)
             {
@@ -617,6 +632,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's a member of internal interface")]
         async void IRaftStateMachine.MoveToCandidateState()
         {
+            Debug.Assert(state is not StandbyState);
             Logger.TransitionToCandidateStateStarted();
             using var lockHolder = await transitionSync.TryAcquireAsync(Token).ConfigureAwait(false);
             if (lockHolder && state is FollowerState followerState)
@@ -634,6 +650,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's a member of internal interface")]
         async void IRaftStateMachine.MoveToLeaderState(IRaftClusterMember newLeader)
         {
+            Debug.Assert(state is not StandbyState);
             Logger.TransitionToLeaderStateStarted();
             using var lockHolder = await transitionSync.TryAcquireAsync(Token).ConfigureAwait(false);
             long currentTerm;

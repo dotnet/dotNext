@@ -281,6 +281,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 // cancel queue
                 foreach (var waiter in Interlocked.Exchange(ref replicationQueue, ImmutableQueue<WaitNode>.Empty))
                     waiter.SetCanceled();
+
+                Metrics = null;
             }
 
             base.Dispose(disposing);

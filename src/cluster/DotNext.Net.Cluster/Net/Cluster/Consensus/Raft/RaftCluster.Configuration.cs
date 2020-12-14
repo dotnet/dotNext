@@ -193,6 +193,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <value>The collection of cluster members.</value>
             public ICollection<IPEndPoint> Members { get; }
 
+            /// <summary>
+            /// Gets or sets a value indicating that the cluster member
+            /// represents standby node which is never become a leader.
+            /// </summary>
+            public bool IsStandby { get; set; }
+
             private protected Func<int, ExchangePool> ExchangePoolFactory(ILocalMember localMember)
             {
                 ExchangePool CreateExchangePool(int count)
