@@ -44,24 +44,6 @@ namespace DotNext
         }
 
         [Fact]
-        [Obsolete("This test is for checking obsolete member")]
-        public static void StringRawData()
-        {
-            var str = "Hello, world!";
-            ref readonly var ch = ref StringExtensions.GetRawData(str);
-            Equal('H', ch);
-            Throws<NullReferenceException>(() => StringExtensions.GetRawData(default(string)));
-        }
-
-        [Fact]
-        [Obsolete("This test is for checking obsolete member")]
-        public static void Equality()
-        {
-            True("Abc".IsEqualIgnoreCase("abc"));
-            False("abc".IsEqualIgnoreCase("CBA"));
-        }
-
-        [Fact]
         public static void Substring()
         {
             Equal("abcd"[1..2], "abcd".Substring(1..2));
