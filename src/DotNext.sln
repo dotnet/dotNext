@@ -25,17 +25,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNext.AspNetCore.Cluster"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RaftNode", "examples\RaftNode\RaftNode.csproj", "{EF588447-3DB4-4719-A9FB-210C21035C65}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNext.Augmentation", "aug\DotNext.Augmentation\DotNext.Augmentation.csproj", "{EA43BB33-55A2-4C3E-821D-2D5FCB7AFA05}"
-	ProjectSection(ProjectDependencies) = postProject
-		{3A488042-F09F-4D43-88A8-259B06D7377F} = {3A488042-F09F-4D43-88A8-259B06D7377F}
-	EndProjectSection
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNext.Augmentation.Fody", "aug\DotNext.Augmentation.Fody\DotNext.Augmentation.Fody.csproj", "{3A488042-F09F-4D43-88A8-259B06D7377F}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNext.Augmentation.Test", "aug\DotNext.Augmentation.Test\DotNext.Augmentation.Test.csproj", "{E1DA704A-3BE6-4328-893B-5ACF536AEE36}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Augmentation", "Augmentation", "{7C5A44E2-5EFF-49ED-BBA2-097167FA074C}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Misc", "Misc", "{4956E982-79AA-462C-B592-E904D24EFFAE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Cluster", "Cluster", "{511B9F61-9A94-44CB-B506-74E49E3A0B41}"
