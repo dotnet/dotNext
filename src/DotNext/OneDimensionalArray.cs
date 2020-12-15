@@ -223,7 +223,7 @@ namespace DotNext
                 return Array.Empty<T>();
 
             var result = new T[length - count];
-            Array.Copy(input, count, result, 0, length);
+            Array.Copy(input, count, result, 0, result.LongLength);
             return result;
         }
 
