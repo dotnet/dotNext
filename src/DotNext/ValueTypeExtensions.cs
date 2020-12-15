@@ -270,7 +270,7 @@ namespace DotNext
         [Obsolete("Use nint and nuint data types in C#")]
 #endif
         public static bool LessThanOrEqual(this UIntPtr value, UIntPtr comparand)
-            => (nuint)value < comparand;
+            => (nuint)value <= comparand;
 
         /// <summary>
         /// Negates native integer value.
