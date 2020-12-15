@@ -170,7 +170,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             await host1.StartAsync();
             await host2.StartAsync();
 
-            var client = host1.Services.GetService<IMessageBus>().Members.FirstOrDefault(member => member.Endpoint.Port == 3263);
+            var client = host1.Services.GetService<IMessageBus>().Members.FirstOrDefault(member => member.EndPoint.Port == 3263);
             var messageBox = host2.Services.GetService<IInputChannel>() as Mailbox;
             NotNull(messageBox);
             //request-reply test
@@ -208,7 +208,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
         public static async Task Leadership(int delay)
         {
             static void CheckLeadership(IClusterMember member1, IClusterMember member2)
-                => Equal(member1.Endpoint, member2.Endpoint);
+                => Equal(member1.EndPoint, member2.EndPoint);
 
             var config1 = new Dictionary<string, string>
             {
@@ -256,7 +256,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                 leader3 = host3.Services.GetRequiredService<ICluster>().Leader;
                 if (leader1 is null || leader2 is null || leader3 is null)
                     continue;
-                if (leader1.Endpoint.Equals(leader2.Endpoint) && leader1.Endpoint.Equals(leader2.Endpoint))
+                if (leader1.EndPoint.Equals(leader2.EndPoint) && leader1.EndPoint.Equals(leader2.EndPoint))
                     break;
             }
 
