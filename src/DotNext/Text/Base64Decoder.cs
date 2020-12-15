@@ -2,6 +2,7 @@ using System;
 using System.Buffers;
 using System.Buffers.Text;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -124,5 +125,14 @@ namespace DotNext.Text
             else
                 DecodeCore(utf8Chars, in output, arg, reservedBuffer, ref reservedBufferSize);
         }
+
+        /// <summary>
+        /// Decodes UTF-8 encoded base64 string and writes result to the stream synchronously.
+        /// </summary>
+        /// <param name="utf8Chars">UTF-8 encoded portion of base64 string.</param>
+        /// <param name="output">The stream used as destination for decoded bytes.</param>
+        /// <exception cref="FormatException">The input base64 string is malformed.</exception>
+        public unsafe void Decode(ReadOnlySpan<byte> utf8Chars, Stream output)
+            => Decode(utf8Chars, new ValueReadOnlySpanAction<byte, Stream>(&Span.CopyTo), output);
     }
 }
