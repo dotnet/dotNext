@@ -228,6 +228,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             var config3 = new Dictionary<string, string>
             {
                 {"partitioning", "false"},
+                {"standby", "true"},
                 {"members:0", "http://localhost:3262"},
                 {"members:1", "http://localhost:3263"},
                 {"members:2", "http://localhost:3264"}
