@@ -12,9 +12,9 @@ namespace DotNext.IO
             private readonly Stream source;
             private ReadSession session;
 
-            internal ReaderStream(FileBufferingWriter writer)
+            internal ReaderStream(FileBufferingWriter writer, bool useAsyncIO)
             {
-                writer.GetWrittenContentAsStream(out source);
+                writer.GetWrittenContentAsStream(out source, useAsyncIO);
                 session = writer.EnterReadMode(this);
             }
 
@@ -107,7 +107,7 @@ namespace DotNext.IO
             }
         }
 
-        private void GetWrittenContentAsStream(out Stream stream)
+        private void GetWrittenContentAsStream(out Stream stream, bool useAsyncIO)
         {
             if (fileBackend is null)
             {
@@ -117,7 +117,7 @@ namespace DotNext.IO
             {
                 const FileOptions withAsyncIO = FileOptions.Asynchronous | FileOptions.SequentialScan;
                 const FileOptions withoutAsyncIO = FileOptions.SequentialScan;
-                stream = new FileStream(fileBackend.Name, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, FileBufferSize, fileBackend.IsAsync ? withAsyncIO : withoutAsyncIO);
+                stream = new FileStream(fileBackend.Name, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, FileBufferSize, useAsyncIO ? withAsyncIO : withoutAsyncIO);
             }
         }
 
@@ -137,7 +137,7 @@ namespace DotNext.IO
                 fileBackend.Flush(true);
             }
 
-            return new ReaderStream(this);
+            return new ReaderStream(this, false);
         }
 
         /// <summary>
@@ -158,7 +158,7 @@ namespace DotNext.IO
                 await fileBackend.FlushAsync(token).ConfigureAwait(false);
             }
 
-            return new ReaderStream(this);
+            return new ReaderStream(this, true);
         }
     }
 }
