@@ -8,6 +8,7 @@ namespace DotNext.Threading.Tasks
 {
     using Dynamic;
     using RuntimeFeaturesAttribute = Runtime.CompilerServices.RuntimeFeaturesAttribute;
+    using static Reflection.TaskType;
 
     /// <summary>
     /// Represents dynamically-typed task.
@@ -53,8 +54,12 @@ namespace DotNext.Threading.Tasks
             void ICriticalNotifyCompletion.UnsafeOnCompleted(Action continuation)
                 => awaiter.OnCompleted(continuation);
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static bool IsTaskWithResult(Type type)
+                => type != CompletedTaskType && type.IsConstructedGenericType;
+
             internal object? GetRawResult()
-                => task.GetType().IsConstructedGenericType ?
+                => IsTaskWithResult(task.GetType()) ?
                     GetResultCallSite.Target.Invoke(GetResultCallSite, task) :
                     Missing.Value;
 
@@ -64,7 +69,7 @@ namespace DotNext.Threading.Tasks
             /// <returns>The result of the completed task; or <see cref="System.Reflection.Missing.Value"/> if underlying task is not of type <see cref="Task{TResult}"/>.</returns>
             public dynamic? GetResult()
             {
-                if (task.GetType().IsConstructedGenericType)
+                if (IsTaskWithResult(task.GetType()))
                     return GetResultCallSite.Target.Invoke(GetResultCallSite, task);
 
                 awaiter.GetResult();

@@ -12,8 +12,8 @@ namespace DotNext.Dynamic
     [RuntimeFeatures(DynamicCodeCompilation = true, RuntimeGenericInstantiation = true)]
     internal sealed class TaskResultBinder : CallSiteBinder
     {
-        private const string PropertyName = nameof(Task<Missing>.Result);
-        private const BindingFlags PropertyFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy;
+        private const string ResultPropertyName = nameof(Task<Missing>.Result);
+        private const BindingFlags ResultPropertyFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy;
 
         private static Expression BindProperty(PropertyInfo resultProperty, Expression target, out Expression restrictions)
         {
@@ -28,7 +28,7 @@ namespace DotNext.Dynamic
 
         private static Expression Bind(object targetValue, Expression target, LabelTarget returnLabel)
         {
-            PropertyInfo? property = targetValue.GetType().GetProperty(PropertyName, PropertyFlags);
+            PropertyInfo? property = targetValue.GetType().GetProperty(ResultPropertyName, ResultPropertyFlags);
             Debug.Assert(property is not null);
             target = BindProperty(property, target, out var restrictions);
 
