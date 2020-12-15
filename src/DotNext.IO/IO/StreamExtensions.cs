@@ -1553,8 +1553,8 @@ namespace DotNext.IO
             if (length == 0)
                 throw new EndOfStreamException();
             using var result = DefaultCharAllocator.Invoke(length, true);
-            await ReadStringAsync(stream, result.Memory, context, buffer, token).ConfigureAwait(false);
-            return decoder.Decode(result.Memory.Span);
+            length = await ReadStringAsync(stream, result.Memory, context, buffer, token).ConfigureAwait(false);
+            return decoder.Decode(result.Memory.Slice(0, length).Span);
         }
 
         private static async ValueTask<TResult> ReadAsync<TResult, TDecoder>(Stream stream, TDecoder decoder, StringLengthEncoding lengthFormat, DecodingContext context, CancellationToken token)
@@ -1570,12 +1570,12 @@ namespace DotNext.IO
             using var result = DefaultCharAllocator.Invoke(length, true);
             using (buffer = DefaultByteAllocator.Invoke(length, false))
             {
-                await ReadStringAsync(stream, result.Memory, context, buffer.Memory, token).ConfigureAwait(false);
-                return decoder.Decode(result.Memory.Span);
+                length = await ReadStringAsync(stream, result.Memory, context, buffer.Memory, token).ConfigureAwait(false);
+                return decoder.Decode(result.Memory.Slice(0, length).Span);
             }
         }
 
-        private static async ValueTask ReadStringAsync(this Stream stream, Memory<char> result, DecodingContext context, Memory<byte> buffer, CancellationToken token = default)
+        private static async ValueTask<int> ReadStringAsync(this Stream stream, Memory<char> result, DecodingContext context, Memory<byte> buffer, CancellationToken token = default)
         {
             var maxChars = context.Encoding.GetMaxCharCount(buffer.Length);
             if (maxChars == 0)
@@ -1589,6 +1589,8 @@ namespace DotNext.IO
                     throw new EndOfStreamException();
                 length -= n;
             }
+
+            return resultOffset;
         }
 
         /// <summary>
@@ -1612,8 +1614,8 @@ namespace DotNext.IO
             if (length == 0)
                 return string.Empty;
             using var result = DefaultCharAllocator.Invoke(length, true);
-            await ReadStringAsync(stream, result.Memory, context, buffer, token).ConfigureAwait(false);
-            return new string(result.Memory.Span);
+            length = await ReadStringAsync(stream, result.Memory, context, buffer, token).ConfigureAwait(false);
+            return new string(result.Memory.Slice(0, length).Span);
         }
 
         /// <summary>
