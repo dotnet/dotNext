@@ -35,7 +35,7 @@ namespace DotNext.Runtime.CompilerServices
             if (expectedType == typeof(void*))
                 return Expression.Call(typeof(Pointer), nameof(Pointer.Unbox), Type.EmptyTypes, expression);
 
-            var pointerType = expression.Type.GetElementType();
+            var pointerType = expectedType.GetElementType();
             Debug.Assert(pointerType is not null);
             return Expression.Call(typeof(ReflectionUtils), nameof(Unwrap), new[] { pointerType }, expression);
         }
