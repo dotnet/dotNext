@@ -381,7 +381,11 @@ namespace DotNext.IO
         }
 #endif
 
-        public override string ToString()
-            => writer is IGrowableBuffer<char> buffer ? buffer.BuildString() : writer.ToString() ?? string.Empty;
+        public override string ToString() => writer switch
+        {
+            IGrowableBuffer<char> buffer => buffer.BuildString(),
+            ArrayBufferWriter<char> buffer => buffer.BuildString(),
+            _ => writer.ToString() ?? string.Empty,
+        };
     }
 }

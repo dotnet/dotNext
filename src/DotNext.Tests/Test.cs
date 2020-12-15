@@ -12,7 +12,6 @@ namespace DotNext
     using static Buffers.BufferHelpers;
 
     [ExcludeFromCodeCoverage]
-    [LogBeforeAfterTest]
     public abstract class Test : Assert
     {
         private protected static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(20);

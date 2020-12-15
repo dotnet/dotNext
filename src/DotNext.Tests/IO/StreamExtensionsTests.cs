@@ -452,7 +452,6 @@ namespace DotNext.IO
 
         [Theory]
         [InlineData("UTF-8")]
-        [InlineData("UTF-7")]
         [InlineData("UTF-16")]
         public static async Task EncodeAsStringAsync(string encodingName)
         {
