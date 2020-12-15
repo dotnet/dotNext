@@ -32,6 +32,6 @@
         /// Gets a value indicating that the cluster member
         /// represents standby node which will never become a leader.
         /// </summary>
-        bool IsStandby { get; }
+        bool Standby { get; }
     }
 }

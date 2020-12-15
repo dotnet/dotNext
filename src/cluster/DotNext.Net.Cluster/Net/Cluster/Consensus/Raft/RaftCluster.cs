@@ -196,7 +196,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             transitionCancellation = new CancellationTokenSource();
             auditTrail = new ConsensusOnlyState();
             heartbeatThreshold = config.HeartbeatThreshold;
-            standbyNode = config.IsStandby;
+            standbyNode = config.Standby;
         }
 
         private static bool IsLocalMember(TMember member) => !member.IsRemote;
