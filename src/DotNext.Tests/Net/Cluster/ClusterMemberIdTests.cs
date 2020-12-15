@@ -1,5 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Net;
+using System.Net.Sockets;
 using Xunit;
 
 namespace DotNext.Net.Cluster
@@ -48,6 +50,33 @@ namespace DotNext.Net.Cluster
             Equal(expected, actual);
             var invalidHex = "AB142244";
             False(ClusterMemberId.TryParse(invalidHex.AsSpan(), out _));
+        }
+
+        [Fact]
+        public static void FromIP()
+        {
+            var endpoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 3262);
+            var id = ClusterMemberId.FromEndPoint(endpoint).ToString();
+            True(ClusterMemberId.TryParse(id, out var actual));
+            Equal(ClusterMemberId.FromEndPoint(endpoint), actual);
+        }
+
+        [Fact]
+        public static void FromDNS()
+        {
+            var endpoint = new DnsEndPoint("localhost", 3262);
+            var id = ClusterMemberId.FromEndPoint(endpoint).ToString();
+            True(ClusterMemberId.TryParse(id, out var actual));
+            Equal(ClusterMemberId.FromEndPoint(endpoint), actual);
+        }
+
+        [Fact]
+        public static void FromUDS()
+        {
+            var endpoint = new UnixDomainSocketEndPoint("/path");
+            var id = ClusterMemberId.FromEndPoint(endpoint).ToString();
+            True(ClusterMemberId.TryParse(id, out var actual));
+            Equal(ClusterMemberId.FromEndPoint(endpoint), actual);
         }
     }
 }
