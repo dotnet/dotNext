@@ -68,7 +68,7 @@ namespace DotNext.Buffers
         /// <param name="value">The value to be encoded.</param>
         /// <param name="isLittleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe void WriteInt32(this ref BufferWriterSlim<byte> builder, short value, bool isLittleEndian)
+        public static unsafe void WriteInt32(this ref BufferWriterSlim<byte> builder, int value, bool isLittleEndian)
             => Write<int>(ref builder, isLittleEndian ? &WriteInt32LittleEndian : &WriteInt32BigEndian, value);
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace DotNext.Buffers
         /// <param name="isLittleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
-        public static unsafe void WriteUInt32(this ref BufferWriterSlim<byte> builder, ushort value, bool isLittleEndian)
+        public static unsafe void WriteUInt32(this ref BufferWriterSlim<byte> builder, uint value, bool isLittleEndian)
             => Write<uint>(ref builder, isLittleEndian ? &WriteUInt32LittleEndian : &WriteUInt32BigEndian, value);
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace DotNext.Buffers
         /// <param name="value">The value to be encoded.</param>
         /// <param name="isLittleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe void WriteInt64(this ref BufferWriterSlim<byte> builder, short value, bool isLittleEndian)
+        public static unsafe void WriteInt64(this ref BufferWriterSlim<byte> builder, long value, bool isLittleEndian)
             => Write<long>(ref builder, isLittleEndian ? &WriteInt64LittleEndian : &WriteInt64BigEndian, value);
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace DotNext.Buffers
         /// <param name="isLittleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
-        public static unsafe void WriteUInt64(this ref BufferWriterSlim<byte> builder, ushort value, bool isLittleEndian)
+        public static unsafe void WriteUInt64(this ref BufferWriterSlim<byte> builder, ulong value, bool isLittleEndian)
             => Write<ulong>(ref builder, isLittleEndian ? &WriteUInt64LittleEndian : &WriteUInt64BigEndian, value);
 
 #if !NETSTANDARD2_1

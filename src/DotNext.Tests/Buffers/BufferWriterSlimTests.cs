@@ -192,5 +192,55 @@ namespace DotNext.Buffers
             Equal(expected, writer.Span.ToArray());
             Equal(expected, writer.WrittenSpan.ToArray());
         }
+
+        [Fact]
+        public static void ReadWritePrimitives()
+        {
+            var builder = new BufferWriterSlim<byte>(stackalloc byte[512], true);
+            try
+            {
+                builder.WriteInt16(short.MinValue, true);
+                builder.WriteInt16(short.MaxValue, false);
+                builder.WriteUInt16(42, true);
+                builder.WriteUInt16(ushort.MaxValue, false);
+                builder.WriteInt32(int.MaxValue, true);
+                builder.WriteInt32(int.MinValue, false);
+                builder.WriteUInt32(42, true);
+                builder.WriteUInt32(uint.MaxValue, false);
+                builder.WriteInt64(long.MaxValue, true);
+                builder.WriteInt64(long.MinValue, false);
+                builder.WriteUInt64(42, true);
+                builder.WriteUInt64(ulong.MaxValue, false);
+#if !NETCOREAPP3_1
+                builder.WriteSingle(float.MaxValue, true);
+                builder.WriteSingle(float.MinValue, false);
+                builder.WriteDouble(double.MaxValue, true);
+                builder.WriteDouble(double.MinValue, false);
+#endif
+                var reader = new SpanReader<byte>(builder.WrittenSpan);
+                Equal(short.MinValue, reader.ReadInt16(true));
+                Equal(short.MaxValue, reader.ReadInt16(false));
+                Equal(42, reader.ReadUInt16(true));
+                Equal(ushort.MaxValue, reader.ReadUInt16(false));
+                Equal(int.MaxValue, reader.ReadInt32(true));
+                Equal(int.MinValue, reader.ReadInt32(false));
+                Equal(42U, reader.ReadUInt32(true));
+                Equal(uint.MaxValue, reader.ReadUInt32(false));
+                Equal(long.MaxValue, reader.ReadInt64(true));
+                Equal(long.MinValue, reader.ReadInt64(false));
+                Equal(42UL, reader.ReadUInt64(true));
+                Equal(ulong.MaxValue, reader.ReadUInt64(false));
+#if !NETCOREAPP3_1
+                Equal(float.MaxValue, reader.ReadSingle(true));
+                Equal(float.MinValue, reader.ReadSingle(false));
+                Equal(double.MaxValue, reader.ReadDouble(true));
+                Equal(double.MinValue, reader.ReadDouble(false));
+#endif
+            }
+            finally
+            {
+                builder.Dispose();
+            }
+        }
     }
 }
