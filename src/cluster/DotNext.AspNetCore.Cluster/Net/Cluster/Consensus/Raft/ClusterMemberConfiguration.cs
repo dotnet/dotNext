@@ -85,6 +85,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Gets or sets a value indicating that the cluster member
         /// represents standby node which is never become a leader.
         /// </summary>
-        public bool IsStandby { get; set; }
+        public bool Standby { get; set; }
+
+        bool IClusterMemberConfiguration.IsStandby => Standby;
     }
 }
