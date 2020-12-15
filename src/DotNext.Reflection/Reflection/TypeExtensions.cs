@@ -8,12 +8,8 @@ namespace DotNext.Reflection
     {
         private const BindingFlags PublicInstanceFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly;
 
-        internal static MethodInfo GetHashCodeMethod(this Type type)
-        {
-            var result = type.GetMethod(nameof(GetHashCode), PublicInstanceFlags, null, Type.EmptyTypes, null);
-            Debug.Assert(result is not null);
-            return result;
-        }
+        internal static MethodInfo? GetHashCodeMethod(this Type type)
+            => type.GetMethod(nameof(GetHashCode), PublicInstanceFlags, null, Type.EmptyTypes, null);
 
         internal static string ToGetterName(this string propertyName) => string.Concat("get_", propertyName);
 
