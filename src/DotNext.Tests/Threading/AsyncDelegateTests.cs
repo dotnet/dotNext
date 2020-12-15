@@ -44,7 +44,7 @@ namespace DotNext.Threading
             Action action = acc.IncBy1;
             action += acc.Throw;
             action += acc.IncBy3;
-            await ThrowsAsync<AggregateException>(async () => await action.InvokeAsync());
+            await ThrowsAsync<Exception>(async () => await action.InvokeAsync());
         }
 
         [Fact]
@@ -87,7 +87,7 @@ namespace DotNext.Threading
                 args[args.LongLength - 1L] = new CancellationToken(false);
                 args[0] = Expression.Lambda(actionType, failedValue, parameters).Compile();
                 result = (Task)method.Invoke(null, args);
-                await ThrowsAsync<AggregateException>(Func.Constant(result));
+                await ThrowsAsync<ArithmeticException>(Func.Constant(result));
             }
         }
     }
