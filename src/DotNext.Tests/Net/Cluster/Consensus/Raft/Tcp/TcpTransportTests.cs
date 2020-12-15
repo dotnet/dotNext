@@ -173,7 +173,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         public async Task Leadership(int delay)
         {
             static void CheckLeadership(IClusterMember member1, IClusterMember member2)
-                => Equal(member1.Endpoint, member2.Endpoint);
+                => Equal(member1.EndPoint, member2.EndPoint);
 
             static void AddMembers(RaftCluster.NodeConfiguration config)
             {
@@ -219,7 +219,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 leader3 = host3.Leader;
                 if (leader1 is null || leader2 is null || leader3 is null)
                     continue;
-                if (leader1.Endpoint.Equals(leader2.Endpoint) && leader1.Endpoint.Equals(leader2.Endpoint))
+                if (leader1.EndPoint.Equals(leader2.EndPoint) && leader1.EndPoint.Equals(leader2.EndPoint))
                     break;
             }
 

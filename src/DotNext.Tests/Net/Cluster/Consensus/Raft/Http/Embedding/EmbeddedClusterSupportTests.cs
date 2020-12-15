@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -170,7 +171,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             await host1.StartAsync();
             await host2.StartAsync();
 
-            var client = host1.Services.GetService<IMessageBus>().Members.FirstOrDefault(member => member.EndPoint.Port == 3263);
+            var client = host1.Services.GetService<IMessageBus>().Members.FirstOrDefault(member => ((IPEndPoint)member.EndPoint).Port == 3263);
             var messageBox = host2.Services.GetService<IInputChannel>() as Mailbox;
             NotNull(messageBox);
             //request-reply test

@@ -95,7 +95,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
                 protected override async ValueTask ApplyAsync(LogEntry entry)
                 {
-                    currentValue = await entry.ReadAsync<long>();
+                    currentValue = await entry.ToType<long, LogEntry>();
                 }
 
                 public override ValueTask WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
@@ -107,7 +107,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
             }
 
-            protected override async ValueTask ApplyAsync(LogEntry entry) => Value = await entry.ReadAsync<long>();
+            protected override async ValueTask ApplyAsync(LogEntry entry) => Value = await entry.ToType<long, LogEntry>();
 
             protected override SnapshotBuilder CreateSnapshotBuilder() => new SimpleSnapshotBuilder();
         }

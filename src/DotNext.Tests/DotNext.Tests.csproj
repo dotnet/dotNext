@@ -39,7 +39,7 @@
       <SetTargetFramework>TargetFramework=netcoreapp3.1</SetTargetFramework>
     </ProjectReference>
     <ProjectReference Include="..\cluster\DotNext.Net.Cluster\DotNext.Net.Cluster.csproj">
-      <SetTargetFramework>TargetFramework=netcoreapp3.1</SetTargetFramework>
+      <SetTargetFramework>TargetFramework=netstandard2.1</SetTargetFramework>
     </ProjectReference>
     <ProjectReference Include="..\DotNext.IO\DotNext.IO.csproj">
       <SetTargetFramework>TargetFramework=netstandard2.1</SetTargetFramework>
