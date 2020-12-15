@@ -1043,10 +1043,10 @@ namespace DotNext.IO
         }
 
         /// <inheritdoc/>
-        async Task IAsyncBinaryReader.CopyToAsync<TArg>(Func<ReadOnlyMemory<byte>, TArg, CancellationToken, ValueTask> reader, TArg arg, CancellationToken token)
+        async Task IAsyncBinaryReader.CopyToAsync<TArg>(Func<TArg, ReadOnlyMemory<byte>, CancellationToken, ValueTask> reader, TArg arg, CancellationToken token)
         {
             foreach (var segment in sequence.Slice(position))
-                await reader(segment, arg, token).ConfigureAwait(false);
+                await reader(arg, segment, token).ConfigureAwait(false);
         }
     }
 }

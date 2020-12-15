@@ -242,7 +242,7 @@ namespace DotNext.IO.Pipelines
         /// <param name="token">The token that can be used to cancel operation.</param>
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static async Task ReadAsync<TArg>(this PipeReader reader, Func<ReadOnlyMemory<byte>, TArg, CancellationToken, ValueTask> consumer, TArg arg, CancellationToken token = default)
+        public static async Task ReadAsync<TArg>(this PipeReader reader, Func<TArg, ReadOnlyMemory<byte>, CancellationToken, ValueTask> consumer, TArg arg, CancellationToken token = default)
         {
             ReadResult result;
             do
@@ -251,7 +251,7 @@ namespace DotNext.IO.Pipelines
                 result.ThrowIfCancellationRequested();
                 var buffer = result.Buffer;
                 for (var position = buffer.Start; buffer.TryGet(ref position, out var block); reader.AdvanceTo(position))
-                    await consumer(block, arg, token);
+                    await consumer(arg, block, token);
             }
             while (!result.IsCompleted);
         }

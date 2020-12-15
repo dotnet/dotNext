@@ -2664,13 +2664,13 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="ArgumentException"><paramref name="buffer"/> is empty.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static async Task ReadAsync<TArg>(this Stream stream, Func<ReadOnlyMemory<byte>, TArg, CancellationToken, ValueTask> reader, TArg arg, Memory<byte> buffer, CancellationToken token = default)
+        public static async Task ReadAsync<TArg>(this Stream stream, Func<TArg, ReadOnlyMemory<byte>, CancellationToken, ValueTask> reader, TArg arg, Memory<byte> buffer, CancellationToken token = default)
         {
             if (buffer.IsEmpty)
                 throw new ArgumentException(ExceptionMessages.BufferTooSmall);
 
             for (int count; (count = await stream.ReadAsync(buffer, token).ConfigureAwait(false)) > 0; )
-                await reader(buffer.Slice(0, count), arg, token).ConfigureAwait(false);
+                await reader(arg, buffer.Slice(0, count), token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -2685,7 +2685,7 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="bufferSize"/> is less than or equal to zero.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static async Task ReadAsync<TArg>(this Stream stream, Func<ReadOnlyMemory<byte>, TArg, CancellationToken, ValueTask> reader, TArg arg, int bufferSize = DefaultBufferSize, CancellationToken token = default)
+        public static async Task ReadAsync<TArg>(this Stream stream, Func<TArg, ReadOnlyMemory<byte>, CancellationToken, ValueTask> reader, TArg arg, int bufferSize = DefaultBufferSize, CancellationToken token = default)
         {
             if (bufferSize <= 0)
                 throw new ArgumentOutOfRangeException(nameof(bufferSize));

@@ -28,6 +28,7 @@ namespace DotNext.IO
     /// </remarks>
     public sealed partial class FileBufferingWriter : Stream, IFlushableBufferWriter<byte>, IGrowableBuffer<byte>
     {
+        internal const int DefaultMemoryThreshold = 32768;
         private const int FileBufferSize = 1024;
 
         [StructLayout(LayoutKind.Auto)]
@@ -186,7 +187,7 @@ namespace DotNext.IO
         /// <param name="asyncIO"><see langword="true"/> if you will use asynchronous methods of the instance; otherwise, <see langword="false"/>.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="memoryThreshold"/> is less than or equal to zero; or <paramref name="initialCapacity"/> is less than zero or greater than <paramref name="memoryThreshold"/>.</exception>
         /// <exception cref="DirectoryNotFoundException"><paramref name="tempDir"/> doesn't exist.</exception>
-        public FileBufferingWriter(MemoryAllocator<byte>? allocator = null, int memoryThreshold = 32768, int initialCapacity = 0, string? tempDir = null, bool asyncIO = true)
+        public FileBufferingWriter(MemoryAllocator<byte>? allocator = null, int memoryThreshold = DefaultMemoryThreshold, int initialCapacity = 0, string? tempDir = null, bool asyncIO = true)
         {
             if (memoryThreshold <= 0)
                 throw new ArgumentOutOfRangeException(nameof(memoryThreshold));

@@ -54,7 +54,7 @@ namespace DotNext.IO
                 Task IAsyncBinaryReader.CopyToAsync(PipeWriter output, CancellationToken token)
                     => reader.CopyToAsync(output, token);
 
-                Task IAsyncBinaryReader.CopyToAsync<TArg>(Func<ReadOnlyMemory<byte>, TArg, CancellationToken, ValueTask> consumer, TArg arg, CancellationToken token)
+                Task IAsyncBinaryReader.CopyToAsync<TArg>(Func<TArg, ReadOnlyMemory<byte>, CancellationToken, ValueTask> consumer, TArg arg, CancellationToken token)
                     => reader.CopyToAsync(consumer, arg, token);
             }
 
@@ -411,7 +411,7 @@ namespace DotNext.IO
                 Equal(supplier.Content, consumer.WrittenMemory.ToArray());
             }
 
-            static ValueTask ConsumeMemory(ReadOnlyMemory<byte> block, IBufferWriter<byte> writer, CancellationToken token)
+            static ValueTask ConsumeMemory(IBufferWriter<byte> writer, ReadOnlyMemory<byte> block, CancellationToken token)
             {
                 writer.Write(block.Span);
                 return new ValueTask();

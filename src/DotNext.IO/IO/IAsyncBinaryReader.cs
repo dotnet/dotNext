@@ -11,7 +11,6 @@ namespace DotNext.IO
     using static Buffers.BufferReader;
     using static Buffers.MemoryAllocator;
     using static Pipelines.ResultExtensions;
-    using BufferWriter = Buffers.BufferWriter;
     using DecodingContext = Text.DecodingContext;
 
     /// <summary>
@@ -354,7 +353,7 @@ namespace DotNext.IO
         {
             return CopyToAsync(CopyToStream, output, token);
 
-            static ValueTask CopyToStream(ReadOnlyMemory<byte> input, Stream output, CancellationToken token)
+            static ValueTask CopyToStream(Stream output, ReadOnlyMemory<byte> input, CancellationToken token)
                 => output.WriteAsync(input, token);
         }
 
@@ -369,7 +368,7 @@ namespace DotNext.IO
         {
             return CopyToAsync(CopyToPipe, output, token);
 
-            static async ValueTask CopyToPipe(ReadOnlyMemory<byte> input, PipeWriter output, CancellationToken token)
+            static async ValueTask CopyToPipe(PipeWriter output, ReadOnlyMemory<byte> input, CancellationToken token)
             {
                 var result = await output.WriteAsync(input, token).ConfigureAwait(false);
                 result.ThrowIfCancellationRequested(token);
@@ -387,7 +386,7 @@ namespace DotNext.IO
         {
             return CopyToAsync(Write, writer, token);
 
-            static ValueTask Write(ReadOnlyMemory<byte> input, IBufferWriter<byte> writer, CancellationToken token)
+            static ValueTask Write(IBufferWriter<byte> writer, ReadOnlyMemory<byte> input, CancellationToken token)
             {
                 Task result;
                 if (token.IsCancellationRequested)
@@ -432,7 +431,7 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel operation.</param>
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        Task CopyToAsync<TArg>(Func<ReadOnlyMemory<byte>, TArg, CancellationToken, ValueTask> consumer, TArg arg, CancellationToken token = default);
+        Task CopyToAsync<TArg>(Func<TArg, ReadOnlyMemory<byte>, CancellationToken, ValueTask> consumer, TArg arg, CancellationToken token = default);
 
         /// <summary>
         /// Creates default implementation of binary reader for the stream.
