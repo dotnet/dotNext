@@ -96,7 +96,7 @@ namespace DotNext.Reflection
             else
             {
                 // hash code calculator
-                GetHashCode = Lambda<Operator<T, int>>(Call(inputParam, typeof(object).GetHashCodeMethod()), inputParam).Compile();
+                GetHashCode = Lambda<Operator<T, int>>(Call(inputParam, typeof(object).GetHashCodeMethod()!), inputParam).Compile();
 
                 // equality checker
                 if (equalsOp is null)
