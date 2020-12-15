@@ -390,7 +390,6 @@ namespace DotNext.IO
 
         [Theory]
         [InlineData("UTF-8")]
-        [InlineData("UTF-7")]
         [InlineData("UTF-16")]
         public static void EncodeAsString(string encodingName)
         {
