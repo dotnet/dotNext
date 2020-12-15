@@ -39,13 +39,11 @@ namespace DotNext.IO
             const string testString1 = "Hello, world! &$@&@()&$YHWORww!";
             ReadStringUsingEncoding(testString1, Encoding.UTF8);
             ReadStringUsingEncoding(testString1, Encoding.Unicode);
-            ReadStringUsingEncoding(testString1, Encoding.UTF7);
             ReadStringUsingEncoding(testString1, Encoding.UTF32);
             ReadStringUsingEncoding(testString1, Encoding.ASCII);
             const string testString2 = "������, ���!";
             ReadStringUsingEncoding(testString2, Encoding.UTF8);
             ReadStringUsingEncoding(testString2, Encoding.Unicode);
-            ReadStringUsingEncoding(testString2, Encoding.UTF7);
             ReadStringUsingEncoding(testString2, Encoding.UTF32);
         }
 
@@ -58,13 +56,11 @@ namespace DotNext.IO
             const string testString1 = "Hello, world! &$@&@()&$YHWORww!";
             ReadStringUsingEncoding(testString1, Encoding.UTF8, bufferSize);
             ReadStringUsingEncoding(testString1, Encoding.Unicode, bufferSize);
-            ReadStringUsingEncoding(testString1, Encoding.UTF7, bufferSize);
             ReadStringUsingEncoding(testString1, Encoding.UTF32, bufferSize);
             ReadStringUsingEncoding(testString1, Encoding.ASCII, bufferSize);
             const string testString2 = "������, ���!";
             ReadStringUsingEncoding(testString2, Encoding.UTF8, bufferSize);
             ReadStringUsingEncoding(testString2, Encoding.Unicode, bufferSize);
-            ReadStringUsingEncoding(testString2, Encoding.UTF7, bufferSize);
             ReadStringUsingEncoding(testString2, Encoding.UTF32, bufferSize);
         }
 
@@ -91,13 +87,11 @@ namespace DotNext.IO
             const string testString1 = "Hello, world! $(@$)Hjdqgd!";
             await ReadStringUsingEncodingAsync(testString1, Encoding.UTF8);
             await ReadStringUsingEncodingAsync(testString1, Encoding.Unicode);
-            await ReadStringUsingEncodingAsync(testString1, Encoding.UTF7);
             await ReadStringUsingEncodingAsync(testString1, Encoding.UTF32);
             await ReadStringUsingEncodingAsync(testString1, Encoding.ASCII);
             const string testString2 = "������, ���!";
             await ReadStringUsingEncodingAsync(testString2, Encoding.UTF8);
             await ReadStringUsingEncodingAsync(testString2, Encoding.Unicode);
-            await ReadStringUsingEncodingAsync(testString2, Encoding.UTF7);
             await ReadStringUsingEncodingAsync(testString2, Encoding.UTF32);
         }
 
@@ -111,13 +105,11 @@ namespace DotNext.IO
             const string testString1 = "Hello, world! $(@$)Hjdqgd!";
             await ReadStringUsingEncodingAsync(testString1, Encoding.UTF8, bufferSize);
             await ReadStringUsingEncodingAsync(testString1, Encoding.Unicode, bufferSize);
-            await ReadStringUsingEncodingAsync(testString1, Encoding.UTF7, bufferSize);
             await ReadStringUsingEncodingAsync(testString1, Encoding.UTF32, bufferSize);
             await ReadStringUsingEncodingAsync(testString1, Encoding.ASCII, bufferSize);
             const string testString2 = "������, ���!";
             await ReadStringUsingEncodingAsync(testString2, Encoding.UTF8, bufferSize);
             await ReadStringUsingEncodingAsync(testString2, Encoding.Unicode, bufferSize);
-            await ReadStringUsingEncodingAsync(testString2, Encoding.UTF7, bufferSize);
             await ReadStringUsingEncodingAsync(testString2, Encoding.UTF32, bufferSize);
         }
 
@@ -156,13 +148,11 @@ namespace DotNext.IO
             const string testString1 = "Hello, world!&*(@&*(fghjwgfwffgw";
             ReadWriteStringUsingEncoding(testString1, Encoding.UTF8, lengthEnc);
             ReadWriteStringUsingEncoding(testString1, Encoding.Unicode, lengthEnc);
-            ReadWriteStringUsingEncoding(testString1, Encoding.UTF7, lengthEnc);
             ReadWriteStringUsingEncoding(testString1, Encoding.UTF32, lengthEnc);
             ReadWriteStringUsingEncoding(testString1, Encoding.ASCII, lengthEnc);
             const string testString2 = "������, ���!";
             ReadWriteStringUsingEncoding(testString2, Encoding.UTF8, lengthEnc);
             ReadWriteStringUsingEncoding(testString2, Encoding.Unicode, lengthEnc);
-            ReadWriteStringUsingEncoding(testString2, Encoding.UTF7, lengthEnc);
             ReadWriteStringUsingEncoding(testString2, Encoding.UTF32, lengthEnc);
         }
 
@@ -186,7 +176,6 @@ namespace DotNext.IO
         {
             ReadWriteStringUsingEncoding(Encoding.UTF8, bufferSize, lengthEnc);
             ReadWriteStringUsingEncoding(Encoding.Unicode, bufferSize, lengthEnc);
-            ReadWriteStringUsingEncoding(Encoding.UTF7, bufferSize, lengthEnc);
             ReadWriteStringUsingEncoding(Encoding.UTF32, bufferSize, lengthEnc);
             ReadWriteStringUsingEncoding(Encoding.ASCII, bufferSize, lengthEnc);
         }
@@ -226,13 +215,11 @@ namespace DotNext.IO
             const string testString1 = "Hello, world!&*(@&*(fghjwgfwffgw";
             await ReadWriteStringUsingEncodingAsync(testString1, Encoding.UTF8, lengthEnc);
             await ReadWriteStringUsingEncodingAsync(testString1, Encoding.Unicode, lengthEnc);
-            await ReadWriteStringUsingEncodingAsync(testString1, Encoding.UTF7, lengthEnc);
             await ReadWriteStringUsingEncodingAsync(testString1, Encoding.UTF32, lengthEnc);
             await ReadWriteStringUsingEncodingAsync(testString1, Encoding.ASCII, lengthEnc);
             const string testString2 = "������, ���!";
             await ReadWriteStringUsingEncodingAsync(testString2, Encoding.UTF8, lengthEnc);
             await ReadWriteStringUsingEncodingAsync(testString2, Encoding.Unicode, lengthEnc);
-            await ReadWriteStringUsingEncodingAsync(testString2, Encoding.UTF7, lengthEnc);
             await ReadWriteStringUsingEncodingAsync(testString2, Encoding.UTF32, lengthEnc);
         }
 
@@ -257,13 +244,11 @@ namespace DotNext.IO
             const string testString1 = "Hello, world!&*(@&*(fghjwgfwffgw";
             await ReadWriteStringUsingEncodingAsync(testString1, Encoding.UTF8, bufferSize, lengthEnc);
             await ReadWriteStringUsingEncodingAsync(testString1, Encoding.Unicode, bufferSize, lengthEnc);
-            await ReadWriteStringUsingEncodingAsync(testString1, Encoding.UTF7, bufferSize, lengthEnc);
             await ReadWriteStringUsingEncodingAsync(testString1, Encoding.UTF32, bufferSize, lengthEnc);
             await ReadWriteStringUsingEncodingAsync(testString1, Encoding.ASCII, bufferSize, lengthEnc);
             const string testString2 = "������, ���!";
             await ReadWriteStringUsingEncodingAsync(testString2, Encoding.UTF8, bufferSize, lengthEnc);
             await ReadWriteStringUsingEncodingAsync(testString2, Encoding.Unicode, bufferSize, lengthEnc);
-            await ReadWriteStringUsingEncodingAsync(testString2, Encoding.UTF7, bufferSize, lengthEnc);
             await ReadWriteStringUsingEncodingAsync(testString2, Encoding.UTF32, bufferSize, lengthEnc);
         }
 

@@ -184,7 +184,6 @@ namespace DotNext.IO.Pipelines
             await EncodeDecodeStringAsync(Encoding.UTF8, testString, bufferSize, lengthEnc);
             await EncodeDecodeStringAsync(Encoding.Unicode, testString, bufferSize, lengthEnc);
             await EncodeDecodeStringAsync(Encoding.UTF32, testString, bufferSize, lengthEnc);
-            await EncodeDecodeStringAsync(Encoding.UTF7, testString, bufferSize, lengthEnc);
             await EncodeDecodeStringAsync(Encoding.ASCII, testString, bufferSize, lengthEnc);
         }
 

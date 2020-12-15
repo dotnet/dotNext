@@ -99,13 +99,11 @@ namespace DotNext.IO
             const string testString1 = "Hello, world!&*(@&*(fghjwgfwffgw";
             await ReadWriteStringUsingEncodingAsync(testString1, Encoding.UTF8, lengthEnc);
             await ReadWriteStringUsingEncodingAsync(testString1, Encoding.Unicode, lengthEnc);
-            await ReadWriteStringUsingEncodingAsync(testString1, Encoding.UTF7, lengthEnc);
             await ReadWriteStringUsingEncodingAsync(testString1, Encoding.UTF32, lengthEnc);
             await ReadWriteStringUsingEncodingAsync(testString1, Encoding.ASCII, lengthEnc);
             const string testString2 = "������, ���!";
             await ReadWriteStringUsingEncodingAsync(testString2, Encoding.UTF8, lengthEnc);
             await ReadWriteStringUsingEncodingAsync(testString2, Encoding.Unicode, lengthEnc);
-            await ReadWriteStringUsingEncodingAsync(testString2, Encoding.UTF7, lengthEnc);
             await ReadWriteStringUsingEncodingAsync(testString2, Encoding.UTF32, lengthEnc);
         }
     }

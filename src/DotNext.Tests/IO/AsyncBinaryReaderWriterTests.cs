@@ -53,6 +53,9 @@ namespace DotNext.IO
 
                 Task IAsyncBinaryReader.CopyToAsync(PipeWriter output, CancellationToken token)
                     => reader.CopyToAsync(output, token);
+
+                Task IAsyncBinaryReader.CopyToAsync<TArg>(Func<ReadOnlyMemory<byte>, TArg, CancellationToken, ValueTask> consumer, TArg arg, CancellationToken token)
+                    => reader.CopyToAsync(consumer, arg, token);
             }
 
             private sealed class DefaultAsyncBinaryWriter : IAsyncBinaryWriter
@@ -262,23 +265,11 @@ namespace DotNext.IO
             yield return new object[] { new StreamSource(), Encoding.UTF8, StringLengthEncoding.PlainLittleEndian };
             yield return new object[] { new StreamSource(), Encoding.UTF8, null };
 
-            yield return new object[] { new StreamSource(), Encoding.UTF7, StringLengthEncoding.Compressed };
-            yield return new object[] { new StreamSource(), Encoding.UTF7, StringLengthEncoding.Plain };
-            yield return new object[] { new StreamSource(), Encoding.UTF7, StringLengthEncoding.PlainBigEndian };
-            yield return new object[] { new StreamSource(), Encoding.UTF7, StringLengthEncoding.PlainLittleEndian };
-            yield return new object[] { new StreamSource(), Encoding.UTF7, null };
-
             yield return new object[] { new BufferSource(), Encoding.UTF8, StringLengthEncoding.Compressed };
             yield return new object[] { new BufferSource(), Encoding.UTF8, StringLengthEncoding.Plain };
             yield return new object[] { new BufferSource(), Encoding.UTF8, StringLengthEncoding.PlainBigEndian };
             yield return new object[] { new BufferSource(), Encoding.UTF8, StringLengthEncoding.PlainLittleEndian };
             yield return new object[] { new BufferSource(), Encoding.UTF8, null };
-
-            yield return new object[] { new BufferSource(), Encoding.UTF7, StringLengthEncoding.Compressed };
-            yield return new object[] { new BufferSource(), Encoding.UTF7, StringLengthEncoding.Plain };
-            yield return new object[] { new BufferSource(), Encoding.UTF7, StringLengthEncoding.PlainBigEndian };
-            yield return new object[] { new BufferSource(), Encoding.UTF7, StringLengthEncoding.PlainLittleEndian };
-            yield return new object[] { new BufferSource(), Encoding.UTF7, null };
 
             yield return new object[] { new PipeSource(), Encoding.UTF8, StringLengthEncoding.Compressed };
             yield return new object[] { new PipeSource(), Encoding.UTF8, StringLengthEncoding.Plain };
@@ -286,35 +277,17 @@ namespace DotNext.IO
             yield return new object[] { new PipeSource(), Encoding.UTF8, StringLengthEncoding.PlainLittleEndian };
             yield return new object[] { new PipeSource(), Encoding.UTF8, null };
 
-            yield return new object[] { new PipeSource(), Encoding.UTF7, StringLengthEncoding.Compressed };
-            yield return new object[] { new PipeSource(), Encoding.UTF7, StringLengthEncoding.Plain };
-            yield return new object[] { new PipeSource(), Encoding.UTF7, StringLengthEncoding.PlainBigEndian };
-            yield return new object[] { new PipeSource(), Encoding.UTF7, StringLengthEncoding.PlainLittleEndian };
-            yield return new object[] { new PipeSource(), Encoding.UTF7, null };
-
             yield return new object[] { new PipeSourceWithSettings(), Encoding.UTF8, StringLengthEncoding.Compressed };
             yield return new object[] { new PipeSourceWithSettings(), Encoding.UTF8, StringLengthEncoding.Plain };
             yield return new object[] { new PipeSourceWithSettings(), Encoding.UTF8, StringLengthEncoding.PlainBigEndian };
             yield return new object[] { new PipeSourceWithSettings(), Encoding.UTF8, StringLengthEncoding.PlainLittleEndian };
             yield return new object[] { new PipeSourceWithSettings(), Encoding.UTF8, null };
 
-            yield return new object[] { new PipeSourceWithSettings(), Encoding.UTF7, StringLengthEncoding.Compressed };
-            yield return new object[] { new PipeSourceWithSettings(), Encoding.UTF7, StringLengthEncoding.Plain };
-            yield return new object[] { new PipeSourceWithSettings(), Encoding.UTF7, StringLengthEncoding.PlainBigEndian };
-            yield return new object[] { new PipeSourceWithSettings(), Encoding.UTF7, StringLengthEncoding.PlainLittleEndian };
-            yield return new object[] { new PipeSourceWithSettings(), Encoding.UTF7, null };
-
             yield return new object[] { new ReadOnlySequenceSource(), Encoding.UTF8, StringLengthEncoding.Compressed };
             yield return new object[] { new ReadOnlySequenceSource(), Encoding.UTF8, StringLengthEncoding.Plain };
             yield return new object[] { new ReadOnlySequenceSource(), Encoding.UTF8, StringLengthEncoding.PlainBigEndian };
             yield return new object[] { new ReadOnlySequenceSource(), Encoding.UTF8, StringLengthEncoding.PlainLittleEndian };
             yield return new object[] { new ReadOnlySequenceSource(), Encoding.UTF8, null };
-
-            yield return new object[] { new ReadOnlySequenceSource(), Encoding.UTF7, StringLengthEncoding.Compressed };
-            yield return new object[] { new ReadOnlySequenceSource(), Encoding.UTF7, StringLengthEncoding.Plain };
-            yield return new object[] { new ReadOnlySequenceSource(), Encoding.UTF7, StringLengthEncoding.PlainBigEndian };
-            yield return new object[] { new ReadOnlySequenceSource(), Encoding.UTF7, StringLengthEncoding.PlainLittleEndian };
-            yield return new object[] { new ReadOnlySequenceSource(), Encoding.UTF7, null };
         }
 
         [Theory]
