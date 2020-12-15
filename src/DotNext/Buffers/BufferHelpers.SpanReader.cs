@@ -131,7 +131,7 @@ namespace DotNext.Buffers
         /// <exception cref="EndOfStreamException">The end of memory block is reached.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe double ReadDouble(this ref SpanReader<byte> reader, bool isLittleEndian)
-            => reader.Read<double>(isLittleEndian ? &ReadDoubleLittleEndian : &ReadDoubleBigEndian, sizeof(float));
+            => reader.Read<double>(isLittleEndian ? &ReadDoubleLittleEndian : &ReadDoubleBigEndian, sizeof(double));
 #endif
     }
 }
