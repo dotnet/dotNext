@@ -13,13 +13,18 @@ namespace DotNext.Text
     /// <summary>
     /// Represents base64 decoder suitable for streaming.
     /// </summary>
+    /// <remarks>
+    /// This type maintains internal state for correct decoding of streaming data.
+    /// Therefore, it must be passed by reference to any routine. It's not a <c>ref struct</c>
+    /// to allow construction of high-level decoders in the form of classes.
+    /// </remarks>
     [StructLayout(LayoutKind.Auto)]
-    public ref struct Base64Decoder
+    public struct Base64Decoder
     {
-        private int reservedBuffer; // 4 bytes buffer for decoding base64
+        private uint reservedBuffer; // 4 bytes buffer for decoding base64
         private int reservedBufferSize;
 
-        private static void DecodeCore(ReadOnlySpan<byte> utf8Chars, IBufferWriter<byte> output, Span<byte> reservedBuffer, ref int reservedBufferSize)
+        private void DecodeCore(ReadOnlySpan<byte> utf8Chars, IBufferWriter<byte> output)
         {
             var produced = Base64.GetMaxDecodedFromUtf8Length(utf8Chars.Length);
             var buffer = output.GetSpan(produced);
@@ -35,7 +40,7 @@ namespace DotNext.Text
                 default:
                     reservedBufferSize = utf8Chars.Length - consumed;
                     Debug.Assert(reservedBufferSize <= 4);
-                    utf8Chars.Slice(consumed).CopyTo(reservedBuffer);
+                    utf8Chars.Slice(consumed).CopyTo(Span.AsBytes(ref reservedBuffer));
                     break;
             }
 
@@ -45,13 +50,13 @@ namespace DotNext.Text
 # if !NETSTANDARD2_1
         [SkipLocalsInit]
 #endif
-        private static void CopyAndDecode(ReadOnlySpan<byte> utf8Chars, IBufferWriter<byte> output, Span<byte> reservedBuffer, ref int reservedBufferSize)
+        private void CopyAndDecode(ReadOnlySpan<byte> utf8Chars, IBufferWriter<byte> output)
         {
             var newSize = reservedBufferSize + utf8Chars.Length;
             using var tempBuffer = newSize <= MemoryRental<byte>.StackallocThreshold ? stackalloc byte[newSize] : new MemoryRental<byte>(newSize);
-            reservedBuffer.Slice(0, reservedBufferSize).CopyTo(tempBuffer.Span);
+            Span.AsReadOnlyBytes(in reservedBuffer).Slice(0, reservedBufferSize).CopyTo(tempBuffer.Span);
             utf8Chars.CopyTo(tempBuffer.Span.Slice(reservedBufferSize));
-            DecodeCore(tempBuffer.Span, output, reservedBuffer, ref reservedBufferSize);
+            DecodeCore(tempBuffer.Span, output);
         }
 
         /// <summary>
@@ -62,18 +67,16 @@ namespace DotNext.Text
         /// <exception cref="FormatException">The input base64 string is malformed.</exception>
         public void Decode(ReadOnlySpan<byte> utf8Chars, IBufferWriter<byte> output)
         {
-            Span<byte> reservedBuffer = Span.AsBytes(ref this.reservedBuffer);
-
             if (reservedBufferSize > 0)
-                CopyAndDecode(utf8Chars, output, reservedBuffer, ref reservedBufferSize);
+                CopyAndDecode(utf8Chars, output);
             else
-                DecodeCore(utf8Chars, output, reservedBuffer, ref reservedBufferSize);
+                DecodeCore(utf8Chars, output);
         }
 
 # if !NETSTANDARD2_1
         [SkipLocalsInit]
 #endif
-        private static void DecodeCore<TArg>(ReadOnlySpan<byte> utf8Chars, in ValueReadOnlySpanAction<byte, TArg> output, TArg arg, Span<byte> reservedBuffer, ref int reservedBufferSize)
+        private void DecodeCore<TArg>(ReadOnlySpan<byte> utf8Chars, in ValueReadOnlySpanAction<byte, TArg> output, TArg arg)
         {
             var produced = Base64.GetMaxDecodedFromUtf8Length(utf8Chars.Length);
             using var buffer = produced <= MemoryRental<byte>.StackallocThreshold ? stackalloc byte[produced] : new MemoryRental<byte>(produced);
@@ -89,7 +92,7 @@ namespace DotNext.Text
                 default:
                     reservedBufferSize = utf8Chars.Length - consumed;
                     Debug.Assert(reservedBufferSize <= 4);
-                    utf8Chars.Slice(consumed).CopyTo(reservedBuffer);
+                    utf8Chars.Slice(consumed).CopyTo(Span.AsBytes(ref reservedBuffer));
                     break;
             }
 
@@ -99,13 +102,13 @@ namespace DotNext.Text
 # if !NETSTANDARD2_1
         [SkipLocalsInit]
 #endif
-        private static void CopyAndDecode<TArg>(ReadOnlySpan<byte> utf8Chars, in ValueReadOnlySpanAction<byte, TArg> output, TArg arg, Span<byte> reservedBuffer, ref int reservedBufferSize)
+        private void CopyAndDecode<TArg>(ReadOnlySpan<byte> utf8Chars, in ValueReadOnlySpanAction<byte, TArg> output, TArg arg)
         {
             var newSize = reservedBufferSize + utf8Chars.Length;
             using var tempBuffer = newSize <= MemoryRental<byte>.StackallocThreshold ? stackalloc byte[newSize] : new MemoryRental<byte>(newSize);
-            reservedBuffer.Slice(0, reservedBufferSize).CopyTo(tempBuffer.Span);
+            Span.AsReadOnlyBytes(in reservedBuffer).Slice(0, reservedBufferSize).CopyTo(tempBuffer.Span);
             utf8Chars.CopyTo(tempBuffer.Span.Slice(reservedBufferSize));
-            DecodeCore(tempBuffer.Span, in output, arg, reservedBuffer, ref reservedBufferSize);
+            DecodeCore(tempBuffer.Span, in output, arg);
         }
 
         /// <summary>
@@ -118,12 +121,10 @@ namespace DotNext.Text
         /// <exception cref="FormatException">The input base64 string is malformed.</exception>
         public void Decode<TArg>(ReadOnlySpan<byte> utf8Chars, in ValueReadOnlySpanAction<byte, TArg> output, TArg arg)
         {
-            Span<byte> reservedBuffer = Span.AsBytes(ref this.reservedBuffer);
-
             if (reservedBufferSize > 0)
-                CopyAndDecode(utf8Chars, in output, arg, reservedBuffer, ref reservedBufferSize);
+                CopyAndDecode(utf8Chars, in output, arg);
             else
-                DecodeCore(utf8Chars, in output, arg, reservedBuffer, ref reservedBufferSize);
+                DecodeCore(utf8Chars, in output, arg);
         }
 
         /// <summary>
