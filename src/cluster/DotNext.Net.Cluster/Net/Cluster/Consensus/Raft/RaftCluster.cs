@@ -54,7 +54,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Represents cluster member.
         /// </summary>
         [StructLayout(LayoutKind.Auto)]
-        protected ref struct MemberHolder
+        protected readonly ref struct MemberHolder
         {
             private readonly LinkedListNode<TMember>? node;
 
@@ -65,7 +65,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// Gets actual cluster member.
             /// </summary>
             /// <exception cref="InvalidOperationException">The member is already removed.</exception>
-            public readonly TMember Member => node?.Value ?? throw new InvalidOperationException();
+            public TMember Member => node?.Value ?? throw new InvalidOperationException();
 
             /// <summary>
             /// Removes the current member from the list.

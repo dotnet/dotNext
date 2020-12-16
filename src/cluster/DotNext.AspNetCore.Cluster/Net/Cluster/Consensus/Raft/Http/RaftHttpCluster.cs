@@ -83,7 +83,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             metadata = new MemberMetadata(configuration.Metadata);
             allowedNetworks = configuration.AllowedNetworks.ToImmutableHashSet();
-            await ChangeMembersAsync(members =>
+            await ChangeMembersAsync((in MemberCollectionBuilder members) =>
             {
                 var existingMembers = new HashSet<Uri>();
 
