@@ -231,7 +231,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     Equal(state.First, entries[0]);
                     Equal(42L, entries[1].Term);
                     Equal(entry.Content, await entries[1].ToStringAsync(Encoding.UTF8));
-                    //execute reader inside of another reader which is not possible for InMemoryAuditTrail
+                    //execute reader inside of another reader which is not possible for ConsensusOnlyState
                     return await state.ReadAsync(checker2, 0L, CancellationToken.None);
                 };
                 await state.ReadAsync(checker1, 0L, CancellationToken.None);
