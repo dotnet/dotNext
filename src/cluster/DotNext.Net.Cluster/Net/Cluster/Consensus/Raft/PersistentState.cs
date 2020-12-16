@@ -678,7 +678,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var startIndex = state.CommitIndex + 1L;
             try
             {
-                count = (endIndex ?? GetLastIndex(false)) - startIndex + 1L;
+                count = endIndex.HasValue ? Math.Min(state.LastIndex, endIndex.Value) : state.LastIndex;
+                count = count - startIndex + 1L;
                 if (count > 0)
                 {
                     state.CommitIndex = startIndex + count - 1;
