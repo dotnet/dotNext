@@ -141,7 +141,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             var contentType = response.Content.Headers.ContentType?.ToString();
             var name = ParseHeader<IEnumerable<string>>(MessageNameHeader, response.Headers.TryGetValues);
-            using var content = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+#if NETCOREAPP3_1
+            await using var content = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+#else
+            await using var content = await response.Content.ReadAsStreamAsync(token).ConfigureAwait(false);
+#endif
             return await reader(new InboundMessageContent(content, name, string.IsNullOrEmpty(contentType) ? new ContentType() : new ContentType(contentType), response.Content.Headers.ContentLength), token).ConfigureAwait(false);
         }
     }
