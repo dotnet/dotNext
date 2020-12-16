@@ -108,13 +108,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             [StructLayout(LayoutKind.Auto)]
             public ref struct Enumerator
             {
-                private LinkedListNode<TMember> current;
-                private bool started;
+                // backlog is the next node after current.
+                // it's required because the current node can be removed during iteration
+                private LinkedListNode<TMember>? current, backlog;
 
                 internal Enumerator(LinkedList<TMember> members)
                 {
-                    current = members.First;
-                    started = false;
+                    current = null;
+                    backlog = members.First;
                 }
 
                 /// <summary>
@@ -123,17 +124,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 /// <returns><see langword="true"/> if enumerator moved to the next member successfully; otherwise, <see langword="false"/>.</returns>
                 public bool MoveNext()
                 {
-                    if (started)
-                        current = current.Next;
-                    else
-                        started = true;
+                    current = backlog;
+                    backlog = backlog?.Next;
                     return !(current is null);
                 }
 
                 /// <summary>
                 /// Gets holder of the member holder at the current position of enumerator.
                 /// </summary>
-                public MemberHolder Current => new MemberHolder(current);
+                public MemberHolder Current => new MemberHolder(current ?? throw new InvalidOperationException());
             }
 
             private readonly MemberCollection members;
