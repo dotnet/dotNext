@@ -13,16 +13,30 @@
     <DebugType>none</DebugType>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\cluster\DotNext.AspNetCore.Cluster\DotNext.AspNetCore.Cluster.csproj" />
-  </ItemGroup>
-
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.10" />
+    <ProjectReference Include="..\DotNext.Threading.Cluster\DotNext.Threading.csproj">
+      <SetTargetFramework>TargetFramework=netstandard2.1</SetTargetFramework>
+    </ProjectReference>
+    <ProjectReference Include="..\..\cluster\DotNext.Net.Cluster\DotNext.Net.Cluster.csproj">
+      <SetTargetFramework>TargetFramework=netstandard2.1</SetTargetFramework>
+    </ProjectReference>
+    <ProjectReference Include="..\..\cluster\DotNext.AspNetCore.Cluster\DotNext.AspNetCore.Cluster.csproj">
+      <SetTargetFramework>TargetFramework=netcoreapp3.1</SetTargetFramework>
+    </ProjectReference>
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' != 'netcoreapp3.1'">
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="5.0.0" />
+    <ProjectReference Include="..\DotNext.Threading.Cluster\DotNext.Threading.csproj">
+      <SetTargetFramework>TargetFramework=net5.0</SetTargetFramework>
+    </ProjectReference>
+    <ProjectReference Include="..\..\cluster\DotNext.Net.Cluster\DotNext.Net.Cluster.csproj">
+      <SetTargetFramework>TargetFramework=net5.0</SetTargetFramework>
+    </ProjectReference>
+    <ProjectReference Include="..\..\cluster\DotNext.AspNetCore.Cluster\DotNext.AspNetCore.Cluster.csproj">
+      <SetTargetFramework>TargetFramework=net5.0</SetTargetFramework>
+    </ProjectReference>
   </ItemGroup>
 
   <ItemGroup>
