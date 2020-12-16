@@ -96,7 +96,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                     }
                     else
                     {
-                        var member = holder.Remove();
+                        using var member = holder.Remove();
                         MemberRemoved?.Invoke(this, member);
                         member.CancelPendingRequests();
                     }

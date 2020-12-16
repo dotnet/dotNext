@@ -142,7 +142,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             var contentType = new ContentType(response.Content.Headers.ContentType.ToString());
             var name = ParseHeader<IEnumerable<string>>(MessageNameHeader, response.Headers.TryGetValues);
-            using var content = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+            await using var content = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
             return await reader(new InboundMessageContent(content, name, contentType, response.Content.Headers.ContentLength), token).ConfigureAwait(false);
         }
     }
