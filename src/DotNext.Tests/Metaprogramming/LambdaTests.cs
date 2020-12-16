@@ -76,6 +76,22 @@ namespace DotNext.Metaprogramming
         }
 
         [Fact]
+        public static void SimpleUntypedAsyncLambda()
+        {
+            var sumMethod = typeof(LambdaTests).GetMethod(nameof(Sum), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+            var lambda = AsyncLambda(new [] { typeof(long), typeof(long) }, typeof(long), false, fun =>
+            {
+                var (arg1, arg2) = fun;
+                var temp = DeclareVariable<long>("tmp");
+                Assign(temp, Expression.Call(null, sumMethod, arg1, arg2).Await(true));
+                Return(temp.AsDynamic() + 20L);
+            });
+            var fn = lambda.Compile() as Func<long, long, Task<long>>;
+            NotNull(fn);
+            Equal(35L, fn(5L, 10L).GetResult(TimeSpan.FromMinutes(1)));
+        }
+
+        [Fact]
         public static void SimpleAsyncLambdaThrowsException()
         {
             var lambda = AsyncLambda<Func<Task<long>, long, Task<long>>>(fun =>

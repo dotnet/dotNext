@@ -16,7 +16,7 @@ namespace DotNext.Metaprogramming
         private ParameterExpression? recursion;
         private ParameterExpression? lambdaResult;
 
-        internal AsyncLambdaExpression()
+        public AsyncLambdaExpression()
             : base(false)
         {
             if (typeof(TDelegate).IsAbstract)
