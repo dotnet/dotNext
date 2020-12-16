@@ -53,7 +53,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Represents cluster member.
         /// </summary>
         [StructLayout(LayoutKind.Auto)]
-        protected ref struct MemberHolder
+        protected readonly ref struct MemberHolder
         {
             private readonly LinkedListNode<TMember> node;
 
@@ -132,7 +132,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 /// <summary>
                 /// Gets holder of the member holder at the current position of enumerator.
                 /// </summary>
-                public MemberHolder Current => new MemberHolder(current ?? throw new InvalidOperationException());
+                public readonly MemberHolder Current => new MemberHolder(current ?? throw new InvalidOperationException());
             }
 
             private readonly MemberCollection members;
