@@ -420,7 +420,7 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         Task CopyToAsync<TArg>(ReadOnlySpanAction<byte, TArg> consumer, TArg arg, CancellationToken token = default)
-            => CopyToAsync(consumer.Invoke, arg, token);
+            => CopyToAsync(new Func<TArg, ReadOnlyMemory<byte>, CancellationToken, ValueTask>(consumer.Invoke), arg, token);
 
         /// <summary>
         /// Reads the entire content using the specified delegate.

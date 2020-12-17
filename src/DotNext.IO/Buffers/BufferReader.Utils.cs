@@ -7,7 +7,7 @@ namespace DotNext.Buffers
 {
     internal static partial class BufferReader
     {
-        internal static ValueTask Invoke<T, TArg>(this ReadOnlySpanAction<T, TArg> callback, ReadOnlyMemory<T> buffer, TArg arg, CancellationToken token)
+        internal static ValueTask Invoke<T, TArg>(this ReadOnlySpanAction<T, TArg> callback, TArg arg, ReadOnlyMemory<T> buffer, CancellationToken token)
         {
             Task result;
             if (token.IsCancellationRequested)
