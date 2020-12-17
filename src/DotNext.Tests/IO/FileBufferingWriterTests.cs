@@ -3,7 +3,7 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -338,12 +338,11 @@ namespace DotNext.IO
                 {"Key1", "Value1"},
                 {"Key2", "Value2"}
             };
-            var formatter = new BinaryFormatter();
             using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: false);
-            formatter.Serialize(writer, dict);
+            DictionarySerializer.Serialize(dict, writer);
             using var manager = writer.GetWrittenContent();
             using var source = StreamSource.AsStream(manager.Memory);
-            Equal(dict, formatter.Deserialize(source));
+            Equal(dict, DictionarySerializer.Deserialize(source));
         }
 
         [Theory]
@@ -357,13 +356,12 @@ namespace DotNext.IO
                 {"Key1", "Value1"},
                 {"Key2", "Value2"}
             };
-            var formatter = new BinaryFormatter();
             using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: false);
-            formatter.Serialize(writer, dict);
+            DictionarySerializer.Serialize(dict, writer);
             using var source = new MemoryStream(1024);
             writer.CopyTo(source);
             source.Position = 0L;
-            Equal(dict, formatter.Deserialize(source));
+            Equal(dict, DictionarySerializer.Deserialize(source));
         }
 
         [Fact]
@@ -388,11 +386,10 @@ namespace DotNext.IO
                 {"Key1", "Value1"},
                 {"Key2", "Value2"}
             };
-            var formatter = new BinaryFormatter();
             using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: false);
-            formatter.Serialize(writer, dict);
+            DictionarySerializer.Serialize(dict, writer);
             using var source = writer.GetWrittenContentAsStream();
-            Equal(dict, formatter.Deserialize(source));
+            Equal(dict, DictionarySerializer.Deserialize(source));
         }
 
         [Theory]
@@ -406,11 +403,10 @@ namespace DotNext.IO
                 {"Key1", "Value1"},
                 {"Key2", "Value2"}
             };
-            var formatter = new BinaryFormatter();
             using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: true);
-            formatter.Serialize(writer, dict);
+            await JsonSerializer.SerializeAsync(writer, dict);
             await using var source = await writer.GetWrittenContentAsStreamAsync();
-            Equal(dict, formatter.Deserialize(source));
+            Equal(dict, await JsonSerializer.DeserializeAsync<Dictionary<string, string>>(source));
         }
 
         [Theory]
