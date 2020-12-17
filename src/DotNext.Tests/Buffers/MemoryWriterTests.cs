@@ -2,13 +2,12 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.Serialization.Formatters.Binary;
 using Xunit;
 using Enumerable = System.Linq.Enumerable;
 
 namespace DotNext.Buffers
 {
-    using StreamSource = IO.StreamSource;
+    using IO;
 
     [ExcludeFromCodeCoverage]
     public sealed class MemoryWriterTests : Test
@@ -157,17 +156,16 @@ namespace DotNext.Buffers
                 {"Key1", "Value1"},
                 {"Key2", "Value2"}
             };
-            var formatter = new BinaryFormatter();
             using var writer = new PooledArrayBufferWriter<byte>();
             // serialize dictionary to memory
             using (var output = StreamSource.AsStream(writer))
             {
-                formatter.Serialize(output, dict);
+                DictionarySerializer.Serialize(dict, output);
             }
             // deserialize from memory
             using (var input = StreamSource.AsStream(writer.WrittenArray))
             {
-                Equal(dict, formatter.Deserialize(input));
+                Equal(dict, DictionarySerializer.Deserialize(input));
             }
         }
 
