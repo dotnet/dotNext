@@ -24,6 +24,7 @@ namespace DotNext
             return result;
         }
 
+        // TODO: Remove support of binary serialization for all types in .NEXT in the next major version
         private protected static T SerializeDeserialize<T>(T value)
             where T : ISerializable
         {
