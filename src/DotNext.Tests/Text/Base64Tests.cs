@@ -19,8 +19,8 @@ namespace DotNext.Text
             var base64 = ToReadOnlySequence<byte>(Encoding.UTF8.GetBytes(Convert.ToBase64String(expected)), chunkSize);
             var actual = new ArrayBufferWriter<byte>();
             var decoder = new Base64Decoder();
-            foreach (var block in base64)
-                decoder.Decode(block.Span, actual);
+            decoder.Decode(base64, actual);
+            False(decoder.NeedMoreData);
 
             Equal(expected, actual.WrittenSpan.ToArray());
         }
@@ -35,8 +35,8 @@ namespace DotNext.Text
             var base64 = ToReadOnlySequence<byte>(Encoding.UTF8.GetBytes(Convert.ToBase64String(expected)), chunkSize);
             var actual = new ArrayBufferWriter<byte>();
             var decoder = new Base64Decoder();
-            foreach (var block in base64)
-                decoder.Decode(block.Span, new ValueReadOnlySpanAction<byte, IBufferWriter<byte>>((input, output) => output.Write(input)), actual);
+            decoder.Decode(base64, new ValueReadOnlySpanAction<byte, IBufferWriter<byte>>((input, output) => output.Write(input)), actual);
+            False(decoder.NeedMoreData);
 
             Equal(expected, actual.WrittenSpan.ToArray());
         }
