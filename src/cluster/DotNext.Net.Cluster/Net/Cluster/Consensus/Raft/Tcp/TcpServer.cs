@@ -233,12 +233,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             {
                 try
                 {
-                    transmissionState.Cancel(false);
+                    if (!transmissionState.IsCancellationRequested)
+                        transmissionState.Cancel(false);
                 }
                 finally
                 {
                     transmissionState.Dispose();
-                    socket.Close(GracefulShutdownTimeout);
                     socket.Dispose();
                 }
 
