@@ -138,6 +138,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             get => Unsafe.Unbox<LogEntry>(initialEntry);
         }
 
+        private long SquashedIndex
+        {
+            get
+            {
+                var commitIndex = state.CommitIndex;
+                return commitIndex - ((commitIndex + 1L) % recordsPerPartition);
+            }
+        }
+
         private async ValueTask<TResult> ReadAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, DataAccessSession session, long startIndex, long endIndex, CancellationToken token)
         {
             if (startIndex > state.LastIndex)
@@ -171,7 +180,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         entry = await snapshot.ReadAsync(session, token).ConfigureAwait(false);
 
                         // skip squashed log entries
-                        startIndex = state.CommitIndex - ((state.CommitIndex + 1) % recordsPerPartition);
+                        startIndex = SquashedIndex;
                     }
                     else
                     {
