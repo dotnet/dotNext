@@ -173,6 +173,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     }
                     else
                     {
+                        Debug.Assert(startIndex == 0L);
+
                         // handle ephemeral entity
                         entry = initialEntry;
                     }
