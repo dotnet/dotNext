@@ -19,7 +19,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             8 bytes = LastIndex
             1 byte = presence of cluster member id
             sizeof(ClusterMemberId) = last vote
-            octet string = IP Address (16 bytes for IPv6)
          */
         private sealed class NodeState : Disposable
         {
