@@ -18,8 +18,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public static async Task RaftPersistentState()
         {
             IPersistentState auditTrail = new ConsensusOnlyState();
-            NotNull(auditTrail.First);
-            Equal(0, auditTrail.First.Term);
             await auditTrail.UpdateTermAsync(10);
             Equal(10, auditTrail.Term);
             await auditTrail.IncrementTermAsync();

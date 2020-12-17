@@ -183,7 +183,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     Null(snapshotIndex);
                     Equal(1L, entries.Count);
-                    Equal(state.First, entries[0]);
+                    Equal(0L, entries[0].Term);
                     return default;
                 };
                 await state.ReadAsync(checker, 0L, CancellationToken.None);
@@ -193,7 +193,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     Null(snapshotIndex);
                     Equal(2, entries.Count);
-                    Equal(state.First, entries[0]);
+                    Equal(0L, entries[0].Term);
                     Equal(42L, entries[1].Term);
                     Equal(entry.Content, await entries[1].ToStringAsync(Encoding.UTF8));
                     return Missing.Value;
@@ -219,7 +219,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     Null(snapshotIndex);
                     Equal(2, entries.Count);
-                    Equal(state.First, entries[0]);
+                    Equal(0L, entries[0].Term);
                     Equal(42L, entries[1].Term);
                     Equal(entry.Content, await entries[1].ToStringAsync(Encoding.UTF8));
                     return Missing.Value;
@@ -228,7 +228,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     Null(snapshotIndex);
                     Equal(2, entries.Count);
-                    Equal(state.First, entries[0]);
+                    Equal(0L, entries[0].Term);
                     Equal(42L, entries[1].Term);
                     Equal(entry.Content, await entries[1].ToStringAsync(Encoding.UTF8));
                     //execute reader inside of another reader which is not possible for ConsensusOnlyState
@@ -317,7 +317,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     Null(snapshotIndex);
                     Equal(1L, entries.Count);
-                    Equal(state.First, entries[0]);
+                    Equal(0L, entries[0].Term);
                     False(entries[0].IsSnapshot);
                     return default;
                 };
@@ -331,7 +331,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     Null(snapshotIndex);
                     Equal(6, entries.Count);
                     False(entries[0].IsSnapshot);
-                    Equal(state.First, entries[0]);
+                    Equal(0L, entries[0].Term);
                     Equal(42L, entries[1].Term);
                     Equal(entry1.Content, await entries[1].ToStringAsync(Encoding.UTF8));
                     Equal(entry1.Timestamp, entries[1].Timestamp);
@@ -365,7 +365,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     Null(snapshotIndex);
                     False(entries[0].IsSnapshot);
                     Equal(6, entries.Count);
-                    Equal(state.First, entries[0]);
+                    Equal(0L, entries[0].Term);
                     Equal(42L, entries[1].Term);
                     Equal(entry1.Content, await entries[1].ToStringAsync(Encoding.UTF8));
                     Equal(entry1.Timestamp, entries[1].Timestamp);

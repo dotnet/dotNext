@@ -21,7 +21,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// </remarks>
     public sealed class ConsensusOnlyState : Disposable, IPersistentState
     {
-        private static readonly IRaftLogEntry First = new EmptyEntry(0L);
         private static readonly Func<ConsensusOnlyState, long, bool> IsCommittedPredicate = IsCommitted;
 
         [StructLayout(LayoutKind.Auto)]
@@ -89,9 +88,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         /// <inheritdoc/>
         long IPersistentState.Term => term.VolatileRead();
-
-        /// <inheritdoc/>
-        ref readonly IRaftLogEntry IAuditTrail<IRaftLogEntry>.First => ref First;
 
         private static bool IsCommitted(ConsensusOnlyState state, long index) => index <= state.commitIndex.VolatileRead();
 

@@ -49,7 +49,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly DirectoryInfo location;
         private readonly AsyncManualResetEvent commitEvent;
         private readonly AsyncSharedLock syncRoot;
-        private readonly IRaftLogEntry initialEntry;
+        private readonly LogEntry initialEntry;
         private readonly long initialSize;
         private readonly MemoryAllocator<LogEntry>? entryPool;
         private readonly MemoryAllocator<LogEntryMetadata>? metadataPool;
@@ -132,12 +132,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private Partition CreatePartition(long partitionNumber)
             => new Partition(location, Buffer.Length, recordsPerPartition, partitionNumber, metadataPool, sessionManager.Capacity);
 
-        private LogEntry First
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => Unsafe.Unbox<LogEntry>(initialEntry);
-        }
-
         private long SquashedIndex
         {
             get
@@ -164,12 +158,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 var listIndex = 0;
                 for (Partition? partition = null; startIndex <= endIndex; list[listIndex++] = entry, startIndex++)
                 {
-                    // handle ephemeral entity
-                    if (startIndex == 0L)
-                    {
-                        entry = First;
-                    }
-                    else if (TryGetPartition(startIndex, ref partition, out var switched))
+                    if (startIndex > 0L && TryGetPartition(startIndex, ref partition, out var switched))
                     {
                         // handle regular record
                         entry = (await partition.ReadAsync(session, startIndex, true, switched, token).ConfigureAwait(false)).Value;
@@ -184,7 +173,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     }
                     else
                     {
-                        break;
+                        // handle ephemeral entity
+                        entry = initialEntry;
                     }
                 }
 
@@ -197,7 +187,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             else
             {
-                result = startIndex == 0L ? reader.ReadAsync<LogEntry, SingletonEntryList<LogEntry>>(new SingletonEntryList<LogEntry>(First), null, token) : reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
+                result = startIndex == 0L ? reader.ReadAsync<LogEntry, SingletonEntryList<LogEntry>>(new SingletonEntryList<LogEntry>(initialEntry), null, token) : reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
             }
 
             return await result.ConfigureAwait(false);
@@ -855,9 +845,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <exception cref="TimeoutException">Timeout occurred.</exception>
         public Task EnsureConsistencyAsync(TimeSpan timeout, CancellationToken token)
             => IsConsistent ? Task.CompletedTask : EnsureConsistencyImpl(timeout, token);
-
-        /// <inheritdoc/>
-        ref readonly IRaftLogEntry IAuditTrail<IRaftLogEntry>.First => ref initialEntry;
 
         /// <inheritdoc/>
         bool IPersistentState.IsVotedFor(IRaftClusterMember? member) => state.IsVotedFor(member?.Id);

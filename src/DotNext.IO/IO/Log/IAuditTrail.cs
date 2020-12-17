@@ -280,14 +280,5 @@ namespace DotNext.IO.Log
         ValueTask<long> AppendAsync<TEntryImpl>(TEntryImpl entry, CancellationToken token = default)
             where TEntryImpl : notnull, TEntry
             => AppendAsync(new SingleEntryProducer<TEntryImpl>(entry), token);
-
-        /// <summary>
-        /// Gets the first ephemeral log entry that is present in the empty log.
-        /// </summary>
-        /// <remarks>
-        /// The first log entry always represents NOP database command and is already committed.
-        /// Index of such entry is always 0.
-        /// </remarks>
-        ref readonly TEntry First { get; }
     }
 }
