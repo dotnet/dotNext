@@ -95,14 +95,12 @@ namespace DotNext.Text
 #endif
         private void DecodeCore<TArg>(ReadOnlySpan<byte> utf8Chars, in ValueReadOnlySpanAction<byte, TArg> output, TArg arg)
         {
-            const int chunkSize = 256;
-            Span<byte> buffer = stackalloc byte[chunkSize];
-            int consumed;
+            Span<byte> buffer = stackalloc byte[256];
 
             consume_next_chunk:
 
             // x & 3 is the same as x % 4
-            switch (Base64.DecodeFromUtf8(utf8Chars, buffer, out consumed, out var produced, (utf8Chars.Length & 3) == 0))
+            switch (Base64.DecodeFromUtf8(utf8Chars, buffer, out var consumed, out var produced, (utf8Chars.Length & 3) == 0))
             {
                 case OperationStatus.Done:
                     reservedBufferSize = 0;
