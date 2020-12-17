@@ -3,7 +3,6 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -369,17 +368,16 @@ namespace DotNext.IO
                 {"Key1", "Value1"},
                 {"Key2", "Value2"}
             };
-            var formatter = new BinaryFormatter();
 
             using (var ms = new MemoryStream(1024))
             {
-                formatter.Serialize(ms, dict);
+                DictionarySerializer.Serialize(dict, ms);
                 ms.Position = 0L;
                 sequence = ToReadOnlySequence<byte>(ms.ToArray(), 10);
             }
 
             using var stream = sequence.AsStream();
-            Equal(dict, formatter.Deserialize(stream));
+            Equal(dict, DictionarySerializer.Deserialize(stream));
         }
 
         private sealed class FlushCounter
