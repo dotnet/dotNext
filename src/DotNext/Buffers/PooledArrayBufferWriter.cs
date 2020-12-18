@@ -213,7 +213,12 @@ namespace DotNext.Buffers
             {
                 buffer = pool.Rent(items.Length);
             }
-            else if (index + items.Length > GetLength(buffer))
+            else if (index + items.Length <= GetLength(buffer))
+            {
+                if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+                    Array.Clear(buffer, index, position - index);
+            }
+            else
             {
                 var newBuffer = pool.Rent(index + items.Length);
                 Array.Copy(buffer, 0, newBuffer, 0, index);
@@ -279,7 +284,7 @@ namespace DotNext.Buffers
 
         private void ReleaseBuffer()
         {
-            if (buffer.Length > 0)
+            if (GetLength(buffer) > 0)
                 pool.Return(buffer, RuntimeHelpers.IsReferenceOrContainsReferences<T>());
         }
 
