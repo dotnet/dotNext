@@ -8,7 +8,7 @@ namespace DotNext.IO
 {
     using static Threading.AsyncDelegate;
 
-    internal abstract class ReadOnlyStream : Stream
+    internal abstract class ReadOnlyStream : Stream, IFlushable
     {
         public sealed override bool CanRead => true;
 

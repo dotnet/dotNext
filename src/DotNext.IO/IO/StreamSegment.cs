@@ -11,7 +11,7 @@ namespace DotNext.IO
     /// <remarks>
     /// The segmentation is supported only for seekable streams.
     /// </remarks>
-    public sealed class StreamSegment : Stream
+    public sealed class StreamSegment : Stream, IFlushable
     {
         private readonly bool leaveOpen;
         private long length, position;
