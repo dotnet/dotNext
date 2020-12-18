@@ -293,10 +293,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 throw new ArgumentOutOfRangeException(nameof(snapshotIndex));
 
             // 1. Save the snapshot into temporary file to avoid corruption caused by network connection
-            string tempSnapshotFile, snapshotFile = this.snapshot.Name;
+            string tempSnapshotFile, snapshotFile = this.snapshot.FileName;
             using (var tempSnapshot = new Snapshot(location, Buffer.Length, 0, true))
             {
-                tempSnapshotFile = tempSnapshot.Name;
+                tempSnapshotFile = tempSnapshot.FileName;
                 await tempSnapshot.WriteAsync(sessionManager.WriteSession, snapshot, snapshotIndex, CancellationToken.None).ConfigureAwait(false);
             }
 
@@ -578,7 +578,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 partitionNumber += (remainder > 0L).ToInt32();
                 for (Partition? partition; partitionTable.TryGetValue(partitionNumber, out partition); partitionNumber++)
                 {
-                    var fileName = partition.Name;
+                    var fileName = partition.FileName;
                     partitionTable.Remove(partitionNumber);
                     partition.Dispose();
                     File.Delete(fileName);

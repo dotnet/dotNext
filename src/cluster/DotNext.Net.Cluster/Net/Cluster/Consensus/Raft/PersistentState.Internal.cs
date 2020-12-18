@@ -48,18 +48,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal static int Size => Unsafe.SizeOf<SnapshotMetadata>();
         }
 
-        private abstract class ConcurrentStorageAccess : FileStream
+        private abstract class ConcurrentStorageAccess : Disposable, IAsyncDisposable, IFlushable
         {
+            // do not derive from FileStream because some virtual methods
+            // assumes that they are overridden and do async calls inefficiently
+            private protected readonly FileStream fs;
             private readonly StreamSegment[] readers;   // a pool of read-only streams that can be shared between multiple readers in parallel
 
             [SuppressMessage("Reliability", "CA2000", Justification = "All streams are disposed in Dispose method")]
             private protected ConcurrentStorageAccess(string fileName, int bufferSize, int readersCount, FileOptions options)
-                : base(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, bufferSize, options)
             {
+                fs = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, bufferSize, options);
                 readers = new StreamSegment[readersCount];
                 if (readersCount == 1)
                 {
-                    readers[0] = new StreamSegment(this, true);
+                    readers[0] = new StreamSegment(fs, true);
                 }
                 else
                 {
@@ -67,6 +70,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         reader = new StreamSegment(new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, bufferSize, FileOptions.Asynchronous | FileOptions.RandomAccess), false);
                 }
             }
+
+            internal long Length => fs.Length;
+
+            public Task FlushAsync(CancellationToken token = default) => fs.FlushAsync(token);
+
+            public void Flush() => fs.Flush(true);
+
+            internal string FileName => fs.Name;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private protected StreamSegment GetReadSessionStream(in DataAccessSession session) => readers[session.SessionId];
@@ -85,12 +96,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         reader?.Dispose();
                         reader = null;
                     }
+
+                    fs.Dispose();
                 }
 
                 base.Dispose(disposing);
             }
 
-            public override async ValueTask DisposeAsync()
+            public async ValueTask DisposeAsync()
             {
                 foreach (Stream? reader in readers)
                 {
@@ -99,7 +112,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
 
                 Array.Clear(readers, 0, readers.Length);
-                await base.DisposeAsync().ConfigureAwait(false);
+                await fs.DisposeAsync().ConfigureAwait(false);
                 base.Dispose(true);
             }
         }

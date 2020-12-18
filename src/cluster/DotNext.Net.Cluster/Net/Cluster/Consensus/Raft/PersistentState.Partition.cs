@@ -42,7 +42,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal long LastIndex => FirstIndex + Capacity - 1;
 
-            internal void Allocate(long initialSize) => SetLength(initialSize + PayloadOffset);
+            internal void Allocate(long initialSize) => fs.SetLength(initialSize + PayloadOffset);
 
             private void PopulateCache(Span<byte> buffer, Span<LogEntryMetadata> lookupCache)
             {
@@ -51,7 +51,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     count = Math.Min(buffer.Length / LogEntryMetadata.Size, lookupCache.Length - index);
                     var maxBytes = count * LogEntryMetadata.Size;
                     var source = buffer.Slice(0, maxBytes);
-                    if (Read(source) < maxBytes)
+                    if (fs.Read(source) < maxBytes)
                         throw new EndOfStreamException();
                     var destination = AsBytes(lookupCache.Slice(index));
                     source.CopyTo(destination);
@@ -107,8 +107,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 else if (lookupCache.IsEmpty)
                 {
                     // read content offset and the length of the previous entry
-                    Position = (index - 1) * LogEntryMetadata.Size;
-                    metadata = await this.ReadAsync<LogEntryMetadata>(buffer).ConfigureAwait(false);
+                    fs.Position = (index - 1) * LogEntryMetadata.Size;
+                    metadata = await fs.ReadAsync<LogEntryMetadata>(buffer).ConfigureAwait(false);
                     Debug.Assert(metadata.Offset > 0, "Previous entry doesn't exist for unknown reason");
                     offset = metadata.Length + metadata.Offset;
                 }
@@ -120,13 +120,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
 
                 // write content
-                Position = offset;
-                await entry.WriteToAsync(this, buffer).ConfigureAwait(false);
-                metadata = LogEntryMetadata.Create(entry, offset, Position - offset);
+                fs.Position = offset;
+                await entry.WriteToAsync(fs, buffer).ConfigureAwait(false);
+                metadata = LogEntryMetadata.Create(entry, offset, fs.Position - offset);
 
                 // record new log entry to the allocation table
-                Position = index * LogEntryMetadata.Size;
-                await this.WriteAsync(metadata, buffer).ConfigureAwait(false);
+                fs.Position = index * LogEntryMetadata.Size;
+                await fs.WriteAsync(metadata, buffer).ConfigureAwait(false);
 
                 // update cache
                 if (!lookupCache.IsEmpty)
@@ -166,17 +166,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             internal override void PopulateCache(in DataAccessSession session)
-                => Index = Length > 0L ? this.Read<SnapshotMetadata>().Index : 0L;
+                => Index = fs.Length > 0L ? fs.Read<SnapshotMetadata>().Index : 0L;
 
             private async ValueTask WriteAsync<TEntry>(TEntry entry, long index, Memory<byte> buffer, CancellationToken token)
                 where TEntry : notnull, IRaftLogEntry
             {
                 Index = index;
-                Position = SnapshotMetadata.Size;
-                await entry.WriteToAsync(this, buffer, token).ConfigureAwait(false);
-                var metadata = SnapshotMetadata.Create(entry, index, Length - SnapshotMetadata.Size);
-                Position = 0;
-                await this.WriteAsync(metadata, buffer, token).ConfigureAwait(false);
+                fs.Position = SnapshotMetadata.Size;
+                await entry.WriteToAsync(fs, buffer, token).ConfigureAwait(false);
+                var metadata = SnapshotMetadata.Create(entry, index, fs.Length - SnapshotMetadata.Size);
+                fs.Position = 0;
+                await fs.WriteAsync(metadata, buffer, token).ConfigureAwait(false);
             }
 
             internal ValueTask WriteAsync<TEntry>(in DataAccessSession session, TEntry entry, long index, CancellationToken token)
@@ -259,7 +259,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             foreach (var (partitionNumber, partition) in partitions)
             {
                 partitionTable.Remove(partitionNumber);
-                var fileName = partition.Name;
+                var fileName = partition.FileName;
                 partition.Dispose();
                 File.Delete(fileName);
             }
