@@ -209,6 +209,8 @@ namespace DotNext.Buffers
 
             Equal(40, writer.WrittenMemory.Span[0]);
             Equal(50, writer.WrittenMemory.Span[9]);
+            Equal(40, writer[0]);
+            Equal(50, writer[9]);
         }
 
         [Fact]
