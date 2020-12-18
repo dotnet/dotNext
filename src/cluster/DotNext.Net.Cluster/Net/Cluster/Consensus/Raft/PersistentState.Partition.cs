@@ -13,6 +13,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using Buffers;
     using IO;
+    using IntegrityException = IO.Log.IntegrityException;
 
     public partial class PersistentState
     {
@@ -64,7 +65,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     PopulateCache(session.Buffer.Span, lookupCache.Memory.Span.Slice(0, Capacity));
             }
 
-            private async ValueTask<LogEntry?> ReadAsync(StreamSegment reader, Memory<byte> buffer, int index, bool refreshStream, CancellationToken token)
+            private async ValueTask<LogEntry> ReadAsync(StreamSegment reader, Memory<byte> buffer, int index, bool refreshStream, CancellationToken token)
             {
                 Debug.Assert(index >= 0 && index < Capacity, $"Invalid index value {index}, offset {FirstIndex}");
 
@@ -82,10 +83,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     metadata = lookupCache[index];
                 }
 
-                return metadata.Offset > 0 ? new LogEntry(reader, buffer, metadata) : new LogEntry?();
+                return metadata.Offset > 0 ? new LogEntry(reader, buffer, metadata) : throw new MissingLogEntryException(index, FirstIndex, LastIndex, FileName);
             }
 
-            internal ValueTask<LogEntry?> ReadAsync(in DataAccessSession session, long index, bool absoluteIndex, bool refreshStream, CancellationToken token)
+            internal ValueTask<LogEntry> ReadAsync(in DataAccessSession session, long index, bool absoluteIndex, bool refreshStream, CancellationToken token)
             {
                 // calculate relative index
                 if (absoluteIndex)
@@ -201,6 +202,56 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 get;
                 private set;
             }
+        }
+
+        /// <summary>
+        /// Indicates that the log entry doesn't have a partition.
+        /// </summary>
+        public sealed class MissingPartitionException : IntegrityException
+        {
+            internal MissingPartitionException(long index)
+                : base(ExceptionMessages.MissingPartition(index))
+                => Index = index;
+
+            /// <summary>
+            /// Gets the index of the log entry.
+            /// </summary>
+            public long Index { get; }
+        }
+
+        /// <summary>
+        /// Indicates that the log record cannot be restored from the partition.
+        /// </summary>
+        public sealed class MissingLogEntryException : IntegrityException
+        {
+            internal MissingLogEntryException(long relativeIndex, long firstIndex, long lastIndex, string fileName)
+                : base(ExceptionMessages.MissingLogEntry(relativeIndex + firstIndex, fileName))
+            {
+                Index = relativeIndex + firstIndex;
+                PartitionFirstIndex = firstIndex;
+                PartitionLastIndex = lastIndex;
+                PartitionFileName = fileName;
+            }
+
+            /// <summary>
+            /// Gets index of the log record.
+            /// </summary>
+            public long Index { get; }
+
+            /// <summary>
+            /// Gets index of the first log record in the partition.
+            /// </summary>
+            public long PartitionFirstIndex { get; }
+
+            /// <summary>
+            /// Gets index of the last log record in the partition.
+            /// </summary>
+            public long PartitionLastIndex { get; }
+
+            /// <summary>
+            /// Gets file name of the partition.
+            /// </summary>
+            public string PartitionFileName { get; }
         }
 
         private readonly int recordsPerPartition;

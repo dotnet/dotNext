@@ -161,7 +161,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     if (startIndex > 0L && TryGetPartition(startIndex, ref partition, out var switched))
                     {
                         // handle regular record
-                        entry = (await partition.ReadAsync(session, startIndex, true, switched, token).ConfigureAwait(false)).Value;
+                        entry = await partition.ReadAsync(session, startIndex, true, switched, token).ConfigureAwait(false);
                     }
                     else if (snapshot.Length > 0 && startIndex <= state.CommitIndex)
                     {
@@ -647,7 +647,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     // ignore the ephemeral entry
                     if (partition.FirstIndex > 0L || i > 0L)
                     {
-                        entry = (await partition.ReadAsync(sessionManager.WriteSession, i, false, false, token).ConfigureAwait(false)).Value;
+                        entry = await partition.ReadAsync(sessionManager.WriteSession, i, false, false, token).ConfigureAwait(false);
                         entry.Reset();
                         await builder.ApplyCoreAsync(entry).ConfigureAwait(false);
                     }
@@ -755,14 +755,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 if (TryGetPartition(startIndex, ref partition, out var switched))
                 {
-                    var entry = (await partition.ReadAsync(sessionManager.WriteSession, startIndex, true, switched, token).ConfigureAwait(false)).Value;
+                    var entry = await partition.ReadAsync(sessionManager.WriteSession, startIndex, true, switched, token).ConfigureAwait(false);
                     entry.Reset();
                     await ApplyAsync(entry).ConfigureAwait(false);
                     lastTerm.VolatileWrite(entry.Term);
                 }
                 else
                 {
-                    Debug.Fail($"Log entry with index {startIndex} doesn't have partition");
+                    throw new MissingPartitionException(startIndex);
                 }
             }
 

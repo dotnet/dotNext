@@ -46,5 +46,9 @@ namespace DotNext
         internal static string UnavailableMember => (string)Resources.Get();
 
         internal static string UnresolvedLocalMember => (string)Resources.Get();
+
+        internal static string MissingPartition(long index) => Resources.Get().Format(index);
+
+        internal static string MissingLogEntry(long index, string fileName) => Resources.Get().Format(index, fileName);
     }
 }
