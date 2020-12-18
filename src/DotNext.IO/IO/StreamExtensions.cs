@@ -1521,11 +1521,16 @@ namespace DotNext.IO
         {
             if (length == 0)
                 return string.Empty;
-            using MemoryRental<byte> bytesBuffer = length <= MemoryRental<byte>.StackallocThreshold ? stackalloc byte[length] : new MemoryRental<byte>(length);
+
+            int charCount;
             using MemoryRental<char> charBuffer = length <= MemoryRental<char>.StackallocThreshold ? stackalloc char[length] : new MemoryRental<char>(length);
-            if (bytesBuffer.Length != stream.Read(bytesBuffer.Span))
-                throw new EndOfStreamException();
-            var charCount = encoding.GetChars(bytesBuffer.Span, charBuffer.Span);
+
+            using (MemoryRental<byte> bytesBuffer = length <= MemoryRental<byte>.StackallocThreshold ? stackalloc byte[length] : new MemoryRental<byte>(length))
+            {
+                stream.ReadBlock(bytesBuffer.Span);
+                charCount = encoding.GetChars(bytesBuffer.Span, charBuffer.Span);
+            }
+
             return new string(charBuffer.Span.Slice(0, charCount));
         }
 
