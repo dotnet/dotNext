@@ -157,7 +157,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
          */
         private sealed class Snapshot : ConcurrentStorageAccess
         {
-            private const string FileName = "snapshot";
+            private new const string FileName = "snapshot";
             private const string TempFileName = "snapshot.new";
 
             internal Snapshot(DirectoryInfo location, int bufferSize, int readersCount, bool tempSnapshot = false)
