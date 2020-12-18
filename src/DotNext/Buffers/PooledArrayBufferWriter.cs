@@ -79,7 +79,16 @@ namespace DotNext.Buffers
         /// <value>The element at the specified index.</value>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> the index is invalid.</exception>
         /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
-        public new ref T this[int index]
+        public new ref T this[int index] => ref this[(long)index];
+
+        /// <summary>
+        /// Gets the element at the specified index.
+        /// </summary>
+        /// <param name="index">The index of the element to retrieve.</param>
+        /// <value>The element at the specified index.</value>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> the index is invalid.</exception>
+        /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
+        public ref T this[long index]
         {
             get
             {
