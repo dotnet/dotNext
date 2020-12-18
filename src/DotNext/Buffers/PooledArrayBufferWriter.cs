@@ -196,6 +196,35 @@ namespace DotNext.Buffers
             return;
         }
 
+        /// <summary>
+        /// Overwrites the elements in this buffer.
+        /// </summary>
+        /// <param name="index">The zero-based index at which the new elements should be rewritten.</param>
+        /// <param name="items">The span whose elements should be added into this buffer.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> the index is invalid.</exception>
+        /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
+        public void Overwrite(int index, ReadOnlySpan<T> items)
+        {
+            ThrowIfDisposed();
+            if (index < 0 || index > position)
+                throw new ArgumentOutOfRangeException(nameof(index));
+
+            if (GetLength(buffer) == 0)
+            {
+                buffer = pool.Rent(items.Length);
+            }
+            else if (index + items.Length > GetLength(buffer))
+            {
+                var newBuffer = pool.Rent(index + items.Length);
+                Array.Copy(buffer, 0, newBuffer, 0, index);
+                ReleaseBuffer();
+                buffer = newBuffer;
+            }
+
+            items.CopyTo(buffer.AsSpan(index));
+            position = index + items.Length;
+        }
+
         /// <inheritdoc/>
         T IList<T>.this[int index]
         {

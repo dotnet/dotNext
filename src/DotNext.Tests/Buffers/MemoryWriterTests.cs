@@ -298,7 +298,7 @@ namespace DotNext.Buffers
         }
 
         [Fact]
-        public void Insertions()
+        public static void Insertion()
         {
             Span<byte> block = stackalloc byte[] { 10, 20, 30 };
             using var writer = new PooledArrayBufferWriter<byte>();
@@ -333,6 +333,28 @@ namespace DotNext.Buffers
             writer.Insert(writer.WrittenCount - 1, block);
             Equal(random[0..(random.Length - 1)], writer.WrittenMemory.Span.Slice(0, random.Length - 1).ToArray());
             Equal(block.ToArray(), writer.WrittenMemory.Span.Slice(random.Length - 1, 3).ToArray());
+        }
+
+        [Fact]
+        public static void Overwrite()
+        {
+            Span<byte> block = stackalloc byte[] { 10, 20, 30 };
+            using var writer = new PooledArrayBufferWriter<byte>();
+
+            writer.Overwrite(0, block);
+            Equal(3, writer.WrittenCount);
+            Equal(10, writer[0]);
+            Equal(20, writer[1]);
+            Equal(30, writer[2]);
+
+            writer.Clear(true);
+            var random = RandomBytes(writer.FreeCapacity);
+            writer.Write(random);
+            Equal(0, writer.FreeCapacity);
+            var random2 = RandomBytes(random.Length + 1);
+            writer.Overwrite(1, random2);
+            Equal(random[0], writer[0]);
+            Equal(random2, writer.WrittenMemory.Span.Slice(1).ToArray());
         }
 
         private sealed class AllocationEventCounter
