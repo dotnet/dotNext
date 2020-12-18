@@ -6,6 +6,8 @@ using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.Buffers
 {
+    using static Runtime.Intrinsics;
+
     /// <summary>
     /// Represents memory writer that is backed by the array obtained from the pool.
     /// </summary>
@@ -152,31 +154,46 @@ namespace DotNext.Buffers
 
         /// <inheritdoc/>
         void IList<T>.Insert(int index, T item)
+            => Insert(index, CreateReadOnlySpan(ref item, 1));
+
+        /// <summary>
+        /// Inserts the elements into this buffer at the specified index.
+        /// </summary>
+        /// <param name="index">The zero-based index at which the new elements should be inserted.</param>
+        /// <param name="items">The span whose elements should be inserted into this buffer.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> the index is invalid.</exception>
+        /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
+        public void Insert(int index, ReadOnlySpan<T> items)
         {
             ThrowIfDisposed();
             if (index < 0 || index > position)
                 throw new ArgumentOutOfRangeException(nameof(index));
 
-            if (position == 0)
+            if (items.IsEmpty)
+                goto exit;
+
+            if (GetLength(buffer) == 0)
             {
-                if (buffer.LongLength == 0L)
-                    buffer = pool.Rent(1);
+                buffer = pool.Rent(items.Length);
             }
-            else if (position < buffer.LongLength)
+            else if (position + items.Length <= GetLength(buffer))
             {
-                Array.Copy(buffer, index, buffer, index + 1, position - index);
+                Array.Copy(buffer, index, buffer, index + items.Length, position - index);
             }
             else
             {
-                var newBuffer = pool.Rent(buffer.Length + 1);
-                Array.Copy(buffer, 0, newBuffer, 0, Math.Min(index + 1, buffer.LongLength));
-                Array.Copy(buffer, index, newBuffer, index + 1, buffer.LongLength - index);
+                var newBuffer = pool.Rent(buffer.Length + items.Length);
+                Array.Copy(buffer, 0, newBuffer, 0, index);
+                Array.Copy(buffer, index, newBuffer, index + items.Length, buffer.LongLength - index);
                 ReleaseBuffer();
                 buffer = newBuffer;
             }
 
-            buffer[index] = item;
-            position += 1;
+            items.CopyTo(buffer.AsSpan(index));
+            position += items.Length;
+
+            exit:
+            return;
         }
 
         /// <inheritdoc/>
