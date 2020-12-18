@@ -51,7 +51,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal DataAccessSession OpenSession(int bufferSize)
             {
-                if (tokens is null || bufferPool is null)
+                if (tokens is null)
                     return WriteSession;
                 if (tokens.TryTake(out var sessionId))
                     return new DataAccessSession(sessionId, bufferPool, bufferSize);
