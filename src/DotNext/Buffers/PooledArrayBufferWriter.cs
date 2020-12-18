@@ -1,8 +1,8 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
-using System.IO;
 using System.Runtime.CompilerServices;
+using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.Buffers
 {
@@ -95,7 +95,11 @@ namespace DotNext.Buffers
                 ThrowIfDisposed();
                 if (index < 0 || index >= position)
                     throw new ArgumentOutOfRangeException(nameof(index));
+#if !NETSTANDARD2_1
+                return ref Unsafe.Add(ref GetArrayDataReference(buffer), new IntPtr(index));
+#else
                 return ref buffer[index];
+#endif
             }
         }
 
