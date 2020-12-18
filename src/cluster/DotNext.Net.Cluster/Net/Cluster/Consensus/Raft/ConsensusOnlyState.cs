@@ -81,7 +81,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private readonly AsyncReaderWriterLock syncRoot = new AsyncReaderWriterLock();
         private readonly AsyncManualResetEvent commitEvent = new AsyncManualResetEvent(false);
-        private readonly long[] singleEntryTerm = new long[1];  // cached array with 1 element
         private long term, commitIndex, lastTerm, index;
         private volatile IRaftClusterMember? votedFor;
         private volatile long[] log = Array.Empty<long>();    // log of uncommitted entries
@@ -183,7 +182,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
                 else
                 {
-                    singleEntryTerm[0] = entry.Term;
+                    long[] singleEntryTerm = { entry.Term };
                     Append(singleEntryTerm, startIndex);
                 }
             }
