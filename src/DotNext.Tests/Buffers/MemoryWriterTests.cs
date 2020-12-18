@@ -132,6 +132,9 @@ namespace DotNext.Buffers
             Equal(10, result[0]);
             Equal(20, result[1]);
             Equal(30, result[2]);
+            Equal(10, writer[0]);
+            Equal(20, writer[1]);
+            Equal(30, writer[2]);
 
             memory = writer.GetArray(3);
             new ArraySegment<byte>(new byte[] { 40, 50, 60 }).CopyTo(memory);
