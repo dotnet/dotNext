@@ -201,7 +201,7 @@ namespace DotNext.Buffers
                     buffer = extraBuffer.Memory.Span;
                 }
 
-                return ref buffer[index];
+                return ref Unsafe.Add(ref MemoryMarshal.GetReference(buffer), index);
             }
         }
 
