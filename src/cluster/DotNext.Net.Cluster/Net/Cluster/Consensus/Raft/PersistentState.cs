@@ -887,10 +887,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             base.Dispose(disposing);
         }
 
-        /// <summary>
-        /// Releases managed resources asynchronously.
-        /// </summary>
-        /// <returns>A task representing state of asynchronous execution.</returns>
+        /// <inheritdoc />
         protected override async ValueTask DisposeAsyncCore()
         {
             foreach (var partition in partitionTable.Values)

@@ -97,14 +97,13 @@ namespace DotNext.IO
             base.Dispose(disposing);
         }
 
+        /// <inheritdoc />
+        protected override ValueTask DisposeAsyncCore() => content.DisposeAsync();
+
         /// <summary>
         /// Asynchronously releases the resources associated with this object.
         /// </summary>
         /// <returns>A task that represents the asynchronous dispose operation.</returns>
-        public virtual ValueTask DisposeAsync()
-        {
-            base.Dispose(false);
-            return content.DisposeAsync();
-        }
+        public ValueTask DisposeAsync() => DisposeAsync(false);
     }
 }
