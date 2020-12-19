@@ -24,7 +24,6 @@ namespace DotNext.Buffers
     {
         private readonly Span<T> initialBuffer;
         private readonly MemoryAllocator<T>? allocator;
-        private readonly bool copyOnOverflow;
         private MemoryOwner<T> extraBuffer;
         private int position;
 
@@ -32,26 +31,19 @@ namespace DotNext.Buffers
         /// Initializes growable builder.
         /// </summary>
         /// <param name="buffer">Pre-allocated buffer used by this builder.</param>
-        /// <param name="copyOnOverflow">
-        /// <see langword="true"/> to copy pre-allocated buffer to pooled memory on overflow;
-        /// <see langword="false"/> to keep head of the written content in the pre-allocated buffer.
-        /// </param>
         /// <param name="allocator">The memory allocator used to rent the memory blocks.</param>
         /// <remarks>
         /// The builder created with this constructor is growable. However, additional memory will not be
         /// requested using <paramref name="allocator"/> while <paramref name="buffer"/> space is sufficient.
         /// If <paramref name="allocator"/> is <see langword="null"/> then <see cref="ArrayPool{T}.Shared"/>
         /// is used for memory pooling.
-        /// <see cref="WrittenSpan"/> property is supported only if <paramref name="copyOnOverflow"/> is <see langword="true"/>.
-        /// Otherwise, it's not possible to represent written content as contiguous memory block.
         /// </remarks>
-        public BufferWriterSlim(Span<T> buffer, bool copyOnOverflow, MemoryAllocator<T>? allocator = null)
+        public BufferWriterSlim(Span<T> buffer, MemoryAllocator<T>? allocator = null)
         {
             initialBuffer = buffer;
             this.allocator = allocator;
             extraBuffer = default;
             position = 0;
-            this.copyOnOverflow = copyOnOverflow;
         }
 
         private int Overflow => Math.Max(0, position - initialBuffer.Length);
@@ -75,17 +67,10 @@ namespace DotNext.Buffers
         /// Gets span over constructed memory block.
         /// </summary>
         /// <value>The constructed memory block.</value>
-        /// <exception cref="NotSupportedException">
-        /// If this builder was constructed using <see cref="BufferWriterSlim{T}(Span{T}, bool, MemoryAllocator{T})"/>
-        /// constructor and <c>copyOnOverflow</c> parameter is <see langword="false"/>.
-        /// </exception>
         public readonly ReadOnlySpan<T> WrittenSpan
         {
             get
             {
-                if (!copyOnOverflow)
-                    throw new NotSupportedException();
-
                 var result = position <= initialBuffer.Length ? initialBuffer : extraBuffer.Memory.Span;
                 return result.Slice(0, position);
             }
@@ -105,62 +90,32 @@ namespace DotNext.Buffers
             var newSize = checked(position + input.Length);
             Span<T> output;
             int offset;
-            MemoryOwner<T> newBuffer;
 
-            if (copyOnOverflow)
+            // grow if needed
+            if (newSize > initialBuffer.Length)
             {
-                // grow if needed
-                if (newSize > initialBuffer.Length)
+                if (extraBuffer.IsEmpty)
                 {
-                    if (extraBuffer.IsEmpty)
-                    {
-                        extraBuffer = allocator.Invoke(newSize, false);
-                        initialBuffer.CopyTo(extraBuffer.Memory.Span);
-                        initialBuffer.Clear();
-                    }
-                    else if (newSize > extraBuffer.Length)
-                    {
-                        newBuffer = allocator.Invoke(newSize, false);
-                        extraBuffer.Memory.CopyTo(newBuffer.Memory);
-                        extraBuffer.Dispose();
-                        extraBuffer = newBuffer;
-                    }
-
-                    output = extraBuffer.Memory.Span;
+                    extraBuffer = allocator.Invoke(newSize, false);
+                    initialBuffer.CopyTo(extraBuffer.Memory.Span);
+                    initialBuffer.Clear();
                 }
-                else
+                else if (newSize > extraBuffer.Length)
                 {
-                    output = initialBuffer;
-                }
-
-                offset = position;
-            }
-            else
-            {
-                // grow if needed
-                if (newSize > initialBuffer.Length && newSize - initialBuffer.Length > extraBuffer.Length)
-                {
-                    newBuffer = allocator.Invoke(newSize, false);
+                    var newBuffer = allocator.Invoke(newSize, false);
                     extraBuffer.Memory.CopyTo(newBuffer.Memory);
                     extraBuffer.Dispose();
                     extraBuffer = newBuffer;
                 }
 
-                // append elements
-                if (position < initialBuffer.Length)
-                {
-                    var writtenCount = Math.Min(initialBuffer.Length - position, input.Length);
-                    input.Slice(0, writtenCount).CopyTo(initialBuffer.Slice(position));
-                    input = input.Slice(writtenCount);
-                    offset = 0;
-                }
-                else
-                {
-                    offset = position - initialBuffer.Length;
-                }
-
                 output = extraBuffer.Memory.Span;
             }
+            else
+            {
+                output = initialBuffer;
+            }
+
+            offset = position;
 
             input.CopyTo(output.Slice(offset));
             position = newSize;
@@ -186,21 +141,7 @@ namespace DotNext.Buffers
                 if (index < 0 || index >= position)
                     throw new ArgumentOutOfRangeException(nameof(index));
 
-                Span<T> buffer;
-                if (copyOnOverflow)
-                {
-                    buffer = position <= initialBuffer.Length ? initialBuffer : extraBuffer.Memory.Span;
-                }
-                else if (extraBuffer.IsEmpty || index < initialBuffer.Length)
-                {
-                    buffer = initialBuffer;
-                }
-                else
-                {
-                    index -= initialBuffer.Length;
-                    buffer = extraBuffer.Memory.Span;
-                }
-
+                var buffer = position <= initialBuffer.Length ? initialBuffer : extraBuffer.Memory.Span;
                 return ref Unsafe.Add(ref MemoryMarshal.GetReference(buffer), index);
             }
         }
@@ -223,85 +164,6 @@ namespace DotNext.Buffers
             }
 
             position = 0;
-        }
-
-        /// <summary>
-        /// Copies written content to the specified buffer writer.
-        /// </summary>
-        /// <param name="output">The buffer writer.</param>
-        public readonly unsafe void CopyTo(IBufferWriter<T> output)
-            => CopyTo(new (&DotNext.Span.CopyTo), output);
-
-        private readonly void GetSegments(out ReadOnlySpan<T> head, out ReadOnlySpan<T> tail)
-        {
-            if (!copyOnOverflow)
-            {
-                var count = Math.Min(position, initialBuffer.Length);
-                head = initialBuffer.Slice(0, count);
-                tail = extraBuffer.Memory.Span;
-                tail = tail.Slice(0, position - count);
-            }
-            else if (extraBuffer.IsEmpty)
-            {
-                head = initialBuffer.Slice(0, position);
-                tail = default;
-            }
-            else
-            {
-                head = extraBuffer.Memory.Span;
-                head = head.Slice(0, position);
-                tail = default;
-            }
-        }
-
-        /// <summary>
-        /// Transfers written content to the specified callback.
-        /// </summary>
-        /// <typeparam name="TArg">The type of the argument to be passed to the callback.</typeparam>
-        /// <param name="action">The callback accepting written content. Can be called more than once.</param>
-        /// <param name="arg">The argument to be passed to the callback.</param>
-        public readonly void CopyTo<TArg>(in ValueReadOnlySpanAction<T, TArg> action, TArg arg)
-        {
-            GetSegments(out var head, out var tail);
-
-            if (!head.IsEmpty)
-            {
-                action.Invoke(head, arg);
-                if (!tail.IsEmpty)
-                {
-                    action.Invoke(tail, arg);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Copies written content.
-        /// </summary>
-        /// <param name="output">The memory writer.</param>
-        /// <returns>The actual number of copied elements.</returns>
-        public readonly int CopyTo(ref SpanWriter<T> output)
-        {
-            GetSegments(out var head, out var tail);
-            int writtenCount;
-            writtenCount = output.Write(head);
-            writtenCount += output.Write(tail);
-            return writtenCount;
-        }
-
-        /// <summary>
-        /// Copies written content to the specified span.
-        /// </summary>
-        /// <remarks>
-        /// The output span can be larger or smaller than <see cref="WrittenCount"/>.
-        /// </remarks>
-        /// <param name="output">The span of elemenents to modify.</param>
-        /// <returns>The actual number of copied elements.</returns>
-        public readonly int CopyTo(Span<T> output)
-        {
-            GetSegments(out var head, out var tail);
-            head.CopyTo(output, out var count1);
-            tail.CopyTo(output.Slice(count1), out var count2);
-            return count1 + count2;
         }
 
         /// <summary>
