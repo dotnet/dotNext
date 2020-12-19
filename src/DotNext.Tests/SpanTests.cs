@@ -34,6 +34,7 @@ namespace DotNext
         }
 
         [Fact]
+        [Obsolete("This test is for obsolete member")]
         public static void Sorting()
         {
             Span<ulong> span = new ulong[] { 3, 2, 6, 4 };
