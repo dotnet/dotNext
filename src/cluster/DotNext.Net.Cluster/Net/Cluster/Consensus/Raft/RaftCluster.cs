@@ -21,7 +21,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// Represents transport-independent implementation of Raft protocol.
     /// </summary>
     /// <typeparam name="TMember">The type implementing communication details with remote nodes.</typeparam>
-    public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, IRaftStateMachine
+    public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, IRaftStateMachine, IAsyncDisposable
         where TMember : class, IRaftClusterMember, IDisposable
     {
         private static readonly IMemberCollection EmptyCollection = new EmptyMemberCollection();
@@ -674,6 +674,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public Task<bool> ForceReplicationAsync(TimeSpan timeout, CancellationToken token = default)
             => state is LeaderState leaderState ? leaderState.ForceReplicationAsync(timeout, token) : throw new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader);
 
+        private void Cleanup()
+        {
+            ICollection<TMember> members = Interlocked.Exchange(ref this.members, EmptyCollection);
+            Dispose(members);
+            if (members.Count > 0)
+                members.Clear();
+            transitionCancellation.Dispose();
+            transitionSync.Dispose();
+            leader = null;
+            Interlocked.Exchange(ref state, null)?.Dispose();
+        }
+
         /// <summary>
         /// Releases managed and unmanaged resources associated with this object.
         /// </summary>
@@ -682,17 +694,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             if (disposing)
             {
-                ICollection<TMember> members = Interlocked.Exchange(ref this.members, EmptyCollection);
-                Dispose(members);
-                if (members.Count > 0)
-                    members.Clear();
-                transitionCancellation.Dispose();
-                transitionSync.Dispose();
-                leader = null;
-                Interlocked.Exchange(ref state, null)?.Dispose();
+                if (!transitionCancellation.IsCancellationRequested)
+                    Logger.StopAsyncWasNotCalled();
+                Cleanup();
             }
 
             base.Dispose(disposing);
         }
+
+        /// <inheritdoc />
+        protected override async ValueTask DisposeAsyncCore()
+        {
+            await StopAsync(CancellationToken.None);
+            Cleanup();
+        }
+
+        /// <inheritdoc />
+        public ValueTask DisposeAsync() => DisposeAsync(false);
     }
 }
