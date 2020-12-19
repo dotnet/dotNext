@@ -200,7 +200,7 @@ namespace DotNext.Runtime
                 throw new InvalidCastException();
 
             success:
-            return (T)obj;
+            return (T?)obj;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
