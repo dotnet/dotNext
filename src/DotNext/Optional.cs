@@ -224,7 +224,7 @@ namespace DotNext
 
         private Optional(SerializationInfo info, StreamingContext context)
         {
-            value = (T)info.GetValue(ValueSerData, typeof(T));
+            value = (T?)info.GetValue(ValueSerData, typeof(T));
             kind = info.GetByte(KindSerData);
         }
 
