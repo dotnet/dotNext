@@ -98,7 +98,8 @@ namespace DotNext.IO
         }
 
         /// <inheritdoc />
-        protected override ValueTask DisposeAsyncCore() => content.DisposeAsync();
+        protected override ValueTask DisposeAsyncCore()
+            => leaveOpen ? new ValueTask() : content.DisposeAsync();
 
         /// <summary>
         /// Asynchronously releases the resources associated with this object.
