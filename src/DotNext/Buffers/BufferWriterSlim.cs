@@ -134,7 +134,7 @@ namespace DotNext.Buffers
         /// <param name="index">he zero-based index of the element.</param>
         /// <value>The element at the specified index.</value>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than zero or greater than or equal to <see cref="WrittenCount"/>.</exception>
-        public readonly ref T this[int index]
+        public ref T this[int index]
         {
             get
             {
