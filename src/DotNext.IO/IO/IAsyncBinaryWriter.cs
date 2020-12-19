@@ -244,6 +244,23 @@ namespace DotNext.IO
         ValueTask WriteAsync(ReadOnlyMemory<byte> input, CancellationToken token = default);
 
         /// <summary>
+        /// Encodes a block of memory using synchronous encoder.
+        /// </summary>
+        /// <param name="writer">The writer of the in-memory buffer.</param>
+        /// <param name="arg">The argument to be passed to the writer.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <typeparam name="TArg">The type of the argument to be passed to the encoder.</typeparam>
+        /// <returns>The task representing state of asynchronous execution.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        async ValueTask WriteAsync<TArg>(Action<TArg, IBufferWriter<byte>> writer, TArg arg, CancellationToken token = default)
+        {
+            using var buffer = new PooledArrayBufferWriter<byte>();
+            writer(arg, buffer);
+            if (buffer.WrittenCount > 0)
+                await WriteAsync(buffer.WrittenMemory, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Encodes a block of characters using the specified encoding.
         /// </summary>
         /// <param name="chars">The characters to encode.</param>

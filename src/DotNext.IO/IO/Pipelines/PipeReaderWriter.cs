@@ -241,6 +241,17 @@ namespace DotNext.IO.Pipelines
                 => output.WriteAsync(input, token);
         }
 
+        unsafe ValueTask IAsyncBinaryWriter.WriteAsync<TArg>(Action<TArg, IBufferWriter<byte>> writer, TArg arg, CancellationToken token)
+        {
+            return WriteAsync(output, new Writer<Action<TArg, IBufferWriter<byte>>, TArg>(writer, arg, &WriteBlockAsync), token);
+
+            static ValueTask<FlushResult> WriteBlockAsync(PipeWriter output, Action<TArg, IBufferWriter<byte>> writer, TArg arg, CancellationToken token)
+            {
+                writer(arg, output);
+                return output.FlushAsync(token);
+            }
+        }
+
         public unsafe ValueTask WriteAsync(ReadOnlyMemory<char> chars, EncodingContext context, StringLengthEncoding? lengthFormat, CancellationToken token)
         {
             if (chars.Length > stringLengthThreshold)

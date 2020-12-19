@@ -387,5 +387,28 @@ namespace DotNext.IO
 
             return new ValueTask(result);
         }
+
+        ValueTask IAsyncBinaryWriter.WriteAsync<TArg>(Action<TArg, IBufferWriter<byte>> writer, TArg arg, CancellationToken token)
+        {
+            Task result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled(token);
+            }
+            else
+            {
+                try
+                {
+                    writer(arg, this.writer);
+                    result = FlushAsync(token);
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException(e);
+                }
+            }
+
+            return new ValueTask(result);
+        }
     }
 }
