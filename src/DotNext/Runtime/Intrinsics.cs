@@ -378,7 +378,6 @@ namespace DotNext.Runtime
             PushInRef(in input);
             Cpobj<T>();
             Ret();
-            throw Unreachable();    // need here because output var should be assigned
         }
 
         /// <summary>
@@ -416,11 +415,7 @@ namespace DotNext.Runtime
             for (int count; length > 0L; length -= count, source = ref Unsafe.Add(ref source, count), destination = ref Unsafe.Add(ref destination, count))
             {
                 count = length.Truncate();
-                Push(ref destination);
-                Push(ref source);
-                Push(count);
-                Conv_Ovf_U4();
-                Cpblk();
+                Unsafe.CopyBlock(ref destination, ref source, (uint)count);
             }
         }
 
@@ -482,27 +477,15 @@ namespace DotNext.Runtime
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static ref byte Advance<T>(this ref byte ptr)
+        private static unsafe ref byte Advance<T>(this ref byte ptr)
             where T : unmanaged
-        {
-            Push(ref ptr);
-            Sizeof<T>();
-            Conv_I();
-            Add();
-            return ref ReturnRef<byte>();
-        }
+            => ref Unsafe.Add(ref ptr, sizeof(T));
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static unsafe ref byte Advance<T>([In] this ref byte address, [In, Out]long* length)
             where T : unmanaged
         {
-            Push(length);
-            Dup();
-            Ldind_I8();
-            Sizeof<T>();
-            Conv_I8();
-            Sub();
-            Stind_I8();
-
+            *length += sizeof(T);
             return ref address.Advance<T>();
         }
 
