@@ -617,6 +617,9 @@ namespace DotNext
         /// <param name="destination">Destination memory.</param>
         /// <param name="writtenCount">The number of copied elements.</param>
         /// <typeparam name="T">The type of the elements in the span.</typeparam>
+#if !NETSTANDARD2_1
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+#endif
         public static void CopyTo<T>(this ReadOnlySpan<T> source, Span<T> destination, out int writtenCount)
         {
             if (source.Length > destination.Length)
