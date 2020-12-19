@@ -888,10 +888,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         /// <summary>
-        /// Releases unmanaged resources asynchronously.
+        /// Releases managed resources asynchronously.
         /// </summary>
         /// <returns>A task representing state of asynchronous execution.</returns>
-        public virtual async ValueTask DisposeAsync()
+        protected override async ValueTask DisposeAsyncCore()
         {
             foreach (var partition in partitionTable.Values)
                 await partition.DisposeAsync().ConfigureAwait(false);
@@ -902,8 +902,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             syncRoot.Dispose();
             await snapshot.DisposeAsync().ConfigureAwait(false);
             await nullSegment.DisposeAsync().ConfigureAwait(false);
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
+
+        /// <summary>
+        /// Releases resources associated with this persistent storage asynchronously.
+        /// </summary>
+        /// <returns>A task representing state of asynchronous execution.</returns>
+        public ValueTask DisposeAsync() => DisposeAsync(false);
     }
 }
