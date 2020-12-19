@@ -435,7 +435,13 @@ namespace DotNext
             var bytesCount = Math.Min(bytes.Length, output.Length / 2);
             ref byte firstByte = ref MemoryMarshal.GetReference(bytes);
             ref char charPtr = ref MemoryMarshal.GetReference(output);
+#if NETSTANDARD2_1
             ref char hexTable = ref HexTable[lowercased ? 0 : 16];
+#else
+            ref char hexTable = ref MemoryMarshal.GetArrayDataReference(HexTable);
+            if (!lowercased)
+                hexTable = ref Unsafe.Add(ref hexTable, 16);
+#endif
             for (var i = 0; i < bytesCount; i++, charPtr = ref Add(ref charPtr, 1))
             {
                 var value = Add(ref firstByte, i);
