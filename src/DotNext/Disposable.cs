@@ -66,6 +66,37 @@ namespace DotNext
         protected virtual void Dispose(bool disposing) => disposed = true;
 
         /// <summary>
+        /// Releases managed resources associated with this object asynchronously.
+        /// </summary>
+        /// <remarks>
+        /// This method makes sense only if derived class implements <see cref="IAsyncDisposable"/> interface.
+        /// </remarks>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        protected virtual ValueTask DisposeAsyncCore()
+        {
+            Dispose(true);
+            return new ValueTask();
+        }
+
+        private async ValueTask DisposeAsyncImpl(bool continueOnCapturedContext)
+        {
+            await DisposeAsyncCore().ConfigureAwait(continueOnCapturedContext);
+            Dispose(false);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Releases managed resources associated with this object asynchronously.
+        /// </summary>
+        /// <remarks>
+        /// If derived class implements <see cref="IAsyncDisposable"/> then <see cref="IAsyncDisposable.DisposeAsync"/>
+        /// can be trivially implemented through delegation of the call to this method.
+        /// </remarks>
+        /// <param name="continueOnCapturedContext"><see langword="true"/> to attempt to marshal the continuation back to the captured context; otherwise, <see langword="false"/>.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        protected ValueTask DisposeAsync(bool continueOnCapturedContext) => disposed ? new ValueTask() : DisposeAsyncImpl(continueOnCapturedContext);
+
+        /// <summary>
         /// Releases all resources associated with this object.
         /// </summary>
         public void Dispose()
