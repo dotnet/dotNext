@@ -506,6 +506,9 @@ namespace DotNext.Runtime
             return ref address.Advance<T>();
         }
 
+#if !NETSTANDARD2_1
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+#endif
         private static unsafe bool IsZero([In] ref byte address, long length)
         {
             var result = false;
@@ -558,6 +561,9 @@ namespace DotNext.Runtime
 
         #region Bitwise Hash Code
 
+#if !NETSTANDARD2_1
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+#endif
         internal static unsafe long GetHashCode64([In] ref byte source, long length, long hash, in ValueFunc<long, long, long> hashFunction, bool salted)
         {
             switch (length)
@@ -590,6 +596,9 @@ namespace DotNext.Runtime
             return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
         }
 
+#if !NETSTANDARD2_1
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+#endif
         internal static unsafe long GetHashCode64([In] ref byte source, long length, bool salted)
         {
             var hash = FNV1a64.Offset;
@@ -731,6 +740,9 @@ namespace DotNext.Runtime
         public static unsafe int GetHashCode32([In] void* source, long length, int hash, Func<int, int, int> hashFunction, bool salted = true)
             => GetHashCode32(source, length, hash, new ValueFunc<int, int, int>(hashFunction), salted);
 
+#if !NETSTANDARD2_1
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+#endif
         internal static unsafe int GetHashCode32([In] ref byte source, long length, int hash, in ValueFunc<int, int, int> hashFunction, bool salted)
         {
             switch (length)
@@ -754,6 +766,9 @@ namespace DotNext.Runtime
             return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
         }
 
+#if !NETSTANDARD2_1
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+#endif
         internal static unsafe int GetHashCode32([In] ref byte source, long length, bool salted)
         {
             var hash = FNV1a32.Offset;
