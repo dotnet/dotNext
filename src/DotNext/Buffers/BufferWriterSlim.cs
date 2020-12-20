@@ -209,5 +209,15 @@ namespace DotNext.Buffers
             extraBuffer.Dispose();
             this = default;
         }
+
+        /// <summary>
+        /// Converts this buffer to the string.
+        /// </summary>
+        /// <remarks>
+        /// If <typeparamref name="T"/> is <see cref="char"/> then
+        /// this method returns constructed string instance.
+        /// </remarks>
+        /// <returns>The textual representation of this object.</returns>
+        public override string ToString() => WrittenSpan.ToString();
     }
 }

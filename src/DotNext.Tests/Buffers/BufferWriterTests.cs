@@ -118,7 +118,7 @@ namespace DotNext.Buffers
                 writer.WriteSingle(32.2F, provider: InvariantCulture);
                 writer.WriteDouble(56.6D, provider: InvariantCulture);
 
-                Equal("Hello, world!!!" + Environment.NewLine + "4256102288997766" + guid + dt.ToString(InvariantCulture) + dto.ToString(InvariantCulture) + "42.532.256.6", writer.BuildString());
+                Equal("Hello, world!!!" + Environment.NewLine + "4256102288997766" + guid + dt.ToString(InvariantCulture) + dto.ToString(InvariantCulture) + "42.532.256.6", writer.ToString());
             }
         }
 
@@ -156,7 +156,7 @@ namespace DotNext.Buffers
                 writer.WriteSingle(32.2F, provider: InvariantCulture);
                 writer.WriteDouble(56.6D, provider: InvariantCulture);
 
-                Equal("Hello, world!!!" + Environment.NewLine + "4256102288997766" + guid + dt.ToString(InvariantCulture) + dto.ToString(InvariantCulture) + "42.532.256.6", writer.BuildString());
+                Equal("Hello, world!!!" + Environment.NewLine + "4256102288997766" + guid + dt.ToString(InvariantCulture) + dto.ToString(InvariantCulture) + "42.532.256.6", writer.ToString());
             }
             finally
             {

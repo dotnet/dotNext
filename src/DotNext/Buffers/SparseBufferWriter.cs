@@ -4,6 +4,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
+using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.Buffers
 {
@@ -259,6 +261,31 @@ namespace DotNext.Buffers
             }
 
             base.Dispose(disposing);
+        }
+
+        /// <summary>
+        /// Returns the textual representation of this buffer.
+        /// </summary>
+        /// <returns>The textual representation of this buffer.</returns>
+        public override string ToString()
+        {
+            return typeof(T) == typeof(char) && length <= int.MaxValue ? BuildString(first, (int)length) : GetType().ToString();
+
+            static void FillChars(Span<char> output, MemoryChunk? chunk)
+            {
+                Debug.Assert(typeof(T) == typeof(char));
+
+                ReadOnlySpan<T> input;
+                for (var offset = 0; chunk is not null; offset += input.Length, chunk = chunk.Next)
+                {
+                    input = chunk.WrittenMemory.Span;
+                    ref var firstChar = ref Unsafe.As<T, char>(ref GetReference(input));
+                    CreateReadOnlySpan<char>(ref firstChar, input.Length).CopyTo(output.Slice(offset));
+                }
+            }
+
+            static string BuildString(MemoryChunk? first, int length)
+                => length > 0 ? string.Create(length, first, FillChars) : string.Empty;
         }
     }
 }

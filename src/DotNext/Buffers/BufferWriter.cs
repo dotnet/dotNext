@@ -241,5 +241,11 @@ namespace DotNext.Buffers
 
         /// <inheritdoc/>
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        /// <summary>
+        /// Gets the textual representation of this buffer.
+        /// </summary>
+        /// <returns>The textual representation of this buffer.</returns>
+        public override string ToString() => WrittenMemory.ToString();
     }
 }

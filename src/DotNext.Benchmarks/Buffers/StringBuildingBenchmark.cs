@@ -24,7 +24,7 @@ namespace DotNext.Buffers
                 writer.WriteLine();
             }
 
-            return writer.BuildString();
+            return writer.ToString();
         }
 
         [Benchmark]
@@ -38,7 +38,7 @@ namespace DotNext.Buffers
                 writer.WriteLine();
             }
 
-            return writer.BuildString();
+            return writer.ToString();
         }
 
         [Benchmark]

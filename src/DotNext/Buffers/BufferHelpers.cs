@@ -10,14 +10,6 @@ namespace DotNext.Buffers
     /// </summary>
     public static partial class BufferHelpers
     {
-        private static readonly SpanAction<char, IGrowableBuffer<char>> InitializeStringFromWriter = InitializeString;
-        private static readonly SpanAction<char, ReadOnlySequence<char>> InitializeStringFromSequence = InitializeString;
-
-        private static void InitializeString(Span<char> output, IGrowableBuffer<char> input)
-            => input.CopyTo(output);
-
-        private static void InitializeString(Span<char> output, ReadOnlySequence<char> input)
-            => input.CopyTo(output);
 
         /// <summary>
         /// Converts the sequence of memory blocks to <see cref="ReadOnlySequence{T}"/> data type.
@@ -70,48 +62,6 @@ namespace DotNext.Buffers
         /// <param name="writer">The buffer of characters.</param>
         /// <returns>The string constructed from the buffer.</returns>
         public static string BuildString(this ArrayBufferWriter<char> writer)
-        {
-            var span = writer.WrittenSpan;
-            return span.IsEmpty ? string.Empty : new string(span);
-        }
-
-        /// <summary>
-        /// Constructs the string from the buffer.
-        /// </summary>
-        /// <param name="writer">The buffer of characters.</param>
-        /// <returns>The string constructed from the buffer.</returns>
-        public static string BuildString(this IGrowableBuffer<char> writer)
-        {
-            var length = writer.WrittenCount;
-
-            if (length == 0L)
-                return string.Empty;
-
-            return string.Create(checked((int)length), writer, InitializeStringFromWriter);
-        }
-
-        /// <summary>
-        /// Constructs the string from non-contiguous buffer.
-        /// </summary>
-        /// <param name="sequence">The sequence of characters.</param>
-        /// <returns>The string constucted from the characters containing in the buffer.</returns>
-        public static string BuildString(this in ReadOnlySequence<char> sequence)
-        {
-            if (sequence.IsEmpty)
-                return string.Empty;
-
-            if (sequence.IsSingleSegment)
-                return new string(sequence.FirstSpan);
-
-            return string.Create(checked((int)sequence.Length), sequence, InitializeStringFromSequence);
-        }
-
-        /// <summary>
-        /// Constructs the string from the buffer.
-        /// </summary>
-        /// <param name="writer">The buffer of characters.</param>
-        /// <returns>The string constructed from the buffer.</returns>
-        public static string BuildString(this in BufferWriterSlim<char> writer)
         {
             var span = writer.WrittenSpan;
             return span.IsEmpty ? string.Empty : new string(span);
