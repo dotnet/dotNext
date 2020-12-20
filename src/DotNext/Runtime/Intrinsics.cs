@@ -485,7 +485,7 @@ namespace DotNext.Runtime
         private static unsafe ref byte Advance<T>([In] this ref byte address, [In, Out]long* length)
             where T : unmanaged
         {
-            *length += sizeof(T);
+            *length -= sizeof(T);
             return ref address.Advance<T>();
         }
 
