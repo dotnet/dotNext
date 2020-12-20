@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Text;
+using System.Runtime.CompilerServices;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Order;
@@ -57,6 +58,48 @@ namespace DotNext.Buffers
             finally
             {
                 writer.Clear();
+            }
+        }
+
+        [Benchmark]
+        public string BuildStringOnStackNoPreallocatedBuffer()
+        {
+            var writer = new BufferWriterSlim<char>();
+            try
+            {
+                for (var i = 0; i < 100; i++)
+                {
+                    writer.Write(StringValue);
+                    writer.WriteInt32(int.MaxValue);
+                    writer.WriteLine();
+                }
+
+                return writer.ToString();
+            }
+            finally
+            {
+                writer.Dispose();
+            }
+        }
+
+        [Benchmark]
+        public string BuildStringOnStack()
+        {
+            var writer = new BufferWriterSlim<char>(stackalloc char[64]);
+            try
+            {
+                for (var i = 0; i < 100; i++)
+                {
+                    writer.Write(StringValue);
+                    writer.WriteInt32(int.MaxValue);
+                    writer.WriteLine();
+                }
+
+                return writer.ToString();
+            }
+            finally
+            {
+                writer.Dispose();
             }
         }
     }
