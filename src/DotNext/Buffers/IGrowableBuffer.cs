@@ -17,7 +17,7 @@ namespace DotNext.Buffers
         /// <summary>
         /// Represents default initial buffer size.
         /// </summary>
-        private const int DefaultInitialBufferSize = 256;
+        private const int DefaultInitialBufferSize = 128;
 
         /// <summary>
         /// Gets the number of written elements.
