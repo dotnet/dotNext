@@ -203,6 +203,9 @@ namespace DotNext.IO
         /// <param name="encoding">The string encoding.</param>
         /// <param name="lengthFormat">String length encoding format; or <see langword="null"/> to prevent encoding of string length.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+#if !NETSTANDARD2_1
+        [SkipLocalsInit]
+#endif
         public static void WriteString(this Stream stream, ReadOnlySpan<char> value, Encoding encoding, StringLengthEncoding? lengthFormat = null)
         {
             var bytesCount = encoding.GetByteCount(value);
@@ -1081,6 +1084,9 @@ namespace DotNext.IO
                 await stream.WriteAsync(block, token).ConfigureAwait(false);
         }
 
+#if !NETSTANDARD2_1
+        [SkipLocalsInit]
+#endif
         private static TResult Read<TResult, TDecoder>(Stream stream, TDecoder decoder, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer)
             where TResult : struct
             where TDecoder : ISpanDecoder<TResult>
@@ -1125,6 +1131,9 @@ namespace DotNext.IO
         /// <returns>The string decoded from the log entry content stream.</returns>
         /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+#if !NETSTANDARD2_1
+        [SkipLocalsInit]
+#endif
         public static string ReadString(this Stream stream, int length, in DecodingContext context, Span<byte> buffer)
         {
             if (length == 0)
@@ -1517,6 +1526,9 @@ namespace DotNext.IO
         /// <param name="encoding">The encoding used to decode bytes from stream into characters.</param>
         /// <returns>The string decoded from the log entry content stream.</returns>
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+#if !NETSTANDARD2_1
+        [SkipLocalsInit]
+#endif
         public static string ReadString(this Stream stream, int length, Encoding encoding)
         {
             if (length == 0)
@@ -2592,6 +2604,9 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel operation.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="bufferSize"/> is less than or equal to zero.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+#if !NETSTANDARD2_1
+        [SkipLocalsInit]
+#endif
         public static void Read<TArg>(this Stream stream, in ValueReadOnlySpanAction<byte, TArg> reader, TArg arg, int bufferSize = DefaultBufferSize, CancellationToken token = default)
         {
             if (bufferSize <= 0)

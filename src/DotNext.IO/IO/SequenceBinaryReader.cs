@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Globalization;
 using System.IO;
 using System.IO.Pipelines;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Missing = System.Reflection.Missing;
@@ -55,6 +56,9 @@ namespace DotNext.IO
             return parser.RemainingBytes == 0 ? decoder.Decode(parser.Complete()) : throw new EndOfStreamException();
         }
 
+#if !NETSTANDARD2_1
+        [SkipLocalsInit]
+#endif
         private unsafe TResult Read<TResult, TDecoder>(TDecoder decoder, StringLengthEncoding lengthFormat, in DecodingContext context)
             where TResult : struct
             where TDecoder : struct, ISpanDecoder<TResult>
@@ -426,6 +430,9 @@ namespace DotNext.IO
         /// <param name="context">The decoding context containing string characters encoding.</param>
         /// <returns>The decoded string.</returns>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+#if !NETSTANDARD2_1
+        [SkipLocalsInit]
+#endif
         public unsafe string ReadString(int length, in DecodingContext context)
         {
             if (length > MemoryRental<char>.StackallocThreshold)

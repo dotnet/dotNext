@@ -459,6 +459,9 @@ namespace DotNext
         /// <param name="bytes">The bytes to convert.</param>
         /// <param name="lowercased"><see langword="true"/> to return lowercased hex string; <see langword="false"/> to return uppercased hex string.</param>
         /// <returns>The hexadecimal representation of bytes.</returns>
+#if !NETSTANDARD2_1
+        [SkipLocalsInit]
+#endif
         public static string ToHex(this ReadOnlySpan<byte> bytes, bool lowercased = false)
         {
             var count = bytes.Length * 2;
@@ -493,6 +496,9 @@ namespace DotNext
         /// </summary>
         /// <param name="chars">The characters containing hexadecimal representation of bytes.</param>
         /// <returns>The decoded array of bytes.</returns>
+#if !NETSTANDARD2_1
+        [SkipLocalsInit]
+#endif
         public static byte[] FromHex(this ReadOnlySpan<char> chars)
         {
             var count = chars.Length / 2;

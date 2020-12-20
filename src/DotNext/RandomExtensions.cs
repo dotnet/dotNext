@@ -25,6 +25,9 @@ namespace DotNext
                 element = Unsafe.Add(ref firstChar, rng.Next(0, allowedChars.Length));
         }
 
+#if !NETSTANDARD2_1
+        [SkipLocalsInit]
+#endif
         private static void NextString(RandomNumberGenerator rng, Span<char> buffer, ReadOnlySpan<char> allowedChars)
         {
             var offset = buffer.Length * sizeof(int);
