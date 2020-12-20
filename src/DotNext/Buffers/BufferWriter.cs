@@ -17,10 +17,7 @@ namespace DotNext.Buffers
     [DebuggerDisplay("WrittenCount = {" + nameof(WrittenCount) + "}, FreeCapacity = {" + nameof(FreeCapacity) + "}")]
     public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, IConvertible<ReadOnlyMemory<T>>, IReadOnlyList<T>, IGrowableBuffer<T>
     {
-        /// <summary>
-        /// Represents default initial buffer size.
-        /// </summary>
-        private protected const int DefaultInitialBufferSize = 256;
+        
 
         private object? diagObj;
 
@@ -220,25 +217,9 @@ namespace DotNext.Buffers
         /// <param name="sizeHint">The requested size of the buffer.</param>
         private protected void CheckAndResizeBuffer(int sizeHint)
         {
-            if (sizeHint < 0)
-                throw new ArgumentOutOfRangeException(nameof(sizeHint));
-            if (sizeHint == 0)
-                sizeHint = 1;
-            if (sizeHint > FreeCapacity)
-            {
-                int currentLength = Capacity, growBy = Math.Max(currentLength, sizeHint);
-                if (currentLength == 0)
-                    growBy = Math.Max(growBy, DefaultInitialBufferSize);
-                var newSize = currentLength + growBy;
-                if ((uint)newSize > int.MaxValue)
-                {
-                    newSize = currentLength + sizeHint;
-                    if ((uint)newSize > int.MaxValue)
-                        throw new InsufficientMemoryException();
-                }
-
-                Resize(newSize);
-            }
+            var newSize = IGrowableBuffer<T>.GetBufferSize(sizeHint, Capacity, position);
+            if (newSize.HasValue)
+                Resize(newSize.GetValueOrDefault());
         }
 
         /// <inheritdoc />

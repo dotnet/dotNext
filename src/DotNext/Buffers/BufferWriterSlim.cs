@@ -56,7 +56,7 @@ namespace DotNext.Buffers
         /// <summary>
         /// Gets the total amount of space within the underlying memory.
         /// </summary>
-        public readonly int Capacity => initialBuffer.Length + extraBuffer.Length;
+        public readonly int Capacity => extraBuffer.IsEmpty ? initialBuffer.Length : extraBuffer.Length;
 
         /// <summary>
         /// Gets the amount of space available that can still be written into without forcing the underlying buffer to grow.
@@ -77,6 +77,71 @@ namespace DotNext.Buffers
         }
 
         /// <summary>
+        /// Returns the memory to write to that is at least the requested size.
+        /// </summary>
+        /// <param name="sizeHint">The minimum length of the returned memory.</param>
+        /// <returns>The memory block of at least the size <paramref name="sizeHint"/>.</returns>
+        /// <exception cref="OutOfMemoryException">The requested buffer size is not available.</exception>
+        public Span<T> GetSpan(int sizeHint = 0)
+        {
+            if (sizeHint < 0)
+                throw new ArgumentOutOfRangeException(nameof(sizeHint));
+
+            Span<T> result;
+            int? newSize;
+            if (extraBuffer.IsEmpty)
+            {
+                newSize = IGrowableBuffer<T>.GetBufferSize(sizeHint, initialBuffer.Length, position);
+
+                // need to copy initial buffer
+                if (newSize.HasValue)
+                {
+                    extraBuffer = allocator.Invoke(newSize.GetValueOrDefault(), false);
+                    initialBuffer.CopyTo(extraBuffer.Memory.Span);
+                    initialBuffer.Clear();
+                    result = extraBuffer.Memory.Span;
+                }
+                else
+                {
+                    result = initialBuffer;
+                }
+            }
+            else
+            {
+                // no need to copy initial buffer
+                newSize = IGrowableBuffer<T>.GetBufferSize(sizeHint, extraBuffer.Length, position);
+                if (newSize.HasValue)
+                {
+                    var newBuffer = allocator.Invoke(newSize.GetValueOrDefault(), false);
+                    extraBuffer.Memory.CopyTo(newBuffer.Memory);
+                    extraBuffer.Dispose();
+                    extraBuffer = newBuffer;
+                }
+
+                result = extraBuffer.Memory.Span;
+            }
+
+            return result.Slice(position);
+        }
+
+        /// <summary>
+        /// Notifies this writer that <paramref name="count"/> of data items were written.
+        /// </summary>
+        /// <param name="count">The number of data items written to the underlying buffer.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero.</exception>
+        /// <exception cref="InvalidOperationException">Attempts to advance past the end of the underlying buffer.</exception>
+        /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
+        public void Advance(int count)
+        {
+            if (count < 0)
+                throw new ArgumentOutOfRangeException(nameof(count));
+            if (position > Capacity - count)
+                throw new InvalidOperationException();
+
+            position += count;
+        }
+
+        /// <summary>
         /// Writes elements to this buffer.
         /// </summary>
         /// <param name="input">The span of elements to be written.</param>
@@ -84,41 +149,11 @@ namespace DotNext.Buffers
         /// <exception cref="OverflowException">The size of the internal buffer becomes greater than <see cref="int.MaxValue"/>.</exception>
         public void Write(ReadOnlySpan<T> input)
         {
-            if (input.IsEmpty)
-                return;
-
-            var newSize = checked(position + input.Length);
-            Span<T> output;
-            int offset;
-
-            // grow if needed
-            if (newSize > initialBuffer.Length)
+            if (!input.IsEmpty)
             {
-                if (extraBuffer.IsEmpty)
-                {
-                    extraBuffer = allocator.Invoke(newSize, false);
-                    initialBuffer.CopyTo(extraBuffer.Memory.Span);
-                    initialBuffer.Clear();
-                }
-                else if (newSize > extraBuffer.Length)
-                {
-                    var newBuffer = allocator.Invoke(newSize, false);
-                    extraBuffer.Memory.CopyTo(newBuffer.Memory);
-                    extraBuffer.Dispose();
-                    extraBuffer = newBuffer;
-                }
-
-                output = extraBuffer.Memory.Span;
+                input.CopyTo(GetSpan(input.Length));
+                position += input.Length;
             }
-            else
-            {
-                output = initialBuffer;
-            }
-
-            offset = position;
-
-            input.CopyTo(output.Slice(offset));
-            position = newSize;
         }
 
         /// <summary>
