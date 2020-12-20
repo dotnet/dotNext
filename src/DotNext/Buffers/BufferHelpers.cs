@@ -107,6 +107,17 @@ namespace DotNext.Buffers
         }
 
         /// <summary>
+        /// Constructs the string from the buffer.
+        /// </summary>
+        /// <param name="writer">The buffer of characters.</param>
+        /// <returns>The string constructed from the buffer.</returns>
+        public static string BuildString(this in BufferWriterSlim<char> writer)
+        {
+            var span = writer.WrittenSpan;
+            return span.IsEmpty ? string.Empty : new string(span);
+        }
+
+        /// <summary>
         /// Writes single element to the buffer.
         /// </summary>
         /// <param name="writer">The buffer writer.</param>

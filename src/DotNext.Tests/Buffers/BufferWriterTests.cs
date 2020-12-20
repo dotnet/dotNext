@@ -122,6 +122,48 @@ namespace DotNext.Buffers
             }
         }
 
+        [Theory]
+        [InlineData(0)]
+        [InlineData(32)]
+        [InlineData(64)]
+        public static void MutableOnStackWriter(int initialBufferSize)
+        {
+            var writer = new BufferWriterSlim<char>(initialBufferSize > 0 ? stackalloc char[initialBufferSize] : Span<char>.Empty);
+            try
+            {
+                writer.Write("Hello, world");
+                writer.Add('!');
+                writer.WriteLine("!!");
+                writer.WriteInt32(42, provider: InvariantCulture);
+                writer.WriteUInt32(56U, provider: InvariantCulture);
+                writer.WriteByte(10, provider: InvariantCulture);
+                writer.WriteSByte(22, provider: InvariantCulture);
+                writer.WriteInt16(88, provider: InvariantCulture);
+                writer.WriteUInt16(99, provider: InvariantCulture);
+                writer.WriteInt64(77, provider: InvariantCulture);
+                writer.WriteUInt64(66, provider: InvariantCulture);
+
+                var guid = Guid.NewGuid();
+                writer.WriteGuid(guid);
+
+                var dt = DateTime.Now;
+                writer.WriteDateTime(dt, provider: InvariantCulture);
+
+                var dto = DateTimeOffset.Now;
+                writer.WriteDateTimeOffset(dto, provider: InvariantCulture);
+
+                writer.WriteDecimal(42.5M, provider: InvariantCulture);
+                writer.WriteSingle(32.2F, provider: InvariantCulture);
+                writer.WriteDouble(56.6D, provider: InvariantCulture);
+
+                Equal("Hello, world!!!" + Environment.NewLine + "4256102288997766" + guid + dt.ToString(InvariantCulture) + dto.ToString(InvariantCulture) + "42.532.256.6", writer.BuildString());
+            }
+            finally
+            {
+                writer.Dispose();
+            }
+        }
+
         public static IEnumerable<object[]> ByteWriters()
         {
             yield return new object[] { new PooledBufferWriter<byte>(MemoryPool<byte>.Shared.ToAllocator()), Encoding.UTF32 };

@@ -618,5 +618,192 @@ namespace DotNext.Buffers
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         public static unsafe void WriteTimeSpan(this IBufferWriter<char> writer, TimeSpan value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
             => Write(writer, in value, &TryFormat, format, provider);
+
+        private static unsafe void Write<T>(ref BufferWriterSlim<char> writer, in T value, delegate*<in T, Span<char>, out int, ReadOnlySpan<char>, IFormatProvider?, bool> formatter, ReadOnlySpan<char> format, IFormatProvider? provider)
+            where T : struct, IFormattable
+        {
+            for (int bufferSize = 0; ; )
+            {
+                var buffer = writer.GetSpan(bufferSize);
+                if (formatter(in value, buffer, out var charsWritten, format, provider))
+                {
+                    writer.Advance(charsWritten);
+                    break;
+                }
+
+                bufferSize = bufferSize <= MaxBufferSize ? buffer.Length * 2 : throw new InsufficientMemoryException();
+            }
+        }
+
+        /// <summary>
+        /// Writes line termination symbols to the buffer.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        public static void WriteLine(this ref BufferWriterSlim<char> writer)
+            => writer.Write(Environment.NewLine);
+
+        /// <summary>
+        /// Writes a string to the buffer, followed by a line terminator.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="characters">The characters to write.</param>
+        public static void WriteLine(this ref BufferWriterSlim<char> writer, ReadOnlySpan<char> characters)
+        {
+            writer.Write(characters);
+            writer.Write(Environment.NewLine);
+        }
+
+        /// <summary>
+        /// Writes string representation of 8-bit unsigned integer to the buffer.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        public static unsafe void WriteByte(this ref BufferWriterSlim<char> writer, byte value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(ref writer, in value, &TryFormat, format, provider);
+
+        /// <summary>
+        /// Writes string representation of 8-bit signed integer to the buffer.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        [CLSCompliant(false)]
+        public static unsafe void WriteSByte(this ref BufferWriterSlim<char> writer, sbyte value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(ref writer, in value, &TryFormat, format, provider);
+
+        /// <summary>
+        /// Writes string representation of 16-bit signed integer to the buffer.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        public static unsafe void WriteInt16(this ref BufferWriterSlim<char> writer, short value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(ref writer, in value, &TryFormat, format, provider);
+
+        /// <summary>
+        /// Writes string representation of 16-bit unsigned integer to the buffer.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        [CLSCompliant(false)]
+        public static unsafe void WriteUInt16(this ref BufferWriterSlim<char> writer, ushort value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(ref writer, in value, &TryFormat, format, provider);
+
+        /// <summary>
+        /// Writes string representation of 32-bit signed integer to the buffer.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        public static unsafe void WriteInt32(this ref BufferWriterSlim<char> writer, int value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(ref writer, in value, &TryFormat, format, provider);
+
+        /// <summary>
+        /// Writes string representation of 32-bit unsigned integer to the buffer.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        [CLSCompliant(false)]
+        public static unsafe void WriteUInt32(this ref BufferWriterSlim<char> writer, uint value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(ref writer, in value, &TryFormat, format, provider);
+
+        /// <summary>
+        /// Writes string representation of 64-bit signed integer to the buffer.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        public static unsafe void WriteInt64(this ref BufferWriterSlim<char> writer, long value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(ref writer, in value, &TryFormat, format, provider);
+
+        /// <summary>
+        /// Writes string representation of 64-bit unsigned integer to the buffer.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        [CLSCompliant(false)]
+        public static unsafe void WriteUInt64(this ref BufferWriterSlim<char> writer, ulong value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(ref writer, in value, &TryFormat, format, provider);
+
+        /// <summary>
+        /// Writes string representation of <see cref="Guid"/> to the buffer.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        public static unsafe void WriteGuid(this ref BufferWriterSlim<char> writer, in Guid value, ReadOnlySpan<char> format = default)
+            => Write(ref writer, in value, &TryFormat, format, null);
+
+        /// <summary>
+        /// Writes string representation of <see cref="DateTime"/> to the buffer.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        public static unsafe void WriteDateTime(this ref BufferWriterSlim<char> writer, DateTime value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(ref writer, in value, &TryFormat, format, provider);
+
+        /// <summary>
+        /// Writes string representation of <see cref="DateTimeOffset"/> to the buffer.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        public static unsafe void WriteDateTimeOffset(this ref BufferWriterSlim<char> writer, DateTimeOffset value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(ref writer, in value, &TryFormat, format, provider);
+
+        /// <summary>
+        /// Writes string representation of <see cref="decimal"/> to the buffer.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        public static unsafe void WriteDecimal(this ref BufferWriterSlim<char> writer, in decimal value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(ref writer, in value, &TryFormat, format, provider);
+
+        /// <summary>
+        /// Writes string representation of single-precision floating-point number to the buffer.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        public static unsafe void WriteSingle(this ref BufferWriterSlim<char> writer, float value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(ref writer, in value, &TryFormat, format, provider);
+
+        /// <summary>
+        /// Writes string representation of double-precision floating-point number to the buffer.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        public static unsafe void WriteDouble(this ref BufferWriterSlim<char> writer, double value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(ref writer, in value, &TryFormat, format, provider);
+
+        /// <summary>
+        /// Writes string representation of <see cref="TimeSpan"/> to the buffer.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        public static unsafe void WriteTimeSpan(this ref BufferWriterSlim<char> writer, TimeSpan value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(ref writer, in value, &TryFormat, format, provider);
     }
 }
