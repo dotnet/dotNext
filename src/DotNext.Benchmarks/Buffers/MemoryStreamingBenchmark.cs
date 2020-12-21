@@ -46,7 +46,7 @@ namespace DotNext.Buffers
         [Benchmark]
         public void WriteToSparseBuffer()
         {
-            using var buffer = new SparseBufferWriter<byte>();
+            using var buffer = new SparseBufferWriter<byte>(4096, SparseBufferGrowth.Exponential);
             using var ms = buffer.AsStream(false);
             Write(ms);
         }
