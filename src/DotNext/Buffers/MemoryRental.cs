@@ -28,8 +28,6 @@ namespace DotNext.Buffers
     [StructLayout(LayoutKind.Auto)]
     public readonly ref struct MemoryRental<T>
     {
-        private const int StackallocThresholdInBytes = 512;
-
         /// <summary>
         /// Global recommended number of elements that can be allocated on the stack.
         /// </summary>
@@ -42,7 +40,7 @@ namespace DotNext.Buffers
         public static int StackallocThreshold
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => Unsafe.SizeOf<T>() > StackallocThresholdInBytes ? 1 : StackallocThresholdInBytes / Unsafe.SizeOf<T>();
+            get => 1 + 511 / Unsafe.SizeOf<T>();
         }
 
         private readonly object? owner;
