@@ -46,7 +46,7 @@ namespace DotNext.Buffers
             position = 0;
         }
 
-        private int Overflow => Math.Max(0, position - initialBuffer.Length);
+        private readonly int Overflow => Math.Max(0, position - initialBuffer.Length);
 
         /// <summary>
         /// Gets the amount of data written to the underlying memory so far.
