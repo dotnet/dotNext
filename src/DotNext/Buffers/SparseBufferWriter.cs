@@ -22,9 +22,10 @@ namespace DotNext.Buffers
     [DebuggerDisplay("WrittenCount = {" + nameof(WrittenCount) + "}, FragmentedBytes = {" + nameof(FragmentedBytes) + "}")]
     public partial class SparseBufferWriter<T> : Disposable, IEnumerable<ReadOnlyMemory<T>>, IGrowableBuffer<T>, IConvertible<ReadOnlySequence<T>>
     {
+        private readonly int chunkSize;
         private readonly MemoryAllocator<T>? allocator;
         private readonly SparseBufferGrowth growth;
-        private int chunkSize;
+        private int chunkIndex;
         private MemoryChunk? first;
 
         [SuppressMessage("Usage", "CA2213", Justification = "It is implicitly through enumerating from first to last chunk in the chain")]
@@ -99,12 +100,27 @@ namespace DotNext.Buffers
             }
         }
 
-        private int NextChunkSize() => growth switch
+        private int NextChunkSize()
         {
-            SparseBufferGrowth.Linear => chunkSize += chunkSize,
-            SparseBufferGrowth.Exponential => chunkSize <<= 1,
-            _ => chunkSize,
-        };
+            int result;
+            switch (growth)
+            {
+                default:
+                    result = chunkSize;
+                    goto exit;
+                case SparseBufferGrowth.Linear:
+                    result = chunkSize * ++chunkIndex;
+                    break;
+                case SparseBufferGrowth.Exponential:
+                    result = chunkSize << ++chunkIndex;
+                    break;
+            }
+
+            result = Math.Max(result, chunkSize);
+
+            exit:
+            return result;
+        }
 
         /// <summary>
         /// Writes the block of memory to this builder.
