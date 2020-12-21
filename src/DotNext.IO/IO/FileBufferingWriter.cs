@@ -335,7 +335,8 @@ namespace DotNext.IO
                 output = default;
                 return size <= memoryThreshold ? MemoryEvaluationResult.PersistExistingBuffer : MemoryEvaluationResult.PersistAll;
             }
-            else if (buffer.Length - position < size)
+
+            if (buffer.Length - position < size)
             {
                 var newBuffer = allocator.Invoke(newSize, false);
                 buffer.Memory.CopyTo(newBuffer.Memory);
