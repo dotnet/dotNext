@@ -1,5 +1,6 @@
 using System;
 using System.Buffers;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -205,7 +206,8 @@ namespace DotNext.Buffers
                     disposable.Dispose();
                     break;
                 case ArrayPool<T> pool:
-                    pool.Return(array!, RuntimeHelpers.IsReferenceOrContainsReferences<T>());
+                    Debug.Assert(array is not null);
+                    pool.Return(array, RuntimeHelpers.IsReferenceOrContainsReferences<T>());
                     break;
             }
         }
