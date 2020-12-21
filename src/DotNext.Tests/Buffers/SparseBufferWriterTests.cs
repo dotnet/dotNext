@@ -11,11 +11,15 @@ namespace DotNext.Buffers
     public sealed class SparseBufferWriterTests : Test
     {
         [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public static void WriteSequence(bool copyMemory)
+        [InlineData(false, SparseBufferGrowth.None)]
+        [InlineData(true, SparseBufferGrowth.None)]
+        [InlineData(false, SparseBufferGrowth.Linear)]
+        [InlineData(true, SparseBufferGrowth.Linear)]
+        [InlineData(false, SparseBufferGrowth.Exponential)]
+        [InlineData(true, SparseBufferGrowth.Exponential)]
+        public static void WriteSequence(bool copyMemory, SparseBufferGrowth growth)
         {
-            using var writer = new SparseBufferWriter<byte>();
+            using var writer = new SparseBufferWriter<byte>(128, growth);
             var sequence = ToReadOnlySequence(new ReadOnlyMemory<byte>(RandomBytes(5000)), 1000);
             writer.Write(in sequence, copyMemory);
             Equal(sequence.ToArray(), writer.ToReadOnlySequence().ToArray());

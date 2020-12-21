@@ -22,8 +22,9 @@ namespace DotNext.Buffers
     [DebuggerDisplay("WrittenCount = {" + nameof(WrittenCount) + "}, FragmentedBytes = {" + nameof(FragmentedBytes) + "}")]
     public partial class SparseBufferWriter<T> : Disposable, IEnumerable<ReadOnlyMemory<T>>, IGrowableBuffer<T>, IConvertible<ReadOnlySequence<T>>
     {
-        private readonly int chunkSize;
         private readonly MemoryAllocator<T>? allocator;
+        private readonly SparseBufferGrowth growth;
+        private int chunkSize;
         private MemoryChunk? first;
 
         [SuppressMessage("Usage", "CA2213", Justification = "It is implicitly through enumerating from first to last chunk in the chain")]
@@ -34,15 +35,17 @@ namespace DotNext.Buffers
         /// Initializes a new builder with the specified size of memory block.
         /// </summary>
         /// <param name="chunkSize">The size of the memory block representing single segment within sequence.</param>
+        /// <param name="growth">Specifies how the memory should be allocated for each subsequent chunk in this buffer.</param>
         /// <param name="allocator">The allocator used to rent the segments.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="chunkSize"/> is less than or equal to zero.</exception>
-        public SparseBufferWriter(int chunkSize, MemoryAllocator<T>? allocator = null)
+        public SparseBufferWriter(int chunkSize, SparseBufferGrowth growth = SparseBufferGrowth.None, MemoryAllocator<T>? allocator = null)
         {
             if (chunkSize <= 0)
                 throw new ArgumentOutOfRangeException(nameof(chunkSize));
 
             this.chunkSize = chunkSize;
             this.allocator = allocator;
+            this.growth = growth;
         }
 
         /// <summary>
@@ -96,6 +99,13 @@ namespace DotNext.Buffers
             }
         }
 
+        private int NextChunkSize() => growth switch
+        {
+            SparseBufferGrowth.Linear => chunkSize += chunkSize,
+            SparseBufferGrowth.Exponential => chunkSize <<= 1,
+            _ => chunkSize,
+        };
+
         /// <summary>
         /// Writes the block of memory to this builder.
         /// </summary>
@@ -113,7 +123,7 @@ namespace DotNext.Buffers
 
                 // no more space in the last chunk, allocate a new one
                 if (writtenCount == 0)
-                    last = new PooledMemoryChunk(allocator, chunkSize, last);
+                    last = new PooledMemoryChunk(allocator, NextChunkSize(), last);
                 else
                     input = input.Slice(writtenCount);
             }
