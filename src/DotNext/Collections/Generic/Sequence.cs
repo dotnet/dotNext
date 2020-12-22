@@ -14,6 +14,9 @@ namespace DotNext.Collections.Generic
     {
         private const int HashSalt = -1521134295;
 
+        // cached to avoid allocation
+        private static readonly Func<int, object?, int> ObjectHashCode = GetHashCode;
+
         private static int GetHashCode(int hash, object? obj) => (hash * HashSalt) + obj?.GetHashCode() ?? 0;
 
         /// <summary>
@@ -24,7 +27,7 @@ namespace DotNext.Collections.Generic
         /// <returns>The hash code computed from each element in the sequence.</returns>
         public static int SequenceHashCode(this IEnumerable<object?> sequence, bool salted = true)
         {
-            var hashCode = sequence.Aggregate(-910176598, GetHashCode);
+            var hashCode = sequence.Aggregate(-910176598, ObjectHashCode);
             return salted ? (hashCode * HashSalt) + RandomExtensions.BitwiseHashSalt : hashCode;
         }
 
