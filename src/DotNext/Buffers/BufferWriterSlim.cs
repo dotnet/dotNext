@@ -108,8 +108,9 @@ namespace DotNext.Buffers
             }
             else
             {
-                // no need to copy initial buffer
                 newSize = IGrowableBuffer<T>.GetBufferSize(sizeHint, extraBuffer.Length, position);
+
+                // no need to copy initial buffer
                 if (newSize.HasValue)
                 {
                     var newBuffer = allocator.Invoke(newSize.GetValueOrDefault(), false);
