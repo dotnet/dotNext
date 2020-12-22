@@ -2,7 +2,6 @@
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Threading;
 
 namespace DotNext
 {
@@ -11,11 +10,6 @@ namespace DotNext
     /// </summary>
     public static partial class DelegateHelpers
     {
-        private static readonly SendOrPostCallback SendOrPostInvoker = UnsafeInvoke!;
-        private static readonly Action<Action> ActionInvoker = UnsafeInvoke;
-
-        private static void UnsafeInvoke(object action) => Unsafe.As<Action>(action).Invoke();
-
         private static MethodInfo GetMethod<TDelegate>(Expression<TDelegate> expression)
             where TDelegate : Delegate
             => expression.Body switch
@@ -108,11 +102,5 @@ namespace DotNext
         public static TDelegate ChangeType<TDelegate>(this Delegate d)
             where TDelegate : Delegate
             => d is TDelegate ? Unsafe.As<TDelegate>(d) : ChangeType<TDelegate, EmptyTargetRewriter>(d, new EmptyTargetRewriter());
-
-        internal static void InvokeInContext(this Action action, SynchronizationContext context)
-            => context.Post(SendOrPostInvoker, action);
-
-        internal static void InvokeInThreadPool(this Action action)
-            => ThreadPool.QueueUserWorkItem(ActionInvoker, action, false);
     }
 }
