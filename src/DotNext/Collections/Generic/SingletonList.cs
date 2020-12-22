@@ -18,9 +18,9 @@ namespace DotNext.Collections.Generic
                 requested = false;
             }
 
-            public T Current { get; }
+            public readonly T Current { get; }
 
-            object? IEnumerator.Current => Current;
+            readonly object? IEnumerator.Current => Current;
 
             void IDisposable.Dispose() => this = default;
 
