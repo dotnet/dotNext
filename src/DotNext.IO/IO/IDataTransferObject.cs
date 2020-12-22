@@ -15,6 +15,8 @@ namespace DotNext.IO
     /// <seealso cref="IAsyncBinaryWriter"/>
     public interface IDataTransferObject
     {
+        private const int DefaultBufferSize = 256;
+
         /// <summary>
         /// Represents DTO transformation.
         /// </summary>
@@ -106,8 +108,7 @@ namespace DotNext.IO
         protected static async ValueTask<TResult> DecodeAsync<TResult, TDecoder>(Stream input, TDecoder transformation, bool resetStream, MemoryAllocator<byte>? allocator, CancellationToken token)
             where TDecoder : notnull, IDecoder<TResult>
         {
-            const int bufferSize = 256;
-            var buffer = allocator.Invoke(bufferSize, false);
+            var buffer = allocator.Invoke(DefaultBufferSize, false);
             try
             {
                 return await transformation.ReadAsync(new AsyncStreamBinaryAccessor(input, buffer.Memory), token).ConfigureAwait(false);
@@ -148,6 +149,55 @@ namespace DotNext.IO
             where TDecoder : notnull, IDecoder<TResult>
             => transformation.ReadAsync(new Pipelines.PipeBinaryReader(input), token);
 
+        // use rented buffer of the small size
+        private async ValueTask<TResult> GetSmallObjectDataAsync<TResult, TDecoder>(TDecoder parser, long length, CancellationToken token)
+            where TDecoder : notnull, IDecoder<TResult>
+        {
+            using PooledArrayBufferWriter<byte> writer = new PooledArrayBufferWriter<byte>((int)length);
+
+            await WriteToAsync(new AsyncBufferWriter(writer), token).ConfigureAwait(false);
+            return await parser.ReadAsync(new SequenceBinaryReader(writer.WrittenMemory), token).ConfigureAwait(false);
+        }
+
+        // use FileBufferingWriter to keep the balance between I/O performance and memory consumption
+        // when size is unknown
+        private async ValueTask<TResult> GetUnknownObjectDataAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token)
+            where TDecoder : notnull, IDecoder<TResult>
+        {
+            await using var output = new FileBufferingWriter(asyncIO: true);
+            using var buffer = BufferWriter.DefaultByteAllocator.Invoke(DefaultBufferSize, false);
+
+            // serialize
+            await WriteToAsync(new AsyncStreamBinaryAccessor(output, buffer.Memory), token).ConfigureAwait(false);
+
+            // deserialize
+            if (output.TryGetWrittenContent(out var memory))
+                return await parser.ReadAsync(new SequenceBinaryReader(memory), token).ConfigureAwait(false);
+
+            await using var input = await output.GetWrittenContentAsStreamAsync(token).ConfigureAwait(false);
+            return await parser.ReadAsync(new AsyncStreamBinaryAccessor(input, buffer.Memory), token).ConfigureAwait(false);
+        }
+
+        // use disk I/O for large-size object
+        private async ValueTask<TResult> GetLargeObjectDataAsync<TResult, TDecoder>(TDecoder parser, long length, CancellationToken token)
+            where TDecoder : notnull, IDecoder<TResult>
+        {
+            var tempFileName = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            const FileOptions tempFileOptions = FileOptions.Asynchronous | FileOptions.DeleteOnClose | FileOptions.SequentialScan;
+            await using var fs = new FileStream(tempFileName, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, DefaultBufferSize, tempFileOptions);
+            fs.SetLength(length);
+
+            using var buffer = BufferWriter.DefaultByteAllocator.Invoke(DefaultBufferSize, false);
+
+            // serialize
+            await WriteToAsync(new AsyncStreamBinaryAccessor(fs, buffer.Memory), token).ConfigureAwait(false);
+            await fs.FlushAsync(token).ConfigureAwait(false);
+
+            // deserialize
+            fs.Position = 0L;
+            return await parser.ReadAsync(new AsyncStreamBinaryAccessor(fs, buffer.Memory), token).ConfigureAwait(false);
+        }
+
         /// <summary>
         /// Converts data transfer object to another type.
         /// </summary>
@@ -161,18 +211,13 @@ namespace DotNext.IO
         /// <typeparam name="TDecoder">The type of parser.</typeparam>
         /// <returns>The converted DTO content.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        async ValueTask<TResult> GetObjectDataAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token = default)
+        ValueTask<TResult> GetObjectDataAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token = default)
             where TDecoder : notnull, IDecoder<TResult>
         {
-            using PooledArrayBufferWriter<byte> writer = Length switch
-            {
-                null => new PooledArrayBufferWriter<byte>(),
-                long length and <= int.MaxValue => new PooledArrayBufferWriter<byte>((int)length),
-                _ => throw new InsufficientMemoryException()
-            };
+            if (Length.TryGetValue(out var length))
+                return length < FileBufferingWriter.DefaultMemoryThreshold ? GetSmallObjectDataAsync<TResult, TDecoder>(parser, length, token) : GetLargeObjectDataAsync<TResult, TDecoder>(parser, length, token);
 
-            await WriteToAsync(new AsyncBufferWriter(writer), token).ConfigureAwait(false);
-            return await parser.ReadAsync(new SequenceBinaryReader(writer.WrittenMemory), token).ConfigureAwait(false);
+            return GetUnknownObjectDataAsync<TResult, TDecoder>(parser, token);
         }
     }
 }
