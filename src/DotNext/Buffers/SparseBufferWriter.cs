@@ -57,8 +57,6 @@ namespace DotNext.Buffers
                 };
             }
 
-            static int NoGrowth(int chunkSize, ref int chunkIndex) => chunkSize;
-
             static int LinearGrowth(int chunkSize, ref int chunkIndex) => Math.Max(chunkSize * ++chunkIndex, chunkSize);
 
             static int ExponentialGrowth(int chunkSize, ref int chunkIndex) => Math.Max(chunkSize << ++chunkIndex, chunkSize);
@@ -73,6 +71,10 @@ namespace DotNext.Buffers
         {
             chunkSize = -1;
             allocator = pool.ToAllocator();
+            unsafe
+            {
+                growth = &NoGrowth;
+            }
         }
 
         /// <summary>
@@ -83,6 +85,8 @@ namespace DotNext.Buffers
             : this(MemoryPool<T>.Shared)
         {
         }
+
+        private static int NoGrowth(int chunkSize, ref int chunkIndex) => chunkSize;
 
         internal MemoryChunk? FirstChunk => first;
 
