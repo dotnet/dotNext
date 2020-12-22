@@ -304,7 +304,7 @@ namespace DotNext.Buffers
             }
             else if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
             {
-                if (buffer.LongLength <= int.MaxValue)
+                if (GetLength(buffer) <= int.MaxValue)
                 {
                     Array.Clear(buffer, 0, buffer.Length);
                 }
