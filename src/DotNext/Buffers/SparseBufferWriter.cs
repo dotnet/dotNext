@@ -24,8 +24,8 @@ namespace DotNext.Buffers
     {
         private readonly int chunkSize;
         private readonly MemoryAllocator<T>? allocator;
-        private readonly SparseBufferGrowth growth;
-        private int chunkIndex;
+        private readonly unsafe delegate*<int, ref int, int> growth;
+        private int chunkIndex; // used for linear and exponential allocation strategies only
         private MemoryChunk? first;
 
         [SuppressMessage("Usage", "CA2213", Justification = "It is implicitly through enumerating from first to last chunk in the chain")]
@@ -46,7 +46,22 @@ namespace DotNext.Buffers
 
             this.chunkSize = chunkSize;
             this.allocator = allocator;
-            this.growth = growth;
+
+            unsafe
+            {
+                this.growth = growth switch
+                {
+                    SparseBufferGrowth.Linear => &LinearGrowth,
+                    SparseBufferGrowth.Exponential => &ExponentialGrowth,
+                    _ => &NoGrowth,
+                };
+            }
+
+            static int NoGrowth(int chunkSize, ref int chunkIndex) => chunkSize;
+
+            static int LinearGrowth(int chunkSize, ref int chunkIndex) => Math.Max(chunkSize * ++chunkIndex, chunkSize);
+
+            static int ExponentialGrowth(int chunkSize, ref int chunkIndex) => Math.Max(chunkSize << ++chunkIndex, chunkSize);
         }
 
         /// <summary>
@@ -100,28 +115,6 @@ namespace DotNext.Buffers
             }
         }
 
-        private int NextChunkSize()
-        {
-            int result;
-            switch (growth)
-            {
-                default:
-                    result = chunkSize;
-                    goto exit;
-                case SparseBufferGrowth.Linear:
-                    result = chunkSize * ++chunkIndex;
-                    break;
-                case SparseBufferGrowth.Exponential:
-                    result = chunkSize << ++chunkIndex;
-                    break;
-            }
-
-            result = Math.Max(result, chunkSize);
-
-            exit:
-            return result;
-        }
-
         /// <summary>
         /// Writes the block of memory to this builder.
         /// </summary>
@@ -139,7 +132,7 @@ namespace DotNext.Buffers
 
                 // no more space in the last chunk, allocate a new one
                 if (writtenCount == 0)
-                    last = new PooledMemoryChunk(allocator, NextChunkSize(), last);
+                    unsafe { last = new PooledMemoryChunk(allocator, growth(chunkSize, ref chunkIndex), last); }
                 else
                     input = input.Slice(writtenCount);
             }

@@ -10,7 +10,7 @@ namespace DotNext.Buffers
             if (last is null)
                 first = last = new PooledMemoryChunk(allocator, chunkSize);
             else if (last.FreeCapacity == 0)
-                last = new PooledMemoryChunk(allocator, NextChunkSize(), last);
+                unsafe { last = new PooledMemoryChunk(allocator, growth(chunkSize, ref chunkIndex), last); }
 
             return last.FreeMemory;
         }
