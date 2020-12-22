@@ -102,6 +102,7 @@ Migration guide for 2.x users is [here](https://sakno.github.io/dotNext/migratio
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/3.0.0">DotNext.Net.Cluster 3.0.0</a>
 * Improved performance of [persistent WAL](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html)
+* Added support of active-standby configuration of Raft cluster. Standby node cannot become a leader but can be used for reads
 * Fixed bug causing long shutdown of Raft node which is using TCP transport
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/3.0.0">DotNext.AspNetCore.Cluster 3.0.0</a>
