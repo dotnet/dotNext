@@ -10,7 +10,6 @@ namespace DotNext.Buffers
     /// </summary>
     public static partial class BufferHelpers
     {
-
         /// <summary>
         /// Converts the sequence of memory blocks to <see cref="ReadOnlySequence{T}"/> data type.
         /// </summary>
