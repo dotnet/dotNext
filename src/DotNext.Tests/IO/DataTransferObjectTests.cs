@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -11,6 +12,24 @@ namespace DotNext.IO
     [ExcludeFromCodeCoverage]
     public sealed class DataTransferObjectTests : Test
     {
+        private sealed class CustomDTO : IDataTransferObject
+        {
+            private readonly byte[] content;
+
+            internal CustomDTO(byte[] content, bool withLength)
+            {
+                this.content = content;
+                Length = withLength ? content.LongLength : null;
+            }
+
+            ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+                => writer.WriteAsync(new ReadOnlyMemory<byte>(content), token);
+
+            public bool IsReusable => true;
+
+            public long? Length { get; }
+        }
+
         [Fact]
         public static async Task StreamTransfer()
         {
@@ -76,6 +95,20 @@ namespace DotNext.IO
         {
             var dto = new BinaryTransferObject<long> { Content = 42L };
             Equal(42L, await dto.GetObjectDataAsync((reader, token) => reader.ReadAsync<long>(token)));
+        }
+
+        [Theory]
+        [InlineData(128, false)]
+        [InlineData(128, true)]
+        [InlineData(ushort.MaxValue, true)]
+        [InlineData(ushort.MaxValue, false)]
+        public static async Task DefaultDecodeAsync(int dataSize, bool withLength)
+        {
+            var data = RandomBytes(dataSize);
+            IDataTransferObject dto = new CustomDTO(data, withLength);
+            True(dto.IsReusable);
+            True(withLength == dto.Length.HasValue);
+            Equal(data, await dto.ToByteArrayAsync());
         }
     }
 }
