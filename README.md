@@ -22,8 +22,8 @@
 
 Quick overview of additional features:
 
-* [Attachment of user data to arbitrary objects](https://sakno.github.io/dotNext/features/core/userdata.html)
-* [Automatic generation of Equals/GetHashCode](https://sakno.github.io/dotNext/features/core/autoeh.html) for arbitrary type at runtime which is much better that Visual Studio compile-time helper for generating these methods
+* [Attachment of user data to an arbitrary objects](https://sakno.github.io/dotNext/features/core/userdata.html)
+* [Automatic generation of Equals/GetHashCode](https://sakno.github.io/dotNext/features/core/autoeh.html) for an arbitrary type at runtime which is much better that Visual Studio compile-time helper for generating these methods
 * Extended set of [atomic operations](https://sakno.github.io/dotNext/features/core/atomic.html). Inspired by [AtomicInteger](https://docs.oracle.com/javase/10/docs/api/java/util/concurrent/atomic/AtomicInteger.html) and friends from Java
 * [Fast Reflection](https://sakno.github.io/dotNext/features/reflection/fast.html)
 * Fast conversion of bytes to hexadecimal representation and vice versa using `ToHex` and `FromHex` methods from [Span](https://sakno.github.io/dotNext/api/DotNext.Span.html) static class
@@ -33,7 +33,7 @@ Quick overview of additional features:
 * Various high-performance [growable buffers](https://sakno.github.io/dotNext/features/io/buffers.html) for efficient I/O
 * Fully-featured [Raft implementation](https://github.com/sakno/dotNext/tree/master/src/cluster)
 
-All these things are implemented in 100% managed code on top of existing .NET Standard stack without modifications of Roslyn compiler or CoreFX libraries.
+All these things are implemented in 100% managed code on top of existing .NET API without modifications of Roslyn compiler or CoreFX libraries.
 
 # Quick Links
 
@@ -123,7 +123,7 @@ _Maintenance_ support level means that new releases will contain bug fixes only.
 
 # Development Process
 Philosophy of development process:
-1. All libraries in .NEXT family based on .NET Standard to be available for the wide range of .NET implementations: Mono, Xamarin, .NET Core, .NET
+1. All libraries in .NEXT family are available for the wide range of .NET implementations: Mono, Xamarin, .NET Core, .NET
 1. Compatibility with AOT compiler should be checked for every release
 1. Minimize set of dependencies
 1. Provide high-quality documentation
