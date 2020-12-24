@@ -26,7 +26,7 @@ namespace DotNext.Net.Cluster.Messaging
         }
 
         /// <summary>
-        /// Initializes a new empty message of predefined size.
+        /// Initializes a new empty message of the predefined size.
         /// </summary>
         /// <param name="name">The name of the message.</param>
         /// <param name="type">Media type of the message.</param>
