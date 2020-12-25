@@ -423,7 +423,7 @@ namespace DotNext.IO
             stream.WriteTimeSpan(t, StringLengthEncoding.Plain, encoding, "G", provider: InvariantCulture);
 
             stream.Position = 0;
-            var decodingContext = new DecodingContext(encoding);
+            DecodingContext decodingContext = encoding;
             Span<byte> buffer = stackalloc byte[256];
             Equal(42L, stream.ReadInt64(StringLengthEncoding.Plain, in decodingContext, buffer, provider: InvariantCulture));
             Equal(12UL, stream.ReadUInt64(StringLengthEncoding.PlainLittleEndian, in decodingContext, buffer, provider: InvariantCulture));
@@ -484,7 +484,7 @@ namespace DotNext.IO
             await stream.WriteTimeSpanAsync(t, StringLengthEncoding.Plain, encoding, "G", provider: InvariantCulture);
 
             stream.Position = 0;
-            var decodingContext = new DecodingContext(encoding);
+            DecodingContext decodingContext = encoding;
             Equal(42L, await stream.ReadInt64Async(StringLengthEncoding.Plain, decodingContext, provider: InvariantCulture));
             Equal(12UL, await stream.ReadUInt64Async(StringLengthEncoding.PlainLittleEndian, decodingContext, provider: InvariantCulture));
             Equal(34, await stream.ReadInt32Async(StringLengthEncoding.PlainBigEndian, decodingContext, provider: InvariantCulture));

@@ -24,7 +24,7 @@ namespace DotNext.Text
         /// <param name="encoding">The encoding to be used for converting string into bytes.</param>
         /// <param name="reuseEncoder"><see langword="true"/> to reuse the encoder between encoding operations; <see langword="false"/> to create separated encoder for each encoding operation.</param>
         /// <exception cref="ArgumentNullException"><paramref name="encoding"/> is <see langword="null"/>.</exception>
-        public EncodingContext(Encoding encoding, bool reuseEncoder = false)
+        public EncodingContext(Encoding encoding, bool reuseEncoder)
         {
             this.encoding = encoding ?? throw new ArgumentNullException(nameof(encoding));
             encoder = reuseEncoder ? encoding.GetEncoder() : null;
@@ -56,6 +56,6 @@ namespace DotNext.Text
         /// Creates encoding context.
         /// </summary>
         /// <param name="encoding">The text encoding.</param>
-        public static implicit operator EncodingContext(Encoding encoding) => new EncodingContext(encoding);
+        public static implicit operator EncodingContext(Encoding encoding) => new EncodingContext(encoding, false);
     }
 }
