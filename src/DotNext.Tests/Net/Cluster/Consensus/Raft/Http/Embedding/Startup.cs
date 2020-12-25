@@ -19,7 +19,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddOptions()
-                .Configure<HostOptions>(options =>
+                .Configure<HostOptions>(static options =>
                 {
                     options.ShutdownTimeout = System.TimeSpan.FromMinutes(2);
                 })

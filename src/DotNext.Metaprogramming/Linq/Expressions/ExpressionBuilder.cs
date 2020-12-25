@@ -1095,7 +1095,7 @@ namespace DotNext.Linq.Expressions
         {
             if (args.LongLength == 0L)
                 return Expression.New(type);
-            ConstructorInfo? ctor = type.GetConstructor(Array.ConvertAll(args, arg => arg.Type));
+            ConstructorInfo? ctor = type.GetConstructor(Array.ConvertAll(args, static arg => arg.Type));
             return ctor is null ?
                 throw new MissingMethodException(type.FullName, ConstructorInfo.ConstructorName) :
                 Expression.New(ctor, args);

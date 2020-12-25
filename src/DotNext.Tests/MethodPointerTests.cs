@@ -158,7 +158,7 @@ namespace DotNext
         [Fact]
         public static void OperatorAsDelegate()
         {
-            var op = DelegateHelpers.CreateOpenDelegate<Func<decimal, decimal>>(arg => -arg);
+            var op = DelegateHelpers.CreateOpenDelegate<Func<decimal, decimal>>(static arg => -arg);
             var ptr = new ValueFunc<decimal, decimal>(op);
             Equal(-10M, ptr.Invoke(10M));
         }

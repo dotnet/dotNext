@@ -19,7 +19,7 @@ namespace DotNext.Metaprogramming
             : base(false) => this.tailCall = tailCall;
 
         private protected static IReadOnlyList<ParameterExpression> GetParameters(System.Reflection.ParameterInfo[] parameters)
-            => Array.ConvertAll(parameters, parameter => Expression.Parameter(parameter.ParameterType, parameter.Name));
+            => Array.ConvertAll(parameters, static parameter => Expression.Parameter(parameter.ParameterType, parameter.Name));
 
         /// <summary>
         /// Gets recursive reference to the lambda.

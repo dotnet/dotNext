@@ -30,7 +30,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
                         else
                             options.ListenAnyIP(port);
                     })
-                    .ConfigureLogging(builder => builder.AddDebug().SetMinimumLevel(LogLevel.Debug))
+                    .ConfigureLogging(static builder => builder.AddDebug().SetMinimumLevel(LogLevel.Debug))
                     .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(configuration))
                     .ConfigureServices(services =>
                     {

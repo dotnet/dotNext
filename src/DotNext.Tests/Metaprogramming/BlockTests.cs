@@ -37,7 +37,7 @@ namespace DotNext.Metaprogramming
         [Fact]
         public static void DisposableStructTest()
         {
-            var lambda = Lambda<DisposeLambda>(fun =>
+            var lambda = Lambda<DisposeLambda>(static fun =>
             {
                 Using(fun[0], () =>
                 {
@@ -56,7 +56,7 @@ namespace DotNext.Metaprogramming
         [Fact]
         public static void DisposableTest()
         {
-            var lambda = Lambda<Func<DisposableClass, long>>(fun =>
+            var lambda = Lambda<Func<DisposableClass, long>>(static fun =>
             {
                 Using(fun[0], () =>
                 {
@@ -73,9 +73,9 @@ namespace DotNext.Metaprogramming
         [Fact]
         public static void WithBlockTest()
         {
-            var lambda = Lambda<Func<int, int>>(fun =>
+            var lambda = Lambda<Func<int, int>>(static fun =>
             {
-                With((Expression)(fun[0].AsDynamic() + 10), scopeVar =>
+                With((Expression)(fun[0].AsDynamic() + 10), static scopeVar =>
                 {
                     Assign(scopeVar, scopeVar.AsDynamic() * 2);
                 });
@@ -87,7 +87,7 @@ namespace DotNext.Metaprogramming
         [Fact]
         public static void LockTest()
         {
-            var lambda = Lambda<Action<StringBuilder>>(fun =>
+            var lambda = Lambda<Action<StringBuilder>>(static fun =>
             {
                 Lock(fun[0], () =>
                 {

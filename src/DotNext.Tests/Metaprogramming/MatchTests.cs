@@ -14,10 +14,10 @@ namespace DotNext.Metaprogramming
         [Fact]
         public static void TypeBasedPattern()
         {
-            var lambda = Lambda<Func<object, int>>(fun =>
+            var lambda = Lambda<Func<object, int>>(static fun =>
             {
                 Match(fun[0])
-                    .Case<string>(t => t.Count())
+                    .Case<string>(static t => t.Count())
                     .Default((-1).Const())
                     .OfType<int>()
                 .End();
@@ -48,11 +48,11 @@ namespace DotNext.Metaprogramming
         [Fact]
         public static void StructMatch()
         {
-            var lambda = Lambda<Func<Point, string>>(fun =>
+            var lambda = Lambda<Func<Point, string>>(static fun =>
             {
                 Match(fun[0])
-                    .Case("X", 0L.Const(), value => "X is zero".Const())
-                    .Case(new { X = long.MaxValue, Y = long.MaxValue }, value => "MaxValue".Const())
+                    .Case("X", 0L.Const(), static value => "X is zero".Const())
+                    .Case(new { X = long.MaxValue, Y = long.MaxValue }, static value => "MaxValue".Const())
                     .Default("Unknown".Const())
                     .OfType<string>()
                 .End();
@@ -88,11 +88,11 @@ namespace DotNext.Metaprogramming
         [Fact]
         public static void TupleMatch()
         {
-            var lambda = Lambda<Func<(long X, long Y), string>>(fun =>
+            var lambda = Lambda<Func<(long X, long Y), string>>(static fun =>
             {
                 Match(fun[0])
-                    .Case("Item1", 0L.Const(), value => "X is zero".Const())
-                    .Case((long.MaxValue, long.MaxValue), value => "MaxValue".Const())
+                    .Case("Item1", 0L.Const(), static value => "X is zero".Const())
+                    .Case((long.MaxValue, long.MaxValue), static value => "MaxValue".Const())
                     .Default("Unknown".Const())
                     .OfType<string>()
                 .End();

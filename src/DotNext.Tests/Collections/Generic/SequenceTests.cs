@@ -344,7 +344,7 @@ namespace DotNext.Collections.Generic
             queue.Enqueue(52);
 
             var consumer = queue.GetConsumer();
-            Collection(consumer, i => Equal(42, i), i => Equal(52, i));
+            Collection(consumer, static i => Equal(42, i), static i => Equal(52, i));
         }
 
         [Fact]
@@ -355,7 +355,7 @@ namespace DotNext.Collections.Generic
             queue.Push(52);
 
             var consumer = queue.GetConsumer();
-            Collection(consumer, i => Equal(52, i), i => Equal(42, i));
+            Collection(consumer, static i => Equal(52, i), static i => Equal(42, i));
         }
     }
 }

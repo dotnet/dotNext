@@ -30,7 +30,7 @@ namespace DotNext.Threading
             ThreadPool.QueueUserWorkItem(async state =>
             {
                 False(await @lock.TryAcquireAsync(TimeSpan.FromMilliseconds(10)));
-                True(ThreadPool.QueueUserWorkItem(ev => ev.Set(), are, false));
+                True(ThreadPool.QueueUserWorkItem(static ev => ev.Set(), are, false));
                 await @lock.AcquireAsync(DefaultTimeout);
                 @lock.Release();
                 task.SetResult(true);

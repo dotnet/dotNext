@@ -25,7 +25,7 @@ namespace DotNext.Metaprogramming
         [Fact]
         public static void Recursion()
         {
-            var fact = Lambda<Func<long, long>>(fun =>
+            var fact = Lambda<Func<long, long>>(static fun =>
             {
                 var arg = fun[0];
                 If((Expression)(arg.AsDynamic() > 1L)).Then(arg.AsDynamic() * fun.Invoke(arg.AsDynamic() - 1L)).Else(arg).OfType<long>().End();
@@ -94,7 +94,7 @@ namespace DotNext.Metaprogramming
         [Fact]
         public static void SimpleAsyncLambdaThrowsException()
         {
-            var lambda = AsyncLambda<Func<Task<long>, long, Task<long>>>(fun =>
+            var lambda = AsyncLambda<Func<Task<long>, long, Task<long>>>(static fun =>
             {
                 var (arg1, arg2) = fun;
                 Return(arg1.Await().Add(arg2));
@@ -205,7 +205,7 @@ namespace DotNext.Metaprogramming
         [Fact]
         public static void TryFinallyWithException()
         {
-            var lambda = AsyncLambda<Func<Task, Action, Task>>(fun =>
+            var lambda = AsyncLambda<Func<Task, Action, Task>>(static fun =>
             {
                 Try(() => Await(fun[0])).Finally(fun[1].Invoke()).End();
             });
@@ -246,9 +246,9 @@ namespace DotNext.Metaprogramming
         [Fact]
         public static void LeaveAsyncTryCatchTest()
         {
-            var lambda = AsyncLambda<Func<long[], Task<string>>>(fun =>
+            var lambda = AsyncLambda<Func<long[], Task<string>>>(static fun =>
             {
-                For(0.Const(), i => i.AsDynamic() < fun[0].ArrayLength(), PostIncrementAssign, i =>
+                For(0.Const(), i => i.AsDynamic() < fun[0].ArrayLength(), PostIncrementAssign, static i =>
                 {
                     Using(typeof(MemoryStream).New(), Break);
                 });
@@ -260,7 +260,7 @@ namespace DotNext.Metaprogramming
         [Fact]
         public static void AwaitStatements()
         {
-            var lambda = AsyncLambda<Func<Task<int>>>(fun =>
+            var lambda = AsyncLambda<Func<Task<int>>>(static fun =>
             {
                 var result = DeclareVariable("result", "42".Const());
                 Await(typeof(Task).CallStatic(nameof(Task.Delay), 0.Const()));
@@ -274,7 +274,7 @@ namespace DotNext.Metaprogramming
         [Fact]
         public static async Task AsyncWithoutReturnTypeValueTask()
         {
-            var lambda = AsyncLambda<Func<StringBuilder, ValueTask>>(fun =>
+            var lambda = AsyncLambda<Func<StringBuilder, ValueTask>>(static fun =>
             {
                 Await(typeof(Task).CallStatic(nameof(Task.Delay), 0.Const()));
                 Call(fun[0], "Append", "Hello, world!".Const());
@@ -287,7 +287,7 @@ namespace DotNext.Metaprogramming
         [Fact]
         public static async Task AsyncWithoutReturnType()
         {
-            var lambda = AsyncLambda<Func<StringBuilder, Task>>(fun =>
+            var lambda = AsyncLambda<Func<StringBuilder, Task>>(static fun =>
             {
                 Await(typeof(Task).CallStatic(nameof(Task.Delay), 0.Const()));
                 Call(fun[0], "Append", "Hello, world!".Const());
@@ -321,7 +321,7 @@ namespace DotNext.Metaprogramming
         [Fact]
         public static void WriteLineToOut()
         {
-            var lambda = Lambda<Action<string>>(fun =>
+            var lambda = Lambda<Action<string>>(static fun =>
             {
                 WriteLine(fun[0]);
             }).Compile();
@@ -331,7 +331,7 @@ namespace DotNext.Metaprogramming
         [Fact]
         public static void RegressionIssue19CharType()
         {
-            var lambda = Lambda<Action<string>>(fun =>
+            var lambda = Lambda<Action<string>>(static fun =>
             {
                 ForEach(fun[0], WriteLine);
             }).Compile();
@@ -341,7 +341,7 @@ namespace DotNext.Metaprogramming
         [Fact]
         public static void RegressionIssue19GuidType()
         {
-            var lambda = Lambda<Action<Guid>>(fun =>
+            var lambda = Lambda<Action<Guid>>(static fun =>
             {
                 WriteLine(fun[0]);
             }).Compile();
@@ -351,7 +351,7 @@ namespace DotNext.Metaprogramming
         [Fact]
         public static void RegressionIssue19RefType()
         {
-            var lambda = Lambda<Action<Type>>(fun =>
+            var lambda = Lambda<Action<Type>>(static fun =>
             {
                 WriteLine(fun[0]);
             }).Compile();
@@ -361,7 +361,7 @@ namespace DotNext.Metaprogramming
         [Fact]
         public static void WriteLineToError()
         {
-            var lambda = Lambda<Action<string>>(fun =>
+            var lambda = Lambda<Action<string>>(static fun =>
             {
                 WriteError(fun[0]);
             }).Compile();
@@ -371,7 +371,7 @@ namespace DotNext.Metaprogramming
         [Fact]
         public static void WriteDebugMessage()
         {
-            var lambda = Lambda<Action<string>>(fun =>
+            var lambda = Lambda<Action<string>>(static fun =>
             {
                 DebugMessage(fun[0]);
             }).Compile();
@@ -381,7 +381,7 @@ namespace DotNext.Metaprogramming
         [Fact]
         public static void ExpressionInlining()
         {
-            var lambda = Lambda<Func<long, long, long>>(fun => ExpressionBuilder.Fragment<Func<long, long, long>>((a, b) => Math.Max(a, b), fun[0], fun[1])).Compile();
+            var lambda = Lambda<Func<long, long, long>>(static fun => ExpressionBuilder.Fragment<Func<long, long, long>>((a, b) => Math.Max(a, b), fun[0], fun[1])).Compile();
             Equal(10, lambda(5, 10));
         }
     }

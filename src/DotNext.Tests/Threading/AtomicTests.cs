@@ -11,7 +11,7 @@ namespace DotNext.Threading
         public static void AtomicArrayTest()
         {
             var array = new[] { "a", "b" };
-            array.UpdateAndGet(1, s => s + "c");
+            array.UpdateAndGet(1, static s => s + "c");
             Equal("bc", array.VolatileRead(1));
         }
 
@@ -28,14 +28,14 @@ namespace DotNext.Threading
             Equal(30F, i);
             Equal(80F, i.Add(50F));
             Equal(80F, i);
-            Equal(80F, i.GetAndAccumulate(10F, (x, y) => x + y));
+            Equal(80F, i.GetAndAccumulate(10F, static (x, y) => x + y));
             Equal(90F, i);
-            Equal(10F, i.AccumulateAndGet(80F, (x, y) => x - y));
+            Equal(10F, i.AccumulateAndGet(80F, static (x, y) => x - y));
             Equal(10F, i);
             Equal(10F, i.GetAndSet(25F));
             Equal(25F, i);
-            Equal(42F, i.UpdateAndGet(current => 42F));
-            Equal(42F, i.GetAndUpdate(current => 52F));
+            Equal(42F, i.UpdateAndGet(static current => 42F));
+            Equal(42F, i.GetAndUpdate(static current => 52F));
             Equal(52F, i);
         }
 
@@ -52,14 +52,14 @@ namespace DotNext.Threading
             Equal(30F, array.VolatileRead(0L));
             Equal(80F, array.Add(0L, 50F));
             Equal(80F, array.VolatileRead(0L));
-            Equal(80F, array.GetAndAccumulate(0L, 10F, (x, y) => x + y));
+            Equal(80F, array.GetAndAccumulate(0L, 10F, static (x, y) => x + y));
             Equal(90F, array.VolatileRead(0L));
             Equal(10F, array.AccumulateAndGet(0L, 80F, (x, y) => x - y));
             Equal(10F, array.VolatileRead(0L));
             Equal(10F, array.GetAndSet(0L, 25F));
             Equal(25F, array.VolatileRead(0L));
-            Equal(42F, array.UpdateAndGet(0L, current => 42F));
-            Equal(42F, array.GetAndUpdate(0L, current => 52F));
+            Equal(42F, array.UpdateAndGet(0L, static current => 42F));
+            Equal(42F, array.GetAndUpdate(0L, static current => 52F));
             Equal(52F, array.VolatileRead(0L));
         }
 
@@ -76,14 +76,14 @@ namespace DotNext.Threading
             Equal(30D, i);
             Equal(80D, i.Add(50D));
             Equal(80D, i);
-            Equal(80D, i.GetAndAccumulate(10D, (x, y) => x + y));
+            Equal(80D, i.GetAndAccumulate(10D, static (x, y) => x + y));
             Equal(90D, i);
-            Equal(10D, i.AccumulateAndGet(80D, (x, y) => x - y));
+            Equal(10D, i.AccumulateAndGet(80D, static (x, y) => x - y));
             Equal(10D, i);
             Equal(10D, i.GetAndSet(25D));
             Equal(25D, i);
-            Equal(42D, i.UpdateAndGet(current => 42D));
-            Equal(42D, i.GetAndUpdate(current => 52D));
+            Equal(42D, i.UpdateAndGet(static current => 42D));
+            Equal(42D, i.GetAndUpdate(static current => 52D));
             Equal(52D, i);
         }
 
@@ -100,14 +100,14 @@ namespace DotNext.Threading
             Equal(30D, array.VolatileRead(0L));
             Equal(80D, array.Add(0L, 50D));
             Equal(80D, array.VolatileRead(0L));
-            Equal(80D, array.GetAndAccumulate(0L, 10D, (x, y) => x + y));
+            Equal(80D, array.GetAndAccumulate(0L, 10D, static (x, y) => x + y));
             Equal(90D, array.VolatileRead(0L));
-            Equal(10D, array.AccumulateAndGet(0L, 80D, (x, y) => x - y));
+            Equal(10D, array.AccumulateAndGet(0L, 80D, static(x, y) => x - y));
             Equal(10D, array.VolatileRead(0L));
             Equal(10D, array.GetAndSet(0L, 25D));
             Equal(25D, array.VolatileRead(0L));
-            Equal(42D, array.UpdateAndGet(0L, current => 42D));
-            Equal(42D, array.GetAndUpdate(0L, current => 52D));
+            Equal(42D, array.UpdateAndGet(0L, static current => 42D));
+            Equal(42D, array.GetAndUpdate(0L, static current => 52D));
             Equal(52D, array.VolatileRead(0L));
         }
 
@@ -124,14 +124,14 @@ namespace DotNext.Threading
             Equal(30, i);
             Equal(80, i.Add(50));
             Equal(80, i);
-            Equal(80, i.GetAndAccumulate(10, (x, y) => x + y));
+            Equal(80, i.GetAndAccumulate(10, static (x, y) => x + y));
             Equal(90, i);
-            Equal(10, i.AccumulateAndGet(80, (x, y) => x - y));
+            Equal(10, i.AccumulateAndGet(80, static (x, y) => x - y));
             Equal(10, i);
             Equal(10, i.GetAndSet(25));
             Equal(25, i);
-            Equal(42, i.UpdateAndGet(current => 42));
-            Equal(42, i.GetAndUpdate(current => 52));
+            Equal(42, i.UpdateAndGet(static current => 42));
+            Equal(42, i.GetAndUpdate(static current => 52));
             Equal(52, i);
         }
 
@@ -148,14 +148,14 @@ namespace DotNext.Threading
             Equal(30, array.VolatileRead(0L));
             Equal(80, array.Add(0L, 50));
             Equal(80, array.VolatileRead(0L));
-            Equal(80, array.GetAndAccumulate(0L, 10, (x, y) => x + y));
+            Equal(80, array.GetAndAccumulate(0L, 10, static (x, y) => x + y));
             Equal(90, array.VolatileRead(0L));
-            Equal(10, array.AccumulateAndGet(0L, 80, (x, y) => x - y));
+            Equal(10, array.AccumulateAndGet(0L, 80, static (x, y) => x - y));
             Equal(10, array.VolatileRead(0L));
             Equal(10, array.GetAndSet(0L, 25));
             Equal(25, array.VolatileRead(0L));
-            Equal(42, array.UpdateAndGet(0L, current => 42));
-            Equal(42, array.GetAndUpdate(0L, current => 52));
+            Equal(42, array.UpdateAndGet(0L, static current => 42));
+            Equal(42, array.GetAndUpdate(0L, static current => 52));
             Equal(52, array.VolatileRead(0L));
         }
 
@@ -172,14 +172,14 @@ namespace DotNext.Threading
             Equal(30L, i);
             Equal(80L, i.Add(50L));
             Equal(80L, i);
-            Equal(80L, i.GetAndAccumulate(10L, (x, y) => x + y));
+            Equal(80L, i.GetAndAccumulate(10L, static (x, y) => x + y));
             Equal(90L, i);
-            Equal(10L, i.AccumulateAndGet(80L, (x, y) => x - y));
+            Equal(10L, i.AccumulateAndGet(80L, static (x, y) => x - y));
             Equal(10L, i);
             Equal(10L, i.GetAndSet(25L));
             Equal(25L, i);
-            Equal(42L, i.UpdateAndGet(current => 42L));
-            Equal(42L, i.GetAndUpdate(current => 52L));
+            Equal(42L, i.UpdateAndGet(static current => 42L));
+            Equal(42L, i.GetAndUpdate(static current => 52L));
             Equal(52L, i);
         }
 
@@ -196,14 +196,14 @@ namespace DotNext.Threading
             Equal(30L, array.VolatileRead(0L));
             Equal(80L, array.Add(0L, 50L));
             Equal(80L, array.VolatileRead(0L));
-            Equal(80L, array.GetAndAccumulate(0L, 10L, (x, y) => x + y));
+            Equal(80L, array.GetAndAccumulate(0L, 10L, static (x, y) => x + y));
             Equal(90L, array.VolatileRead(0L));
-            Equal(10L, array.AccumulateAndGet(0L, 80L, (x, y) => x - y));
+            Equal(10L, array.AccumulateAndGet(0L, 80L, static (x, y) => x - y));
             Equal(10L, array.VolatileRead(0L));
             Equal(10L, array.GetAndSet(0L, 25L));
             Equal(25L, array.VolatileRead(0L));
-            Equal(42L, array.UpdateAndGet(0L, current => 42L));
-            Equal(42L, array.GetAndUpdate(0L, current => 52L));
+            Equal(42L, array.UpdateAndGet(0L, static current => 42L));
+            Equal(42L, array.GetAndUpdate(0L, static current => 52L));
             Equal(52L, array.VolatileRead(0L));
         }
 
@@ -215,13 +215,13 @@ namespace DotNext.Threading
             Empty(stref.GetAndSet(null));
             Null(stref.Value);
             NotEmpty(stref.SetAndGet("Hello"));
-            Equal("Hello, world!", stref.AccumulateAndGet(", world!", (x, y) => x + y));
+            Equal("Hello, world!", stref.AccumulateAndGet(", world!", static (x, y) => x + y));
             Equal("Hello, world!", stref.Value);
-            Equal("Hello, world!", stref.GetAndUpdate(current => ""));
+            Equal("Hello, world!", stref.GetAndUpdate(static current => ""));
             Empty(stref.Value);
             stref.Value = null;
-            Equal("Hello", stref.SetIfNull(() => "Hello"));
-            Equal("Hello", stref.SetIfNull(() => ""));
+            Equal("Hello", stref.SetIfNull(static () => "Hello"));
+            Equal("Hello", stref.SetIfNull(static () => ""));
             Equal("Hello", stref.Value);
             Equal("Hello", stref.ToString());
             Equal("Hello".GetHashCode(), stref.GetHashCode());
@@ -247,18 +247,18 @@ namespace DotNext.Threading
             True(value.SetAndGet(true));
             True(value.Value);
             Equal(bool.TrueString, value.ToString());
-            True(value.GetAndAccumulate(false, (current, update) =>
+            True(value.GetAndAccumulate(false, static (current, update) =>
             {
                 True(current);
                 False(update);
                 return current & update;
             }));
             False(value.Value);
-            True(value.AccumulateAndGet(true, (current, update) => current | update));
+            True(value.AccumulateAndGet(true, static (current, update) => current | update));
             True(value.Value);
-            True(value.GetAndUpdate(x => !x));
+            True(value.GetAndUpdate(static x => !x));
             False(value.Value);
-            True(value.UpdateAndGet(x => !x));
+            True(value.UpdateAndGet(static x => !x));
             True(value.Value);
         }
 
@@ -279,19 +279,19 @@ namespace DotNext.Threading
             Equal(EnvironmentVariableTarget.Process, value.Value);
             Equal(EnvironmentVariableTarget.Process, value.GetAndSet(EnvironmentVariableTarget.Machine));
             Equal(EnvironmentVariableTarget.Machine, value.Value);
-            Equal(EnvironmentVariableTarget.Machine, value.GetAndUpdate(x => EnvironmentVariableTarget.User));
+            Equal(EnvironmentVariableTarget.Machine, value.GetAndUpdate(static x => EnvironmentVariableTarget.User));
             Equal(EnvironmentVariableTarget.User, value.Value);
             Equal(EnvironmentVariableTarget.User.ToString(), value.ToString());
             value.Value = EnvironmentVariableTarget.Process;
             Equal(EnvironmentVariableTarget.Machine, value.SetAndGet(EnvironmentVariableTarget.Machine));
             Equal(EnvironmentVariableTarget.Machine, value.Value);
-            Equal(EnvironmentVariableTarget.User, value.UpdateAndGet(x =>
+            Equal(EnvironmentVariableTarget.User, value.UpdateAndGet(static x =>
             {
                 Equal(EnvironmentVariableTarget.Machine, x);
                 return EnvironmentVariableTarget.User;
             }));
             value.Value = EnvironmentVariableTarget.Process;
-            Equal(EnvironmentVariableTarget.Process, value.GetAndAccumulate(EnvironmentVariableTarget.User, (current, update) =>
+            Equal(EnvironmentVariableTarget.Process, value.GetAndAccumulate(EnvironmentVariableTarget.User, static (current, update) =>
             {
                 Equal(EnvironmentVariableTarget.Process, current);
                 Equal(EnvironmentVariableTarget.User, update);
@@ -299,7 +299,7 @@ namespace DotNext.Threading
             }));
             Equal(EnvironmentVariableTarget.User, value.Value);
             value.Value = EnvironmentVariableTarget.Process;
-            Equal(EnvironmentVariableTarget.User, value.AccumulateAndGet(EnvironmentVariableTarget.User, (current, update) =>
+            Equal(EnvironmentVariableTarget.User, value.AccumulateAndGet(EnvironmentVariableTarget.User, static (current, update) =>
             {
                 Equal(EnvironmentVariableTarget.Process, current);
                 Equal(EnvironmentVariableTarget.User, update);
@@ -319,14 +319,14 @@ namespace DotNext.Threading
             Equal(new IntPtr(30), i);
             False(i.CompareAndSet(new IntPtr(20), new IntPtr(50)));
             Equal(new IntPtr(30), i);
-            Equal(new IntPtr(30), i.GetAndAccumulate(new IntPtr(60), (x, y) => x + y.ToInt32()));
+            Equal(new IntPtr(30), i.GetAndAccumulate(new IntPtr(60), static (x, y) => x + y.ToInt32()));
             Equal(new IntPtr(90), i);
-            Equal(new IntPtr(10), i.AccumulateAndGet(new IntPtr(80), (x, y) => x - y.ToInt32()));
+            Equal(new IntPtr(10), i.AccumulateAndGet(new IntPtr(80), static (x, y) => x - y.ToInt32()));
             Equal(new IntPtr(10), i);
             Equal(new IntPtr(10), i.GetAndSet(new IntPtr(25)));
             Equal(new IntPtr(25), i);
-            Equal(new IntPtr(42), i.UpdateAndGet(current => new IntPtr(42)));
-            Equal(new IntPtr(42), i.GetAndUpdate(current => new IntPtr(52)));
+            Equal(new IntPtr(42), i.UpdateAndGet(static current => new IntPtr(42)));
+            Equal(new IntPtr(42), i.GetAndUpdate(static current => new IntPtr(52)));
             Equal(new IntPtr(52), i);
         }
 
@@ -341,14 +341,14 @@ namespace DotNext.Threading
             Equal(new IntPtr(30), array.VolatileRead(0L));
             False(array.CompareAndSet(0L, new IntPtr(20), new IntPtr(50)));
             Equal(new IntPtr(30), array.VolatileRead(0L));
-            Equal(new IntPtr(30), array.GetAndAccumulate(0L, new IntPtr(60), (x, y) => x + y.ToInt32()));
+            Equal(new IntPtr(30), array.GetAndAccumulate(0L, new IntPtr(60), static (x, y) => x + y.ToInt32()));
             Equal(new IntPtr(90), array.VolatileRead(0L));
-            Equal(new IntPtr(10), array.AccumulateAndGet(0L, new IntPtr(80), (x, y) => x - y.ToInt32()));
+            Equal(new IntPtr(10), array.AccumulateAndGet(0L, new IntPtr(80), static (x, y) => x - y.ToInt32()));
             Equal(new IntPtr(10), array.VolatileRead(0L));
             Equal(new IntPtr(10), array.GetAndSet(0L, new IntPtr(25)));
             Equal(new IntPtr(25), array.VolatileRead(0L));
-            Equal(new IntPtr(42), array.UpdateAndGet(0L, current => new IntPtr(42)));
-            Equal(new IntPtr(42), array.GetAndUpdate(0L, current => new IntPtr(52)));
+            Equal(new IntPtr(42), array.UpdateAndGet(0L, static current => new IntPtr(42)));
+            Equal(new IntPtr(42), array.GetAndUpdate(0L, static current => new IntPtr(52)));
             Equal(new IntPtr(52), array.VolatileRead(0L));
         }
 

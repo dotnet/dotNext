@@ -13,7 +13,7 @@ namespace DotNext.Metaprogramming
         [Fact]
         public static void IntConversion()
         {
-            var lambda = Lambda<Func<int, string>>(fun =>
+            var lambda = Lambda<Func<int, string>>(static fun =>
             {
                 Switch(fun[0])
                     .Case(0.Const(), "Zero".Const())
@@ -31,7 +31,7 @@ namespace DotNext.Metaprogramming
         [Fact]
         public static void SwitchOverString()
         {
-            var lambda = Lambda<Func<string, int>>(fun =>
+            var lambda = Lambda<Func<string, int>>(static fun =>
             {
                 Switch(fun[0])
                     .Case("Zero".Const(), 0.Const())

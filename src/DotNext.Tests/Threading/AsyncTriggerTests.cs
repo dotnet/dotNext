@@ -20,7 +20,7 @@ namespace DotNext.Threading
             using var trigger = new AsyncTrigger();
             var eventNode = trigger.WaitAsync();
             False(eventNode.IsCompleted);
-            var valueNode = trigger.WaitAsync(state, i => i.Value == 42);
+            var valueNode = trigger.WaitAsync(state, static i => i.Value == 42);
             False(valueNode.IsCompleted);
             trigger.Signal();
             True(eventNode.IsCompletedSuccessfully);
@@ -44,7 +44,7 @@ namespace DotNext.Threading
             using var trigger = new AsyncTrigger();
             var eventNode = trigger.WaitAsync();
             False(eventNode.IsCompleted);
-            var valueNode = trigger.WaitAsync(state, i => i.Value == 42);
+            var valueNode = trigger.WaitAsync(state, static i => i.Value == 42);
             False(valueNode.IsCompleted);
             trigger.Signal();
             True(eventNode.IsCompletedSuccessfully);
@@ -62,7 +62,7 @@ namespace DotNext.Threading
         {
             var state = new State { Value = 10 };
             using var trigger = new AsyncTrigger();
-            var waitTask = trigger.SignalAndWaitAsync(state, i => i.Value == 42);
+            var waitTask = trigger.SignalAndWaitAsync(state, static i => i.Value == 42);
             False(waitTask.IsCompleted);
             Equal(10, state.Value);
             state.Value = 42;
@@ -90,9 +90,9 @@ namespace DotNext.Threading
             using var trigger = new AsyncTrigger();
             var untypedWait = trigger.WaitAsync();
             False(untypedWait.IsCompleted);
-            var stringWait = trigger.WaitAsync(string.Empty, str => str.Length > 0);
+            var stringWait = trigger.WaitAsync(string.Empty, static str => str.Length > 0);
             False(stringWait.IsCompleted);
-            var arrayWait = trigger.WaitAsync(Array.Empty<int>(), array => array.Length > 0);
+            var arrayWait = trigger.WaitAsync(Array.Empty<int>(), static array => array.Length > 0);
             False(arrayWait.IsCompleted);
 
             trigger.Signal("Hello, world!");

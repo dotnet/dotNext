@@ -68,7 +68,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                 )
                 .UseHostOptions(new HostOptions { ShutdownTimeout = TimeSpan.FromMinutes(2) })
                 .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(configuration))
-                .ConfigureLogging(builder => builder.AddDebug().SetMinimumLevel(LogLevel.Debug))
+                .ConfigureLogging(static builder => builder.AddDebug().SetMinimumLevel(LogLevel.Debug))
                 .JoinCluster()
                 .Build();
         }
@@ -171,7 +171,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             await host1.StartAsync();
             await host2.StartAsync();
 
-            var client = host1.Services.GetService<IMessageBus>().Members.FirstOrDefault(member => ((IPEndPoint)member.EndPoint).Port == 3263);
+            var client = host1.Services.GetService<IMessageBus>().Members.FirstOrDefault(static member => ((IPEndPoint)member.EndPoint).Port == 3263);
             var messageBox = host2.Services.GetService<IInputChannel>() as Mailbox;
             NotNull(messageBox);
             //request-reply test

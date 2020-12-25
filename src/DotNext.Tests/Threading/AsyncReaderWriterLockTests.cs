@@ -93,7 +93,7 @@ namespace DotNext.Threading
             ThreadPool.QueueUserWorkItem(async state =>
             {
                 False(await rwLock.TryEnterReadLockAsync(TimeSpan.FromMilliseconds(10)));
-                True(ThreadPool.QueueUserWorkItem(ev => ev.Set(), are, false));
+                True(ThreadPool.QueueUserWorkItem(static ev => ev.Set(), are, false));
                 await rwLock.EnterReadLockAsync(DefaultTimeout);
                 rwLock.ExitReadLock();
                 task.SetResult(true);
@@ -113,7 +113,7 @@ namespace DotNext.Threading
             ThreadPool.QueueUserWorkItem(async state =>
             {
                 False(await rwLock.TryEnterUpgradeableReadLockAsync(TimeSpan.FromMilliseconds(10)));
-                True(ThreadPool.QueueUserWorkItem(ev => ev.Set(), are, false));
+                True(ThreadPool.QueueUserWorkItem(static ev => ev.Set(), are, false));
                 await rwLock.EnterUpgradeableReadLockAsync(DefaultTimeout);
                 rwLock.ExitUpgradeableReadLock();
                 task.SetResult(true);

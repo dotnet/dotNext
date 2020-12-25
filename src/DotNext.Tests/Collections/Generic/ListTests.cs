@@ -12,7 +12,7 @@ namespace DotNext.Collections.Generic
         public static void ToArray()
         {
             var list = new List<long>() { 10, 40, 100 };
-            var array = list.ToArray(i => i.ToString());
+            var array = list.ToArray(static i => i.ToString());
             True(array.SequenceEqual(new[] { "10", "40", "100" }));
         }
 

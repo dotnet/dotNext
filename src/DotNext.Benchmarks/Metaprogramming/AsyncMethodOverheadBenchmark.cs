@@ -23,7 +23,7 @@ namespace DotNext.Metaprogramming
         [GlobalSetup]
         public void CompileAsyncFuncInMemory()
         {
-            generatedAsyncFunc = AsyncLambda<Func<Task<int>>>(fun =>
+            generatedAsyncFunc = AsyncLambda<Func<Task<int>>>(static fun =>
             {
                 var result = DeclareVariable("result", "42".Const());
                 Await(typeof(Task).CallStatic(nameof(Task.Delay), 0.Const()));

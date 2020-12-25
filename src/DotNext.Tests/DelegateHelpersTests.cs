@@ -27,12 +27,12 @@ namespace DotNext
         [Fact]
         public static void ChangeDelegateType()
         {
-            WaitCallback callback = obj => { };
-            callback += obj => { };
+            WaitCallback callback = static obj => { };
+            callback += static obj => { };
             var result = callback.ChangeType<SendOrPostCallback>();
             NotNull(result);
-            var list1 = callback.GetInvocationList().Select(d => d.Method);
-            var list2 = result.GetInvocationList().Select(d => d.Method);
+            var list1 = callback.GetInvocationList().Select(static d => d.Method);
+            var list2 = result.GetInvocationList().Select(static d => d.Method);
             Equal(list1, list2);
         }
 
@@ -47,7 +47,7 @@ namespace DotNext
         [Fact]
         public static void OpenDelegateForProperty()
         {
-            var d = DelegateHelpers.CreateOpenDelegate<Func<string, int>>(str => str.Length);
+            var d = DelegateHelpers.CreateOpenDelegate<Func<string, int>>(static str => str.Length);
             NotNull(d);
             Equal(4, d("abcd"));
         }
@@ -69,7 +69,7 @@ namespace DotNext
         [Fact]
         public static void OpenDelegateConversion()
         {
-            var d = DelegateHelpers.CreateOpenDelegate<Func<decimal, long>>(i => (long)i);
+            var d = DelegateHelpers.CreateOpenDelegate<Func<decimal, long>>(static i => (long)i);
             Equal(42L, d(42M));
         }
 
@@ -195,7 +195,7 @@ namespace DotNext
         {
             var conv = new Converter<string, int>(int.Parse);
             Equal(42, conv.AsFunc().Invoke("42"));
-            Converter<int, bool> odd = i => i % 2 != 0;
+            Converter<int, bool> odd = static i => i % 2 != 0;
             True(odd.AsPredicate().Invoke(3));
             Equal(42, conv.TryInvoke("42"));
             NotNull(conv.TryInvoke("abc").Error);
@@ -210,7 +210,7 @@ namespace DotNext
         public static void OpenDelegateForPropertySetter()
         {
             var obj = new ClassWithProperty();
-            var action = DelegateHelpers.CreateOpenDelegate<ClassWithProperty, int>(obj => obj.Prop);
+            var action = DelegateHelpers.CreateOpenDelegate<ClassWithProperty, int>(static obj => obj.Prop);
             NotNull(action);
             action(obj, 42);
             Equal(42, obj.Prop);

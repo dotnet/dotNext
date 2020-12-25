@@ -21,7 +21,7 @@ namespace DotNext
         private static readonly Func<string, int> ParseToIntMethod = int.Parse;
         private static readonly ValueFunc<string, int> ParseToIntMethodPtr = new ValueFunc<string, int>(ParseToIntMethod);
 
-        private static readonly Func<decimal, decimal> NegateDecimal = DelegateHelpers.CreateOpenDelegate<Func<decimal, decimal>>(arg => -arg);
+        private static readonly Func<decimal, decimal> NegateDecimal = DelegateHelpers.CreateOpenDelegate<Func<decimal, decimal>>(static arg => -arg);
 
         private static readonly ValueFunc<decimal, decimal> NegateDecimalPtr = new ValueFunc<decimal, decimal>(NegateDecimal);
 
