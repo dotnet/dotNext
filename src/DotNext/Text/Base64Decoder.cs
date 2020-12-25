@@ -20,7 +20,7 @@ namespace DotNext.Text
         // 8 bytes buffer for decoding base64
         // for utf8 encoding we need just 4 bytes
         // but for Unicode we need 8 bytes, because max chars in reserve is 4 (4 X sizeof(char) == 8 bytes)
-        private ulong reservedBuffer; 
+        private ulong reservedBuffer;
         private int reservedBufferSize;
 
         /// <summary>
