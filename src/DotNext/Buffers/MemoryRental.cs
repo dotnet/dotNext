@@ -13,10 +13,10 @@ namespace DotNext.Buffers
     /// <remarks>
     /// This type is aimed to be compatible with memory allocated using <c>stackalloc</c> operator.
     /// If stack allocation threshold is reached (e.g. <see cref="StackallocThreshold"/>) then it's possible to use pooled memory from
-    /// arbitrary <see cref="MemoryPool{T}"/> or <see cref="ArrayPool{T}.Shared"/>. Arbitrary
+    /// arbitrary <see cref="MemoryPool{T}"/> or <see cref="ArrayPool{T}.Shared"/>. Custom
     /// <see cref="ArrayPool{T}"/> is not supported because default <see cref="ArrayPool{T}.Shared"/>
     /// is optimized for per-CPU core allocation which is perfectly for situation when the same
-    /// thread is responsible for renting and releasing array.
+    /// thread is responsible for renting and releasing of an array.
     /// </remarks>
     /// <example>
     /// <code>
