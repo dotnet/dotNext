@@ -28,6 +28,7 @@ namespace DotNext.IO
         private const int MaxBufferSize = int.MaxValue / 2;
         private const int InitialCharBufferSize = 128;
         private const int DefaultBufferSize = 256;
+        private const MemoryAllocator<char>? DefaultCharAllocator = null;
 
         // this struct is required to call function pointer in async method
         [StructLayout(LayoutKind.Auto)]
@@ -236,8 +237,8 @@ namespace DotNext.IO
             {
                 for (var charBufferSize = InitialCharBufferSize * 2; ; charBufferSize = charBufferSize <= MaxBufferSize ? charBufferSize * 2 : throw new InsufficientMemoryException())
                 {
-                    using var owner = DefaultCharAllocator.Invoke(charBufferSize, false);
-                    if (WriteString(stream, in value, formatter, charBuffer, lengthFormat, encoding, format, provider))
+                    using var owner = new MemoryRental<char>(charBufferSize, false);
+                    if (WriteString(stream, in value, formatter, owner.Span, lengthFormat, encoding, format, provider))
                         break;
                     charBufferSize = owner.Length;
                 }
