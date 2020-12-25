@@ -72,16 +72,19 @@ namespace DotNext.Buffers
         /// </summary>
         /// <param name="pool">The memory pool.</param>
         /// <param name="minBufferSize">The minimum size of the memory to rent.</param>
+        /// <param name="exactSize"><see langword="true"/> to return the buffer of <paramref name="minBufferSize"/> length; otherwise, the returned buffer is at least of <paramref name="minBufferSize"/>.</param>
         /// <exception cref="ArgumentNullException"><paramref name="pool"/> is <see langword="null"/>.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="minBufferSize"/> is less than or equal to zero.</exception>
-        public MemoryRental(MemoryPool<T> pool, int minBufferSize)
+        public MemoryRental(MemoryPool<T> pool, int minBufferSize, bool exactSize = true)
         {
             if (pool is null)
                 throw new ArgumentNullException(nameof(pool));
             if (minBufferSize <= 0)
                 throw new ArgumentOutOfRangeException(nameof(minBufferSize));
             var owner = pool.Rent(minBufferSize);
-            memory = owner.Memory.Span.Slice(0, minBufferSize);
+            memory = owner.Memory.Span;
+            if (exactSize)
+                memory = memory.Slice(0, minBufferSize);
             this.owner = owner;
         }
 
@@ -103,14 +106,15 @@ namespace DotNext.Buffers
         /// Rents the memory from <see cref="ArrayPool{T}.Shared"/>.
         /// </summary>
         /// <param name="minBufferSize">The minimum size of the memory to rent.</param>
+        /// <param name="exactSize"><see langword="true"/> to return the buffer of <paramref name="minBufferSize"/> length; otherwise, the returned buffer is at least of <paramref name="minBufferSize"/>.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="minBufferSize"/> is less than or equal to zero.</exception>
-        public MemoryRental(int minBufferSize)
+        public MemoryRental(int minBufferSize, bool exactSize = true)
         {
             if (minBufferSize <= 0)
                 throw new ArgumentOutOfRangeException(nameof(minBufferSize));
 
             var owner = ArrayPool<T>.Shared.Rent(minBufferSize);
-            memory = owner.AsSpan(0, minBufferSize);
+            memory = exactSize ? owner.AsSpan(0, minBufferSize) : new Span<T>(owner);
             this.owner = owner;
         }
 
