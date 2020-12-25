@@ -230,8 +230,8 @@ namespace DotNext.Buffers
             {
                 for (var charBufferSize = initialCharBufferSize * 2; ; charBufferSize = charBufferSize <= MaxBufferSize ? charBufferSize * 2 : throw new InsufficientMemoryException())
                 {
-                    using var owner = DefaultCharAllocator.Invoke(charBufferSize, false);
-                    if (WriteString(writer, value, formatter, charBuffer, lengthFormat, in context, format, provider, bufferSize))
+                    using var owner = new MemoryRental<char>(charBufferSize, false);
+                    if (WriteString(writer, value, formatter, owner.Span, lengthFormat, in context, format, provider, bufferSize))
                         break;
                     charBufferSize = owner.Length;
                 }
