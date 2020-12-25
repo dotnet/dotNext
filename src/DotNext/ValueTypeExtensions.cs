@@ -678,7 +678,7 @@ namespace DotNext
 #if !NETSTANDARD2_1
         [Obsolete("Use nint and nuint data types in C#")]
 #endif
-        public static IntPtr Increment(this IntPtr value) => (nint)value + 1;
+        public static IntPtr Increment(this IntPtr value) => unchecked((nint)value + 1);
 
         /// <summary>
         /// Decrements native integer by 1.
@@ -689,7 +689,7 @@ namespace DotNext
 #if !NETSTANDARD2_1
         [Obsolete("Use nint and nuint data types in C#")]
 #endif
-        public static IntPtr Decrement(this IntPtr value) => (nint)value - 1;
+        public static IntPtr Decrement(this IntPtr value) => unchecked((nint)value - 1);
 
         /// <summary>
         /// Increments native integer by 1.
@@ -701,7 +701,7 @@ namespace DotNext
 #if !NETSTANDARD2_1
         [Obsolete("Use nint and nuint data types in C#")]
 #endif
-        public static UIntPtr Increment(this UIntPtr value) => (nuint)value + 1;
+        public static UIntPtr Increment(this UIntPtr value) => unchecked((nuint)value + 1);
 
         /// <summary>
         /// Decrements native integer by 1.
@@ -713,7 +713,7 @@ namespace DotNext
 #if !NETSTANDARD2_1
         [Obsolete("Use nint and nuint data types in C#")]
 #endif
-        public static UIntPtr Decrement(this UIntPtr value) => (nuint)value - 1;
+        public static UIntPtr Decrement(this UIntPtr value) => unchecked((nuint)value - 1);
 
         /// <summary>
         /// Truncates 64-bit signed integer.
