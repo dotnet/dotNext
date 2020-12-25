@@ -16,7 +16,6 @@ namespace DotNext.Buffers
     public static partial class BufferWriter
     {
         private const int MaxBufferSize = int.MaxValue / 2;
-        internal const MemoryAllocator<char>? DefaultCharAllocator = null;
         internal const MemoryAllocator<byte>? DefaultByteAllocator = null;
 
         [StructLayout(LayoutKind.Auto)]
