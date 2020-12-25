@@ -14,7 +14,7 @@ namespace DotNext.Text
 
         private void DecodeCore(ReadOnlySpan<char> chars, IBufferWriter<byte> output)
         {
-            var size = chars.Length % 4;
+            var size = chars.Length & 3;
             if (size > 0)
             {
                 // size of the rest
