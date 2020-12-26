@@ -9,7 +9,7 @@ namespace DotNext.IO
     /// <summary>
     /// Represents data transfer object holding the content of the predefined size in the memory.
     /// </summary>
-    public class MemoryTransferObject : Disposable, IDataTransferObject, IDisposable
+    public class MemoryTransferObject : Disposable, IDataTransferObject
     {
         private MemoryOwner<byte> owner;
 

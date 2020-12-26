@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading;
@@ -140,7 +141,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
 
         private static async ValueTask<StreamMessage> CreateBufferedMessageAsync(IMessage message, CancellationToken token)
         {
-            var result = new StreamMessage(message.Name, message.Type);
+            var result = new StreamMessage(new MemoryStream(), false, message.Name, message.Type);
             await result.LoadFromAsync(message, token);
             return result;
         }

@@ -82,6 +82,30 @@ namespace DotNext.IO
         }
 
         [Fact]
+        public static async Task BufferedDTO()
+        {
+            using var dto = new MemoryTransferObject(sizeof(long));
+            Span.AsReadOnlyBytes(42L).CopyTo(dto.Content.Span);
+            Equal(sizeof(long), dto.As<IDataTransferObject>().Length);
+            True(dto.As<IDataTransferObject>().IsReusable);
+            var writer = new ArrayBufferWriter<byte>();
+            await dto.WriteToAsync(writer);
+            Equal(sizeof(long), writer.WrittenCount);
+            Equal(42L, BitConverter.ToInt64(writer.WrittenSpan));
+            var memory = await dto.ToByteArrayAsync();
+            Equal(42L, BitConverter.ToInt64(memory, 0));
+        }
+
+        [Fact]
+        public static async Task DecodeAsAllocatedBuffer()
+        {
+            using var dto = new MemoryTransferObject(sizeof(long));
+            Span.AsReadOnlyBytes(42L).CopyTo(dto.Content.Span);
+            using var memory = await dto.ToMemoryAsync();
+            Equal(42L, BitConverter.ToInt64(memory.Memory.Span));
+        }
+
+        [Fact]
         public static async Task ToBlittableType()
         {
             var bytes = new byte[sizeof(decimal)];

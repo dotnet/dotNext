@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using static Xunit.Assert;
@@ -20,7 +21,7 @@ namespace DotNext.Net.Cluster.Messaging
 
         async Task IInputChannel.ReceiveSignal(ISubscriber sender, IMessage signal, object context, CancellationToken token)
         {
-            var buffered = new StreamMessage(signal.Name, signal.Type);
+            var buffered = new StreamMessage(new MemoryStream(), false, signal.Name, signal.Type);
             await buffered.LoadFromAsync(signal, token).ConfigureAwait(false);
             Enqueue(buffered);
         }

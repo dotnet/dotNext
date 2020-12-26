@@ -49,14 +49,6 @@ namespace DotNext.Buffers
         }
 
         [Fact]
-        public static void ReadWriteUsingRentedMemoryStream()
-        {
-            using var stream = new RentedMemoryStream(8192);
-            Equal(stream.Capacity, stream.As<IGrowableBuffer<byte>>().Capacity);
-            ReadWriteTest(stream);
-        }
-
-        [Fact]
         public static void ReadWriteUsingPooledBufferWriter()
         {
             using var writer = new PooledBufferWriter<byte>(null);
