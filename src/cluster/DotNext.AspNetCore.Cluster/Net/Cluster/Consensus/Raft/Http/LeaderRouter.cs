@@ -48,10 +48,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                         context.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
                         return Task.CompletedTask;
                     }
-                    else if (leader.IsRemote)
-                    {
+
+                    if (leader.IsRemote)
                         return redirection(context.Response, new UriBuilder(context.Request.GetEncodedUrl()) { Host = leader.EndPoint.Address.ToString(), Port = applicationPortHint ?? context.Connection.LocalPort }.Uri);
-                    }
                 }
 
                 return next(context);
