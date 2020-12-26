@@ -672,7 +672,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <exception cref="InvalidOperationException">The local cluster member is not a leader.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public Task<bool> ForceReplicationAsync(TimeSpan timeout, CancellationToken token = default)
-            => state is LeaderState leaderState ? leaderState.ForceReplicationAsync(timeout, token) : throw new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader);
+            => state is LeaderState leaderState ? leaderState.ForceReplicationAsync(timeout, token) : Task.FromException<bool>(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader));
 
         private void Cleanup()
         {
