@@ -19,9 +19,7 @@ namespace DotNext.IO
         /// <param name="length">The length, in bytes, of the content.</param>
         /// <param name="allocator">The memory allocator.</param>
         public MemoryTransferObject(int length, MemoryAllocator<byte>? allocator = null)
-        {
-            owner = length > 0 ? allocator.Invoke(length, true) : default;
-        }
+            => owner = length > 0 ? allocator.Invoke(length, true) : default;
 
         /// <summary>
         /// Transforms this object to serialized form.
