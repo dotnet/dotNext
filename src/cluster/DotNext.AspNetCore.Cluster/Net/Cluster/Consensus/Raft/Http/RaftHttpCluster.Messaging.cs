@@ -127,11 +127,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             IInputChannel? handler = handlers.FirstOrDefault(message.IsSignalSupported);
             if (handler is null)
                 return;
-            IBufferedMessage buffered;
-            if (message.Length.TryGetValue(out var length) && length < FileMessage.MinSize)
-                buffered = new InMemoryMessage(message.Name, message.Type, Convert.ToInt32(length));
-            else
-                buffered = new FileMessage(message.Name, message.Type);
+            IBufferedMessage buffered = message.Length.TryGetValue(out var length) && length < FileMessage.MinSize ?
+                new InMemoryMessage(message.Name, message.Type, Convert.ToInt32(length)) :
+                new FileMessage(message.Name, message.Type);
             await buffered.LoadFromAsync(message, token).ConfigureAwait(false);
             buffered.PrepareForReuse();
             response.OnCompleted(ReceiveSignal);
