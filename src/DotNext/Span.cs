@@ -380,8 +380,7 @@ namespace DotNext
             {
                 if (comparer.Invoke(reference, value))
                     return i;
-                else
-                    reference = ref Add(ref reference, 1);
+                reference = ref Add(ref reference, 1);
             }
 
             return -1;
