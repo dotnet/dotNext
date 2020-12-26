@@ -10,7 +10,7 @@ namespace DotNext.Threading.Tasks
     /// </summary>
     public abstract class Future : IFuture, IValueTaskSource
     {
-         /// <summary>
+        /// <summary>
         /// Represents awaiter of the asynchronous computation result represented by future object.
         /// </summary>
         public interface IAwaiter
