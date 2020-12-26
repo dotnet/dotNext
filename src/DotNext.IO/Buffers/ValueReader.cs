@@ -20,8 +20,4 @@ namespace DotNext.Buffers
             offset += block.Length;
         }
     }
-
-    internal delegate TResult ValueReader<TResult, TStyle>(ReadOnlySpan<char> value, TStyle style, IFormatProvider? provider)
-            where TResult : struct
-            where TStyle : struct, Enum;
 }
