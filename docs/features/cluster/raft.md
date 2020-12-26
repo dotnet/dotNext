@@ -162,7 +162,7 @@ This section contains recommendations about implementation of your own database 
     1. Override `ApplyAsync` method which contains interpretation of commands contained in log entries
     1. Override `CreateSnapshot` method which is responsible for log compaction
     1. Expose high-level data operations declared in the derived class in the form of interface. Let's assume that its name is `IDataEngine`
-    1. Optionally override `FlushAsync` to handle notification from persistent log about the moment when batch modification completed
+    1. Optionally override `FlushAsync` to handle notification from persistent log about the moment when the batch modification has completed
 1. Declare class that is responsible for communication with leader node using custom messages
     1. This class aggregates reference to `IDataEngine`
     1. This class encapsulates logic for messaging with leader node
@@ -216,10 +216,10 @@ You can use [this](https://github.com/sakno/dotNext/blob/master/src/cluster/DotN
 
 ## Derivation from RaftCluster
 `RaftCluster` class contains all necessary methods for handling deserialized Raft messages:
-* `ReceiveEntries` method allows to handle _AppendEntries_ Raft message type that was sent by another node
-* `ReceiveResign` method allows to handle leadership revocation procedure
-* `ReceiveSnapshot` method allows to handle _InstallSnapshot_ Raft message type that was sent by another node
-* `ReceiveVote` method allows to handle _Vote_ Raft message type that was sent by another node
+* `ReceiveEntriesAsync` method allows to handle _AppendEntries_ Raft message type that was sent by another node
+* `ReceiveResignAsync` method allows to handle leadership revocation procedure
+* `ReceiveSnapshotAsync` method allows to handle _InstallSnapshot_ Raft message type that was sent by another node
+* `ReceiveVoteAsync` method allows to handle _Vote_ Raft message type that was sent by another node
 
 The underlying code responsible for listening network requests must restore Raft messages from transport-specific representation and call the necessary handler for particular message type. 
 
@@ -276,5 +276,3 @@ By default, `RaftCluster` implements only [IReplicationCluster](https://sakno.gi
 * Dynamic addition/removal of members without restarting the whole cluster
 
 If you want to support these features then appropriate interfaces must be implemented in your code. Learn more about these interfaces [here](./index.md).
-
-
