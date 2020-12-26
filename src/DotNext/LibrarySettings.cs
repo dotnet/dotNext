@@ -2,7 +2,7 @@ using System;
 
 namespace DotNext
 {
-    internal static class RuntimeSettings
+    internal static class LibrarySettings
     {
         private const string StackallocThresholdEnvar = "DOTNEXT_STACK_ALLOC_THRESHOLD";
         private const int DefaultStackallocThreshold = 511;

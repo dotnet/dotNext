@@ -37,7 +37,7 @@ namespace DotNext.Buffers
         /// </remarks>
         [EditorBrowsable(EditorBrowsableState.Never)]
         [CLSCompliant(false)]
-        public static int StackallocThreshold { get; } = 1 + (RuntimeSettings.StackallocThreshold / Unsafe.SizeOf<T>());
+        public static int StackallocThreshold { get; } = 1 + (LibrarySettings.StackallocThreshold / Unsafe.SizeOf<T>());
 
         private readonly object? owner;
         private readonly Span<T> memory;
