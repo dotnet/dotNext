@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Buffers;
 using System.IO.Compression;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
