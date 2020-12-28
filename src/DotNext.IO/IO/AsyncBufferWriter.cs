@@ -16,19 +16,10 @@ namespace DotNext.IO
     internal readonly struct AsyncBufferWriter : IAsyncBinaryWriter
     {
         private readonly IBufferWriter<byte> writer;
-        private readonly Func<IBufferWriter<byte>, CancellationToken, Task>? flush;
 
         internal AsyncBufferWriter(IBufferWriter<byte> writer)
         {
             this.writer = writer ?? throw new ArgumentNullException(nameof(writer));
-            flush = IFlushable.TryReflectAsyncFlushMethod(writer);
-        }
-
-        private Task FlushAsync(CancellationToken token)
-        {
-            if (flush is null)
-                return token.IsCancellationRequested ? Task.FromCanceled(token) : Task.CompletedTask;
-            return flush(writer, token);
         }
 
         Task IAsyncBinaryWriter.CopyFromAsync(Stream input, CancellationToken token)
@@ -39,7 +30,7 @@ namespace DotNext.IO
 
         async Task IAsyncBinaryWriter.CopyFromAsync<TArg>(Func<TArg, CancellationToken, ValueTask<ReadOnlyMemory<byte>>> supplier, TArg arg, CancellationToken token)
         {
-            for (ReadOnlyMemory<byte> source; !(source = await supplier(arg, token).ConfigureAwait(false)).IsEmpty; await FlushAsync(token).ConfigureAwait(false))
+            for (ReadOnlyMemory<byte> source; !(source = await supplier(arg, token).ConfigureAwait(false)).IsEmpty; token.ThrowIfCancellationRequested())
                 writer.Write(source.Span);
         }
 
@@ -75,10 +66,10 @@ namespace DotNext.IO
             }
             else
             {
+                result = Task.CompletedTask;
                 try
                 {
-                    writer.Write(value);
-                    result = FlushAsync(token);
+                    writer.Write(in value);
                 }
                 catch (Exception e)
                 {
@@ -98,10 +89,10 @@ namespace DotNext.IO
             }
             else
             {
+                result = Task.CompletedTask;
                 try
                 {
                     writer.Write(input.Span);
-                    result = FlushAsync(token);
                 }
                 catch (Exception e)
                 {
@@ -121,10 +112,10 @@ namespace DotNext.IO
             }
             else
             {
+                result = Task.CompletedTask;
                 try
                 {
                     writer.WriteString(chars.Span, in context, lengthFormat: lengthFormat);
-                    result = FlushAsync(token);
                 }
                 catch (Exception e)
                 {
@@ -144,10 +135,10 @@ namespace DotNext.IO
             }
             else
             {
+                result = Task.CompletedTask;
                 try
                 {
                     writer.WriteByte(value, lengthFormat, in context, format, provider);
-                    result = FlushAsync(token);
                 }
                 catch (Exception e)
                 {
@@ -167,10 +158,10 @@ namespace DotNext.IO
             }
             else
             {
+                result = Task.CompletedTask;
                 try
                 {
                     writer.WriteInt16(value, lengthFormat, in context, format, provider);
-                    result = FlushAsync(token);
                 }
                 catch (Exception e)
                 {
@@ -190,10 +181,10 @@ namespace DotNext.IO
             }
             else
             {
+                result = Task.CompletedTask;
                 try
                 {
                     writer.WriteInt32(value, lengthFormat, in context, format, provider);
-                    result = FlushAsync(token);
                 }
                 catch (Exception e)
                 {
@@ -213,10 +204,10 @@ namespace DotNext.IO
             }
             else
             {
+                result = Task.CompletedTask;
                 try
                 {
                     writer.WriteInt64(value, lengthFormat, in context, format, provider);
-                    result = FlushAsync(token);
                 }
                 catch (Exception e)
                 {
@@ -236,10 +227,10 @@ namespace DotNext.IO
             }
             else
             {
+                result = Task.CompletedTask;
                 try
                 {
                     writer.WriteSingle(value, lengthFormat, in context, format, provider);
-                    result = FlushAsync(token);
                 }
                 catch (Exception e)
                 {
@@ -259,10 +250,10 @@ namespace DotNext.IO
             }
             else
             {
+                result = Task.CompletedTask;
                 try
                 {
                     writer.WriteDouble(value, lengthFormat, in context, format, provider);
-                    result = FlushAsync(token);
                 }
                 catch (Exception e)
                 {
@@ -282,10 +273,10 @@ namespace DotNext.IO
             }
             else
             {
+                result = Task.CompletedTask;
                 try
                 {
                     writer.WriteDecimal(value, lengthFormat, in context, format, provider);
-                    result = FlushAsync(token);
                 }
                 catch (Exception e)
                 {
@@ -305,10 +296,10 @@ namespace DotNext.IO
             }
             else
             {
+                result = Task.CompletedTask;
                 try
                 {
                     writer.WriteDateTime(value, lengthFormat, in context, format, provider);
-                    result = FlushAsync(token);
                 }
                 catch (Exception e)
                 {
@@ -328,10 +319,10 @@ namespace DotNext.IO
             }
             else
             {
+                result = Task.CompletedTask;
                 try
                 {
                     writer.WriteDateTimeOffset(value, lengthFormat, in context, format, provider);
-                    result = FlushAsync(token);
                 }
                 catch (Exception e)
                 {
@@ -351,10 +342,10 @@ namespace DotNext.IO
             }
             else
             {
+                result = Task.CompletedTask;
                 try
                 {
                     writer.WriteGuid(value, lengthFormat, in context, format);
-                    result = FlushAsync(token);
                 }
                 catch (Exception e)
                 {
@@ -374,10 +365,10 @@ namespace DotNext.IO
             }
             else
             {
+                result = Task.CompletedTask;
                 try
                 {
                     writer.WriteTimeSpan(value, lengthFormat, in context, format, provider);
-                    result = FlushAsync(token);
                 }
                 catch (Exception e)
                 {
@@ -397,10 +388,10 @@ namespace DotNext.IO
             }
             else
             {
+                result = Task.CompletedTask;
                 try
                 {
                     writer(arg, this.writer);
-                    result = FlushAsync(token);
                 }
                 catch (Exception e)
                 {
