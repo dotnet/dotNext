@@ -10,6 +10,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
     /// <summary>
     /// Represents Raft log entry containing custom command.
     /// </summary>
+    /// <typeparam name="TCommand">The type of the command encoded by the log entry.</typeparam>
     [StructLayout(LayoutKind.Auto)]
     public readonly struct LogEntry<TCommand> : IRaftLogEntry
         where TCommand : struct
