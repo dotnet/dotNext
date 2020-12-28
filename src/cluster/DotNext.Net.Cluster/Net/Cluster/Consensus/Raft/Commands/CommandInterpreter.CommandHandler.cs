@@ -26,6 +26,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
                 this.handler = handler;
             }
 
+            public CommandHandler(FormatterInfo formatter, Func<TCommand, CancellationToken, ValueTask> handler)
+            {
+                if (!formatter.TryGetFormatter<TCommand>(out var fmt))
+                    throw new GenericArgumentException<TCommand>(ExceptionMessages.MissingCommandAttribute<TCommand>(), nameof(formatter));
+                this.formatter = fmt;
+                this.handler = handler;
+            }
+
             internal override async ValueTask InterpretAsync<TReader>(TReader reader, CancellationToken token)
             {
                 var command = await formatter.DeserializeAsync(reader, token).ConfigureAwait(false);

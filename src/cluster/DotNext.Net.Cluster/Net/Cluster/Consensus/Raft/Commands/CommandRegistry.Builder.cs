@@ -17,7 +17,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
         public sealed class Builder : IConvertible<CommandInterpreter>
         {
             private readonly Dictionary<int, CommandHandler> interpreters;
-            private readonly Dictionary<Type, object> formatters;
+            private readonly Dictionary<Type, FormatterInfo> formatters;
 
             /// <summary>
             /// Initializes a new builder.
@@ -25,7 +25,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
             public Builder()
             {
                 interpreters = new Dictionary<int, CommandHandler>();
-                formatters = new Dictionary<Type, object>();
+                formatters = new Dictionary<Type, FormatterInfo>();
             }
 
             /// <summary>
@@ -49,7 +49,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
 
                 var id = typeof(TCommand).GetCustomAttribute<CommandAttribute>()?.Id ?? throw new GenericArgumentException<TCommand>(ExceptionMessages.MissingCommandAttribute<TCommand>());
                 interpreters.Add(id, new CommandHandler<TCommand>(formatter, handler));
-                formatters.Add(typeof(TCommand), formatter);
+                formatters.Add(typeof(TCommand), FormatterInfo.Create(formatter, id));
             }
 
             /// <summary>

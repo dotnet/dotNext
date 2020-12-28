@@ -16,13 +16,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
     {
         private readonly TCommand command;
         private readonly ICommandFormatter<TCommand> formatter;
+        private readonly int id;
 
-        internal LogEntry(long term, TCommand command, ICommandFormatter<TCommand> formatter)
+        internal LogEntry(long term, TCommand command, ICommandFormatter<TCommand> formatter, int id)
         {
             Term = term;
             Timestamp = DateTimeOffset.Now;
             this.command = command;
             this.formatter = formatter;
+            this.id = id;
         }
 
         /// <inheritdoc />
@@ -38,7 +40,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
         long? IDataTransferObject.Length => formatter.GetLength(in command);
 
         /// <inheritdoc />
-        ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
-            => formatter.SerializeAsync(command, writer, token);
+        async ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+        {
+            await writer.WriteInt32Async(id, true, token).ConfigureAwait(false);
+            await formatter.SerializeAsync(command, writer, token).ConfigureAwait(false);
+        }
     }
 }

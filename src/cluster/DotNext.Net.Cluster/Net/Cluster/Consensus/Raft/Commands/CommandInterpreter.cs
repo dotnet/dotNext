@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -41,8 +43,55 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
             public int CommandId { get; }
         }
 
+        [StructLayout(LayoutKind.Auto)]
+        private readonly struct FormatterInfo
+        {
+            private readonly object? formatter;
+            internal readonly int Id;
+
+            internal FormatterInfo(CommandAttribute attribute)
+            {
+                var formatter = attribute.Formatter is null ? null : Activator.CreateInstance(attribute.Formatter);
+                if (formatter is null)
+                {
+                    this.formatter = null;
+                    Id = 0;
+                }
+                else
+                {
+                    this.formatter = formatter;
+                    Id = attribute.Id;
+                }
+            }
+
+            private FormatterInfo(object? formatter, int id)
+            {
+                this.formatter = formatter;
+                Id = id;
+            }
+
+            internal static FormatterInfo Create<TCommand>(ICommandFormatter<TCommand> formatter, int id)
+                where TCommand : struct
+                => new FormatterInfo(formatter, id);
+
+            internal bool IsEmpty => Id == 0 && formatter is null;
+
+            internal bool TryGetFormatter<TCommand>([MaybeNullWhen(false)] out ICommandFormatter<TCommand> formatter)
+                where TCommand : struct
+            {
+                if (this.formatter is ICommandFormatter<TCommand> typedFormatter)
+                {
+                    formatter = typedFormatter;
+                    return true;
+                }
+
+                formatter = null;
+                return false;
+            }
+        }
+
         private readonly IHandlerRegistry interpreters;
-        private readonly IReadOnlyDictionary<Type, object> formatters;
+        private readonly IReadOnlyDictionary<Type, FormatterInfo> formatters;
 
         /// <summary>
         /// Initializes a new interpreter and discovers methods marked
@@ -51,8 +100,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
         protected CommandInterpreter()
         {
             var interpreters = new Dictionary<int, CommandHandler>();
-            var formatters = new Dictionary<Type, object>();
-            foreach (var method in GetType().GetMethods())
+            var formatters = new Dictionary<Type, FormatterInfo>();
+            const BindingFlags publicInstanceMethod = BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy;
+            foreach (var method in GetType().GetMethods(publicInstanceMethod))
             {
                 var handlerAttr = method.GetCustomAttribute<CommandHandlerAttribute>();
                 if (handlerAttr is not null && method.ReturnType == typeof(ValueTask))
@@ -64,8 +114,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
                     var commandAttr = commandType.GetCustomAttribute<CommandAttribute>();
                     if (commandAttr is null || commandAttr.Formatter is null)
                         continue;
-                    var formatter = Activator.CreateInstance(commandAttr.Formatter);
-                    Debug.Assert(formatter is not null);
+                    var formatter = new FormatterInfo(commandAttr);
+                    if (formatter.IsEmpty)
+                        continue;
                     var interpreter = Delegate.CreateDelegate(typeof(Func<,,>).MakeGenericType(commandType, typeof(CancellationToken), typeof(ValueTask)), method.IsStatic ? null : this, method);
                     Debug.Assert(interpreter is not null);
                     interpreters.Add(commandAttr.Id, Cast<CommandHandler>(Activator.CreateInstance(typeof(CommandHandler<>).MakeGenericType(commandType), formatter, interpreter)));
@@ -80,7 +131,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
             this.formatters = formatters;
         }
 
-        private CommandInterpreter(IDictionary<int, CommandHandler> interpreters, IDictionary<Type, object> formatters)
+        private CommandInterpreter(IDictionary<int, CommandHandler> interpreters, IDictionary<Type, FormatterInfo> formatters)
         {
             this.interpreters = CreateRegistry(interpreters);
             this.formatters = ImmutableDictionary.ToImmutableDictionary(formatters);
@@ -97,8 +148,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public LogEntry<TCommand> CreateLogEntry<TCommand>(TCommand command, long term)
             where TCommand : struct
-            => formatters.TryGetValue(typeof(TCommand), out var formatter) && formatter is ICommandFormatter<TCommand> typedFormatter ?
-                new LogEntry<TCommand>(term, command, typedFormatter) :
+            => formatters.TryGetValue(typeof(TCommand), out var formatter) && formatter.TryGetFormatter<TCommand>(out var typedFormatter) ?
+                new LogEntry<TCommand>(term, command, typedFormatter, formatter.Id) :
                 throw new GenericArgumentException<TCommand>(ExceptionMessages.MissingCommandFormatter<TCommand>(), nameof(command));
 
         /// <summary>
