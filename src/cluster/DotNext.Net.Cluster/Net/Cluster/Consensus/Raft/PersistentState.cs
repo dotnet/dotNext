@@ -741,6 +741,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// The base method does nothing so you don't need to call base implementation.
         /// </remarks>
         /// <returns>The task representing asynchronous execution of this method.</returns>
+        /// <seealso cref="Commands.CommandInterpreter"/>
         protected virtual ValueTask ApplyAsync(LogEntry entry) => new ValueTask();
 
         /// <summary>
