@@ -52,43 +52,11 @@ namespace DotNext
             Throws<ObjectDisposedException>(() => ms.ReadByte());
         }
 
-        private sealed class DisposeCallback : Disposable
-        {
-            private readonly ManualResetEventSlim disposeSignal;
-
-            internal DisposeCallback(ManualResetEventSlim signal)
-                => disposeSignal = signal;
-
-            internal void DisposeAsync() => QueueDispose(this);
-
-            protected override void Dispose(bool disposing)
-            {
-                if (disposing)
-                    disposeSignal.Set();
-                base.Dispose(disposing);
-            }
-        }
-
-        [Fact]
-        public static void QueueDispose()
-        {
-            using (var resetEvent = new ManualResetEventSlim(false))
-            {
-                var disposable = new DisposeCallback(resetEvent);
-                disposable.DisposeAsync();
-                True(resetEvent.Wait(DefaultTimeout));
-            }
-        }
-
         private sealed class DisposableObject : Disposable, IAsyncDisposable
         {
             public new bool IsDisposed => base.IsDisposed;
 
-            ValueTask IAsyncDisposable.DisposeAsync()
-            {
-                base.Dispose(true);
-                return new ValueTask();
-            }
+            ValueTask IAsyncDisposable.DisposeAsync() => DisposeAsync(false);
         }
 
         [Fact]

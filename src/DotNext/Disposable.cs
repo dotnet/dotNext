@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace DotNext
 {
+    using static Runtime.Intrinsics;
+
     /// <summary>
     /// Provides implementation of dispose pattern.
     /// </summary>
@@ -13,10 +14,6 @@ namespace DotNext
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-dispose">Implementing Dispose method</seealso>
     public abstract class Disposable : IDisposable
     {
-        private static readonly WaitCallback DisposeCallback = UnsafeDispose!;
-
-        private static void UnsafeDispose(object disposable) => Unsafe.As<IDisposable>(disposable).Dispose();
-
         private volatile bool disposed;
 
         /// <summary>
@@ -106,14 +103,6 @@ namespace DotNext
         }
 
         /// <summary>
-        /// Places <see cref="IDisposable.Dispose"/> method call into thread pool.
-        /// </summary>
-        /// <param name="resource">The resource to be disposed.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="resource"/> is <see langword="null"/>.</exception>
-        protected static void QueueDispose(IDisposable resource)
-            => ThreadPool.QueueUserWorkItem(DisposeCallback, resource ?? throw new ArgumentNullException(nameof(resource)));
-
-        /// <summary>
         /// Disposes many objects.
         /// </summary>
         /// <param name="objects">An array of objects to dispose.</param>
@@ -142,7 +131,10 @@ namespace DotNext
         /// </summary>
         /// <param name="objects">An array of objects to dispose.</param>
         public static void Dispose(params IDisposable?[] objects)
-            => Dispose(objects.As<IEnumerable<IDisposable?>>());
+        {
+            for (nint i = 0; i < GetLength(objects); i++)
+                objects[i]?.Dispose();
+        }
 
         /// <summary>
         /// Disposes many objects in safe manner.
