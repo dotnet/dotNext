@@ -24,6 +24,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
         /// Gets or sets the type implementing <see cref="ICommandFormatter{TCommand}"/> interface
         /// for the attributed type.
         /// </summary>
+        /// <remarks>
+        /// The formatter must have public parameterless constructor.
+        /// </remarks>
         public Type? Formatter { get; set; }
     }
 }

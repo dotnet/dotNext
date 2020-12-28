@@ -31,10 +31,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
             /// <summary>
             /// Registers command handler.
             /// </summary>
+            /// <remarks>
+            /// <see cref="CommandAttribute.Formatter"/> is ignored by this method.
+            /// </remarks>
             /// <param name="handler">The command handler.</param>
             /// <param name="formatter">Serializer/deserializer of the command type.</param>
             /// <typeparam name="TCommand">The type of the command supported by the handler.</typeparam>
             /// <exception cref="ArgumentNullException"><paramref name="handler"/> or <paramref name="formatter"/> is <see langword="null"/>.</exception>
+            /// <exception cref="GenericArgumentException">Type <typaparamref name="TCommand"/> is not annotated with <see cref="CommandAttribute"/> attribute.</exception>
             public void Add<TCommand>(Func<TCommand, CancellationToken, ValueTask> handler, ICommandFormatter<TCommand> formatter)
                 where TCommand : struct 
             {
@@ -51,9 +55,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
             /// <summary>
             /// Registers command handler.
             /// </summary>
+            /// <remarks>
+            /// <see cref="CommandAttribute.Formatter"/> must be defined.
+            /// </remarks>
             /// <param name="handler">The command handler.</param>
             /// <typeparam name="TCommand">The type of the command supported by the handler.</typeparam>
             /// <exception cref="ArgumentNullException"><paramref name="handler"/> is <see langword="null"/>.</exception>
+            /// <exception cref="GenericArgumentException">Type <typaparamref name="TCommand"/> is not annotated with <see cref="CommandAttribute"/> attribute or <see cref="CommandAttribute.Formatter"/> refers to the invalid formatter.</exception>
             public void Add<TCommand>(Func<TCommand, CancellationToken, ValueTask> handler)
                 where TCommand : struct
             {
