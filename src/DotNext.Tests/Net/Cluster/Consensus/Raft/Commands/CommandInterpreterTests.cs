@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -129,6 +130,42 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
                 => DoUnaryOperation(ref Value, command, token);
         }
 
+        private sealed class TestPersistenceState : PersistentState
+        {
+            private readonly CustomInterpreter interpreter;
+
+            public TestPersistenceState()
+                : base(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), 4)
+            {
+                interpreter = new CustomInterpreter();
+            }
+
+            internal int Value => interpreter.Value;
+
+            internal LogEntry<TCommand> CreateLogEntry<TCommand>(TCommand command)
+                where TCommand : struct
+                => interpreter.CreateLogEntry(command, Term);
+
+            protected override ValueTask ApplyAsync(LogEntry entry)
+                => new ValueTask(interpreter.InterpretAsync(entry).AsTask());
+
+            protected override void Dispose(bool disposing)
+            {
+                if (disposing)
+                {
+                    interpreter.Dispose();
+                }
+
+                base.Dispose(disposing);
+            }
+
+            protected override ValueTask DisposeAsyncCore()
+            {
+                interpreter.Dispose();
+                return base.DisposeAsyncCore();
+            }
+        }
+
         [Fact]
         public static async Task MethodsAsHandlers()
         {
@@ -139,7 +176,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
             Equal(0, await interpreter.InterpretAsync(entry1));
             Equal(42, interpreter.Value);
 
-            interpreter.Value = 0;
             var entry2 = interpreter.CreateLogEntry(new UnaryOperationCommand { X = 42, Type = UnaryOperation.Negate }, 10L);
             Equal(10L, entry2.Term);
             Equal(1, await interpreter.InterpretAsync(entry2));
@@ -170,7 +206,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
             Equal(0, await interpreter.InterpretAsync(entry1));
             Equal(42, state.Value);
 
-            state.Value = 0;
             var entry2 = interpreter.CreateLogEntry(new UnaryOperationCommand { X = 42, Type = UnaryOperation.Negate }, 10L);
             Equal(10L, entry2.Term);
             Equal(1, await interpreter.InterpretAsync(entry2));
@@ -180,6 +215,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
             Equal(68L, entry3.Term);
             Equal(3, await interpreter.InterpretAsync(entry3));
             Equal(int.MaxValue, state.Value);
+        }
+
+        [Fact]
+        public static async Task InterpreterWithPersistentState()
+        {
+            await using var wal = new TestPersistenceState();
+            var entry1 = wal.CreateLogEntry(new BinaryOperationCommand { X = 44, Y = 2, Type = BinaryOperation.Subtract});
+            await wal.AppendAsync(entry1);
+            Equal(0, wal.Value);
+            await wal.CommitAsync(CancellationToken.None);
+            Equal(42, wal.Value);
+
+            var entry2 = wal.CreateLogEntry(new UnaryOperationCommand { X = 42, Type = UnaryOperation.OnesComplement });
+            await wal.AppendAsync(entry2);
+            await wal.CommitAsync(CancellationToken.None);
+            Equal(~42, wal.Value);
         }
     }
 }
