@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -95,10 +96,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
         {
             internal int Value;
 
-            [CommandHandler]
-            public ValueTask DoBinaryOperation(BinaryOperationCommand command, CancellationToken token)
+            internal static ValueTask DoBinaryOperation(ref int value, BinaryOperationCommand command, CancellationToken token)
             {
-                Value = command.Type switch
+                value = command.Type switch
                 {
                     BinaryOperation.Add => command.X + command.Y,
                     BinaryOperation.Subtract => command.X - command.Y,
@@ -109,9 +109,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
             }
 
             [CommandHandler]
-            public ValueTask DoUnaryOperation(UnaryOperationCommand command, CancellationToken token)
+            public ValueTask DoBinaryOperation(BinaryOperationCommand command, CancellationToken token)
+                => DoBinaryOperation(ref Value, command, token);
+
+            internal static ValueTask DoUnaryOperation(ref int value, UnaryOperationCommand command, CancellationToken token)
             {
-                Value = command.Type switch
+                value = command.Type switch
                 {
                     UnaryOperation.Negate => -command.X,
                     UnaryOperation.OnesComplement => ~command.X,
@@ -120,6 +123,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
 
                 return new ValueTask();
             }
+
+            [CommandHandler]
+            public ValueTask DoUnaryOperation(UnaryOperationCommand command, CancellationToken token)
+                => DoUnaryOperation(ref Value, command, token);
         }
 
         [Fact]
@@ -137,6 +144,42 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
             Equal(10L, entry2.Term);
             Equal(1, await interpreter.InterpretAsync(entry2));
             Equal(-42, interpreter.Value);
+        }
+
+        [Fact]
+        public static async Task DelegatesAsHandlers()
+        {
+            var state = new StrongBox<int>();
+            Func<BinaryOperationCommand, CancellationToken, ValueTask> binaryOp = (command, token) => CustomInterpreter.DoBinaryOperation(ref state.Value, command, token);
+            Func<UnaryOperationCommand, CancellationToken, ValueTask> unaryOp = (command, token) => CustomInterpreter.DoUnaryOperation(ref state.Value, command, token);
+            Func<AssignCommand, CancellationToken, ValueTask> assignOp = (command, token) =>
+            {
+                state.Value = command.Value;
+                return new ValueTask();
+            };
+
+            var interpreter = new CommandInterpreter.Builder()
+                .Add(binaryOp)
+                .Add(unaryOp)
+                .Add(assignOp, new Formatter())
+                .Build();
+
+            var entry1 = interpreter.CreateLogEntry(new BinaryOperationCommand { X = 40, Y = 2, Type = BinaryOperation.Add}, 1L);
+            Equal(1L, entry1.Term);
+            Equal(0, state.Value);
+            Equal(0, await interpreter.InterpretAsync(entry1));
+            Equal(42, state.Value);
+
+            state.Value = 0;
+            var entry2 = interpreter.CreateLogEntry(new UnaryOperationCommand { X = 42, Type = UnaryOperation.Negate }, 10L);
+            Equal(10L, entry2.Term);
+            Equal(1, await interpreter.InterpretAsync(entry2));
+            Equal(-42, state.Value);
+
+            var entry3 = interpreter.CreateLogEntry(new AssignCommand { Value = int.MaxValue }, 68L);
+            Equal(68L, entry3.Term);
+            Equal(3, await interpreter.InterpretAsync(entry3));
+            Equal(int.MaxValue, state.Value);
         }
     }
 }
