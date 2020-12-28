@@ -50,17 +50,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
 
             internal FormatterInfo(CommandAttribute attribute)
             {
-                var formatter = attribute.Formatter is null ? null : Activator.CreateInstance(attribute.Formatter);
-                if (formatter is null)
-                {
-                    this.formatter = null;
-                    Id = 0;
-                }
-                else
-                {
-                    this.formatter = formatter;
-                    Id = attribute.Id;
-                }
+                Id = (formatter = attribute.CreateFormatter()) is null ? 0 : attribute.Id;
             }
 
             private FormatterInfo(object? formatter, int id)

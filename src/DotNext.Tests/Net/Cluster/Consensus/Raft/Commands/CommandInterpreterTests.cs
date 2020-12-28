@@ -30,7 +30,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
             public BinaryOperation Type;
         }
 
-        [Command(1, Formatter = typeof(Formatter))]
+        [Command(1, Formatter = typeof(Formatter), FormatterMember = nameof(Formatter.Instance))]
         private struct UnaryOperationCommand
         {
             public int X;
@@ -45,6 +45,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
 
         private sealed class Formatter : ICommandFormatter<BinaryOperationCommand>, ICommandFormatter<UnaryOperationCommand>, ICommandFormatter<AssignCommand>
         {
+            public static readonly Formatter Instance = new Formatter();
+
             async ValueTask ICommandFormatter<BinaryOperationCommand>.SerializeAsync<TWriter>(BinaryOperationCommand command, TWriter writer, CancellationToken token)
             {
                 await writer.WriteInt32Async(command.X, true, token);
