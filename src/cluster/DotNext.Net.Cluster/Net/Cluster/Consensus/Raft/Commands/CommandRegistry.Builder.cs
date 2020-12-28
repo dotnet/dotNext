@@ -64,8 +64,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
                 if (attr is null || attr.Formatter is null)
                     throw new GenericArgumentException<TCommand>(ExceptionMessages.MissingCommandAttribute<TCommand>());
 
-                var formatter = Activator.CreateInstance(attr.Formatter);
-                Debug.Assert(formatter is not null);
+                var formatter = Activator.CreateInstance(attr.Formatter) ?? throw new GenericArgumentException<TCommand>(ExceptionMessages.MissingCommandAttribute<TCommand>());
                 var interp = Activator.CreateInstance(typeof(CommandHandler<>).MakeGenericType(typeof(TCommand)), formatter, handler);
                 interpreters.Add(attr.Id, Cast<CommandHandler>(interp));
             }
