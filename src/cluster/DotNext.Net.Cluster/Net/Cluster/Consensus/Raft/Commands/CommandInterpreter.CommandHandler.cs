@@ -27,11 +27,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
             }
 
             public CommandHandler(FormatterInfo formatter, Func<TCommand, CancellationToken, ValueTask> handler)
+                : this(formatter.GetFormatter<TCommand>(), handler)
             {
-                if (!formatter.TryGetFormatter<TCommand>(out var fmt))
-                    throw new GenericArgumentException<TCommand>(ExceptionMessages.MissingCommandAttribute<TCommand>(), nameof(formatter));
-                this.formatter = fmt;
-                this.handler = handler;
             }
 
             internal override async ValueTask InterpretAsync<TReader>(TReader reader, CancellationToken token)

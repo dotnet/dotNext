@@ -76,18 +76,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
 
             internal bool IsEmpty => Id == 0 && formatter is null;
 
-            internal bool TryGetFormatter<TCommand>([MaybeNullWhen(false)] out ICommandFormatter<TCommand> formatter)
+            internal ICommandFormatter<TCommand> GetFormatter<TCommand>()
                 where TCommand : struct
-            {
-                if (this.formatter is ICommandFormatter<TCommand> typedFormatter)
-                {
-                    formatter = typedFormatter;
-                    return true;
-                }
-
-                formatter = null;
-                return false;
-            }
+                => formatter is ICommandFormatter<TCommand> typedFormatter ?
+                    typedFormatter :
+                    throw new GenericArgumentException<TCommand>(ExceptionMessages.MissingCommandFormatter<TCommand>());
         }
 
         private readonly IHandlerRegistry interpreters;
@@ -148,8 +141,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public LogEntry<TCommand> CreateLogEntry<TCommand>(TCommand command, long term)
             where TCommand : struct
-            => formatters.TryGetValue(typeof(TCommand), out var formatter) && formatter.TryGetFormatter<TCommand>(out var typedFormatter) ?
-                new LogEntry<TCommand>(term, command, typedFormatter, formatter.Id) :
+            => formatters.TryGetValue(typeof(TCommand), out var formatter) ?
+                new LogEntry<TCommand>(term, command, formatter.GetFormatter<TCommand>(), formatter.Id) :
                 throw new GenericArgumentException<TCommand>(ExceptionMessages.MissingCommandFormatter<TCommand>(), nameof(command));
 
         /// <summary>
