@@ -360,7 +360,7 @@ namespace DotNext.Reflection
             private protected override Event<T, THandler>? Create(string eventName, bool nonPublic) => Reflect(eventName, nonPublic);
         }
 
-        private const BindingFlags PublicFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
+        private const BindingFlags PublicFlags = BindingFlags.Instance | BindingFlags.Public;
         private const BindingFlags NonPublicFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
         /// <summary>

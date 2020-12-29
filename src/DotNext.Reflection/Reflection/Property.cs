@@ -374,7 +374,7 @@ namespace DotNext.Reflection
             private protected override Property<T, TValue>? Create(string propertyName, bool nonPublic) => Reflect(propertyName, nonPublic);
         }
 
-        private const BindingFlags PublicFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
+        private const BindingFlags PublicFlags = BindingFlags.Instance | BindingFlags.Public;
         private const BindingFlags NonPublicFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
         private Property(PropertyInfo property)

@@ -27,7 +27,7 @@ namespace DotNext.Reflection
 
         private const BindingFlags StaticPublicFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly;
         private const BindingFlags StaticNonPublicFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
-        private const BindingFlags InstancePublicFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
+        private const BindingFlags InstancePublicFlags = BindingFlags.Instance | BindingFlags.Public;
         private const BindingFlags InstanceNonPublicFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
         private static readonly UserDataSlot<Method<TSignature>?> CacheSlot = UserDataSlot<Method<TSignature>?>.Allocate();
 

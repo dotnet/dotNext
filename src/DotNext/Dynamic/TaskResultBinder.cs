@@ -13,7 +13,7 @@ namespace DotNext.Dynamic
     internal sealed class TaskResultBinder : CallSiteBinder
     {
         private const string ResultPropertyName = nameof(Task<Missing>.Result);
-        private const BindingFlags ResultPropertyFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy;
+        private const BindingFlags ResultPropertyFlags = BindingFlags.Public | BindingFlags.Instance;
 
         private static Expression BindProperty(PropertyInfo resultProperty, Expression target, out Expression restrictions)
         {

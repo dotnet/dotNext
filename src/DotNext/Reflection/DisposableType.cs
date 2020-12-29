@@ -10,7 +10,7 @@ namespace DotNext.Reflection
     /// </summary>
     public static class DisposableType
     {
-        private const BindingFlags PublicInstanceMethod = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
+        private const BindingFlags PublicInstanceMethod = BindingFlags.Instance | BindingFlags.Public;
 
         private static MethodInfo? GetDisposeMethod(Type type, Type disposableType, string disposeMethodName, Type returnType)
         {

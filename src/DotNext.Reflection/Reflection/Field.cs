@@ -240,7 +240,7 @@ namespace DotNext.Reflection
             private protected override Field<T, TValue>? Create(string fieldName, bool nonPublic) => Reflect(fieldName, nonPublic);
         }
 
-        private const BindingFlags PubicFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
+        private const BindingFlags PubicFlags = BindingFlags.Instance | BindingFlags.Public;
         private const BindingFlags NonPublicFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
         private static readonly UserDataSlot<Field<T, TValue>> CacheSlot = UserDataSlot<Field<T, TValue>>.Allocate();
 

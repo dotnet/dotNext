@@ -26,7 +26,7 @@ namespace DotNext.Linq.Expressions
         /// <exception cref="ArgumentException">Passed expression doesn't implement TAP pattern.</exception>
         public AwaitExpression(Expression expression, bool configureAwait = false)
         {
-            const BindingFlags PublicInstanceMethod = BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy;
+            const BindingFlags PublicInstanceMethod = BindingFlags.Public | BindingFlags.Instance;
             if (configureAwait)
             {
                 MethodInfo? configureMethod = expression.Type.GetMethod(nameof(Task.ConfigureAwait), PublicInstanceMethod, Type.DefaultBinder, new[] { typeof(bool) }, null);

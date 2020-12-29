@@ -787,7 +787,7 @@ namespace DotNext.Linq.Expressions
         /// <returns>Property access expression.</returns>
         public static Expression Property(this Expression instance, Type interfaceType, string propertyName, params Expression[] indicies)
         {
-            PropertyInfo? property = interfaceType.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+            PropertyInfo? property = interfaceType.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);
             return property is null ?
                 throw new MissingMemberException(interfaceType.FullName, propertyName) :
                 instance.Property(property, indicies);
