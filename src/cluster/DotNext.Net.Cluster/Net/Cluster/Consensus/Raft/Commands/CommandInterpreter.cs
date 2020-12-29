@@ -83,7 +83,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
         {
             var interpreters = new Dictionary<int, CommandHandler>();
             var formatters = new Dictionary<Type, FormatterInfo>();
-            const BindingFlags publicInstanceMethod = BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy;
+            const BindingFlags publicInstanceMethod = BindingFlags.Public | BindingFlags.Instance;
             foreach (var method in GetType().GetMethods(publicInstanceMethod))
             {
                 var handlerAttr = method.GetCustomAttribute<CommandHandlerAttribute>();
