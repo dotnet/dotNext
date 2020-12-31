@@ -38,7 +38,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
         bool IDataTransferObject.IsReusable => true;
 
         /// <inheritdoc />
-        long? IDataTransferObject.Length => formatter.GetLength(in command);
+        long? IDataTransferObject.Length
+        {
+            get
+            {
+                var result = formatter.GetLength(in command);
+                if (result.TryGetValue(out var length))
+                    result = new long?(length + sizeof(int));
+
+                return result;
+            }
+        }
 
         /// <inheritdoc />
         async ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
