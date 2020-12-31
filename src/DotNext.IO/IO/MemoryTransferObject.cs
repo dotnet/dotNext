@@ -36,15 +36,15 @@ namespace DotNext.IO
         /// <summary>
         /// Converts data transfer object to another type.
         /// </summary>
-        /// <param name="parser">The parser instance.</param>
+        /// <param name="transformation">The parser instance.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <typeparam name="TResult">The type of result.</typeparam>
-        /// <typeparam name="TDecoder">The type of parser.</typeparam>
+        /// <typeparam name="TTransformation">The type of parser.</typeparam>
         /// <returns>The converted DTO content.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public ValueTask<TResult> GetObjectDataAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token = default)
-            where TDecoder : notnull, IDataTransferObject.IDecoder<TResult>
-            => IsDisposed ? new ValueTask<TResult>(GetDisposedTask<TResult>()) : parser.ReadAsync(new SequenceBinaryReader(Content), token);
+        public ValueTask<TResult> TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token = default)
+            where TTransformation : notnull, IDataTransferObject.ITransformation<TResult>
+            => IsDisposed ? new ValueTask<TResult>(GetDisposedTask<TResult>()) : transformation.TransformAsync(new SequenceBinaryReader(Content), token);
 
         /// <summary>
         /// Gets the content of this object.

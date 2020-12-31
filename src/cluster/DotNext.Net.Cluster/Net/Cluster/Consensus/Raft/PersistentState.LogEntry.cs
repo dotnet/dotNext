@@ -13,7 +13,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Represents persistent log entry.
         /// </summary>
         /// <remarks>
-        /// Use <see cref="GetObjectDataAsync"/> to decode the log entry.
+        /// Use <see cref="TransformAsync"/> to decode the log entry.
         /// </remarks>
         [StructLayout(LayoutKind.Auto)]
         protected readonly struct LogEntry : IRaftLogEntry
@@ -78,11 +78,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public DateTimeOffset Timestamp => new DateTimeOffset(metadata.Timestamp, TimeSpan.Zero);
 
             /// <inheritdoc/>
-            public ValueTask<TResult> GetObjectDataAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token)
-                where TDecoder : notnull, IDataTransferObject.IDecoder<TResult>
+            public ValueTask<TResult> TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
+                where TTransformation : notnull, IDataTransferObject.ITransformation<TResult>
             {
                 Reset();
-                return IDataTransferObject.DecodeAsync<TResult, TDecoder>(content, parser, false, buffer, token);
+                return IDataTransferObject.TransformAsync<TResult, TTransformation>(content, transformation, false, buffer, token);
             }
         }
     }

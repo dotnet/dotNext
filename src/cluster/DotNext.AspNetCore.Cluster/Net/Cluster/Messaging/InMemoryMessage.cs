@@ -14,13 +14,13 @@ namespace DotNext.Net.Cluster.Messaging
     internal sealed class InMemoryMessage : Disposable, IDataTransferObject, IBufferedMessage
     {
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct BufferDecoder : IDataTransferObject.IDecoder<BufferWriter<byte>>
+        private readonly struct BufferDecoder : IDataTransferObject.ITransformation<BufferWriter<byte>>
         {
             private readonly int initialSize;
 
             internal BufferDecoder(int initialSize) => this.initialSize = initialSize;
 
-            public async ValueTask<BufferWriter<byte>> ReadAsync<TReader>(TReader reader, CancellationToken token)
+            public async ValueTask<BufferWriter<byte>> TransformAsync<TReader>(TReader reader, CancellationToken token)
                 where TReader : notnull, IAsyncBinaryReader
             {
                 var writer = new PooledArrayBufferWriter<byte>(initialSize);
@@ -56,15 +56,15 @@ namespace DotNext.Net.Cluster.Messaging
         async ValueTask IBufferedMessage.LoadFromAsync(IDataTransferObject source, CancellationToken token)
         {
             buffer?.Dispose();
-            buffer = await source.GetObjectDataAsync<BufferWriter<byte>, BufferDecoder>(new BufferDecoder(initialSize), token).ConfigureAwait(false);
+            buffer = await source.TransformAsync<BufferWriter<byte>, BufferDecoder>(new BufferDecoder(initialSize), token).ConfigureAwait(false);
         }
 
         void IBufferedMessage.PrepareForReuse()
         {
         }
 
-        ValueTask<TResult> IDataTransferObject.GetObjectDataAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token)
-            => parser.ReadAsync(IAsyncBinaryReader.Create(Content), token);
+        ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
+            => transformation.TransformAsync(IAsyncBinaryReader.Create(Content), token);
 
         protected override void Dispose(bool disposing)
         {

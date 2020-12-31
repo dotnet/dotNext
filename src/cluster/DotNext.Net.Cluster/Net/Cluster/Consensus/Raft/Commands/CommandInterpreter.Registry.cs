@@ -11,7 +11,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
 
     public partial class CommandInterpreter
     {
-        private interface IHandlerRegistry : IReadOnlyDictionary<int, CommandHandler>, IDataTransferObject.IDecoder<int>
+        private interface IHandlerRegistry : IReadOnlyDictionary<int, CommandHandler>, IDataTransferObject.ITransformation<int>
         {
         }
 
@@ -22,7 +22,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
             {
             }
 
-            async ValueTask<int> IDataTransferObject.IDecoder<int>.ReadAsync<TReader>(TReader reader, CancellationToken token)
+            async ValueTask<int> IDataTransferObject.ITransformation<int>.TransformAsync<TReader>(TReader reader, CancellationToken token)
             {
                 var id = await reader.ReadInt32Async(true, token).ConfigureAwait(false);
                 if (!TryGetValue(id, out var interpreter))
@@ -69,7 +69,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
                 return false;
             }
 
-            async ValueTask<int> IDataTransferObject.IDecoder<int>.ReadAsync<TReader>(TReader reader, CancellationToken token)
+            async ValueTask<int> IDataTransferObject.ITransformation<int>.TransformAsync<TReader>(TReader reader, CancellationToken token)
             {
                 var id = await reader.ReadInt32Async(true, token).ConfigureAwait(false);
                 if (id < 0 || id >= interpreters.Length)

@@ -21,7 +21,7 @@ namespace DotNext.IO
         /// Represents DTO transformation.
         /// </summary>
         /// <typeparam name="TResult">The result type.</typeparam>
-        public interface IDecoder<TResult>
+        public interface ITransformation<TResult>
         {
             /// <summary>
             /// Parses DTO content asynchronously.
@@ -30,7 +30,7 @@ namespace DotNext.IO
             /// <param name="token">The token that can be used to cancel the operation.</param>
             /// <typeparam name="TReader">The type of binary reader.</typeparam>
             /// <returns>The converted DTO content.</returns>
-            ValueTask<TResult> ReadAsync<TReader>(TReader reader, CancellationToken token)
+            ValueTask<TResult> TransformAsync<TReader>(TReader reader, CancellationToken token)
                 where TReader : notnull, IAsyncBinaryReader;
         }
 
@@ -73,19 +73,19 @@ namespace DotNext.IO
         /// <param name="buffer">The temporary buffer.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <typeparam name="TResult">The type of result.</typeparam>
-        /// <typeparam name="TDecoder">The type of parser.</typeparam>
+        /// <typeparam name="TTransformation">The type of parser.</typeparam>
         /// <returns>The decoded stream.</returns>
         /// <exception cref="ArgumentException"><paramref name="buffer"/> is empty.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        protected static async ValueTask<TResult> DecodeAsync<TResult, TDecoder>(Stream input, TDecoder transformation, bool resetStream, Memory<byte> buffer, CancellationToken token)
-            where TDecoder : notnull, IDecoder<TResult>
+        protected static async ValueTask<TResult> TransformAsync<TResult, TTransformation>(Stream input, TTransformation transformation, bool resetStream, Memory<byte> buffer, CancellationToken token)
+            where TTransformation : notnull, ITransformation<TResult>
         {
             if (buffer.IsEmpty)
                 throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
 
             try
             {
-                return await transformation.ReadAsync(new AsyncStreamBinaryAccessor(input, buffer), token).ConfigureAwait(false);
+                return await transformation.TransformAsync(new AsyncStreamBinaryAccessor(input, buffer), token).ConfigureAwait(false);
             }
             finally
             {
@@ -102,16 +102,16 @@ namespace DotNext.IO
         /// <param name="allocator">The allocator of temporary buffer.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <typeparam name="TResult">The type of result.</typeparam>
-        /// <typeparam name="TDecoder">The type of parser.</typeparam>
+        /// <typeparam name="TTransformation">The type of parser.</typeparam>
         /// <returns>The decoded stream.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        protected static async ValueTask<TResult> DecodeAsync<TResult, TDecoder>(Stream input, TDecoder transformation, bool resetStream, MemoryAllocator<byte>? allocator, CancellationToken token)
-            where TDecoder : notnull, IDecoder<TResult>
+        protected static async ValueTask<TResult> TransformAsync<TResult, TTransformation>(Stream input, TTransformation transformation, bool resetStream, MemoryAllocator<byte>? allocator, CancellationToken token)
+            where TTransformation : notnull, ITransformation<TResult>
         {
             var buffer = allocator.Invoke(DefaultBufferSize, false);
             try
             {
-                return await transformation.ReadAsync(new AsyncStreamBinaryAccessor(input, buffer.Memory), token).ConfigureAwait(false);
+                return await transformation.TransformAsync(new AsyncStreamBinaryAccessor(input, buffer.Memory), token).ConfigureAwait(false);
             }
             finally
             {
@@ -128,12 +128,12 @@ namespace DotNext.IO
         /// <param name="resetStream"><see langword="true"/> to reset stream position after decoding.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <typeparam name="TResult">The type of result.</typeparam>
-        /// <typeparam name="TDecoder">The type of parser.</typeparam>
+        /// <typeparam name="TTransformation">The type of parser.</typeparam>
         /// <returns>The decoded stream.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        protected static ValueTask<TResult> DecodeAsync<TResult, TDecoder>(Stream input, TDecoder transformation, bool resetStream, CancellationToken token)
-            where TDecoder : notnull, IDecoder<TResult>
-            => DecodeAsync<TResult, TDecoder>(input, transformation, resetStream, BufferWriter.DefaultByteAllocator, token);
+        protected static ValueTask<TResult> DecodeAsync<TResult, TTransformation>(Stream input, TTransformation transformation, bool resetStream, CancellationToken token)
+            where TTransformation : notnull, ITransformation<TResult>
+            => TransformAsync<TResult, TTransformation>(input, transformation, resetStream, BufferWriter.DefaultByteAllocator, token);
 
         /// <summary>
         /// Decodes the data using pipe reader.
@@ -142,27 +142,27 @@ namespace DotNext.IO
         /// <param name="transformation">The decoder.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <typeparam name="TResult">The type of result.</typeparam>
-        /// <typeparam name="TDecoder">The type of parser.</typeparam>
+        /// <typeparam name="TTransformation">The type of parser.</typeparam>
         /// <returns>The decoded stream.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        protected static ValueTask<TResult> DecodeAsync<TResult, TDecoder>(PipeReader input, TDecoder transformation, CancellationToken token)
-            where TDecoder : notnull, IDecoder<TResult>
-            => transformation.ReadAsync(new Pipelines.PipeBinaryReader(input), token);
+        protected static ValueTask<TResult> DecodeAsync<TResult, TTransformation>(PipeReader input, TTransformation transformation, CancellationToken token)
+            where TTransformation : notnull, ITransformation<TResult>
+            => transformation.TransformAsync(new Pipelines.PipeBinaryReader(input), token);
 
         // use rented buffer of the small size
-        private async ValueTask<TResult> GetSmallObjectDataAsync<TResult, TDecoder>(TDecoder parser, long length, CancellationToken token)
-            where TDecoder : notnull, IDecoder<TResult>
+        private async ValueTask<TResult> GetSmallObjectDataAsync<TResult, TTransformation>(TTransformation parser, long length, CancellationToken token)
+            where TTransformation : notnull, ITransformation<TResult>
         {
             using PooledArrayBufferWriter<byte> writer = new PooledArrayBufferWriter<byte>((int)length);
 
             await WriteToAsync(new AsyncBufferWriter(writer), token).ConfigureAwait(false);
-            return await parser.ReadAsync(new SequenceBinaryReader(writer.WrittenMemory), token).ConfigureAwait(false);
+            return await parser.TransformAsync(new SequenceBinaryReader(writer.WrittenMemory), token).ConfigureAwait(false);
         }
 
         // use FileBufferingWriter to keep the balance between I/O performance and memory consumption
         // when size is unknown
-        private async ValueTask<TResult> GetUnknownObjectDataAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token)
-            where TDecoder : notnull, IDecoder<TResult>
+        private async ValueTask<TResult> GetUnknownObjectDataAsync<TResult, TTransformation>(TTransformation parser, CancellationToken token)
+            where TTransformation : notnull, ITransformation<TResult>
         {
             await using var output = new FileBufferingWriter(asyncIO: true);
             using var buffer = BufferWriter.DefaultByteAllocator.Invoke(DefaultBufferSize, false);
@@ -172,15 +172,15 @@ namespace DotNext.IO
 
             // deserialize
             if (output.TryGetWrittenContent(out var memory))
-                return await parser.ReadAsync(new SequenceBinaryReader(memory), token).ConfigureAwait(false);
+                return await parser.TransformAsync(new SequenceBinaryReader(memory), token).ConfigureAwait(false);
 
             await using var input = await output.GetWrittenContentAsStreamAsync(token).ConfigureAwait(false);
-            return await parser.ReadAsync(new AsyncStreamBinaryAccessor(input, buffer.Memory), token).ConfigureAwait(false);
+            return await parser.TransformAsync(new AsyncStreamBinaryAccessor(input, buffer.Memory), token).ConfigureAwait(false);
         }
 
         // use disk I/O for large-size object
-        private async ValueTask<TResult> GetLargeObjectDataAsync<TResult, TDecoder>(TDecoder parser, long length, CancellationToken token)
-            where TDecoder : notnull, IDecoder<TResult>
+        private async ValueTask<TResult> GetLargeObjectDataAsync<TResult, TTransformation>(TTransformation parser, long length, CancellationToken token)
+            where TTransformation : notnull, ITransformation<TResult>
         {
             var tempFileName = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             const FileOptions tempFileOptions = FileOptions.Asynchronous | FileOptions.DeleteOnClose | FileOptions.SequentialScan;
@@ -195,7 +195,7 @@ namespace DotNext.IO
 
             // deserialize
             fs.Position = 0L;
-            return await parser.ReadAsync(new AsyncStreamBinaryAccessor(fs, buffer.Memory), token).ConfigureAwait(false);
+            return await parser.TransformAsync(new AsyncStreamBinaryAccessor(fs, buffer.Memory), token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -205,19 +205,19 @@ namespace DotNext.IO
         /// The default implementation copies the content into memory
         /// before parsing.
         /// </remarks>
-        /// <param name="parser">The parser instance.</param>
+        /// <param name="transformation">The parser instance.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <typeparam name="TResult">The type of result.</typeparam>
-        /// <typeparam name="TDecoder">The type of parser.</typeparam>
+        /// <typeparam name="TTransformation">The type of parser.</typeparam>
         /// <returns>The converted DTO content.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        ValueTask<TResult> GetObjectDataAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token = default)
-            where TDecoder : notnull, IDecoder<TResult>
+        ValueTask<TResult> TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token = default)
+            where TTransformation : notnull, ITransformation<TResult>
         {
             if (Length.TryGetValue(out var length))
-                return length < FileBufferingWriter.DefaultMemoryThreshold ? GetSmallObjectDataAsync<TResult, TDecoder>(parser, length, token) : GetLargeObjectDataAsync<TResult, TDecoder>(parser, length, token);
+                return length < FileBufferingWriter.DefaultMemoryThreshold ? GetSmallObjectDataAsync<TResult, TTransformation>(transformation, length, token) : GetLargeObjectDataAsync<TResult, TTransformation>(transformation, length, token);
 
-            return GetUnknownObjectDataAsync<TResult, TDecoder>(parser, token);
+            return GetUnknownObjectDataAsync<TResult, TTransformation>(transformation, token);
         }
     }
 }
