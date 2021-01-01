@@ -54,7 +54,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             /// <summary>
-            /// Gets the address used for hosting of local member.
+            /// Gets the address used for hosting local member.
             /// </summary>
             public IPEndPoint HostEndPoint { get; }
 
