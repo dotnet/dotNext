@@ -119,7 +119,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         [Fact]
         public static async Task StateManipulations()
         {
-            var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             IPersistentState state = new PersistentState(dir, RecordsPerPartition);
             var member = new ClusterMemberMock(new IPEndPoint(IPAddress.IPv6Loopback, 3232));
             try
@@ -152,7 +152,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         [Fact]
         public static async Task EmptyLogEntry()
         {
-            var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             using var auditTrail = new PersistentState(dir, RecordsPerPartition);
             await auditTrail.AppendAsync(new EmptyEntry(10), CancellationToken.None);
             Equal(1, auditTrail.GetLastIndex(false));
@@ -174,7 +174,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public static async Task QueryAppendEntries()
         {
             var entry = new TestLogEntry("SET X = 0") { Term = 42L };
-            var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
             IPersistentState state = new PersistentState(dir, RecordsPerPartition);
             try
@@ -210,7 +210,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public static async Task ParallelReads()
         {
             var entry = new TestLogEntry("SET X = 0") { Term = 42L };
-            var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             IPersistentState state = new PersistentState(dir, RecordsPerPartition);
             try
             {
@@ -251,7 +251,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var entry4 = new TestLogEntry("SET U = 3") { Term = 45L };
             var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
 
-            var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             using var state = new PersistentState(dir, RecordsPerPartition);
             Equal(1L, await state.AppendAsync(new LogEntryList(entry1, entry2, entry3, entry4, entry5)));
             Equal(5L, state.GetLastIndex(false));
@@ -270,7 +270,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var entry4 = new TestLogEntry("SET U = 3") { Term = 45L };
             var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
             Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
-            var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             using (var state = new PersistentState(dir, RecordsPerPartition))
             {
                 Equal(1L, await state.AppendAsync(new LogEntryList(entry2, entry3, entry4, entry5)));
@@ -309,7 +309,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var entry4 = new TestLogEntry("SET U = 3") { Term = 45L };
             var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
             Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
-            var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             IPersistentState state = new PersistentState(dir, RecordsPerPartition, new PersistentState.Options { UseCaching = useCaching, InitialPartitionSize = 1024 * 1024 });
             try
             {
@@ -402,7 +402,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var entry4 = new TestLogEntry("SET U = 3") { Term = 45L };
             var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
 
-            var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             using (var state = new PersistentState(dir, RecordsPerPartition, new PersistentState.Options { UseCaching = useCaching }))
             {
                 Equal(1L, await state.AppendAsync(new LogEntryList(entry1)));
@@ -432,7 +432,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
             entries.ForEach((ref Int64LogEntry entry, long index) => entry = new Int64LogEntry(42L + index) { Term = index });
-            var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
             using (var state = new TestAuditTrail(dir, useCaching))
             {
@@ -484,7 +484,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
             entries.ForEach((ref Int64LogEntry entry, long index) => entry = new Int64LogEntry(42L + index) { Term = index });
-            var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
             using (var state = new TestAuditTrail(dir, useCaching))
             {
@@ -543,7 +543,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var entry3 = new TestLogEntry("SET Z = 2") { Term = 44L };
             var entry4 = new TestLogEntry("SET U = 3") { Term = 45L };
             var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
-            var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             var backupFile = Path.GetTempFileName();
             IPersistentState state = new PersistentState(dir, RecordsPerPartition);
             var member = new ClusterMemberMock(new IPEndPoint(IPAddress.IPv6Loopback, 3232));
@@ -614,5 +614,55 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Equal(entries.Length + 41L, state.Value);
             }
         }
+
+#if !NETCOREAPP3_1
+        public struct JsonPayload
+        {
+            public int X { get; set; }
+            public int Y { get; set; }
+            public string Message { get; set; }
+        }
+
+        private sealed class JsonPersistentState : PersistentState
+        {
+            private readonly List<object> entries = new List<object>();
+
+            internal JsonPersistentState(string location)
+                : base(location, RecordsPerPartition)
+            {
+            }
+
+            protected override async ValueTask ApplyAsync(LogEntry entry)
+            {
+                var content = await entry.DeserializeFromJsonAsync();
+                entries.Add(content);
+            }
+
+            internal IReadOnlyList<object> Entries => entries;
+        }
+
+        [Fact]
+        public static async Task JsonSerialization()
+        {
+            var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            await using var state = new JsonPersistentState(dir);
+            var entry1 = state.CreateJsonLogEntry<JsonPayload>(new JsonPayload { X = 10, Y = 20, Message = "Entry1" });
+            var entry2 = state.CreateJsonLogEntry<JsonPayload>(new JsonPayload { X = 50, Y = 60, Message = "Entry2" });
+            await state.AppendAsync(entry1);
+            await state.AppendAsync(entry2);
+            await state.CommitAsync(CancellationToken.None);
+            Equal(2, state.Entries.Count);
+
+            var payload = (JsonPayload)state.Entries[0];
+            Equal(entry1.Content.X, payload.X);
+            Equal(entry1.Content.Y, payload.Y);
+            Equal(entry1.Content.Message, payload.Message);
+
+            payload = (JsonPayload)state.Entries[1];
+            Equal(entry2.Content.X, payload.X);
+            Equal(entry2.Content.Y, payload.Y);
+            Equal(entry2.Content.Message, payload.Message);
+        }
+#endif
     }
 }
