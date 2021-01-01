@@ -4,6 +4,9 @@ using System.Globalization;
 using System.IO;
 using System.IO.Pipelines;
 using System.Runtime.InteropServices;
+#if !NETSTANDARD2_1
+using System.Text.Json;
+#endif
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -183,6 +186,11 @@ namespace DotNext.IO
 
         ValueTask IAsyncBinaryWriter.WriteTimeSpanAsync(TimeSpan value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
             => stream.WriteTimeSpanAsync(value, lengthFormat, context, buffer, format, provider, token);
+
+#if !NETSTANDARD2_1
+        ValueTask IAsyncBinaryWriter.WriteJsonAsync<T>(T obj, JsonSerializerOptions? options, CancellationToken token)
+            => new ValueTask(JsonSerializer.SerializeAsync(stream, obj, options, token));
+#endif
 
         Task IAsyncBinaryWriter.CopyFromAsync(Stream input, CancellationToken token)
             => input.CopyToAsync(stream, token);
