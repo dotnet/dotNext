@@ -15,20 +15,13 @@ namespace DotNext.ComponentModel
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
             => sourceType.IsOneOf(typeof(string), typeof(ReadOnlyMemory<char>), typeof(Memory<char>));
 
-        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value) => value switch
         {
-            switch (value)
-            {
-                case string address:
-                    return IPAddress.Parse(address);
-                case ReadOnlyMemory<char> memory:
-                    return IPAddress.Parse(memory.Span);
-                case Memory<char> memory:
-                    return IPAddress.Parse(memory.Span);
-                default:
-                    throw new NotSupportedException();
-            }
-        }
+            string address => IPAddress.Parse(address),
+            ReadOnlyMemory<char> memory => IPAddress.Parse(memory.Span),
+            Memory<char> memory => IPAddress.Parse(memory.Span),
+            _ => new NotSupportedException()
+        };
 
         public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
             => destinationType == typeof(string);
