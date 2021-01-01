@@ -19,5 +19,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public static IServiceCollection ConfigureCluster<TConfig>(this IServiceCollection services)
             where TConfig : class, IClusterMemberLifetime
             => services.AddSingleton<IClusterMemberLifetime, TConfig>();
+
+        /// <summary>
+        /// Registers custom persistence engine for the Write-Ahead Log based on <see cref="PersistentState"/> class.
+        /// </summary>
+        /// <typeparam name="TPersistentState">The type representing custom persistence engine.</typeparam>
+        /// <param name="services">A collection of services provided by DI container.</param>
+        /// <returns>A modified collection of services.</returns>
+        public static IServiceCollection UsePersistenceEngine<TPersistentState>(this IServiceCollection services)
+            where TPersistentState : PersistentState
+        {
+            Func<IServiceProvider, TPersistentState> engineCast = ServiceProviderServiceExtensions.GetRequiredService<TPersistentState>;
+
+            return services.AddSingleton<TPersistentState>()
+                .AddSingleton<IPersistentState>(engineCast);
+        }
     }
 }
