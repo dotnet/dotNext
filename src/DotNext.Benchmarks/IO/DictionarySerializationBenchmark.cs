@@ -26,7 +26,7 @@ namespace DotNext.IO
         {
             const string value = "Hello, world!";
             for (var i = 0; i < DictionarySize; i++)
-                data[i.ToString(InvariantCulture)] = value;
+                data.Add(i.ToString(InvariantCulture), value);
         }
 
         [GlobalCleanup]
@@ -55,6 +55,31 @@ namespace DotNext.IO
                 await writer.WriteAsync(key.AsMemory(), context, StringLengthEncoding.Plain);
                 await writer.WriteAsync(value.AsMemory(), context, StringLengthEncoding.Plain);
             }
+        }
+
+        [Benchmark]
+        public async Task SerializeToJsonFileStream()
+        {
+            await using var output = new FileStream(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), FileMode.CreateNew, FileAccess.Write, FileShare.None, 1024, FileOptions.SequentialScan | FileOptions.Asynchronous);
+            await JsonSerializer.SerializeAsync(output, data);
+            await output.FlushAsync();
+        }
+
+        [Benchmark]
+        public async Task SerializeToBinaryFormFileStream()
+        {
+            await using var output = new FileStream(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), FileMode.CreateNew, FileAccess.Write, FileShare.None, 1024, FileOptions.SequentialScan | FileOptions.Asynchronous);
+            var writer = IAsyncBinaryWriter.Create(output, buffer);
+            await writer.WriteInt32Async(data.Count, true);
+
+            var context = new EncodingContext(Encoding.UTF8, true);
+            foreach (var (key, value) in data)
+            {
+                await writer.WriteAsync(key.AsMemory(), context, StringLengthEncoding.Plain);
+                await writer.WriteAsync(value.AsMemory(), context, StringLengthEncoding.Plain);
+            }
+
+            await output.FlushAsync();
         }
     }
 }
