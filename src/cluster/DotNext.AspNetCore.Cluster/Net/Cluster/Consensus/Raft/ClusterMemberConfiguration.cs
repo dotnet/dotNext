@@ -39,7 +39,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Example of IPv4 network: 192.168.0.0/24.
         /// </remarks>
         [CLSCompliant(false)]
-        public HashSet<IPNetwork> AllowedNetworks { get; }
+        public ISet<IPNetwork> AllowedNetworks { get; }
 
         /// <summary>
         /// Gets lower possible value of leader election timeout, in milliseconds.
