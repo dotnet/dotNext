@@ -1,7 +1,11 @@
 using System;
 using System.Buffers;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Pipelines;
+#if !NETSTANDARD2_1
+using System.Text.Json;
+#endif
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Globalization.CultureInfo;
@@ -271,6 +275,42 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
         ValueTask WriteAsync(ReadOnlyMemory<char> chars, EncodingContext context, StringLengthEncoding? lengthFormat, CancellationToken token = default);
+
+#if !NETSTANDARD2_1
+        private protected static JsonWriterOptions GetWriterOptions(JsonSerializerOptions? options)
+        {
+            var writerOptions = new JsonWriterOptions { SkipValidation = false };
+            if (options is not null)
+            {
+                writerOptions.Encoder = options.Encoder;
+                writerOptions.Indented = options.WriteIndented;
+            }
+
+            return writerOptions;
+        }
+
+        /// <summary>
+        /// Serializes object as UTF-8 encoded JSON.
+        /// </summary>
+        /// <param name="obj">The object to be serialized.</param>
+        /// <param name="options">The serialization options.</param>
+        /// <param name="token">The token that can be used to cancel the serialization</param>
+        /// <typeparam name="T">The type of the object to be serialized.</typeparam>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        unsafe ValueTask WriteJsonAsync<T>(T obj, JsonSerializerOptions? options = null, CancellationToken token = default)
+        {
+            Action<T, IBufferWriter<byte>>? serializer = DelegateHelpers.CreateDelegate<JsonSerializerOptions?, T, IBufferWriter<byte>>(&SerializeToJson, options);
+            Debug.Assert(serializer is not null);
+            return WriteAsync(serializer, obj, token);
+
+            static void SerializeToJson(JsonSerializerOptions? options, T obj, IBufferWriter<byte> output)
+            {
+                using var writer = new Utf8JsonWriter(output, GetWriterOptions(options));
+                JsonSerializer.Serialize(writer, obj, options);
+            }
+        }
+#endif
 
         /// <summary>
         /// Writes the content from the specified stream.
