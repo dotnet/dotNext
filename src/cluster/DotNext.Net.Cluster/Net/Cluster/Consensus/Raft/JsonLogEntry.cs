@@ -93,6 +93,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
+        /// <inheritdoc />
         ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
             => JsonLogEntry.SerializeAsync<T, TWriter>(writer, TypeId, Content, token);
     }

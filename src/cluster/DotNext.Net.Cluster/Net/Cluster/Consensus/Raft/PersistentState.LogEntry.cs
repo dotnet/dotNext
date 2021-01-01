@@ -100,6 +100,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <param name="options">Deserialization options.</param>
             /// <param name="token">The token that can be used to cancel the deserialization.</param>
             /// <returns>The deserialized object.</returns>
+            /// <exception cref="TypeLoadException"><paramref name="typeLoader"/> unable to resolve the type.</exception>
+            /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+            /// <seealso cref="CreateJsonLogEntry"/>
             public ValueTask<object?> DeserializeFromJsonAsync(Func<string, Type>? typeLoader = null, JsonSerializerOptions? options = null, CancellationToken token = default)
             {
                 Reset();
