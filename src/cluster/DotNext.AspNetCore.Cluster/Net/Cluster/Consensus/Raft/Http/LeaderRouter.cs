@@ -86,7 +86,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         /// redirected automatically to the leader node with 302 (Moved Permanently).
         /// If there are no consensus then the request will be failed with 503 (Service Unavailable).
         /// You can override redirection behavior using custom <paramref name="redirection"/>.
-        /// <paramref name="applicationPortHint"/> used to highligh real port of the application endpoints in the cluster.
+        /// <paramref name="applicationPortHint"/> used to highlight the real port of the application endpoints in the cluster.
         /// This parameter can be used if your deployment is based on Docker. If it is not specified then router trying to add
         /// local port of the TCP listener. This may be invalid due to port mappings in Docker.
         /// </remarks>
