@@ -22,7 +22,7 @@ namespace RaftNode
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IClusterMemberLifetime, ClusterConfigurator>()
+            services.ConfigureCluster<ClusterConfigurator>()
                 .AddSingleton<IHttpMessageHandlerFactory, RaftClientHandlerFactory>()
                 .AddOptions();
             var path = configuration[SimplePersistentState.LogLocation];
