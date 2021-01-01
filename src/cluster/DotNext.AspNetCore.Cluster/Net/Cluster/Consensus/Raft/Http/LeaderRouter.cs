@@ -17,7 +17,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private sealed class RedirectionMiddleware
         {
             private readonly RequestDelegate next;
-            private readonly RaftHttpCluster cluster;
+            private readonly RaftCluster<RaftClusterMember> cluster;
             private readonly int? applicationPortHint;
             private readonly Func<HttpResponse, Uri, Task> redirection;
             private readonly PathString pathMatch;
