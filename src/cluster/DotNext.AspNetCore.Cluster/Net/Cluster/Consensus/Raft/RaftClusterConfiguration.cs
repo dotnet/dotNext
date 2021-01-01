@@ -34,5 +34,23 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return services.AddSingleton<TPersistentState>()
                 .AddSingleton<IPersistentState>(engineCast);
         }
+
+        /// <summary>
+        /// Registers custom persistence engine for the Write-Ahead Log based on <see cref="PersistentState"/> class.
+        /// </summary>
+        /// <typeparam name="TEngine">An interface used for interaction with the persistence engine.</typeparam>
+        /// <typeparam name="TImplementation">The type representing custom persistence engine.</typeparam>
+        /// <param name="services">A collection of services provided by DI container.</param>
+        /// <returns>A modified collection of services.</returns>
+        public static IServiceCollection UsePersistenceEngine<TEngine, TImplementation>(this IServiceCollection services)
+            where TEngine : class
+            where TImplementation : PersistentState, TEngine
+        {
+            Func<IServiceProvider, TImplementation> engineCast = ServiceProviderServiceExtensions.GetRequiredService<TImplementation>;
+
+            return services.AddSingleton<TImplementation>()
+                .AddSingleton<TEngine>(engineCast)
+                .AddSingleton<IPersistentState>(engineCast);
+        }
     }
 }
