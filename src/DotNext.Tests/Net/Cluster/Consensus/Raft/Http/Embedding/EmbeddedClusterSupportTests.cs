@@ -62,7 +62,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                 })
                     .ConfigureServices(services =>
                     {
-                        if (configurator != null)
+                        if (configurator is not null)
                             services.AddSingleton(configurator);
                     })
                     .UseStartup<TStartup>()
