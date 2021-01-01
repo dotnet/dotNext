@@ -7,7 +7,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// Allows to setup special service used for configuration of <see cref="IRaftCluster"/> instance.
     /// </summary>
     [CLSCompliant(false)]
-    public static class RaftClusterConfigurator
+    public static class RaftClusterConfiguration
     {
         /// <summary>
         /// Registers configurator of <see cref="ICluster"/> service registered as a service
