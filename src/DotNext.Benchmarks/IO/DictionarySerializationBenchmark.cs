@@ -60,7 +60,7 @@ namespace DotNext.IO
         [Benchmark]
         public async Task SerializeToJsonFileStream()
         {
-            await using var output = new FileStream(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), FileMode.CreateNew, FileAccess.Write, FileShare.None, 1024, FileOptions.SequentialScan | FileOptions.Asynchronous);
+            await using var output = new FileStream(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), FileMode.CreateNew, FileAccess.Write, FileShare.None, 1024, FileOptions.SequentialScan | FileOptions.Asynchronous | FileOptions.DeleteOnClose);
             await JsonSerializer.SerializeAsync(output, data);
             await output.FlushAsync();
         }
@@ -68,7 +68,7 @@ namespace DotNext.IO
         [Benchmark]
         public async Task SerializeToBinaryFormFileStream()
         {
-            await using var output = new FileStream(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), FileMode.CreateNew, FileAccess.Write, FileShare.None, 1024, FileOptions.SequentialScan | FileOptions.Asynchronous);
+            await using var output = new FileStream(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), FileMode.CreateNew, FileAccess.Write, FileShare.None, 1024, FileOptions.SequentialScan | FileOptions.Asynchronous | FileOptions.DeleteOnClose);
             var writer = IAsyncBinaryWriter.Create(output, buffer);
             await writer.WriteInt32Async(data.Count, true);
 
