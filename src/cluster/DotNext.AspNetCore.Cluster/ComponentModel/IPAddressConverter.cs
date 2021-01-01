@@ -13,7 +13,7 @@ namespace DotNext.ComponentModel
             => TypeDescriptor.AddAttributes(typeof(IPAddress), new TypeConverterAttribute(typeof(IPAddressConverter)));
 
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
-            => sourceType == typeof(string);
+            => sourceType.IsOneOf(typeof(string), typeof(ReadOnlyMemory<char>), typeof(Memory<char>));
 
         public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
         {
@@ -21,6 +21,10 @@ namespace DotNext.ComponentModel
             {
                 case string address:
                     return IPAddress.Parse(address);
+                case ReadOnlyMemory<char> memory:
+                    return IPAddress.Parse(memory.Span);
+                case Memory<char> memory:
+                    return IPAddress.Parse(memory.Span);
                 default:
                     throw new NotSupportedException();
             }
