@@ -28,11 +28,7 @@ namespace RaftNode
             var path = configuration[SimplePersistentState.LogLocation];
             if (!string.IsNullOrWhiteSpace(path))
             {
-                Func<IServiceProvider, SimplePersistentState> serviceCast = ServiceProviderServiceExtensions.GetRequiredService<SimplePersistentState>;
-                services
-                    .AddSingleton<SimplePersistentState>()
-                    .AddSingleton<IPersistentState>(serviceCast)
-                    .AddSingleton<IValueProvider>(serviceCast)
+                services.UsePersistenceEngine<IValueProvider, SimplePersistentState>()
                     .AddSingleton<IHostedService, DataModifier>();
             }
         }
