@@ -5,15 +5,32 @@ using Microsoft.AspNetCore.Http.Features;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
+    using ComponentModel;
     using HostAddressHintFeature = DotNext.Hosting.Server.Features.HostAddressHintFeature;
 
     internal class RaftClusterMemberConfiguration : ClusterMemberConfiguration
     {
+        static RaftClusterMemberConfiguration()
+        {
+            IPNetworkConverter.Register();
+            IPAddressConverter.Register();
+        }
+
         private const string DefaultClientHandlerName = "raftClient";
 
         private string? handlerName;
         private TimeSpan? requestTimeout;
         private TimeSpan? rpcTimeout;
+
+        /// <summary>
+        /// Represents a set of networks from which remote member can make
+        /// a request to the local member.
+        /// </summary>
+        /// <remarks>
+        /// Example of IPv6 network: 2001:0db8::/32
+        /// Example of IPv4 network: 192.168.0.0/24.
+        /// </remarks>
+        public ISet<IPNetwork> AllowedNetworks { get; } = new HashSet<IPNetwork>();
 
         /// <summary>
         /// Gets collection of members.

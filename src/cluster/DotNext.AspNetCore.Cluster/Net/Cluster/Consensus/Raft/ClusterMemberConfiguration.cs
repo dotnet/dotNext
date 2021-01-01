@@ -4,19 +4,11 @@ using System.Net;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    using ComponentModel;
-
     /// <summary>
     /// Represents configuration of cluster member.
     /// </summary>
     public class ClusterMemberConfiguration : IClusterMemberConfiguration
     {
-        static ClusterMemberConfiguration()
-        {
-            IPNetworkConverter.Register();
-            IPAddressConverter.Register();
-        }
-
         private ElectionTimeout electionTimeout;
 
         /// <summary>
@@ -27,19 +19,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             electionTimeout = ElectionTimeout.Recommended;
             HeartbeatThreshold = 0.5D;
             Metadata = new Dictionary<string, string>();
-            AllowedNetworks = new HashSet<IPNetwork>();
         }
-
-        /// <summary>
-        /// Represents set of networks from which remote member can make
-        /// a request to the local member.
-        /// </summary>
-        /// <remarks>
-        /// Example of IPv6 network: 2001:0db8::/32
-        /// Example of IPv4 network: 192.168.0.0/24.
-        /// </remarks>
-        [CLSCompliant(false)]
-        public ISet<IPNetwork> AllowedNetworks { get; }
 
         /// <summary>
         /// Gets lower possible value of leader election timeout, in milliseconds.
