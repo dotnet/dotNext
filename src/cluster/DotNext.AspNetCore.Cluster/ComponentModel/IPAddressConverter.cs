@@ -13,13 +13,14 @@ namespace DotNext.ComponentModel
             => TypeDescriptor.AddAttributes(typeof(IPAddress), new TypeConverterAttribute(typeof(IPAddressConverter)));
 
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
-            => sourceType.IsOneOf(typeof(string), typeof(ReadOnlyMemory<char>), typeof(Memory<char>));
+            => sourceType.IsOneOf(typeof(string), typeof(ReadOnlyMemory<char>), typeof(Memory<char>), typeof(char[]));
 
         public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value) => value switch
         {
             string address => IPAddress.Parse(address),
             ReadOnlyMemory<char> memory => IPAddress.Parse(memory.Span),
             Memory<char> memory => IPAddress.Parse(memory.Span),
+            char[] array => IPAddress.Parse(new ReadOnlySpan<char>(array)),
             _ => new NotSupportedException()
         };
 
