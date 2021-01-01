@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -17,12 +18,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private sealed class RedirectionMiddleware
         {
             private readonly RequestDelegate next;
-            private readonly RaftCluster<RaftClusterMember> cluster;
+            private readonly ICluster cluster;
             private readonly int? applicationPortHint;
             private readonly Func<HttpResponse, Uri, Task> redirection;
             private readonly PathString pathMatch;
 
-            internal RedirectionMiddleware(RaftHttpCluster cluster, RequestDelegate next, PathString pathMatch, int? applicationPortHint, Func<HttpResponse, Uri, Task>? redirection)
+            internal RedirectionMiddleware(ICluster cluster, RequestDelegate next, PathString pathMatch, int? applicationPortHint, Func<HttpResponse, Uri, Task>? redirection)
             {
                 this.cluster = cluster;
                 this.next = next;
@@ -38,6 +39,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 return Task.CompletedTask;
             }
 
+            private Task Redirect(HttpContext context, EndPoint leader)
+            {
+                string targetHost;
+                switch (leader)
+                {
+                    case IPEndPoint ip:
+                        targetHost = ip.Address.ToString();
+                        break;
+                    case DnsEndPoint dns:
+                        targetHost = dns.Host;
+                        break;
+                    default:
+                        // endpoint type is unknown so respond to the client without redirection
+                        context.Response.StatusCode = StatusCodes.Status501NotImplemented;
+                        return context.Response.WriteAsync(ExceptionMessages.UnsupportedRedirection);
+                }
+
+                return redirection(context.Response, new UriBuilder(context.Request.GetEncodedUrl()) { Host = targetHost, Port = applicationPortHint ?? context.Connection.LocalPort }.Uri);
+            }
+
             internal Task Redirect(HttpContext context)
             {
                 if (context.Request.Path.StartsWithSegments(pathMatch, StringComparison.OrdinalIgnoreCase))
@@ -50,7 +71,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                     }
 
                     if (leader.IsRemote)
-                        return redirection(context.Response, new UriBuilder(context.Request.GetEncodedUrl()) { Host = leader.EndPoint.Address.ToString(), Port = applicationPortHint ?? context.Connection.LocalPort }.Uri);
+                        return Redirect(context, leader.EndPoint);
                 }
 
                 return next(context);
@@ -76,7 +97,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         /// <returns>The request pipeline builder.</returns>
         public static IApplicationBuilder RedirectToLeader(this IApplicationBuilder builder, PathString path, int? applicationPortHint = null, Func<HttpResponse, Uri, Task>? redirection = null)
         {
-            var cluster = builder.ApplicationServices.GetRequiredService<RaftHttpCluster>();
+            var cluster = builder.ApplicationServices.GetRequiredService<ICluster>();
             return builder.Use(next => new RedirectionMiddleware(cluster, next, path, applicationPortHint, redirection).Redirect);
         }
     }
