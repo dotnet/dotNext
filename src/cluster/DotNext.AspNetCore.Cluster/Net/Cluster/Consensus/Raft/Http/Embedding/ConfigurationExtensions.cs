@@ -80,7 +80,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             => builder.ConfigureServices(memberConfigSection.JoinCluster);
 
         private static void ConfigureConsensusProtocolHandler(this RaftHttpCluster cluster, IApplicationBuilder builder)
-            => builder.UseExceptionHandler(new ExceptionHandlerOptions { ExceptionHandler = RaftHttpConfigurator.WriteExceptionContent }).Run(cluster.ProcessRequest);
+            => builder.UseExceptionHandler(new ExceptionHandlerOptions { ExceptionHandler = RaftHttpConfiguration.WriteExceptionContent }).Run(cluster.ProcessRequest);
 
         /// <summary>
         /// Setup Raft protocol handler as middleware for the specified application.

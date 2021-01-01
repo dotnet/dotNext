@@ -11,7 +11,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     using Messaging;
     using Replication;
 
-    internal static class RaftHttpConfigurator
+    internal static class RaftHttpConfiguration
     {
         internal static IServiceCollection AddClusterAsSingleton<TCluster, TConfig>(this IServiceCollection services, IConfiguration memberConfig)
             where TCluster : RaftHttpCluster
