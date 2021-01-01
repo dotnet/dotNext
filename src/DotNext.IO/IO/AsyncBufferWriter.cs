@@ -3,9 +3,6 @@ using System.Buffers;
 using System.IO;
 using System.IO.Pipelines;
 using System.Runtime.InteropServices;
-#if !NETSTANDARD2_1
-using System.Text.Json;
-#endif
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -404,36 +401,5 @@ namespace DotNext.IO
 
             return new ValueTask(result);
         }
-
-#if !NETSTANDARD2_1
-        ValueTask IAsyncBinaryWriter.WriteJsonAsync<T>(T obj, JsonSerializerOptions? options, CancellationToken token)
-        {
-            Task result;
-            if (token.IsCancellationRequested)
-            {
-                result = Task.FromCanceled(token);
-            }
-            else
-            {
-                result = Task.CompletedTask;
-                Utf8JsonWriter? writer = null;
-                try
-                {
-                    writer = new Utf8JsonWriter(this.writer, IAsyncBinaryWriter.GetWriterOptions(options));
-                    JsonSerializer.Serialize(writer, obj, options);
-                }
-                catch (Exception e)
-                {
-                    result = Task.FromException(e);
-                }
-                finally
-                {
-                    writer?.Dispose();
-                }
-            }
-
-            return new ValueTask(result);
-        }
-#endif
     }
 }

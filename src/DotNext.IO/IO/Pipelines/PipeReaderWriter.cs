@@ -4,9 +4,6 @@ using System.Globalization;
 using System.IO;
 using System.IO.Pipelines;
 using System.Runtime.InteropServices;
-#if !NETSTANDARD2_1
-using System.Text.Json;
-#endif
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -254,20 +251,6 @@ namespace DotNext.IO.Pipelines
                 return output.FlushAsync(token);
             }
         }
-
-#if !NETSTANDARD2_1
-        unsafe ValueTask IAsyncBinaryWriter.WriteJsonAsync<T>(T obj, JsonSerializerOptions? options, CancellationToken token)
-        {
-            return WriteAsync(output, new Writer<T, JsonSerializerOptions?>(obj, options, &SerializeToJsonAsync), token);
-
-            static ValueTask<FlushResult> SerializeToJsonAsync(PipeWriter output, T obj, JsonSerializerOptions? options, CancellationToken token)
-            {
-                using var writer = new Utf8JsonWriter(output, IAsyncBinaryWriter.GetWriterOptions(options));
-                JsonSerializer.Serialize(writer, obj, options);
-                return output.FlushAsync(token);
-            }
-        }
-#endif
 
         public unsafe ValueTask WriteAsync(ReadOnlyMemory<char> chars, EncodingContext context, StringLengthEncoding? lengthFormat, CancellationToken token)
         {
