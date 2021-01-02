@@ -103,7 +103,7 @@ namespace DotNext.IO
             return new ValueTask(result);
         }
 
-        ValueTask IAsyncBinaryWriter.WriteAsync(ReadOnlyMemory<char> chars, EncodingContext context, StringLengthEncoding? lengthFormat, CancellationToken token)
+        ValueTask IAsyncBinaryWriter.WriteAsync(ReadOnlyMemory<char> chars, EncodingContext context, LengthFormat? lengthFormat, CancellationToken token)
         {
             Task result;
             if (token.IsCancellationRequested)
@@ -126,7 +126,7 @@ namespace DotNext.IO
             return new ValueTask(result);
         }
 
-        ValueTask IAsyncBinaryWriter.WriteByteAsync(byte value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+        ValueTask IAsyncBinaryWriter.WriteByteAsync(byte value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
         {
             Task result;
             if (token.IsCancellationRequested)
@@ -149,7 +149,7 @@ namespace DotNext.IO
             return new ValueTask(result);
         }
 
-        ValueTask IAsyncBinaryWriter.WriteInt16Async(short value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+        ValueTask IAsyncBinaryWriter.WriteInt16Async(short value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
         {
             Task result;
             if (token.IsCancellationRequested)
@@ -172,7 +172,7 @@ namespace DotNext.IO
             return new ValueTask(result);
         }
 
-        ValueTask IAsyncBinaryWriter.WriteInt32Async(int value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+        ValueTask IAsyncBinaryWriter.WriteInt32Async(int value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
         {
             Task result;
             if (token.IsCancellationRequested)
@@ -195,7 +195,7 @@ namespace DotNext.IO
             return new ValueTask(result);
         }
 
-        ValueTask IAsyncBinaryWriter.WriteInt64Async(long value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+        ValueTask IAsyncBinaryWriter.WriteInt64Async(long value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
         {
             Task result;
             if (token.IsCancellationRequested)
@@ -218,7 +218,7 @@ namespace DotNext.IO
             return new ValueTask(result);
         }
 
-        ValueTask IAsyncBinaryWriter.WriteSingleAsync(float value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+        ValueTask IAsyncBinaryWriter.WriteSingleAsync(float value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
         {
             Task result;
             if (token.IsCancellationRequested)
@@ -241,7 +241,7 @@ namespace DotNext.IO
             return new ValueTask(result);
         }
 
-        ValueTask IAsyncBinaryWriter.WriteDoubleAsync(double value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+        ValueTask IAsyncBinaryWriter.WriteDoubleAsync(double value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
         {
             Task result;
             if (token.IsCancellationRequested)
@@ -264,7 +264,7 @@ namespace DotNext.IO
             return new ValueTask(result);
         }
 
-        ValueTask IAsyncBinaryWriter.WriteDecimalAsync(decimal value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+        ValueTask IAsyncBinaryWriter.WriteDecimalAsync(decimal value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
         {
             Task result;
             if (token.IsCancellationRequested)
@@ -287,7 +287,7 @@ namespace DotNext.IO
             return new ValueTask(result);
         }
 
-        ValueTask IAsyncBinaryWriter.WriteDateTimeAsync(DateTime value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+        ValueTask IAsyncBinaryWriter.WriteDateTimeAsync(DateTime value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
         {
             Task result;
             if (token.IsCancellationRequested)
@@ -310,7 +310,7 @@ namespace DotNext.IO
             return new ValueTask(result);
         }
 
-        ValueTask IAsyncBinaryWriter.WriteDateTimeOffsetAsync(DateTimeOffset value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+        ValueTask IAsyncBinaryWriter.WriteDateTimeOffsetAsync(DateTimeOffset value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
         {
             Task result;
             if (token.IsCancellationRequested)
@@ -333,7 +333,7 @@ namespace DotNext.IO
             return new ValueTask(result);
         }
 
-        ValueTask IAsyncBinaryWriter.WriteGuidAsync(Guid value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, CancellationToken token)
+        ValueTask IAsyncBinaryWriter.WriteGuidAsync(Guid value, LengthFormat lengthFormat, EncodingContext context, string? format, CancellationToken token)
         {
             Task result;
             if (token.IsCancellationRequested)
@@ -356,7 +356,7 @@ namespace DotNext.IO
             return new ValueTask(result);
         }
 
-        ValueTask IAsyncBinaryWriter.WriteTimeSpanAsync(TimeSpan value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+        ValueTask IAsyncBinaryWriter.WriteTimeSpanAsync(TimeSpan value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
         {
             Task result;
             if (token.IsCancellationRequested)

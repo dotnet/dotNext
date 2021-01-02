@@ -14,7 +14,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
     internal static class JsonLogEntry
     {
-        private const StringLengthEncoding LengthEncoding = StringLengthEncoding.PlainLittleEndian;
+        private const LengthFormat LengthEncoding = LengthFormat.PlainLittleEndian;
         internal static readonly Func<string, Type> DefaultTypeLoader = LoadType;
 
         private static Type LoadType(string typeId) => Type.GetType(typeId, true)!;

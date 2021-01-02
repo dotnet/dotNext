@@ -76,7 +76,7 @@ namespace DotNext.IO
             Equal(47, reader.ReadUInt16(littleEndian));
         }
 
-        private static async Task ReadWriteStringUsingEncodingAsync(string value, Encoding encoding, StringLengthEncoding? lengthEnc)
+        private static async Task ReadWriteStringUsingEncodingAsync(string value, Encoding encoding, LengthFormat? lengthEnc)
         {
             using var ms = new MemoryStream();
             await ms.WriteStringAsync(value.AsMemory(), encoding, lengthEnc);
@@ -90,11 +90,11 @@ namespace DotNext.IO
 
         [Theory]
         [InlineData(null)]
-        [InlineData(StringLengthEncoding.Compressed)]
-        [InlineData(StringLengthEncoding.Plain)]
-        [InlineData(StringLengthEncoding.PlainLittleEndian)]
-        [InlineData(StringLengthEncoding.PlainBigEndian)]
-        public static async Task ReadWriteBufferedStringAsync(StringLengthEncoding? lengthEnc)
+        [InlineData(LengthFormat.Compressed)]
+        [InlineData(LengthFormat.Plain)]
+        [InlineData(LengthFormat.PlainLittleEndian)]
+        [InlineData(LengthFormat.PlainBigEndian)]
+        public static async Task ReadWriteBufferedStringAsync(LengthFormat? lengthEnc)
         {
             const string testString1 = "Hello, world!&*(@&*(fghjwgfwffgw";
             await ReadWriteStringUsingEncodingAsync(testString1, Encoding.UTF8, lengthEnc);

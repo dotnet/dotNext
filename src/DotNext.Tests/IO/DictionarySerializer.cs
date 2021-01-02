@@ -14,8 +14,8 @@ namespace DotNext.IO
             // write pairs
             foreach (var (key, value) in dictionary)
             {
-                output.WriteString(key, Encoding.UTF8, StringLengthEncoding.Plain);
-                output.WriteString(value, Encoding.UTF8, StringLengthEncoding.Plain);
+                output.WriteString(key, Encoding.UTF8, LengthFormat.Plain);
+                output.WriteString(value, Encoding.UTF8, LengthFormat.Plain);
             }
         }
 
@@ -26,8 +26,8 @@ namespace DotNext.IO
 
             while (--count >= 0)
             {
-                var key = input.ReadString(StringLengthEncoding.Plain, Encoding.UTF8);
-                var value = input.ReadString(StringLengthEncoding.Plain, Encoding.UTF8);
+                var key = input.ReadString(LengthFormat.Plain, Encoding.UTF8);
+                var value = input.ReadString(LengthFormat.Plain, Encoding.UTF8);
                 result.Add(key, value);
             }
 

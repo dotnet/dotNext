@@ -52,8 +52,8 @@ namespace DotNext.IO
             var context = new EncodingContext(Encoding.UTF8, true);
             foreach (var (key, value) in data)
             {
-                await writer.WriteAsync(key.AsMemory(), context, StringLengthEncoding.Plain);
-                await writer.WriteAsync(value.AsMemory(), context, StringLengthEncoding.Plain);
+                await writer.WriteAsync(key.AsMemory(), context, LengthFormat.Plain);
+                await writer.WriteAsync(value.AsMemory(), context, LengthFormat.Plain);
             }
         }
 
@@ -75,8 +75,8 @@ namespace DotNext.IO
             var context = new EncodingContext(Encoding.UTF8, true);
             foreach (var (key, value) in data)
             {
-                await writer.WriteAsync(key.AsMemory(), context, StringLengthEncoding.Plain);
-                await writer.WriteAsync(value.AsMemory(), context, StringLengthEncoding.Plain);
+                await writer.WriteAsync(key.AsMemory(), context, LengthFormat.Plain);
+                await writer.WriteAsync(value.AsMemory(), context, LengthFormat.Plain);
             }
 
             await output.FlushAsync();

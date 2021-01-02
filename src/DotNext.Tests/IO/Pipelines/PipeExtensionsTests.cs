@@ -152,7 +152,7 @@ namespace DotNext.IO.Pipelines
             await ThrowsAsync<EndOfStreamException>(pipe.Reader.ReadAsync<decimal>().AsTask);
         }
 
-        private static async Task EncodeDecodeStringAsync(Encoding encoding, string value, int bufferSize, StringLengthEncoding? lengthEnc)
+        private static async Task EncodeDecodeStringAsync(Encoding encoding, string value, int bufferSize, LengthFormat? lengthEnc)
         {
             var pipe = new Pipe();
             await pipe.Writer.WriteStringAsync(value.AsMemory(), encoding, bufferSize, lengthEnc);
@@ -166,19 +166,19 @@ namespace DotNext.IO.Pipelines
         [InlineData(0, null)]
         [InlineData(10, null)]
         [InlineData(1024, null)]
-        [InlineData(0, StringLengthEncoding.Compressed)]
-        [InlineData(10, StringLengthEncoding.Compressed)]
-        [InlineData(1024, StringLengthEncoding.Compressed)]
-        [InlineData(0, StringLengthEncoding.Plain)]
-        [InlineData(10, StringLengthEncoding.Plain)]
-        [InlineData(1024, StringLengthEncoding.Plain)]
-        [InlineData(0, StringLengthEncoding.PlainLittleEndian)]
-        [InlineData(10, StringLengthEncoding.PlainLittleEndian)]
-        [InlineData(1024, StringLengthEncoding.PlainLittleEndian)]
-        [InlineData(0, StringLengthEncoding.PlainBigEndian)]
-        [InlineData(10, StringLengthEncoding.PlainBigEndian)]
-        [InlineData(1024, StringLengthEncoding.PlainBigEndian)]
-        public static async Task EncodeDecodeString(int bufferSize, StringLengthEncoding? lengthEnc)
+        [InlineData(0, LengthFormat.Compressed)]
+        [InlineData(10, LengthFormat.Compressed)]
+        [InlineData(1024, LengthFormat.Compressed)]
+        [InlineData(0, LengthFormat.Plain)]
+        [InlineData(10, LengthFormat.Plain)]
+        [InlineData(1024, LengthFormat.Plain)]
+        [InlineData(0, LengthFormat.PlainLittleEndian)]
+        [InlineData(10, LengthFormat.PlainLittleEndian)]
+        [InlineData(1024, LengthFormat.PlainLittleEndian)]
+        [InlineData(0, LengthFormat.PlainBigEndian)]
+        [InlineData(10, LengthFormat.PlainBigEndian)]
+        [InlineData(1024, LengthFormat.PlainBigEndian)]
+        public static async Task EncodeDecodeString(int bufferSize, LengthFormat? lengthEnc)
         {
             const string testString = "abc^$&@^$&@)(_+~";
             await EncodeDecodeStringAsync(Encoding.UTF8, testString, bufferSize, lengthEnc);

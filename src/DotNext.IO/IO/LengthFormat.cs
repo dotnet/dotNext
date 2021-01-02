@@ -3,10 +3,10 @@
 namespace DotNext.IO
 {
     /// <summary>
-    /// Describes how string length should be encoded in binary form.
+    /// Describes how the length of the octet string should be encoded in binary form.
     /// </summary>
     [Serializable]
-    public enum StringLengthEncoding : byte
+    public enum LengthFormat : byte
     {
         /// <summary>
         /// Use 32-bit integer value to represent string length
