@@ -115,12 +115,9 @@ namespace DotNext.IO
             return (int)reader.Result;
         }
 
-        private static void WriteLength(this Stream stream, ReadOnlySpan<char> value, Encoding encoding, LengthFormat? lengthFormat)
+        private static void WriteLength(this Stream stream, int length, LengthFormat lengthFormat)
         {
-            if (lengthFormat is null)
-                return;
-            var length = encoding.GetByteCount(value);
-            switch (lengthFormat.GetValueOrDefault())
+            switch (lengthFormat)
             {
                 default:
                     throw new ArgumentOutOfRangeException(nameof(lengthFormat));
@@ -137,6 +134,12 @@ namespace DotNext.IO
                     stream.Write7BitEncodedInt(length);
                     break;
             }
+        }
+
+        private static void WriteLength(this Stream stream, ReadOnlySpan<char> value, Encoding encoding, LengthFormat? lengthFormat)
+        {
+            if (lengthFormat.HasValue)
+                WriteLength(stream, encoding.GetByteCount(value), lengthFormat.GetValueOrDefault());
         }
 
         /// <summary>
@@ -428,12 +431,9 @@ namespace DotNext.IO
         public static unsafe void WriteTimeSpan(this Stream stream, TimeSpan value, LengthFormat lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
             => Write(stream, in value, &TryFormat, lengthFormat, encoding, format, provider);
 
-        private static ValueTask WriteLengthAsync(this Stream stream, ReadOnlySpan<char> value, Encoding encoding, LengthFormat? lengthFormat, Memory<byte> buffer, CancellationToken token)
+        private static ValueTask WriteLengthAsync(this Stream stream, int length, LengthFormat lengthFormat, Memory<byte> buffer, CancellationToken token)
         {
-            if (lengthFormat is null)
-                return new ValueTask();
-            var length = encoding.GetByteCount(value);
-            switch (lengthFormat.GetValueOrDefault())
+            switch (lengthFormat)
             {
                 default:
                     throw new ArgumentOutOfRangeException(nameof(lengthFormat));
@@ -449,6 +449,9 @@ namespace DotNext.IO
                     return stream.Write7BitEncodedIntAsync(length, buffer, token);
             }
         }
+
+        private static ValueTask WriteLengthAsync(this Stream stream, ReadOnlySpan<char> value, Encoding encoding, LengthFormat? lengthFormat, Memory<byte> buffer, CancellationToken token)
+            => lengthFormat.HasValue ? WriteLengthAsync(stream, encoding.GetByteCount(value), lengthFormat.GetValueOrDefault(), buffer, token) : new ValueTask();
 
         /// <summary>
         /// Writes a length-prefixed or raw string to the stream asynchronously using supplied reusable buffer.
