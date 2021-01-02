@@ -36,7 +36,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         bool ILogEntry.IsSnapshot => isSnapshot;
 
         /// <inheritdoc/>
-        long? IDataTransferObject.Length => 0;
+        long? IDataTransferObject.Length => 0L;
 
         /// <inheritdoc/>
         bool IDataTransferObject.IsReusable => true;
