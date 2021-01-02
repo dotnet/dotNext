@@ -93,6 +93,30 @@ namespace DotNext.IO
         public void Read(Memory<byte> output) => Read<Missing, MemoryReader>(new MemoryReader(output));
 
         /// <summary>
+        /// Reads length-prefixed block of bytes.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the block length encoded in the underlying stream.</param>
+        /// <param name="allocator">The memory allocator used to place the decoded block of bytes.</param>
+        /// <returns>The decoded block of bytes.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of sequence.</exception>
+        public MemoryOwner<byte> Read(LengthFormat lengthFormat, MemoryAllocator<byte>? allocator = null)
+        {
+            var length = ReadLength(lengthFormat);
+            MemoryOwner<byte> result;
+            if (length > 0)
+            {
+                result = allocator.Invoke(length, true);
+                Read(result.Memory);
+            }
+            else
+            {
+                result = default;
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// Parses 64-bit signed integer from its string representation encoded in the underlying stream.
         /// </summary>
         /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
@@ -530,6 +554,30 @@ namespace DotNext.IO
             }
 
             return new ValueTask(result);
+        }
+
+        /// <inheritdoc/>
+        ValueTask<MemoryOwner<byte>> IAsyncBinaryReader.ReadAsync(LengthFormat lengthFormat, MemoryAllocator<byte>? allocator, CancellationToken token)
+        {
+            Task<MemoryOwner<byte>> result;
+
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled<MemoryOwner<byte>>(token);
+            }
+            else
+            {
+                try
+                {
+                    return new ValueTask<MemoryOwner<byte>>(Read(lengthFormat, allocator));
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException<MemoryOwner<byte>>(e);
+                }
+            }
+
+            return new ValueTask<MemoryOwner<byte>>(result);
         }
 
         /// <inheritdoc/>

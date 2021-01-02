@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 
 namespace DotNext.IO.Pipelines
 {
+    using Buffers;
     using Text;
-    using static Buffers.BufferWriter;
 
     [StructLayout(LayoutKind.Auto)]
     internal readonly struct PipeBinaryReader : IAsyncBinaryReader
@@ -25,6 +25,9 @@ namespace DotNext.IO.Pipelines
 
         public ValueTask ReadAsync(Memory<byte> output, CancellationToken token)
             => input.ReadBlockAsync(output, token);
+
+        ValueTask<MemoryOwner<byte>> IAsyncBinaryReader.ReadAsync(LengthFormat lengthFormat, MemoryAllocator<byte>? allocator, CancellationToken token)
+            => input.ReadBlockAsync(lengthFormat, allocator, token);
 
         public ValueTask<string> ReadStringAsync(int length, DecodingContext context, CancellationToken token)
             => input.ReadStringAsync(length, context, token);

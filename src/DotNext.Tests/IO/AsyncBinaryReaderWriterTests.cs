@@ -14,8 +14,8 @@ using TimeSpanStyles = System.Globalization.TimeSpanStyles;
 
 namespace DotNext.IO
 {
+    using Buffers;
     using Text;
-    using static Buffers.MemoryAllocator;
 
     [ExcludeFromCodeCoverage]
     public sealed class AsyncBinaryReaderWriterTests : Test
@@ -41,6 +41,9 @@ namespace DotNext.IO
                 
                 ValueTask IAsyncBinaryReader.ReadAsync(Memory<byte> output, CancellationToken token)
                     => reader.ReadAsync(output, token);
+
+                ValueTask<MemoryOwner<byte>> IAsyncBinaryReader.ReadAsync(LengthFormat lengthFormat, MemoryAllocator<byte> allocator, CancellationToken token)
+                    => reader.ReadAsync(lengthFormat, allocator, token);
 
                 ValueTask<string> IAsyncBinaryReader.ReadStringAsync(int length, DecodingContext context, CancellationToken token)
                     => reader.ReadStringAsync(length, context, token);

@@ -367,6 +367,32 @@ namespace DotNext.IO.Pipelines
             => await ReadAsync<Missing, MemoryReader>(reader, new MemoryReader(output), token).ConfigureAwait(false);
 
         /// <summary>
+        /// Reads length-prefixed block of bytes.
+        /// </summary>
+        /// <param name="reader">The pipe reader.</param>
+        /// <param name="lengthFormat">The format of the block length encoded in the underlying pipe.</param>
+        /// <param name="allocator">The memory allocator used to place the decoded block of bytes.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The decoded block of bytes.</returns>
+        /// <exception cref="EndOfStreamException">Reader doesn't have enough data.</exception>
+        public static async ValueTask<MemoryOwner<byte>> ReadBlockAsync(this PipeReader reader, LengthFormat lengthFormat, MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
+        {
+            var length = await reader.ReadLengthAsync(lengthFormat, token).ConfigureAwait(false);
+            MemoryOwner<byte> result;
+            if (length > 0)
+            {
+                result = allocator.Invoke(length, true);
+                await ReadAsync<Missing, MemoryReader>(reader, new MemoryReader(result.Memory), token).ConfigureAwait(false);
+            }
+            else
+            {
+                result = default;
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// Decodes 8-bit unsigned integer from its string representation.
         /// </summary>
         /// <param name="reader">The pipe to read from.</param>

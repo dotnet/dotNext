@@ -2406,6 +2406,31 @@ namespace DotNext.IO
         }
 
         /// <summary>
+        /// Decodes the block of bytes.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the block length encoded in the underlying stream.</param>
+        /// <param name="allocator">The memory allocator used to place the decoded block of bytes.</param>
+        /// <returns>The decoded block of bytes.</returns>
+        /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
+        public static MemoryOwner<byte> ReadBlock(this Stream stream, LengthFormat lengthFormat, MemoryAllocator<byte>? allocator = null)
+        {
+            var length = stream.ReadLength(lengthFormat);
+            MemoryOwner<byte> result;
+            if (length > 0)
+            {
+                result = allocator.Invoke(length, true);
+                stream.ReadBlock(result.Memory.Span);
+            }
+            else
+            {
+                result = default;
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// Deserializes the value type from the stream.
         /// </summary>
         /// <param name="stream">The stream to read from.</param>
@@ -2437,6 +2462,34 @@ namespace DotNext.IO
                 if (bytesRead == 0)
                     throw new EndOfStreamException();
             }
+        }
+
+        /// <summary>
+        /// Decodes the block of bytes asynchronously.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the block length encoded in the underlying stream.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="allocator">The memory allocator used to place the decoded block of bytes.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded block of bytes.</returns>
+        /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static async ValueTask<MemoryOwner<byte>> ReadBlockAsync(this Stream stream, LengthFormat lengthFormat, Memory<byte> buffer, MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
+        {
+            var length = await stream.ReadLengthAsync(lengthFormat, buffer, token).ConfigureAwait(false);
+            MemoryOwner<byte> result;
+            if (length > 0)
+            {
+                result = allocator.Invoke(length, true);
+                await stream.ReadBlockAsync(result.Memory, token).ConfigureAwait(false);
+            }
+            else
+            {
+                result = default;
+            }
+
+            return result;
         }
 
         /// <summary>

@@ -8,8 +8,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.IO
 {
-    using static Buffers.BufferReader;
-    using static Buffers.MemoryAllocator;
+    using Buffers;
     using static Pipelines.ResultExtensions;
     using DecodingContext = Text.DecodingContext;
 
@@ -314,6 +313,17 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
         ValueTask ReadAsync(Memory<byte> output, CancellationToken token = default);
+
+        /// <summary>
+        /// Reads length-prefixed block of bytes.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the block length encoded in the underlying stream.</param>
+        /// <param name="allocator">The memory allocator used to place the decoded block of bytes.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The decoded block of bytes.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        ValueTask<MemoryOwner<byte>> ReadAsync(LengthFormat lengthFormat, MemoryAllocator<byte>? allocator = null, CancellationToken token = default);
 
         /// <summary>
         /// Decodes the string.

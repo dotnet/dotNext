@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 
 namespace DotNext.IO
 {
+    using Buffers;
     using Text;
-    using static Buffers.BufferReader;
 
     /// <summary>
     /// Represents binary reader for the stream.
@@ -36,6 +36,9 @@ namespace DotNext.IO
 
         public ValueTask ReadAsync(Memory<byte> output, CancellationToken token = default)
             => StreamExtensions.ReadBlockAsync(stream, output, token);
+
+        ValueTask<MemoryOwner<byte>> IAsyncBinaryReader.ReadAsync(LengthFormat lengthFormat, MemoryAllocator<byte>? allocator, CancellationToken token)
+            => StreamExtensions.ReadBlockAsync(stream, lengthFormat, buffer, allocator, token);
 
         public ValueTask<string> ReadStringAsync(int length, DecodingContext context, CancellationToken token = default)
             => StreamExtensions.ReadStringAsync(stream, length, context, buffer, token);

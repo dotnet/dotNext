@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.IO
 {
+    using Buffers;
     using DecodingContext = Text.DecodingContext;
 
     internal sealed class EmptyBinaryReader : IAsyncBinaryReader
@@ -24,6 +25,9 @@ namespace DotNext.IO
 
         public ValueTask ReadAsync(Memory<byte> output, CancellationToken token)
             => EndOfStream();
+
+        public ValueTask<MemoryOwner<byte>> ReadAsync(LengthFormat lengthFormat, MemoryAllocator<byte>? allocator, CancellationToken token)
+            => EndOfStream<MemoryOwner<byte>>();
 
         public ValueTask<string> ReadStringAsync(int length, DecodingContext context, CancellationToken token)
             => EndOfStream<string>();

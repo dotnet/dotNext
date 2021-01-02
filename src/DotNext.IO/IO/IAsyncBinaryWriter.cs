@@ -1,6 +1,5 @@
 using System;
 using System.Buffers;
-using System.Diagnostics;
 using System.IO;
 using System.IO.Pipelines;
 using System.Threading;
@@ -236,7 +235,8 @@ namespace DotNext.IO
             => WriteAsync(value, lengthFormat, context, format, provider, token);
 
         /// <summary>
-        /// Encodes a block of memory.
+        /// Encodes a block of memory, optionally prefixed with the length encoded as a sequence of bytes
+        /// according with the specified format.
         /// </summary>
         /// <param name="input">A block of memory.</param>
         /// <param name="lengthFormat">Indicates how the length of the BLOB must be encoded; or <see langword="null"/> to prevent length encoding.</param>
