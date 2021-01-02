@@ -149,9 +149,8 @@ namespace DotNext.Buffers
             output.Advance(writer.Count);
         }
 
-        internal static void WriteLength(this IBufferWriter<byte> writer, ReadOnlySpan<char> value, LengthFormat lengthFormat, Encoding encoding)
+        internal static void WriteLength(this IBufferWriter<byte> writer, int length, LengthFormat lengthFormat)
         {
-            var length = encoding.GetByteCount(value);
             switch (lengthFormat)
             {
                 default:
@@ -170,6 +169,9 @@ namespace DotNext.Buffers
                     break;
             }
         }
+
+        internal static void WriteLength(this IBufferWriter<byte> writer, ReadOnlySpan<char> value, LengthFormat lengthFormat, Encoding encoding)
+            => WriteLength(writer, encoding.GetByteCount(value), lengthFormat);
 
         private static void WriteString(IBufferWriter<byte> writer, ReadOnlySpan<char> value, Encoder encoder, int bytesPerChar, int bufferSize)
         {
