@@ -213,6 +213,7 @@ namespace DotNext.IO
                 var valueDT = DateTime.Now;
                 var valueDTO = DateTimeOffset.Now;
                 var valueT = TimeSpan.FromMilliseconds(1024);
+                var blob = RandomBytes(128);
 
                 var writer = source.CreateWriter();
                 await writer.WriteInt16Async(value16, littleEndian);
@@ -235,6 +236,7 @@ namespace DotNext.IO
                 await writer.WriteDateTimeOffsetAsync(valueDTO, LengthFormat.Plain, encodingContext, format: "O", provider: InvariantCulture);
                 await writer.WriteTimeSpanAsync(valueT, LengthFormat.Plain, encodingContext);
                 await writer.WriteTimeSpanAsync(valueT, LengthFormat.Plain, encodingContext, "G", InvariantCulture);
+                await writer.WriteAsync(blob, LengthFormat.Compressed);
 
                 var reader = source.CreateReader();
                 Equal(value16, await reader.ReadInt16Async(littleEndian));
@@ -257,6 +259,8 @@ namespace DotNext.IO
                 Equal(valueDTO, await reader.ReadDateTimeOffsetAsync(LengthFormat.Plain, decodingContext, new[] { "O" }, style: DateTimeStyles.RoundtripKind, provider: InvariantCulture));
                 Equal(valueT, await reader.ReadTimeSpanAsync(LengthFormat.Plain, decodingContext, InvariantCulture));
                 Equal(valueT, await reader.ReadTimeSpanAsync(LengthFormat.Plain, decodingContext, new[] { "G" }, TimeSpanStyles.None, InvariantCulture));
+                using var decodedBlob = await reader.ReadAsync(LengthFormat.Compressed);
+                Equal(blob, decodedBlob.Memory.ToArray());
             }
         }
 

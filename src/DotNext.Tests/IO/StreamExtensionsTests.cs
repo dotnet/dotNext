@@ -399,6 +399,8 @@ namespace DotNext.IO
             var dt = DateTime.Now;
             var dto = DateTimeOffset.Now;
             var t = TimeSpan.FromMilliseconds(1096);
+            var blob = RandomBytes(128);
+
             stream.WriteInt64(42L, LengthFormat.Plain, encoding, provider: InvariantCulture);
             stream.WriteUInt64(12UL, LengthFormat.PlainLittleEndian, encoding, provider: InvariantCulture);
             stream.WriteInt32(34, LengthFormat.PlainBigEndian, encoding, provider: InvariantCulture);
@@ -421,6 +423,7 @@ namespace DotNext.IO
             stream.WriteDouble(56.6D, LengthFormat.Plain, encoding, provider: InvariantCulture);
             stream.WriteTimeSpan(t, LengthFormat.Plain, encoding, provider: InvariantCulture);
             stream.WriteTimeSpan(t, LengthFormat.Plain, encoding, "G", provider: InvariantCulture);
+            stream.WriteBlock(blob, LengthFormat.Plain);
 
             stream.Position = 0;
             DecodingContext decodingContext = encoding;
@@ -447,6 +450,8 @@ namespace DotNext.IO
             Equal(56.6D, stream.ReadDouble(LengthFormat.Plain, in decodingContext, buffer, provider: InvariantCulture));
             Equal(t, stream.ReadTimeSpan(LengthFormat.Plain, in decodingContext, buffer, provider: InvariantCulture));
             Equal(t, stream.ReadTimeSpan(LengthFormat.Plain, in decodingContext, buffer, formats: new[] { "G" }, provider: InvariantCulture));
+            using var decodedBlob = stream.ReadBlock(LengthFormat.Plain);
+            Equal(blob, decodedBlob.Memory.ToArray());
         }
 
         [Theory]
