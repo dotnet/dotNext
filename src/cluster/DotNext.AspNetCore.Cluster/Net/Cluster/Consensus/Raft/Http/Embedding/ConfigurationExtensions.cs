@@ -27,7 +27,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
         /// <param name="memberConfig">The configuration of local cluster node.</param>
         /// <returns>The modified collection of services.</returns>
         public static IServiceCollection ConfigureLocalNode(this IServiceCollection services, IConfiguration memberConfig)
-            => services.AddClusterAsSingleton<RaftEmbeddedCluster, RaftEmbeddedClusterMemberConfiguration>(memberConfig);
+            => RaftHttpCluster.AddClusterAsSingleton<RaftEmbeddedCluster, RaftEmbeddedClusterMemberConfiguration>(services, memberConfig);
 
         private static void JoinCluster(HostBuilderContext context, IServiceCollection services)
             => ConfigureLocalNode(services, context.Configuration);
@@ -80,7 +80,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             => builder.ConfigureServices(memberConfigSection.JoinCluster);
 
         private static void ConfigureConsensusProtocolHandler(this RaftHttpCluster cluster, IApplicationBuilder builder)
-            => builder.UseExceptionHandler(new ExceptionHandlerOptions { ExceptionHandler = RaftHttpConfiguration.WriteExceptionContent }).Run(cluster.ProcessRequest);
+            => builder.UseExceptionHandler(new ExceptionHandlerOptions { ExceptionHandler = RaftHttpCluster.WriteExceptionContent }).Run(cluster.ProcessRequest);
 
         /// <summary>
         /// Setup Raft protocol handler as middleware for the specified application.

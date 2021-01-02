@@ -1,20 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
-using Microsoft.AspNetCore.Http.Features;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using ComponentModel;
-    using HostAddressHintFeature = DotNext.Hosting.Server.Features.HostAddressHintFeature;
 
     internal class HttpClusterMemberConfiguration : ClusterMemberConfiguration
     {
-        static HttpClusterMemberConfiguration()
-        {
-            IPNetworkConverter.Register();
-            IPAddressConverter.Register();
-        }
+        static HttpClusterMemberConfiguration() => IPNetworkConverter.Register();
 
         private const string DefaultClientHandlerName = "raftClient";
 
@@ -47,11 +41,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         public bool OpenConnectionForEachRequest { get; set; }
 
         /// <summary>
-        /// Gets or sets the address of the local node.
-        /// </summary>
-        public IPAddress? HostAddressHint { get; set; }
-
-        /// <summary>
         /// Gets or sets HTTP version supported by Raft implementation.
         /// </summary>
         public HttpVersion ProtocolVersion { get; set; }
@@ -63,13 +52,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             get => rpcTimeout ?? TimeSpan.FromMilliseconds(UpperElectionTimeout / 2D);
             set => rpcTimeout = value > TimeSpan.Zero ? value : throw new ArgumentOutOfRangeException(nameof(value));
-        }
-
-        internal void SetupHostAddressHint(IFeatureCollection features)
-        {
-            var address = HostAddressHint;
-            if (address is not null && !features.IsReadOnly)
-                features.Set(new HostAddressHintFeature(address));
         }
 
         /// <summary>

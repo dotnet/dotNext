@@ -1,26 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using Microsoft.AspNetCore.Http.Features;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using ComponentModel;
+    using HostAddressHintFeature = DotNext.Hosting.Server.Features.HostAddressHintFeature;
+
     /// <summary>
     /// Represents configuration of cluster member.
     /// </summary>
     public class ClusterMemberConfiguration : IClusterMemberConfiguration
     {
-        private ElectionTimeout electionTimeout;
+        // default port for Hosted Mode
+        private protected const int DefaultPort = 32999;
+
+        static ClusterMemberConfiguration() => IPAddressConverter.Register();
+
+        private ElectionTimeout electionTimeout = ElectionTimeout.Recommended;
         private TimeSpan? requestTimeout;
 
         /// <summary>
-        /// Initializes a new default configuration.
+        /// Gets or sets the address of the local node.
         /// </summary>
-        public ClusterMemberConfiguration()
-        {
-            electionTimeout = ElectionTimeout.Recommended;
-            HeartbeatThreshold = 0.5D;
-            Metadata = new Dictionary<string, string>();
-        }
+        public IPAddress? HostAddressHint { get; set; }
 
         /// <summary>
         /// Gets lower possible value of leader election timeout, in milliseconds.
@@ -53,7 +57,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Gets or sets threshold of the heartbeat timeout.
         /// </summary>
-        public double HeartbeatThreshold { get; set; }
+        public double HeartbeatThreshold { get; set; } = 0.5D;
 
         /// <inheritdoc/>
         ElectionTimeout IClusterMemberConfiguration.ElectionTimeout => electionTimeout;
@@ -70,12 +74,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Gets metadata associated with local cluster member.
         /// </summary>
-        public IDictionary<string, string> Metadata { get; }
+        public IDictionary<string, string> Metadata { get; } = new Dictionary<string, string>();
 
         /// <summary>
         /// Gets or sets a value indicating that the cluster member
         /// represents standby node which is never become a leader.
         /// </summary>
         public bool Standby { get; set; }
+
+        internal void SetupHostAddressHint(IFeatureCollection features)
+        {
+            var address = HostAddressHint;
+            if (address is not null && !features.IsReadOnly)
+                features.Set(new HostAddressHintFeature(address));
+        }
     }
 }

@@ -33,7 +33,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
             }
 
             private void Configure(IApplicationBuilder app)
-                => app.UseExceptionHandler(new ExceptionHandlerOptions { ExceptionHandler = RaftHttpConfiguration.WriteExceptionContent }).Run(raftProcessor);
+                => app.UseExceptionHandler(new ExceptionHandlerOptions { ExceptionHandler = RaftHttpCluster.WriteExceptionContent }).Run(raftProcessor);
 
             private void Configure(IWebHostBuilder webHost)
             {
