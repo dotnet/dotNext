@@ -204,6 +204,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         [CLSCompliant(false)]
         protected virtual ILogger Logger => NullLogger.Instance;
 
+        /// <inheritdoc />
         ILogger IRaftStateMachine.Logger => Logger;
 
         /// <inheritdoc/>
@@ -272,6 +273,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>A collection of cluster member.</returns>
         public IReadOnlyCollection<TMember> Members => state is null ? EmptyCollection : members;
 
+        /// <inheritdoc />
         IEnumerable<IRaftClusterMember> IRaftStateMachine.Members => Members;
 
         /// <inheritdoc/>
@@ -611,6 +613,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
+        /// <inheritdoc />
         async void IRaftStateMachine.MoveToFollowerState(bool randomizeTimeout, long? newTerm)
         {
             Debug.Assert(state is not StandbyState);
@@ -623,6 +626,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
+        /// <inheritdoc />
         async void IRaftStateMachine.MoveToCandidateState()
         {
             Debug.Assert(state is not StandbyState);
@@ -640,6 +644,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
+        /// <inheritdoc />
         async void IRaftStateMachine.MoveToLeaderState(IRaftClusterMember newLeader)
         {
             Debug.Assert(state is not StandbyState);

@@ -36,11 +36,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
             /// <param name="handler">The command handler.</param>
             /// <param name="formatter">Serializer/deserializer of the command type.</param>
             /// <typeparam name="TCommand">The type of the command supported by the handler.</typeparam>
-            /// <returns>This builder</returns>
+            /// <returns>This builder.</returns>
             /// <exception cref="ArgumentNullException"><paramref name="handler"/> or <paramref name="formatter"/> is <see langword="null"/>.</exception>
             /// <exception cref="GenericArgumentException">Type <typaparamref name="TCommand"/> is not annotated with <see cref="CommandAttribute"/> attribute.</exception>
             public Builder Add<TCommand>(Func<TCommand, CancellationToken, ValueTask> handler, ICommandFormatter<TCommand> formatter)
-                where TCommand : struct 
+                where TCommand : struct
             {
                 if (handler is null)
                     throw new ArgumentNullException(nameof(handler));
@@ -61,7 +61,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
             /// </remarks>
             /// <param name="handler">The command handler.</param>
             /// <typeparam name="TCommand">The type of the command supported by the handler.</typeparam>
-            /// <returns>This builder</returns>
+            /// <returns>This builder.</returns>
             /// <exception cref="ArgumentNullException"><paramref name="handler"/> is <see langword="null"/>.</exception>
             /// <exception cref="GenericArgumentException">Type <typaparamref name="TCommand"/> is not annotated with <see cref="CommandAttribute"/> attribute or <see cref="CommandAttribute.Formatter"/> refers to the invalid formatter.</exception>
             public Builder Add<TCommand>(Func<TCommand, CancellationToken, ValueTask> handler)

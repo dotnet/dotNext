@@ -118,7 +118,7 @@ namespace DotNext.Buffers
         /// </summary>
         /// <param name="input">The memory block to be written to this builder.</param>
         /// <exception cref="ObjectDisposedException">The builder has been disposed.</exception>
-        public void Write(ReadOnlySpan<T> input)
+        public unsafe void Write(ReadOnlySpan<T> input)
         {
             ThrowIfDisposed();
             if (last is null)
@@ -130,7 +130,7 @@ namespace DotNext.Buffers
 
                 // no more space in the last chunk, allocate a new one
                 if (writtenCount == 0)
-                    unsafe { last = new PooledMemoryChunk(allocator, growth(chunkSize, ref chunkIndex), last); }
+                    last = new PooledMemoryChunk(allocator, growth(chunkSize, ref chunkIndex), last);
                 else
                     input = input.Slice(writtenCount);
             }

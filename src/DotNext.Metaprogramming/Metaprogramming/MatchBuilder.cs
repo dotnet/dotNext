@@ -459,8 +459,10 @@ namespace DotNext.Metaprogramming
         {
             const BindingFlags PublicInstance = BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Instance;
             foreach (var property in structPattern.GetType().GetProperties(PublicInstance))
+            {
                 if (property.CanRead)
                     yield return GetMemberPattern(structPattern, property.Name, property.PropertyType, property.GetValue);
+            }
 
             foreach (var field in structPattern.GetType().GetFields(PublicInstance))
                 yield return GetMemberPattern(structPattern, field.Name, field.FieldType, field.GetValue);

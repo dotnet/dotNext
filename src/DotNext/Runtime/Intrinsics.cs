@@ -388,6 +388,7 @@ namespace DotNext.Runtime
         /// <param name="output">The reference to the destination location.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
+        [SuppressMessage("StyleCop.CSharp.ReadabilityRules", "SA1107", Justification = "Unaligned is a prefix instruction")]
         public static unsafe void CopyUnaligned<T>([In] T* input, [Out] T* output)
             where T : unmanaged
         {

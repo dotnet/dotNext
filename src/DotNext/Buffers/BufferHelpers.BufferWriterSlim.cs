@@ -1,6 +1,6 @@
 using System;
-using System.Text;
 using System.Runtime.CompilerServices;
+using System.Text;
 using static System.Buffers.Binary.BinaryPrimitives;
 
 namespace DotNext.Buffers

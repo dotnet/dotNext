@@ -120,7 +120,7 @@ namespace DotNext.Reflection
         /// <param name="arg3">The third argument.</param>
         /// <param name="arg4">The fourth argument.</param>
         /// <param name="arg5">The fifth argument.</param>
-        /// <param name="arg6">The fifth argument.</param>
+        /// <param name="arg6">The sixth argument.</param>
         /// <returns>The result of member invocation.</returns>
         public static object? Invoke(this DynamicInvoker invoker, object? target, object? arg1, object? arg2, object? arg3, object? arg4, object? arg5, object? arg6)
         {

@@ -84,7 +84,7 @@ namespace DotNext
         /// <param name="ptr">The function pointer.</param>
         /// <param name="obj">The object to be passed as first argument implicitly.</param>
         /// <returns>The delegate instance; or <see langword="null"/> if <paramref name="ptr"/> is zero.</returns>
-         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
         public static unsafe RefFunc<TRef, TArgs, TResult>? CreateDelegate<T, TRef, TArgs, TResult>(delegate*<T, ref TRef, TArgs, TResult> ptr, T obj)
             where T : class?
@@ -164,7 +164,7 @@ namespace DotNext
         /// <param name="ptr">The function pointer.</param>
         /// <param name="obj">The object to be passed as first argument implicitly.</param>
         /// <returns>The delegate instance; or <see langword="null"/> if <paramref name="ptr"/> is zero.</returns>
-         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
         public static unsafe Action<T1>? CreateDelegate<T, T1>(delegate*<T, T1, void> ptr, T obj)
             where T : class?

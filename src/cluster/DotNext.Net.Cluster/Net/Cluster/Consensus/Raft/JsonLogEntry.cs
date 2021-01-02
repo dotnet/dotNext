@@ -61,13 +61,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Gets the payload of this log entry.
         /// </summary>
-        /// <value></value>
         public T Content { get; }
 
         /// <summary>
         /// Gets Term value associated with this log entry.
         /// </summary>
-        /// <value></value>
         public long Term { get; }
 
         /// <summary>

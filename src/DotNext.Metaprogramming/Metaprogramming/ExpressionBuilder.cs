@@ -59,6 +59,7 @@ namespace DotNext.Metaprogramming
 
         private protected abstract TExpression Build();
 
+        /// <inheritdoc />
         TExpression IExpressionBuilder<TExpression>.Build() => Build();
 
         private protected virtual void Cleanup() => currentScope = null;

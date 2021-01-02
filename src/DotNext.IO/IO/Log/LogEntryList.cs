@@ -5,7 +5,7 @@ namespace DotNext.IO.Log
 {
     internal sealed class LogEntryList<TEntry, TEntryImpl, TList> : IReadOnlyList<TEntry>
         where TEntry : class, ILogEntry
-        where TEntryImpl: notnull, TEntry
+        where TEntryImpl : notnull, TEntry
         where TList : notnull, IReadOnlyList<TEntryImpl>
     {
         private sealed class Enumerator : Disposable, IEnumerator<TEntry>

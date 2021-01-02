@@ -37,7 +37,7 @@ namespace DotNext.IO
         {
             private readonly T value;
             private readonly delegate*<in T, Span<char>, out int, ReadOnlySpan<char>, IFormatProvider?, bool> formatter;
-        
+
             internal SpanFormattable(T value, delegate*<in T, Span<char>, out int, ReadOnlySpan<char>, IFormatProvider?, bool> formatter)
             {
                 this.value = value;
@@ -474,6 +474,7 @@ namespace DotNext.IO
         /// <param name="lengthFormat">The format of the octet string length that must be inserted before the payload.</param>
         /// <param name="buffer">The buffer for internal I/O operations.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentException"><paramref name="buffer"/> is too small for encoding minimal portion of <paramref name="value"/>.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>

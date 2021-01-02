@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 namespace DotNext.Threading.Tasks
 {
     using Dynamic;
-    using RuntimeFeaturesAttribute = Runtime.CompilerServices.RuntimeFeaturesAttribute;
     using static Reflection.TaskType;
+    using RuntimeFeaturesAttribute = Runtime.CompilerServices.RuntimeFeaturesAttribute;
 
     /// <summary>
     /// Represents dynamically-typed task.

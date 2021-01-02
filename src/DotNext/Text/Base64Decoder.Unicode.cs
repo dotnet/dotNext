@@ -36,7 +36,7 @@ namespace DotNext.Text
             output.Advance(size);
         }
 
-# if !NETSTANDARD2_1
+#if !NETSTANDARD2_1
         [SkipLocalsInit]
 #endif
         private void CopyAndDecode(ReadOnlySpan<char> chars, IBufferWriter<byte> output)
@@ -74,7 +74,7 @@ namespace DotNext.Text
                 Decode(chunk.Span, output);
         }
 
-# if !NETSTANDARD2_1
+#if !NETSTANDARD2_1
         [SkipLocalsInit]
 #endif
         private void DecodeCore<TArg>(ReadOnlySpan<char> chars, in ValueReadOnlySpanAction<byte, TArg> output, TArg arg)
@@ -121,7 +121,7 @@ namespace DotNext.Text
             }
         }
 
-# if !NETSTANDARD2_1
+#if !NETSTANDARD2_1
         [SkipLocalsInit]
 #endif
         private void CopyAndDecode<TArg>(ReadOnlySpan<char> chars, in ValueReadOnlySpanAction<byte, TArg> output, TArg arg)

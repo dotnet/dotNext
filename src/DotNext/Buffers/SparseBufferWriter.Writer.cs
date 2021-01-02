@@ -5,12 +5,12 @@ namespace DotNext.Buffers
 {
     public partial class SparseBufferWriter<T> : IBufferWriter<T>
     {
-        private Memory<T> GetMemory()
+        private unsafe Memory<T> GetMemory()
         {
             if (last is null)
                 first = last = new PooledMemoryChunk(allocator, chunkSize);
             else if (last.FreeCapacity == 0)
-                unsafe { last = new PooledMemoryChunk(allocator, growth(chunkSize, ref chunkIndex), last); }
+                last = new PooledMemoryChunk(allocator, growth(chunkSize, ref chunkIndex), last);
 
             return last.FreeMemory;
         }

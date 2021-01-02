@@ -66,7 +66,7 @@ namespace DotNext.IO.Log
         /// <summary>
         /// Wraps the consumer as a reader of log entries.
         /// </summary>
-        /// <param name="consumer"></param>
+        /// <param name="consumer">The consumer to be wrapped.</param>
         public LogEntryConsumer(ILogEntryConsumer<TEntry, TResult> consumer)
             => this.consumer = consumer;
 

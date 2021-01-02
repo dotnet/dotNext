@@ -131,7 +131,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     stateView.Write(LastVotePresenceOffset, True);
                     stateView.Write(LastVoteOffset, ref member);
-                    this.votedFor = member;
+                    votedFor = member;
                     stateView.Flush();
                 }
             }
@@ -141,7 +141,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 using (await syncRoot.AcquireAsync(CancellationToken.None).ConfigureAwait(false))
                 {
                     stateView.Write(LastVotePresenceOffset, False);
-                    this.votedFor = null;
+                    votedFor = null;
                     stateView.Flush();
                 }
             }

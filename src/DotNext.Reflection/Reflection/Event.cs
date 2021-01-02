@@ -386,7 +386,7 @@ namespace DotNext.Reflection
             {
                 var handlerParam = Expression.Parameter(@event.EventHandlerType);
                 addMethod = @event.AddMethod is null ? null : CompileAccessor(@event.AddMethod, instanceParam, handlerParam);
-                removeMethod = @event.RemoveMethod is null ? null: CompileAccessor(@event.RemoveMethod, instanceParam, handlerParam);
+                removeMethod = @event.RemoveMethod is null ? null : CompileAccessor(@event.RemoveMethod, instanceParam, handlerParam);
             }
         }
 

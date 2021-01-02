@@ -6,6 +6,7 @@ using static System.Threading.Timeout;
 namespace DotNext.Threading
 {
     using Runtime.CompilerServices;
+
     /// <summary>
     /// Allows to turn <see cref="WaitHandle"/> and <see cref="CancellationToken"/> into task.
     /// </summary>

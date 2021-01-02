@@ -175,8 +175,8 @@ namespace DotNext.Buffers
         /// <param name="reader">The decoder.</param>
         /// <param name="count">The numbers of elements to read.</param>
         /// <param name="result">The decoded value.</param>
-        /// <typeparam name="TResult"><see langword="true"/> if the value is decoded successfully; otherwise, <see langword="false"/>.</typeparam>
-        /// <returns></returns>
+        /// <typeparam name="TResult">The type of the value to be decoded.</typeparam>
+        /// <returns><see langword="true"/> if the value is decoded successfully; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="reader"/> is zero.</exception>
         [CLSCompliant(false)]
         public unsafe bool TryRead<TResult>(delegate*<ReadOnlySpan<T>, TResult> reader, int count, [MaybeNullWhen(false)] out TResult result)

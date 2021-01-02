@@ -272,7 +272,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return reader.ReadAsync<EmptyLogEntry, EntryList>(new EntryList(log, endIndex - startIndex + 1, offset, lastTerm.VolatileRead()), offset >= 0 ? null : new long?(commitIndex), token);
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Reads the range of the log entries from this storage.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="reader">The reader over log entries.</param>
+        /// <param name="startIndex">The index of the first log entry to retrieve.</param>
+        /// <param name="endIndex">The index of the last log entry to retrieve, inclusive.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The result of the transformation applied to the range of the log entries.</returns>
         public async ValueTask<TResult> ReadAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, long endIndex, CancellationToken token)
         {
             if (startIndex < 0L)
@@ -297,7 +305,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         ValueTask<TResult> IAuditTrail.ReadAsync<TResult>(Func<IReadOnlyList<ILogEntry>, long?, CancellationToken, ValueTask<TResult>> reader, long startIndex, CancellationToken token)
             => ReadAsync(new LogEntryConsumer<IRaftLogEntry, TResult>(reader), startIndex, token);
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Reads the log entries starting at the specified index to the end of the log.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="reader">The reader over log entries.</param>
+        /// <param name="startIndex">The index of the first log entry to retrieve.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The result of the transformation applied to the range of the log entries.</returns>
         public async ValueTask<TResult> ReadAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, CancellationToken token)
         {
             if (startIndex < 0L)

@@ -1844,6 +1844,8 @@ namespace DotNext
     /// <summary>
     /// Represents a value delegate compatible with <see cref="ReadOnlySpanAction{T, TArg}"/> delegate type.
     /// </summary>
+    /// <typeparam name="T">The type of the objects in the span.</typeparam>
+    /// <typeparam name="TArg">The type of the object that represents the state.</typeparam>
     /// <remarks>
     /// This method pointer is intended to call managed methods only.
     /// </remarks>
@@ -1972,6 +1974,8 @@ namespace DotNext
     /// <summary>
     /// Represents a value delegate compatible with <see cref="SpanAction{T, TArg}"/> delegate type.
     /// </summary>
+    /// <typeparam name="T">The type of the objects in the span.</typeparam>
+    /// <typeparam name="TArg">The type of the object that represents the state.</typeparam>
     /// <remarks>
     /// This method pointer is intended to call managed methods only.
     /// </remarks>

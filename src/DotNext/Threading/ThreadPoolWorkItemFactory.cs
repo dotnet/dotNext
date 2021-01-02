@@ -29,7 +29,7 @@ namespace DotNext.Threading
                 : base(arg1, arg2)
                 => this.invoker = invoker;
 
-            void IThreadPoolWorkItem.Execute() => invoker(Item1, Item2); 
+            void IThreadPoolWorkItem.Execute() => invoker(Item1, Item2);
         }
 
         /// <summary>

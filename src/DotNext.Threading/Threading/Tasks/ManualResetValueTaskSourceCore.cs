@@ -1,6 +1,6 @@
 using System;
-using System.Threading.Tasks.Sources;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks.Sources;
 
 namespace DotNext.Threading.Tasks
 {

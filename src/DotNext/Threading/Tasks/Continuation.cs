@@ -31,7 +31,6 @@ namespace DotNext.Threading.Tasks
         private static void WhenFaultedOrCanceled(Task task, object? state)
             => task.ConfigureAwait(false).GetAwaiter().GetResult();
 
-
         [SuppressMessage("Design", "CA1068", Justification = "Method signature follows Task.ContinueWith")]
         private static Task<T> ContinueWithConstant<T, TConstant>(Task<T> task, bool completedSynchronously, Func<Task<T>, T> continuation, CancellationToken token = default, TaskScheduler? scheduler = null)
             where TConstant : Constant<T>, new()

@@ -21,8 +21,8 @@ namespace DotNext.Threading.Tasks
             void GetResult();
         }
 
-        private ManualResetValueTaskSourceCore<Missing> source;
         private readonly ValueTaskSourceOnCompletedFlags flags;
+        private ManualResetValueTaskSourceCore<Missing> source;
 
         /// <summary>
         /// Initializes a new future.
@@ -33,7 +33,7 @@ namespace DotNext.Threading.Tasks
         {
             source = new ManualResetValueTaskSourceCore<Missing>
             {
-                RunContinuationsAsynchronously = runContinuationsAsynchronously
+                RunContinuationsAsynchronously = runContinuationsAsynchronously,
             };
 
             flags = continueOnCapturedContext ? ValueTaskSourceOnCompletedFlags.UseSchedulingContext : ValueTaskSourceOnCompletedFlags.None;
@@ -45,8 +45,9 @@ namespace DotNext.Threading.Tasks
         public bool IsCompleted => source.GetStatus(source.Version) != ValueTaskSourceStatus.Pending;
 
         /// <summary>
-        /// Completes future successfully.
+        /// Completes this future.
         /// </summary>
+        /// <param name="e"><see langword="null"/> to complete the future successfully; otherwise, pass the error.</param>
         protected void Complete(Exception? e = null)
         {
             if (e is null)
@@ -65,7 +66,6 @@ namespace DotNext.Threading.Tasks
         /// <summary>
         /// Gets value associated with this future.
         /// </summary>
-        /// <returns>The value associated with this future.</returns>
         protected void GetResult() => source.GetResult(source.Version);
 
         /// <summary>
@@ -103,8 +103,8 @@ namespace DotNext.Threading.Tasks
             TResult GetResult();
         }
 
-        private ManualResetValueTaskSourceCore<TResult> source;
         private readonly ValueTaskSourceOnCompletedFlags flags;
+        private ManualResetValueTaskSourceCore<TResult> source;
 
         /// <summary>
         /// Initializes a new future.
@@ -115,7 +115,7 @@ namespace DotNext.Threading.Tasks
         {
             source = new ManualResetValueTaskSourceCore<TResult>
             {
-                RunContinuationsAsynchronously = runContinuationsAsynchronously
+                RunContinuationsAsynchronously = runContinuationsAsynchronously,
             };
 
             flags = continueOnCapturedContext ? ValueTaskSourceOnCompletedFlags.UseSchedulingContext : ValueTaskSourceOnCompletedFlags.None;

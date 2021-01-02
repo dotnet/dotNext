@@ -34,7 +34,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
         /// Gets the name of the static property or field declared in <see cref="Formatter"/> type
         /// which has the type implementing <see cref="ICommandFormatter{TCommand}"/> interface.
         /// </summary>
-        /// <value></value>
         public string? FormatterMember { get; set; }
 
         private static object? CreateFormatter(Type formatterType, string? memberName)
@@ -49,7 +48,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
                 return field.GetValue(null);
 
             var property = formatterType.GetProperty(memberName, publicStatic);
-            return property is null ? null : property.GetValue(null);
+            return property?.GetValue(null);
         }
 
         internal object? CreateFormatter()

@@ -83,15 +83,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         protected RaftClusterMember CreateClient(IPEndPoint address)
             => clientFactory(this, address, Metrics as IClientMetricsCollector);
 
+        /// <inheritdoc />
         bool ILocalMember.IsLeader(IRaftClusterMember member) => ReferenceEquals(Leader, member);
 
+        /// <inheritdoc />
         IPEndPoint ILocalMember.Address => publicEndPoint;
 
+        /// <inheritdoc />
         IReadOnlyDictionary<string, string> ILocalMember.Metadata => metadata;
 
+        /// <inheritdoc />
         Task<bool> ILocalMember.ResignAsync(CancellationToken token)
             => ReceiveResignAsync(token);
 
+        /// <inheritdoc />
         Task<Result<bool>> ILocalMember.ReceiveEntriesAsync<TEntry>(EndPoint sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
         {
             var member = FindMember(MatchByEndPoint, sender);
@@ -102,6 +107,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return ReceiveEntriesAsync(member, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, token);
         }
 
+        /// <inheritdoc />
         Task<Result<bool>> ILocalMember.ReceiveVoteAsync(EndPoint sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
         {
             var member = FindMember(MatchByEndPoint, sender);
@@ -112,6 +118,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return ReceiveVoteAsync(member, term, lastLogIndex, lastLogTerm, token);
         }
 
+        /// <inheritdoc />
         Task<Result<bool>> ILocalMember.ReceiveSnapshotAsync<TSnapshot>(EndPoint sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
         {
             var member = FindMember(MatchByEndPoint, sender);

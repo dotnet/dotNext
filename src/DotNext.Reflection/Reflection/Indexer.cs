@@ -452,6 +452,7 @@ namespace DotNext.Reflection
                 Debug.Assert(@this is not null);
                 return GetMethod.Invoker(@this, index);
             }
+
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             set
             {
