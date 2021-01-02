@@ -143,6 +143,19 @@ namespace DotNext.IO
         }
 
         /// <summary>
+        /// Encodes the octet string.
+        /// </summary>
+        /// <param name="stream">The stream to write into.</param>
+        /// <param name="value">The octet string to encode.</param>
+        /// <param name="lengthFormat">The format of the octet string length that must be inserted before the payload.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+        public static void WriteBlock(this Stream stream, ReadOnlySpan<byte> value, LengthFormat lengthFormat)
+        {
+            stream.WriteLength(value.Length, lengthFormat);
+            stream.Write(value);
+        }
+
+        /// <summary>
         /// Writes a length-prefixed or raw string to the stream using supplied reusable buffer.
         /// </summary>
         /// <remarks>
@@ -452,6 +465,23 @@ namespace DotNext.IO
 
         private static ValueTask WriteLengthAsync(this Stream stream, ReadOnlySpan<char> value, Encoding encoding, LengthFormat? lengthFormat, Memory<byte> buffer, CancellationToken token)
             => lengthFormat.HasValue ? WriteLengthAsync(stream, encoding.GetByteCount(value), lengthFormat.GetValueOrDefault(), buffer, token) : new ValueTask();
+
+        /// <summary>
+        /// Encodes the octet string asynchronously.
+        /// </summary>
+        /// <param name="stream">The stream to write into.</param>
+        /// <param name="value">The octet string to encode.</param>
+        /// <param name="lengthFormat">The format of the octet string length that must be inserted before the payload.</param>
+        /// <param name="buffer">The buffer for internal I/O operations.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> is too small for encoding minimal portion of <paramref name="value"/>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+        public static async ValueTask WriteBlockAsync(this Stream stream, ReadOnlyMemory<byte> value, LengthFormat lengthFormat, Memory<byte> buffer, CancellationToken token = default)
+        {
+            await stream.WriteLengthAsync(value.Length, lengthFormat, buffer, token).ConfigureAwait(false);
+            await stream.WriteAsync(value, token).ConfigureAwait(false);
+        }
 
         /// <summary>
         /// Writes a length-prefixed or raw string to the stream asynchronously using supplied reusable buffer.

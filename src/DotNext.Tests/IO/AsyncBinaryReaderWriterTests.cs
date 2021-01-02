@@ -65,8 +65,8 @@ namespace DotNext.IO
                 internal DefaultAsyncBinaryWriter(Stream stream, Memory<byte> buffer)
                     => writer = IAsyncBinaryWriter.Create(stream, buffer);
 
-                ValueTask IAsyncBinaryWriter.WriteAsync(ReadOnlyMemory<byte> input, CancellationToken token)
-                    => writer.WriteAsync(input, token);
+                ValueTask IAsyncBinaryWriter.WriteAsync(ReadOnlyMemory<byte> input, LengthFormat? lengthFormat, CancellationToken token)
+                    => writer.WriteAsync(input, lengthFormat, token);
 
                 ValueTask IAsyncBinaryWriter.WriteAsync(ReadOnlyMemory<char> chars, EncodingContext context, LengthFormat? lengthFormat, CancellationToken token)
                     => writer.WriteAsync(chars, context, lengthFormat, token);

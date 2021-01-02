@@ -80,7 +80,7 @@ namespace DotNext.IO
             return new ValueTask(result);
         }
 
-        ValueTask IAsyncBinaryWriter.WriteAsync(ReadOnlyMemory<byte> input, CancellationToken token)
+        ValueTask IAsyncBinaryWriter.WriteAsync(ReadOnlyMemory<byte> input, LengthFormat? lengthFormat, CancellationToken token)
         {
             Task result;
             if (token.IsCancellationRequested)
@@ -92,6 +92,9 @@ namespace DotNext.IO
                 result = Task.CompletedTask;
                 try
                 {
+                    if (lengthFormat.HasValue)
+                        writer.WriteLength(input.Length, lengthFormat.GetValueOrDefault());
+
                     writer.Write(input.Span);
                 }
                 catch (Exception e)

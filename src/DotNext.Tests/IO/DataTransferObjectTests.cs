@@ -23,7 +23,7 @@ namespace DotNext.IO
             }
 
             ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
-                => writer.WriteAsync(new ReadOnlyMemory<byte>(content), token);
+                => writer.WriteAsync(new ReadOnlyMemory<byte>(content), null, token);
 
             public bool IsReusable => true;
 

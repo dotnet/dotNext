@@ -233,13 +233,8 @@ namespace DotNext.IO.Pipelines
             where T : unmanaged
             => WriteAsync(output, new Writer<T>(value, &PipeExtensions.WriteAsync), token);
 
-        public unsafe ValueTask WriteAsync(ReadOnlyMemory<byte> input, CancellationToken token)
-        {
-            return WriteAsync(output, new Writer<ReadOnlyMemory<byte>>(input, &WriteBlockAsync), token);
-
-            static ValueTask<FlushResult> WriteBlockAsync(PipeWriter output, ReadOnlyMemory<byte> input, CancellationToken token)
-                => output.WriteAsync(input, token);
-        }
+        public unsafe ValueTask WriteAsync(ReadOnlyMemory<byte> input, LengthFormat? lengthFormat, CancellationToken token)
+            => WriteAsync(output, new Writer<ReadOnlyMemory<byte>, LengthFormat?>(input, lengthFormat, &PipeExtensions.WriteBlockAsync), token);
 
         unsafe ValueTask IAsyncBinaryWriter.WriteAsync<TArg>(Action<TArg, IBufferWriter<byte>> writer, TArg arg, CancellationToken token)
         {

@@ -51,7 +51,7 @@ namespace DotNext.Net.Cluster.Messaging
 
         public ValueTask WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
             where TWriter : IAsyncBinaryWriter
-            => writer.WriteAsync(Content, token);
+            => writer.WriteAsync(Content, null, token);
 
         async ValueTask IBufferedMessage.LoadFromAsync(IDataTransferObject source, CancellationToken token)
         {

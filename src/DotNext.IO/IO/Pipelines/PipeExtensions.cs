@@ -1164,6 +1164,24 @@ namespace DotNext.IO.Pipelines
         }
 
         /// <summary>
+        /// Encodes the octet string asynchronously.
+        /// </summary>
+        /// <param name="writer">The pipe to write into.</param>
+        /// <param name="input">The octet string to encode.</param>
+        /// <param name="lengthFormat">The format of the octet string length that must be inserted before the payload.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing state of asynchronous execution.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+        public static ValueTask<FlushResult> WriteBlockAsync(this PipeWriter writer, ReadOnlyMemory<byte> input, LengthFormat? lengthFormat, CancellationToken token = default)
+        {
+            if (lengthFormat.HasValue)
+                writer.WriteLength(input.Length, lengthFormat.GetValueOrDefault());
+
+            return writer.WriteAsync(input, token);
+        }
+
+        /// <summary>
         /// Copies the data from the pipe to the buffer.
         /// </summary>
         /// <param name="reader">The pipe to read from.</param>

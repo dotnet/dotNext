@@ -33,7 +33,7 @@ namespace DotNext.IO
         {
             using var buffer = BufferWriter.DefaultByteAllocator.Invoke(Unsafe.SizeOf<T>(), true);
             Span.AsReadOnlyBytes(value).CopyTo(buffer.Memory.Span);
-            await WriteAsync(buffer.Memory, token).ConfigureAwait(false);
+            await WriteAsync(buffer.Memory, null, token).ConfigureAwait(false);
         }
 
         private ValueTask WriteAsync<T>(T value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
@@ -239,10 +239,11 @@ namespace DotNext.IO
         /// Encodes a block of memory.
         /// </summary>
         /// <param name="input">A block of memory.</param>
+        /// <param name="lengthFormat">Indicates how the length of the BLOB must be encoded; or <see langword="null"/> to prevent length encoding.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        ValueTask WriteAsync(ReadOnlyMemory<byte> input, CancellationToken token = default);
+        ValueTask WriteAsync(ReadOnlyMemory<byte> input, LengthFormat? lengthFormat = null, CancellationToken token = default);
 
         /// <summary>
         /// Encodes a block of memory using synchronous encoder.
@@ -258,7 +259,7 @@ namespace DotNext.IO
             using var buffer = new PooledArrayBufferWriter<byte>();
             writer(arg, buffer);
             if (buffer.WrittenCount > 0)
-                await WriteAsync(buffer.WrittenMemory, token).ConfigureAwait(false);
+                await WriteAsync(buffer.WrittenMemory, null, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -285,7 +286,7 @@ namespace DotNext.IO
             const int defaultBufferSize = 512;
             using var buffer = BufferWriter.DefaultByteAllocator.Invoke(defaultBufferSize, false);
             for (int count; (count = await input.ReadAsync(buffer.Memory, token).ConfigureAwait(false)) > 0; )
-                await WriteAsync(buffer.Memory.Slice(0, count), token).ConfigureAwait(false);
+                await WriteAsync(buffer.Memory.Slice(0, count), null, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -304,7 +305,7 @@ namespace DotNext.IO
                 result.ThrowIfCancellationRequested();
                 var buffer = result.Buffer;
                 for (SequencePosition position = buffer.Start; buffer.TryGet(ref position, out var block); input.AdvanceTo(position))
-                    await WriteAsync(block, token).ConfigureAwait(false);
+                    await WriteAsync(block, null, token).ConfigureAwait(false);
             }
             while (!result.IsCompleted);
         }
@@ -319,7 +320,7 @@ namespace DotNext.IO
         async Task WriteAsync(ReadOnlySequence<byte> input, CancellationToken token = default)
         {
             foreach (var segment in input)
-                await WriteAsync(segment, token).ConfigureAwait(false);
+                await WriteAsync(segment, null, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -337,7 +338,7 @@ namespace DotNext.IO
         async Task CopyFromAsync<TArg>(Func<TArg, CancellationToken, ValueTask<ReadOnlyMemory<byte>>> supplier, TArg arg, CancellationToken token = default)
         {
             for (ReadOnlyMemory<byte> source; !(source = await supplier(arg, token).ConfigureAwait(false)).IsEmpty; )
-                await WriteAsync(source, token).ConfigureAwait(false);
+                await WriteAsync(source, null, token).ConfigureAwait(false);
         }
 
         /// <summary>

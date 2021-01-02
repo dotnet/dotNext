@@ -31,7 +31,7 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public ValueTask WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
             where TWriter : IAsyncBinaryWriter
-            => IsDisposed ? new ValueTask(DisposedTask) : writer.WriteAsync(Content, token);
+            => IsDisposed ? new ValueTask(DisposedTask) : writer.WriteAsync(Content, null, token);
 
         /// <summary>
         /// Converts data transfer object to another type.
