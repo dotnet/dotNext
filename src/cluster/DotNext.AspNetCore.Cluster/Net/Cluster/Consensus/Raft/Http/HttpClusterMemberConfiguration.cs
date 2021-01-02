@@ -8,9 +8,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     using ComponentModel;
     using HostAddressHintFeature = DotNext.Hosting.Server.Features.HostAddressHintFeature;
 
-    internal class RaftClusterMemberConfiguration : ClusterMemberConfiguration
+    internal class HttpClusterMemberConfiguration : ClusterMemberConfiguration
     {
-        static RaftClusterMemberConfiguration()
+        static HttpClusterMemberConfiguration()
         {
             IPNetworkConverter.Register();
             IPAddressConverter.Register();

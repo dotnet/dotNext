@@ -27,7 +27,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private readonly HttpVersion protocolVersion;
         private IPEndPoint? localMember;
 
-        private RaftHttpCluster(RaftClusterMemberConfiguration config, IServiceProvider dependencies, out MemberCollectionBuilder members, Func<Action<RaftClusterMemberConfiguration, string>, IDisposable> configTracker)
+        private RaftHttpCluster(HttpClusterMemberConfiguration config, IServiceProvider dependencies, out MemberCollectionBuilder members, Func<Action<HttpClusterMemberConfiguration, string>, IDisposable> configTracker)
             : base(config, out members)
         {
             openConnectionForEachRequest = config.OpenConnectionForEachRequest;
@@ -51,13 +51,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             configurationTracker = configTracker(ConfigurationChanged);
         }
 
-        private RaftHttpCluster(IOptionsMonitor<RaftClusterMemberConfiguration> config, IServiceProvider dependencies, out MemberCollectionBuilder members)
+        private RaftHttpCluster(IOptionsMonitor<HttpClusterMemberConfiguration> config, IServiceProvider dependencies, out MemberCollectionBuilder members)
             : this(config.CurrentValue, dependencies, out members, config.OnChange)
         {
         }
 
         private protected RaftHttpCluster(IServiceProvider dependencies, out MemberCollectionBuilder members)
-            : this(dependencies.GetRequiredService<IOptionsMonitor<RaftClusterMemberConfiguration>>(), dependencies, out members)
+            : this(dependencies.GetRequiredService<IOptionsMonitor<HttpClusterMemberConfiguration>>(), dependencies, out members)
         {
         }
 
@@ -79,7 +79,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         ISubscriber? IMessageBus.Leader => Leader;
 
-        private async void ConfigurationChanged(RaftClusterMemberConfiguration configuration, string name)
+        private async void ConfigurationChanged(HttpClusterMemberConfiguration configuration, string name)
         {
             metadata = new MemberMetadata(configuration.Metadata);
             allowedNetworks = configuration.AllowedNetworks.ToImmutableHashSet();

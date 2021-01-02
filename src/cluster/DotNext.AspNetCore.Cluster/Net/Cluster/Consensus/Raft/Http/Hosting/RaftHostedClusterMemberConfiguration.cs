@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
 {
-    internal sealed class RaftHostedClusterMemberConfiguration : RaftClusterMemberConfiguration
+    internal sealed class RaftHostedClusterMemberConfiguration : HttpClusterMemberConfiguration
     {
         private const int DefaultPort = 32999;
 

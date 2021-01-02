@@ -4,7 +4,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
 {
     using ComponentModel;
 
-    internal sealed class RaftEmbeddedClusterMemberConfiguration : RaftClusterMemberConfiguration
+    internal sealed class RaftEmbeddedClusterMemberConfiguration : HttpClusterMemberConfiguration
     {
         internal const string DefaultResourcePath = "/cluster-consensus/raft";
 
