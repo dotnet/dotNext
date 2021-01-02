@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
@@ -20,7 +21,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             Func<IServiceProvider, RaftHttpCluster> clusterNodeCast =
                 ServiceProviderServiceExtensions.GetRequiredService<TCluster>;
             return services.Configure<TConfig>(memberConfig)
-                .Configure<HttpClusterMemberConfiguration>(memberConfig)
                 .AddSingleton<TCluster>()
                 .AddSingleton(clusterNodeCast)
                 .AddSingleton<IHostedService>(clusterNodeCast)
