@@ -1,7 +1,6 @@
-# Code files
-[*.{cs,vb}]
+root=true
 
-
+[*.cs]
 dotnet_diagnostic.AD0001.severity = none
 dotnet_diagnostic.CA1000.severity = none
 dotnet_diagnostic.CA1001.severity = warning
