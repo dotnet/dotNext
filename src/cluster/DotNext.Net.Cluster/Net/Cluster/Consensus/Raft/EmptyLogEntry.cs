@@ -12,11 +12,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// Represents No-OP entry.
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct EmptyEntry : IRaftLogEntry
+    public readonly struct EmptyLogEntry : IRaftLogEntry
     {
         private readonly bool isSnapshot;
 
-        internal EmptyEntry(long term, bool snapshot)
+        internal EmptyLogEntry(long term, bool snapshot)
         {
             Term = term;
             Timestamp = DateTimeOffset.UtcNow;
@@ -27,7 +27,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Initializes a new empty log entry.
         /// </summary>
         /// <param name="term">The term value.</param>
-        public EmptyEntry(long term)
+        public EmptyLogEntry(long term)
             : this(term, false)
         {
         }

@@ -32,6 +32,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             => index <= auditTrail.GetLastIndex(false) && term == await auditTrail.GetTermAsync(index, token).ConfigureAwait(false);
 
         internal static ValueTask<long> AppendNoOpEntry(this IPersistentState auditTrail, CancellationToken token)
-            => auditTrail.AppendAsync(new EmptyEntry(auditTrail.Term), token);
+            => auditTrail.AppendAsync(new EmptyLogEntry(auditTrail.Term), token);
     }
 }

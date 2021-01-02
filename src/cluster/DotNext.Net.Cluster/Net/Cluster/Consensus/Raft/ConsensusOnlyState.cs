@@ -24,7 +24,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private static readonly Func<ConsensusOnlyState, long, bool> IsCommittedPredicate = IsCommitted;
 
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct EntryList : IReadOnlyList<EmptyEntry>
+        private readonly struct EntryList : IReadOnlyList<EmptyLogEntry>
         {
             private readonly long count, offset, snapshotTerm;
             private readonly long[] terms;
@@ -38,42 +38,42 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 this.snapshotTerm = snapshotTerm;
             }
 
-            public EmptyEntry this[long index]
+            public EmptyLogEntry this[long index]
             {
                 get
                 {
                     if (index < 0L || index >= count)
                         throw new ArgumentOutOfRangeException(nameof(index));
 
-                    EmptyEntry result;
+                    EmptyLogEntry result;
                     if (offset >= 0L)
                     {
-                        result = new EmptyEntry(terms[index + offset], false);
+                        result = new EmptyLogEntry(terms[index + offset], false);
                     }
                     else if (index == 0)
                     {
-                        result = new EmptyEntry(snapshotTerm, true);
+                        result = new EmptyLogEntry(snapshotTerm, true);
                     }
                     else
                     {
-                        result = new EmptyEntry(terms[index - 1L], false);
+                        result = new EmptyLogEntry(terms[index - 1L], false);
                     }
 
                     return result;
                 }
             }
 
-            EmptyEntry IReadOnlyList<EmptyEntry>.this[int index]
+            EmptyLogEntry IReadOnlyList<EmptyLogEntry>.this[int index]
                 => this[index];
 
-            int IReadOnlyCollection<EmptyEntry>.Count => (int)(offset >= 0 ? count : Math.Max(1L, count + offset + 1L));
+            int IReadOnlyCollection<EmptyLogEntry>.Count => (int)(offset >= 0 ? count : Math.Max(1L, count + offset + 1L));
 
-            public IEnumerator<EmptyEntry> GetEnumerator()
+            public IEnumerator<EmptyLogEntry> GetEnumerator()
             {
                 if (offset < 0)
-                    yield return new EmptyEntry(snapshotTerm, true);
+                    yield return new EmptyLogEntry(snapshotTerm, true);
                 for (var i = 0L; i < count + offset; i++)
-                    yield return new EmptyEntry(terms[i], false);
+                    yield return new EmptyLogEntry(terms[i], false);
             }
 
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
@@ -269,7 +269,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             var commitIndex = this.commitIndex.VolatileRead();
             var offset = startIndex - commitIndex - 1L;
-            return reader.ReadAsync<EmptyEntry, EntryList>(new EntryList(log, endIndex - startIndex + 1, offset, lastTerm.VolatileRead()), offset >= 0 ? null : new long?(commitIndex), token);
+            return reader.ReadAsync<EmptyLogEntry, EntryList>(new EntryList(log, endIndex - startIndex + 1, offset, lastTerm.VolatileRead()), offset >= 0 ? null : new long?(commitIndex), token);
         }
 
         /// <inheritdoc/>
@@ -280,7 +280,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (endIndex < 0L)
                 throw new ArgumentOutOfRangeException(nameof(endIndex));
             if (endIndex < startIndex)
-                return await reader.ReadAsync<EmptyEntry, EmptyEntry[]>(Array.Empty<EmptyEntry>(), null, token).ConfigureAwait(false);
+                return await reader.ReadAsync<EmptyLogEntry, EmptyLogEntry[]>(Array.Empty<EmptyLogEntry>(), null, token).ConfigureAwait(false);
             using (await syncRoot.AcquireReadLockAsync(token).ConfigureAwait(false))
                 return await ReadCoreAsync(reader, startIndex, endIndex, token).ConfigureAwait(false);
         }

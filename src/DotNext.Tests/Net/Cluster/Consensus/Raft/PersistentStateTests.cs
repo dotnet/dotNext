@@ -154,7 +154,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             using var auditTrail = new PersistentState(dir, RecordsPerPartition);
-            await auditTrail.AppendAsync(new EmptyEntry(10), CancellationToken.None);
+            await auditTrail.AppendAsync(new EmptyLogEntry(10), CancellationToken.None);
             Equal(1, auditTrail.GetLastIndex(false));
             await auditTrail.CommitAsync(1L, CancellationToken.None);
             Equal(1, auditTrail.GetLastIndex(true));
