@@ -388,7 +388,6 @@ namespace DotNext.Threading
     /// not referred to the field.
     /// </remarks>
     [Serializable]
-    [SuppressMessage("Design", "CA1066")]
     [SuppressMessage("Usage", "CA2231")]
     public struct AtomicReference<T> : IEquatable<T>, ISerializable
         where T : class?

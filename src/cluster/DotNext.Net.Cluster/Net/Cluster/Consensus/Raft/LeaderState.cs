@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -159,7 +158,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return false;
         }
 
-        [SuppressMessage("Reliability", "CA2012", Justification = "Replicator task should be added to collection to ensure parallelism")]
         private async Task<bool> DoHeartbeats(IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)
         {
             var timeStamp = Timestamp.Current;

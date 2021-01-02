@@ -3,7 +3,6 @@ using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using static System.Runtime.InteropServices.MemoryMarshal;
 
@@ -27,8 +26,6 @@ namespace DotNext.Buffers
         private readonly unsafe delegate*<int, ref int, int> growth;
         private int chunkIndex; // used for linear and exponential allocation strategies only
         private MemoryChunk? first;
-
-        [SuppressMessage("Usage", "CA2213", Justification = "It is implicitly through enumerating from first to last chunk in the chain")]
         private MemoryChunk? last;
         private long length;
 

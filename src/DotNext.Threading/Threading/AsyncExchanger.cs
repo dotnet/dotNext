@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -39,7 +38,6 @@ namespace DotNext.Threading
             }
         }
 
-        [SuppressMessage("Usage", "CA2213", Justification = "The field is disposed after atomic exchange")]
         private volatile ExchangePoint? point;
         private bool disposeRequested;
         private volatile ExchangeTerminatedException? termination;

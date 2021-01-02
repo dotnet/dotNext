@@ -14,7 +14,6 @@ namespace DotNext.Threading
     /// Represents atomic boolean.
     /// </summary>
     [Serializable]
-    [SuppressMessage("Design", "CA1066")]
     [SuppressMessage("Usage", "CA2231")]
     public struct AtomicBoolean : IEquatable<bool>, ISerializable
     {

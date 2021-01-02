@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
@@ -14,7 +13,6 @@ namespace DotNext
     /// </summary>
     /// <typeparam name="TEnum">Enum type to reflect.</typeparam>
     /// <seealso href="https://github.com/dotnet/corefx/issues/34077">EnumMember API</seealso>
-    [SuppressMessage("Design", "CA1036")]
     [Serializable]
     [StructLayout(LayoutKind.Auto)]
     public readonly struct Enum<TEnum> : IEquatable<TEnum>, IComparable<TEnum>, IFormattable, IEquatable<Enum<TEnum>>, ISerializable, IConvertible<TEnum>, ICustomAttributeProvider

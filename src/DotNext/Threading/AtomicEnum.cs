@@ -97,7 +97,6 @@ namespace DotNext.Threading
     /// </summary>
     /// <typeparam name="TEnum">The enum type.</typeparam>
     [Serializable]
-    [SuppressMessage("Design", "CA1066")]
     [SuppressMessage("Usage", "CA2231")]
     public struct AtomicEnum<TEnum> : IEquatable<TEnum>, ISerializable
         where TEnum : struct, Enum

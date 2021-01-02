@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
@@ -121,7 +120,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         IOutputChannel IMessageBus.LeaderRouter => this;
 
-        [SuppressMessage("Reliability", "CA2000", Justification = "Buffered message will be destroyed in OnCompleted method")]
         private static async Task ReceiveOneWayMessageFastAck(ISubscriber sender, IMessage message, IEnumerable<IInputChannel> handlers, HttpResponse response, CancellationToken token)
         {
             IInputChannel? handler = handlers.FirstOrDefault(message.IsSignalSupported);

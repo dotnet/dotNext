@@ -1,12 +1,10 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Microsoft.AspNetCore.Http;
 
 namespace DotNext.ComponentModel
 {
-    [SuppressMessage("Usage", "CA1812", Justification = "This class is instantiated implicitly via Register method")]
     internal sealed class PathStringConverter : TypeConverter
     {
         internal static void Register()

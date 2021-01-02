@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -276,7 +275,6 @@ namespace DotNext.IO.Log
         /// <typeparam name="TEntryImpl">The actual type of the supplied log entry.</typeparam>
         /// <returns>The index of the added entry.</returns>
         /// <exception cref="InvalidOperationException"><paramref name="entry"/> is the snapshot entry.</exception>
-        [SuppressMessage("Reliability", "CA2000", Justification = "SingleEntryProducer.Dispose is trivial and can be omitted")]
         ValueTask<long> AppendAsync<TEntryImpl>(TEntryImpl entry, CancellationToken token = default)
             where TEntryImpl : notnull, TEntry
             => AppendAsync(new SingleEntryProducer<TEntryImpl>(entry), token);

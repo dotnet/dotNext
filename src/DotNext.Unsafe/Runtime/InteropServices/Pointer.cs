@@ -2,7 +2,6 @@ using System;
 using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -178,7 +177,6 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="index">Element index.</param>
         /// <returns>Array element.</returns>
         /// <exception cref="NullPointerException">This array is not allocated.</exception>
-        [SuppressMessage("Design", "CA1065", Justification = "Not possible to access null pointer")]
         public unsafe ref T this[long index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -536,7 +534,6 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <value>The reference to the memory location.</value>
         /// <exception cref="NullPointerException">The pointer is 0.</exception>
-        [SuppressMessage("Design", "CA1065", Justification = "Not possible to access null pointer")]
         public unsafe ref T Value
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]

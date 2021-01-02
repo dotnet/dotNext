@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Threading.Timeout;
@@ -31,7 +30,6 @@ namespace DotNext.Threading.Tasks
         private static void WhenFaultedOrCanceled(Task task, object? state)
             => task.ConfigureAwait(false).GetAwaiter().GetResult();
 
-        [SuppressMessage("Design", "CA1068", Justification = "Symmetry with ContinueWith method")]
         private static Task<T> ContinueWithConstant<T, TConstant>(Task<T> task, bool completedSynchronously, Func<Task<T>, T> continuation, CancellationToken token = default, TaskScheduler? scheduler = null)
             where TConstant : Constant<T>, new()
             => completedSynchronously ? CompletedTask<T, TConstant>.Task : task.ContinueWith(continuation, token, TaskContinuationOptions.ExecuteSynchronously, scheduler ?? TaskScheduler.Current);

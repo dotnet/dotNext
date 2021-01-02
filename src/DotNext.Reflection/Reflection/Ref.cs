@@ -51,7 +51,6 @@ namespace DotNext.Reflection
         /// <summary>
         /// Gets or sets value.
         /// </summary>
-        [SuppressMessage("Design", "CA1051", Justification = "It is by-design due to nature of this type")]
         [AllowNull]
         public T Value;
 

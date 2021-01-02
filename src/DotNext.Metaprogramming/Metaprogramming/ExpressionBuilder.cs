@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using static System.Threading.Thread;
 
@@ -60,7 +59,6 @@ namespace DotNext.Metaprogramming
 
         private protected abstract TExpression Build();
 
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's a member of internal interface")]
         TExpression IExpressionBuilder<TExpression>.Build() => Build();
 
         private protected virtual void Cleanup() => currentScope = null;

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -171,7 +170,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private AsyncLock transitionSync;  // used to synchronize state transitions
 
-        [SuppressMessage("Usage", "CA2213", Justification = "It is disposed as a part of members collection")]
         private volatile RaftState? state;
         private volatile TMember? leader;
         private volatile int electionTimeout;
@@ -204,7 +202,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         [CLSCompliant(false)]
         protected virtual ILogger Logger => NullLogger.Instance;
 
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's a member of internal interface")]
         ILogger IRaftStateMachine.Logger => Logger;
 
         /// <inheritdoc/>
@@ -273,7 +270,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>A collection of cluster member.</returns>
         public IReadOnlyCollection<TMember> Members => state is null ? EmptyCollection : members;
 
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's a member of internal interface")]
         IEnumerable<IRaftClusterMember> IRaftStateMachine.Members => Members;
 
         /// <inheritdoc/>
@@ -613,7 +609,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's a member of internal interface")]
         async void IRaftStateMachine.MoveToFollowerState(bool randomizeTimeout, long? newTerm)
         {
             Debug.Assert(state is not StandbyState);
@@ -626,7 +621,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's a member of internal interface")]
         async void IRaftStateMachine.MoveToCandidateState()
         {
             Debug.Assert(state is not StandbyState);
@@ -644,7 +638,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's a member of internal interface")]
         async void IRaftStateMachine.MoveToLeaderState(IRaftClusterMember newLeader)
         {
             Debug.Assert(state is not StandbyState);

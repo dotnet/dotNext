@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -223,7 +222,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             }
         }
 
-        [SuppressMessage("Reliability", "CA2000", Justification = "Task is from pool and its lifetime controlled by entire socket instance")]
         private ValueTask SendToAsync(Memory<byte> datagram, EndPoint endPoint)
         {
             // obtain sender task from the pool

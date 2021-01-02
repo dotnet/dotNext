@@ -1,7 +1,6 @@
 using System;
 using System.Buffers;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Runtime.InteropServices;
@@ -85,7 +84,6 @@ namespace DotNext.IO.MemoryMappedFiles
 
         private sealed class MappedSegment : ReadOnlySequenceSegment<byte>, IDisposable
         {
-            [SuppressMessage("Usage", "CA2213", Justification = "It's disposed but cannot be recognized by analyzer")]
             private readonly MemoryManager manager;
 
             private MappedSegment(ReadOnlySequenceAccessor cursor, Segment segment)

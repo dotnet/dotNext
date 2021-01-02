@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
@@ -10,8 +9,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using Resources;
 
-    [SuppressMessage("Globalization", "CA1304", Justification = "This is culture-specific resource strings")]
-    [SuppressMessage("Globalization", "CA1305", Justification = "This is culture-specific resource strings")]
     internal static class LogMessages
     {
         private static readonly ResourceManager Resources = new ResourceManager("DotNext.Net.Cluster.Consensus.Raft.LogMessages", Assembly.GetExecutingAssembly());

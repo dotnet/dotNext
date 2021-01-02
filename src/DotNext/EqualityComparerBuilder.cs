@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -32,7 +31,6 @@ namespace DotNext
         /// Sets an array of excluded field names.
         /// </summary>
         /// <value>An array of excluded fields.</value>
-        [SuppressMessage("Performance", "CA1819", Justification = "Property is write-only")]
         public string[] ExcludedFields
         {
 #if NETSTANDARD2_1

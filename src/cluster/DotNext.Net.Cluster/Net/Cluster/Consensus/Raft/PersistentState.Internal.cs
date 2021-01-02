@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -55,7 +54,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private readonly FileStream fs;
             private readonly StreamSegment[] readers;   // a pool of read-only streams that can be shared between multiple readers in parallel
 
-            [SuppressMessage("Reliability", "CA2000", Justification = "All streams are disposed in Dispose method")]
             private protected ConcurrentStorageAccess(string fileName, int bufferSize, int readersCount, FileOptions options)
             {
                 fs = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, bufferSize, options);

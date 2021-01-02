@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 
@@ -14,7 +13,6 @@ namespace DotNext.Reflection
     /// Represents registry of extension methods that can be registered
     /// for the specified type and be available using strongly typed reflection via <see cref="Type{T}"/>.
     /// </summary>
-    [SuppressMessage("Design", "CA1010", Justification = "The registry cannot be instantiated directly from external code")]
     public sealed class ExtensionRegistry : ConcurrentBag<MethodInfo>
     {
         private static readonly UserDataSlot<ExtensionRegistry> InstanceMethods = UserDataSlot<ExtensionRegistry>.Allocate();
