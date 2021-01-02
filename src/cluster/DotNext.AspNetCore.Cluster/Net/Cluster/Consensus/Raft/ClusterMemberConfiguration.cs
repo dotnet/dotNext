@@ -10,6 +10,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     public class ClusterMemberConfiguration : IClusterMemberConfiguration
     {
         private ElectionTimeout electionTimeout;
+        private TimeSpan? requestTimeout;
 
         /// <summary>
         /// Initializes a new default configuration.
@@ -37,6 +38,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             get => electionTimeout.UpperValue;
             set => electionTimeout.Update(null, value);
+        }
+
+        /// <summary>
+        /// Gets or sets request timeout used to communicate with cluster members.
+        /// </summary>
+        /// <value>HTTP request timeout; default is <see cref="ClusterMemberConfiguration.UpperElectionTimeout"/>.</value>
+        public TimeSpan RequestTimeout
+        {
+            get => requestTimeout ?? TimeSpan.FromMilliseconds(UpperElectionTimeout);
+            set => requestTimeout = value > TimeSpan.Zero ? value : throw new ArgumentOutOfRangeException(nameof(value));
         }
 
         /// <summary>
