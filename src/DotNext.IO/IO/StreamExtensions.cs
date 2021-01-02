@@ -115,7 +115,7 @@ namespace DotNext.IO
             return (int)reader.Result;
         }
 
-        private static void WriteLength(this Stream stream, ReadOnlySpan<char> value, Encoding encoding, StringLengthEncoding? lengthFormat)
+        private static void WriteLength(this Stream stream, ReadOnlySpan<char> value, Encoding encoding, LengthFormat? lengthFormat)
         {
             if (lengthFormat is null)
                 return;
@@ -124,16 +124,16 @@ namespace DotNext.IO
             {
                 default:
                     throw new ArgumentOutOfRangeException(nameof(lengthFormat));
-                case StringLengthEncoding.Plain:
+                case LengthFormat.Plain:
                     stream.Write(length);
                     break;
-                case StringLengthEncoding.PlainLittleEndian:
+                case LengthFormat.PlainLittleEndian:
                     length.ReverseIfNeeded(true);
-                    goto case StringLengthEncoding.Plain;
-                case StringLengthEncoding.PlainBigEndian:
+                    goto case LengthFormat.Plain;
+                case LengthFormat.PlainBigEndian:
                     length.ReverseIfNeeded(false);
-                    goto case StringLengthEncoding.Plain;
-                case StringLengthEncoding.Compressed:
+                    goto case LengthFormat.Plain;
+                case LengthFormat.Compressed:
                     stream.Write7BitEncodedInt(length);
                     break;
             }
@@ -152,7 +152,7 @@ namespace DotNext.IO
         /// <param name="lengthFormat">String length encoding format; or <see langword="null"/> to prevent encoding of string length.</param>
         /// <exception cref="ArgumentException"><paramref name="buffer"/> is too small for encoding minimal portion of <paramref name="value"/>.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static void WriteString(this Stream stream, ReadOnlySpan<char> value, in EncodingContext context, Span<byte> buffer, StringLengthEncoding? lengthFormat = null)
+        public static void WriteString(this Stream stream, ReadOnlySpan<char> value, in EncodingContext context, Span<byte> buffer, LengthFormat? lengthFormat = null)
         {
             stream.WriteLength(value, context.Encoding, lengthFormat);
             if (value.IsEmpty)
@@ -170,7 +170,7 @@ namespace DotNext.IO
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void WriteLength(this Stream stream, int length, StringLengthEncoding? lengthFormat)
+        private static void WriteLength(this Stream stream, int length, LengthFormat? lengthFormat)
         {
             switch (lengthFormat)
             {
@@ -178,16 +178,16 @@ namespace DotNext.IO
                     throw new ArgumentOutOfRangeException(nameof(lengthFormat));
                 case null:
                     break;
-                case StringLengthEncoding.Plain:
+                case LengthFormat.Plain:
                     stream.Write(length);
                     break;
-                case StringLengthEncoding.PlainLittleEndian:
+                case LengthFormat.PlainLittleEndian:
                     length.ReverseIfNeeded(true);
-                    goto case StringLengthEncoding.Plain;
-                case StringLengthEncoding.PlainBigEndian:
+                    goto case LengthFormat.Plain;
+                case LengthFormat.PlainBigEndian:
                     length.ReverseIfNeeded(false);
-                    goto case StringLengthEncoding.Plain;
-                case StringLengthEncoding.Compressed:
+                    goto case LengthFormat.Plain;
+                case LengthFormat.Compressed:
                     stream.Write7BitEncodedInt(length);
                     break;
             }
@@ -207,7 +207,7 @@ namespace DotNext.IO
 #if !NETSTANDARD2_1
         [SkipLocalsInit]
 #endif
-        public static void WriteString(this Stream stream, ReadOnlySpan<char> value, Encoding encoding, StringLengthEncoding? lengthFormat = null)
+        public static void WriteString(this Stream stream, ReadOnlySpan<char> value, Encoding encoding, LengthFormat? lengthFormat = null)
         {
             var bytesCount = encoding.GetByteCount(value);
             stream.WriteLength(bytesCount, lengthFormat);
@@ -218,7 +218,7 @@ namespace DotNext.IO
             stream.Write(buffer.Span);
         }
 
-        private static unsafe bool WriteString<T>(Stream stream, in T value, delegate*<in T, Span<char>, out int, ReadOnlySpan<char>, IFormatProvider?, bool> formatter, Span<char> buffer, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format, IFormatProvider? provider)
+        private static unsafe bool WriteString<T>(Stream stream, in T value, delegate*<in T, Span<char>, out int, ReadOnlySpan<char>, IFormatProvider?, bool> formatter, Span<char> buffer, LengthFormat lengthFormat, Encoding encoding, ReadOnlySpan<char> format, IFormatProvider? provider)
             where T : struct, IFormattable
         {
             if (!formatter(in value, buffer, out var charsWritten, format, provider))
@@ -228,7 +228,7 @@ namespace DotNext.IO
             return true;
         }
 
-        private static unsafe void Write<T>(Stream stream, in T value, delegate*<in T, Span<char>, out int, ReadOnlySpan<char>, IFormatProvider?, bool> formatter, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format, IFormatProvider? provider)
+        private static unsafe void Write<T>(Stream stream, in T value, delegate*<in T, Span<char>, out int, ReadOnlySpan<char>, IFormatProvider?, bool> formatter, LengthFormat lengthFormat, Encoding encoding, ReadOnlySpan<char> format, IFormatProvider? provider)
             where T : struct, IFormattable
         {
             // attempt to allocate char buffer on the stack
@@ -254,7 +254,7 @@ namespace DotNext.IO
         /// <param name="encoding">The string encoding.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static unsafe void WriteByte(this Stream stream, byte value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+        public static unsafe void WriteByte(this Stream stream, byte value, LengthFormat lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
             => Write(stream, in value, &TryFormat, lengthFormat, encoding, format, provider);
 
         /// <summary>
@@ -267,7 +267,7 @@ namespace DotNext.IO
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         [CLSCompliant(false)]
-        public static unsafe void WriteSByte(this Stream stream, sbyte value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+        public static unsafe void WriteSByte(this Stream stream, sbyte value, LengthFormat lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
             => Write(stream, in value, &TryFormat, lengthFormat, encoding, format, provider);
 
         /// <summary>
@@ -279,7 +279,7 @@ namespace DotNext.IO
         /// <param name="encoding">The string encoding.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static unsafe void WriteInt16(this Stream stream, short value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+        public static unsafe void WriteInt16(this Stream stream, short value, LengthFormat lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
             => Write(stream, in value, &TryFormat, lengthFormat, encoding, format, provider);
 
         /// <summary>
@@ -292,7 +292,7 @@ namespace DotNext.IO
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         [CLSCompliant(false)]
-        public static unsafe void WriteUInt16(this Stream stream, ushort value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+        public static unsafe void WriteUInt16(this Stream stream, ushort value, LengthFormat lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
             => Write(stream, in value, &TryFormat, lengthFormat, encoding, format, provider);
 
         /// <summary>
@@ -304,7 +304,7 @@ namespace DotNext.IO
         /// <param name="encoding">The string encoding.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static unsafe void WriteInt32(this Stream stream, int value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+        public static unsafe void WriteInt32(this Stream stream, int value, LengthFormat lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
             => Write(stream, in value, &TryFormat, lengthFormat, encoding, format, provider);
 
         /// <summary>
@@ -317,7 +317,7 @@ namespace DotNext.IO
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         [CLSCompliant(false)]
-        public static unsafe void WriteUInt32(this Stream stream, uint value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+        public static unsafe void WriteUInt32(this Stream stream, uint value, LengthFormat lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
             => Write(stream, in value, &TryFormat, lengthFormat, encoding, format, provider);
 
         /// <summary>
@@ -329,7 +329,7 @@ namespace DotNext.IO
         /// <param name="encoding">The string encoding.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static unsafe void WriteInt64(this Stream stream, long value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+        public static unsafe void WriteInt64(this Stream stream, long value, LengthFormat lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
             => Write(stream, in value, &TryFormat, lengthFormat, encoding, format, provider);
 
         /// <summary>
@@ -342,7 +342,7 @@ namespace DotNext.IO
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         [CLSCompliant(false)]
-        public static unsafe void WriteUInt64(this Stream stream, ulong value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+        public static unsafe void WriteUInt64(this Stream stream, ulong value, LengthFormat lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
             => Write(stream, in value, &TryFormat, lengthFormat, encoding, format, provider);
 
         /// <summary>
@@ -354,7 +354,7 @@ namespace DotNext.IO
         /// <param name="encoding">The string encoding.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static unsafe void WriteSingle(this Stream stream, float value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+        public static unsafe void WriteSingle(this Stream stream, float value, LengthFormat lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
             => Write(stream, in value, &TryFormat, lengthFormat, encoding, format, provider);
 
         /// <summary>
@@ -366,7 +366,7 @@ namespace DotNext.IO
         /// <param name="encoding">The string encoding.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static unsafe void WriteDouble(this Stream stream, double value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+        public static unsafe void WriteDouble(this Stream stream, double value, LengthFormat lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
             => Write(stream, in value, &TryFormat, lengthFormat, encoding, format, provider);
 
         /// <summary>
@@ -378,7 +378,7 @@ namespace DotNext.IO
         /// <param name="encoding">The string encoding.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static unsafe void WriteDecimal(this Stream stream, in decimal value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+        public static unsafe void WriteDecimal(this Stream stream, in decimal value, LengthFormat lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
             => Write(stream, in value, &TryFormat, lengthFormat, encoding, format, provider);
 
         /// <summary>
@@ -389,7 +389,7 @@ namespace DotNext.IO
         /// <param name="lengthFormat">String length encoding format.</param>
         /// <param name="encoding">The string encoding.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
-        public static unsafe void WriteGuid(this Stream stream, in Guid value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default)
+        public static unsafe void WriteGuid(this Stream stream, in Guid value, LengthFormat lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default)
             => Write(stream, in value, &TryFormat, lengthFormat, encoding, format, null);
 
         /// <summary>
@@ -401,7 +401,7 @@ namespace DotNext.IO
         /// <param name="encoding">The string encoding.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static unsafe void WriteDateTime(this Stream stream, DateTime value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+        public static unsafe void WriteDateTime(this Stream stream, DateTime value, LengthFormat lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
             => Write(stream, in value, &TryFormat, lengthFormat, encoding, format, provider);
 
         /// <summary>
@@ -413,7 +413,7 @@ namespace DotNext.IO
         /// <param name="encoding">The string encoding.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static unsafe void WriteDateTimeOffset(this Stream stream, DateTimeOffset value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+        public static unsafe void WriteDateTimeOffset(this Stream stream, DateTimeOffset value, LengthFormat lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
             => Write(stream, in value, &TryFormat, lengthFormat, encoding, format, provider);
 
         /// <summary>
@@ -425,10 +425,10 @@ namespace DotNext.IO
         /// <param name="encoding">The string encoding.</param>
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
-        public static unsafe void WriteTimeSpan(this Stream stream, TimeSpan value, StringLengthEncoding lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+        public static unsafe void WriteTimeSpan(this Stream stream, TimeSpan value, LengthFormat lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
             => Write(stream, in value, &TryFormat, lengthFormat, encoding, format, provider);
 
-        private static ValueTask WriteLengthAsync(this Stream stream, ReadOnlySpan<char> value, Encoding encoding, StringLengthEncoding? lengthFormat, Memory<byte> buffer, CancellationToken token)
+        private static ValueTask WriteLengthAsync(this Stream stream, ReadOnlySpan<char> value, Encoding encoding, LengthFormat? lengthFormat, Memory<byte> buffer, CancellationToken token)
         {
             if (lengthFormat is null)
                 return new ValueTask();
@@ -437,15 +437,15 @@ namespace DotNext.IO
             {
                 default:
                     throw new ArgumentOutOfRangeException(nameof(lengthFormat));
-                case StringLengthEncoding.Plain:
+                case LengthFormat.Plain:
                     return stream.WriteAsync(length, token);
-                case StringLengthEncoding.PlainLittleEndian:
+                case LengthFormat.PlainLittleEndian:
                     length.ReverseIfNeeded(true);
-                    goto case StringLengthEncoding.Plain;
-                case StringLengthEncoding.PlainBigEndian:
+                    goto case LengthFormat.Plain;
+                case LengthFormat.PlainBigEndian:
                     length.ReverseIfNeeded(false);
-                    goto case StringLengthEncoding.Plain;
-                case StringLengthEncoding.Compressed:
+                    goto case LengthFormat.Plain;
+                case LengthFormat.Compressed:
                     return stream.Write7BitEncodedIntAsync(length, buffer, token);
             }
         }
@@ -466,7 +466,7 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentException"><paramref name="buffer"/> is too small for encoding minimal portion of <paramref name="value"/>.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static async ValueTask WriteStringAsync(this Stream stream, ReadOnlyMemory<char> value, EncodingContext context, Memory<byte> buffer, StringLengthEncoding? lengthFormat = null, CancellationToken token = default)
+        public static async ValueTask WriteStringAsync(this Stream stream, ReadOnlyMemory<char> value, EncodingContext context, Memory<byte> buffer, LengthFormat? lengthFormat = null, CancellationToken token = default)
         {
             await stream.WriteLengthAsync(value.Span, context.Encoding, lengthFormat, buffer, token).ConfigureAwait(false);
             if (value.IsEmpty)
@@ -484,7 +484,7 @@ namespace DotNext.IO
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static ValueTask WriteLengthAsync(this Stream stream, int length, StringLengthEncoding? lengthFormat, Memory<byte> buffer, CancellationToken token)
+        private static ValueTask WriteLengthAsync(this Stream stream, int length, LengthFormat? lengthFormat, Memory<byte> buffer, CancellationToken token)
         {
             switch (lengthFormat)
             {
@@ -492,15 +492,15 @@ namespace DotNext.IO
                     throw new ArgumentOutOfRangeException(nameof(lengthFormat));
                 case null:
                     return new ValueTask();
-                case StringLengthEncoding.Plain:
+                case LengthFormat.Plain:
                     return stream.WriteAsync(length, token);
-                case StringLengthEncoding.PlainLittleEndian:
+                case LengthFormat.PlainLittleEndian:
                     length.ReverseIfNeeded(true);
-                    goto case StringLengthEncoding.Plain;
-                case StringLengthEncoding.PlainBigEndian:
+                    goto case LengthFormat.Plain;
+                case LengthFormat.PlainBigEndian:
                     length.ReverseIfNeeded(false);
-                    goto case StringLengthEncoding.Plain;
-                case StringLengthEncoding.Compressed:
+                    goto case LengthFormat.Plain;
+                case LengthFormat.Compressed:
                     return stream.Write7BitEncodedIntAsync(length, buffer, token);
             }
         }
@@ -519,7 +519,7 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static async ValueTask WriteStringAsync(this Stream stream, ReadOnlyMemory<char> value, Encoding encoding, StringLengthEncoding? lengthFormat = null, CancellationToken token = default)
+        public static async ValueTask WriteStringAsync(this Stream stream, ReadOnlyMemory<char> value, Encoding encoding, LengthFormat? lengthFormat = null, CancellationToken token = default)
         {
             var bytesCount = encoding.GetByteCount(value.Span);
             using var buffer = DefaultByteAllocator.Invoke(bytesCount, true);
@@ -531,7 +531,7 @@ namespace DotNext.IO
             await stream.WriteAsync(buffer.Memory, token).ConfigureAwait(false);
         }
 
-        private static async ValueTask WriteAsync<T>(Stream stream, SpanFormattable<T> value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format, IFormatProvider? provider, CancellationToken token)
+        private static async ValueTask WriteAsync<T>(Stream stream, SpanFormattable<T> value, LengthFormat lengthFormat, EncodingContext context, Memory<byte> buffer, string? format, IFormatProvider? provider, CancellationToken token)
             where T : struct, IFormattable
         {
             for (var charBufferSize = InitialCharBufferSize; ; charBufferSize = charBufferSize <= MaxBufferSize ? charBufferSize * 2 : throw new InsufficientMemoryException())
@@ -548,7 +548,7 @@ namespace DotNext.IO
             }
         }
 
-        private static async ValueTask WriteAsync<T>(Stream stream, SpanFormattable<T> value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+        private static async ValueTask WriteAsync<T>(Stream stream, SpanFormattable<T> value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
             where T : struct, IFormattable
         {
             using var owner = DefaultByteAllocator.Invoke(DefaultBufferSize, false);
@@ -569,7 +569,7 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static unsafe ValueTask WriteByteAsync(this Stream stream, byte value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static unsafe ValueTask WriteByteAsync(this Stream stream, byte value, LengthFormat lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync(stream, new SpanFormattable<byte>(value, &TryFormat), lengthFormat, context, buffer, format, provider, token);
 
         /// <summary>
@@ -585,7 +585,7 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static unsafe ValueTask WriteByteAsync(this Stream stream, byte value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static unsafe ValueTask WriteByteAsync(this Stream stream, byte value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync(stream, new SpanFormattable<byte>(value, &TryFormat), lengthFormat, context, format, provider, token);
 
         /// <summary>
@@ -603,7 +603,7 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
         [CLSCompliant(false)]
-        public static unsafe ValueTask WriteSByteAsync(this Stream stream, sbyte value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static unsafe ValueTask WriteSByteAsync(this Stream stream, sbyte value, LengthFormat lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync(stream, new SpanFormattable<sbyte>(value, &TryFormat), lengthFormat, context, buffer, format, provider, token);
 
         /// <summary>
@@ -620,7 +620,7 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
         [CLSCompliant(false)]
-        public static unsafe ValueTask WriteSByteAsync(this Stream stream, sbyte value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static unsafe ValueTask WriteSByteAsync(this Stream stream, sbyte value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync(stream, new SpanFormattable<sbyte>(value, &TryFormat), lengthFormat, context, format, provider, token);
 
         /// <summary>
@@ -637,7 +637,7 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static unsafe ValueTask WriteInt16Async(this Stream stream, short value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static unsafe ValueTask WriteInt16Async(this Stream stream, short value, LengthFormat lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync(stream, new SpanFormattable<short>(value, &TryFormat), lengthFormat, context, buffer, format, provider, token);
 
         /// <summary>
@@ -653,7 +653,7 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static unsafe ValueTask WriteInt16Async(this Stream stream, short value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static unsafe ValueTask WriteInt16Async(this Stream stream, short value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync(stream, new SpanFormattable<short>(value, &TryFormat), lengthFormat, context, format, provider, token);
 
         /// <summary>
@@ -671,7 +671,7 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
         [CLSCompliant(false)]
-        public static unsafe ValueTask WriteUInt16Async(this Stream stream, ushort value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static unsafe ValueTask WriteUInt16Async(this Stream stream, ushort value, LengthFormat lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync(stream, new SpanFormattable<ushort>(value, &TryFormat), lengthFormat, context, buffer, format, provider, token);
 
         /// <summary>
@@ -688,7 +688,7 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
         [CLSCompliant(false)]
-        public static unsafe ValueTask WriteUInt16Async(this Stream stream, ushort value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static unsafe ValueTask WriteUInt16Async(this Stream stream, ushort value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync(stream, new SpanFormattable<ushort>(value, &TryFormat), lengthFormat, context, format, provider, token);
 
         /// <summary>
@@ -705,7 +705,7 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static unsafe ValueTask WriteInt32Async(this Stream stream, int value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static unsafe ValueTask WriteInt32Async(this Stream stream, int value, LengthFormat lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync(stream, new SpanFormattable<int>(value, &TryFormat), lengthFormat, context, buffer, format, provider, token);
 
         /// <summary>
@@ -721,7 +721,7 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static unsafe ValueTask WriteInt32Async(this Stream stream, int value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static unsafe ValueTask WriteInt32Async(this Stream stream, int value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync(stream, new SpanFormattable<int>(value, &TryFormat), lengthFormat, context, format, provider, token);
 
         /// <summary>
@@ -739,7 +739,7 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
         [CLSCompliant(false)]
-        public static unsafe ValueTask WriteUInt32Async(this Stream stream, uint value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static unsafe ValueTask WriteUInt32Async(this Stream stream, uint value, LengthFormat lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync(stream, new SpanFormattable<uint>(value, &TryFormat), lengthFormat, context, buffer, format, provider, token);
 
         /// <summary>
@@ -756,7 +756,7 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
         [CLSCompliant(false)]
-        public static unsafe ValueTask WriteUInt32Async(this Stream stream, uint value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static unsafe ValueTask WriteUInt32Async(this Stream stream, uint value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync(stream, new SpanFormattable<uint>(value, &TryFormat), lengthFormat, context, format, provider, token);
 
         /// <summary>
@@ -773,7 +773,7 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static unsafe ValueTask WriteInt64Async(this Stream stream, long value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static unsafe ValueTask WriteInt64Async(this Stream stream, long value, LengthFormat lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync(stream, new SpanFormattable<long>(value, &TryFormat), lengthFormat, context, buffer, format, provider, token);
 
         /// <summary>
@@ -789,7 +789,7 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static unsafe ValueTask WriteInt64Async(this Stream stream, long value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static unsafe ValueTask WriteInt64Async(this Stream stream, long value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync(stream, new SpanFormattable<long>(value, &TryFormat), lengthFormat, context, format, provider, token);
 
         /// <summary>
@@ -807,7 +807,7 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
         [CLSCompliant(false)]
-        public static unsafe ValueTask WriteUInt64Async(this Stream stream, ulong value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static unsafe ValueTask WriteUInt64Async(this Stream stream, ulong value, LengthFormat lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync(stream, new SpanFormattable<ulong>(value, &TryFormat), lengthFormat, context, buffer, format, provider, token);
 
         /// <summary>
@@ -824,7 +824,7 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
         [CLSCompliant(false)]
-        public static unsafe ValueTask WriteUInt64Async(this Stream stream, ulong value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static unsafe ValueTask WriteUInt64Async(this Stream stream, ulong value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync(stream, new SpanFormattable<ulong>(value, &TryFormat), lengthFormat, context, format, provider, token);
 
         /// <summary>
@@ -841,7 +841,7 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static unsafe ValueTask WriteSingleAsync(this Stream stream, float value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static unsafe ValueTask WriteSingleAsync(this Stream stream, float value, LengthFormat lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync(stream, new SpanFormattable<float>(value, &TryFormat), lengthFormat, context, buffer, format, provider, token);
 
         /// <summary>
@@ -857,7 +857,7 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static unsafe ValueTask WriteSingleAsync(this Stream stream, float value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static unsafe ValueTask WriteSingleAsync(this Stream stream, float value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync(stream, new SpanFormattable<float>(value, &TryFormat), lengthFormat, context, format, provider, token);
 
         /// <summary>
@@ -874,7 +874,7 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static unsafe ValueTask WriteDoubleAsync(this Stream stream, double value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static unsafe ValueTask WriteDoubleAsync(this Stream stream, double value, LengthFormat lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync(stream, new SpanFormattable<double>(value, &TryFormat), lengthFormat, context, buffer, format, provider, token);
 
         /// <summary>
@@ -890,7 +890,7 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static unsafe ValueTask WriteDoubleAsync(this Stream stream, double value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static unsafe ValueTask WriteDoubleAsync(this Stream stream, double value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync(stream, new SpanFormattable<double>(value, &TryFormat), lengthFormat, context, format, provider, token);
 
         /// <summary>
@@ -907,7 +907,7 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static unsafe ValueTask WriteDecimalAsync(this Stream stream, decimal value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static unsafe ValueTask WriteDecimalAsync(this Stream stream, decimal value, LengthFormat lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync(stream, new SpanFormattable<decimal>(value, &TryFormat), lengthFormat, context, buffer, format, provider, token);
 
         /// <summary>
@@ -923,7 +923,7 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static unsafe ValueTask WriteDecimalAsync(this Stream stream, decimal value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static unsafe ValueTask WriteDecimalAsync(this Stream stream, decimal value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync(stream, new SpanFormattable<decimal>(value, &TryFormat), lengthFormat, context, format, provider, token);
 
         /// <summary>
@@ -939,7 +939,7 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static unsafe ValueTask WriteGuidAsync(this Stream stream, Guid value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, CancellationToken token = default)
+        public static unsafe ValueTask WriteGuidAsync(this Stream stream, Guid value, LengthFormat lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, CancellationToken token = default)
             => WriteAsync(stream, new SpanFormattable<Guid>(value, &TryFormat), lengthFormat, context, buffer, format, null, token);
 
         /// <summary>
@@ -954,7 +954,7 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static unsafe ValueTask WriteGuidAsync(this Stream stream, Guid value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, CancellationToken token = default)
+        public static unsafe ValueTask WriteGuidAsync(this Stream stream, Guid value, LengthFormat lengthFormat, EncodingContext context, string? format = null, CancellationToken token = default)
             => WriteAsync(stream, new SpanFormattable<Guid>(value, &TryFormat), lengthFormat, context, format, null, token);
 
         /// <summary>
@@ -971,7 +971,7 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static unsafe ValueTask WriteDateTimeAsync(this Stream stream, DateTime value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static unsafe ValueTask WriteDateTimeAsync(this Stream stream, DateTime value, LengthFormat lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync(stream, new SpanFormattable<DateTime>(value, &TryFormat), lengthFormat, context, buffer, format, provider, token);
 
         /// <summary>
@@ -987,7 +987,7 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static unsafe ValueTask WriteDateTimeAsync(this Stream stream, DateTime value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static unsafe ValueTask WriteDateTimeAsync(this Stream stream, DateTime value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync(stream, new SpanFormattable<DateTime>(value, &TryFormat), lengthFormat, context, format, provider, token);
 
         /// <summary>
@@ -1004,7 +1004,7 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static unsafe ValueTask WriteDateTimeOffsetAsync(this Stream stream, DateTimeOffset value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static unsafe ValueTask WriteDateTimeOffsetAsync(this Stream stream, DateTimeOffset value, LengthFormat lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync(stream, new SpanFormattable<DateTimeOffset>(value, &TryFormat), lengthFormat, context, buffer, format, provider, token);
 
         /// <summary>
@@ -1020,7 +1020,7 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static unsafe ValueTask WriteDateTimeOffsetAsync(this Stream stream, DateTimeOffset value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static unsafe ValueTask WriteDateTimeOffsetAsync(this Stream stream, DateTimeOffset value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync(stream, new SpanFormattable<DateTimeOffset>(value, &TryFormat), lengthFormat, context, format, provider, token);
 
         /// <summary>
@@ -1037,7 +1037,7 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static unsafe ValueTask WriteTimeSpanAsync(this Stream stream, TimeSpan value, StringLengthEncoding lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static unsafe ValueTask WriteTimeSpanAsync(this Stream stream, TimeSpan value, LengthFormat lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync(stream, new SpanFormattable<TimeSpan>(value, &TryFormat), lengthFormat, context, buffer, format, provider, token);
 
         /// <summary>
@@ -1053,7 +1053,7 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static unsafe ValueTask WriteTimeSpanAsync(this Stream stream, TimeSpan value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static unsafe ValueTask WriteTimeSpanAsync(this Stream stream, TimeSpan value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync(stream, new SpanFormattable<TimeSpan>(value, &TryFormat), lengthFormat, context, format, provider, token);
 
         /// <summary>
@@ -1088,7 +1088,7 @@ namespace DotNext.IO
 #if !NETSTANDARD2_1
         [SkipLocalsInit]
 #endif
-        private static TResult Read<TResult, TDecoder>(Stream stream, TDecoder decoder, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer)
+        private static TResult Read<TResult, TDecoder>(Stream stream, TDecoder decoder, LengthFormat lengthFormat, in DecodingContext context, Span<byte> buffer)
             where TResult : struct
             where TDecoder : ISpanDecoder<TResult>
         {
@@ -1156,7 +1156,7 @@ namespace DotNext.IO
         /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
-        public static byte ReadByte(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
+        public static byte ReadByte(this Stream stream, LengthFormat lengthFormat, in DecodingContext context, Span<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
             => Read<byte, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, in context, buffer);
 
         /// <summary>
@@ -1173,7 +1173,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         [CLSCompliant(false)]
-        public static sbyte ReadSByte(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
+        public static sbyte ReadSByte(this Stream stream, LengthFormat lengthFormat, in DecodingContext context, Span<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
             => Read<sbyte, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, in context, buffer);
 
         /// <summary>
@@ -1189,7 +1189,7 @@ namespace DotNext.IO
         /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
-        public static short ReadInt16(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
+        public static short ReadInt16(this Stream stream, LengthFormat lengthFormat, in DecodingContext context, Span<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
             => Read<short, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, in context, buffer);
 
         /// <summary>
@@ -1206,7 +1206,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         [CLSCompliant(false)]
-        public static ushort ReadUInt16(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
+        public static ushort ReadUInt16(this Stream stream, LengthFormat lengthFormat, in DecodingContext context, Span<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
             => Read<ushort, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, in context, buffer);
 
         /// <summary>
@@ -1222,7 +1222,7 @@ namespace DotNext.IO
         /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
-        public static int ReadInt32(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
+        public static int ReadInt32(this Stream stream, LengthFormat lengthFormat, in DecodingContext context, Span<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
             => Read<int, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, in context, buffer);
 
         /// <summary>
@@ -1239,7 +1239,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         [CLSCompliant(false)]
-        public static uint ReadUInt32(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
+        public static uint ReadUInt32(this Stream stream, LengthFormat lengthFormat, in DecodingContext context, Span<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
             => Read<uint, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, in context, buffer);
 
         /// <summary>
@@ -1255,7 +1255,7 @@ namespace DotNext.IO
         /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
-        public static long ReadInt64(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
+        public static long ReadInt64(this Stream stream, LengthFormat lengthFormat, in DecodingContext context, Span<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
             => Read<long, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, in context, buffer);
 
         /// <summary>
@@ -1272,7 +1272,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         [CLSCompliant(false)]
-        public static ulong ReadUInt64(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
+        public static ulong ReadUInt64(this Stream stream, LengthFormat lengthFormat, in DecodingContext context, Span<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
             => Read<ulong, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, in context, buffer);
 
         /// <summary>
@@ -1288,7 +1288,7 @@ namespace DotNext.IO
         /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
-        public static float ReadSingle(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer, NumberStyles style = NumberStyles.AllowThousands | NumberStyles.Float, IFormatProvider? provider = null)
+        public static float ReadSingle(this Stream stream, LengthFormat lengthFormat, in DecodingContext context, Span<byte> buffer, NumberStyles style = NumberStyles.AllowThousands | NumberStyles.Float, IFormatProvider? provider = null)
             => Read<float, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, in context, buffer);
 
         /// <summary>
@@ -1304,7 +1304,7 @@ namespace DotNext.IO
         /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
-        public static double ReadDouble(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer, NumberStyles style = NumberStyles.AllowThousands | NumberStyles.Float, IFormatProvider? provider = null)
+        public static double ReadDouble(this Stream stream, LengthFormat lengthFormat, in DecodingContext context, Span<byte> buffer, NumberStyles style = NumberStyles.AllowThousands | NumberStyles.Float, IFormatProvider? provider = null)
             => Read<double, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, in context, buffer);
 
         /// <summary>
@@ -1320,7 +1320,7 @@ namespace DotNext.IO
         /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
-        public static decimal ReadDecimal(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer, NumberStyles style = NumberStyles.Number, IFormatProvider? provider = null)
+        public static decimal ReadDecimal(this Stream stream, LengthFormat lengthFormat, in DecodingContext context, Span<byte> buffer, NumberStyles style = NumberStyles.Number, IFormatProvider? provider = null)
             => Read<decimal, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, in context, buffer);
 
         /// <summary>
@@ -1334,7 +1334,7 @@ namespace DotNext.IO
         /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">GUID value is in incorrect format.</exception>
-        public static Guid ReadGuid(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer)
+        public static Guid ReadGuid(this Stream stream, LengthFormat lengthFormat, in DecodingContext context, Span<byte> buffer)
             => Read<Guid, GuidDecoder>(stream, new GuidDecoder(), lengthFormat, in context, buffer);
 
         /// <summary>
@@ -1349,7 +1349,7 @@ namespace DotNext.IO
         /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">GUID value is in incorrect format.</exception>
-        public static Guid ReadGuid(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer, string format)
+        public static Guid ReadGuid(this Stream stream, LengthFormat lengthFormat, in DecodingContext context, Span<byte> buffer, string format)
             => Read<Guid, GuidDecoder>(stream, new GuidDecoder(format), lengthFormat, in context, buffer);
 
         /// <summary>
@@ -1365,7 +1365,7 @@ namespace DotNext.IO
         /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The date/time string is in incorrect format.</exception>
-        public static DateTime ReadDateTime(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null)
+        public static DateTime ReadDateTime(this Stream stream, LengthFormat lengthFormat, in DecodingContext context, Span<byte> buffer, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null)
             => Read<DateTime, DateTimeDecoder>(stream, new DateTimeDecoder(style, provider), lengthFormat, in context, buffer);
 
         /// <summary>
@@ -1382,7 +1382,7 @@ namespace DotNext.IO
         /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The date/time string is in incorrect format.</exception>
-        public static DateTime ReadDateTime(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer, string[] formats, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null)
+        public static DateTime ReadDateTime(this Stream stream, LengthFormat lengthFormat, in DecodingContext context, Span<byte> buffer, string[] formats, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null)
             => Read<DateTime, DateTimeDecoder>(stream, new DateTimeDecoder(style, formats, provider), lengthFormat, in context, buffer);
 
         /// <summary>
@@ -1398,7 +1398,7 @@ namespace DotNext.IO
         /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The date/time string is in incorrect format.</exception>
-        public static DateTimeOffset ReadDateTimeOffset(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null)
+        public static DateTimeOffset ReadDateTimeOffset(this Stream stream, LengthFormat lengthFormat, in DecodingContext context, Span<byte> buffer, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null)
             => Read<DateTimeOffset, DateTimeDecoder>(stream, new DateTimeDecoder(style, provider), lengthFormat, in context, buffer);
 
         /// <summary>
@@ -1415,7 +1415,7 @@ namespace DotNext.IO
         /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The date/time string is in incorrect format.</exception>
-        public static DateTimeOffset ReadDateTimeOffset(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer, string[] formats, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null)
+        public static DateTimeOffset ReadDateTimeOffset(this Stream stream, LengthFormat lengthFormat, in DecodingContext context, Span<byte> buffer, string[] formats, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null)
             => Read<DateTimeOffset, DateTimeDecoder>(stream, new DateTimeDecoder(style, formats, provider), lengthFormat, in context, buffer);
 
         /// <summary>
@@ -1429,7 +1429,7 @@ namespace DotNext.IO
         /// <returns>The parsed value.</returns>
         /// <exception cref="FormatException">The time span is in incorrect format.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-        public static TimeSpan ReadTimeSpan(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer, IFormatProvider? provider = null)
+        public static TimeSpan ReadTimeSpan(this Stream stream, LengthFormat lengthFormat, in DecodingContext context, Span<byte> buffer, IFormatProvider? provider = null)
             => Read<TimeSpan, TimeSpanDecoder>(stream, new TimeSpanDecoder(provider), lengthFormat, in context, buffer);
 
         /// <summary>
@@ -1445,10 +1445,10 @@ namespace DotNext.IO
         /// <returns>The parsed value.</returns>
         /// <exception cref="FormatException">The time span is in incorrect format.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-        public static TimeSpan ReadTimeSpan(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer, string[] formats, TimeSpanStyles style = TimeSpanStyles.None, IFormatProvider? provider = null)
+        public static TimeSpan ReadTimeSpan(this Stream stream, LengthFormat lengthFormat, in DecodingContext context, Span<byte> buffer, string[] formats, TimeSpanStyles style = TimeSpanStyles.None, IFormatProvider? provider = null)
             => Read<TimeSpan, TimeSpanDecoder>(stream, new TimeSpanDecoder(style, formats, provider), lengthFormat, in context, buffer);
 
-        private static int ReadLength(this Stream stream, StringLengthEncoding lengthFormat)
+        private static int ReadLength(this Stream stream, LengthFormat lengthFormat)
         {
             int result;
             var littleEndian = BitConverter.IsLittleEndian;
@@ -1456,16 +1456,16 @@ namespace DotNext.IO
             {
                 default:
                     throw new ArgumentOutOfRangeException(nameof(lengthFormat));
-                case StringLengthEncoding.Plain:
+                case LengthFormat.Plain:
                     result = stream.Read<int>();
                     break;
-                case StringLengthEncoding.PlainLittleEndian:
+                case LengthFormat.PlainLittleEndian:
                     littleEndian = true;
-                    goto case StringLengthEncoding.Plain;
-                case StringLengthEncoding.PlainBigEndian:
+                    goto case LengthFormat.Plain;
+                case LengthFormat.PlainBigEndian:
                     littleEndian = false;
-                    goto case StringLengthEncoding.Plain;
-                case StringLengthEncoding.Compressed:
+                    goto case LengthFormat.Plain;
+                case LengthFormat.Compressed:
                     result = stream.Read7BitEncodedInt();
                     break;
             }
@@ -1474,7 +1474,7 @@ namespace DotNext.IO
             return result;
         }
 
-        private static async ValueTask<int> ReadLengthAsync(this Stream stream, StringLengthEncoding lengthFormat, Memory<byte> buffer, CancellationToken token)
+        private static async ValueTask<int> ReadLengthAsync(this Stream stream, LengthFormat lengthFormat, Memory<byte> buffer, CancellationToken token)
         {
             ValueTask<int> result;
             var littleEndian = BitConverter.IsLittleEndian;
@@ -1482,16 +1482,16 @@ namespace DotNext.IO
             {
                 default:
                     throw new ArgumentOutOfRangeException(nameof(lengthFormat));
-                case StringLengthEncoding.Plain:
+                case LengthFormat.Plain:
                     result = stream.ReadAsync<int>(buffer, token);
                     break;
-                case StringLengthEncoding.PlainLittleEndian:
+                case LengthFormat.PlainLittleEndian:
                     littleEndian = true;
-                    goto case StringLengthEncoding.Plain;
-                case StringLengthEncoding.PlainBigEndian:
+                    goto case LengthFormat.Plain;
+                case LengthFormat.PlainBigEndian:
                     littleEndian = false;
-                    goto case StringLengthEncoding.Plain;
-                case StringLengthEncoding.Compressed:
+                    goto case LengthFormat.Plain;
+                case LengthFormat.Compressed:
                     result = stream.Read7BitEncodedIntAsync(buffer, token);
                     break;
             }
@@ -1516,7 +1516,7 @@ namespace DotNext.IO
         /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static string ReadString(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer)
+        public static string ReadString(this Stream stream, LengthFormat lengthFormat, in DecodingContext context, Span<byte> buffer)
             => ReadString(stream, stream.ReadLength(lengthFormat), in context, buffer);
 
         /// <summary>
@@ -1560,10 +1560,10 @@ namespace DotNext.IO
         /// <returns>The string decoded from the log entry content stream.</returns>
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static string ReadString(this Stream stream, StringLengthEncoding lengthFormat, Encoding encoding)
+        public static string ReadString(this Stream stream, LengthFormat lengthFormat, Encoding encoding)
             => ReadString(stream, stream.ReadLength(lengthFormat), encoding);
 
-        private static async ValueTask<TResult> ReadAsync<TResult, TDecoder>(Stream stream, TDecoder decoder, StringLengthEncoding lengthFormat, DecodingContext context, Memory<byte> buffer, CancellationToken token)
+        private static async ValueTask<TResult> ReadAsync<TResult, TDecoder>(Stream stream, TDecoder decoder, LengthFormat lengthFormat, DecodingContext context, Memory<byte> buffer, CancellationToken token)
             where TResult : struct
             where TDecoder : ISpanDecoder<TResult>
         {
@@ -1575,7 +1575,7 @@ namespace DotNext.IO
             return decoder.Decode(result.Memory.Slice(0, length).Span);
         }
 
-        private static async ValueTask<TResult> ReadAsync<TResult, TDecoder>(Stream stream, TDecoder decoder, StringLengthEncoding lengthFormat, DecodingContext context, CancellationToken token)
+        private static async ValueTask<TResult> ReadAsync<TResult, TDecoder>(Stream stream, TDecoder decoder, LengthFormat lengthFormat, DecodingContext context, CancellationToken token)
             where TResult : struct
             where TDecoder : ISpanDecoder<TResult>
         {
@@ -1653,7 +1653,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static async ValueTask<string> ReadStringAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, Memory<byte> buffer, CancellationToken token = default)
+        public static async ValueTask<string> ReadStringAsync(this Stream stream, LengthFormat lengthFormat, DecodingContext context, Memory<byte> buffer, CancellationToken token = default)
             => await ReadStringAsync(stream, await stream.ReadLengthAsync(lengthFormat, buffer, token).ConfigureAwait(false), context, buffer, token).ConfigureAwait(false);
 
         /// <summary>
@@ -1698,7 +1698,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static async ValueTask<string> ReadStringAsync(this Stream stream, StringLengthEncoding lengthFormat, Encoding encoding, CancellationToken token = default)
+        public static async ValueTask<string> ReadStringAsync(this Stream stream, LengthFormat lengthFormat, Encoding encoding, CancellationToken token = default)
         {
             using var lengthDecodingBuffer = DefaultByteAllocator.Invoke(BufferSizeForLength, false);
             return await ReadStringAsync(stream, await stream.ReadLengthAsync(lengthFormat, lengthDecodingBuffer.Memory, token).ConfigureAwait(false), encoding, token).ConfigureAwait(false);
@@ -1719,7 +1719,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<byte> ReadByteAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, Memory<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<byte> ReadByteAsync(this Stream stream, LengthFormat lengthFormat, DecodingContext context, Memory<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<byte, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, buffer, token);
 
         /// <summary>
@@ -1738,7 +1738,7 @@ namespace DotNext.IO
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         [CLSCompliant(false)]
-        public static ValueTask<sbyte> ReadSByteAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, Memory<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<sbyte> ReadSByteAsync(this Stream stream, LengthFormat lengthFormat, DecodingContext context, Memory<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<sbyte, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, buffer, token);
 
         /// <summary>
@@ -1756,7 +1756,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<short> ReadInt16Async(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, Memory<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<short> ReadInt16Async(this Stream stream, LengthFormat lengthFormat, DecodingContext context, Memory<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<short, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, buffer, token);
 
         /// <summary>
@@ -1775,7 +1775,7 @@ namespace DotNext.IO
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         [CLSCompliant(false)]
-        public static ValueTask<ushort> ReadUInt16Async(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, Memory<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<ushort> ReadUInt16Async(this Stream stream, LengthFormat lengthFormat, DecodingContext context, Memory<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<ushort, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, buffer, token);
 
         /// <summary>
@@ -1793,7 +1793,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<int> ReadInt32Async(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, Memory<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<int> ReadInt32Async(this Stream stream, LengthFormat lengthFormat, DecodingContext context, Memory<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<int, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, buffer, token);
 
         /// <summary>
@@ -1812,7 +1812,7 @@ namespace DotNext.IO
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         [CLSCompliant(false)]
-        public static ValueTask<uint> ReadUInt32Async(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, Memory<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<uint> ReadUInt32Async(this Stream stream, LengthFormat lengthFormat, DecodingContext context, Memory<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<uint, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, buffer, token);
 
         /// <summary>
@@ -1830,7 +1830,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<long> ReadInt64Async(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, Memory<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<long> ReadInt64Async(this Stream stream, LengthFormat lengthFormat, DecodingContext context, Memory<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<long, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, buffer, token);
 
         /// <summary>
@@ -1849,7 +1849,7 @@ namespace DotNext.IO
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         [CLSCompliant(false)]
-        public static ValueTask<ulong> ReadUInt64Async(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, Memory<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<ulong> ReadUInt64Async(this Stream stream, LengthFormat lengthFormat, DecodingContext context, Memory<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<ulong, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, buffer, token);
 
         /// <summary>
@@ -1867,7 +1867,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<float> ReadSingleAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, Memory<byte> buffer, NumberStyles style = NumberStyles.AllowThousands | NumberStyles.Float, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<float> ReadSingleAsync(this Stream stream, LengthFormat lengthFormat, DecodingContext context, Memory<byte> buffer, NumberStyles style = NumberStyles.AllowThousands | NumberStyles.Float, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<float, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, buffer, token);
 
         /// <summary>
@@ -1885,7 +1885,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<double> ReadDoubleAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, Memory<byte> buffer, NumberStyles style = NumberStyles.AllowThousands | NumberStyles.Float, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<double> ReadDoubleAsync(this Stream stream, LengthFormat lengthFormat, DecodingContext context, Memory<byte> buffer, NumberStyles style = NumberStyles.AllowThousands | NumberStyles.Float, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<double, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, buffer, token);
 
         /// <summary>
@@ -1903,7 +1903,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<decimal> ReadDecimalAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, Memory<byte> buffer, NumberStyles style = NumberStyles.Number, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<decimal> ReadDecimalAsync(this Stream stream, LengthFormat lengthFormat, DecodingContext context, Memory<byte> buffer, NumberStyles style = NumberStyles.Number, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<decimal, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, buffer, token);
 
         /// <summary>
@@ -1919,7 +1919,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">GUID value is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<Guid> ReadGuidAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, Memory<byte> buffer, CancellationToken token = default)
+        public static ValueTask<Guid> ReadGuidAsync(this Stream stream, LengthFormat lengthFormat, DecodingContext context, Memory<byte> buffer, CancellationToken token = default)
             => ReadAsync<Guid, GuidDecoder>(stream, new GuidDecoder(), lengthFormat, context, buffer, token);
 
         /// <summary>
@@ -1936,7 +1936,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">GUID value is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<Guid> ReadGuidAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, Memory<byte> buffer, string format, CancellationToken token = default)
+        public static ValueTask<Guid> ReadGuidAsync(this Stream stream, LengthFormat lengthFormat, DecodingContext context, Memory<byte> buffer, string format, CancellationToken token = default)
             => ReadAsync<Guid, GuidDecoder>(stream, new GuidDecoder(format), lengthFormat, context, buffer, token);
 
         /// <summary>
@@ -1954,7 +1954,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The date/time string is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<DateTime> ReadDateTimeAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, Memory<byte> buffer, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<DateTime> ReadDateTimeAsync(this Stream stream, LengthFormat lengthFormat, DecodingContext context, Memory<byte> buffer, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<DateTime, DateTimeDecoder>(stream, new DateTimeDecoder(style, provider), lengthFormat, context, buffer, token);
 
         /// <summary>
@@ -1973,7 +1973,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The date/time string is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<DateTime> ReadDateTimeAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, string[] formats, Memory<byte> buffer, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<DateTime> ReadDateTimeAsync(this Stream stream, LengthFormat lengthFormat, DecodingContext context, string[] formats, Memory<byte> buffer, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<DateTime, DateTimeDecoder>(stream, new DateTimeDecoder(style, formats, provider), lengthFormat, context, buffer, token);
 
         /// <summary>
@@ -1991,7 +1991,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The date/time string is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<DateTimeOffset> ReadDateTimeOffsetAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, Memory<byte> buffer, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<DateTimeOffset> ReadDateTimeOffsetAsync(this Stream stream, LengthFormat lengthFormat, DecodingContext context, Memory<byte> buffer, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<DateTimeOffset, DateTimeDecoder>(stream, new DateTimeDecoder(style, provider), lengthFormat, context, buffer, token);
 
         /// <summary>
@@ -2010,7 +2010,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The date/time string is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<DateTimeOffset> ReadDateTimeOffsetAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, string[] formats, Memory<byte> buffer, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<DateTimeOffset> ReadDateTimeOffsetAsync(this Stream stream, LengthFormat lengthFormat, DecodingContext context, string[] formats, Memory<byte> buffer, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<DateTimeOffset, DateTimeDecoder>(stream, new DateTimeDecoder(style, formats, provider), lengthFormat, context, buffer, token);
 
         /// <summary>
@@ -2027,7 +2027,7 @@ namespace DotNext.IO
         /// <exception cref="FormatException">The time span is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-        public static ValueTask<TimeSpan> ReadTimeSpanAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, Memory<byte> buffer, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<TimeSpan> ReadTimeSpanAsync(this Stream stream, LengthFormat lengthFormat, DecodingContext context, Memory<byte> buffer, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<TimeSpan, TimeSpanDecoder>(stream, new TimeSpanDecoder(provider), lengthFormat, context, buffer, token);
 
         /// <summary>
@@ -2046,7 +2046,7 @@ namespace DotNext.IO
         /// <exception cref="FormatException">The time span is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-        public static ValueTask<TimeSpan> ReadTimeSpanAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, Memory<byte> buffer, string[] formats, TimeSpanStyles style = TimeSpanStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<TimeSpan> ReadTimeSpanAsync(this Stream stream, LengthFormat lengthFormat, DecodingContext context, Memory<byte> buffer, string[] formats, TimeSpanStyles style = TimeSpanStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<TimeSpan, TimeSpanDecoder>(stream, new TimeSpanDecoder(style, formats, provider), lengthFormat, context, buffer, token);
 
         /// <summary>
@@ -2062,7 +2062,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<byte> ReadByteAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<byte> ReadByteAsync(this Stream stream, LengthFormat lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<byte, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, token);
 
         /// <summary>
@@ -2079,7 +2079,7 @@ namespace DotNext.IO
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         [CLSCompliant(false)]
-        public static ValueTask<sbyte> ReadSByteAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<sbyte> ReadSByteAsync(this Stream stream, LengthFormat lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<sbyte, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, token);
 
         /// <summary>
@@ -2095,7 +2095,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<short> ReadInt16Async(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<short> ReadInt16Async(this Stream stream, LengthFormat lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<short, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, token);
 
         /// <summary>
@@ -2112,7 +2112,7 @@ namespace DotNext.IO
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         [CLSCompliant(false)]
-        public static ValueTask<ushort> ReadUInt16Async(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<ushort> ReadUInt16Async(this Stream stream, LengthFormat lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<ushort, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, token);
 
         /// <summary>
@@ -2128,7 +2128,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<int> ReadInt32Async(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<int> ReadInt32Async(this Stream stream, LengthFormat lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<int, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, token);
 
         /// <summary>
@@ -2145,7 +2145,7 @@ namespace DotNext.IO
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         [CLSCompliant(false)]
-        public static ValueTask<uint> ReadUInt32Async(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<uint> ReadUInt32Async(this Stream stream, LengthFormat lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<uint, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, token);
 
         /// <summary>
@@ -2161,7 +2161,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<long> ReadInt64Async(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<long> ReadInt64Async(this Stream stream, LengthFormat lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<long, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, token);
 
         /// <summary>
@@ -2178,7 +2178,7 @@ namespace DotNext.IO
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         [CLSCompliant(false)]
-        public static ValueTask<ulong> ReadUInt64Async(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<ulong> ReadUInt64Async(this Stream stream, LengthFormat lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<ulong, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, token);
 
         /// <summary>
@@ -2194,7 +2194,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<float> ReadSingleAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.AllowThousands | NumberStyles.Float, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<float> ReadSingleAsync(this Stream stream, LengthFormat lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.AllowThousands | NumberStyles.Float, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<float, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, token);
 
         /// <summary>
@@ -2210,7 +2210,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<double> ReadDoubleAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.AllowThousands | NumberStyles.Float, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<double> ReadDoubleAsync(this Stream stream, LengthFormat lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.AllowThousands | NumberStyles.Float, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<double, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, token);
 
         /// <summary>
@@ -2226,7 +2226,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<decimal> ReadDecimalAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Number, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<decimal> ReadDecimalAsync(this Stream stream, LengthFormat lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Number, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<decimal, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, token);
 
         /// <summary>
@@ -2240,7 +2240,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">GUID value is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<Guid> ReadGuidAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, CancellationToken token = default)
+        public static ValueTask<Guid> ReadGuidAsync(this Stream stream, LengthFormat lengthFormat, DecodingContext context, CancellationToken token = default)
             => ReadAsync<Guid, GuidDecoder>(stream, new GuidDecoder(), lengthFormat, context, token);
 
         /// <summary>
@@ -2255,7 +2255,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">GUID value is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<Guid> ReadGuidAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, string format, CancellationToken token = default)
+        public static ValueTask<Guid> ReadGuidAsync(this Stream stream, LengthFormat lengthFormat, DecodingContext context, string format, CancellationToken token = default)
             => ReadAsync<Guid, GuidDecoder>(stream, new GuidDecoder(format), lengthFormat, context, token);
 
         /// <summary>
@@ -2271,7 +2271,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The date/time string is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<DateTime> ReadDateTimeAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<DateTime> ReadDateTimeAsync(this Stream stream, LengthFormat lengthFormat, DecodingContext context, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<DateTime, DateTimeDecoder>(stream, new DateTimeDecoder(style, provider), lengthFormat, context, token);
 
         /// <summary>
@@ -2288,7 +2288,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The date/time string is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<DateTime> ReadDateTimeAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, string[] formats, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<DateTime> ReadDateTimeAsync(this Stream stream, LengthFormat lengthFormat, DecodingContext context, string[] formats, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<DateTime, DateTimeDecoder>(stream, new DateTimeDecoder(style, formats, provider), lengthFormat, context, token);
 
         /// <summary>
@@ -2304,7 +2304,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The date/time string is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<DateTimeOffset> ReadDateTimeOffsetAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<DateTimeOffset> ReadDateTimeOffsetAsync(this Stream stream, LengthFormat lengthFormat, DecodingContext context, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<DateTimeOffset, DateTimeDecoder>(stream, new DateTimeDecoder(style, provider), lengthFormat, context, token);
 
         /// <summary>
@@ -2321,7 +2321,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The date/time string is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<DateTimeOffset> ReadDateTimeOffsetAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, string[] formats, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<DateTimeOffset> ReadDateTimeOffsetAsync(this Stream stream, LengthFormat lengthFormat, DecodingContext context, string[] formats, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<DateTimeOffset, DateTimeDecoder>(stream, new DateTimeDecoder(style, formats, provider), lengthFormat, context, token);
 
         /// <summary>
@@ -2336,7 +2336,7 @@ namespace DotNext.IO
         /// <exception cref="FormatException">The time span is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-        public static ValueTask<TimeSpan> ReadTimeSpanAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<TimeSpan> ReadTimeSpanAsync(this Stream stream, LengthFormat lengthFormat, DecodingContext context, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<TimeSpan, TimeSpanDecoder>(stream, new TimeSpanDecoder(provider), lengthFormat, context, token);
 
         /// <summary>
@@ -2353,7 +2353,7 @@ namespace DotNext.IO
         /// <exception cref="FormatException">The time span is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-        public static ValueTask<TimeSpan> ReadTimeSpanAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, string[] formats, TimeSpanStyles style = TimeSpanStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<TimeSpan> ReadTimeSpanAsync(this Stream stream, LengthFormat lengthFormat, DecodingContext context, string[] formats, TimeSpanStyles style = TimeSpanStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<TimeSpan, TimeSpanDecoder>(stream, new TimeSpanDecoder(style, formats, provider), lengthFormat, context, token);
 
         /// <summary>
