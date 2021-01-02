@@ -47,7 +47,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         public bool OpenConnectionForEachRequest { get; set; }
 
         /// <summary>
-        /// Gets or sets address of the local node.
+        /// Gets or sets the address of the local node.
         /// </summary>
         public IPAddress? HostAddressHint { get; set; }
 
