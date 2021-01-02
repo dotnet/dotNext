@@ -1,6 +1,5 @@
 using System.Buffers;
 using System.Text;
-using System.Runtime.CompilerServices;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Order;

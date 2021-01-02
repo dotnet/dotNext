@@ -7,8 +7,6 @@ using System.Threading.Tasks;
 
 namespace DotNext.IO
 {
-    using static Buffers.BufferHelpers;
-
     /// <summary>
     /// Represents <see cref="TextReader"/> wrapper for <see cref="ReadOnlySequence{T}"/> type.
     /// </summary>
