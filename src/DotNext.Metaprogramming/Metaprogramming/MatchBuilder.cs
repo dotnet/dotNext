@@ -252,12 +252,9 @@ namespace DotNext.Metaprogramming
 
             Expression ICaseStatementBuilder.Build(ParameterExpression value) => statement(value);
 
-            internal static Expression Build(Expression result, ParameterExpression value) => result;
-
             public static implicit operator CaseStatementBuilder(CaseStatement statement) => new CaseStatementBuilder(statement);
         }
 
-        private static readonly MethodInfo PlainCaseStatementBuilder = new Func<Expression, ParameterExpression, Expression>(CaseStatementBuilder.Build).Method;
         private readonly ParameterExpression value;
         private readonly BinaryExpression? assignment;
         private readonly ICollection<PatternMatch> patterns;
@@ -277,9 +274,6 @@ namespace DotNext.Metaprogramming
                 assignment = Expression.Assign(this.value, value);
             }
         }
-
-        private static CaseStatement MakeCaseStatement(Expression value)
-            => PlainCaseStatementBuilder.CreateDelegate<CaseStatement>(value);
 
         private static PatternMatch MatchByCondition<TBuilder>(ParameterExpression value, Pattern condition, TBuilder builder)
             where TBuilder : struct, ICaseStatementBuilder
@@ -345,7 +339,7 @@ namespace DotNext.Metaprogramming
         /// <param name="pattern">The condition representing pattern.</param>
         /// <param name="value">The value to be supplied if the specified pattern matches to the passed object.</param>
         /// <returns><c>this</c> builder.</returns>
-        public MatchBuilder Case(Pattern pattern, Expression value) => Case(pattern, MakeCaseStatement(value));
+        public MatchBuilder Case(Pattern pattern, Expression value) => Case(pattern, new CaseStatement(value.TrivialCaseStatement));
 
         internal MatchStatement<Action<ParameterExpression>> Case(Pattern pattern) => new MatchByConditionStatement(this, pattern);
 
@@ -488,7 +482,7 @@ namespace DotNext.Metaprogramming
         /// <param name="value">The value to be supplied if the specified structural pattern matches to the passed object.</param>
         /// <returns><c>this</c> builder.</returns>
         public MatchBuilder Case(object structPattern, Expression value)
-            => Case(structPattern, MakeCaseStatement(value));
+            => Case(structPattern, new CaseStatement(value.TrivialCaseStatement));
 
         /// <summary>
         /// Defines default behavior in case when all defined patterns are false positive.
@@ -506,7 +500,7 @@ namespace DotNext.Metaprogramming
         /// </summary>
         /// <param name="value">The expression to be evaluated as default case.</param>
         /// <returns><c>this</c> builder.</returns>
-        public MatchBuilder Default(Expression value) => Default(MakeCaseStatement(value));
+        public MatchBuilder Default(Expression value) => Default(new CaseStatement(value.TrivialCaseStatement));
 
         internal MatchStatement<Action<ParameterExpression>> Default() => new DefaultStatement(this);
 

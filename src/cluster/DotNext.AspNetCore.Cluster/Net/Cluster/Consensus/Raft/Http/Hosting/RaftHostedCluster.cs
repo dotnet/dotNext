@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
@@ -13,6 +14,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
 {
     using static DotNext.Hosting.HostBuilderExtensions;
 
+    [SuppressMessage("Performance", "CA1812", Justification = "This class is instantiated by DI container")]
     internal sealed class RaftHostedCluster : RaftHttpCluster
     {
         private sealed class WebHostConfigurer
