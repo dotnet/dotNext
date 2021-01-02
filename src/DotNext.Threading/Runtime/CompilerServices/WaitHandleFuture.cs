@@ -12,7 +12,7 @@ namespace DotNext.Runtime.CompilerServices
     internal sealed class WaitHandleFuture : Future<bool>, Future<bool>.IAwaiter
     {
         // cached to avoid allocations
-        private readonly WaitOrTimerCallback CompletionCallback = Complete!;
+        private static readonly WaitOrTimerCallback CompletionCallback = Complete!;
 
         private readonly RegisteredWaitHandle? handle;
 
