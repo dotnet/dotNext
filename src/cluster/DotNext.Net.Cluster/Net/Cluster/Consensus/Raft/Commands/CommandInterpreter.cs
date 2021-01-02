@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -100,7 +99,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
                     if (formatter.IsEmpty)
                         continue;
                     var interpreter = Delegate.CreateDelegate(typeof(Func<,,>).MakeGenericType(commandType, typeof(CancellationToken), typeof(ValueTask)), method.IsStatic ? null : this, method);
-                    Debug.Assert(interpreter is not null);
                     interpreters.Add(commandAttr.Id, Cast<CommandHandler>(Activator.CreateInstance(typeof(CommandHandler<>).MakeGenericType(commandType), formatter, interpreter)));
                     formatters.Add(commandType, formatter);
                 }

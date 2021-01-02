@@ -41,7 +41,7 @@ dotnet_diagnostic.CA1806.severity = suggestion
 dotnet_diagnostic.CA1810.severity = none
 dotnet_diagnostic.CA1812.severity = error
 dotnet_diagnostic.CA1815.severity = none
-dotnet_diagnostic.CA1821.severity = warning
+dotnet_diagnostic.CA1821.severity = error
 dotnet_diagnostic.CA1823.severity = error
 dotnet_diagnostic.CA1824.severity = none
 dotnet_diagnostic.CA1825.severity = error
@@ -89,7 +89,7 @@ dotnet_diagnostic.CA2237.severity = warning
 dotnet_diagnostic.CA2238.severity = warning
 dotnet_diagnostic.CA2240.severity = warning
 dotnet_diagnostic.CA2241.severity = warning
-dotnet_diagnostic.CA2242.severity = warning
+dotnet_diagnostic.CA2242.severity = error
 dotnet_diagnostic.CA9999.severity = none
 dotnet_diagnostic.SA0001.severity = none
 dotnet_diagnostic.SA1009.severity = none
@@ -135,3 +135,42 @@ dotnet_diagnostic.CA1700.severity = error
 
 # CA1805: Do not initialize unnecessarily
 dotnet_diagnostic.CA1805.severity = warning
+
+# CA1041: Provide ObsoleteAttribute message
+dotnet_diagnostic.CA1041.severity = error
+
+# CA1068: CancellationToken parameters must come last
+dotnet_diagnostic.CA1068.severity = error
+
+# CA1827: Do not use Count() or LongCount() when Any() can be used
+dotnet_diagnostic.CA1827.severity = error
+
+# CA1828: Do not use CountAsync() or LongCountAsync() when AnyAsync() can be used
+dotnet_diagnostic.CA1828.severity = error
+
+# CA1829: Use Length/Count property instead of Count() when available
+dotnet_diagnostic.CA1829.severity = error
+
+# CA1831: Use AsSpan or AsMemory instead of Range-based indexers when appropriate
+dotnet_diagnostic.CA1831.severity = error
+
+# CA1832: Use AsSpan or AsMemory instead of Range-based indexers when appropriate
+dotnet_diagnostic.CA1832.severity = error
+
+# CA1833: Use AsSpan or AsMemory instead of Range-based indexers when appropriate
+dotnet_diagnostic.CA1833.severity = error
+
+# CA1836: Prefer IsEmpty over Count
+dotnet_diagnostic.CA1836.severity = error
+
+# CA2007: Consider calling ConfigureAwait on the awaited task
+dotnet_diagnostic.CA2007.severity = error
+
+# CA2009: Do not call ToImmutableCollection on an ImmutableCollection value
+dotnet_diagnostic.CA2009.severity = error
+
+# CA2011: Avoid infinite recursion
+dotnet_diagnostic.CA2011.severity = error
+
+# CA2014: Do not use stackalloc in loops
+dotnet_diagnostic.CA2014.severity = error

@@ -224,7 +224,7 @@ namespace DotNext.IO.Pipelines
             do
             {
                 result = await reader.ReadAsync(token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested();
+                result.ThrowIfCancellationRequested(token);
                 var buffer = result.Buffer;
                 for (var position = buffer.Start; buffer.TryGet(ref position, out var block); reader.AdvanceTo(position), token.ThrowIfCancellationRequested())
                     consumer(block.Span, arg);
@@ -248,10 +248,10 @@ namespace DotNext.IO.Pipelines
             do
             {
                 result = await reader.ReadAsync(token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested();
+                result.ThrowIfCancellationRequested(token);
                 var buffer = result.Buffer;
                 for (var position = buffer.Start; buffer.TryGet(ref position, out var block); reader.AdvanceTo(position))
-                    await consumer(arg, block, token);
+                    await consumer(arg, block, token).ConfigureAwait(false);
             }
             while (!result.IsCompleted);
         }

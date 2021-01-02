@@ -120,7 +120,7 @@ namespace DotNext.IO.MemoryMappedFiles
             {
                 if (disposing)
                 {
-                    manager.As<IDisposable>().Dispose();
+                    ((IDisposable)manager).Dispose();
                 }
             }
 

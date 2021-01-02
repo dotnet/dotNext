@@ -160,13 +160,11 @@ namespace DotNext.Collections.Generic
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static async ValueTask<Optional<T>> ElementAtAsync<T>(this IAsyncEnumerable<T> collection, int index, CancellationToken token = default)
         {
-            await using (var enumerator = collection.GetAsyncEnumerator(token))
-            {
-                await enumerator.SkipAsync(index).ConfigureAwait(false);
-                return await enumerator.MoveNextAsync().ConfigureAwait(false) ?
-                    enumerator.Current :
-                    Optional<T>.None;
-            }
+            await using var enumerator = collection.GetAsyncEnumerator(token);
+            await enumerator.SkipAsync(index).ConfigureAwait(false);
+            return await enumerator.MoveNextAsync().ConfigureAwait(false) ?
+                enumerator.Current :
+                Optional<T>.None;
         }
 
         /// <summary>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -170,6 +171,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private AsyncLock transitionSync;  // used to synchronize state transitions
 
+        [SuppressMessage("Usage", "CA2213", Justification = "Disposed correctly but cannot be recognized by .NET Analyzer")]
         private volatile RaftState? state;
         private volatile TMember? leader;
         private volatile int electionTimeout;
@@ -698,7 +700,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <inheritdoc />
         protected override async ValueTask DisposeAsyncCore()
         {
-            await StopAsync(CancellationToken.None);
+            await StopAsync(CancellationToken.None).ConfigureAwait(false);
             Cleanup();
         }
 
