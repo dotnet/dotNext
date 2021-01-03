@@ -14,6 +14,12 @@ namespace DotNext.IO.Log
     public interface IAuditTrail
     {
         /// <summary>
+        /// Gets a value indicating that the <see cref="IDataTransferObject.Length">length</see> of the log entries
+        /// obtained from this audit trail is always not <see langword="null"/>.
+        /// </summary>
+        bool IsLogEntryLengthAlwaysPresented => false;
+
+        /// <summary>
         /// Gets index of the committed or last log entry.
         /// </summary>
         /// <remarks>

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Pipelines;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -18,6 +19,7 @@ using static System.Buffers.BuffersExtensions;
 using static System.Globalization.CultureInfo;
 using HeaderNames = Microsoft.Net.Http.Headers.HeaderNames;
 using HeaderUtils = Microsoft.Net.Http.Headers.HeaderUtilities;
+using MediaTypeNames = System.Net.Mime.MediaTypeNames;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
@@ -26,20 +28,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     using IO;
     using IO.Log;
     using EncodingContext = Text.EncodingContext;
+    using static IO.Pipelines.PipeExtensions;
 
     internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessageWriter<Result<bool>>
     {
-        private static readonly ILogEntryProducer<ReceivedLogEntry> EmptyProducer = new LogEntryProducer<ReceivedLogEntry>();
-
+        private static readonly ILogEntryProducer<MultipartLogEntry> EmptyProducer = new LogEntryProducer<MultipartLogEntry>();
         internal new const string MessageType = "AppendEntries";
         private const string PrecedingRecordIndexHeader = "X-Raft-Preceding-Record-Index";
         private const string PrecedingRecordTermHeader = "X-Raft-Preceding-Record-Term";
         private const string CommitIndexHeader = "X-Raft-Commit-Index";
         private protected const string CountHeader = "X-Raft-Entries-Count";
 
-        private sealed class ReceivedLogEntry : StreamTransferObject, IRaftLogEntry
+        private sealed class MultipartLogEntry : StreamTransferObject, IRaftLogEntry
         {
-            internal ReceivedLogEntry(MultipartSection section)
+            internal MultipartLogEntry(MultipartSection section)
                 : base(section.Body, true)
             {
                 HeadersReader<StringValues> headers = GetHeaders(section).TryGetValue;
@@ -60,26 +62,83 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             public DateTimeOffset Timestamp { get; }
         }
 
-        private sealed class ReceivedLogEntryReader : MultipartReader, ILogEntryProducer<ReceivedLogEntry>, IDisposable
+        private sealed class OctetStreamLogEntry : IRaftLogEntry
+        {
+            private readonly PipeReader reader;
+            internal readonly long Length;
+            private bool touched;
+
+            internal OctetStreamLogEntry(PipeReader reader, long term, long timestamp, long length)
+            {
+                Timestamp = new DateTimeOffset(timestamp, TimeSpan.Zero);
+                Length = length;
+                Term = term;
+                this.reader = reader;
+            }
+
+            internal ValueTask SkipIfNeededAsync()
+            {
+                ValueTask result;
+                if (touched)
+                {
+                    result = new ValueTask();
+                }
+                else
+                {
+                    touched = true;
+                    result = reader.SkipAsync(Length);
+                }
+
+                return result;
+            }
+
+            long? IDataTransferObject.Length => Length;
+
+            public DateTimeOffset Timestamp { get; }
+
+            public long Term { get; }
+
+            bool IDataTransferObject.IsReusable => false;
+
+            bool ILogEntry.IsSnapshot => false;
+
+            ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+            {
+                ValueTask result;
+                if (touched)
+                {
+                    result = new ValueTask(Task.FromException(new InvalidOperationException(ExceptionMessages.ReadLogEntryTwice)));
+                }
+                else
+                {
+                    touched = true;
+                    result = reader.ReadBlockAsync(Length, WriteToAsync<TWriter>, writer, token);
+                }
+
+                return result;
+            }
+        }
+
+        private sealed class MultipartLogEntriesReader : MultipartReader, ILogEntryProducer<MultipartLogEntry>, IDisposable
         {
             private long count;
-            private ReceivedLogEntry? current;
+            private MultipartLogEntry? current;
 
-            internal ReceivedLogEntryReader(string boundary, Stream body, long count)
+            internal MultipartLogEntriesReader(string boundary, Stream body, long count)
                 : base(boundary, body) => this.count = count;
 
-            long ILogEntryProducer<ReceivedLogEntry>.RemainingCount => count;
+            long ILogEntryProducer<MultipartLogEntry>.RemainingCount => count;
 
-            public ReceivedLogEntry Current => current ?? throw new InvalidOperationException();
+            public MultipartLogEntry Current => current ?? throw new InvalidOperationException();
 
-            async ValueTask<bool> IAsyncEnumerator<ReceivedLogEntry>.MoveNextAsync()
+            async ValueTask<bool> IAsyncEnumerator<MultipartLogEntry>.MoveNextAsync()
             {
                 if (current is not null)
                     await current.DisposeAsync().ConfigureAwait(false);
                 var section = await ReadNextSectionAsync().ConfigureAwait(false);
                 if (section is null)
                     return false;
-                current = new ReceivedLogEntry(section);
+                current = new MultipartLogEntry(section);
                 count -= 1L;
                 return true;
             }
@@ -91,6 +150,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                     current?.Dispose();
                     current = null;
                 }
+
+                count = 0L;
             }
 
             void IDisposable.Dispose()
@@ -103,11 +164,58 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             {
                 var task = current?.DisposeAsync() ?? new ValueTask();
                 current = null;
+                count = 0L;
                 GC.SuppressFinalize(this);
                 return task;
             }
 
-            ~ReceivedLogEntryReader() => Dispose(false);
+            ~MultipartLogEntriesReader() => Dispose(false);
+        }
+
+        private sealed class OctetStreamLogEntriesReader : ILogEntryProducer<OctetStreamLogEntry>
+        {
+            private readonly PipeReader reader;
+            private long count;
+            private OctetStreamLogEntry? current;
+
+            internal OctetStreamLogEntriesReader(PipeReader reader, long count)
+            {
+                this.count = count;
+                this.reader = reader;
+            }
+
+            long ILogEntryProducer<OctetStreamLogEntry>.RemainingCount => count;
+
+            public OctetStreamLogEntry Current => current ?? throw new InvalidOperationException();
+
+            async ValueTask<bool> IAsyncEnumerator<OctetStreamLogEntry>.MoveNextAsync()
+            {
+                if (current is not null)
+                    await current.SkipIfNeededAsync().ConfigureAwait(false);
+
+                if (count <= 0L)
+                    return false;
+
+                // read term
+                var term = await reader.ReadInt64Async(true).ConfigureAwait(false);
+
+                // read timestamp
+                var timestamp = await reader.ReadInt64Async(true).ConfigureAwait(false);
+
+                // read length
+                var length = await reader.ReadInt64Async(true).ConfigureAwait(false);
+
+                count -= 1L;
+                current = new OctetStreamLogEntry(reader, term, timestamp, length);
+                return true;
+            }
+
+            ValueTask IAsyncDisposable.DisposeAsync()
+            {
+                current = null;
+                count = 0L;
+                return new ValueTask();
+            }
         }
 
         internal readonly long PrevLogIndex;
@@ -134,8 +242,28 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         internal AppendEntriesMessage(HttpRequest request, out ILogEntryProducer<IRaftLogEntry> entries)
             : this(request.Headers.TryGetValue, out var count)
         {
-            var boundary = request.GetMultipartBoundary();
-            entries = string.IsNullOrEmpty(boundary) || count == 0L ? EmptyProducer : new ReceivedLogEntryReader(boundary, request.Body, count);
+            entries = CreateReader(request, count);
+        }
+
+        private static ILogEntryProducer<IRaftLogEntry> CreateReader(HttpRequest request, long count)
+        {
+            string boundary;
+
+            if (count == 0L)
+            {
+                // jump to empty set of log entries
+            }
+            else if (request.ContentLength.HasValue)
+            {
+                // log entries encoded as efficient binary stream
+                return new OctetStreamLogEntriesReader(request.BodyReader, count);
+            }
+            else if(!string.IsNullOrEmpty(boundary = request.GetMultipartBoundary()))
+            {
+                return new MultipartLogEntriesReader(boundary, request.Body, count);
+            }
+
+            return EmptyProducer;
         }
 
         internal override void PrepareRequest(HttpRequestMessage request)
@@ -153,26 +281,79 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         where TEntry : IRaftLogEntry
         where TList : IReadOnlyList<TEntry>
     {
-        private static readonly Encoding DefaultHttpEncoding = Encoding.GetEncoding("iso-8859-1");
+        // This writer is used in situations when audit trail provides strong guarantees
+        // that the IRaftLogEntry.Length is not null for any returned log entry.
+        // If so, we can efficiently encode the series of log entries as binary stream with the
+        // following format:
+        // <term> - 8 bytes
+        // <timestamp> - 8 bytes
+        // <length> - 8 bytes
+        // <payload> - octet string
+        private sealed class OctetStreamLogEntriesWriter : HttpContent
+        {
+            private TList entries;
+
+            internal OctetStreamLogEntriesWriter(in TList entries)
+            {
+                Headers.ContentType = new MediaTypeHeaderValue(MediaTypeNames.Application.Octet);
+                this.entries = entries;
+            }
+
+            protected override async Task SerializeToStreamAsync(Stream stream, TransportContext? context)
+            {
+                using var buffer = new MemoryOwner<byte>(ArrayPool<byte>.Shared, 512);
+                var writer = IAsyncBinaryWriter.Create(stream, buffer.Memory);
+                foreach (var entry in entries)
+                {
+                    // write term
+                    await writer.WriteInt64Async(entry.Term, true).ConfigureAwait(false);
+
+                    // write timestamp
+                    await writer.WriteInt64Async(entry.Timestamp.Ticks, true).ConfigureAwait(false);
+
+                    // write length
+                    await writer.WriteInt64Async(entry.Length.GetValueOrDefault(), true).ConfigureAwait(false);
+
+                    // write log entry payload
+                    await entry.WriteToAsync(writer, CancellationToken.None).ConfigureAwait(false);
+                }
+            }
+
+            protected override bool TryComputeLength(out long length)
+            {
+                length = 0L;
+                foreach (var entry in entries)
+                {
+                    Debug.Assert(entry.Length.HasValue);
+
+                    // sizeof(long) * 3 is a length of the log entry metadata
+                    length += entry.Length.GetValueOrDefault() + sizeof(long) * 3;
+                }
+
+                return true;
+            }
+        }
 
         /*
          * MultipartContent is not an option for this situation
          * Each log entry should not be boxed in the heap whenever possible
          * That's why stream-like writer of multipart content is here
          */
-        private sealed class LogEntriesContent : HttpContent
+        private sealed class MultipartLogEntriesWriter : HttpContent
         {
+            private static readonly Encoding DefaultHttpEncoding = Encoding.GetEncoding("iso-8859-1");
+            private const string ContentType = "multipart/mixed";
             private const string CrLf = "\r\n";
             private const string DoubleDash = "--";
             private const char Quote = '\"';
             private readonly Enumerable<TEntry, TList> entries;
             private readonly string boundary;
 
-            internal LogEntriesContent(in TList entries)
+            internal MultipartLogEntriesWriter(in TList entries)
             {
                 boundary = Guid.NewGuid().ToString();
                 this.entries = new Enumerable<TEntry, TList>(in entries);
-                var contentType = new MediaTypeHeaderValue("multipart/mixed");
+                var contentType = new MediaTypeHeaderValue(ContentType);
                 contentType.Parameters.Add(new NameValueHeaderValue(nameof(boundary), Quote + boundary + Quote));
                 Headers.ContentType = contentType;
             }
@@ -251,18 +432,31 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         }
 
         private TList entries;  // not readonly to avoid hidden copies
+        private bool optimizedTransfer;
 
         internal AppendEntriesMessage(IPEndPoint sender, long term, long prevLogIndex, long prevLogTerm, long commitIndex, TList entries)
             : base(sender, term, prevLogIndex, prevLogTerm, commitIndex)
             => this.entries = entries;
 
+        internal bool UseOptimizedTransfer
+        {
+#if NETCOREAPP3_1
+            set => optimizedTransfer = value;
+#else
+            init => optimizedTransfer = value;
+#endif
+        }
+
         internal override void PrepareRequest(HttpRequestMessage request)
         {
             request.Headers.Add(CountHeader, entries.Count.ToString(InvariantCulture));
             if (entries.Count > 0)
-                request.Content = new LogEntriesContent(in entries);
+                request.Content = CreateContentProvider();
             base.PrepareRequest(request);
         }
+
+        private HttpContent CreateContentProvider()
+            => optimizedTransfer ? new OctetStreamLogEntriesWriter(in entries) : new MultipartLogEntriesWriter(in entries);
 
         Task<Result<bool>> IHttpMessageReader<Result<bool>>.ParseResponse(HttpResponseMessage response, CancellationToken token) => ParseBoolResponse(response);
     }

@@ -145,7 +145,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             if (EndPoint.Equals(context.LocalEndpoint))
                 return Task.FromResult(new Result<bool>(term, true));
-            return SendAsync<Result<bool>, AppendEntriesMessage<TEntry, TList>>(new AppendEntriesMessage<TEntry, TList>(context.LocalEndpoint, term, prevLogIndex, prevLogTerm, commitIndex, entries), token);
+            return SendAsync<Result<bool>, AppendEntriesMessage<TEntry, TList>>(new AppendEntriesMessage<TEntry, TList>(context.LocalEndpoint, term, prevLogIndex, prevLogTerm, commitIndex, entries) { UseOptimizedTransfer = context.UseEfficientTransferOfLogEntries }, token);
         }
 
         Task<Result<bool>> IRaftClusterMember.InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)

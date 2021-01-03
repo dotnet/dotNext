@@ -127,6 +127,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         HttpMessageHandler IHostingContext.CreateHttpHandler()
             => httpHandlerFactory?.CreateHandler(clientHandlerName) ?? new HttpClientHandler();
 
+        bool IHostingContext.UseEfficientTransferOfLogEntries => AuditTrail.IsLogEntryLengthAlwaysPresented;
+
         public event ClusterChangedEventHandler? MemberAdded;
 
         public event ClusterChangedEventHandler? MemberRemoved;

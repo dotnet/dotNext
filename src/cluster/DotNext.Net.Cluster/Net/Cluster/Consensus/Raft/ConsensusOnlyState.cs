@@ -88,6 +88,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <inheritdoc/>
         long IPersistentState.Term => term.VolatileRead();
 
+        /// <inheritdoc/>
+        bool IAuditTrail.IsLogEntryLengthAlwaysPresented => true;
+
         private static bool IsCommitted(ConsensusOnlyState state, long index) => index <= state.commitIndex.VolatileRead();
 
         private void Append(long[] terms, long startIndex)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.IO.Pipelines;
@@ -61,6 +62,7 @@ namespace DotNext.IO.Pipelines
 
         private static readonly Func<Missing, ReadOnlyMemory<byte>, CancellationToken, ValueTask> SkippingCallback = SkipAsync;
 
+        [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1313", Justification = "Underscore is used to indicate that the parameter is unused")]
         private static ValueTask SkipAsync(Missing _, ReadOnlyMemory<byte> block, CancellationToken token)
             => token.IsCancellationRequested ? new ValueTask(Task.FromCanceled(token)) : new ValueTask();
 

@@ -11,6 +11,8 @@ using HeaderUtils = Microsoft.Net.Http.Headers.HeaderUtilities;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
+    using IAsyncBinaryWriter = IO.IAsyncBinaryWriter;
+
     internal abstract class RaftHttpMessage : HttpMessage
     {
         // cached to avoid memory allocation
@@ -53,5 +55,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             response.Headers.Add(TermHeader, result.Term.ToString(InvariantCulture));
             return response.WriteAsync(result.Value.ToString(InvariantCulture), token);
         }
+
+        private protected static ValueTask WriteToAsync<TWriter>(TWriter writer, ReadOnlyMemory<byte> block, CancellationToken token)
+            where TWriter : notnull, IAsyncBinaryWriter
+            => writer.WriteAsync(block, null, token);
     }
 }

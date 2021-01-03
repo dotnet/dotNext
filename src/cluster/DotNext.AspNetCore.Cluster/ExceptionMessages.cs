@@ -28,5 +28,7 @@ namespace DotNext
         internal static string InvalidRpcTimeout => (string)Resources.Get();
 
         internal static string UnsupportedRedirection => (string)Resources.Get();
+
+        internal static string ReadLogEntryTwice => (string)Resources.Get();
     }
 }
