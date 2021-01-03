@@ -11,7 +11,7 @@ namespace DotNext.Buffers
             where TParser : struct, IBufferReader<TResult>
         {
             consumed = input.Start;
-            if (input.Length > 0)
+            if (!input.IsEmpty)
             {
                 for (int bytesToConsume; parser.RemainingBytes > 0 && input.TryGet(ref consumed, out var block, false) && !block.IsEmpty; consumed = input.GetPosition(bytesToConsume, consumed))
                 {
