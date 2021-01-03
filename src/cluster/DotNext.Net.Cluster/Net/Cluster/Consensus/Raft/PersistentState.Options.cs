@@ -15,6 +15,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private const int MinBufferSize = 128;
             private int bufferSize = 2048;
             private int concurrencyLevel = 3;
+            private long partitionSize;
 
             /// <summary>
             /// Gets size of in-memory buffer for I/O operations.
@@ -34,7 +35,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <summary>
             /// Gets or sets the initial size of the file that holds the partition with log entries, in bytes.
             /// </summary>
-            public long InitialPartitionSize { get; set; }
+            /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is less than zero.</exception>
+            public long InitialPartitionSize
+            {
+                get => partitionSize;
+                set => partitionSize = value >= 0L ? value : throw new ArgumentOutOfRangeException(nameof(value));
+            }
 
             /// <summary>
             /// Enables or disables in-memory cache.
