@@ -119,7 +119,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         /// <inheritdoc/>
-        bool IAuditTrail.IsLogEntryLengthAlwaysPresented => false;
+        bool IAuditTrail.IsLogEntryLengthAlwaysPresented => true;
 
         /// <summary>
         /// Gets the buffer that can be used to perform I/O operations.
