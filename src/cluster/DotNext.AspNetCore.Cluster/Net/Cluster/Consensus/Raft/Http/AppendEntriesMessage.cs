@@ -44,7 +44,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             {
                 HeadersReader<StringValues> headers = GetHeaders(section).TryGetValue;
                 Term = ParseHeader(RequestVoteMessage.RecordTermHeader, headers, Int64Parser);
-                Timestamp = ParseHeader(HeaderNames.LastModified, headers, DateTimeParser);
+                Timestamp = ParseHeader(HeaderNames.LastModified, headers, Rfc1123Parser);
 
                 static IReadOnlyDictionary<string, StringValues> GetHeaders(MultipartSection section)
                 {

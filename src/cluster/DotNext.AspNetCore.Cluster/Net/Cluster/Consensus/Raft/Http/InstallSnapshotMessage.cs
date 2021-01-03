@@ -49,7 +49,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             : base(headers)
         {
             Index = ParseHeader(SnapshotIndexHeader, headers, Int64Parser);
-            Snapshot = new ReceivedSnapshot(body, ParseHeader(SnapshotTermHeader, headers, Int64Parser), ParseHeader(HeaderNames.LastModified, headers, DateTimeParser));
+            Snapshot = new ReceivedSnapshot(body, ParseHeader(SnapshotTermHeader, headers, Int64Parser), ParseHeader(HeaderNames.LastModified, headers, Rfc1123Parser));
         }
 
         internal InstallSnapshotMessage(HttpRequest request)
