@@ -27,8 +27,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     using Collections.Generic;
     using IO;
     using IO.Log;
-    using EncodingContext = Text.EncodingContext;
     using static IO.Pipelines.PipeExtensions;
+    using EncodingContext = Text.EncodingContext;
 
     internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessageWriter<Result<bool>>
     {
@@ -258,7 +258,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 // log entries encoded as efficient binary stream
                 return new OctetStreamLogEntriesReader(request.BodyReader, count);
             }
-            else if(!string.IsNullOrEmpty(boundary = request.GetMultipartBoundary()))
+            else if (!string.IsNullOrEmpty(boundary = request.GetMultipartBoundary()))
             {
                 return new MultipartLogEntriesReader(boundary, request.Body, count);
             }
@@ -327,7 +327,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                     Debug.Assert(entry.Length.HasValue);
 
                     // sizeof(long) * 3 is a length of the log entry metadata
-                    length += entry.Length.GetValueOrDefault() + sizeof(long) * 3;
+                    length += entry.Length.GetValueOrDefault() + (sizeof(long) * 3);
                 }
 
                 return true;
@@ -341,11 +341,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
          */
         private sealed class MultipartLogEntriesWriter : HttpContent
         {
-            private static readonly Encoding DefaultHttpEncoding = Encoding.GetEncoding("iso-8859-1");
             private const string ContentType = "multipart/mixed";
             private const string CrLf = "\r\n";
             private const string DoubleDash = "--";
             private const char Quote = '\"';
+            private static readonly Encoding DefaultHttpEncoding = Encoding.GetEncoding("iso-8859-1");
+
             private readonly Enumerable<TEntry, TList> entries;
             private readonly string boundary;
 
