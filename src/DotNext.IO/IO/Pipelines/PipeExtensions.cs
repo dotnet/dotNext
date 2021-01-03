@@ -447,7 +447,7 @@ namespace DotNext.IO.Pipelines
                 if (buffer.IsEmpty)
                     break;
                 consumed = buffer.Start;
-                for (int bytesToConsume; length > 0L && buffer.TryGet(ref consumed, out var block, false) && block.Length > 0; consumed = buffer.GetPosition(bytesToConsume, consumed), length -= bytesToConsume)
+                for (int bytesToConsume; length > 0L && buffer.TryGet(ref consumed, out var block, false) && !block.IsEmpty; consumed = buffer.GetPosition(bytesToConsume, consumed), length -= bytesToConsume)
                 {
                     bytesToConsume = Math.Min(block.Length, length.Truncate());
                     await callback(arg, block.Slice(0, bytesToConsume), token).ConfigureAwait(false);
