@@ -59,6 +59,11 @@ namespace DotNext.IO.Pipelines
             }
         }
 
+        private static readonly Func<Missing, ReadOnlyMemory<byte>, CancellationToken, ValueTask> SkippingCallback = SkipAsync;
+
+        private static ValueTask SkipAsync(Missing _, ReadOnlyMemory<byte> block, CancellationToken token)
+            => token.IsCancellationRequested ? new ValueTask(Task.FromCanceled(token)) : new ValueTask();
+
         private static async ValueTask<TResult> ReadAsync<TResult, TParser>(this PipeReader reader, TParser parser, CancellationToken token)
             where TParser : struct, IBufferReader<TResult>
         {
@@ -430,6 +435,19 @@ namespace DotNext.IO.Pipelines
             if (length > 0L)
                 throw new EndOfStreamException();
         }
+
+        /// <summary>
+        /// Drops the specified number of bytes from the pipe.
+        /// </summary>
+        /// <param name="reader">The pipe reader.</param>
+        /// <param name="length">The number of bytes to skip.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="EndOfStreamException">Reader doesn't have enough data to skip.</exception>
+        public static ValueTask SkipAsync(this PipeReader reader, long length, CancellationToken token = default)
+            => ReadBlockAsync(reader, length, SkippingCallback, Missing.Value, token);
 
         /// <summary>
         /// Decodes 8-bit unsigned integer from its string representation.
