@@ -69,12 +69,17 @@ namespace DotNext.IO.Pipelines
         private static async ValueTask<TResult> ReadAsync<TResult, TParser>(this PipeReader reader, TParser parser, CancellationToken token)
             where TParser : struct, IBufferReader<TResult>
         {
-            for (SequencePosition consumed; parser.RemainingBytes > 0; reader.AdvanceTo(consumed))
+            var completed = false;
+            for (SequencePosition consumed; parser.RemainingBytes > 0 && !completed; reader.AdvanceTo(consumed))
             {
                 var readResult = await reader.ReadAsync(token).ConfigureAwait(false);
                 readResult.ThrowIfCancellationRequested(token);
                 parser.Append<TResult, TParser>(readResult.Buffer, out consumed);
+                completed = readResult.IsCompleted;
             }
+
+            if (parser.RemainingBytes > 0)
+                parser.EndOfStream();
 
             return parser.Complete();
         }
@@ -88,12 +93,14 @@ namespace DotNext.IO.Pipelines
                 throw new EndOfStreamException();
             using var buffer = new ArrayBuffer<char>(length);
             var parser = new StringReader<ArrayBuffer<char>>(in context, buffer);
+            var completed = false;
 
-            for (SequencePosition consumed; parser.RemainingBytes > 0; reader.AdvanceTo(consumed))
+            for (SequencePosition consumed; parser.RemainingBytes > 0 && !completed; reader.AdvanceTo(consumed))
             {
                 var readResult = await reader.ReadAsync(token).ConfigureAwait(false);
                 readResult.ThrowIfCancellationRequested(token);
                 parser.Append<string, StringReader<ArrayBuffer<char>>>(readResult.Buffer, out consumed);
+                completed = readResult.IsCompleted;
             }
 
             return parser.RemainingBytes == 0 ? decoder.Decode(parser.Complete()) : throw new EndOfStreamException();
