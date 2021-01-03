@@ -32,7 +32,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             /// <summary>
-            /// Gets or sets the initial size of the file that holds the partition with log entries.
+            /// Gets or sets the initial size of the file that holds the partition with log entries, in bytes.
             /// </summary>
             public long InitialPartitionSize { get; set; }
 
