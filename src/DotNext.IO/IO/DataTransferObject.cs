@@ -234,7 +234,7 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns>The content of the object.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<TResult> ToType<TResult, TObject>(this TObject dto, CancellationToken token = default)
+        public static ValueTask<TResult> ToTypeAsync<TResult, TObject>(this TObject dto, CancellationToken token = default)
             where TObject : notnull, IDataTransferObject
             where TResult : unmanaged
             => dto.TransformAsync<TResult, ValueDecoder<TResult>>(new ValueDecoder<TResult>(), token);

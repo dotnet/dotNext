@@ -111,7 +111,7 @@ namespace DotNext.IO
             var bytes = new byte[sizeof(decimal)];
             Span.AsReadOnlyBytes(42M).CopyTo(bytes);
             var dto = new BinaryTransferObject(bytes);
-            Equal(42M, await dto.ToType<decimal, BinaryTransferObject>());
+            Equal(42M, await dto.ToTypeAsync<decimal, BinaryTransferObject>());
         }
 
         [Fact]

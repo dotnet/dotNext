@@ -16,7 +16,7 @@ namespace DotNext.Net.Cluster.Messaging
         /// <summary>
         /// Gets the reader of the binary message.
         /// </summary>
-        public static readonly MessageReader<T> Reader = DataTransferObject.ToType<T, IMessage>;
+        public static readonly MessageReader<T> Reader = DataTransferObject.ToTypeAsync<T, IMessage>;
 
         /// <summary>
         /// Initializes a new binary message.
