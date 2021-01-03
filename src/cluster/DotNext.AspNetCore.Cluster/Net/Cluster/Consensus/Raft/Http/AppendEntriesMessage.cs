@@ -68,12 +68,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             internal readonly long Length;
             private bool touched;
 
-            internal OctetStreamLogEntry(PipeReader reader, long term, long timestamp, long length)
+            internal OctetStreamLogEntry(PipeReader content, long term, long timestamp, long length)
             {
                 Timestamp = new DateTimeOffset(timestamp, TimeSpan.Zero);
                 Length = length;
                 Term = term;
-                this.reader = reader;
+                reader = content;
             }
 
             internal ValueTask SkipIfNeededAsync()
