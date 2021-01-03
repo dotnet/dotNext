@@ -111,6 +111,7 @@ Migration guide for 2.x users is [here](https://sakno.github.io/dotNext/migratio
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/3.0.0">DotNext.AspNetCore.Cluster 3.0.0</a>
 * Added `UsePersistenceEngine` extension method for correct registration of custom persistence engine derived from [PersistentState](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html) class
 * Added support of HTTP/3 (available for .NET 5 only)
+* Significantly optimized performance and traffic volume of **AppendEntries** Raft RPC call. Now replication has the performance comparable with TCP/UDP transports
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
