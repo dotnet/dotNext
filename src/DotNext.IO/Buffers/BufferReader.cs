@@ -27,35 +27,45 @@ namespace DotNext.Buffers
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static unsafe void ReverseIfNeeded<T>(ref T value, bool littleEndian, delegate*<T, T> reverse)
-            where T : unmanaged
+        internal static void ReverseIfNeeded(this ref int value, bool littleEndian)
         {
             if (littleEndian != BitConverter.IsLittleEndian)
-                value = reverse(value);
+                value = BinaryPrimitives.ReverseEndianness(value);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static unsafe void ReverseIfNeeded(this ref int value, bool littleEndian)
-            => ReverseIfNeeded(ref value, littleEndian, &BinaryPrimitives.ReverseEndianness);
+        internal static void ReverseIfNeeded(this ref long value, bool littleEndian)
+        {
+            if (littleEndian != BitConverter.IsLittleEndian)
+                value = BinaryPrimitives.ReverseEndianness(value);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static unsafe void ReverseIfNeeded(this ref long value, bool littleEndian)
-            => ReverseIfNeeded(ref value, littleEndian, &BinaryPrimitives.ReverseEndianness);
+        internal static void ReverseIfNeeded(this ref short value, bool littleEndian)
+        {
+            if (littleEndian != BitConverter.IsLittleEndian)
+                value = BinaryPrimitives.ReverseEndianness(value);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static unsafe void ReverseIfNeeded(this ref short value, bool littleEndian)
-            => ReverseIfNeeded(ref value, littleEndian, &BinaryPrimitives.ReverseEndianness);
+        internal static void ReverseIfNeeded(this ref ulong value, bool littleEndian)
+        {
+            if (littleEndian != BitConverter.IsLittleEndian)
+                value = BinaryPrimitives.ReverseEndianness(value);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static unsafe void ReverseIfNeeded(this ref ulong value, bool littleEndian)
-            => ReverseIfNeeded(ref value, littleEndian, &BinaryPrimitives.ReverseEndianness);
+        internal static void ReverseIfNeeded(this ref uint value, bool littleEndian)
+        {
+            if (littleEndian != BitConverter.IsLittleEndian)
+                value = BinaryPrimitives.ReverseEndianness(value);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static unsafe void ReverseIfNeeded(this ref uint value, bool littleEndian)
-            => ReverseIfNeeded(ref value, littleEndian, &BinaryPrimitives.ReverseEndianness);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static unsafe void ReverseIfNeeded(this ref ushort value, bool littleEndian)
-            => ReverseIfNeeded(ref value, littleEndian, &BinaryPrimitives.ReverseEndianness);
+        internal static void ReverseIfNeeded(this ref ushort value, bool littleEndian)
+        {
+            if (littleEndian != BitConverter.IsLittleEndian)
+                value = BinaryPrimitives.ReverseEndianness(value);
+        }
     }
 }
