@@ -233,8 +233,24 @@ namespace DotNext.IO.Pipelines
                 result = await reader.ReadAsync(token).ConfigureAwait(false);
                 result.ThrowIfCancellationRequested(token);
                 var buffer = result.Buffer;
-                for (var position = buffer.Start; buffer.TryGet(ref position, out var block); reader.AdvanceTo(position), token.ThrowIfCancellationRequested())
-                    consumer(block.Span, arg);
+                long consumedBytes = 0L;
+
+                // this way of advancing over the buffer is required
+                // because PipeReader.AdvanceTo and ReadOnlySequence<T>.TryGet
+                // may have incompatible behavior for some types of the pipe
+                // which causes ArgumentOutOfRange exception
+                try
+                {
+                    foreach (var block in buffer)
+                    {
+                        consumer(block.Span, arg);
+                        consumedBytes += block.Length;
+                    }
+                }
+                finally
+                {
+                    reader.AdvanceTo(consumedBytes == buffer.Length ? buffer.End : buffer.GetPosition(consumedBytes));
+                }
             }
             while (!result.IsCompleted);
         }
@@ -257,8 +273,24 @@ namespace DotNext.IO.Pipelines
                 result = await reader.ReadAsync(token).ConfigureAwait(false);
                 result.ThrowIfCancellationRequested(token);
                 var buffer = result.Buffer;
-                for (var position = buffer.Start; buffer.TryGet(ref position, out var block); reader.AdvanceTo(position))
-                    await consumer(arg, block, token).ConfigureAwait(false);
+                long consumedBytes = 0L;
+
+                // this way of advancing over the buffer is required
+                // because PipeReader.AdvanceTo and ReadOnlySequence<T>.TryGet
+                // may have incompatible behavior for some types of the pipe
+                // which causes ArgumentOutOfRange exception
+                try
+                {
+                    foreach (var block in buffer)
+                    {
+                        await consumer(arg, block, token).ConfigureAwait(false);
+                        consumedBytes += block.Length;
+                    }
+                }
+                finally
+                {
+                    reader.AdvanceTo(consumedBytes == buffer.Length ? buffer.End : buffer.GetPosition(consumedBytes));
+                }
             }
             while (!result.IsCompleted);
         }
