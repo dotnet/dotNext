@@ -233,23 +233,17 @@ namespace DotNext.IO.Pipelines
                 result = await reader.ReadAsync(token).ConfigureAwait(false);
                 result.ThrowIfCancellationRequested(token);
                 var buffer = result.Buffer;
-                long consumedBytes = 0L;
+                var consumed = buffer.Start;
 
-                // this way of advancing over the buffer is required
-                // because PipeReader.AdvanceTo and ReadOnlySequence<T>.TryGet
-                // may have incompatible behavior for some types of the pipe
-                // which causes ArgumentOutOfRange exception
                 try
                 {
-                    foreach (var block in buffer)
-                    {
+                    for (var position = consumed; buffer.TryGet(ref position, out var block); consumed = position)
                         consumer(block.Span, arg);
-                        consumedBytes += block.Length;
-                    }
+                    consumed = buffer.End;
                 }
                 finally
                 {
-                    reader.AdvanceTo(consumedBytes == buffer.Length ? buffer.End : buffer.GetPosition(consumedBytes));
+                    reader.AdvanceTo(consumed);
                 }
             }
             while (!result.IsCompleted);
@@ -273,23 +267,17 @@ namespace DotNext.IO.Pipelines
                 result = await reader.ReadAsync(token).ConfigureAwait(false);
                 result.ThrowIfCancellationRequested(token);
                 var buffer = result.Buffer;
-                long consumedBytes = 0L;
+                var consumed = buffer.Start;
 
-                // this way of advancing over the buffer is required
-                // because PipeReader.AdvanceTo and ReadOnlySequence<T>.TryGet
-                // may have incompatible behavior for some types of the pipe
-                // which causes ArgumentOutOfRange exception
                 try
                 {
-                    foreach (var block in buffer)
-                    {
+                    for (var position = consumed; buffer.TryGet(ref position, out var block); consumed = position)
                         await consumer(arg, block, token).ConfigureAwait(false);
-                        consumedBytes += block.Length;
-                    }
+                    consumed = buffer.End;
                 }
                 finally
                 {
-                    reader.AdvanceTo(consumedBytes == buffer.Length ? buffer.End : buffer.GetPosition(consumedBytes));
+                    reader.AdvanceTo(consumed);
                 }
             }
             while (!result.IsCompleted);
