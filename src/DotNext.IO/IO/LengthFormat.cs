@@ -15,7 +15,7 @@ namespace DotNext.IO
         /// <remarks>
         /// This format provides the best performance.
         /// </remarks>
-        Plain,
+        Plain = 0,
 
         /// <summary>
         /// Use 32-bit integer value to represent string length
