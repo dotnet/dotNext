@@ -227,5 +227,37 @@ namespace DotNext.IO.Pipelines
             alg.Initialize();
             Equal(hash, alg.ComputeHash(data));
         }
+
+        [Fact]
+        public static async Task ReadBlockUsingCallback()
+        {
+            static async void WriteValuesAsync(PipeWriter writer)
+            {
+                await writer.WriteInt64Async(42L, true);
+                await writer.WriteUInt64Async(43UL, true);
+                await writer.WriteInt32Async(44, true);
+                await writer.WriteUInt32Async(45U, true);
+                await writer.WriteInt16Async(46, true);
+                await writer.WriteUInt16Async(47, true);
+                await writer.CompleteAsync();
+            }
+
+            var pipe = new Pipe();
+            WriteValuesAsync(pipe.Writer);
+            var buffer = new ArrayBufferWriter<byte>();
+            await pipe.Reader.ReadBlockAsync<ArrayBufferWriter<byte>>(28L, static (writer, block, token) =>
+            {
+                writer.Write(block.Span);
+                return new ValueTask();
+            }, buffer);
+            Equal(28, buffer.WrittenCount);
+            var reader = IAsyncBinaryReader.Create(buffer.WrittenMemory);
+            Equal(42L, reader.ReadInt64(true));
+            Equal(43UL, reader.ReadUInt64(true));
+            Equal(44, reader.ReadInt32(true));
+            Equal(45U, reader.ReadUInt32(true));
+            Equal(46, reader.ReadInt16(true));
+            Equal(47, reader.ReadUInt16(true));
+        }
     }
 }

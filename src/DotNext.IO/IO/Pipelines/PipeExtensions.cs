@@ -362,6 +362,7 @@ namespace DotNext.IO.Pipelines
         /// <param name="output">The block of memory to fill from the pipe.</param>
         /// <param name="token">The token that can be used to cancel operation.</param>
         /// <returns>The task representing asynchronous state of the operation.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">Reader doesn't have enough data.</exception>
         public static async ValueTask ReadBlockAsync(this PipeReader reader, Memory<byte> output, CancellationToken token = default)
             => await ReadAsync<Missing, MemoryReader>(reader, new MemoryReader(output), token).ConfigureAwait(false);
@@ -374,6 +375,7 @@ namespace DotNext.IO.Pipelines
         /// <param name="allocator">The memory allocator used to place the decoded block of bytes.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The decoded block of bytes.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">Reader doesn't have enough data.</exception>
         public static async ValueTask<MemoryOwner<byte>> ReadBlockAsync(this PipeReader reader, LengthFormat lengthFormat, MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
         {
@@ -390,6 +392,43 @@ namespace DotNext.IO.Pipelines
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Consumes the requested portion of data asynchronously.
+        /// </summary>
+        /// <param name="reader">The pipe reader.</param>
+        /// <param name="length">The length of the block to consume, in bytes.</param>
+        /// <param name="callback">The callback to be called for each consumed segment.</param>
+        /// <param name="arg">The argument to be passed to the callback.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <typeparam name="TArg">The type of the argument to be passed to the callback.</typeparam>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="EndOfStreamException">Reader doesn't have enough data.</exception>
+        public static async ValueTask ReadBlockAsync<TArg>(this PipeReader reader, long length, Func<TArg, ReadOnlyMemory<byte>, CancellationToken, ValueTask> callback, TArg arg, CancellationToken token = default)
+        {
+            if (length < 0L)
+                throw new ArgumentOutOfRangeException(nameof(length));
+
+            for (SequencePosition consumed; length > 0L; reader.AdvanceTo(consumed))
+            {
+                var readResult = await reader.ReadAsync(token).ConfigureAwait(false);
+                readResult.ThrowIfCancellationRequested(token);
+                var buffer = readResult.Buffer;
+                if (buffer.IsEmpty)
+                    break;
+                consumed = buffer.Start;
+                for (int bytesToConsume; length > 0L && buffer.TryGet(ref consumed, out var block, false) && block.Length > 0; consumed = buffer.GetPosition(bytesToConsume, consumed), length -= bytesToConsume)
+                {
+                    bytesToConsume = Math.Min(block.Length, length.Truncate());
+                    await callback(arg, block.Slice(0, bytesToConsume), token).ConfigureAwait(false);
+                }
+            }
+
+            if (length > 0L)
+                throw new EndOfStreamException();
         }
 
         /// <summary>
