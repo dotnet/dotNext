@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Commands
@@ -30,6 +31,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
         /// <remarks>
         /// The formatter must have public parameterless constructor.
         /// </remarks>
+#if !NETSTANDARD2_1
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.PublicMethods | DynamicallyAccessedMemberTypes.NonPublicMethods)]
+#endif
         public Type? Formatter { get; set; }
 
         /// <summary>
