@@ -87,8 +87,7 @@ namespace DotNext.IO
             {
                 using var writer = CreateBuffer();
                 await reader.CopyToAsync(writer, token).ConfigureAwait(false);
-
-                return writer.WrittenCount > 0 ? writer.WrittenMemory.ToArray() : Array.Empty<byte>();
+                return writer.WrittenMemory.ToArray();
             }
         }
 
