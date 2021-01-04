@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -31,6 +32,9 @@ namespace DotNext.Reflection
         /// </remarks>
         /// <param name="type">The type to inspect.</param>
         /// <returns>Dispose method; or <see langword="null"/>, if this method doesn't exist.</returns>
+#if !NETSTANDARD2_1
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)]
+#endif
         public static MethodInfo? GetDisposeMethod(this Type type)
             => GetDisposeMethod(type, typeof(IDisposable), nameof(IDisposable.Dispose), typeof(void));
 
@@ -39,6 +43,9 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="type">The type to inspect.</param>
         /// <returns>Dispose method; or <see langword="null"/>, if this method doesn't exist.</returns>
+#if !NETSTANDARD2_1
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)]
+#endif
         public static MethodInfo? GetDisposeAsyncMethod(this Type type)
             => GetDisposeMethod(type, typeof(IAsyncDisposable), nameof(IAsyncDisposable.DisposeAsync), typeof(ValueTask));
     }
