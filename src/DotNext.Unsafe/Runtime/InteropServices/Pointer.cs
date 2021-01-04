@@ -398,7 +398,7 @@ namespace DotNext.Runtime.InteropServices
                 var total = 0L;
                 while (length > 0)
                 {
-                    var bytesRead = source.Read(new Span<byte>(&destination[total], (int)Math.Min(int.MaxValue, length)));
+                    var bytesRead = source.Read(new Span<byte>(&destination[total], length.Truncate()));
                     if (bytesRead == 0)
                         break;
                     total += bytesRead;
@@ -414,7 +414,7 @@ namespace DotNext.Runtime.InteropServices
             var total = 0L;
             while (length > 0L)
             {
-                using var manager = new MemorySource(destination, (int)Math.Min(int.MaxValue, length));
+                using var manager = new MemorySource(destination, length.Truncate());
                 var bytesRead = await source.ReadAsync(manager.Memory, token).ConfigureAwait(false);
                 if (bytesRead == 0)
                     break;
