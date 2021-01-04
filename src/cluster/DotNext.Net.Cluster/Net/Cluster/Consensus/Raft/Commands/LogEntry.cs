@@ -43,7 +43,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
         {
             get
             {
-                var result = formatter.GetLength(in command);
+                var result = formatter.GetLength(command);
                 if (result.TryGetValue(out var length))
                     result = new long?(length + sizeof(int));
 

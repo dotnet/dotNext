@@ -11,7 +11,6 @@ namespace DotNext.Runtime.Serialization
     /// </summary>
     /// <typeparam name="T">The type to be serialized.</typeparam>
     public interface IFormatter<T>
-        where T : struct
     {
         /// <summary>
         /// Serializes the value asynchronously.
@@ -39,8 +38,8 @@ namespace DotNext.Runtime.Serialization
         /// <summary>
         /// Gets length of the object data, in bytes.
         /// </summary>
-        /// <param name="command">The command data.</param>
+        /// <param name="obj">The command data.</param>
         /// <returns>The length of the object data, in bytes; or <see langword="null"/> if the length cannot be determined.</returns>
-        long? GetLength(in T command) => null;
+        long? GetLength(T obj) => null;
     }
 }
