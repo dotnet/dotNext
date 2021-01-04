@@ -83,7 +83,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                         while (await entries.MoveNextAsync())
                         {
                             True(entries.Current.Length.HasValue);
-                            buffer = await entries.Current.ToByteArrayAsync(token);
+                            buffer = await entries.Current.ToByteArrayAsync(null, token);
                             ReceivedEntries.Add(new BufferedEntry(entries.Current.Term, entries.Current.Timestamp, entries.Current.IsSnapshot, buffer));
                         }
                         break;
@@ -91,13 +91,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                         break;
                     case ReceiveEntriesBehavior.ReceiveFirst:
                         True(await entries.MoveNextAsync());
-                        buffer = await entries.Current.ToByteArrayAsync(token);
+                        buffer = await entries.Current.ToByteArrayAsync(null, token);
                         ReceivedEntries.Add(new BufferedEntry(entries.Current.Term, entries.Current.Timestamp, entries.Current.IsSnapshot, buffer));
                         break;
                     case ReceiveEntriesBehavior.DropFirst:
                         True(await entries.MoveNextAsync());
                         True(await entries.MoveNextAsync());
-                        buffer = await entries.Current.ToByteArrayAsync(token);
+                        buffer = await entries.Current.ToByteArrayAsync(null, token);
                         ReceivedEntries.Add(new BufferedEntry(entries.Current.Term, entries.Current.Timestamp, entries.Current.IsSnapshot, buffer));
                         break;
                 }
@@ -110,7 +110,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 Equal(42L, senderTerm);
                 Equal(10, snapshotIndex);
                 True(snapshot.IsSnapshot);
-                var buffer = await snapshot.ToByteArrayAsync(token);
+                var buffer = await snapshot.ToByteArrayAsync(null, token);
                 ReceivedEntries.Add(new BufferedEntry(snapshot.Term, snapshot.Timestamp, snapshot.IsSnapshot, buffer));
                 return new Result<bool>(43L, true);
             }

@@ -38,8 +38,6 @@ namespace DotNext.IO
             using var dto = new StreamTransferObject(ms, false);
             Equal(ms.Length, dto.As<IDataTransferObject>().Length);
             Equal(testString, await dto.ToStringAsync(Encoding.Unicode));
-            ms.Position = 0;
-            Equal(testString, await dto.ToStringAsync(Encoding.Unicode, 1024));
         }
 
         [Fact]
