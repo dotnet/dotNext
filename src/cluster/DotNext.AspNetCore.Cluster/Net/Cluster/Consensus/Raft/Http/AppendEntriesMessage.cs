@@ -62,41 +62,45 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             public DateTimeOffset Timestamp { get; }
         }
 
-        private sealed class OctetStreamLogEntry : IRaftLogEntry
+        private abstract class OctetStreamLogEntry : IRaftLogEntry
         {
             private readonly PipeReader reader;
-            internal readonly long Length;
-            private bool touched;
+            private long length, timestamp, term;
+            private bool consumed;
 
-            internal OctetStreamLogEntry(PipeReader content, long term, long timestamp, long length)
+            private protected OctetStreamLogEntry(PipeReader reader)
             {
-                Timestamp = new DateTimeOffset(timestamp, TimeSpan.Zero);
-                Length = length;
-                Term = term;
-                reader = content;
+                this.reader = reader;
+                consumed = true;
             }
 
-            internal ValueTask SkipIfNeededAsync()
-            {
-                ValueTask result;
-                if (touched)
-                {
-                    result = new ValueTask();
-                }
-                else
-                {
-                    touched = true;
-                    result = reader.SkipAsync(Length);
-                }
+            private protected bool Consumed => consumed;
 
-                return result;
+            private protected ValueTask SkipAsync()
+            {
+                consumed = true;
+                return reader.SkipAsync(length);
             }
 
-            long? IDataTransferObject.Length => Length;
+            private protected async ValueTask ConsumeAsync()
+            {
+                // read term
+                term = await reader.ReadInt64Async(true).ConfigureAwait(false);
 
-            public DateTimeOffset Timestamp { get; }
+                // read timestamp
+                timestamp = await reader.ReadInt64Async(true).ConfigureAwait(false);
 
-            public long Term { get; }
+                // read length
+                length = await reader.ReadInt64Async(true).ConfigureAwait(false);
+
+                consumed = false;
+            }
+
+            long? IDataTransferObject.Length => length;
+
+            DateTimeOffset ILogEntry.Timestamp => new DateTimeOffset(timestamp, TimeSpan.Zero);
+
+            long IRaftLogEntry.Term => term;
 
             bool IDataTransferObject.IsReusable => false;
 
@@ -105,14 +109,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
             {
                 ValueTask result;
-                if (touched)
+                if (consumed)
                 {
                     result = new ValueTask(Task.FromException(new InvalidOperationException(ExceptionMessages.ReadLogEntryTwice)));
                 }
                 else
                 {
-                    touched = true;
-                    result = reader.ReadBlockAsync(Length, WriteToAsync<TWriter>, writer, token);
+                    consumed = true;
+                    result = reader.ReadBlockAsync(length, WriteToAsync<TWriter>, writer, token);
                 }
 
                 return result;
@@ -172,47 +176,37 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             ~MultipartLogEntriesReader() => Dispose(false);
         }
 
-        private sealed class OctetStreamLogEntriesReader : ILogEntryProducer<OctetStreamLogEntry>
+        // Reader and log entry is combined as a single class.
+        // Such an approach allows to prevent allocation of objects for each log entry
+        private sealed class OctetStreamLogEntriesReader : OctetStreamLogEntry, ILogEntryProducer<OctetStreamLogEntry>
         {
-            private readonly PipeReader reader;
             private long count;
-            private OctetStreamLogEntry? current;
 
             internal OctetStreamLogEntriesReader(PipeReader reader, long count)
-            {
-                this.count = count;
-                this.reader = reader;
-            }
+                : base(reader)
+                => this.count = count;
 
             long ILogEntryProducer<OctetStreamLogEntry>.RemainingCount => count;
 
-            public OctetStreamLogEntry Current => current ?? throw new InvalidOperationException();
+            OctetStreamLogEntry IAsyncEnumerator<OctetStreamLogEntry>.Current => this;
 
             async ValueTask<bool> IAsyncEnumerator<OctetStreamLogEntry>.MoveNextAsync()
             {
-                if (current is not null)
-                    await current.SkipIfNeededAsync().ConfigureAwait(false);
-
                 if (count <= 0L)
                     return false;
 
-                // read term
-                var term = await reader.ReadInt64Async(true).ConfigureAwait(false);
+                // Consumed == true if the previous log entry has been consumed completely
+                // Consumed == false if the previous log entry was not consumed completely, only metadata
+                if (!Consumed)
+                    await SkipAsync().ConfigureAwait(false);
 
-                // read timestamp
-                var timestamp = await reader.ReadInt64Async(true).ConfigureAwait(false);
-
-                // read length
-                var length = await reader.ReadInt64Async(true).ConfigureAwait(false);
-
+                await ConsumeAsync().ConfigureAwait(false);
                 count -= 1L;
-                current = new OctetStreamLogEntry(reader, term, timestamp, length);
                 return true;
             }
 
             ValueTask IAsyncDisposable.DisposeAsync()
             {
-                current = null;
                 count = 0L;
                 return new ValueTask();
             }
