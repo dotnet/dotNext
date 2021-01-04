@@ -240,31 +240,17 @@ namespace DotNext.IO
             => dto.TransformAsync<TResult, ValueDecoder<TResult>>(new ValueDecoder<TResult>(), token);
 
         /// <summary>
-        /// Gets the data encapsulated by the data transfer object.
-        /// </summary>
-        /// <param name="dto">Data transfer object to read from.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <typeparam name="TResult">The type representing another form of data transfer object.</typeparam>
-        /// <typeparam name="TObject">The type of the data transfer object.</typeparam>
-        /// <returns>The data extracted from DTO.</returns>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<TResult> GetObjectDataAsync<TResult, TObject>(this TObject dto, CancellationToken token = default)
-            where TResult : notnull, IDataTransferObject.ITransformation<TResult>, new()
-            where TObject : notnull, IDataTransferObject
-            => dto.TransformAsync<TResult, TResult>(new TResult(), token);
-
-        /// <summary>
         /// Converts data transfer object to another type.
         /// </summary>
         /// <param name="dto">Data transfer object to decode.</param>
-        /// <param name="parser">The parser instance.</param>
+        /// <param name="transformation">The parser instance.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <typeparam name="TResult">The type of result.</typeparam>
         /// <typeparam name="TObject">The type of the data transfer object.</typeparam>
         /// <returns>The converted DTO content.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<TResult> GetObjectDataAsync<TResult, TObject>(this TObject dto, Func<IAsyncBinaryReader, CancellationToken, ValueTask<TResult>> parser, CancellationToken token = default)
+        public static ValueTask<TResult> TransformAsync<TResult, TObject>(this TObject dto, Func<IAsyncBinaryReader, CancellationToken, ValueTask<TResult>> transformation, CancellationToken token = default)
             where TObject : notnull, IDataTransferObject
-            => dto.TransformAsync<TResult, DelegatingDecoder<TResult>>(new DelegatingDecoder<TResult>(parser), token);
+            => dto.TransformAsync<TResult, DelegatingDecoder<TResult>>(new DelegatingDecoder<TResult>(transformation), token);
     }
 }

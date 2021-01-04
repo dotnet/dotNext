@@ -118,7 +118,7 @@ namespace DotNext.IO
         public static async Task DecodeUsingDelegate()
         {
             var dto = new BinaryTransferObject<long> { Content = 42L };
-            Equal(42L, await dto.GetObjectDataAsync((reader, token) => reader.ReadAsync<long>(token)));
+            Equal(42L, await dto.TransformAsync((reader, token) => reader.ReadAsync<long>(token)));
         }
 
         [Theory]
