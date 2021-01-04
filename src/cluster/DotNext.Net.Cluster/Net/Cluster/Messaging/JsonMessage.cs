@@ -1,5 +1,6 @@
 #if !NETSTANDARD2_1
 using System;
+using System.Buffers;
 using System.Net.Mime;
 using System.Text.Json;
 using System.Threading;
@@ -73,13 +74,19 @@ namespace DotNext.Net.Cluster.Messaging
         /// <inheritdoc />
         long? IDataTransferObject.Length => null;
 
-        /// <inheritdoc />
-        async ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+        private void SerializeToJson(IBufferWriter<byte> buffer)
         {
-            using var buffer = new PooledArrayBufferWriter<byte>();
             using var jsonWriter = new Utf8JsonWriter(buffer, WriterOptions);
             JsonSerializer.Serialize(jsonWriter, Content, options);
-            await writer.WriteAsync(buffer.WrittenMemory, null, token).ConfigureAwait(false);
+        }
+
+        /// <inheritdoc />
+        ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+        {
+            return writer.WriteAsync(SerializeToJson, this, token);
+
+            static void SerializeToJson(JsonMessage<T> message, IBufferWriter<byte> buffer)
+                => message.SerializeToJson(buffer);
         }
 
         /// <summary>
@@ -91,7 +98,7 @@ namespace DotNext.Net.Cluster.Messaging
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>Deserialized object.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static async ValueTask<T?> FromJsonAsync(IMessage message, JsonSerializerOptions? options = null, MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
+        public static async ValueTask<T?> FromJsonAsync(IDataTransferObject message, JsonSerializerOptions? options = null, MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
         {
             using var utf8Bytes = await message.ToMemoryAsync(allocator, token).ConfigureAwait(false);
             return JsonSerializer.Deserialize<T>(utf8Bytes.Memory.Span, options);
@@ -104,7 +111,7 @@ namespace DotNext.Net.Cluster.Messaging
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>Deserialized object.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<T?> FromJsonAsync(IMessage message, CancellationToken token = default)
+        public static ValueTask<T?> FromJsonAsync(IDataTransferObject message, CancellationToken token = default)
             => FromJsonAsync(message, null, null, token);
     }
 }
