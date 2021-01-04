@@ -62,7 +62,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             public DateTimeOffset Timestamp { get; }
         }
 
-        private abstract class OctetStreamLogEntry : IRaftLogEntry
+        private class OctetStreamLogEntry : IRaftLogEntry
         {
             private readonly PipeReader reader;
             private long length, timestamp, term;
