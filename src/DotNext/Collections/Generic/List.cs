@@ -115,7 +115,11 @@ namespace DotNext.Collections.Generic
         /// <returns>An array of list items.</returns>
         public static TOutput[] ToArray<TInput, TOutput>(this IList<TInput> input, in ValueFunc<TInput, TOutput> mapper)
         {
+#if NETSTANDARD2_1
             var output = OneDimensionalArray.New<TOutput>(input.Count);
+#else
+            var output = GC.AllocateUninitializedArray<TOutput>(input.Count);
+#endif
             for (var i = 0; i < input.Count; i++)
                 output[i] = mapper.Invoke(input[i]);
             return output;
@@ -143,7 +147,11 @@ namespace DotNext.Collections.Generic
         /// <returns>An array of list items.</returns>
         public static TOutput[] ToArray<TInput, TOutput>(this IList<TInput> input, in ValueFunc<int, TInput, TOutput> mapper)
         {
+#if NETSTANDARD2_1
             var output = OneDimensionalArray.New<TOutput>(input.Count);
+#else
+            var output = GC.AllocateUninitializedArray<TOutput>(input.Count);
+#endif
             for (var i = 0; i < input.Count; i++)
                 output[i] = mapper.Invoke(i, input[i]);
             return output;
