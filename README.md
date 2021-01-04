@@ -49,12 +49,7 @@ Documentation for older versions:
 # What's new
 Release Date: 01-XX-2021
 
-The next major release of .NEXT is here and contains the following changes:
-* Multiple target frameworks: .NET Standard 2.1 and .NET 5.0
-* Significant performance improvements of growable buffers, fast reflection, persistent WAL, random string generation, HEX conversion and more
-* Removed obsolete classes and members
-* Fixed nullability attributes
-* `DotNext.Augmentation` IL weaver add-on for MSBuild is no longer supported
+The next major release is now available. Its primary focus is .NET 5 support while keeping compatibility with .NET Standard 2.1. As a result, .NEXT libraries built for multiple target frameworks. Additional changes include performance optimizations, polishing of existing API, dropping support of members that were deprecated in 2.x, expanding usage of nullable reference types.
 
 Migration guide for 2.x users is [here](https://sakno.github.io/dotNext/migration/2.html). Please consider that this version is not fully backward compatible with 2.x.
 
@@ -64,7 +59,7 @@ Migration guide for 2.x users is [here](https://sakno.github.io/dotNext/migratio
 * `ArrayRental<T>` type is replaced by [MemoryOwner&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.MemoryOwner-1.html) type
 * Removed obsolete members and classes
 * Removed `UnreachableCodeExecutionException` exception
-* Completely implementation of extension methods provided by [AsyncDelegate](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncDelegate.html) class
+* Completely rewritten implementation of extension methods provided by [AsyncDelegate](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncDelegate.html) class
 * Added [Base64Decoder](https://sakno.github.io/dotNext/api/DotNext.Text.Base64Decoder.html) type for efficient decoding of base64-encoded bytes in streaming scenarios
 * Removed `Future&lt;T&gt;` type
 * Added `ThreadPoolWorkItemFactory` static class with extension methods for constructing [IThreadPoolWorkItem](https://docs.microsoft.com/en-us/dotnet/api/system.threading.ithreadpoolworkitem) instances from method pointers. Available only for .NET 5 target
@@ -79,6 +74,7 @@ Migration guide for 2.x users is [here](https://sakno.github.io/dotNext/migratio
 * Added advanced encoding/decoding methods to [IAsyncBinaryWriter](https://sakno.github.io/dotNext/api/DotNext.IO.IAsyncBinaryWriter.html) and [IAsyncBinaryReader](https://sakno.github.io/dotNext/api/DotNext.IO.IAsyncBinaryReader.html) interfaces
 * Removed obsolete members and classes
 * Simplified signature of `AppendAsync` methods exposed by [IAuditTrail&lt;TEntry&gt;](https://sakno.github.io/dotNext/api/DotNext.IO.Log.IAuditTrail-1.html) interface
+* Improved performances of extension methods declared in [PipeExtensions](https://sakno.github.io/dotNext/api/DotNext.IO.Pipelines.PipeExtensions.html) class
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/3.0.0">DotNext.Metaprogramming 3.0.0</a>
@@ -99,19 +95,22 @@ Migration guide for 2.x users is [here](https://sakno.github.io/dotNext/migratio
 <a href="https://www.nuget.org/packages/dotnext.unsafe/3.0.0">DotNext.Unsafe 3.0.0</a>
 * Removed obsolete members and classes
 * Fixed nullability attributes
+* [IUnmanagedArray](https://sakno.github.io/dotNext/api/DotNext.Runtime.InteropServices.IUnmanagedArray-1.html) indexer property now uses 64-bit signed integer as an argument instead of 32-bit signed integer
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/3.0.0">DotNext.Net.Cluster 3.0.0</a>
 * Improved performance of [persistent WAL](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html)
 * Added support of active-standby configuration of Raft cluster. Standby node cannot become a leader but can be used for reads
-* Introduced [framework](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.Commands.html) for writing interpreters of the log entries stored in persistent write-ahead log
-* Added support of JSON-serializable log entries
+* Introduced [framework](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.Commands.html) for writing interpreters of log entries stored in persistent write-ahead log
+* Added support of JSON-serializable log entries (available for .NET 5 only)
 * Fixed bug causing long shutdown of Raft node which is using TCP transport
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/3.0.0">DotNext.AspNetCore.Cluster 3.0.0</a>
 * Added `UsePersistenceEngine` extension method for correct registration of custom persistence engine derived from [PersistentState](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html) class
 * Added support of HTTP/3 (available for .NET 5 only)
-* Significantly optimized performance and traffic volume of **AppendEntries** Raft RPC call. Now replication has the performance comparable with TCP/UDP transports
+* Significantly optimized performance and traffic volume of **AppendEntries** Raft RPC call. Now replication performance is comparable to TCP/UDP transports
+
+`DotNext.Augmentation` IL weaver add-on for MSBuild is no longer supported.
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
