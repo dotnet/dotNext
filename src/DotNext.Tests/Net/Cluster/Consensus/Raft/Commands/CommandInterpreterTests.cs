@@ -8,6 +8,8 @@ using Xunit;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Commands
 {
+    using Runtime.Serialization;
+
     [ExcludeFromCodeCoverage]
     public sealed class CommandInterpreterTests : Test
     {
@@ -43,18 +45,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
             public int Value;
         }
 
-        private sealed class Formatter : ICommandFormatter<BinaryOperationCommand>, ICommandFormatter<UnaryOperationCommand>, ICommandFormatter<AssignCommand>
+        private sealed class Formatter : IFormatter<BinaryOperationCommand>, IFormatter<UnaryOperationCommand>, IFormatter<AssignCommand>
         {
             public static readonly Formatter Instance = new Formatter();
 
-            async ValueTask ICommandFormatter<BinaryOperationCommand>.SerializeAsync<TWriter>(BinaryOperationCommand command, TWriter writer, CancellationToken token)
+            async ValueTask IFormatter<BinaryOperationCommand>.SerializeAsync<TWriter>(BinaryOperationCommand command, TWriter writer, CancellationToken token)
             {
                 await writer.WriteInt32Async(command.X, true, token);
                 await writer.WriteInt32Async(command.Y, true, token);
                 await writer.WriteAsync(command.Type, token);
             }
 
-            async ValueTask<BinaryOperationCommand> ICommandFormatter<BinaryOperationCommand>.DeserializeAsync<TReader>(TReader reader, CancellationToken token)
+            async ValueTask<BinaryOperationCommand> IFormatter<BinaryOperationCommand>.DeserializeAsync<TReader>(TReader reader, CancellationToken token)
             {
                 return new BinaryOperationCommand
                 {
@@ -64,16 +66,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
                 };
             }
 
-            unsafe long? ICommandFormatter<BinaryOperationCommand>.GetLength(in BinaryOperationCommand command)
+            unsafe long? IFormatter<BinaryOperationCommand>.GetLength(in BinaryOperationCommand command)
                 => sizeof(BinaryOperationCommand);
 
-            async ValueTask ICommandFormatter<UnaryOperationCommand>.SerializeAsync<TWriter>(UnaryOperationCommand command, TWriter writer, CancellationToken token)
+            async ValueTask IFormatter<UnaryOperationCommand>.SerializeAsync<TWriter>(UnaryOperationCommand command, TWriter writer, CancellationToken token)
             {
                 await writer.WriteInt32Async(command.X, true, token);
                 await writer.WriteAsync(command.Type, token);
             }
 
-            async ValueTask<UnaryOperationCommand> ICommandFormatter<UnaryOperationCommand>.DeserializeAsync<TReader>(TReader reader, CancellationToken token)
+            async ValueTask<UnaryOperationCommand> IFormatter<UnaryOperationCommand>.DeserializeAsync<TReader>(TReader reader, CancellationToken token)
             {
                 return new UnaryOperationCommand
                 {
@@ -82,16 +84,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
                 };
             }
 
-            unsafe long? ICommandFormatter<UnaryOperationCommand>.GetLength(in UnaryOperationCommand command)
+            unsafe long? IFormatter<UnaryOperationCommand>.GetLength(in UnaryOperationCommand command)
                 => sizeof(UnaryOperationCommand);
 
-            ValueTask ICommandFormatter<AssignCommand>.SerializeAsync<TWriter>(AssignCommand command, TWriter writer, CancellationToken token)
+            ValueTask IFormatter<AssignCommand>.SerializeAsync<TWriter>(AssignCommand command, TWriter writer, CancellationToken token)
                 => writer.WriteAsync(command, token);
 
-            ValueTask<AssignCommand> ICommandFormatter<AssignCommand>.DeserializeAsync<TReader>(TReader reader, CancellationToken token)
+            ValueTask<AssignCommand> IFormatter<AssignCommand>.DeserializeAsync<TReader>(TReader reader, CancellationToken token)
                 => reader.ReadAsync<AssignCommand>(token);
 
-            unsafe long? ICommandFormatter<AssignCommand>.GetLength(in AssignCommand command)
+            unsafe long? IFormatter<AssignCommand>.GetLength(in AssignCommand command)
                 => sizeof(AssignCommand);
         }
 

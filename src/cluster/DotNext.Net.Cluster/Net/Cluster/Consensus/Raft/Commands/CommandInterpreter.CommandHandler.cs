@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 namespace DotNext.Net.Cluster.Consensus.Raft.Commands
 {
     using IO;
+    using Runtime.Serialization;
 
     public partial class CommandInterpreter
     {
@@ -17,10 +18,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
         private sealed class CommandHandler<TCommand> : CommandHandler
             where TCommand : struct
         {
-            private readonly ICommandFormatter<TCommand> formatter;
+            private readonly IFormatter<TCommand> formatter;
             private readonly Func<TCommand, CancellationToken, ValueTask> handler;
 
-            public CommandHandler(ICommandFormatter<TCommand> formatter, Func<TCommand, CancellationToken, ValueTask> handler)
+            public CommandHandler(IFormatter<TCommand> formatter, Func<TCommand, CancellationToken, ValueTask> handler)
             {
                 this.formatter = formatter;
                 this.handler = handler;

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace DotNext.Net.Cluster.Consensus.Raft.Commands
 {
     using static Runtime.Intrinsics;
+    using Runtime.Serialization;
 
     public partial class CommandInterpreter
     {
@@ -39,7 +40,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
             /// <returns>This builder.</returns>
             /// <exception cref="ArgumentNullException"><paramref name="handler"/> or <paramref name="formatter"/> is <see langword="null"/>.</exception>
             /// <exception cref="GenericArgumentException">Type <typaparamref name="TCommand"/> is not annotated with <see cref="CommandAttribute"/> attribute.</exception>
-            public Builder Add<TCommand>(Func<TCommand, CancellationToken, ValueTask> handler, ICommandFormatter<TCommand> formatter)
+            public Builder Add<TCommand>(Func<TCommand, CancellationToken, ValueTask> handler, IFormatter<TCommand> formatter)
                 where TCommand : struct
             {
                 if (handler is null)

@@ -3,6 +3,8 @@ using System.Reflection;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Commands
 {
+    using Runtime.Serialization;
+
     /// <summary>
     /// Marks target value type as the command of the database engine
     /// constructed on top of <see cref="PersistentState"/> type.
@@ -22,7 +24,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
         public int Id { get; }
 
         /// <summary>
-        /// Gets or sets the type implementing <see cref="ICommandFormatter{TCommand}"/> interface
+        /// Gets or sets the type implementing <see cref="IFormatter{T}"/> interface
         /// for the attributed type.
         /// </summary>
         /// <remarks>
@@ -32,7 +34,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
 
         /// <summary>
         /// Gets the name of the static property or field declared in <see cref="Formatter"/> type
-        /// which has the type implementing <see cref="ICommandFormatter{TCommand}"/> interface.
+        /// which has the type implementing <see cref="IFormatter{T}"/> interface.
         /// </summary>
         public string? FormatterMember { get; set; }
 

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Commands
 {
+    using Runtime.Serialization;
     using static Reflection.MethodExtensions;
     using static Runtime.Intrinsics;
     using IntegrityException = IO.Log.IntegrityException;
@@ -58,15 +59,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
                 Id = id;
             }
 
-            internal static FormatterInfo Create<TCommand>(ICommandFormatter<TCommand> formatter, int id)
+            internal static FormatterInfo Create<TCommand>(IFormatter<TCommand> formatter, int id)
                 where TCommand : struct
                 => new FormatterInfo(formatter, id);
 
             internal bool IsEmpty => Id == 0 && formatter is null;
 
-            internal ICommandFormatter<TCommand> GetFormatter<TCommand>()
+            internal IFormatter<TCommand> GetFormatter<TCommand>()
                 where TCommand : struct
-                => formatter is ICommandFormatter<TCommand> typedFormatter ?
+                => formatter is IFormatter<TCommand> typedFormatter ?
                     typedFormatter :
                     throw new GenericArgumentException<TCommand>(ExceptionMessages.MissingCommandFormatter<TCommand>());
         }
@@ -124,7 +125,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
         /// <param name="term">The term of the local node.</param>
         /// <typeparam name="TCommand">The type of the command.</typeparam>
         /// <returns>The instance of the log entry containing the command.</returns>
-        /// <exception cref="GenericArgumentException"><typeparamref name="TCommand"/> type doesn't have registered <see cref="ICommandFormatter{TCommand}"/>.</exception>
+        /// <exception cref="GenericArgumentException"><typeparamref name="TCommand"/> type doesn't have registered <see cref="IFormatter{TCommand}"/>.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public LogEntry<TCommand> CreateLogEntry<TCommand>(TCommand command, long term)
             where TCommand : struct

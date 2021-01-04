@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 namespace DotNext.Net.Cluster.Consensus.Raft.Commands
 {
     using IO;
+    using Runtime.Serialization;
 
     /// <summary>
     /// Represents Raft log entry containing custom command.
@@ -16,10 +17,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
         where TCommand : struct
     {
         private readonly TCommand command;
-        private readonly ICommandFormatter<TCommand> formatter;
+        private readonly IFormatter<TCommand> formatter;
         private readonly int id;
 
-        internal LogEntry(long term, TCommand command, ICommandFormatter<TCommand> formatter, int id)
+        internal LogEntry(long term, TCommand command, IFormatter<TCommand> formatter, int id)
         {
             Term = term;
             Timestamp = DateTimeOffset.Now;
