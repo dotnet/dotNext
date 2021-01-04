@@ -53,6 +53,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 }
                 else
                 {
+                    touched = true;
                     result = reader.ReadAsync(WriteToAsync<TWriter>, writer, token);
                 }
 
