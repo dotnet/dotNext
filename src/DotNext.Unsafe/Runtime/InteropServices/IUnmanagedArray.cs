@@ -32,7 +32,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="index">The index of the element to get.</param>
         /// <exception cref="IndexOutOfRangeException"><paramref name="index"/> is out of range.</exception>
         /// <value>The pointer to the array element.</value>
-        ref T this[int index]
+        ref T this[long index]
         {
             get
             {
