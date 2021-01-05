@@ -1,4 +1,7 @@
 using System;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using Debug = System.Diagnostics.Debug;
 using static System.Diagnostics.Stopwatch;
 
 namespace DotNext.Diagnostics
@@ -119,5 +122,27 @@ namespace DotNext.Diagnostics
         /// <param name="second">The second timestamp to compare.</param>
         /// <returns><see langword="true"/> if <paramref name="first"/> is less than or equal to <paramref name="second"/>.</returns>
         public static bool operator <=(Timestamp first, Timestamp second) => first.ticks <= second.ticks;
+
+        /// <summary>
+        /// Reads the timestamp and prevents the processor from reordering memory operations.
+        /// </summary>
+        /// <param name="location">The managed pointer to the timestamp.</param>
+        /// <returns>The value at the specified location.</returns>
+        public static Timestamp VolatileRead(ref Timestamp location)
+        {
+            Debug.Assert(Unsafe.SizeOf<Timestamp>() == sizeof(long));
+            return new Timestamp(Volatile.Read(ref Unsafe.As<Timestamp, long>(ref location)));
+        }
+
+        /// <summary>
+        /// Writes the timestamp and prevents the proces from reordering memory operations.
+        /// </summary>
+        /// <param name="location">The managed pointer to the timestamp.</param>
+        /// <param name="newValue">The value to write.</param>
+        public static void VolatileWrite(ref Timestamp location, Timestamp newValue)
+        {
+            Debug.Assert(Unsafe.SizeOf<Timestamp>() == sizeof(long));
+            Volatile.Write(ref Unsafe.As<Timestamp, long>(ref location), newValue.ticks);
+        }
     }
 }
