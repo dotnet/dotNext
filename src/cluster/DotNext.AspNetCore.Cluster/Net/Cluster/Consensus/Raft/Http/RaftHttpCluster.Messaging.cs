@@ -120,7 +120,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         IOutputChannel IMessageBus.LeaderRouter => this;
 
-        private static async Task ReceiveOneWayMessageFastAck(ISubscriber sender, IMessage message, IEnumerable<IInputChannel> handlers, HttpResponse response, CancellationToken token)
+        private static async Task ReceiveOneWayMessageFastAckAsync(ISubscriber sender, IMessage message, IEnumerable<IInputChannel> handlers, HttpResponse response, CancellationToken token)
         {
             IInputChannel? handler = handlers.FirstOrDefault(message.IsSignalSupported);
             if (handler is null)
@@ -141,7 +141,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
         }
 
-        private static Task ReceiveOneWayMessage(ISubscriber sender, CustomMessage request, IEnumerable<IInputChannel> handlers, bool reliable, HttpResponse response, CancellationToken token)
+        private static Task ReceiveOneWayMessageAsync(ISubscriber sender, CustomMessage request, IEnumerable<IInputChannel> handlers, bool reliable, HttpResponse response, CancellationToken token)
         {
             response.StatusCode = StatusCodes.Status204NoContent;
 
@@ -150,7 +150,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 return Task.CompletedTask;
             Task? task = reliable ?
                 handlers.TryReceiveSignal(sender, request.Message, response.HttpContext, token) :
-                ReceiveOneWayMessageFastAck(sender, request.Message, handlers, response, token);
+                ReceiveOneWayMessageFastAckAsync(sender, request.Message, handlers, response, token);
             if (task is null)
             {
                 response.StatusCode = StatusCodes.Status501NotImplemented;
@@ -160,7 +160,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             return task;
         }
 
-        private static async Task ReceiveMessage(ISubscriber sender, CustomMessage request, IEnumerable<IInputChannel> handlers, HttpResponse response, CancellationToken token)
+        private static async Task ReceiveMessageAsync(ISubscriber sender, CustomMessage request, IEnumerable<IInputChannel> handlers, HttpResponse response, CancellationToken token)
         {
             response.StatusCode = StatusCodes.Status200OK;
             var task = handlers.TryReceiveMessage(sender, request.Message, response.HttpContext, token);
@@ -170,7 +170,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 await CustomMessage.SaveResponse(response, await task.ConfigureAwait(false), token).ConfigureAwait(false);
         }
 
-        private Task ReceiveMessage(CustomMessage message, HttpResponse response, CancellationToken token)
+        private Task ReceiveMessageAsync(CustomMessage message, HttpResponse response, CancellationToken token)
         {
             var sender = FindMember(MatchByEndPoint, message.Sender);
             var task = Task.CompletedTask;
@@ -183,13 +183,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 switch (message.Mode)
                 {
                     case CustomMessage.DeliveryMode.RequestReply:
-                        task = ReceiveMessage(sender, message, messageHandlers, response, token);
+                        task = ReceiveMessageAsync(sender, message, messageHandlers, response, token);
                         break;
                     case CustomMessage.DeliveryMode.OneWay:
-                        task = ReceiveOneWayMessage(sender, message, messageHandlers, true, response, token);
+                        task = ReceiveOneWayMessageAsync(sender, message, messageHandlers, true, response, token);
                         break;
                     case CustomMessage.DeliveryMode.OneWayNoAck:
-                        task = ReceiveOneWayMessage(sender, message, messageHandlers, false, response, token);
+                        task = ReceiveOneWayMessageAsync(sender, message, messageHandlers, false, response, token);
                         break;
                     default:
                         response.StatusCode = StatusCodes.Status400BadRequest;
@@ -205,7 +205,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             return task;
         }
 
-        private async Task ReceiveVote(RequestVoteMessage request, HttpResponse response, CancellationToken token)
+        private async Task ReceiveVoteAsync(RequestVoteMessage request, HttpResponse response, CancellationToken token)
         {
             var sender = FindMember(MatchByEndPoint, request.Sender);
             if (sender is null)
@@ -219,14 +219,28 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
         }
 
-        private async Task Resign(ResignMessage request, HttpResponse response, CancellationToken token)
+        private async Task ReceivePreVoteAsync(PreVoteMessage request, HttpResponse response, CancellationToken token)
+        {
+            var sender = FindMember(MatchByEndPoint, request.Sender);
+            if (sender is null)
+            {
+                await request.SaveResponse(response, new Result<bool>(Term, false), token).ConfigureAwait(false);
+            }
+            else
+            {
+                await request.SaveResponse(response, await ReceivePreVoteAsync(request.ConsensusTerm + 1L, request.LastLogIndex, request.LastLogTerm, token).ConfigureAwait(false), token).ConfigureAwait(false);
+                sender.Touch();
+            }
+        }
+
+        private async Task ResignAsync(ResignMessage request, HttpResponse response, CancellationToken token)
         {
             var sender = FindMember(MatchByEndPoint, request.Sender);
             await request.SaveResponse(response, await ReceiveResignAsync(token).ConfigureAwait(false), token).ConfigureAwait(false);
             sender?.Touch();
         }
 
-        private Task GetMetadata(MetadataMessage request, HttpResponse response, CancellationToken token)
+        private Task GetMetadataAsync(MetadataMessage request, HttpResponse response, CancellationToken token)
         {
             var sender = FindMember(MatchByEndPoint, request.Sender);
             var result = request.SaveResponse(response, metadata, token);
@@ -234,7 +248,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             return result;
         }
 
-        private async Task ReceiveEntries(HttpRequest request, HttpResponse response, CancellationToken token)
+        private async Task ReceiveEntriesAsync(HttpRequest request, HttpResponse response, CancellationToken token)
         {
             var message = new AppendEntriesMessage(request, out var entries);
             await using (entries)
@@ -280,15 +294,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             switch (HttpMessage.GetMessageType(context.Request))
             {
                 case RequestVoteMessage.MessageType:
-                    return ReceiveVote(new RequestVoteMessage(context.Request), context.Response, context.RequestAborted);
+                    return ReceiveVoteAsync(new RequestVoteMessage(context.Request), context.Response, context.RequestAborted);
+                case PreVoteMessage.MessageType:
+                    return ReceivePreVoteAsync(new PreVoteMessage(context.Request), context.Response, context.RequestAborted);
                 case ResignMessage.MessageType:
-                    return Resign(new ResignMessage(context.Request), context.Response, context.RequestAborted);
+                    return ResignAsync(new ResignMessage(context.Request), context.Response, context.RequestAborted);
                 case MetadataMessage.MessageType:
-                    return GetMetadata(new MetadataMessage(context.Request), context.Response, context.RequestAborted);
+                    return GetMetadataAsync(new MetadataMessage(context.Request), context.Response, context.RequestAborted);
                 case AppendEntriesMessage.MessageType:
-                    return ReceiveEntries(context.Request, context.Response, context.RequestAborted);
+                    return ReceiveEntriesAsync(context.Request, context.Response, context.RequestAborted);
                 case CustomMessage.MessageType:
-                    return ReceiveMessage(new CustomMessage(context.Request), context.Response, context.RequestAborted);
+                    return ReceiveMessageAsync(new CustomMessage(context.Request), context.Response, context.RequestAborted);
                 case InstallSnapshotMessage.MessageType:
                     return InstallSnapshot(new InstallSnapshotMessage(context.Request), context.Response, context.RequestAborted);
                 default:

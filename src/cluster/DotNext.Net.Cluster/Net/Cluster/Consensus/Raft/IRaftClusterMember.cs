@@ -16,8 +16,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="lastLogIndex">Index of candidate's last log entry.</param>
         /// <param name="lastLogTerm">Term of candidate's last log entry.</param>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
-        /// <returns>Vote received from member; <see langword="true"/> if node accepts new leader, <see langword="false"/> if node doesn't accept new leader, <see langword="null"/> if node is not available.</returns>
+        /// <returns>Vote received from the member; <see langword="true"/> if node accepts new leader, <see langword="false"/> if node doesn't accept new leader.</returns>
         Task<Result<bool>> VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token);
+
+        /// <summary>
+        /// Checks whether the transition to Candidate state makes sence.
+        /// </summary>
+        /// <remarks>
+        /// Called by a server before changing itself to Candidate status.
+        /// If a majority of servers return true, proceed to Candidate.
+        /// Otherwise, wait for another election timeout.
+        /// </remarks>
+        /// <param name="term">Term value maintained by local cluster member.</param>
+        /// <param name="lastLogIndex">Index of candidate's last log entry.</param>
+        /// <param name="lastLogTerm">Term of candidate's last log entry.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>Pre-vote result received from the member; <see langword="true"/> if the member confirms transition of the caller to Candidate state.</returns>
+        /// <seealso href="https://www.openlife.cc/sites/default/files/4-modifications-for-Raft-consensus.pdf">Four modifications for the Raft consensus algorithm.</seealso>
+        Task<Result<bool>> PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token);
 
         /// <summary>
         /// Transfers transaction log entry to the member.

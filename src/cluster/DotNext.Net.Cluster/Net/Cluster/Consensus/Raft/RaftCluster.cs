@@ -15,6 +15,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using IO.Log;
     using Threading;
+    using Timestamp = Diagnostics.Timestamp;
     using static Threading.Tasks.ValueTaskSynchronization;
 
     /// <summary>
@@ -176,6 +177,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private volatile TMember? leader;
         private volatile int electionTimeout;
         private IPersistentState auditTrail;
+        private Timestamp lastUpdated;
 
         /// <summary>
         /// Initializes a new cluster manager for the local node.
@@ -207,8 +209,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <inheritdoc />
         ILogger IRaftStateMachine.Logger => Logger;
 
-        /// <inheritdoc/>
-        TimeSpan IRaftCluster.ElectionTimeout => TimeSpan.FromMilliseconds(electionTimeout);
+        /// <summary>
+        /// Gets election timeout used by the local member.
+        /// </summary>
+        public TimeSpan ElectionTimeout => TimeSpan.FromMilliseconds(electionTimeout);
 
         /// <summary>
         /// Indicates that local member is a leader.
@@ -328,7 +332,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             // otherwise use ephemeral state
             state = standbyNode ?
                 new StandbyState(this) :
-                new FollowerState(this) { Metrics = Metrics }.StartServing(TimeSpan.FromMilliseconds(electionTimeout), Token);
+                new FollowerState(this) { Metrics = Metrics }.StartServing(ElectionTimeout, Token);
         }
 
         private async Task CancelPendingRequestsAsync()
@@ -368,7 +372,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        private async Task StepDown(long newTerm) // true - need to update leader, false - leave leader value as is
+        private async Task StepDown(long newTerm)
         {
             if (newTerm > auditTrail.Term)
                 await WhenAll(auditTrail.UpdateTermAsync(newTerm), auditTrail.UpdateVotedForAsync(null)).ConfigureAwait(false);
@@ -386,14 +390,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 case LeaderState leaderState:
                     var newState = new FollowerState(this) { Metrics = Metrics };
                     await leaderState.StopAsync().ConfigureAwait(false);
-                    state = newState.StartServing(TimeSpan.FromMilliseconds(electionTimeout), Token);
+                    state = newState.StartServing(ElectionTimeout, Token);
                     leaderState.Dispose();
                     Metrics?.MovedToFollowerState();
                     break;
                 case CandidateState candidateState:
                     newState = new FollowerState(this) { Metrics = Metrics };
                     await candidateState.StopAsync().ConfigureAwait(false);
-                    state = newState.StartServing(TimeSpan.FromMilliseconds(electionTimeout), Token);
+                    state = newState.StartServing(ElectionTimeout, Token);
                     candidateState.Dispose();
                     Metrics?.MovedToFollowerState();
                     break;
@@ -502,6 +506,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     }
                 }
 
+                if (result)
+                    lastUpdated = Timestamp.Current;
+
                 return new Result<bool>(currentTerm, result);
             }
             finally
@@ -509,6 +516,38 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 transitionLock.Dispose();
                 tokenSource?.Dispose();
             }
+        }
+
+        /// <summary>
+        /// Receives preliminary vote from the potential Candidate in the cluster.
+        /// </summary>
+        /// <param name="nextTerm">Caller's current term + 1.</param>
+        /// <param name="lastLogIndex">Index of candidate's last log entry.</param>
+        /// <param name="lastLogTerm">Term of candidate's last log entry.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>Pre-vote result received from the member; <see langword="true"/> if the member confirms transition of the caller to Candidate state.</returns>
+        protected async Task<Result<bool>> ReceivePreVoteAsync(long nextTerm, long lastLogIndex, long lastLogTerm, CancellationToken token)
+        {
+            bool result;
+            long currentTerm;
+
+            // PreVote doesn't cause transition to another Raft state so locking is not needed
+            var tokenSource = token.LinkTo(Token);
+            try
+            {
+                currentTerm = auditTrail.Term;
+
+                // provide leader stickiness
+                result = Timestamp.Current - lastUpdated.Value >= ElectionTimeout &&
+                    currentTerm <= nextTerm &&
+                    await auditTrail.IsUpToDateAsync(lastLogIndex, lastLogTerm, token).ConfigureAwait(false);
+            }
+            finally
+            {
+                tokenSource?.Dispose();
+            }
+
+            return new Result<bool>(currentTerm, result);
         }
 
         /// <summary>
@@ -583,7 +622,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (state is LeaderState leaderState)
                 {
                     await leaderState.StopAsync().ConfigureAwait(false);
-                    state = new FollowerState(this) { Metrics = Metrics }.StartServing(TimeSpan.FromMilliseconds(electionTimeout), token);
+                    state = new FollowerState(this) { Metrics = Metrics }.StartServing(ElectionTimeout, token);
                     leaderState.Dispose();
                     Leader = null;
                     return true;
@@ -634,13 +673,60 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             using var lockHolder = await transitionSync.TryAcquireAsync(Token).ConfigureAwait(false);
             if (lockHolder && state is FollowerState followerState)
             {
-                followerState.Dispose();
                 Leader = null;
-                var localMember = FindMember(IsLocalMember);
-                await auditTrail.UpdateVotedForAsync(localMember).ConfigureAwait(false);     // vote for self
-                state = new CandidateState(this, await auditTrail.IncrementTermAsync().ConfigureAwait(false)).StartVoting(electionTimeout, auditTrail);
-                Metrics?.MovedToCandidateState();
+                if (await PreVoteAsync().ConfigureAwait(false))
+                {
+                    followerState.Dispose();
+                    var localMember = FindMember(IsLocalMember);
+                    await auditTrail.UpdateVotedForAsync(localMember).ConfigureAwait(false);     // vote for self
+                    state = new CandidateState(this, await auditTrail.IncrementTermAsync().ConfigureAwait(false)).StartVoting(electionTimeout, auditTrail);
+                    Metrics?.MovedToCandidateState();
+                }
+                else
+                {
+                    // resume follower state
+                    followerState.StartServing(ElectionTimeout, Token);
+                }
+
                 Logger.TransitionToCandidateStateCompleted();
+            }
+
+            // pre-vote logic that allow to decide about transition to candidate state
+            async Task<bool> PreVoteAsync()
+            {
+                var currentTerm = auditTrail.Term;
+                var lastIndex = auditTrail.GetLastIndex(false);
+                var lastTerm = await auditTrail.GetTermAsync(lastIndex, Token).ConfigureAwait(false);
+
+                ICollection<Task<Result<bool>>> responses = new LinkedList<Task<Result<bool>>>();
+                foreach (var member in Members)
+                    responses.Add(member.PreVoteAsync(currentTerm, lastIndex, lastTerm, Token));
+
+                var votes = 0;
+
+                // analyze responses
+                foreach (var response in responses)
+                {
+                    try
+                    {
+                        var result = await response.ConfigureAwait(false);
+                        votes += result.Value ? +1 : -1;
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        return false;
+                    }
+                    catch (MemberUnavailableException)
+                    {
+                        votes -= 1;
+                    }
+                    finally
+                    {
+                        response.Dispose();
+                    }
+                }
+
+                return votes > 0;
             }
         }
 

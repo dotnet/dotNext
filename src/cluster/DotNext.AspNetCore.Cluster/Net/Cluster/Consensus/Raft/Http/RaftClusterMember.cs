@@ -132,6 +132,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 ? Task.FromResult(new Result<bool>(term, true))
                 : SendAsync<Result<bool>, RequestVoteMessage>(new RequestVoteMessage(context.LocalEndpoint, term, lastLogIndex, lastLogTerm), token);
 
+        Task<Result<bool>> IRaftClusterMember.PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
+            => EndPoint.Equals(context.LocalEndpoint)
+                ? Task.FromResult(new Result<bool>(term, true))
+                : SendAsync<Result<bool>, PreVoteMessage>(new PreVoteMessage(context.LocalEndpoint, term, lastLogIndex, lastLogTerm), token);
+
         Task<bool> IClusterMember.ResignAsync(CancellationToken token)
             => SendAsync<bool, ResignMessage>(new ResignMessage(context.LocalEndpoint), token);
 

@@ -35,7 +35,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             private protected NodeConfiguration(IPEndPoint hostAddress)
             {
-                electionTimeout = ElectionTimeout.Recommended;
+                electionTimeout = Raft.ElectionTimeout.Recommended;
                 heartbeatThreshold = 0.5D;
                 Metadata = new Dictionary<string, string>();
                 Members = new HashSet<IPEndPoint>();
