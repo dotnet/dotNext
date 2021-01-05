@@ -6,10 +6,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using IO.Log;
 
-    /// <summary>
-    /// Represents various extensions for <see cref="IPersistentState"/> interface.
-    /// </summary>
-    public static class AuditTrail
+    internal static class AuditTrail
     {
         private sealed class TermReader : ILogEntryConsumer<IRaftLogEntry, long>
         {
@@ -32,16 +29,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return index >= localIndex && term >= await auditTrail.GetTermAsync(localIndex, token).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Checks whether the log entry at the specified index has the specified term.
-        /// </summary>
-        /// <param name="auditTrail">The audit trail with Raft-specific log entries.</param>
-        /// <param name="index">The index of the log entry to check.</param>
-        /// <param name="term">The expected Term value.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns><see langword="true"/> if the log entry at index <paramref name="index"/> has the term equal to <paramref name="term"/>.</returns>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static async ValueTask<bool> ContainsAsync(this IAuditTrail<IRaftLogEntry> auditTrail, long index, long term, CancellationToken token)
+        internal static async ValueTask<bool> ContainsAsync(this IAuditTrail<IRaftLogEntry> auditTrail, long index, long term, CancellationToken token)
             => index <= auditTrail.GetLastIndex(false) && term == await auditTrail.GetTermAsync(index, token).ConfigureAwait(false);
 
         internal static ValueTask<long> AppendNoOpEntry(this IPersistentState auditTrail, CancellationToken token)
