@@ -150,14 +150,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             replicationQueue = ImmutableQueue<WaitNode>.Empty;
         }
 
-        private bool CheckTerm(long term)
-        {
-            if (term <= currentTerm)
-                return true;
-            stateMachine.MoveToFollowerState(false, term);
-            return false;
-        }
-
         private async Task<bool> DoHeartbeats(IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)
         {
             var timeStamp = Timestamp.Current;
@@ -208,21 +200,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             tasks.Clear();
             Metrics?.ReportBroadcastTime(timeStamp.Elapsed);
 
-            // majority of nodes accept entries with a least one entry from current term
+            // majority of nodes accept entries with a least one entry from the current term
             if (commitQuorum > 0)
             {
                 var count = await auditTrail.CommitAsync(currentIndex, token).ConfigureAwait(false); // commit all entries started from first uncommitted index to the end
                 stateMachine.Logger.CommitSuccessful(commitIndex + 1, count);
-                return CheckTerm(term);
+                goto check_term;
             }
 
             stateMachine.Logger.CommitFailed(quorum, commitIndex);
 
             // majority of nodes replicated, continue leading if current term is not changed
-            if (quorum > 0 || allowPartitioning)
-                return CheckTerm(term);
+            if (quorum <= 0 & !allowPartitioning)
+                goto stop_leading;
+
+            check_term:
+            if (term <= currentTerm)
+                return true;
 
             // it is partitioned network with absolute majority, not possible to have more than one leader
+            stop_leading:
             stateMachine.MoveToFollowerState(false, term);
             return false;
         }
