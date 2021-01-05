@@ -668,11 +668,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             Debug.Assert(state is not StandbyState);
             Logger.TransitionToCandidateStateStarted();
+
+            var readyForTransition = await PreVoteAsync().ConfigureAwait(false);
             using var lockHolder = await transitionSync.TryAcquireAsync(Token).ConfigureAwait(false);
             if (lockHolder && state is FollowerState followerState)
             {
                 Leader = null;
-                if (await PreVoteAsync().ConfigureAwait(false))
+                if (readyForTransition)
                 {
                     followerState.Dispose();
                     var localMember = FindMember(IsLocalMember);
