@@ -1,8 +1,8 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using Debug = System.Diagnostics.Debug;
 using static System.Diagnostics.Stopwatch;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Diagnostics
 {

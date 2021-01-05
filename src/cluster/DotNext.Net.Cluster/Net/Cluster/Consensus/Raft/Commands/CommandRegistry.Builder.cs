@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Commands
 {
-    using static Runtime.Intrinsics;
     using Runtime.Serialization;
+    using static Runtime.Intrinsics;
 
     public partial class CommandInterpreter
     {

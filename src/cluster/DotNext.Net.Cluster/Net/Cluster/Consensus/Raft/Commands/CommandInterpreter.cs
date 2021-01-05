@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Commands
 {
+    using IO.Log;
     using Runtime.Serialization;
     using static Reflection.MethodExtensions;
     using static Runtime.Intrinsics;
-    using IntegrityException = IO.Log.IntegrityException;
 
     /// <summary>
     /// Represents interpreter of the log entries.

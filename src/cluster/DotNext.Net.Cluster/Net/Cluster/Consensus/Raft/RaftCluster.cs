@@ -15,8 +15,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using IO.Log;
     using Threading;
-    using Timestamp = Diagnostics.Timestamp;
     using static Threading.Tasks.ValueTaskSynchronization;
+    using Timestamp = Diagnostics.Timestamp;
 
     /// <summary>
     /// Represents transport-independent implementation of Raft protocol.
