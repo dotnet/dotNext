@@ -559,17 +559,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns><see langword="true"/> if local node accepts new leader in the cluster; otherwise, <see langword="false"/>.</returns>
         protected async Task<Result<bool>> ReceiveVoteAsync(TMember sender, long senderTerm, long lastLogIndex, long lastLogTerm, CancellationToken token)
         {
+            var currentTerm = auditTrail.Term;
+            var result = false;
+
+            if (currentTerm > senderTerm)
+                goto exit;
+
             var tokenSource = token.LinkTo(Token);
             var transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
             try
             {
-                var currentTerm = auditTrail.Term;
-                if (currentTerm > senderTerm)
-                {
-                    goto reject;
-                }
-
-                if (currentTerm < senderTerm)
+                if (currentTerm != senderTerm)
                 {
                     Leader = null;
                     await StepDown(senderTerm).ConfigureAwait(false);
@@ -584,23 +584,23 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
                 else
                 {
-                    goto reject;
+                    goto exit;
                 }
 
                 if (auditTrail.IsVotedFor(sender) && await auditTrail.IsUpToDateAsync(lastLogIndex, lastLogTerm, token).ConfigureAwait(false))
                 {
                     await auditTrail.UpdateVotedForAsync(sender).ConfigureAwait(false);
-                    return new Result<bool>(currentTerm, true);
+                    result = true;
                 }
-
-                reject:
-                return new Result<bool>(currentTerm, false);
             }
             finally
             {
                 transitionLock.Dispose();
                 tokenSource?.Dispose();
             }
+
+            exit:
+            return new Result<bool>(currentTerm, result);
         }
 
         /// <summary>
