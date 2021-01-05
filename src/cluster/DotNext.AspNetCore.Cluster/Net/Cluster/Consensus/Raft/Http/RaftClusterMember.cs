@@ -98,7 +98,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
             catch (HttpRequestException e)
             {
-                if (response is null)
+                if (response is null || e.StatusCode == HttpStatusCode.InternalServerError)
                 {
                     context.Logger.MemberUnavailable(EndPoint, e);
                     ChangeStatus(ClusterMemberStatus.Unavailable);
