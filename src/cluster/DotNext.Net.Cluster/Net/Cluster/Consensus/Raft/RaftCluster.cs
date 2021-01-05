@@ -177,7 +177,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private volatile TMember? leader;
         private volatile int electionTimeout;
         private IPersistentState auditTrail;
-        private Timestamp lastUpdated;
+        private Timestamp lastUpdated; // access is protected by transitionSync
 
         /// <summary>
         /// Initializes a new cluster manager for the local node.
@@ -502,12 +502,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         * If it is 'false' then the method will throw the exception and the node becomes unavailable in each replication cycle.
                         */
                         await auditTrail.AppendAsync(entries, prevLogIndex + 1L, true, token).ConfigureAwait(false);
-                        result = commitIndex <= auditTrail.GetLastIndex(true) || await auditTrail.CommitAsync(commitIndex, token).ConfigureAwait(false) > 0;
+                        if (result = commitIndex <= auditTrail.GetLastIndex(true) || await auditTrail.CommitAsync(commitIndex, token).ConfigureAwait(false) > 0)
+                            Timestamp.VolatileWrite(ref lastUpdated, Timestamp.Current);
                     }
                 }
-
-                if (result)
-                    lastUpdated = Timestamp.Current;
 
                 return new Result<bool>(currentTerm, result);
             }
@@ -538,7 +536,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 currentTerm = auditTrail.Term;
 
                 // provide leader stickiness
-                result = Timestamp.Current - lastUpdated.Value >= ElectionTimeout &&
+                result = Timestamp.Current - Timestamp.VolatileRead(ref lastUpdated).Value >= ElectionTimeout &&
                     currentTerm <= nextTerm &&
                     await auditTrail.IsUpToDateAsync(lastLogIndex, lastLogTerm, token).ConfigureAwait(false);
             }
