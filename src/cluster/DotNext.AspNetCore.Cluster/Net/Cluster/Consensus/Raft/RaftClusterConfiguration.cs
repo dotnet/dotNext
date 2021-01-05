@@ -3,6 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using IO.Log;
+
     /// <summary>
     /// Allows to setup special service used for configuration of <see cref="IRaftCluster"/> instance.
     /// </summary>
@@ -32,7 +34,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Func<IServiceProvider, TPersistentState> engineCast = ServiceProviderServiceExtensions.GetRequiredService<TPersistentState>;
 
             return services.AddSingleton<TPersistentState>()
-                .AddSingleton<IPersistentState>(engineCast);
+                .AddSingleton<IPersistentState>(engineCast)
+                .AddSingleton<IAuditTrail<IRaftLogEntry>>(engineCast);
         }
 
         /// <summary>
@@ -50,7 +53,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             return services.AddSingleton<TImplementation>()
                 .AddSingleton<TEngine>(engineCast)
-                .AddSingleton<IPersistentState>(engineCast);
+                .AddSingleton<IPersistentState>(engineCast)
+                .AddSingleton<IAuditTrail<IRaftLogEntry>>(engineCast);
         }
     }
 }
