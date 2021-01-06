@@ -529,7 +529,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             bool result;
             long currentTerm;
 
-            // PreVote doesn't cause transition to another Raft state so locking is not needed
+            // PreVote doesn't cause transition to another Raft state so locking not needed
             var tokenSource = token.LinkTo(Token);
             try
             {
