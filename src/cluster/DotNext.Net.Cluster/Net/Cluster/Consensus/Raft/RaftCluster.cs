@@ -490,6 +490,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 var currentTerm = auditTrail.Term;
                 if (currentTerm <= senderTerm)
                 {
+                    Timestamp.VolatileWrite(ref lastUpdated, Timestamp.Current);
                     await StepDown(senderTerm).ConfigureAwait(false);
                     Leader = sender;
                     if (await auditTrail.ContainsAsync(prevLogIndex, prevLogTerm, token).ConfigureAwait(false))
@@ -502,8 +503,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         * If it is 'false' then the method will throw the exception and the node becomes unavailable in each replication cycle.
                         */
                         await auditTrail.AppendAsync(entries, prevLogIndex + 1L, true, token).ConfigureAwait(false);
-                        if (result = commitIndex <= auditTrail.GetLastIndex(true) || await auditTrail.CommitAsync(commitIndex, token).ConfigureAwait(false) > 0)
-                            Timestamp.VolatileWrite(ref lastUpdated, Timestamp.Current);
+                        result = commitIndex <= auditTrail.GetLastIndex(true) || await auditTrail.CommitAsync(commitIndex, token).ConfigureAwait(false) > 0;
                     }
                 }
 
