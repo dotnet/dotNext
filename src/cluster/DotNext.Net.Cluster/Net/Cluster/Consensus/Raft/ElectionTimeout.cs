@@ -50,7 +50,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public int UpperValue { get; }
 
         internal static void Modify(ref ElectionTimeout timeout, int lowerValue, int upperValue)
-            => timeout = new ElectionTimeout(lowerValue, upperValue);
+            => timeout = new ElectionTimeout(lowerValue, upperValue, timeout.random);
     }
 
     /// <summary>
