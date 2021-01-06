@@ -104,7 +104,7 @@ Migration guide for 2.x users is [here](https://sakno.github.io/dotNext/migratio
 * Introduced [framework](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.Commands.html) for writing interpreters of log entries stored in persistent write-ahead log
 * Added support of JSON-serializable log entries (available for .NET 5 only)
 * Fixed bug causing long shutdown of Raft node which is using TCP transport
-* Added support of **PreVote** extension for Raft
+* Added support of **PreVote** extension for Raft preventing _term inflation_
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/3.0.0">DotNext.AspNetCore.Cluster 3.0.0</a>
 * Added `UsePersistenceEngine` extension method for correct registration of custom persistence engine derived from [PersistentState](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html) class
