@@ -214,6 +214,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         public TimeSpan ElectionTimeout => TimeSpan.FromMilliseconds(electionTimeout);
 
+        private TimeSpan HeartbeatTimeout => TimeSpan.FromMilliseconds(electionTimeout * heartbeatThreshold);
+
         /// <summary>
         /// Indicates that local member is a leader.
         /// </summary>
@@ -742,7 +744,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 candidateState.Dispose();
                 Leader = newLeader as TMember;
                 state = new LeaderState(this, allowPartitioning, currentTerm) { Metrics = Metrics }
-                    .StartLeading(TimeSpan.FromMilliseconds(electionTimeout * heartbeatThreshold), auditTrail, Token);
+                    .StartLeading(HeartbeatTimeout, auditTrail, Token);
                 await auditTrail.AppendNoOpEntry(Token).ConfigureAwait(false);
                 Metrics?.MovedToLeaderState();
                 Logger.TransitionToLeaderStateCompleted();
