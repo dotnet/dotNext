@@ -119,14 +119,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         /// <inheritdoc />
-        Task<Result<bool>> ILocalMember.ReceivePreVoteAsync(EndPoint sender, long nextTerm, long lastLogIndex, long lastLogTerm, CancellationToken token)
+        Task<Result<bool>> ILocalMember.ReceivePreVoteAsync(EndPoint sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
         {
             var member = FindMember(MatchByEndPoint, sender);
             if (member is null)
                 return Task.FromResult(new Result<bool>(Term, false));
 
             member.Touch();
-            return ReceivePreVoteAsync(nextTerm, lastLogIndex, lastLogTerm, token);
+            return ReceivePreVoteAsync(term + 1L, lastLogIndex, lastLogTerm, token);
         }
 
         /// <inheritdoc />

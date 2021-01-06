@@ -22,7 +22,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         Task<Result<bool>> ReceiveVoteAsync(EndPoint sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token);
 
-        Task<Result<bool>> ReceivePreVoteAsync(EndPoint sender, long nextTerm, long lastLogIndex, long lastLogTerm, CancellationToken token);
+        Task<Result<bool>> ReceivePreVoteAsync(EndPoint sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token);
 
         Task<bool> ResignAsync(CancellationToken token);
 
