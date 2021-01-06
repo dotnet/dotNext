@@ -177,7 +177,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private volatile TMember? leader;
         private volatile int electionTimeout;
         private IPersistentState auditTrail;
-        private Timestamp lastUpdated; // access is protected by transitionSync
+        private Timestamp lastUpdated; // volatile
 
         /// <summary>
         /// Initializes a new cluster manager for the local node.
