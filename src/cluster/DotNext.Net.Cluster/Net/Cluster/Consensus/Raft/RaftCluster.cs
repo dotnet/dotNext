@@ -669,13 +669,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         async void IRaftStateMachine.MoveToCandidateState()
         {
             Debug.Assert(state is not StandbyState);
-            Logger.TransitionToCandidateStateStarted();
 
-            var readyForTransition = await PreVoteAsync().ConfigureAwait(false);
+            var currentTerm = auditTrail.Term;
+            var readyForTransition = await PreVoteAsync(currentTerm).ConfigureAwait(false);
             using var lockHolder = await transitionSync.TryAcquireAsync(Token).ConfigureAwait(false);
             if (lockHolder && state is FollowerState followerState && followerState.IsExpired)
             {
-                Leader = null;
+                Logger.TransitionToCandidateStateStarted();
+
+                // if term changed after lock then assumes that leader will be updated soon
+                if (currentTerm == auditTrail.Term)
+                    Leader = null;
+                else
+                    readyForTransition = false;
+
                 if (readyForTransition)
                 {
                     followerState.Dispose();
@@ -683,20 +690,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     await auditTrail.UpdateVotedForAsync(localMember).ConfigureAwait(false);     // vote for self
                     state = new CandidateState(this, await auditTrail.IncrementTermAsync().ConfigureAwait(false)).StartVoting(electionTimeout, auditTrail);
                     Metrics?.MovedToCandidateState();
+                    Logger.TransitionToCandidateStateCompleted();
                 }
                 else
                 {
                     // resume follower state
                     followerState.StartServing(ElectionTimeout, Token);
+                    Logger.DowngradedToFollowerState();
                 }
-
-                Logger.TransitionToCandidateStateCompleted();
             }
 
             // pre-vote logic that allow to decide about transition to candidate state
-            async Task<bool> PreVoteAsync()
+            async Task<bool> PreVoteAsync(long currentTerm)
             {
-                var currentTerm = auditTrail.Term;
                 var lastIndex = auditTrail.GetLastIndex(false);
                 var lastTerm = await auditTrail.GetTermAsync(lastIndex, Token).ConfigureAwait(false);
 
