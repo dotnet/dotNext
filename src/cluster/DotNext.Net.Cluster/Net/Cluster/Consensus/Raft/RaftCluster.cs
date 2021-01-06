@@ -673,7 +673,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             var readyForTransition = await PreVoteAsync().ConfigureAwait(false);
             using var lockHolder = await transitionSync.TryAcquireAsync(Token).ConfigureAwait(false);
-            if (lockHolder && state is FollowerState followerState)
+            if (lockHolder && state is FollowerState followerState && followerState.IsExpired)
             {
                 Leader = null;
                 if (readyForTransition)
