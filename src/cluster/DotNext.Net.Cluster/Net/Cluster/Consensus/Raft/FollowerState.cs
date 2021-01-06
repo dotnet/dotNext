@@ -46,6 +46,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             else
             {
+                timedOut = false;
                 tracker = Track(timeout, refreshEvent, trackerCancellation.Token, token);
             }
 
