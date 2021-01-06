@@ -86,7 +86,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         Task<Result<bool>> IRaftClusterMember.PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
             => EndPoint.Equals(localMember.Address) ?
                 Task.FromResult(new Result<bool>(term, true)) :
-                VoteAsync(term, lastLogIndex, lastLogTerm, token);
+                PreVoteAsync(term, lastLogIndex, lastLogTerm, token);
 
         private protected abstract Task<Result<bool>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
             where TEntry : IRaftLogEntry
