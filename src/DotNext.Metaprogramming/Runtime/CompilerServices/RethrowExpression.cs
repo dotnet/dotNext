@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Runtime.ExceptionServices;
 
@@ -14,11 +13,7 @@ namespace DotNext.Runtime.CompilerServices
         public override Expression Reduce() => Rethrow();
 
         internal static Expression Dispatch(ParameterExpression exceptionHolder)
-        {
-            var captureMethod = typeof(ExceptionDispatchInfo).GetMethod(nameof(ExceptionDispatchInfo.Capture), new[] { typeof(Exception) });
-            Debug.Assert(captureMethod is not null);
-            return Call(null, captureMethod, exceptionHolder).Call(nameof(ExceptionDispatchInfo.Throw));
-        }
+            => Call(typeof(ExceptionDispatchInfo), nameof(ExceptionDispatchInfo.Throw), Type.EmptyTypes, exceptionHolder);
 
         internal override Expression Reduce(ParameterExpression stateMachine)
             => stateMachine.Call(nameof(AsyncStateMachine<ValueTuple>.Rethrow));
