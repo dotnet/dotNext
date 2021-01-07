@@ -13,13 +13,7 @@ namespace DotNext.Runtime.CompilerServices
         public override Expression Reduce() => Rethrow();
 
         internal static Expression Dispatch(ParameterExpression exceptionHolder)
-        {
-            var capture = Call(
-                null,
-                typeof(ExceptionDispatchInfo).GetMethod(nameof(ExceptionDispatchInfo.Capture), new[] { typeof(Exception) }),
-                exceptionHolder);
-            return capture.Call(nameof(ExceptionDispatchInfo.Throw));
-        }
+            => Call(typeof(ExceptionDispatchInfo), nameof(ExceptionDispatchInfo.Throw), Type.EmptyTypes, exceptionHolder);
 
         internal override Expression Reduce(ParameterExpression stateMachine)
             => stateMachine.Call(nameof(AsyncStateMachine<ValueTuple>.Rethrow));
