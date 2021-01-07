@@ -39,16 +39,16 @@ namespace DotNext.Runtime.CompilerServices
                 bool skipNextGuardedStatement = false;
                 foreach (var statement in statements)
                 {
-                    if (statement is GuardedStatement guardedStmt)
+                    switch (statement)
                     {
-                        if (skipNextGuardedStatement)
+                        case GuardedStatement guarded:
+                            if (!skipNextGuardedStatement)
+                                return guarded.FaultLabel;
                             skipNextGuardedStatement = false;
-                        else
-                            return guardedStmt.FaultLabel;
-                    }
-                    else if (statement is FinallyStatement | statement is CatchStatement)
-                    {
-                        skipNextGuardedStatement = true;
+                            break;
+                        case FinallyStatement _:
+                            skipNextGuardedStatement = true;
+                            break;
                     }
                 }
 
@@ -174,7 +174,7 @@ namespace DotNext.Runtime.CompilerServices
             {
                 if (ExpressionAttributes.Get(lookup)?.Labels.Contains(@goto.Target) ?? false)
                     break;
-                else if (lookup is TryCatchFinallyStatement statement)
+                if (lookup is TryCatchFinallyStatement statement)
                     result.AddLast(statement.InlineFinally(visitor, state));
             }
 
