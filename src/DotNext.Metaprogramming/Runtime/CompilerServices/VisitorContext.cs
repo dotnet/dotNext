@@ -27,12 +27,33 @@ namespace DotNext.Runtime.CompilerServices
 
         internal KeyValuePair<uint, StateTransition> NewTransition(IDictionary<uint, StateTransition> table)
         {
-            var guardedStmt = FindStatement<GuardedStatement>();
+            // if we are in finally or catch block then all exceptions must be redirected to the parent catch or finally block
             stateId += 1;
-            var transition = new StateTransition(Expression.Label("state_" + stateId), guardedStmt?.FaultLabel);
+            var transition = new StateTransition(Expression.Label("state_" + stateId), ResolveFaultLabel());
             var pair = new KeyValuePair<uint, StateTransition>(stateId, transition);
             table.Add(pair);
             return pair;
+
+            LabelTarget? ResolveFaultLabel()
+            {
+                bool skipNextGuardedStatement = false;
+                foreach (var statement in statements)
+                {
+                    if (statement is GuardedStatement guardedStmt)
+                    {
+                        if (skipNextGuardedStatement)
+                            skipNextGuardedStatement = false;
+                        else
+                            return guardedStmt.FaultLabel;
+                    }
+                    else if (statement is FinallyStatement | statement is CatchStatement)
+                    {
+                        skipNextGuardedStatement = true;
+                    }
+                }
+
+                return null;
+            }
         }
 
         private TStatement? FindStatement<TStatement>()

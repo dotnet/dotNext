@@ -84,12 +84,12 @@ namespace DotNext.Metaprogramming
         [Fact]
         public static async Task RegressionIssue46()
         {
-            var result = AsyncLambda<Func<IAsyncEnumerable<char>, IAsyncEnumerable<char>, Task>>(fun => 
+            var result = AsyncLambda<Func<IAsyncEnumerable<char>, IAsyncEnumerable<char>, Task>>(fun =>
             {
                 AwaitForEach(fun[0], ch =>
                 {
                     WriteLine(ch);
-                    AwaitForEach(fun[1], ch => WriteLine(ch));
+                    AwaitForEach(fun[1], WriteLine);
                 });
             }).Compile();
             
