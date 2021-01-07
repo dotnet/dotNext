@@ -363,7 +363,8 @@ namespace DotNext.IO
             var writer = new ArrayBufferWriter<byte>();
             var bytes = new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
             using var ms = new MemoryStream(bytes, false);
-            Equal(10L, ms.CopyTo(writer, 3));
+            ms.CopyTo(writer, 3);
+            Equal(10L, ms.Position);
             Equal(bytes, writer.WrittenSpan.ToArray());
         }
 
@@ -373,7 +374,8 @@ namespace DotNext.IO
             var writer = new ArrayBufferWriter<byte>();
             var bytes = new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
             using var ms = new MemoryStream(bytes, false);
-            Equal(10L, await ms.CopyToAsync(writer, 3));
+            await ms.CopyToAsync(writer, 3);
+            Equal(10L, ms.Position);
             Equal(bytes, writer.WrittenSpan.ToArray());
         }
 

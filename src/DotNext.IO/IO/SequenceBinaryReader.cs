@@ -1061,7 +1061,7 @@ namespace DotNext.IO
                 result = Task.CompletedTask;
                 try
                 {
-                    writer.Write(sequence.Slice(position), token);
+                    writer.Write(sequence.Slice(position));
                 }
                 catch (Exception e)
                 {

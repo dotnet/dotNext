@@ -194,7 +194,7 @@ namespace DotNext.IO.Pipelines
             await pipe.Writer.WriteAsync(new byte[] { 10, 20, 30 });
             await pipe.Writer.CompleteAsync();
             var buffer = new ArrayBufferWriter<byte>();
-            Equal(3L, await pipe.Reader.CopyToAsync(buffer));
+            await pipe.Reader.CopyToAsync(buffer);
             Equal(new byte[] { 10, 20, 30 }, buffer.WrittenMemory.ToArray());
         }
 

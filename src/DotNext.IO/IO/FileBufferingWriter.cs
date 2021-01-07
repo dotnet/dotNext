@@ -578,24 +578,18 @@ namespace DotNext.IO
         /// <param name="destination">The buffer to drain buffered contents to.</param>
         /// <param name="bufferSize">The size, in bytes, of the buffer used to copy bytes.</param>
         /// <param name="token">The token to monitor for cancellation requests.</param>
-        /// <returns>The number of copied elements..</returns>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public async Task<long> CopyToAsync(IBufferWriter<byte> destination, int bufferSize = 1024, CancellationToken token = default)
+        public async Task CopyToAsync(IBufferWriter<byte> destination, int bufferSize = 1024, CancellationToken token = default)
         {
-            var totalBytes = 0L;
             if (fileBackend is not null)
             {
                 fileBackend.Position = 0L;
-                totalBytes += await fileBackend.CopyToAsync(destination, bufferSize, token).ConfigureAwait(false);
+                await fileBackend.CopyToAsync(destination, bufferSize, token).ConfigureAwait(false);
             }
 
             if (buffer.Length > 0 && position > 0)
-            {
                 destination.Write(buffer.Memory.Span.Slice(0, position));
-                totalBytes += position;
-            }
-
-            return totalBytes;
         }
 
         /// <summary>
@@ -604,24 +598,17 @@ namespace DotNext.IO
         /// <param name="destination">The buffer to drain buffered contents to.</param>
         /// <param name="bufferSize">The size, in bytes, of the buffer used to copy bytes.</param>
         /// <param name="token">The token to monitor for cancellation requests.</param>
-        /// <returns>The number of copied elements..</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public long CopyTo(IBufferWriter<byte> destination, int bufferSize = 1024, CancellationToken token = default)
+        public void CopyTo(IBufferWriter<byte> destination, int bufferSize = 1024, CancellationToken token = default)
         {
-            var totalBytes = 0L;
             if (fileBackend is not null)
             {
                 fileBackend.Position = 0L;
-                totalBytes += fileBackend.CopyTo(destination, bufferSize, token);
+                fileBackend.CopyTo(destination, bufferSize, token);
             }
 
             if (buffer.Length > 0 && position > 0)
-            {
                 destination.Write(buffer.Memory.Span.Slice(0, position));
-                totalBytes += position;
-            }
-
-            return totalBytes;
         }
 
         /// <summary>

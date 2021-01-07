@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 namespace DotNext.IO
 {
     using Text;
+    using static Buffers.BufferHelpers;
     using static Buffers.BufferWriter;
     using static Pipelines.PipeExtensions;
 
@@ -46,7 +47,7 @@ namespace DotNext.IO
                 result = Task.CompletedTask;
                 try
                 {
-                    writer.Write(input, token);
+                    writer.Write(input);
                 }
                 catch (Exception e)
                 {

@@ -17,6 +17,7 @@ namespace DotNext.Buffers
     {
         private const int MaxBufferSize = int.MaxValue / 2;
         internal const MemoryAllocator<byte>? DefaultByteAllocator = null;
+        internal static readonly ReadOnlySpanAction<byte, IBufferWriter<byte>> ByteBufferWriter = BufferHelpers.GetBufferWriter<byte>();
 
         [StructLayout(LayoutKind.Auto)]
         internal struct LengthWriter : SevenBitEncodedInt.IWriter
@@ -47,25 +48,6 @@ namespace DotNext.Buffers
         public static void Write<T>(this IBufferWriter<byte> writer, in T value)
             where T : unmanaged
             => writer.Write(Span.AsReadOnlyBytes(in value));
-
-        /// <summary>
-        /// Writes the sequence of elements to the buffer.
-        /// </summary>
-        /// <typeparam name="T">The type of the elements in the sequence.</typeparam>
-        /// <param name="writer">The buffer writer.</param>
-        /// <param name="value">The sequence of elements to be written.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The number of written elements.</returns>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static long Write<T>(this IBufferWriter<T> writer, ReadOnlySequence<T> value, CancellationToken token = default)
-        {
-            var count = 0L;
-
-            for (var position = value.Start; value.TryGet(ref position, out var block); count += block.Length, token.ThrowIfCancellationRequested())
-                writer.Write(block.Span);
-
-            return count;
-        }
 
         /// <summary>
         /// Encodes 64-bit signed integer.

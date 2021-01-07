@@ -79,6 +79,27 @@ namespace DotNext.Buffers
             writer.Advance(count);
         }
 
+        /// <summary>
+        /// Writes the sequence of elements to the buffer.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements in the sequence.</typeparam>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The sequence of elements to be written.</param>
+        public static void Write<T>(this IBufferWriter<T> writer, ReadOnlySequence<T> value)
+        {
+            foreach (var segment in value)
+                writer.Write(segment.Span);
+        }
+
+        /// <summary>
+        /// Creates <see cref="ReadOnlySpanAction{T, TArg}"/> delegate
+        /// that can be used to write the block of elements to the buffer.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements in the buffer.</typeparam>
+        /// <returns>The delegate instance.</returns>
+        public static ReadOnlySpanAction<T, IBufferWriter<T>> GetBufferWriter<T>()
+            => Span.CopyTo;
+
 #if !NETSTANDARD2_1
         /// <summary>
         /// Writes the contents of string builder to the buffer.

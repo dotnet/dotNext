@@ -2810,30 +2810,13 @@ namespace DotNext.IO
         /// <param name="destination">The writer to which the contents of the current stream will be copied.</param>
         /// <param name="bufferSize">The size, in bytes, of the buffer.</param>
         /// <param name="token">The token to monitor for cancellation requests.</param>
-        /// <returns>The number of copied bytes.</returns>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="destination"/> is <see langword="null"/>.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="bufferSize"/> is negative or zero.</exception>
         /// <exception cref="NotSupportedException"><paramref name="source"/> doesn't support reading.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static async Task<long> CopyToAsync(this Stream source, IBufferWriter<byte> destination, int bufferSize = 0, CancellationToken token = default)
-        {
-            if (destination is null)
-                throw new ArgumentNullException(nameof(destination));
-            if (bufferSize < 0)
-                throw new ArgumentOutOfRangeException(nameof(bufferSize));
-
-            var totalBytes = 0L;
-            for (int count; ; totalBytes += count)
-            {
-                var buffer = destination.GetMemory(bufferSize);
-                count = await source.ReadAsync(buffer, token).ConfigureAwait(false);
-                if (count <= 0)
-                    break;
-                destination.Advance(count);
-            }
-
-            return totalBytes;
-        }
+        public static Task CopyToAsync(this Stream source, IBufferWriter<byte> destination, int bufferSize = 0, CancellationToken token = default)
+            => ReadAsync(source, BufferWriter.ByteBufferWriter, destination, bufferSize, token);
 
         /// <summary>
         /// Synchronously reads the bytes from the current stream and writes them to buffer
@@ -2843,29 +2826,11 @@ namespace DotNext.IO
         /// <param name="destination">The writer to which the contents of the current stream will be copied.</param>
         /// <param name="bufferSize">The size, in bytes, of the buffer.</param>
         /// <param name="token">The token to monitor for cancellation requests.</param>
-        /// <returns>The number of copied bytes.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="destination"/> is <see langword="null"/>.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="bufferSize"/> is negative or zero.</exception>
         /// <exception cref="NotSupportedException"><paramref name="source"/> doesn't support reading.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static long CopyTo(this Stream source, IBufferWriter<byte> destination, int bufferSize = 0, CancellationToken token = default)
-        {
-            if (destination is null)
-                throw new ArgumentNullException(nameof(destination));
-            if (bufferSize < 0)
-                throw new ArgumentOutOfRangeException(nameof(bufferSize));
-
-            var totalBytes = 0L;
-            for (int count; !token.IsCancellationRequested; totalBytes += count, token.ThrowIfCancellationRequested())
-            {
-                var buffer = destination.GetSpan(bufferSize);
-                count = source.Read(buffer);
-                if (count <= 0)
-                    break;
-                destination.Advance(count);
-            }
-
-            return totalBytes;
-        }
+        public static void CopyTo(this Stream source, IBufferWriter<byte> destination, int bufferSize = 0, CancellationToken token = default)
+            => Read(source, BufferWriter.ByteBufferWriter, destination, bufferSize, token);
     }
 }
