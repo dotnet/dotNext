@@ -2815,8 +2815,21 @@ namespace DotNext.IO
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="bufferSize"/> is negative or zero.</exception>
         /// <exception cref="NotSupportedException"><paramref name="source"/> doesn't support reading.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static Task CopyToAsync(this Stream source, IBufferWriter<byte> destination, int bufferSize = 0, CancellationToken token = default)
-            => ReadAsync(source, BufferWriter.ByteBufferWriter, destination, bufferSize, token);
+        public static async Task CopyToAsync(this Stream source, IBufferWriter<byte> destination, int bufferSize = 0, CancellationToken token = default)
+        {
+            if (destination is null)
+                throw new ArgumentNullException(nameof(destination));
+            if (bufferSize < 0)
+                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+
+            for (int count; ; destination.Advance(count))
+            {
+                var buffer = destination.GetMemory(bufferSize);
+                count = await source.ReadAsync(buffer, token).ConfigureAwait(false);
+                if (count <= 0)
+                    break;
+            }
+        }
 
         /// <summary>
         /// Synchronously reads the bytes from the current stream and writes them to buffer
@@ -2831,6 +2844,19 @@ namespace DotNext.IO
         /// <exception cref="NotSupportedException"><paramref name="source"/> doesn't support reading.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static void CopyTo(this Stream source, IBufferWriter<byte> destination, int bufferSize = 0, CancellationToken token = default)
-            => Read(source, BufferWriter.ByteBufferWriter, destination, bufferSize, token);
+        {
+            if (destination is null)
+                throw new ArgumentNullException(nameof(destination));
+            if (bufferSize < 0)
+                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+
+            for (int count; ; destination.Advance(count))
+            {
+                var buffer = destination.GetSpan(bufferSize);
+                count = source.Read(buffer);
+                if (count <= 0)
+                    break;
+            }
+        }
     }
 }
