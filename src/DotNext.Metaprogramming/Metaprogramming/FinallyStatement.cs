@@ -11,7 +11,7 @@ namespace DotNext.Metaprogramming
         public TryBuilder Build(Action scope)
         {
             scope();
-            return builder.Finally(scope);
+            return builder.Finally(Build());
         }
     }
 }

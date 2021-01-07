@@ -1,6 +1,10 @@
 Release Notes
 ====
 
+# 01-07-2021
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.12.2">DotNext.Metaprogramming 2.12.2</a>
+* Fixed [46](https://github.com/sakno/dotNext/issues/46)
+
 # 12-16-2020
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.12.1">DotNext.Metaprogramming 2.12.1</a>
 * Fixed invalid detection of the collection item type inside of [CollectionAccessExpression](https://sakno.github.io/dotNext/api/DotNext.Linq.Expressions.CollectionAccessExpression.html)

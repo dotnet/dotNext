@@ -10,7 +10,7 @@ namespace DotNext.Runtime.CompilerServices
             : base(body)
         {
             prologue.AddFirst(finallyLabel.LandingSite());
-            prologue.AddLast(new ExitGuardedCodeExpression(previousState));
+            prologue.AddLast(new ExitGuardedCodeExpression(previousState, true));
         }
 
         protected override Expression VisitChildren(ExpressionVisitor visitor)
