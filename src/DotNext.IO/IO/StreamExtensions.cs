@@ -2850,12 +2850,13 @@ namespace DotNext.IO
             if (bufferSize < 0)
                 throw new ArgumentOutOfRangeException(nameof(bufferSize));
 
-            for (int count; ; destination.Advance(count))
+            for (int count; ; token.ThrowIfCancellationRequested())
             {
                 var buffer = destination.GetSpan(bufferSize);
                 count = source.Read(buffer);
                 if (count <= 0)
                     break;
+                destination.Advance(count);
             }
         }
     }
