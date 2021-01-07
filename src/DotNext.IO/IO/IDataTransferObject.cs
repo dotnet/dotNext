@@ -131,7 +131,7 @@ namespace DotNext.IO
         /// <typeparam name="TTransformation">The type of parser.</typeparam>
         /// <returns>The decoded stream.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        protected static ValueTask<TResult> DecodeAsync<TResult, TTransformation>(Stream input, TTransformation transformation, bool resetStream, CancellationToken token)
+        protected static ValueTask<TResult> TransformAsync<TResult, TTransformation>(Stream input, TTransformation transformation, bool resetStream, CancellationToken token)
             where TTransformation : notnull, ITransformation<TResult>
             => TransformAsync<TResult, TTransformation>(input, transformation, resetStream, BufferWriter.DefaultByteAllocator, token);
 
@@ -145,7 +145,7 @@ namespace DotNext.IO
         /// <typeparam name="TTransformation">The type of parser.</typeparam>
         /// <returns>The decoded stream.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        protected static ValueTask<TResult> DecodeAsync<TResult, TTransformation>(PipeReader input, TTransformation transformation, CancellationToken token)
+        protected static ValueTask<TResult> TransformAsync<TResult, TTransformation>(PipeReader input, TTransformation transformation, CancellationToken token)
             where TTransformation : notnull, ITransformation<TResult>
             => transformation.TransformAsync(new Pipelines.PipeBinaryReader(input), token);
 

@@ -84,7 +84,7 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public ValueTask<TResult> TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token = default)
             where TTransformation : IDataTransferObject.ITransformation<TResult>
-            => IDataTransferObject.DecodeAsync<TResult, TTransformation>(content, transformation, IsReusable, token);
+            => IDataTransferObject.TransformAsync<TResult, TTransformation>(content, transformation, IsReusable, token);
 
         /// <summary>
         /// Releases resources associated with this object.

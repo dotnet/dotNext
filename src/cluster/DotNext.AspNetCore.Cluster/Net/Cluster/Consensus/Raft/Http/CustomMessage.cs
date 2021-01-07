@@ -75,7 +75,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 => new ValueTask(writer.CopyFromAsync(requestStream, token));
 
             ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
-                => IDataTransferObject.DecodeAsync<TResult, TTransformation>(requestStream, transformation, false, token);
+                => IDataTransferObject.TransformAsync<TResult, TTransformation>(requestStream, transformation, false, token);
         }
 
         internal new const string MessageType = "CustomMessage";
