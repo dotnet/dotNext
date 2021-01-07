@@ -82,6 +82,29 @@ namespace DotNext.Metaprogramming
         }
 
         [Fact]
+        public static async Task RegressionIssue46()
+        {
+            var result = AsyncLambda<Func<IAsyncEnumerable<char>, IAsyncEnumerable<char>, Task>>(fun =>
+            {
+                AwaitForEach(fun[0], ch =>
+                {
+                    WriteLine(ch);
+                    AwaitForEach(fun[1], WriteLine);
+                });
+            }).Compile();
+            
+            var e = await ThrowsAsync<Exception>(() => result(GetData('1'), GetData('2')));
+            Equal("Custom exception", e.Message);
+
+            static async IAsyncEnumerable<char> GetData(char data)
+            {
+                await Task.Yield();
+                yield return data;
+                throw new Exception("Custom exception");
+            }
+        }
+
+        [Fact]
         public static void DoWhileLoop()
         {
             var sum = Lambda<Func<long, long>>((fun, result) =>
