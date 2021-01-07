@@ -47,6 +47,32 @@ namespace DotNext.Metaprogramming
         }
 
         [Fact]
+        public static async Task ThrowInCatchBlock()
+        {
+            var result = new StrongBox<int>();
+            var lambda = AsyncLambda<Func<StrongBox<int>, Task>>(fun =>
+            {
+                Try(() =>
+                {
+                    Await(Expression.Call(typeof(Task), nameof(Task.Yield), Type.EmptyTypes));
+                    Throw<InvalidOperationException>();
+                })
+                .Catch(typeof(InvalidOperationException), e =>
+                {
+                    Throw<ArithmeticException>();
+                })
+                .Finally(() =>
+                {
+                    Assign(Expression.Field(fun[0], "Value"), 45.Const());
+                })
+                .End();
+            }).Compile();
+
+            await ThrowsAsync<ArithmeticException>(() => lambda(result));
+            Equal(45, result.Value);
+        }
+
+        [Fact]
         public static void AsyncLambdaWithoutAwaitValueTask()
         {
             var lambda = Lambda<Func<int, int, ValueTask<int>>>((fun, result) =>
