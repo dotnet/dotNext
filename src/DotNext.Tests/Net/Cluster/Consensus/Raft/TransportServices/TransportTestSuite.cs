@@ -124,6 +124,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 return Task.FromResult(new Result<bool>(43L, true));
             }
 
+            Task<Result<bool>> ILocalMember.ReceivePreVoteAsync(EndPoint sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
+            {
+                True(token.CanBeCanceled);
+                Equal(10L, term);
+                Equal(2L, lastLogIndex);
+                Equal(99L, lastLogTerm);
+                return Task.FromResult(new Result<bool>(44L, true));
+            }
+
             public IReadOnlyDictionary<string, string> Metadata { get; }
         }
 
@@ -166,6 +175,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 result = await exchange.Task;
                 True(result.Value);
                 Equal(43L, result.Term);
+            }
+            // PreVote reqyest
+            using (timeoutTokenSource = new CancellationTokenSource(timeout))
+            {
+                var exchange = new PreVoteExchange(10L, 2L, 99L);
+                client.Enqueue(exchange, timeoutTokenSource.Token);
+                result = await exchange.Task;
+                True(result.Value);
+                Equal(44L, result.Term);
             }
             //Resign request
             using (timeoutTokenSource = new CancellationTokenSource(timeout))

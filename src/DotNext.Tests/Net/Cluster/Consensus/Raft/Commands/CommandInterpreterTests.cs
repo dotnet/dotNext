@@ -66,7 +66,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
                 };
             }
 
-            unsafe long? IFormatter<BinaryOperationCommand>.GetLength(in BinaryOperationCommand command)
+            unsafe long? IFormatter<BinaryOperationCommand>.GetLength(BinaryOperationCommand command)
                 => sizeof(BinaryOperationCommand);
 
             async ValueTask IFormatter<UnaryOperationCommand>.SerializeAsync<TWriter>(UnaryOperationCommand command, TWriter writer, CancellationToken token)
@@ -84,7 +84,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
                 };
             }
 
-            unsafe long? IFormatter<UnaryOperationCommand>.GetLength(in UnaryOperationCommand command)
+            unsafe long? IFormatter<UnaryOperationCommand>.GetLength(UnaryOperationCommand command)
                 => sizeof(UnaryOperationCommand);
 
             ValueTask IFormatter<AssignCommand>.SerializeAsync<TWriter>(AssignCommand command, TWriter writer, CancellationToken token)
@@ -93,7 +93,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
             ValueTask<AssignCommand> IFormatter<AssignCommand>.DeserializeAsync<TReader>(TReader reader, CancellationToken token)
                 => reader.ReadAsync<AssignCommand>(token);
 
-            unsafe long? IFormatter<AssignCommand>.GetLength(in AssignCommand command)
+            unsafe long? IFormatter<AssignCommand>.GetLength(AssignCommand command)
                 => sizeof(AssignCommand);
         }
 

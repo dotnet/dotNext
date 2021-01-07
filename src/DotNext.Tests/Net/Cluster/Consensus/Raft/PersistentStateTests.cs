@@ -26,6 +26,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Task<Result<bool>> IRaftClusterMember.VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
                 => throw new NotImplementedException();
 
+            Task<Result<bool>> IRaftClusterMember.PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
+                => throw new NotImplementedException();
+
             Task<Result<bool>> IRaftClusterMember.AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
                 => throw new NotImplementedException();
 
