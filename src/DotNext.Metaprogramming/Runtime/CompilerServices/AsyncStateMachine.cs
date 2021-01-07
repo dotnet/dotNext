@@ -27,6 +27,7 @@ namespace DotNext.Runtime.CompilerServices
         public TState State;
         private AsyncValueTaskMethodBuilder builder;
         private ExceptionDispatchInfo? exception;
+        private bool suspended;
         private uint guardedRegionsCounter;    // number of entries into try-clause
 
         private AsyncStateMachine(Transition<TState, AsyncStateMachine<TState>> transition, TState state)
@@ -36,6 +37,7 @@ namespace DotNext.Runtime.CompilerServices
             State = state;
             StateId = IAsyncStateMachine<TState>.FinalState;
             exception = null;
+            suspended = false;
             guardedRegionsCounter = 0;
         }
 
@@ -66,11 +68,13 @@ namespace DotNext.Runtime.CompilerServices
         /// Leaves guarded code block.
         /// </summary>
         /// <param name="previousState">The identifier of the async state machine before invocation of <see cref="EnterGuardedCode(uint)"/>.</param>
+        /// <param name="suspendException"><see langword="true"/> to suspend exception then entering finally block; otherwise, <see langword="false"/>.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void ExitGuardedCode(uint previousState)
+        public void ExitGuardedCode(uint previousState, bool suspendException)
         {
             StateId = previousState;
             guardedRegionsCounter -= 1;
+            suspended = exception is not null && suspendException;
         }
 
         /// <summary>
@@ -101,13 +105,17 @@ namespace DotNext.Runtime.CompilerServices
         public readonly bool HasNoException
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => exception is null;
+            get => exception is null || suspended;
         }
 
         /// <summary>
         /// Re-throws capture exception.
         /// </summary>
-        public readonly void Rethrow() => exception?.Throw();
+        public void Rethrow()
+        {
+            suspended = false;
+            exception?.Throw();
+        }
 
         void IAsyncStateMachine.MoveNext()
         {
@@ -118,6 +126,7 @@ namespace DotNext.Runtime.CompilerServices
             }
             catch (Exception e)
             {
+                suspended = false;
                 exception = ExceptionDispatchInfo.Capture(e);
 
                 // try to recover from exception and re-enter into state machine
@@ -206,18 +215,19 @@ namespace DotNext.Runtime.CompilerServices
         /// Represents internal state.
         /// </summary>
         public TState State;
-        private AsyncValueTaskMethodBuilder<TResult> builder;
+        private AsyncValueTaskMethodBuilder<TResult?> builder;
         private ExceptionDispatchInfo? exception;
+        private bool suspended;
         private uint guardedRegionsCounter;    // number of entries into try-clause
-        [AllowNull]
-        private TResult result;
+        private TResult? result;
 
         private AsyncStateMachine(Transition<TState, AsyncStateMachine<TState, TResult>> transition, TState state)
         {
-            builder = AsyncValueTaskMethodBuilder<TResult>.Create();
+            builder = AsyncValueTaskMethodBuilder<TResult?>.Create();
             StateId = IAsyncStateMachine<TState>.FinalState;
             State = state;
             this.transition = transition;
+            suspended = false;
             guardedRegionsCounter = 0;
             exception = null;
             result = default;
@@ -250,11 +260,13 @@ namespace DotNext.Runtime.CompilerServices
         /// Leaves guarded code block.
         /// </summary>
         /// <param name="previousState">The identifier of the async state machine before invocation of <see cref="EnterGuardedCode(uint)"/>.</param>
+        /// <param name="suspendException"><see langword="true"/> to suspend exception then entering finally block; otherwise, <see langword="false"/>.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void ExitGuardedCode(uint previousState)
+        public void ExitGuardedCode(uint previousState, bool suspendException)
         {
             StateId = previousState;
             guardedRegionsCounter -= 1;
+            suspended = exception is not null && suspendException;
         }
 
         /// <summary>
@@ -285,15 +297,19 @@ namespace DotNext.Runtime.CompilerServices
         public readonly bool HasNoException
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => exception is null;
+            get => exception is null || suspended;
         }
 
         /// <summary>
         /// Re-throws capture exception.
         /// </summary>
-        public readonly void Rethrow() => exception?.Throw();
+        public void Rethrow()
+        {
+            suspended = false;
+            exception?.Throw();
+        }
 
-        private ValueTask<TResult> Start()
+        private ValueTask<TResult?> Start()
         {
             builder.Start(ref this);
             return builder.Task;
@@ -305,7 +321,7 @@ namespace DotNext.Runtime.CompilerServices
         /// <param name="transition">Async function which execution is controlled by state machine.</param>
         /// <param name="initialState">Initial state.</param>
         /// <returns>The task representing execution of async function.</returns>
-        public static ValueTask<TResult> Start(Transition<TState, AsyncStateMachine<TState, TResult>> transition, TState initialState = default)
+        public static ValueTask<TResult?> Start(Transition<TState, AsyncStateMachine<TState, TResult>> transition, TState initialState = default)
             => new AsyncStateMachine<TState, TResult>(transition, initialState).Start();
 
         /// <summary>
@@ -336,14 +352,10 @@ namespace DotNext.Runtime.CompilerServices
 
             // avoid boxing of this state machine through continuation action if awaiter is completed already
             if (Awaiter<TAwaiter>.IsCompleted(ref awaiter))
-            {
                 return true;
-            }
-            else
-            {
-                builder.AwaitOnCompleted(ref awaiter, ref this);
-                return false;
-            }
+
+            builder.AwaitOnCompleted(ref awaiter, ref this);
+            return false;
         }
 
         void IAsyncStateMachine.MoveNext()
@@ -355,6 +367,7 @@ namespace DotNext.Runtime.CompilerServices
             }
             catch (Exception e)
             {
+                suspended = true;
                 exception = ExceptionDispatchInfo.Capture(e);
 
                 // try to recover from exception and re-enter into state machine

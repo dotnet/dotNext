@@ -29,7 +29,7 @@ namespace DotNext.Runtime.CompilerServices
 
         void EnterGuardedCode(uint newState);
 
-        void ExitGuardedCode(uint previousState);
+        void ExitGuardedCode(uint previousState, bool suspendException);
 
         bool TryRecover<TException>([NotNullWhen(true)] out TException? exception)
             where TException : Exception;

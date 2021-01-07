@@ -31,8 +31,8 @@ namespace DotNext.Runtime.CompilerServices
         {
             var finallyCode = Content.Finally;
             finallyCode = finallyCode is null ?
-                new ExitGuardedCodeExpression(leavingState) :
-                finallyCode.AddEpilogue(false, new ExitGuardedCodeExpression(leavingState));
+                new ExitGuardedCodeExpression(leavingState, false) :
+                finallyCode.AddEpilogue(false, new ExitGuardedCodeExpression(leavingState, true));
             finallyCode = finallyCode.AddEpilogue(false, epilogue);
             finallyCode = Inliner.Rewrite(finallyCode);
             return visitor.Visit(finallyCode);
@@ -50,7 +50,7 @@ namespace DotNext.Runtime.CompilerServices
             var handlers = new LinkedList<Expression>();
             if (finallyLabel is not null)
             {
-                handlers.AddLast(new ExitGuardedCodeExpression(previousState));
+                handlers.AddLast(new ExitGuardedCodeExpression(previousState, false));
                 handlers.AddLast(new EnterGuardedCodeExpression(recoveryStateId));
                 foreach (var handler in Content.Handlers)
                     handlers.AddLast(visitor.Visit(new CatchStatement(handler, finallyLabel)));

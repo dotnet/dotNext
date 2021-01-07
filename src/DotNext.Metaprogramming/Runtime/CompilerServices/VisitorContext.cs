@@ -34,7 +34,6 @@ namespace DotNext.Runtime.CompilerServices
             table.Add(pair);
             return pair;
 
-            // if we are in finally or catch block then all exceptions must be redirected to the parent catch or finally block
             LabelTarget? ResolveFaultLabel()
             {
                 bool skipNextGuardedStatement = false;
@@ -47,7 +46,7 @@ namespace DotNext.Runtime.CompilerServices
                                 return guarded.FaultLabel;
                             skipNextGuardedStatement = false;
                             break;
-                        case FinallyStatement or CatchStatement:
+                        case FinallyStatement:
                             skipNextGuardedStatement = true;
                             break;
                     }
@@ -95,8 +94,7 @@ namespace DotNext.Runtime.CompilerServices
             {
                 if (ReferenceEquals(ExpressionAttributes.Get(CurrentStatement), attr))
                     return;
-                else
-                    attr.ContainsAwait = true;
+                attr.ContainsAwait = true;
             }
         }
 
@@ -176,7 +174,7 @@ namespace DotNext.Runtime.CompilerServices
             {
                 if (ExpressionAttributes.Get(lookup)?.Labels.Contains(@goto.Target) ?? false)
                     break;
-                else if (lookup is TryCatchFinallyStatement statement)
+                if (lookup is TryCatchFinallyStatement statement)
                     result.AddLast(statement.InlineFinally(visitor, state));
             }
 
