@@ -368,14 +368,10 @@ namespace DotNext.Runtime.CompilerServices
 
             // avoid boxing of this state machine through continuation action if awaiter is completed already
             if (Awaiter<TAwaiter>.IsCompleted(ref awaiter))
-            {
                 return true;
-            }
-            else
-            {
-                builder.AwaitOnCompleted(ref awaiter, ref this);
-                return false;
-            }
+
+            builder.AwaitOnCompleted(ref awaiter, ref this);
+            return false;
         }
 
         void IAsyncStateMachine.MoveNext()
