@@ -182,7 +182,7 @@ namespace DotNext.Threading
         /// <param name="pointer">The pointer to read.</param>
         /// <returns>The value that was read. This value is the latest written by any processor in the computer, regardless of the number of processors or the state of processor cache.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static long VolatileRead(this Pointer<long> pointer) => AtomicInt64.VolatileRead(ref pointer.Value);
+        public static long VolatileRead(this Pointer<long> pointer) => AtomicInt64.VolatileRead(in pointer.Value);
 
         /// <summary>
         /// Reads the value from the memory location identified by the pointer.
@@ -194,7 +194,7 @@ namespace DotNext.Threading
         /// <param name="pointer">The pointer to read.</param>
         /// <returns>The value that was read. This value is the latest written by any processor in the computer, regardless of the number of processors or the state of processor cache.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int VolatileRead(this Pointer<int> pointer) => AtomicInt32.VolatileRead(ref pointer.Value);
+        public static int VolatileRead(this Pointer<int> pointer) => AtomicInt32.VolatileRead(in pointer.Value);
 
         /// <summary>
         /// Reads the value from the memory location identified by the pointer.
@@ -242,7 +242,7 @@ namespace DotNext.Threading
         /// <param name="pointer">The pointer to read.</param>
         /// <returns>The value that was read. This value is the latest written by any processor in the computer, regardless of the number of processors or the state of processor cache.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static IntPtr VolatileRead(this Pointer<IntPtr> pointer) => AtomicIntPtr.VolatileRead(ref pointer.Value);
+        public static IntPtr VolatileRead(this Pointer<IntPtr> pointer) => AtomicIntPtr.VolatileRead(in pointer.Value);
 
         /// <summary>
         /// Reads the value from the memory location identified by the pointer.
@@ -254,7 +254,7 @@ namespace DotNext.Threading
         /// <param name="pointer">The pointer to read.</param>
         /// <returns>The value that was read. This value is the latest written by any processor in the computer, regardless of the number of processors or the state of processor cache.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float VolatileRead(this Pointer<float> pointer) => AtomicSingle.VolatileRead(ref pointer.Value);
+        public static float VolatileRead(this Pointer<float> pointer) => AtomicSingle.VolatileRead(in pointer.Value);
 
         /// <summary>
         /// Reads the value from the memory location identified by the pointer.
@@ -266,7 +266,7 @@ namespace DotNext.Threading
         /// <param name="pointer">The pointer to read.</param>
         /// <returns>The value that was read. This value is the latest written by any processor in the computer, regardless of the number of processors or the state of processor cache.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static double VolatileRead(this Pointer<double> pointer) => AtomicDouble.VolatileRead(ref pointer.Value);
+        public static double VolatileRead(this Pointer<double> pointer) => AtomicDouble.VolatileRead(in pointer.Value);
 
         /// <summary>
         /// Reads the value from the memory location identified by the pointer.

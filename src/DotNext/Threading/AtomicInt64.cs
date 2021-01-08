@@ -28,7 +28,7 @@ namespace DotNext.Threading
         /// cache.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static long VolatileRead(ref this long value) => Volatile.Read(ref value);
+        public static long VolatileRead(in this long value) => Volatile.Read(ref Unsafe.AsRef(in value));
 
         /// <summary>
         /// Writes the specified value to the specified field. On systems that require it,
@@ -112,7 +112,7 @@ namespace DotNext.Threading
             long oldValue, newValue;
             do
             {
-                newValue = updater.Invoke(oldValue = VolatileRead(ref value));
+                newValue = updater.Invoke(oldValue = VolatileRead(in value));
             }
             while (!CompareAndSet(ref value, oldValue, newValue));
             return (oldValue, newValue);
@@ -123,7 +123,7 @@ namespace DotNext.Threading
             long oldValue, newValue;
             do
             {
-                newValue = accumulator.Invoke(oldValue = VolatileRead(ref value), x);
+                newValue = accumulator.Invoke(oldValue = VolatileRead(in value), x);
             }
             while (!CompareAndSet(ref value, oldValue, newValue));
             return (oldValue, newValue);
@@ -241,7 +241,7 @@ namespace DotNext.Threading
         /// <returns>The array element.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long VolatileRead(this long[] array, long index)
-            => VolatileRead(ref array[index]);
+            => VolatileRead(in array[index]);
 
         /// <summary>
         /// Performs volatile write to the array element.

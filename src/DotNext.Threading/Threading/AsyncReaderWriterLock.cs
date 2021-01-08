@@ -213,7 +213,7 @@ namespace DotNext.Threading
         /// <summary>
         /// Gets the total number of unique readers.
         /// </summary>
-        public long CurrentReadCount => AtomicInt64.VolatileRead(ref state.Value.ReadLocks);
+        public long CurrentReadCount => AtomicInt64.VolatileRead(in state.Value.ReadLocks);
 
         /// <summary>
         /// Gets a value that indicates whether the read lock taken.

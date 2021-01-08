@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using static InlineIL.IL;
-using static InlineIL.IL.Emit;
 
 namespace DotNext.Threading
 {
@@ -32,13 +30,7 @@ namespace DotNext.Threading
         /// cache.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float VolatileRead(ref this float value)
-        {
-            Push(ref value);
-            Volatile();
-            Ldind_R4();
-            return Return<float>();
-        }
+        public static float VolatileRead(in this float value) => Volatile.Read(ref Unsafe.AsRef(in value));
 
         /// <summary>
         /// Writes the specified value to the specified field. On systems that require it,
@@ -52,14 +44,7 @@ namespace DotNext.Threading
         /// all processors in the computer.
         /// </param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void VolatileWrite(ref this float value, float newValue)
-        {
-            Push(ref value);
-            Push(newValue);
-            Volatile();
-            Stind_R4();
-            Ret();
-        }
+        public static void VolatileWrite(ref this float value, float newValue) => Volatile.Write(ref value, newValue);
 
         /// <summary>
         /// Atomically increments by one referenced value.
@@ -130,7 +115,7 @@ namespace DotNext.Threading
             float oldValue, newValue;
             do
             {
-                newValue = updater.Invoke(oldValue = VolatileRead(ref value));
+                newValue = updater.Invoke(oldValue = VolatileRead(in value));
             }
             while (!CompareAndSet(ref value, oldValue, newValue));
             return (oldValue, newValue);
@@ -141,7 +126,7 @@ namespace DotNext.Threading
             float oldValue, newValue;
             do
             {
-                newValue = accumulator.Invoke(oldValue = VolatileRead(ref value), x);
+                newValue = accumulator.Invoke(oldValue = VolatileRead(in value), x);
             }
             while (!CompareAndSet(ref value, oldValue, newValue));
             return (oldValue, newValue);
@@ -259,7 +244,7 @@ namespace DotNext.Threading
         /// <returns>The array element.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float VolatileRead(this float[] array, long index)
-            => VolatileRead(ref array[index]);
+            => VolatileRead(in array[index]);
 
         /// <summary>
         /// Performs volatile write to the array element.

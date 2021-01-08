@@ -28,8 +28,8 @@ namespace DotNext.Threading
         /// cache.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static IntPtr VolatileRead(ref this IntPtr value)
-            => Volatile.Read(ref value);
+        public static IntPtr VolatileRead(in this IntPtr value)
+            => Volatile.Read(ref Unsafe.AsRef(in value));
 
         /// <summary>
         /// Writes the specified value to the specified field. On systems that require it,
@@ -126,7 +126,7 @@ namespace DotNext.Threading
             IntPtr oldValue, newValue;
             do
             {
-                newValue = updater.Invoke(oldValue = VolatileRead(ref value));
+                newValue = updater.Invoke(oldValue = VolatileRead(in value));
             }
             while (!CompareAndSet(ref value, oldValue, newValue));
             return (oldValue, newValue);
@@ -137,7 +137,7 @@ namespace DotNext.Threading
             IntPtr oldValue, newValue;
             do
             {
-                newValue = accumulator.Invoke(oldValue = VolatileRead(ref value), x);
+                newValue = accumulator.Invoke(oldValue = VolatileRead(in value), x);
             }
             while (!CompareAndSet(ref value, oldValue, newValue));
             return (oldValue, newValue);
@@ -255,7 +255,7 @@ namespace DotNext.Threading
         /// <returns>The array element.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IntPtr VolatileRead(this IntPtr[] array, long index)
-            => VolatileRead(ref array[index]);
+            => VolatileRead(in array[index]);
 
         /// <summary>
         /// Performs volatile write to the array element.

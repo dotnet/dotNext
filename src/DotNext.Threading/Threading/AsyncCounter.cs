@@ -22,7 +22,7 @@ namespace DotNext.Threading
 
             internal LockManager(long value) => counter = value;
 
-            internal long Count => counter.VolatileRead();
+            internal readonly long Count => counter.VolatileRead();
 
             internal long Increment() => counter.IncrementAndGet();
 
