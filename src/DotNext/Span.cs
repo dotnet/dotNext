@@ -696,7 +696,7 @@ namespace DotNext
         /// <param name="tuple">The tuple.</param>
         /// <typeparam name="T">The type of items in the tuple.</typeparam>
         /// <returns>The span over items in the tuple.</returns>
-        public static Span<T> AsSpan<T>(this ref ValueTuple<T, T> tuple)
+        public static Span<T> AsSpan<T>(this ref (T, T) tuple)
             => TupleToSpan<T, ValueTuple<T, T>>(ref tuple);
 
         /// <summary>
@@ -705,7 +705,7 @@ namespace DotNext
         /// <param name="tuple">The tuple.</param>
         /// <typeparam name="T">The type of items in the tuple.</typeparam>
         /// <returns>The span over items in the tuple.</returns>
-        public static ReadOnlySpan<T> AsReadOnlySpan<T>(this in ValueTuple<T, T> tuple)
+        public static ReadOnlySpan<T> AsReadOnlySpan<T>(this in (T, T) tuple)
             => TupleToSpan<T, ValueTuple<T, T>>(ref AsRef(in tuple));
 
         /// <summary>
