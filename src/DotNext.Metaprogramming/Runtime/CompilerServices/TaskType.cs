@@ -46,7 +46,7 @@ namespace DotNext.Runtime.CompilerServices
         }
 
         internal MethodCallExpression AdjustTaskType(MethodCallExpression startMachineCall)
-            => IsValueTask ? startMachineCall : Expression.Call(startMachineCall, nameof(ValueTask.AsTask), Array.Empty<Type>());
+            => IsValueTask ? startMachineCall : Expression.Call(startMachineCall, nameof(ValueTask.AsTask), Type.EmptyTypes);
 
         internal Type ResultType => resultType ?? typeof(void);
 
