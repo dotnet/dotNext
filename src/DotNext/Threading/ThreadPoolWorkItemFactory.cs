@@ -81,6 +81,7 @@ namespace DotNext.Threading
         /// <param name="workItem">The pointer to the method implementing work item logic.</param>
         /// <param name="arg1">The first argument to be passed to the method implementing work item logic.</param>
         /// <param name="arg2">The second argument to be passed to the method implementing work item logic.</param>
+        /// <param name="arg3">The third argument to be passed to the method implementing work item logic.</param>
         /// <typeparam name="T1">The type of the work item first argument.</typeparam>
         /// <typeparam name="T2">The type of the work item second argument.</typeparam>
         /// <typeparam name="T3">The type of the work item third argument.</typeparam>
