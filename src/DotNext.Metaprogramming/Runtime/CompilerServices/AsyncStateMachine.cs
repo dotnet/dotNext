@@ -87,16 +87,15 @@ namespace DotNext.Runtime.CompilerServices
         public bool TryRecover<TException>([NotNullWhen(true)] out TException? restoredException)
             where TException : Exception
         {
-            switch (exception?.SourceException)
+            if (exception?.SourceException is TException typed)
             {
-                case TException typed:
-                    exception = null;
-                    restoredException = typed;
-                    return true;
-                default:
-                    restoredException = null;
-                    return false;
+                exception = null;
+                restoredException = typed;
+                return true;
             }
+
+            restoredException = null;
+            return false;
         }
 
         /// <summary>
@@ -279,16 +278,15 @@ namespace DotNext.Runtime.CompilerServices
         public bool TryRecover<TException>([NotNullWhen(true)]out TException? restoredException)
             where TException : Exception
         {
-            switch (exception?.SourceException)
+            if (exception?.SourceException is TException typed)
             {
-                case TException typed:
-                    exception = null;
-                    restoredException = typed;
-                    return true;
-                default:
-                    restoredException = null;
-                    return false;
+                exception = null;
+                restoredException = typed;
+                return true;
             }
+
+            restoredException = null;
+            return false;
         }
 
         /// <summary>
