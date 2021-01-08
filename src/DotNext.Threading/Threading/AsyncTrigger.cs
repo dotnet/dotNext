@@ -17,7 +17,7 @@ namespace DotNext.Threading
     public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     {
         [StructLayout(LayoutKind.Auto)]
-        private struct LockManager : ILockManager<WaitNode>
+        private readonly struct LockManager : ILockManager<WaitNode>
         {
             bool ILockManager<WaitNode>.TryAcquire() => false;
 

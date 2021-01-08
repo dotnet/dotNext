@@ -47,7 +47,7 @@ namespace DotNext.Threading
 
             internal long IncrementLocks() => RemainingLocks = RemainingLocks == ExclusiveMode ? ConcurrencyLevel : RemainingLocks + 1L;
 
-            internal bool IsEmpty => RemainingLocks == ConcurrencyLevel;
+            internal readonly bool IsEmpty => RemainingLocks == ConcurrencyLevel;
 
             bool ILockManager<StrongLockNode>.TryAcquire()
             {
@@ -57,7 +57,7 @@ namespace DotNext.Threading
                 return true;
             }
 
-            StrongLockNode ILockManager<StrongLockNode>.CreateNode(WaitNode? tail) => tail is null ? new StrongLockNode() : new StrongLockNode(tail);
+            readonly StrongLockNode ILockManager<StrongLockNode>.CreateNode(WaitNode? tail) => tail is null ? new StrongLockNode() : new StrongLockNode(tail);
 
             bool ILockManager<WaitNode>.TryAcquire()
             {
@@ -67,7 +67,7 @@ namespace DotNext.Threading
                 return true;
             }
 
-            WaitNode ILockManager<WaitNode>.CreateNode(WaitNode? tail) => tail is null ? new WaitNode() : new WaitNode(tail);
+            readonly WaitNode ILockManager<WaitNode>.CreateNode(WaitNode? tail) => tail is null ? new WaitNode() : new WaitNode(tail);
         }
 
         private readonly Box<State> state;

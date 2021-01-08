@@ -95,7 +95,7 @@ namespace DotNext.Threading
             internal void IncrementVersion() => version.IncrementAndGet();
 
             // write lock management
-            WriteLockNode ILockManager<WriteLockNode>.CreateNode(WaitNode? node) => node is null ? new WriteLockNode() : new WriteLockNode(node);
+            readonly WriteLockNode ILockManager<WriteLockNode>.CreateNode(WaitNode? node) => node is null ? new WriteLockNode() : new WriteLockNode(node);
 
             bool ILockManager<WriteLockNode>.TryAcquire()
             {
@@ -114,7 +114,7 @@ namespace DotNext.Threading
             }
 
             // read lock management
-            ReadLockNode ILockManager<ReadLockNode>.CreateNode(WaitNode? node) => node is null ? new ReadLockNode() : new ReadLockNode(node);
+            readonly ReadLockNode ILockManager<ReadLockNode>.CreateNode(WaitNode? node) => node is null ? new ReadLockNode() : new ReadLockNode(node);
 
             bool ILockManager<ReadLockNode>.TryAcquire()
             {
@@ -125,7 +125,7 @@ namespace DotNext.Threading
             }
 
             // upgradeable read lock management
-            UpgradeableReadLockNode ILockManager<UpgradeableReadLockNode>.CreateNode(WaitNode? node) => node is null ? new UpgradeableReadLockNode() : new UpgradeableReadLockNode(node);
+            readonly UpgradeableReadLockNode ILockManager<UpgradeableReadLockNode>.CreateNode(WaitNode? node) => node is null ? new UpgradeableReadLockNode() : new UpgradeableReadLockNode(node);
 
             bool ILockManager<UpgradeableReadLockNode>.TryAcquire()
             {

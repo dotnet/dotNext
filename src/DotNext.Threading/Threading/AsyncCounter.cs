@@ -30,7 +30,7 @@ namespace DotNext.Threading
 
             internal bool Reset() => Interlocked.Exchange(ref counter, 0L) > 0L;
 
-            WaitNode ILockManager<WaitNode>.CreateNode(WaitNode? tail)
+            readonly WaitNode ILockManager<WaitNode>.CreateNode(WaitNode? tail)
                 => tail is null ? new WaitNode() : new WaitNode(tail);
 
             bool ILockManager<WaitNode>.TryAcquire()

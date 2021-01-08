@@ -18,11 +18,11 @@ namespace DotNext.Threading
 
             internal bool IsSignaled
             {
-                get => state.Value;
+                readonly get => state.Value;
                 set => state.Value = value;
             }
 
-            WaitNode ILockManager<WaitNode>.CreateNode(WaitNode? tail) => tail is null ? new WaitNode() : new WaitNode(tail);
+            readonly WaitNode ILockManager<WaitNode>.CreateNode(WaitNode? tail) => tail is null ? new WaitNode() : new WaitNode(tail);
         }
 
         private LockManager manager;
