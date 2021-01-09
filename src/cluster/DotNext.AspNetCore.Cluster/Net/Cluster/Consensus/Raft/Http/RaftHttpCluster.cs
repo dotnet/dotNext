@@ -21,7 +21,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private readonly IClusterMemberLifetime? configurator;
         private readonly IDisposable configurationTracker;
         private readonly IHttpMessageHandlerFactory? httpHandlerFactory;
-        private readonly TimeSpan requestTimeout, raftRpcTimeout;
+        private readonly TimeSpan requestTimeout, raftRpcTimeout, connectTimeout;
         private readonly bool openConnectionForEachRequest;
         private readonly string clientHandlerName;
         private readonly HttpVersion protocolVersion;
@@ -35,6 +35,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             metadata = new MemberMetadata(config.Metadata);
             requestTimeout = config.RequestTimeout;
             raftRpcTimeout = config.RpcTimeout;
+            connectTimeout = TimeSpan.FromMilliseconds(config.LowerElectionTimeout);
             duplicationDetector = new DuplicateRequestDetector(config.RequestJournal);
             clientHandlerName = config.ClientHandlerName;
             protocolVersion = config.ProtocolVersion;
@@ -125,7 +126,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         IPEndPoint IHostingContext.LocalEndpoint => localMember ?? throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
 
         HttpMessageHandler IHostingContext.CreateHttpHandler()
+#if NETCOREAPP3_1
             => httpHandlerFactory?.CreateHandler(clientHandlerName) ?? new HttpClientHandler();
+#else
+            => httpHandlerFactory?.CreateHandler(clientHandlerName) ?? new SocketsHttpHandler { ConnectTimeout = connectTimeout };
+#endif
 
         bool IHostingContext.UseEfficientTransferOfLogEntries => AuditTrail.IsLogEntryLengthAlwaysPresented;
 
