@@ -140,10 +140,9 @@ namespace DotNext.Collections.Generic
         {
             while (count > 0)
             {
-                if (await enumerator.MoveNextAsync().ConfigureAwait(false))
-                    count--;
-                else
+                if (!await enumerator.MoveNextAsync().ConfigureAwait(false))
                     return false;
+                count--;
             }
 
             return true;

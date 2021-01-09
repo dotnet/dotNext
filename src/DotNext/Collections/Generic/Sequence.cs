@@ -149,10 +149,10 @@ namespace DotNext.Collections.Generic
         {
             while (count > 0)
             {
-                if (enumerator.MoveNext())
-                    count--;
-                else
+                if (!enumerator.MoveNext())
                     return false;
+
+                count--;
             }
 
             return true;
@@ -171,10 +171,10 @@ namespace DotNext.Collections.Generic
         {
             while (count > 0)
             {
-                if (enumerator.MoveNext())
-                    count--;
-                else
+                if (!enumerator.MoveNext())
                     return false;
+
+                count--;
             }
 
             return true;
