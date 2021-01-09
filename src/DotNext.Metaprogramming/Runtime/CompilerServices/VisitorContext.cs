@@ -4,7 +4,6 @@ using System.Linq.Expressions;
 
 namespace DotNext.Runtime.CompilerServices
 {
-    using static Collections.Generic.Stack;
     using AwaitExpression = Linq.Expressions.AwaitExpression;
 
     internal sealed class VisitorContext : Disposable
@@ -169,7 +168,7 @@ namespace DotNext.Runtime.CompilerServices
             var result = new LinkedList<Expression>();
 
             // iterate through snapshot of statements because collection can be modified
-            var statements = this.statements.Clone();
+            var statements = this.statements.ToArray();
             foreach (var lookup in statements)
             {
                 if (ExpressionAttributes.Get(lookup)?.Labels.Contains(@goto.Target) ?? false)
@@ -178,7 +177,7 @@ namespace DotNext.Runtime.CompilerServices
                     result.AddLast(statement.InlineFinally(visitor, state));
             }
 
-            statements.Clear();
+            Array.Clear(statements, 0, statements.Length);
             return result;
         }
 
