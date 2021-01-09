@@ -190,7 +190,11 @@ namespace DotNext.Buffers
                 if (index < 0 || index >= length)
                     goto invalid_index;
                 if (array is not null)
+#if NETSTANDARD2_1
                     return ref array[index];
+#else
+                    return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(array), index);
+#endif
                 if (owner is not null)
                     return ref Unsafe.Add(ref MemoryMarshal.GetReference(Unsafe.As<IMemoryOwner<T>>(owner).Memory.Span), index);
                 invalid_index:
