@@ -102,6 +102,7 @@ The application should be configured properly to work as a cluster node. The fol
 | keepAliveTimeout | Hosted | No | 2 minutes | TCP keep-alive timeout |
 | requestTimeout | Hosted, Embedded | No | `upperElectionTimeout` | Request timeout used to access cluster members across the network using HTTP client |
 | rpcTimeout | Hosted, Embedded | No | `upperElectionTimeout` / 2 | Request timeout used to send Raft-specific messages to cluster members. Must be less than or equal to _requestTimeout_ parameter |
+| standby | Hosted, Embedded | No | false | **true** to prevent election of the cluster member as a leader. It's useful to configure nodes available for read-only operations where eventual consistency is allowed |
 
 `requestJournal` configuration section is rarely used and useful for high-load scenario only.
 
@@ -137,11 +138,11 @@ internal sealed class MemberLifetime : IClusterMemberLifetime
 Additionally, the hook can be used to modify metadata of the local cluster member.
 
 ## HTTP Client Behavior
-.NEXT uses [HttpClient](https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpclient) for communication between cluster nodes. In .NET Standard, the only available HTTP handler is [HttpClientHandler](https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpclienthandler). It has inconsistent behavior on different platforms because relies on _libcurl_. Raft implementation uses `Timeout` property of `HttpClient` to establish request timeout. It is always defined as `upperElectionTimeout` by .NEXT infrastructure. To demonstrate inconsistent behavior let's introduce three cluster nodes: _A_, _B_ and _C_. _A_ and _B_ have been started except _C_:
+.NEXT uses [HttpClient](https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpclient) for communication between cluster nodes. The client itself delegates all operations to [HttpMessageHandler](https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpmessagehandler). It's not recommended to use [HttpClientHandler](https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpclienthandler) because it has inconsistent behavior on different platforms because relies on _libcurl_. Raft implementation uses `Timeout` property of `HttpClient` to establish request timeout. It is always defined as `upperElectionTimeout` by .NEXT infrastructure. To demonstrate inconsistent behavior let's introduce three cluster nodes: _A_, _B_ and _C_. _A_ and _B_ have been started except _C_:
 * On Windows the leader will not be elected even though the majority is present - 2 of 3 nodes are available. This is happening because Connection Timeout is equal to Response Timeout, which is equal to `upperElectionTimeout`.
 * On Linux everything is fine because Connection Timeout less than Response Timeout
 
-It is not possible to specify these timeouts separately for `HttpClientHandler` as well as use [SocketsHttpHandler](https://docs.microsoft.com/en-us/dotnet/api/system.net.http.socketshttphandler) directly in library code because this class doesn't exist in .NET Standard. However, solution exists and presented by [IHttpMessageHandlerFactory](https://docs.microsoft.com/en-us/dotnet/api/system.net.http.ihttpmessagehandlerfactory). You can implement this interface manually and register its implementation as singleton. .NEXT tries to use this interface if it is registered as a factory of [HttpMessageInvoker](https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpmessageinvoker). The following example demonstrates how to implement this interface and create platform-independent version of message invoker:
+By default, Raft implementation uses [SocketsHttpHandler](https://docs.microsoft.com/en-us/dotnet/api/system.net.http.socketshttphandler). However, the handler can be overridden using [IHttpMessageHandlerFactory](https://docs.microsoft.com/en-us/dotnet/api/system.net.http.ihttpmessagehandlerfactory). You can implement this interface manually and register its implementation as singleton. .NEXT tries to use this interface if it is registered as a factory of custom [HttpMessageHandler](https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpmessagehandler). The following example demonstrates how to implement this interface and create platform-independent version of message invoker:
 
 ```csharp
 using System;
