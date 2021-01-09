@@ -237,10 +237,12 @@ namespace DotNext.Collections.Generic
         public static TValue GetOrAdd<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, in ValueFunc<TKey, TValue> valueFactory)
             where TKey : notnull
         {
-            if (dictionary.TryGetValue(key, out var value))
-                return value;
-            value = valueFactory.Invoke(key);
-            dictionary.Add(key, value);
+            if (!dictionary.TryGetValue(key, out var value))
+            {
+                value = valueFactory.Invoke(key);
+                dictionary.Add(key, value);
+            }
+
             return value;
         }
 
