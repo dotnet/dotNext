@@ -126,11 +126,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         IPEndPoint IHostingContext.LocalEndpoint => localMember ?? throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
 
         HttpMessageHandler IHostingContext.CreateHttpHandler()
-#if NETCOREAPP3_1
-            => httpHandlerFactory?.CreateHandler(clientHandlerName) ?? new HttpClientHandler();
-#else
             => httpHandlerFactory?.CreateHandler(clientHandlerName) ?? new SocketsHttpHandler { ConnectTimeout = connectTimeout };
-#endif
 
         bool IHostingContext.UseEfficientTransferOfLogEntries => AuditTrail.IsLogEntryLengthAlwaysPresented;
 
