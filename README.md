@@ -80,6 +80,7 @@ Migration guide for 2.x users is [here](https://sakno.github.io/dotNext/migratio
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/3.0.0">DotNext.Metaprogramming 3.0.0</a>
 * Fixed nullability attributes
 * Fixed [issue 23](https://github.com/sakno/dotNext/issues/23)
+* Fixed code generation of **finally* blocks inside of asynchronous lambda expressions
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.reflection/3.0.0">DotNext.Reflection 3.0.0</a>
