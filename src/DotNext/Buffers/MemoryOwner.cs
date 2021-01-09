@@ -14,8 +14,11 @@ namespace DotNext.Buffers
     [StructLayout(LayoutKind.Auto)]
     public readonly struct MemoryOwner<T> : IMemoryOwner<T>, IConvertible<Memory<T>>
     {
+        // Of type ArrayPool<T> or IMemoryOwner<T>.
+        // If support of another type is needed then reconsider implementation
+        // of Memory, this[int index] and Expand members
         private readonly object? owner;
-        private readonly T[]? array;  // not null only if owner is ArrayPool
+        private readonly T[]? array;  // not null only if owner is ArrayPool or null
         private readonly int length;
 
         internal MemoryOwner(ArrayPool<T>? pool, T[] array, int length)
@@ -116,8 +119,8 @@ namespace DotNext.Buffers
 
             if (array is not null)
                 length = array.Length;
-            else if (owner is IMemoryOwner<T> memory)
-                length = memory.Memory.Length;
+            else if (owner is not null)
+                length = Unsafe.As<IMemoryOwner<T>>(owner).Memory.Length;
             else
                 goto exit;
 
@@ -143,8 +146,8 @@ namespace DotNext.Buffers
                 Memory<T> result;
                 if (array is not null)
                     result = new Memory<T>(array);
-                else if (owner is IMemoryOwner<T> memory)
-                    result = memory.Memory;
+                else if (owner is not null)
+                    result = Unsafe.As<IMemoryOwner<T>>(owner).Memory;
                 else
                     result = default;
 
@@ -188,8 +191,8 @@ namespace DotNext.Buffers
                     goto invalid_index;
                 if (array is not null)
                     return ref array[index];
-                if (owner is IMemoryOwner<T> memory)
-                    return ref Unsafe.Add(ref MemoryMarshal.GetReference(memory.Memory.Span), index);
+                if (owner is not null)
+                    return ref Unsafe.Add(ref MemoryMarshal.GetReference(Unsafe.As<IMemoryOwner<T>>(owner).Memory.Span), index);
                 invalid_index:
                 throw new ArgumentOutOfRangeException(nameof(index));
             }
