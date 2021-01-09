@@ -19,7 +19,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         static ClusterMemberConfiguration() => IPAddressConverter.Register();
 
         private ElectionTimeout electionTimeout = ElectionTimeout.Recommended;
-        private TimeSpan? requestTimeout;
+        private TimeSpan? rpcTimeout;
 
         /// <summary>
         /// Gets or sets the address of the local node.
@@ -45,13 +45,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         /// <summary>
-        /// Gets or sets request timeout used to communicate with cluster members.
+        /// Gets or sets Raft RPC timeout.
         /// </summary>
-        /// <value>HTTP request timeout; default is <see cref="ClusterMemberConfiguration.UpperElectionTimeout"/>.</value>
-        public TimeSpan RequestTimeout
+        public TimeSpan RpcTimeout
         {
-            get => requestTimeout ?? TimeSpan.FromMilliseconds(UpperElectionTimeout);
-            set => requestTimeout = value > TimeSpan.Zero ? value : throw new ArgumentOutOfRangeException(nameof(value));
+            get => rpcTimeout ?? TimeSpan.FromMilliseconds(UpperElectionTimeout / 2D);
+            set => rpcTimeout = value > TimeSpan.Zero ? value : throw new ArgumentOutOfRangeException(nameof(value));
         }
 
         /// <summary>

@@ -13,7 +13,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private const string DefaultClientHandlerName = "raftClient";
 
         private string? handlerName;
-        private TimeSpan? rpcTimeout;
+        private TimeSpan? requestTimeout;
 
         /// <summary>
         /// Represents a set of networks from which remote member can make
@@ -46,12 +46,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         public HttpVersion ProtocolVersion { get; set; }
 
         /// <summary>
-        /// Gets or sets Raft RPC timeout.
+        /// Gets or sets request timeout used to communicate with cluster members.
         /// </summary>
-        public TimeSpan RpcTimeout
+        /// <value>HTTP request timeout; default is <see cref="ClusterMemberConfiguration.UpperElectionTimeout"/>.</value>
+        public TimeSpan RequestTimeout
         {
-            get => rpcTimeout ?? TimeSpan.FromMilliseconds(UpperElectionTimeout / 2D);
-            set => rpcTimeout = value > TimeSpan.Zero ? value : throw new ArgumentOutOfRangeException(nameof(value));
+            get => requestTimeout ?? TimeSpan.FromMilliseconds(UpperElectionTimeout);
+            set => requestTimeout = value > TimeSpan.Zero ? value : throw new ArgumentOutOfRangeException(nameof(value));
         }
 
         /// <summary>
