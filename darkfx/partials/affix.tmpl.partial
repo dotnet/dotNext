@@ -20,14 +20,14 @@
     {{/_disableContribution}}
     <div class="toggle-mode">
       <div class="icon">
-        <i class="fa fa-sun-o" aria-hidden="true"></i>
+        <i aria-hidden="true">☀</i>
       </div>
       <label class="switch">
         <input type="checkbox" id="switch-style" checked>
         <span class="slider round"></span>
       </label>
       <div class="icon">
-        <i class="fa fa-moon-o" aria-hidden="true"></i>
+        <i aria-hidden="true">☾</i>
       </div>
       <script type="text/javascript" src="{{_rel}}styles/toggle-theme.js"></script>
     </div>

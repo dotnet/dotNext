@@ -404,6 +404,18 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 }
+.toggle-mode .icon {
+  display: inline-block;
+}
+
+.toggle-mode .icon i {
+  font-style: normal;
+  font-size: 17px;
+  display: inline-block;
+  padding-right: 7px;
+  padding-left: 7px;
+  vertical-align: middle;
+}
 
 @media (min-width: 1600px) {
   .container {
