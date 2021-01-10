@@ -325,6 +325,18 @@ blockquote {
   display: inline;
 }
 
+.tabGroup a[role="tab"] {
+  border-bottom: 2px solid var(--color-background-dark);
+}
+
+.tabGroup a[role="tab"][aria-selected="true"] {
+  color: var(--color-foreground);
+}
+
+.tabGroup section[role="tabpanel"] {
+  border: 1px solid var(--color-background-dark);
+}
+
 @media (min-width: 1600px) {
   .container {
     width: 100%;
