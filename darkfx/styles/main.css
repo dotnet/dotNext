@@ -1,4 +1,4 @@
-:root {
+:root, body.dark-theme {
   --color-foreground: #ccd5dc;
   --color-navbar: #66666d;
   --color-breadcrumb: #999;
@@ -11,9 +11,13 @@
   --color-background-quote: #69696e;
 }
 
+body.light-theme {
+  --color-foreground: #171717;
+  --color-background: #ffffff;
+}
+
 body {
   color: var(--color-foreground);
-  font-family: "Open Sans", sans-serif;
   line-height: 1.5;
   font-size: 14px;
   -ms-text-size-adjust: 100%;
@@ -335,6 +339,70 @@ blockquote {
 
 .tabGroup section[role="tabpanel"] {
   border: 1px solid var(--color-background-dark);
+}
+
+.sideaffix > div.contribution > ul > li > a.contribution-link:hover {
+  background-color: var(--color-background);
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+}
+
+.switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 4px;
+  bottom: 3px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #337ab7;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #337ab7;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(19px);
+  -ms-transform: translateX(19px);
+  transform: translateX(19px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 20px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
 }
 
 @media (min-width: 1600px) {
