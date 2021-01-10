@@ -13,11 +13,9 @@ namespace DotNext
                 second = array[startIndex];
                 return true;
             }
-            else
-            {
-                first = second = default;
-                return false;
-            }
+
+            first = second = default;
+            return false;
         }
 
         internal static bool Take<T>(this T[] array, [MaybeNullWhen(false)] out T first, [MaybeNullWhen(false)] out T second, [MaybeNullWhen(false)]out T third, int startIndex = 0)
@@ -30,11 +28,9 @@ namespace DotNext
                 third = array[startIndex];
                 return true;
             }
-            else
-            {
-                first = second = third = default;
-                return false;
-            }
+
+            first = second = third = default;
+            return false;
         }
     }
 }
