@@ -23,7 +23,7 @@
         <i aria-hidden="true">☀</i>
       </div>
       <label class="switch">
-        <input type="checkbox" id="switch-style" checked>
+        <input type="checkbox" id="switch-style">
         <span class="slider round"></span>
       </label>
       <div class="icon">

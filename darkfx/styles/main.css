@@ -13,7 +13,12 @@
 
 body.light-theme {
   --color-foreground: #171717;
+  --color-breadcrumb: #4a4a4a;
+  --color-toc-hover: #4c4c4c;
   --color-background: #ffffff;
+  --color-background-subnav: #f5f5f5;
+  --color-background-dark: #ddd;
+  --color-background-table-alt: #f9f9f9;
 }
 
 body {
@@ -100,6 +105,10 @@ article h4 {
 .navbar-form .form-control {
   border: none;
   border-radius: 0;
+}
+
+.light-theme .navbar-brand svg {
+  filter: brightness(20%);
 }
 
 .toc .level1>li {
@@ -235,6 +244,10 @@ code {
   content: "|";
 }
 
+.breadcrumb {
+  background-color: var(--color-background-subnav);
+}
+
 .breadcrumb .label.label-primary {
   background: #444;
   border-radius: 0;
@@ -266,6 +279,10 @@ code {
   color: var(--color-background-dark);
   padding: 0;
 }
+
+.light-theme .breadcrumb>li+li:before {
+  color: var(--color-foreground)
+ }
 
 .toc .level1>li {
   font-weight: 600;
