@@ -85,3 +85,15 @@ ferro tellusque tulit longa **ungues** oris magnis tamen tectus; fulmina urbs
 obscura ramis feliciter libido aut sensi? Vidi oenea puppibus amanti, pro
 foliis, hoc est amicitiae et! Caput favorem, inimica in spinae hoc simul
 stantibus pependit opesque pericula avorum paene.
+
+## Test tabs syntax
+
+Tab group 1:
+
+# [Tab Text 1](#tab/tabid-1)
+
+Tab content-1-1.
+
+# [Tab Text 2](#tab/tabid-2)
+
+Tab content-1-2.
