@@ -66,7 +66,7 @@ namespace DotNext.Runtime.InteropServices
             get
             {
                 if (array is null)
-                    throw new ArgumentOutOfRangeException(nameof(index));
+                    throw new IndexOutOfRangeException();
 
                 return ref array[index];
             }
