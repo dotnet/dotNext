@@ -30,6 +30,7 @@ namespace DotNext.Runtime.InteropServices
         /// <summary>
         /// Represents enumerator over raw memory.
         /// </summary>
+        [StructLayout(LayoutKind.Auto)]
         public unsafe struct Enumerator : IEnumerator<T>
         {
             private const long InitialPosition = -1L;
