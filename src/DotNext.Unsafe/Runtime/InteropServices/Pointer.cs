@@ -511,7 +511,7 @@ namespace DotNext.Runtime.InteropServices
         public unsafe nint Address
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => new IntPtr(value);
+            get => (nint)value;
         }
 
         /// <summary>
@@ -708,7 +708,7 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>A new pointer that reflects the addition of offset to pointer.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe Pointer<T> operator +(Pointer<T> pointer, nint offset)
-            => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.Address + offset);
+            => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.value + offset);
 
         /// <summary>
         /// Subtracts an offset from the value of a pointer.
@@ -734,7 +734,7 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>A new pointer that reflects the subtraction of offset from pointer.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe Pointer<T> operator -(Pointer<T> pointer, nint offset)
-            => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.Address - offset);
+            => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.value - offset);
 
         /// <summary>
         /// Adds an offset to the value of a pointer.
@@ -856,10 +856,10 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="ptr">The pointer to be converted.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
-        public static unsafe implicit operator nuint(Pointer<T> ptr) => new UIntPtr(ptr.value);
+        public static unsafe implicit operator nuint(Pointer<T> ptr) => (nuint)ptr.value;
 
         /// <inheritdoc/>
-        unsafe UIntPtr IConvertible<UIntPtr>.Convert() => new UIntPtr(value);
+        unsafe UIntPtr IConvertible<UIntPtr>.Convert() => (nuint)value;
 
         /// <summary>
         /// Converts this pointer the memory owner.
@@ -944,7 +944,12 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="other">The object of type <see cref="Pointer{T}"/> to be compared.</param>
         /// <returns><see langword="true"/>, if this pointer represents the same memory location as other pointer; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object? other) => other is Pointer<T> ptr && Equals(ptr);
+        public override unsafe bool Equals(object? other) => other switch
+        {
+            Pointer<T> ptr => Equals(ptr),
+            Pointer ptr => value == Pointer.Unbox(ptr),
+            _ => false
+        };
 
         /// <summary>
         /// Returns hexadecimal address represented by this pointer.
