@@ -162,12 +162,12 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="length">The number of elements located in the unmanaged memory identified by this pointer.</param>
         /// <returns><see cref="Span{T}"/> representing elements in the unmanaged memory.</returns>
-        public unsafe Span<T> ToSpan(int length) => IsNull ? default : new Span<T>(value, length);
+        public unsafe Span<T> ToSpan(int length) => IsNull ? Span<T>.Empty : new Span<T>(value, length);
 
         /// <summary>
         /// Converts this pointer into span of bytes.
         /// </summary>
-        public unsafe Span<byte> Bytes => IsNull ? default : Span.AsBytes(value);
+        public unsafe Span<byte> Bytes => IsNull ? Span<byte>.Empty : Span.AsBytes(value);
 
         /// <summary>
         /// Gets or sets pointer value at the specified position in the memory.
