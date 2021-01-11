@@ -494,9 +494,13 @@ namespace DotNext.Runtime.InteropServices
             if (IsNull || length == 0L)
                 return Array.Empty<T>();
 
-            // TODO: Replace with GC.AllocateUninitializedArray
+#if NETSTANDARD2_1
             var result = new T[length];
             Intrinsics.Copy(in value[0], out result[0], length);
+#else
+            var result = length <= int.MaxValue ? GC.AllocateUninitializedArray<T>((int)length, true) : new T[length];
+            Intrinsics.Copy(in value[0], out MemoryMarshal.GetArrayDataReference(result), length);
+#endif
             return result;
         }
 
