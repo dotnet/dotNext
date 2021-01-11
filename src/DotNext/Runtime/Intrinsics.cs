@@ -885,7 +885,6 @@ namespace DotNext.Runtime
         /// <param name="array">The array object.</param>
         /// <returns>The length of the array as native unsigned integer.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [CLSCompliant(false)]
         public static nint GetLength(Array array)
         {
             Push(array);
