@@ -338,12 +338,11 @@ namespace DotNext.Runtime
         /// <param name="index">The index of the array element.</param>
         /// <returns>The reference to the array element with restricted mutability.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ref readonly TBase GetReadonlyRef<T, TBase>(this T[] array, long index)
+        public static ref readonly TBase GetReadonlyRef<T, TBase>(this T[] array, nint index)
             where T : class, TBase
         {
             Push(array);
             Push(index);
-            Conv_Ovf_I();
             Readonly();
             Ldelema<TBase>();
             return ref ReturnRef<TBase>();
