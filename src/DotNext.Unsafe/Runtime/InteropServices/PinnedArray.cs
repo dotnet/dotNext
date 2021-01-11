@@ -61,7 +61,7 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="index">The index of the element in memory.</param>
         /// <value>The managed pointer to the array element.</value>
-        public ref T this[long index]
+        public ref T this[int index]
         {
             get
             {
