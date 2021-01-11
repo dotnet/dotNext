@@ -333,7 +333,7 @@ namespace DotNext.Runtime
         /// Allows to reinterpret managed pointer to array element.
         /// </summary>
         /// <typeparam name="T">The type of array elements.</typeparam>
-        /// <typeparam name="TBase">The requested.</typeparam>
+        /// <typeparam name="TBase">The requested type.</typeparam>
         /// <param name="array">The array object.</param>
         /// <param name="index">The index of the array element.</param>
         /// <returns>The reference to the array element with restricted mutability.</returns>
