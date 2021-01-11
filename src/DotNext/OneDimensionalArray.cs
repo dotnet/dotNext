@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using static System.Runtime.CompilerServices.Unsafe;
+using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext
 {
@@ -302,7 +303,11 @@ namespace DotNext
                 return false;
             if (Intrinsics.GetLength(first) == 0)
                 return true;
+#if NETSTANDARD2_1
             return Intrinsics.EqualsAligned(ref As<T, byte>(ref first[0]), ref As<T, byte>(ref second[0]), first.LongLength * sizeof(T));
+#else
+            return Intrinsics.EqualsAligned(ref As<T, byte>(ref GetArrayDataReference(first)), ref As<T, byte>(ref GetArrayDataReference(second)), first.LongLength * sizeof(T));
+#endif
         }
 
         /// <summary>
@@ -314,7 +319,11 @@ namespace DotNext
         /// <returns>32-bit hash code of the array content.</returns>
         public static unsafe int BitwiseHashCode<T>(this T[] array, bool salted = true)
             where T : unmanaged
-            => array.LongLength > 0L ? Intrinsics.GetHashCode32(ref As<T, byte>(ref array[0]), array.LongLength * sizeof(T), salted) : 0;
+#if NETSTANDARD2_1
+            => Intrinsics.GetLength(array) > 0 ? Intrinsics.GetHashCode32(ref As<T, byte>(ref array[0]), array.LongLength * sizeof(T), salted) : 0;
+#else
+            => Intrinsics.GetLength(array) > 0 ? Intrinsics.GetHashCode32(ref As<T, byte>(ref GetArrayDataReference(array)), array.LongLength * sizeof(T), salted) : 0;
+#endif
 
         /// <summary>
         /// Computes bitwise hash code for the array content using custom hash function.
@@ -327,7 +336,11 @@ namespace DotNext
         /// <returns>32-bit hash code of the array content.</returns>
         public static unsafe int BitwiseHashCode<T>(this T[] array, int hash, in ValueFunc<int, int, int> hashFunction, bool salted = true)
             where T : unmanaged
-            => array.LongLength > 0L ? Intrinsics.GetHashCode32(ref As<T, byte>(ref array[0]), array.LongLength * sizeof(T), hash, hashFunction, salted) : hash;
+#if NETSTANDARD2_1
+            => Intrinsics.GetLength(array) > 0 ? Intrinsics.GetHashCode32(ref As<T, byte>(ref array[0]), array.LongLength * sizeof(T), hash, hashFunction, salted) : hash;
+#else
+            => Intrinsics.GetLength(array) > 0 ? Intrinsics.GetHashCode32(ref As<T, byte>(ref GetArrayDataReference(array)), array.LongLength * sizeof(T), hash, hashFunction, salted) : hash;
+#endif
 
         /// <summary>
         /// Computes bitwise hash code for the array content using custom hash function.
@@ -353,7 +366,11 @@ namespace DotNext
         /// <returns>64-bit hash code of the array content.</returns>
         public static unsafe long BitwiseHashCode64<T>(this T[] array, long hash, in ValueFunc<long, long, long> hashFunction, bool salted = true)
             where T : unmanaged
-            => array.LongLength > 0L ? Intrinsics.GetHashCode64(ref As<T, byte>(ref array[0]), array.LongLength * sizeof(T), hash, hashFunction, salted) : hash;
+#if NETSTANDARD2_1
+            => Intrinsics.GetLength(array) > 0 ? Intrinsics.GetHashCode64(ref As<T, byte>(ref array[0]), array.LongLength * sizeof(T), hash, hashFunction, salted) : hash;
+#else
+            => Intrinsics.GetLength(array) > 0 ? Intrinsics.GetHashCode64(ref As<T, byte>(ref GetArrayDataReference(array)), array.LongLength * sizeof(T), hash, hashFunction, salted) : hash;
+#endif
 
         /// <summary>
         /// Computes bitwise hash code for the array content using custom hash function.
@@ -377,7 +394,11 @@ namespace DotNext
         /// <returns>64-bit hash code of the array content.</returns>
         public static unsafe long BitwiseHashCode64<T>(this T[] array, bool salted = true)
             where T : unmanaged
-            => array.LongLength > 0L ? Intrinsics.GetHashCode64(ref As<T, byte>(ref array[0]), array.LongLength * sizeof(T), salted) : 0L;
+#if NETSTANDARD2_1
+            => Intrinsics.GetLength(array) > 0 ? Intrinsics.GetHashCode64(ref As<T, byte>(ref array[0]), array.LongLength * sizeof(T), salted) : 0L;
+#else
+            => Intrinsics.GetLength(array) > 0 ? Intrinsics.GetHashCode64(ref As<T, byte>(ref GetArrayDataReference(array)), array.LongLength * sizeof(T), salted) : 0L;
+#endif
 
         private sealed class ArrayEqualityComparer
         {
@@ -442,14 +463,18 @@ namespace DotNext
         public static unsafe int BitwiseCompare<T>(this T[]? first, T[]? second)
             where T : unmanaged
         {
-            if (first is null)
-                return second is null ? 0 : -1;
-            if (second is null)
+            if (first.IsNullOrEmpty())
+                return second.IsNullOrEmpty() ? 0 : -1;
+            if (second.IsNullOrEmpty())
                 return 1;
-            if (first.LongLength != second.LongLength)
-                return first.LongLength.CompareTo(second.LongLength);
-
-            return Intrinsics.Compare(ref As<T, byte>(ref first[0]), ref As<T, byte>(ref second[0]), first.LongLength * sizeof(T));
+            var cmp = first.LongLength.CompareTo(second.LongLength);
+            if (cmp == 0)
+#if NETSTANDARD2_1
+            cmp = Intrinsics.Compare(ref As<T, byte>(ref first[0]), ref As<T, byte>(ref second[0]), first.LongLength * sizeof(T));
+#else
+            cmp = Intrinsics.Compare(ref As<T, byte>(ref GetArrayDataReference(first)), ref As<T, byte>(ref GetArrayDataReference(second)), first.LongLength * sizeof(T));
+#endif
+            return cmp;
         }
     }
 }
