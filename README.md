@@ -97,6 +97,7 @@ Migration guide for 2.x users is [here](https://sakno.github.io/dotNext/migratio
 * Removed obsolete members and classes
 * Fixed nullability attributes
 * [IUnmanagedArray](https://sakno.github.io/dotNext/api/DotNext.Runtime.InteropServices.IUnmanagedArray-1.html) indexer property now uses 64-bit signed integer as an argument instead of 32-bit signed integer
+* Added `PinnedArray<T>` as a wrapper of pinned arrays from .NET 5
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/3.0.0">DotNext.Net.Cluster 3.0.0</a>
