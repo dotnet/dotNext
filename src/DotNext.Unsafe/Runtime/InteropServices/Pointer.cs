@@ -887,7 +887,7 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="handle">The memory handle.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe explicit operator Pointer<T>(in MemoryHandle handle) => new Pointer<T>(new IntPtr(handle.Pointer));
+        public static unsafe explicit operator Pointer<T>(in MemoryHandle handle) => new Pointer<T>((nint)handle.Pointer);
 
         /// <summary>
         /// Checks whether this pointer is not zero.
