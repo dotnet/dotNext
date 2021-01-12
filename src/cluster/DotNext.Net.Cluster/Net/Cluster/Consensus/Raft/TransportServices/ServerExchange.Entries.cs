@@ -50,8 +50,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
             => new ValueTask(writer.CopyFromAsync(reader, token));
 
-        ValueTask<TResult> IDataTransferObject.GetObjectDataAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token)
-            => IDataTransferObject.DecodeAsync<TResult, TDecoder>(reader, parser, token);
+        ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
+            => IDataTransferObject.TransformAsync<TResult, TTransformation>(reader, transformation, token);
     }
 
     internal partial class ServerExchange : ILogEntryProducer<ReceivedLogEntry>

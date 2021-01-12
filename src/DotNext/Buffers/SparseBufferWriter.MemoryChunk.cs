@@ -8,7 +8,7 @@ namespace DotNext.Buffers
         {
             private protected MemoryChunk(MemoryChunk? previous)
             {
-                if (!(previous is null))
+                if (previous is not null)
                     previous.Next = this;
             }
 
@@ -75,13 +75,7 @@ namespace DotNext.Buffers
 
             internal override int Write(ReadOnlySpan<T> input)
             {
-                var output = FreeMemory.Span;
-                int count;
-                if (input.IsEmpty || output.IsEmpty)
-                    count = 0;
-                else
-                    input.CopyTo(output, out count);
-
+                input.CopyTo(FreeMemory.Span, out var count);
                 writtenCount += count;
                 return count;
             }

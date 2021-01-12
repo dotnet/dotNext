@@ -9,12 +9,6 @@ namespace DotNext.Threading.Tasks
     /// </summary>
     public static class Conversion
     {
-        private static class NullableConverter<T>
-            where T : struct
-        {
-            internal static readonly Converter<T, T?> Value = value => new T?(value);
-        }
-
         /// <summary>
         /// Converts one type of task into another.
         /// </summary>
@@ -45,7 +39,7 @@ namespace DotNext.Threading.Tasks
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<T?> ToNullable<T>(this Task<T> task)
             where T : struct
-            => Convert(task, NullableConverter<T>.Value);
+            => Convert(task, static value => new T?(value));
 
         /// <summary>
         /// Converts one type of task into another.

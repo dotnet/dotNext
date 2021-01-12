@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
@@ -19,7 +18,7 @@ namespace DotNext.Metaprogramming
             : base(false) => this.tailCall = tailCall;
 
         private protected static IReadOnlyList<ParameterExpression> GetParameters(System.Reflection.ParameterInfo[] parameters)
-            => Array.ConvertAll(parameters, parameter => Expression.Parameter(parameter.ParameterType, parameter.Name));
+            => Array.ConvertAll(parameters, static parameter => Expression.Parameter(parameter.ParameterType, parameter.Name));
 
         /// <summary>
         /// Gets recursive reference to the lambda.
@@ -54,7 +53,6 @@ namespace DotNext.Metaprogramming
         private ParameterExpression? lambdaResult;
         private LabelTarget? returnLabel;
 
-        [SuppressMessage("Usage", "CA2208", Justification = "The name of the generic parameter is correct")]
         internal LambdaExpression(bool tailCall)
             : base(tailCall)
         {
@@ -84,7 +82,7 @@ namespace DotNext.Metaprogramming
             {
                 if (returnType == typeof(void))
                     return null;
-                else if (lambdaResult is null)
+                if (lambdaResult is null)
                     DeclareVariable(lambdaResult = Expression.Variable(returnType, "result"));
                 return lambdaResult;
             }
@@ -96,24 +94,24 @@ namespace DotNext.Metaprogramming
                 returnLabel = Expression.Label("leave");
             if (result is null)
                 result = Expression.Default(returnType);
-            result = returnType == typeof(void) ? (Expression)Expression.Return(returnLabel) : Expression.Block(Expression.Assign(Result, result), Expression.Return(returnLabel));
+            result = returnType == typeof(void) ? Expression.Return(returnLabel) : Expression.Block(Expression.Assign(Result!, result), Expression.Return(returnLabel));
             return result;
         }
 
         private new Expression<TDelegate> Build()
         {
-            if (!(returnLabel is null))
+            if (returnLabel is not null)
                 AddStatement(Expression.Label(returnLabel));
 
             // last instruction should be always a result of a function
-            if (!(lambdaResult is null))
+            if (lambdaResult is not null)
                 AddStatement(lambdaResult);
 
             // rewrite body
             var body = Expression.Block(returnType, Variables, this);
 
             // build lambda expression
-            if (!(recursion is null))
+            if (recursion is not null)
             {
                 body = Expression.Block(
                     Seq.Singleton(recursion),

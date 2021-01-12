@@ -12,8 +12,7 @@ namespace DotNext
             {
                 if (ObjectExtensions.IsContravariant(closure.Target, targetType))
                     return ChangeType<T, EmptyTargetRewriter>(closure.Delegate, default);
-                else
-                    goto invalid_op;
+                goto invalid_op;
             }
 
             if (ObjectExtensions.IsContravariant(target, targetType))

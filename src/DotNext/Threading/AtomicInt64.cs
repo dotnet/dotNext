@@ -28,7 +28,7 @@ namespace DotNext.Threading
         /// cache.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static long VolatileRead(ref this long value) => Volatile.Read(ref value);
+        public static long VolatileRead(in this long value) => Volatile.Read(ref Unsafe.AsRef(in value));
 
         /// <summary>
         /// Writes the specified value to the specified field. On systems that require it,
@@ -112,7 +112,7 @@ namespace DotNext.Threading
             long oldValue, newValue;
             do
             {
-                newValue = updater.Invoke(oldValue = VolatileRead(ref value));
+                newValue = updater.Invoke(oldValue = VolatileRead(in value));
             }
             while (!CompareAndSet(ref value, oldValue, newValue));
             return (oldValue, newValue);
@@ -123,7 +123,7 @@ namespace DotNext.Threading
             long oldValue, newValue;
             do
             {
-                newValue = accumulator.Invoke(oldValue = VolatileRead(ref value), x);
+                newValue = accumulator.Invoke(oldValue = VolatileRead(in value), x);
             }
             while (!CompareAndSet(ref value, oldValue, newValue));
             return (oldValue, newValue);
@@ -142,7 +142,7 @@ namespace DotNext.Threading
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long AccumulateAndGet(ref this long value, long x, Func<long, long, long> accumulator)
-            => AccumulateAndGet(ref value, x, new ValueFunc<long, long, long>(accumulator, true));
+            => AccumulateAndGet(ref value, x, new ValueFunc<long, long, long>(accumulator));
 
         /// <summary>
         /// Atomically updates the current value with the results of applying the given function
@@ -172,7 +172,7 @@ namespace DotNext.Threading
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long GetAndAccumulate(ref this long value, long x, Func<long, long, long> accumulator)
-            => GetAndAccumulate(ref value, x, new ValueFunc<long, long, long>(accumulator, true));
+            => GetAndAccumulate(ref value, x, new ValueFunc<long, long, long>(accumulator));
 
         /// <summary>
         /// Atomically updates the current value with the results of applying the given function
@@ -198,7 +198,7 @@ namespace DotNext.Threading
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long UpdateAndGet(ref this long value, Func<long, long> updater)
-            => UpdateAndGet(ref value, new ValueFunc<long, long>(updater, true));
+            => UpdateAndGet(ref value, new ValueFunc<long, long>(updater));
 
         /// <summary>
         /// Atomically updates the stored value with the results
@@ -220,7 +220,7 @@ namespace DotNext.Threading
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long GetAndUpdate(ref this long value, Func<long, long> updater)
-            => GetAndUpdate(ref value, new ValueFunc<long, long>(updater, true));
+            => GetAndUpdate(ref value, new ValueFunc<long, long>(updater));
 
         /// <summary>
         /// Atomically updates the stored value with the results
@@ -241,7 +241,7 @@ namespace DotNext.Threading
         /// <returns>The array element.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long VolatileRead(this long[] array, long index)
-            => VolatileRead(ref array[index]);
+            => VolatileRead(in array[index]);
 
         /// <summary>
         /// Performs volatile write to the array element.
@@ -347,7 +347,7 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <returns>The updated value.</returns>
         public static long AccumulateAndGet(this long[] array, long index, long x, Func<long, long, long> accumulator)
-            => AccumulateAndGet(array, index, x, new ValueFunc<long, long, long>(accumulator, true));
+            => AccumulateAndGet(array, index, x, new ValueFunc<long, long, long>(accumulator));
 
         /// <summary>
         /// Atomically updates the array element with the results of applying the given function
@@ -377,7 +377,7 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <returns>The original value of the array element.</returns>
         public static long GetAndAccumulate(this long[] array, long index, long x, Func<long, long, long> accumulator)
-            => GetAndAccumulate(array, index, x, new ValueFunc<long, long, long>(accumulator, true));
+            => GetAndAccumulate(array, index, x, new ValueFunc<long, long, long>(accumulator));
 
         /// <summary>
         /// Atomically updates the array element with the results of applying the given function
@@ -403,7 +403,7 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function.</param>
         /// <returns>The updated value.</returns>
         public static long UpdateAndGet(this long[] array, long index, Func<long, long> updater)
-            => UpdateAndGet(array, index, new ValueFunc<long, long>(updater, true));
+            => UpdateAndGet(array, index, new ValueFunc<long, long>(updater));
 
         /// <summary>
         /// Atomically updates the array element with the results
@@ -425,7 +425,7 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function.</param>
         /// <returns>The original value of the array element.</returns>
         public static long GetAndUpdate(this long[] array, long index, Func<long, long> updater)
-            => GetAndUpdate(array, index, new ValueFunc<long, long>(updater, true));
+            => GetAndUpdate(array, index, new ValueFunc<long, long>(updater));
 
         /// <summary>
         /// Atomically updates the array element with the results

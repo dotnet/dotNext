@@ -1,7 +1,6 @@
 using System;
 using System.Buffers;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Runtime.InteropServices;
@@ -43,7 +42,7 @@ namespace DotNext.IO.MemoryMappedFiles
             public bool Equals(Segment other)
                 => Equals(in other);
 
-            public override bool Equals(object other) => other is Segment window && Equals(in window);
+            public override bool Equals(object? other) => other is Segment window && Equals(in window);
 
             public override int GetHashCode()
                 => HashCode.Combine(Offset, Length);
@@ -85,7 +84,6 @@ namespace DotNext.IO.MemoryMappedFiles
 
         private sealed class MappedSegment : ReadOnlySequenceSegment<byte>, IDisposable
         {
-            [SuppressMessage("Usage", "CA2213", Justification = "It's disposed but cannot be recognized by analyzer")]
             private readonly MemoryManager manager;
 
             private MappedSegment(ReadOnlySequenceAccessor cursor, Segment segment)
@@ -122,7 +120,7 @@ namespace DotNext.IO.MemoryMappedFiles
             {
                 if (disposing)
                 {
-                    manager.As<IDisposable>().Dispose();
+                    ((IDisposable)manager).Dispose();
                 }
             }
 
@@ -202,8 +200,8 @@ namespace DotNext.IO.MemoryMappedFiles
                 remainingLength -= segmentLength;
             }
 
-            Debug.Assert(first != null);
-            Debug.Assert(last != null);
+            Debug.Assert(first is not null);
+            Debug.Assert(last is not null);
             return (first, last);
         }
 
@@ -244,7 +242,7 @@ namespace DotNext.IO.MemoryMappedFiles
                 segment.SafeMemoryMappedViewHandle.AcquirePointer(ref ptr);
             }
 
-            Debug.Assert(segment != null);
+            Debug.Assert(segment is not null);
             return ptr + segment.PointerOffset;
         }
 

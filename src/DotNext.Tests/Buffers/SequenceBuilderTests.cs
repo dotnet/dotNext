@@ -39,13 +39,5 @@ namespace DotNext.Buffers
             builder.Write(expected);
             Equal(expected, builder.As<IReadOnlySequenceSource<byte>>().Sequence.ToArray());
         }
-
-        [Fact]
-        public static void BuildString()
-        {
-            using var builder = new SequenceBuilder<char>();
-            builder.Write(new[] { 'H', 'e', 'l', 'l', 'o' });
-            Equal("Hello", builder.BuildString());
-        }
     }
 }

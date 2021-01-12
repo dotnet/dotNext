@@ -10,7 +10,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     internal sealed class RequestVoteMessage : RaftHttpMessage, IHttpMessageReader<Result<bool>>, IHttpMessageWriter<Result<bool>>
     {
-        private const string RecordIndexHeader = "X-Raft-Record-Index";
+        internal const string RecordIndexHeader = "X-Raft-Record-Index";
         internal const string RecordTermHeader = "X-Raft-Record-Term";
         internal new const string MessageType = "RequestVote";
 

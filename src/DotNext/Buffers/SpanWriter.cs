@@ -12,7 +12,6 @@ namespace DotNext.Buffers
     [StructLayout(LayoutKind.Auto)]
     public ref struct SpanWriter<T>
     {
-        // TODO: Support of BinaryPrimitives should be added using function pointers in C# 9
         private readonly Span<T> span;
         private int position;
 
@@ -162,36 +161,53 @@ namespace DotNext.Buffers
         /// <exception cref="EndOfStreamException">Remaining space in the underlying span is not enough to place <paramref name="count"/> elements.</exception>
         public Span<T> Slide(int count)
             => TrySlide(count, out var result) ? result : throw new EndOfStreamException(ExceptionMessages.NotEnoughMemory);
-    }
-
-    /// <summary>
-    /// Represents extension methods for <see cref="SpanWriter{T}"/> type.
-    /// </summary>
-    public static class SpanWriter
-    {
-        /// <summary>
-        /// Writes value of blittable type as bytes to the underlying memory block.
-        /// </summary>
-        /// <param name="writer">The memory writer.</param>
-        /// <param name="value">The value of blittable type.</param>
-        /// <typeparam name="T">The blittable type.</typeparam>
-        /// <returns>
-        /// <see langword="true"/> if all bytes are copied successfully;
-        /// <see langword="false"/> if remaining space in the underlying span is not enough to place all <paramref name="value"/> bytes.
-        /// </returns>
-        public static bool TryWrite<T>(this ref SpanWriter<byte> writer, in T value)
-            where T : unmanaged
-            => writer.TryWrite(Span.AsReadOnlyBytes(in value));
 
         /// <summary>
-        /// Writes value of blittable type as bytes to the underlying memory block.
+        /// Writes the portion of data.
         /// </summary>
-        /// <param name="writer">The memory writer.</param>
-        /// <param name="value">The value of blittable type.</param>
-        /// <typeparam name="T">The blittable type.</typeparam>
-        /// <exception cref="EndOfStreamException">Remaining space in the underlying span is not enough to place all <paramref name="value"/> bytes.</exception>
-        public static void Write<T>(this ref SpanWriter<byte> writer, in T value)
-            where T : unmanaged
-            => writer.Write(Span.AsReadOnlyBytes(in value));
+        /// <param name="action">The action responsible for writing elements.</param>
+        /// <param name="arg">The state to be passed to the action.</param>
+        /// <param name="count">The number of the elements to be written.</param>
+        /// <typeparam name="TArg">The type of the argument to be passed to the callback.</typeparam>
+        /// <exception cref="ArgumentNullException"><paramref name="action"/> is zero.</exception>
+        /// <exception cref="EndOfStreamException">Remaining space in the underlying span is not enough to place <paramref name="count"/> elements.</exception>
+        [CLSCompliant(false)]
+        public unsafe void Write<TArg>(delegate*<Span<T>, TArg, void> action, TArg arg, int count)
+        {
+            if (action == null)
+                throw new ArgumentNullException(nameof(action));
+
+            if (!TrySlide(count, out var buffer))
+                throw new EndOfStreamException(ExceptionMessages.NotEnoughMemory);
+            action(buffer, arg);
+        }
+
+        /// <summary>
+        /// Attempts to write the portion of data.
+        /// </summary>
+        /// <param name="action">The action responsible for writing elements.</param>
+        /// <param name="arg">The state to be passed to the action.</param>
+        /// <param name="count">The number of the elements to be written.</param>
+        /// <typeparam name="TArg">The type of the argument to be passed to the callback.</typeparam>
+        /// <returns><see langword="true"/> if all elements are written successfully; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="action"/> is zero.</exception>
+        [CLSCompliant(false)]
+        public unsafe bool TryWrite<TArg>(delegate*<Span<T>, TArg, void> action, TArg arg, int count)
+        {
+            if (action == null)
+                throw new ArgumentNullException(nameof(action));
+
+            bool result;
+            if (result = TrySlide(count, out var buffer))
+                action(buffer, arg);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Gets the textual representation of the written content.
+        /// </summary>
+        /// <returns>The textual representation of the written content.</returns>
+        public override string ToString() => WrittenSpan.ToString();
     }
 }

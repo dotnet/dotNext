@@ -62,24 +62,24 @@ namespace DotNext.Threading.Channels
         /// <value>The number of unread messages.</value>
         public long RemainingCount => ((Writer as IChannelInfo)?.Position ?? 0L) - ((Reader as IChannelInfo)?.Position ?? 0L);
 
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's member of internal interface")]
+        /// <inheritdoc />
         long IChannelReader<TOutput>.WrittenCount => (Writer as IChannelInfo)?.Position ?? 0L;
 
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's member of internal interface")]
+        /// <inheritdoc />
         DirectoryInfo IChannel.Location => location;
 
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's member of internal interface")]
+        /// <inheritdoc />
         void IChannelWriter<TInput>.MessageReady()
         {
             readTrigger.Signal();
             writeRate?.Increment();
         }
 
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's member of internal interface")]
+        /// <inheritdoc />
         ValueTask IChannelWriter<TInput>.SerializeAsync(TInput input, PartitionStream output, CancellationToken token)
             => SerializeAsync(input, output, token);
 
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's member of internal interface")]
+        /// <inheritdoc />
         Task IChannelReader<TOutput>.WaitToReadAsync(CancellationToken token) => readTrigger.WaitAsync(token);
 
         private PartitionStream CreateTopicStream(long partition, in FileCreationOptions options)
@@ -90,7 +90,7 @@ namespace DotNext.Threading.Channels
             return result;
         }
 
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's member of internal interface")]
+        /// <inheritdoc />
         PartitionStream IChannel.GetOrCreatePartition(ref ChannelCursor state, [NotNull]ref PartitionStream? partition, in FileCreationOptions options, bool deleteOnDispose)
         {
             var partitionNumber = state.Position / maxCount;
@@ -135,7 +135,7 @@ namespace DotNext.Threading.Channels
         /// <returns>Deserialized message.</returns>
         protected abstract ValueTask<TOutput> DeserializeAsync(Stream input, CancellationToken token);
 
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's member of internal interface")]
+        /// <inheritdoc />
         ValueTask<TOutput> IChannelReader<TOutput>.DeserializeAsync(PartitionStream input, CancellationToken token)
             => DeserializeAsync(input, token);
 

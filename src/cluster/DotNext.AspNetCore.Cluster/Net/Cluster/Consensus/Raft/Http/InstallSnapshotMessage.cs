@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.IO.Pipelines;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -12,6 +13,7 @@ using HeaderNames = Microsoft.Net.Http.Headers.HeaderNames;
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using IO;
+    using static IO.Pipelines.PipeExtensions;
 
     internal sealed class InstallSnapshotMessage : RaftHttpMessage, IHttpMessageReader<Result<bool>>, IHttpMessageWriter<Result<bool>>
     {
@@ -19,13 +21,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private const string SnapshotIndexHeader = "X-Raft-Snapshot-Index";
         private const string SnapshotTermHeader = "X-Raft-Snapshot-Term";
 
-        private sealed class ReceivedSnapshot : StreamTransferObject, IRaftLogEntry
+        private sealed class ReceivedSnapshot : IRaftLogEntry
         {
-            internal ReceivedSnapshot(Stream content, long term, DateTimeOffset timestamp)
-                : base(content, true)
+            private readonly PipeReader reader;
+            private bool touched;
+
+            internal ReceivedSnapshot(PipeReader content, long term, DateTimeOffset timestamp, long? length)
             {
                 Term = term;
                 Timestamp = timestamp;
+                Length = length;
+                reader = content;
             }
 
             public long Term { get; }
@@ -33,6 +39,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             bool IO.Log.ILogEntry.IsSnapshot => true;
 
             public DateTimeOffset Timestamp { get; }
+
+            public long? Length { get; }
+
+            bool IDataTransferObject.IsReusable => false;
+
+            ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+            {
+                Task result;
+                if (touched)
+                {
+                    result = Task.FromException(new InvalidOperationException(ExceptionMessages.ReadLogEntryTwice));
+                }
+                else
+                {
+                    touched = true;
+                    result = reader.ReadAsync(WriteToAsync<TWriter>, writer, token);
+                }
+
+                return new ValueTask(result);
+            }
         }
 
         internal readonly IRaftLogEntry Snapshot;
@@ -45,15 +71,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             Snapshot = snapshot;
         }
 
-        private InstallSnapshotMessage(HeadersReader<StringValues> headers, Stream body)
+        private InstallSnapshotMessage(HeadersReader<StringValues> headers, PipeReader body, long? length)
             : base(headers)
         {
             Index = ParseHeader(SnapshotIndexHeader, headers, Int64Parser);
-            Snapshot = new ReceivedSnapshot(body, ParseHeader(SnapshotTermHeader, headers, Int64Parser), ParseHeader(HeaderNames.LastModified, headers, DateTimeParser));
+            Snapshot = new ReceivedSnapshot(body, ParseHeader(SnapshotTermHeader, headers, Int64Parser), ParseHeader(HeaderNames.LastModified, headers, Rfc1123Parser), length);
         }
 
         internal InstallSnapshotMessage(HttpRequest request)
-            : this(request.Headers.TryGetValue, request.Body)
+            : this(request.Headers.TryGetValue, request.BodyReader, request.ContentLength)
         {
         }
 

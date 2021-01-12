@@ -26,3 +26,4 @@ RequestTimedOut=Request has timed out
 SocketAcceptLoopTerminated=Listening of incoming connections unexpectedly failed
 TcpGracefulShutdownFailed=Graceful shutdown of TCP server failed. Timeout is {Timeout}
 FailedToCancelPendingRequests=Unable to cancel all pending outbound requests
+StopAsyncWasNotCalled=StopAsync() method wasn't called

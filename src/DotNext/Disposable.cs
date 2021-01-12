@@ -1,30 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace DotNext
 {
-    using Runtime.CompilerServices;
+    using static Runtime.Intrinsics;
 
     /// <summary>
     /// Provides implementation of dispose pattern.
     /// </summary>
     /// <see cref="IDisposable"/>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-dispose">Implementing Dispose method</seealso>
-    [BeforeFieldInit(true)]
     public abstract class Disposable : IDisposable
     {
-        private static readonly WaitCallback DisposeCallback;
-
-        static Disposable()
-        {
-            DisposeCallback = UnsafeDispose;
-
-            static void UnsafeDispose(object disposable) => Unsafe.As<IDisposable>(disposable).Dispose();
-        }
-
         private volatile bool disposed;
 
         /// <summary>
@@ -74,6 +63,37 @@ namespace DotNext
         protected virtual void Dispose(bool disposing) => disposed = true;
 
         /// <summary>
+        /// Releases managed resources associated with this object asynchronously.
+        /// </summary>
+        /// <remarks>
+        /// This method makes sense only if derived class implements <see cref="IAsyncDisposable"/> interface.
+        /// </remarks>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        protected virtual ValueTask DisposeAsyncCore()
+        {
+            Dispose(true);
+            return new ValueTask();
+        }
+
+        private async ValueTask DisposeAsyncImpl(bool continueOnCapturedContext)
+        {
+            await DisposeAsyncCore().ConfigureAwait(continueOnCapturedContext);
+            Dispose(false);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Releases managed resources associated with this object asynchronously.
+        /// </summary>
+        /// <remarks>
+        /// If derived class implements <see cref="IAsyncDisposable"/> then <see cref="IAsyncDisposable.DisposeAsync"/>
+        /// can be trivially implemented through delegation of the call to this method.
+        /// </remarks>
+        /// <param name="continueOnCapturedContext"><see langword="true"/> to attempt to marshal the continuation back to the captured context; otherwise, <see langword="false"/>.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        protected ValueTask DisposeAsync(bool continueOnCapturedContext) => disposed ? new ValueTask() : DisposeAsyncImpl(continueOnCapturedContext);
+
+        /// <summary>
         /// Releases all resources associated with this object.
         /// </summary>
         public void Dispose()
@@ -81,14 +101,6 @@ namespace DotNext
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-
-        /// <summary>
-        /// Places <see cref="IDisposable.Dispose"/> method call into thread pool.
-        /// </summary>
-        /// <param name="resource">The resource to be disposed.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="resource"/> is <see langword="null"/>.</exception>
-        protected static void QueueDispose(IDisposable resource)
-            => ThreadPool.QueueUserWorkItem(DisposeCallback, resource ?? throw new ArgumentNullException(nameof(resource)));
 
         /// <summary>
         /// Disposes many objects.
@@ -109,7 +121,7 @@ namespace DotNext
         {
             foreach (var obj in objects)
             {
-                if (!(obj is null))
+                if (obj is not null)
                     await obj.DisposeAsync().ConfigureAwait(false);
             }
         }
@@ -119,7 +131,10 @@ namespace DotNext
         /// </summary>
         /// <param name="objects">An array of objects to dispose.</param>
         public static void Dispose(params IDisposable?[] objects)
-            => Dispose(objects.As<IEnumerable<IDisposable?>>());
+        {
+            for (nint i = 0; i < GetLength(objects); i++)
+                objects[i]?.Dispose();
+        }
 
         /// <summary>
         /// Disposes many objects in safe manner.

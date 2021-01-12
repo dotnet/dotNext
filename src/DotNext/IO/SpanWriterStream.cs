@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Buffers;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -9,17 +8,17 @@ namespace DotNext.IO
 
     internal sealed class SpanWriterStream<TArg> : WriterStream<TArg>
     {
-        private readonly ReadOnlySpanAction<byte, TArg> writer;
+        private readonly ValueReadOnlySpanAction<byte, TArg> writer;
 
-        internal SpanWriterStream(ReadOnlySpanAction<byte, TArg> writer, TArg arg, Action<TArg>? flush, Func<TArg, CancellationToken, Task>? flushAsync)
+        internal SpanWriterStream(ValueReadOnlySpanAction<byte, TArg> writer, TArg arg, Action<TArg>? flush, Func<TArg, CancellationToken, Task>? flushAsync)
             : base(arg, flush, flushAsync)
-            => this.writer = writer ?? throw new ArgumentNullException(nameof(writer));
+            => this.writer = writer;
 
         public override void Write(ReadOnlySpan<byte> buffer)
         {
             if (!buffer.IsEmpty)
             {
-                writer(buffer, argument);
+                writer.Invoke(buffer, argument);
                 writtenBytes += buffer.Length;
             }
         }

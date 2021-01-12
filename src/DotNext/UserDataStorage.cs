@@ -104,8 +104,16 @@ namespace DotNext
             {
                 BackingStorage copy;
                 lockState.EnterReadLock();
-                copy = new BackingStorage(this);
-                lockState.ExitReadLock();
+
+                try
+                {
+                    copy = new BackingStorage(this);
+                }
+                finally
+                {
+                    lockState.ExitReadLock();
+                }
+
                 return copy;
             }
 
@@ -113,24 +121,36 @@ namespace DotNext
             {
                 lockState.EnterReadLock();
                 dest.lockState.EnterWriteLock();
-                dest.Clear();
-                dest.AddAll(this);
-                dest.lockState.ExitWriteLock();
-                lockState.ExitReadLock();
+                try
+                {
+                    dest.Clear();
+                    dest.AddAll(this);
+                }
+                finally
+                {
+                    dest.lockState.ExitWriteLock();
+                    lockState.ExitReadLock();
+                }
             }
 
             [return: NotNullIfNotNull("defaultValue")]
-            [return: MaybeNull]
-            internal TValue Get<TValue>(UserDataSlot<TValue> slot, [AllowNull]TValue defaultValue)
+            internal TValue? Get<TValue>(UserDataSlot<TValue> slot, TValue? defaultValue)
             {
+                TValue? result;
                 lockState.EnterReadLock();
-                var result = slot.GetUserData(this, defaultValue);
-                lockState.ExitReadLock();
+                try
+                {
+                    result = slot.GetUserData(this, defaultValue);
+                }
+                finally
+                {
+                    lockState.ExitReadLock();
+                }
+
                 return result;
             }
 
-            [return: MaybeNull]
-            internal TValue GetOrSet<TValue, TSupplier>(UserDataSlot<TValue> slot, ref TSupplier valueFactory)
+            internal TValue? GetOrSet<TValue, TSupplier>(UserDataSlot<TValue> slot, ref TSupplier valueFactory)
                 where TSupplier : struct, ISupplier<TValue>
             {
                 // fast path - read lock is required
@@ -151,7 +171,7 @@ namespace DotNext
                     try
                     {
                         userData = valueFactory.Invoke();
-                        if (userData != null)
+                        if (userData is not null)
                             slot.SetUserData(this, userData);
                     }
                     finally
@@ -227,7 +247,7 @@ namespace DotNext
         {
             if (source is BackingStorage storage)
                 return storage;
-            return UserData.TryGetValue(source, out storage) ? storage : null;
+            return UserData.TryGetValue(source, out storage!) ? storage : null;
         }
 
         private BackingStorage GetOrCreateStorage()
@@ -241,8 +261,7 @@ namespace DotNext
         /// <param name="defaultValue">Default value to be returned if no user data contained in this collection.</param>
         /// <returns>User data.</returns>
         [return: NotNullIfNotNull("defaultValue")]
-        [return: MaybeNull]
-        public TValue Get<TValue>(UserDataSlot<TValue> slot, [AllowNull]TValue defaultValue)
+        public TValue? Get<TValue>(UserDataSlot<TValue> slot, TValue? defaultValue)
         {
             var storage = GetStorage();
             return storage is null ? defaultValue : storage.Get(slot!, defaultValue);
@@ -254,8 +273,7 @@ namespace DotNext
         /// <typeparam name="TValue">Type of data.</typeparam>
         /// <param name="slot">The slot identifying user data.</param>
         /// <returns>User data; or <c>default(V)</c> if there is no user data associated with <paramref name="slot"/>.</returns>
-        [return: MaybeNull]
-        public TValue Get<TValue>(UserDataSlot<TValue> slot)
+        public TValue? Get<TValue>(UserDataSlot<TValue> slot)
         {
             var storage = GetStorage();
             return storage is null ? default : storage.Get(slot!, default);
@@ -295,7 +313,7 @@ namespace DotNext
         /// <param name="slot">The slot identifying user data.</param>
         /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
         /// <returns>The data associated with the slot.</returns>
-        public TValue GetOrSet<TValue>(UserDataSlot<TValue> slot, Func<TValue> valueFactory) => GetOrSet(slot, new ValueFunc<TValue>(valueFactory, true));
+        public TValue GetOrSet<TValue>(UserDataSlot<TValue> slot, Func<TValue> valueFactory) => GetOrSet(slot, new ValueFunc<TValue>(valueFactory));
 
         /// <summary>
         /// Gets existing user data or creates a new data and return it.
@@ -307,7 +325,7 @@ namespace DotNext
         /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
         /// <returns>The data associated with the slot.</returns>
         public TValue GetOrSet<T, TValue>(UserDataSlot<TValue> slot, T arg, Func<T, TValue> valueFactory)
-            => GetOrSet(slot, arg, new ValueFunc<T, TValue>(valueFactory, true));
+            => GetOrSet(slot, arg, new ValueFunc<T, TValue>(valueFactory));
 
         /// <summary>
         /// Gets existing user data or creates a new data and return it.
@@ -321,7 +339,7 @@ namespace DotNext
         /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
         /// <returns>The data associated with the slot.</returns>
         public TValue GetOrSet<T1, T2, TValue>(UserDataSlot<TValue> slot, T1 arg1, T2 arg2, Func<T1, T2, TValue> valueFactory)
-            => GetOrSet(slot, arg1, arg2, new ValueFunc<T1, T2, TValue>(valueFactory, true));
+            => GetOrSet(slot, arg1, arg2, new ValueFunc<T1, T2, TValue>(valueFactory));
 
         /// <summary>
         /// Gets existing user data or creates a new data and return it.
@@ -433,7 +451,7 @@ namespace DotNext
             if (obj is IContainer support)
                 obj = support.Source;
             var source = GetStorage();
-            if (source != null)
+            if (source is not null)
             {
                 if (obj is BackingStorage destination)
                     source.CopyTo(destination);
@@ -460,7 +478,7 @@ namespace DotNext
         /// Returns textual representation of this storage.
         /// </summary>
         /// <returns>The textual representation of this storage.</returns>
-        public override string ToString() => source.ToString();
+        public override string? ToString() => source?.ToString();
 
         /// <summary>
         /// Determines whether two stores are for the same object.

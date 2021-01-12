@@ -15,8 +15,6 @@ namespace DotNext.Threading
     /// <seealso cref="Interlocked"/>
     public static class AtomicDouble
     {
-        private static readonly ValueFunc<double, double, double> Sum = new ValueFunc<double, double, double>(SumImpl);
-
         private static double SumImpl(double x, double y) => x + y;
 
         /// <summary>
@@ -32,7 +30,7 @@ namespace DotNext.Threading
         /// cache.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static double VolatileRead(ref this double value) => Volatile.Read(ref value);
+        public static double VolatileRead(in this double value) => Volatile.Read(ref Unsafe.AsRef(in value));
 
         /// <summary>
         /// Writes the specified value to the specified field. On systems that require it,
@@ -54,7 +52,7 @@ namespace DotNext.Threading
         /// <param name="value">Reference to a value to be modified.</param>
         /// <returns>Incremented value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static double IncrementAndGet(ref this double value) => AccumulateAndGet(ref value, 1D, Sum);
+        public static unsafe double IncrementAndGet(ref this double value) => AccumulateAndGet(ref value, 1D, new ValueFunc<double, double, double>(&SumImpl));
 
         /// <summary>
         /// Atomically decrements by one the current value.
@@ -62,7 +60,7 @@ namespace DotNext.Threading
         /// <param name="value">Reference to a value to be modified.</param>
         /// <returns>Decremented value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static double DecrementAndGet(ref this double value) => AccumulateAndGet(ref value, -1D, Sum);
+        public static unsafe double DecrementAndGet(ref this double value) => AccumulateAndGet(ref value, -1D, new ValueFunc<double, double, double>(&SumImpl));
 
         /// <summary>
         /// Adds two 64-bit floating-point numbers and replaces referenced storage with the sum,
@@ -72,7 +70,7 @@ namespace DotNext.Threading
         /// <param name="operand">The value to be added to the currently stored integer.</param>
         /// <returns>Result of sum operation.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static double Add(ref this double value, double operand) => AccumulateAndGet(ref value, operand, Sum);
+        public static unsafe double Add(ref this double value, double operand) => AccumulateAndGet(ref value, operand, new ValueFunc<double, double, double>(&SumImpl));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool Equals(double x, double y)
@@ -117,7 +115,7 @@ namespace DotNext.Threading
             double oldValue, newValue;
             do
             {
-                newValue = updater.Invoke(oldValue = VolatileRead(ref value));
+                newValue = updater.Invoke(oldValue = VolatileRead(in value));
             }
             while (!CompareAndSet(ref value, oldValue, newValue));
             return (oldValue, newValue);
@@ -128,7 +126,7 @@ namespace DotNext.Threading
             double oldValue, newValue;
             do
             {
-                newValue = accumulator.Invoke(oldValue = VolatileRead(ref value), x);
+                newValue = accumulator.Invoke(oldValue = VolatileRead(in value), x);
             }
             while (!CompareAndSet(ref value, oldValue, newValue));
             return (oldValue, newValue);
@@ -147,7 +145,7 @@ namespace DotNext.Threading
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double AccumulateAndGet(ref this double value, double x, Func<double, double, double> accumulator)
-            => AccumulateAndGet(ref value, x, new ValueFunc<double, double, double>(accumulator, true));
+            => AccumulateAndGet(ref value, x, new ValueFunc<double, double, double>(accumulator));
 
         /// <summary>
         /// Atomically updates the current value with the results of applying the given function
@@ -177,7 +175,7 @@ namespace DotNext.Threading
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double GetAndAccumulate(ref this double value, double x, Func<double, double, double> accumulator)
-            => GetAndAccumulate(ref value, x, new ValueFunc<double, double, double>(accumulator, true));
+            => GetAndAccumulate(ref value, x, new ValueFunc<double, double, double>(accumulator));
 
         /// <summary>
         /// Atomically updates the current value with the results of applying the given function
@@ -203,7 +201,7 @@ namespace DotNext.Threading
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double UpdateAndGet(ref this double value, Func<double, double> updater)
-            => UpdateAndGet(ref value, new ValueFunc<double, double>(updater, true));
+            => UpdateAndGet(ref value, new ValueFunc<double, double>(updater));
 
         /// <summary>
         /// Atomically updates the stored value with the results
@@ -225,7 +223,7 @@ namespace DotNext.Threading
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double GetAndUpdate(ref this double value, Func<double, double> updater)
-            => GetAndUpdate(ref value, new ValueFunc<double, double>(updater, true));
+            => GetAndUpdate(ref value, new ValueFunc<double, double>(updater));
 
         /// <summary>
         /// Atomically updates the stored value with the results
@@ -246,7 +244,7 @@ namespace DotNext.Threading
         /// <returns>The array element.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double VolatileRead(this double[] array, long index)
-            => VolatileRead(ref array[index]);
+            => VolatileRead(in array[index]);
 
         /// <summary>
         /// Performs volatile write to the array element.
@@ -352,7 +350,7 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <returns>The updated value.</returns>
         public static double AccumulateAndGet(this double[] array, long index, double x, Func<double, double, double> accumulator)
-            => AccumulateAndGet(array, index, x, new ValueFunc<double, double, double>(accumulator, true));
+            => AccumulateAndGet(array, index, x, new ValueFunc<double, double, double>(accumulator));
 
         /// <summary>
         /// Atomically updates the array element with the results of applying the given function
@@ -382,7 +380,7 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <returns>The original value of the array element.</returns>
         public static double GetAndAccumulate(this double[] array, long index, double x, Func<double, double, double> accumulator)
-            => GetAndAccumulate(array, index, x, new ValueFunc<double, double, double>(accumulator, true));
+            => GetAndAccumulate(array, index, x, new ValueFunc<double, double, double>(accumulator));
 
         /// <summary>
         /// Atomically updates the array element with the results of applying the given function
@@ -408,7 +406,7 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function.</param>
         /// <returns>The updated value.</returns>
         public static double UpdateAndGet(this double[] array, long index, Func<double, double> updater)
-            => UpdateAndGet(array, index, new ValueFunc<double, double>(updater, true));
+            => UpdateAndGet(array, index, new ValueFunc<double, double>(updater));
 
         /// <summary>
         /// Atomically updates the array element with the results
@@ -430,7 +428,7 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function.</param>
         /// <returns>The original value of the array element.</returns>
         public static double GetAndUpdate(this double[] array, long index, Func<double, double> updater)
-            => GetAndUpdate(array, index, new ValueFunc<double, double>(updater, true));
+            => GetAndUpdate(array, index, new ValueFunc<double, double>(updater));
 
         /// <summary>
         /// Atomically updates the array element with the results

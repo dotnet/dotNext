@@ -19,5 +19,7 @@ namespace DotNext
             => Resources.Get().Format(path);
 
         internal static string WriterInReadMode => (string)Resources.Get();
+
+        internal static string NoConsumerProvided => (string)Resources.Get();
     }
 }

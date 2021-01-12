@@ -29,7 +29,7 @@ namespace DotNext.Threading
         public static async Task WaitForSignal()
         {
             using var ev = new ManualResetEvent(false);
-            ThreadPool.QueueUserWorkItem(state => ev.Set());
+            ThreadPool.QueueUserWorkItem(static state => state.Set(), ev, false);
             await ev.WaitAsync(DefaultTimeout);
         }
 

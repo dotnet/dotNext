@@ -6,38 +6,28 @@ using System.Net;
 
 namespace DotNext.ComponentModel
 {
-    [SuppressMessage("Usage", "CA1812", Justification = "This class is instantiated implicitly via Register method")]
+    [SuppressMessage("Performance", "CA1812", Justification = "This class is instantiated implicitly via Register method")]
     internal sealed class IPAddressConverter : TypeConverter
     {
         internal static void Register()
             => TypeDescriptor.AddAttributes(typeof(IPAddress), new TypeConverterAttribute(typeof(IPAddressConverter)));
 
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
-            => sourceType == typeof(string);
+            => sourceType.IsOneOf(typeof(string), typeof(ReadOnlyMemory<char>), typeof(Memory<char>), typeof(char[]));
 
-        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value) => value switch
         {
-            switch (value)
-            {
-                case string address:
-                    return IPAddress.Parse(address);
-                default:
-                    throw new NotSupportedException();
-            }
-        }
+            string address => IPAddress.Parse(address),
+            ReadOnlyMemory<char> memory => IPAddress.Parse(memory.Span),
+            Memory<char> memory => IPAddress.Parse(memory.Span),
+            char[] array => IPAddress.Parse(new ReadOnlySpan<char>(array)),
+            _ => new NotSupportedException()
+        };
 
         public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
             => destinationType == typeof(string);
 
         public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
-        {
-            switch (value)
-            {
-                case IPAddress address:
-                    return address.ToString();
-                default:
-                    throw new NotSupportedException();
-            }
-        }
+            => value is IPAddress ip ? ip.ToString() : throw new NotSupportedException();
     }
 }

@@ -43,12 +43,12 @@ namespace DotNext.Runtime.CompilerServices
             // generate try block
             var tryBody = visitor.Visit(Wrap(Content.Body));
             tryBody = tryBody.AddPrologue(false, prologue);
-            if (!(finallyLabel is null))
+            if (finallyLabel is not null)
                 tryBody = tryBody.AddEpilogue(false, finallyLabel.Goto(), FaultLabel.LandingSite());
 
             // generate exception handlers block
             var handlers = new LinkedList<Expression>();
-            if (finallyLabel != null)
+            if (finallyLabel is not null)
             {
                 handlers.AddLast(new ExitGuardedCodeExpression(previousState, false));
                 handlers.AddLast(new EnterGuardedCodeExpression(recoveryStateId));
@@ -57,7 +57,7 @@ namespace DotNext.Runtime.CompilerServices
             }
 
             // generate finally block
-            Expression fault = new FinallyStatement(Content.Finally ?? Content.Fault, previousState, finallyLabel ?? FaultLabel);
+            Expression fault = new FinallyStatement(Content.Finally ?? Content.Fault ?? Expression.Empty(), previousState, finallyLabel ?? FaultLabel);
             fault = visitor.Visit(fault);
             return tryBody.AddEpilogue(false, handlers).AddEpilogue(false, fault);
         }

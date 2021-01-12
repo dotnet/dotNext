@@ -43,9 +43,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 client.Enqueue(exchange, timeoutSource.Token);
                 return await exchange.Task.ConfigureAwait(false);
             }
-            catch (Exception e) when (!(e is OperationCanceledException) || !token.IsCancellationRequested)
+            catch (Exception e) when (e is not OperationCanceledException || !token.IsCancellationRequested)
             {
-                Logger.MemberUnavailable(Endpoint, e);
+                Logger.MemberUnavailable(EndPoint, e);
                 ChangeStatus(ClusterMemberStatus.Unavailable);
                 throw new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, e);
             }
@@ -60,6 +60,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         private protected override Task<Result<bool>> VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
             => SendAsync<Result<bool>, VoteExchange>(new VoteExchange(term, lastLogIndex, lastLogTerm), token);
+
+        private protected override Task<Result<bool>> PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
+            => SendAsync<Result<bool>, PreVoteExchange>(new PreVoteExchange(term, lastLogIndex, lastLogTerm), token);
 
         private protected override Task<Result<bool>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
             => entries.Count > 0 ?

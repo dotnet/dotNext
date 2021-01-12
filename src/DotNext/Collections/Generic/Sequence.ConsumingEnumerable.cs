@@ -24,7 +24,7 @@ namespace DotNext.Collections.Generic
             {
                 private readonly IProducerConsumerCollection<T>? collection;
 
-                private T current;
+                private T? current;
 
                 internal Enumerator(IProducerConsumerCollection<T>? collection)
                 {
@@ -35,7 +35,7 @@ namespace DotNext.Collections.Generic
                 /// <summary>
                 /// Gets consumed item from the underlying collection.
                 /// </summary>
-                public readonly T Current => current;
+                public readonly T Current => current!;
 
                 /// <inheritdoc />
                 readonly object? IEnumerator.Current => Current;
@@ -44,7 +44,7 @@ namespace DotNext.Collections.Generic
                 /// Consumes the item from the underlying collection.
                 /// </summary>
                 /// <returns><see langword="true"/> if the item has been consumed successfully; <see langword="false"/> if underlying collection is empty.</returns>
-                public bool MoveNext() => collection != null && collection.TryTake(out current);
+                public bool MoveNext() => collection is not null && collection.TryTake(out current);
 
                 /// <inheritdoc />
                 readonly void IEnumerator.Reset() => throw new NotSupportedException();

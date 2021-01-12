@@ -129,7 +129,8 @@ namespace DotNext.Threading
         }
 
         private readonly ValueFunc<CancellationToken, Task<bool>> callback;
-        [SuppressMessage("Usage", "CA2213", Justification = "It is disposed in Dispose method")]
+
+        [SuppressMessage("Usage", "CA2213", Justification = "Disposed correctly but cannot be recognized by .NET Analyzer")]
         private volatile TimerCompletionSource? timerTask;
         private bool disposeRequested;
 
@@ -164,7 +165,7 @@ namespace DotNext.Threading
             get
             {
                 var task = timerTask;
-                return task != null && !task.Task.IsCompleted;
+                return task is not null && !task.Task.IsCompleted;
             }
         }
 
@@ -230,7 +231,7 @@ namespace DotNext.Threading
             if (disposing)
             {
                 var timerTask = Interlocked.Exchange(ref this.timerTask, null);
-                if (timerTask != null)
+                if (timerTask is not null)
                 {
                     TrySetDisposedException(timerTask);
                     timerTask.Dispose();
@@ -240,7 +241,7 @@ namespace DotNext.Threading
             base.Dispose(disposing);
         }
 
-        private void Dispose(Task parent, object state)
+        private void Dispose(Task parent, object? state)
         {
             (state as IDisposable)?.Dispose();
             Dispose();

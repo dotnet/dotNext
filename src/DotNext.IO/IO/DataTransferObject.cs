@@ -9,8 +9,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.IO
 {
-    using ByteBuffer = Buffers.ArrayRental<byte>;
-    using ByteBufferWriter = Buffers.PooledArrayBufferWriter<byte>;
+    using Buffers;
     using PipeBinaryWriter = Pipelines.PipeBinaryWriter;
 
     /// <summary>
@@ -21,70 +20,95 @@ namespace DotNext.IO
         private const int DefaultBufferSize = 1024;
 
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct TextDecoder : IDataTransferObject.IDecoder<string>
+        private readonly struct TextDecoder : IDataTransferObject.ITransformation<string>
         {
             private readonly Encoding encoding;
-            private readonly int? capacity;
+            private readonly long? capacity;
+            private readonly MemoryAllocator<byte>? allocator;
 
-            internal TextDecoder(Encoding encoding)
-            {
-                this.encoding = encoding;
-                capacity = null;
-            }
-
-            internal TextDecoder(Encoding encoding, int capacity)
+            internal TextDecoder(Encoding encoding, long? capacity, MemoryAllocator<byte>? allocator)
             {
                 this.encoding = encoding;
                 this.capacity = capacity;
+                this.allocator = allocator;
             }
 
-            public async ValueTask<string> ReadAsync<TReader>(TReader reader, CancellationToken token)
+            private BufferWriter<byte> CreateBuffer()
+                => capacity.TryGetValue(out var initialCapacity) && initialCapacity > 0L ?
+                    new PooledBufferWriter<byte>(allocator, initialCapacity.Truncate()) :
+                    new PooledBufferWriter<byte>(allocator);
+
+            public async ValueTask<string> TransformAsync<TReader>(TReader reader, CancellationToken token)
                 where TReader : IAsyncBinaryReader
             {
-                using var writer = capacity.HasValue ?
-                    new ByteBufferWriter(capacity.GetValueOrDefault()) :
-                    new ByteBufferWriter();
+                using var writer = CreateBuffer();
                 await reader.CopyToAsync(writer, token).ConfigureAwait(false);
                 return writer.WrittenCount == 0 ? string.Empty : encoding.GetString(writer.WrittenMemory.Span);
             }
         }
 
-        private sealed class ArrayDecoder : IDataTransferObject.IDecoder<byte[]>
+        [StructLayout(LayoutKind.Auto)]
+        private readonly struct MemoryDecoder : IDataTransferObject.ITransformation<MemoryOwner<byte>>, IDataTransferObject.ITransformation<byte[]>
         {
-            internal static readonly ArrayDecoder Instance = new ArrayDecoder();
+            private readonly MemoryAllocator<byte>? allocator;
+            private readonly long? initialCapacity;
 
-            private ArrayDecoder()
+            internal MemoryDecoder(MemoryAllocator<byte>? allocator, long? length)
             {
+                this.allocator = allocator;
+                initialCapacity = length;
             }
 
-            public async ValueTask<byte[]> ReadAsync<TReader>(TReader reader, CancellationToken token)
-                where TReader : IAsyncBinaryReader
+            private BufferWriter<byte> CreateBuffer()
+                => this.initialCapacity.TryGetValue(out var initialCapacity) && initialCapacity > 0L ?
+                    new PooledBufferWriter<byte>(allocator, initialCapacity.Truncate()) :
+                    new PooledBufferWriter<byte>(allocator);
+
+            async ValueTask<MemoryOwner<byte>> IDataTransferObject.ITransformation<MemoryOwner<byte>>.TransformAsync<TReader>(TReader reader, CancellationToken token)
             {
-                using var ms = new MemoryStream(DefaultBufferSize);
-                await reader.CopyToAsync(ms, token).ConfigureAwait(false);
-                ms.Seek(0, SeekOrigin.Begin);
-                return ms.ToArray();
+                using var writer = CreateBuffer();
+                await reader.CopyToAsync(writer, token).ConfigureAwait(false);
+
+                MemoryOwner<byte> result;
+                if (writer.WrittenCount > 0)
+                {
+                    result = allocator.Invoke(writer.WrittenCount, true);
+                    writer.WrittenMemory.CopyTo(result.Memory);
+                }
+                else
+                {
+                    result = default;
+                }
+
+                return result;
+            }
+
+            async ValueTask<byte[]> IDataTransferObject.ITransformation<byte[]>.TransformAsync<TReader>(TReader reader, CancellationToken token)
+            {
+                using var writer = CreateBuffer();
+                await reader.CopyToAsync(writer, token).ConfigureAwait(false);
+                return writer.WrittenMemory.ToArray();
             }
         }
 
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct ValueDecoder<T> : IDataTransferObject.IDecoder<T>
+        private readonly struct ValueDecoder<T> : IDataTransferObject.ITransformation<T>
             where T : unmanaged
         {
-            public ValueTask<T> ReadAsync<TReader>(TReader reader, CancellationToken token)
+            public ValueTask<T> TransformAsync<TReader>(TReader reader, CancellationToken token)
                 where TReader : IAsyncBinaryReader
                 => reader.ReadAsync<T>(token);
         }
 
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct DelegatingDecoder<T> : IDataTransferObject.IDecoder<T>
+        private readonly struct DelegatingDecoder<T> : IDataTransferObject.ITransformation<T>
         {
             private readonly Func<IAsyncBinaryReader, CancellationToken, ValueTask<T>> decoder;
 
             internal DelegatingDecoder(Func<IAsyncBinaryReader, CancellationToken, ValueTask<T>> decoder)
                 => this.decoder = decoder;
 
-            ValueTask<T> IDataTransferObject.IDecoder<T>.ReadAsync<TReader>(TReader reader, CancellationToken token)
+            ValueTask<T> IDataTransferObject.ITransformation<T>.TransformAsync<TReader>(TReader reader, CancellationToken token)
                 => decoder(reader, token);
         }
 
@@ -100,7 +124,7 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static ValueTask WriteToAsync<TObject>(this TObject dto, Stream output, Memory<byte> buffer, CancellationToken token = default)
             where TObject : notnull, IDataTransferObject
-            => dto.WriteToAsync(new AsyncStreamBinaryWriter(output, buffer), token);
+            => dto.WriteToAsync(new AsyncStreamBinaryAccessor(output, buffer), token);
 
         /// <summary>
         /// Copies the object content to the specified stream.
@@ -115,7 +139,7 @@ namespace DotNext.IO
         public static async ValueTask WriteToAsync<TObject>(this TObject dto, Stream output, int bufferSize = DefaultBufferSize, CancellationToken token = default)
             where TObject : notnull, IDataTransferObject
         {
-            using var buffer = new ByteBuffer(bufferSize);
+            using var buffer = new MemoryOwner<byte>(ArrayPool<byte>.Shared, bufferSize);
             await WriteToAsync(dto, output, buffer.Memory, token).ConfigureAwait(false);
         }
 
@@ -151,38 +175,39 @@ namespace DotNext.IO
         /// <typeparam name="TObject">The type of data transfer object.</typeparam>
         /// <param name="dto">Data transfer object to read from.</param>
         /// <param name="encoding">The encoding used to decode stored string.</param>
+        /// <param name="allocator">The memory allocator.</param>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns>The content of the object.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static Task<string> ToStringAsync<TObject>(this TObject dto, Encoding encoding, CancellationToken token = default)
+        public static ValueTask<string> ToStringAsync<TObject>(this TObject dto, Encoding encoding, MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
             where TObject : notnull, IDataTransferObject
-            => dto.GetObjectDataAsync<string, TextDecoder>(new TextDecoder(encoding), token).AsTask();
+            => dto.TransformAsync<string, TextDecoder>(new TextDecoder(encoding, dto.Length, allocator), token);
 
         /// <summary>
-        /// Converts DTO content to string.
+        /// Converts DTO to an array of bytes.
         /// </summary>
         /// <typeparam name="TObject">The type of data transfer object.</typeparam>
         /// <param name="dto">Data transfer object to read from.</param>
-        /// <param name="encoding">The encoding used to decode stored string.</param>
-        /// <param name="capacity">The maximum possible size of the message, in bytes.</param>
+        /// <param name="allocator">The memory allocator.</param>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns>The content of the object.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static Task<string> ToStringAsync<TObject>(this TObject dto, Encoding encoding, int capacity, CancellationToken token = default)
+        public static ValueTask<byte[]> ToByteArrayAsync<TObject>(this TObject dto, MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
             where TObject : notnull, IDataTransferObject
-            => dto.GetObjectDataAsync<string, TextDecoder>(new TextDecoder(encoding, capacity), token).AsTask();
+            => dto.TransformAsync<byte[], MemoryDecoder>(new MemoryDecoder(allocator, dto.Length), token);
 
         /// <summary>
-        /// Converts DTO to array of bytes.
+        /// Converts DTO to a block of memory.
         /// </summary>
         /// <typeparam name="TObject">The type of data transfer object.</typeparam>
         /// <param name="dto">Data transfer object to read from.</param>
+        /// <param name="allocator">The memory allocator.</param>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns>The content of the object.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static Task<byte[]> ToByteArrayAsync<TObject>(this TObject dto, CancellationToken token = default)
+        public static ValueTask<MemoryOwner<byte>> ToMemoryAsync<TObject>(this TObject dto, MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
             where TObject : notnull, IDataTransferObject
-            => dto.GetObjectDataAsync<byte[], ArrayDecoder>(ArrayDecoder.Instance, token).AsTask();
+            => dto.TransformAsync<MemoryOwner<byte>, MemoryDecoder>(new MemoryDecoder(allocator, dto.Length), token);
 
         /// <summary>
         /// Converts DTO to value of blittable type.
@@ -193,37 +218,23 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns>The content of the object.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<TResult> ToType<TResult, TObject>(this TObject dto, CancellationToken token = default)
+        public static ValueTask<TResult> ToTypeAsync<TResult, TObject>(this TObject dto, CancellationToken token = default)
             where TObject : notnull, IDataTransferObject
             where TResult : unmanaged
-            => dto.GetObjectDataAsync<TResult, ValueDecoder<TResult>>(new ValueDecoder<TResult>(), token);
-
-        /// <summary>
-        /// Gets the data encapsulated by the data transfer object.
-        /// </summary>
-        /// <param name="dto">Data transfer object to read from.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <typeparam name="TResult">The type representing another form of data transfer object.</typeparam>
-        /// <typeparam name="TObject">The type of the data transfer object.</typeparam>
-        /// <returns>The data extracted from DTO.</returns>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<TResult> GetObjectDataAsync<TResult, TObject>(this TObject dto, CancellationToken token = default)
-            where TResult : notnull, IDataTransferObject.IDecoder<TResult>, new()
-            where TObject : notnull, IDataTransferObject
-            => dto.GetObjectDataAsync<TResult, TResult>(new TResult(), token);
+            => dto.TransformAsync<TResult, ValueDecoder<TResult>>(new ValueDecoder<TResult>(), token);
 
         /// <summary>
         /// Converts data transfer object to another type.
         /// </summary>
         /// <param name="dto">Data transfer object to decode.</param>
-        /// <param name="parser">The parser instance.</param>
+        /// <param name="transformation">The parser instance.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <typeparam name="TResult">The type of result.</typeparam>
         /// <typeparam name="TObject">The type of the data transfer object.</typeparam>
         /// <returns>The converted DTO content.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<TResult> GetObjectDataAsync<TResult, TObject>(this TObject dto, Func<IAsyncBinaryReader, CancellationToken, ValueTask<TResult>> parser, CancellationToken token = default)
+        public static ValueTask<TResult> TransformAsync<TResult, TObject>(this TObject dto, Func<IAsyncBinaryReader, CancellationToken, ValueTask<TResult>> transformation, CancellationToken token = default)
             where TObject : notnull, IDataTransferObject
-            => dto.GetObjectDataAsync<TResult, DelegatingDecoder<TResult>>(new DelegatingDecoder<TResult>(parser), token);
+            => dto.TransformAsync<TResult, DelegatingDecoder<TResult>>(new DelegatingDecoder<TResult>(transformation), token);
     }
 }

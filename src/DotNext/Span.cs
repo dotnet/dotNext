@@ -19,6 +19,8 @@ namespace DotNext
     /// </summary>
     public static class Span
     {
+#if NETSTANDARD2_1
+        [StructLayout(LayoutKind.Auto)]
         private readonly struct ValueComparer<T> : ISupplier<T, T, int>
         {
             private readonly IComparer<T> comparer;
@@ -27,6 +29,18 @@ namespace DotNext
 
             int ISupplier<T, T, int>.Invoke(T arg1, T arg2) => comparer.Compare(arg1, arg2);
         }
+#else
+        [StructLayout(LayoutKind.Auto)]
+        private readonly struct ComparerWrapper<T> : IComparer<T>
+        {
+            private readonly ValueFunc<T?, T?, int> comparer;
+
+            internal ComparerWrapper(in ValueFunc<T?, T?, int> comparer)
+                => this.comparer = comparer;
+
+            int IComparer<T>.Compare(T? x, T? y) => comparer.Invoke(x, y);
+        }
+#endif
 
         private static readonly char[] HexTable = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
@@ -136,7 +150,7 @@ namespace DotNext
         /// <returns>32-bit hash code of the array content.</returns>
         public static int BitwiseHashCode<T>(this ReadOnlySpan<T> span, int hash, Func<int, int, int> hashFunction, bool salted = true)
             where T : unmanaged
-            => BitwiseHashCode(span, hash, new ValueFunc<int, int, int>(hashFunction, true), salted);
+            => BitwiseHashCode(span, hash, new ValueFunc<int, int, int>(hashFunction), salted);
 
         /// <summary>
         /// Computes bitwise hash code for the memory identified by the given span using custom hash function.
@@ -166,7 +180,7 @@ namespace DotNext
         /// <returns>64-bit hash code of the array content.</returns>
         public static long BitwiseHashCode64<T>(this ReadOnlySpan<T> span, long hash, Func<long, long, long> hashFunction, bool salted = true)
             where T : unmanaged
-            => BitwiseHashCode64(span, hash, new ValueFunc<long, long, long>(hashFunction, true), salted);
+            => BitwiseHashCode64(span, hash, new ValueFunc<long, long, long>(hashFunction), salted);
 
         /// <summary>
         /// Computes bitwise hash code for the memory identified by the given span.
@@ -244,6 +258,7 @@ namespace DotNext
             where T : unmanaged
             => MemoryMarshal.AsBytes(first).SequenceCompareTo(MemoryMarshal.AsBytes(second));
 
+#if NETSTANDARD2_1
         private static void QuickSort<T, TComparer>(Span<T> span, int startIndex, int endIndex, ref TComparer comparison)
             where TComparer : struct, ISupplier<T, T, int>
         {
@@ -272,6 +287,7 @@ namespace DotNext
                 return i;
             }
         }
+#endif
 
         /// <summary>
         /// Sorts the elements.
@@ -279,10 +295,17 @@ namespace DotNext
         /// <param name="span">The contiguous region of arbitrary memory to sort.</param>
         /// <param name="comparison">The comparer used for sorting.</param>
         /// <typeparam name="T">The type of the elements.</typeparam>
+#if !NETSTANDARD2_1
+        [Obsolete("Use MemoryExtensions.Sort() extension method instead")]
+#endif
         public static void Sort<T>(this Span<T> span, IComparer<T>? comparison = null)
         {
+#if NETSTANDARD2_1
             var cmp = new ValueComparer<T>(comparison ?? Comparer<T>.Default);
             QuickSort(span, 0, span.Length - 1, ref cmp);
+#else
+            MemoryExtensions.Sort(span, comparison ?? Comparer<T>.Default);
+#endif
         }
 
         /// <summary>
@@ -291,8 +314,15 @@ namespace DotNext
         /// <param name="span">The contiguous region of arbitrary memory to sort.</param>
         /// <param name="comparison">The comparer used for sorting.</param>
         /// <typeparam name="T">The type of the elements.</typeparam>
-        public static void Sort<T>(this Span<T> span, in ValueFunc<T, T, int> comparison)
+#if !NETSTANDARD2_1
+        [Obsolete("Use MemoryExtensions.Sort() extension method instead")]
+#endif
+        public static void Sort<T>(this Span<T> span, in ValueFunc<T?, T?, int> comparison)
+#if NETSTANDARD2_1
             => QuickSort(span, 0, span.Length - 1, ref AsRef(comparison));
+#else
+            => MemoryExtensions.Sort(span, new ComparerWrapper<T>(comparison));
+#endif
 
         /// <summary>
         /// Sorts the elements.
@@ -300,8 +330,15 @@ namespace DotNext
         /// <param name="span">The contiguous region of arbitrary memory to sort.</param>
         /// <param name="comparison">The comparer used for sorting.</param>
         /// <typeparam name="T">The type of the elements.</typeparam>
-        public static void Sort<T>(this Span<T> span, Comparison<T> comparison)
-            => Sort(span, comparison.AsValueFunc(true));
+#if !NETSTANDARD2_1
+        [Obsolete("Use MemoryExtensions.Sort() extension method instead")]
+#endif
+        public static void Sort<T>(this Span<T> span, Comparison<T?> comparison)
+#if NETSTANDARD2_1
+            => Sort(span, comparison.AsValueFunc());
+#else
+            => MemoryExtensions.Sort(span, comparison);
+#endif
 
         /// <summary>
         /// Trims the span to specified length if it exceeds it.
@@ -343,8 +380,7 @@ namespace DotNext
             {
                 if (comparer.Invoke(reference, value))
                     return i;
-                else
-                    reference = ref Add(ref reference, 1);
+                reference = ref Add(ref reference, 1);
             }
 
             return -1;
@@ -359,7 +395,7 @@ namespace DotNext
         /// <param name="startIndex">The search starting position.</param>
         /// <param name="comparer">The comparer used to compare the expected value and the actual value from the span.</param>
         /// <returns>The zero-based index position of <paramref name="value"/> from the start of the given span if that value is found, or -1 if it is not.</returns>
-        public static int IndexOf<T>(this ReadOnlySpan<T> span, T value, int startIndex, Func<T, T, bool> comparer) => IndexOf(span, value, startIndex, new ValueFunc<T, T, bool>(comparer, true));
+        public static int IndexOf<T>(this ReadOnlySpan<T> span, T value, int startIndex, Func<T, T, bool> comparer) => IndexOf(span, value, startIndex, new ValueFunc<T, T, bool>(comparer));
 
         /// <summary>
         /// Iterates over elements of the span.
@@ -382,7 +418,7 @@ namespace DotNext
         /// <typeparam name="T">The type of the elements.</typeparam>
         /// <param name="span">The span to iterate.</param>
         /// <param name="action">The action to be applied for each element of the span.</param>
-        public static void ForEach<T>(this Span<T> span, RefAction<T, int> action) => ForEach(span, new ValueRefAction<T, int>(action, true));
+        public static void ForEach<T>(this Span<T> span, RefAction<T, int> action) => ForEach(span, new ValueRefAction<T, int>(action));
 
         /// <summary>
         /// Converts set of bytes into hexadecimal representation.
@@ -398,7 +434,13 @@ namespace DotNext
             var bytesCount = Math.Min(bytes.Length, output.Length / 2);
             ref byte firstByte = ref MemoryMarshal.GetReference(bytes);
             ref char charPtr = ref MemoryMarshal.GetReference(output);
+#if NETSTANDARD2_1
             ref char hexTable = ref HexTable[lowercased ? 0 : 16];
+#else
+            ref char hexTable = ref MemoryMarshal.GetArrayDataReference(HexTable);
+            if (!lowercased)
+                hexTable = ref Unsafe.Add(ref hexTable, 16);
+#endif
             for (var i = 0; i < bytesCount; i++, charPtr = ref Add(ref charPtr, 1))
             {
                 var value = Add(ref firstByte, i);
@@ -416,6 +458,9 @@ namespace DotNext
         /// <param name="bytes">The bytes to convert.</param>
         /// <param name="lowercased"><see langword="true"/> to return lowercased hex string; <see langword="false"/> to return uppercased hex string.</param>
         /// <returns>The hexadecimal representation of bytes.</returns>
+#if !NETSTANDARD2_1
+        [SkipLocalsInit]
+#endif
         public static string ToHex(this ReadOnlySpan<byte> bytes, bool lowercased = false)
         {
             var count = bytes.Length * 2;
@@ -450,6 +495,9 @@ namespace DotNext
         /// </summary>
         /// <param name="chars">The characters containing hexadecimal representation of bytes.</param>
         /// <returns>The decoded array of bytes.</returns>
+#if !NETSTANDARD2_1
+        [SkipLocalsInit]
+#endif
         public static byte[] FromHex(this ReadOnlySpan<char> chars)
         {
             var count = chars.Length / 2;
@@ -458,38 +506,6 @@ namespace DotNext
             using MemoryRental<byte> buffer = count <= MemoryRental<byte>.StackallocThreshold ? stackalloc byte[count] : new MemoryRental<byte>(count);
             count = FromHex(chars, buffer.Span);
             return buffer.Span.Slice(0, count).ToArray();
-        }
-
-        /// <summary>
-        /// Reads the value of blittable type
-        /// from the block of memory and advances the original span.
-        /// </summary>
-        /// <param name="bytes">The block of memory.</param>
-        /// <typeparam name="T">The blittable type.</typeparam>
-        /// <returns>The deserialized value.</returns>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="bytes"/> is smaller than <typeparamref name="T"/>.</exception>
-        [Obsolete("Use SpanReader<T> type instead")]
-        public static unsafe T Read<T>(ref ReadOnlySpan<byte> bytes)
-            where T : unmanaged
-        {
-            var result = MemoryMarshal.Read<T>(bytes);
-            bytes = bytes.Slice(sizeof(T));
-            return result;
-        }
-
-        /// <summary>
-        /// Copies the value of blittable type to the specified block of memory.
-        /// </summary>
-        /// <param name="value">The value to copy to the destination memory block.</param>
-        /// <param name="output">The block of memory.</param>
-        /// <typeparam name="T">The blittable type.</typeparam>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="output"/> is smaller than <typeparamref name="T"/>.</exception>
-        [Obsolete("Use SpanWriter<T> type instead")]
-        public static unsafe void Write<T>(in T value, ref Span<byte> output)
-            where T : unmanaged
-        {
-            AsReadOnlyBytes(value).CopyTo(output);
-            output = output.Slice(sizeof(T));
         }
 
         /// <summary>
@@ -606,6 +622,9 @@ namespace DotNext
         /// <param name="destination">Destination memory.</param>
         /// <param name="writtenCount">The number of copied elements.</param>
         /// <typeparam name="T">The type of the elements in the span.</typeparam>
+#if !NETSTANDARD2_1
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+#endif
         public static void CopyTo<T>(this ReadOnlySpan<T> source, Span<T> destination, out int writtenCount)
         {
             if (source.Length > destination.Length)
@@ -677,7 +696,7 @@ namespace DotNext
         /// <param name="tuple">The tuple.</param>
         /// <typeparam name="T">The type of items in the tuple.</typeparam>
         /// <returns>The span over items in the tuple.</returns>
-        public static Span<T> AsSpan<T>(this ref ValueTuple<T, T> tuple)
+        public static Span<T> AsSpan<T>(this ref (T, T) tuple)
             => TupleToSpan<T, ValueTuple<T, T>>(ref tuple);
 
         /// <summary>
@@ -686,7 +705,7 @@ namespace DotNext
         /// <param name="tuple">The tuple.</param>
         /// <typeparam name="T">The type of items in the tuple.</typeparam>
         /// <returns>The span over items in the tuple.</returns>
-        public static ReadOnlySpan<T> AsReadOnlySpan<T>(this in ValueTuple<T, T> tuple)
+        public static ReadOnlySpan<T> AsReadOnlySpan<T>(this in (T, T) tuple)
             => TupleToSpan<T, ValueTuple<T, T>>(ref AsRef(in tuple));
 
         /// <summary>

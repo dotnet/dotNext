@@ -9,10 +9,9 @@ using Xunit;
 
 namespace DotNext
 {
-    using ChunkSequence = Buffers.ChunkSequence;
+    using static Buffers.BufferHelpers;
 
     [ExcludeFromCodeCoverage]
-    [LogBeforeAfterTest]
     public abstract class Test : Assert
     {
         private protected static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(20);
@@ -25,6 +24,7 @@ namespace DotNext
             return result;
         }
 
+        // TODO: Remove support of binary serialization for all types in .NEXT in the next major version
         private protected static T SerializeDeserialize<T>(T value)
             where T : ISerializable
         {
@@ -50,6 +50,6 @@ namespace DotNext
         }
 
         private protected static ReadOnlySequence<T> ToReadOnlySequence<T>(ReadOnlyMemory<T> memory, int chunkSize)
-            => ChunkSequence.ToReadOnlySequence(Split(memory, chunkSize));
+            => Split(memory, chunkSize).ToReadOnlySequence();
     }
 }

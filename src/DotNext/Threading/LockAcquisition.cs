@@ -32,7 +32,7 @@ namespace DotNext.Threading
                 case SemaphoreSlim _:
                 case WaitHandle _:
                 case ReaderWriterLock _:
-                case string str when !(string.IsInterned(str) is null):
+                case string str when string.IsInterned(str) is not null:
                     throw new InvalidOperationException(ExceptionMessages.UnsupportedLockAcquisition);
                 default:
                     return obj.GetUserData().GetOrSet<ReaderWriterLockSlim, ReaderWriterLockSlimWithRecursion>(ReaderWriterLock);

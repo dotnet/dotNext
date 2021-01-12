@@ -39,7 +39,7 @@ namespace DotNext.Threading
             }
         }
 
-        [SuppressMessage("Usage", "CA2213", Justification = "The field is disposed after atomic exchange")]
+        [SuppressMessage("Usage", "CA2213", Justification = "Disposed correctly but cannot be recognized by .NET Analyzer")]
         private volatile ExchangePoint? point;
         private bool disposeRequested;
         private volatile ExchangeTerminatedException? termination;
@@ -70,7 +70,7 @@ namespace DotNext.Threading
                 Dispose();
                 result = new ValueTask<T>(GetDisposedTask<T>());
             }
-            else if (termination != null)
+            else if (termination is not null)
             {
                 result = new ValueTask<T>(Task.FromException<T>(termination));
             }
@@ -129,7 +129,7 @@ namespace DotNext.Threading
                 Dispose();
                 result = false;
             }
-            else if (termination != null)
+            else if (termination is not null)
             {
                 throw termination;
             }
@@ -157,7 +157,7 @@ namespace DotNext.Threading
         public void Terminate(Exception? exception = null)
         {
             ThrowIfDisposed();
-            if (termination != null)
+            if (termination is not null)
                 throw new InvalidOperationException();
 
             ExchangeTerminatedException tmp;
@@ -178,7 +178,7 @@ namespace DotNext.Threading
             get
             {
                 ThrowIfDisposed();
-                return termination != null;
+                return termination is not null;
             }
         }
 
@@ -189,7 +189,7 @@ namespace DotNext.Threading
             if (disposing)
             {
                 var point = Interlocked.Exchange(ref this.point, null);
-                if (point != null && TrySetDisposedException(point))
+                if (point is not null && TrySetDisposedException(point))
                     point.Dispose();
                 termination = null;
             }
@@ -210,7 +210,7 @@ namespace DotNext.Threading
 
             return point.Task.ContinueWith(SuppressFaultOrCancellation, point, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
 
-            static void SuppressFaultOrCancellation(Task<T> task, object state)
+            static void SuppressFaultOrCancellation(Task<T> task, object? state)
                 => (state as IDisposable)?.Dispose();
         }
 

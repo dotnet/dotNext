@@ -4,6 +4,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
+using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.Buffers
 {
@@ -22,9 +24,11 @@ namespace DotNext.Buffers
     {
         private readonly int chunkSize;
         private readonly MemoryAllocator<T>? allocator;
+        private readonly unsafe delegate*<int, ref int, int> growth;
+        private int chunkIndex; // used for linear and exponential allocation strategies only
         private MemoryChunk? first;
 
-        [SuppressMessage("Usage", "CA2213", Justification = "It is implicitly through enumerating from first to last chunk in the chain")]
+        [SuppressMessage("Usage", "CA2213", Justification = "Disposed as a part of the linked list")]
         private MemoryChunk? last;
         private long length;
 
@@ -32,15 +36,26 @@ namespace DotNext.Buffers
         /// Initializes a new builder with the specified size of memory block.
         /// </summary>
         /// <param name="chunkSize">The size of the memory block representing single segment within sequence.</param>
+        /// <param name="growth">Specifies how the memory should be allocated for each subsequent chunk in this buffer.</param>
         /// <param name="allocator">The allocator used to rent the segments.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="chunkSize"/> is less than or equal to zero.</exception>
-        public SparseBufferWriter(int chunkSize, MemoryAllocator<T>? allocator = null)
+        public SparseBufferWriter(int chunkSize, SparseBufferGrowth growth = SparseBufferGrowth.None, MemoryAllocator<T>? allocator = null)
         {
             if (chunkSize <= 0)
                 throw new ArgumentOutOfRangeException(nameof(chunkSize));
 
             this.chunkSize = chunkSize;
             this.allocator = allocator;
+
+            unsafe
+            {
+                this.growth = growth switch
+                {
+                    SparseBufferGrowth.Linear => &BufferHelpers.LinearGrowth,
+                    SparseBufferGrowth.Exponential => &BufferHelpers.ExponentialGrowth,
+                    _ => &BufferHelpers.NoGrowth,
+                };
+            }
         }
 
         /// <summary>
@@ -52,6 +67,10 @@ namespace DotNext.Buffers
         {
             chunkSize = -1;
             allocator = pool.ToAllocator();
+            unsafe
+            {
+                growth = &BufferHelpers.NoGrowth;
+            }
         }
 
         /// <summary>
@@ -83,10 +102,10 @@ namespace DotNext.Buffers
             get
             {
                 var result = 0L;
-                for (MemoryChunk? current = first, next; !(current is null); current = next)
+                for (MemoryChunk? current = first, next; current is not null; current = next)
                 {
                     next = current.Next;
-                    if (!(next is null) && next.WrittenMemory.Length > 0)
+                    if (next is not null && next.WrittenMemory.Length > 0)
                         result += current.FreeCapacity;
                 }
 
@@ -99,7 +118,7 @@ namespace DotNext.Buffers
         /// </summary>
         /// <param name="input">The memory block to be written to this builder.</param>
         /// <exception cref="ObjectDisposedException">The builder has been disposed.</exception>
-        public void Write(ReadOnlySpan<T> input)
+        public unsafe void Write(ReadOnlySpan<T> input)
         {
             ThrowIfDisposed();
             if (last is null)
@@ -111,7 +130,7 @@ namespace DotNext.Buffers
 
                 // no more space in the last chunk, allocate a new one
                 if (writtenCount == 0)
-                    last = new PooledMemoryChunk(allocator, chunkSize, last);
+                    last = new PooledMemoryChunk(allocator, growth(chunkSize, ref chunkIndex), last);
                 else
                     input = input.Slice(writtenCount);
             }
@@ -167,13 +186,13 @@ namespace DotNext.Buffers
         /// <param name="arg">The argument to be passed to the callback.</param>
         /// <typeparam name="TArg">The type of the argument to tbe passed to the callback.</typeparam>
         /// <exception cref="ObjectDisposedException">The builder has been disposed.</exception>
-        public void CopyTo<TArg>(ReadOnlySpanAction<T, TArg> writer, TArg arg)
+        public void CopyTo<TArg>(in ValueReadOnlySpanAction<T, TArg> writer, TArg arg)
         {
             ThrowIfDisposed();
-            for (MemoryChunk? current = first; !(current is null); current = current.Next)
+            for (MemoryChunk? current = first; current is not null; current = current.Next)
             {
                 var buffer = current.WrittenMemory.Span;
-                writer(buffer, arg);
+                writer.Invoke(buffer, arg);
             }
         }
 
@@ -187,7 +206,7 @@ namespace DotNext.Buffers
         {
             ThrowIfDisposed();
             var total = 0;
-            for (MemoryChunk? current = first; !(current is null) && !output.IsEmpty; current = current.Next)
+            for (MemoryChunk? current = first; current is not null && !output.IsEmpty; current = current.Next)
             {
                 var buffer = current.WrittenMemory.Span;
                 buffer.CopyTo(output, out var writtenCount);
@@ -241,7 +260,7 @@ namespace DotNext.Buffers
 
         private void ReleaseChunks()
         {
-            for (MemoryChunk? current = first, next; !(current is null); current = next)
+            for (MemoryChunk? current = first, next; current is not null; current = next)
             {
                 next = current.Next;
                 current.Dispose();
@@ -259,6 +278,31 @@ namespace DotNext.Buffers
             }
 
             base.Dispose(disposing);
+        }
+
+        /// <summary>
+        /// Returns the textual representation of this buffer.
+        /// </summary>
+        /// <returns>The textual representation of this buffer.</returns>
+        public override string ToString()
+        {
+            return typeof(T) == typeof(char) && length <= int.MaxValue ? BuildString(first, (int)length) : GetType().ToString();
+
+            static void FillChars(Span<char> output, MemoryChunk? chunk)
+            {
+                Debug.Assert(typeof(T) == typeof(char));
+
+                ReadOnlySpan<T> input;
+                for (var offset = 0; chunk is not null; offset += input.Length, chunk = chunk.Next)
+                {
+                    input = chunk.WrittenMemory.Span;
+                    ref var firstChar = ref Unsafe.As<T, char>(ref GetReference(input));
+                    CreateReadOnlySpan<char>(ref firstChar, input.Length).CopyTo(output.Slice(offset));
+                }
+            }
+
+            static string BuildString(MemoryChunk? first, int length)
+                => length > 0 ? string.Create(length, first, FillChars) : string.Empty;
         }
     }
 }

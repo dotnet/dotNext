@@ -1,13 +1,10 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
 namespace DotNext
 {
-    using static Reflection.TypeExtensions;
-
     /// <summary>
     /// Represents extension methods for type <see cref="Result{T}"/>.
     /// </summary>
@@ -58,7 +55,6 @@ namespace DotNext
         private const string ExceptionSerData = "Exception";
         private const string ValueSerData = "Value";
 
-        [AllowNull]
         private readonly T value;
         private readonly ExceptionDispatchInfo? exception;
 
@@ -79,18 +75,18 @@ namespace DotNext
         public Result(Exception error)
         {
             exception = ExceptionDispatchInfo.Capture(error);
-            value = default;
+            value = default!;
         }
 
         private Result(ExceptionDispatchInfo dispatchInfo)
         {
-            value = default;
+            value = default!;
             exception = dispatchInfo;
         }
 
         private Result(SerializationInfo info, StreamingContext context)
         {
-            value = (T)info.GetValue(ValueSerData, typeof(T));
+            value = (T)info.GetValue(ValueSerData, typeof(T))!;
             exception = info.GetValue(ExceptionSerData, typeof(Exception)) is Exception e ?
                 ExceptionDispatchInfo.Capture(e) :
                 null;
@@ -105,7 +101,7 @@ namespace DotNext
         {
             Result<T> result;
             if (optional.HasValue)
-                result = new Result<T>(optional.OrDefault());
+                result = new Result<T>(optional.OrDefault()!);
             else if (optional.IsNull)
                 result = default;
             else
@@ -169,14 +165,14 @@ namespace DotNext
         /// <param name="converter">A mapping function to be applied to the value, if present.</param>
         /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
         /// <returns>The conversion result.</returns>
-        public Result<TResult> Convert<TResult>(Converter<T, TResult> converter) => Convert(converter.AsValueFunc(true));
+        public Result<TResult> Convert<TResult>(Converter<T, TResult> converter) => Convert(converter.AsValueFunc());
 
         /// <summary>
         /// Attempts to extract value from container if it is present.
         /// </summary>
         /// <param name="value">Extracted value.</param>
         /// <returns><see langword="true"/> if value is present; otherwise, <see langword="false"/>.</returns>
-        public bool TryGet([MaybeNull]out T value)
+        public bool TryGet(out T value)
         {
             value = this.value;
             return exception is null;
@@ -187,7 +183,7 @@ namespace DotNext
         /// </summary>
         /// <param name="defaultValue">The value to be returned if this result is unsuccessful.</param>
         /// <returns>The value, if present, otherwise <paramref name="defaultValue"/>.</returns>
-        public T Or(T defaultValue) => exception is null ? value : defaultValue;
+        public T? Or(T? defaultValue) => exception is null ? value : defaultValue;
 
         /// <summary>
         /// Returns the value if present; otherwise return default value.
@@ -207,7 +203,7 @@ namespace DotNext
         /// </summary>
         /// <param name="defaultFunc">A delegate to be invoked if value is not present.</param>
         /// <returns>The value, if present, otherwise returned from delegate.</returns>
-        public T OrInvoke(Func<T> defaultFunc) => OrInvoke(new ValueFunc<T>(defaultFunc, true));
+        public T OrInvoke(Func<T> defaultFunc) => OrInvoke(new ValueFunc<T>(defaultFunc));
 
         /// <summary>
         /// Returns the value if present; otherwise invoke delegate.
@@ -221,7 +217,7 @@ namespace DotNext
         /// </summary>
         /// <param name="defaultFunc">A delegate to be invoked if value is not present.</param>
         /// <returns>The value, if present, otherwise returned from delegate.</returns>
-        public T OrInvoke(Func<Exception, T> defaultFunc) => OrInvoke(new ValueFunc<Exception, T>(defaultFunc, true));
+        public T OrInvoke(Func<Exception, T> defaultFunc) => OrInvoke(new ValueFunc<Exception, T>(defaultFunc));
 
         /// <summary>
         /// Gets exception associated with this result.
@@ -238,7 +234,6 @@ namespace DotNext
         /// Extracts actual result.
         /// </summary>
         /// <param name="result">The result object.</param>
-        [return: MaybeNull]
         public static explicit operator T(in Result<T> result) => result.Value;
 
         /// <summary>
@@ -287,7 +282,7 @@ namespace DotNext
         /// </summary>
         /// <param name="result">The result to check.</param>
         /// <returns><see langword="false"/> if this result is successful; <see langword="true"/> if this result represents exception.</returns>
-        public static bool operator false(in Result<T> result) => !(result.exception is null);
+        public static bool operator false(in Result<T> result) => result.exception is not null;
 
         /// <inheritdoc/>
         void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)

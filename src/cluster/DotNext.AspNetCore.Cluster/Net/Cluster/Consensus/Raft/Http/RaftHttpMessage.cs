@@ -11,9 +11,12 @@ using HeaderUtils = Microsoft.Net.Http.Headers.HeaderUtilities;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
+    using IAsyncBinaryWriter = IO.IAsyncBinaryWriter;
+
     internal abstract class RaftHttpMessage : HttpMessage
     {
-        private protected static readonly ValueParser<DateTimeOffset> DateTimeParser = (string str, out DateTimeOffset value) => HeaderUtils.TryParseDate(str, out value);
+        // cached to avoid memory allocation
+        private protected static readonly ValueParser<DateTimeOffset> Rfc1123Parser = TryParseRfc1123FormattedDateTime;
 
         // request - represents Term value according with Raft protocol
         // response - represents Term value of the reply node
@@ -36,6 +39,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             base.PrepareRequest(request);
         }
 
+        private static bool TryParseRfc1123FormattedDateTime(string input, out DateTimeOffset result)
+            => HeaderUtils.TryParseDate(input, out result);
+
         private protected static new async Task<Result<bool>> ParseBoolResponse(HttpResponseMessage response)
         {
             var result = await HttpMessage.ParseBoolResponse(response).ConfigureAwait(false);
@@ -49,5 +55,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             response.Headers.Add(TermHeader, result.Term.ToString(InvariantCulture));
             return response.WriteAsync(result.Value.ToString(InvariantCulture), token);
         }
+
+        private protected static ValueTask WriteToAsync<TWriter>(TWriter writer, ReadOnlyMemory<byte> block, CancellationToken token)
+            where TWriter : notnull, IAsyncBinaryWriter
+            => writer.WriteAsync(block, null, token);
     }
 }

@@ -10,8 +10,8 @@ namespace DotNext.Net.Cluster
         /// </summary>
         /// <param name="endpoints">The collection of end points.</param>
         /// <param name="member">The cluster member.</param>
-        /// <returns><see langword="true"/> if <paramref name="endpoints"/> contains <see cref="IClusterMember.Endpoint"/> if <paramref name="member"/>.</returns>
+        /// <returns><see langword="true"/> if <paramref name="endpoints"/> contains <see cref="IClusterMember.EndPoint"/> if <paramref name="member"/>.</returns>
         internal static bool Contains(this ICollection<IPEndPoint> endpoints, IClusterMember member)
-            => endpoints.Contains(member.Endpoint);
+            => member.EndPoint is IPEndPoint ip && endpoints.Contains(ip);
     }
 }

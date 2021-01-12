@@ -6,7 +6,9 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -60,14 +62,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                 })
                     .ConfigureServices(services =>
                     {
-                        if (configurator != null)
+                        if (configurator is not null)
                             services.AddSingleton(configurator);
                     })
                     .UseStartup<TStartup>()
                 )
                 .UseHostOptions(new HostOptions { ShutdownTimeout = TimeSpan.FromMinutes(2) })
                 .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(configuration))
-                .ConfigureLogging(builder => builder.AddDebug().SetMinimumLevel(LogLevel.Debug))
+                .ConfigureLogging(static builder => builder.AddDebug().SetMinimumLevel(LogLevel.Debug))
                 .JoinCluster()
                 .Build();
         }
@@ -139,7 +141,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
 
         private static async ValueTask<StreamMessage> CreateBufferedMessageAsync(IMessage message, CancellationToken token)
         {
-            var result = new StreamMessage(message.Name, message.Type);
+            var result = new StreamMessage(new MemoryStream(), false, message.Name, message.Type);
             await result.LoadFromAsync(message, token);
             return result;
         }
@@ -170,7 +172,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             await host1.StartAsync();
             await host2.StartAsync();
 
-            var client = host1.Services.GetService<IMessageBus>().Members.FirstOrDefault(member => member.Endpoint.Port == 3263);
+            var client = host1.Services.GetService<IMessageBus>().Members.FirstOrDefault(static member => ((IPEndPoint)member.EndPoint).Port == 3263);
             var messageBox = host2.Services.GetService<IInputChannel>() as Mailbox;
             NotNull(messageBox);
             //request-reply test
@@ -208,7 +210,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
         public static async Task Leadership(int delay)
         {
             static void CheckLeadership(IClusterMember member1, IClusterMember member2)
-                => Equal(member1.Endpoint, member2.Endpoint);
+                => Equal(member1.EndPoint, member2.EndPoint);
 
             var config1 = new Dictionary<string, string>
             {
@@ -227,6 +229,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             var config3 = new Dictionary<string, string>
             {
                 {"partitioning", "false"},
+                {"standby", "true"},
                 {"members:0", "http://localhost:3262"},
                 {"members:1", "http://localhost:3263"},
                 {"members:2", "http://localhost:3264"}
@@ -256,7 +259,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                 leader3 = host3.Services.GetRequiredService<ICluster>().Leader;
                 if (leader1 is null || leader2 is null || leader3 is null)
                     continue;
-                if (leader1.Endpoint.Equals(leader2.Endpoint) && leader1.Endpoint.Equals(leader2.Endpoint))
+                if (leader1.EndPoint.Equals(leader2.EndPoint) && leader1.EndPoint.Equals(leader2.EndPoint))
                     break;
             }
 

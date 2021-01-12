@@ -30,7 +30,7 @@ namespace DotNext.Buffers
                 => output.Append(input);
         }
 
-        private static void ReadWriteTest(IGrowableBuffer<byte> writer)
+        private static unsafe void ReadWriteTest(IGrowableBuffer<byte> writer)
         {
             // write a few bytes
             writer.Write(255);
@@ -44,16 +44,8 @@ namespace DotNext.Buffers
             var expected = RandomBytes(5000);
             writer.Write(expected);
             actual = new byte[expected.Length];
-            writer.CopyTo(ArrayCopyOperation.Append, new ArrayCopyOperation(actual));
+            writer.CopyTo(new ValueReadOnlySpanAction<byte, ArrayCopyOperation>(&ArrayCopyOperation.Append), new ArrayCopyOperation(actual));
             Equal(expected, actual);
-        }
-
-        [Fact]
-        public static void ReadWriteUsingRentedMemoryStream()
-        {
-            using var stream = new RentedMemoryStream(8192);
-            Equal(stream.Capacity, stream.As<IGrowableBuffer<byte>>().Capacity);
-            ReadWriteTest(stream);
         }
 
         [Fact]

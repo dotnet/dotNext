@@ -1,4 +1,4 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -8,15 +8,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
     internal static class AuditTrail
     {
-        [StructLayout(LayoutKind.Auto)]
-        private readonly struct TermReader : ILogEntryConsumer<IRaftLogEntry, long>
+        private sealed class TermReader : ILogEntryConsumer<IRaftLogEntry, long>
         {
+            internal static readonly ILogEntryConsumer<IRaftLogEntry, long> Instance = new TermReader();
+
+            private TermReader()
+            {
+            }
+
             ValueTask<long> ILogEntryConsumer<IRaftLogEntry, long>.ReadAsync<TEntryImpl, TList>(TList entries, long? snapshotIndex, CancellationToken token)
                 => new ValueTask<long>(entries[0].Term);
         }
 
         internal static ValueTask<long> GetTermAsync(this IAuditTrail<IRaftLogEntry> auditTrail, long index, CancellationToken token)
-            => auditTrail.ReadAsync<TermReader, long>(new TermReader(), index, index, token);
+            => auditTrail.ReadAsync<long>(TermReader.Instance, index, index, token);
 
         internal static async ValueTask<bool> IsUpToDateAsync(this IAuditTrail<IRaftLogEntry> auditTrail, long index, long term, CancellationToken token)
         {
@@ -28,6 +33,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             => index <= auditTrail.GetLastIndex(false) && term == await auditTrail.GetTermAsync(index, token).ConfigureAwait(false);
 
         internal static ValueTask<long> AppendNoOpEntry(this IPersistentState auditTrail, CancellationToken token)
-            => auditTrail.AppendAsync(new EmptyEntry(auditTrail.Term), token);
+            => auditTrail.AppendAsync(new EmptyLogEntry(auditTrail.Term), token);
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -55,9 +54,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal ValueTask<Result<bool>> Start(IAuditTrail<IRaftLogEntry> auditTrail)
             {
-                logger.ReplicationStarted(member.Endpoint, currentIndex);
+                logger.ReplicationStarted(member.EndPoint, currentIndex);
                 return currentIndex >= member.NextIndex ?
-                    auditTrail.ReadAsync<Replicator, Result<bool>>(this, member.NextIndex, token) :
+                    auditTrail.ReadAsync(this, member.NextIndex, token) :
                     ReadAsync<IRaftLogEntry, IRaftLogEntry[]>(Array.Empty<IRaftLogEntry>(), null, token);
             }
 
@@ -71,13 +70,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     // analyze result and decrease node index when it is out-of-sync with the current node
                     if (result.Value)
                     {
-                        logger.ReplicationSuccessful(member.Endpoint, member.NextIndex);
+                        logger.ReplicationSuccessful(member.EndPoint, member.NextIndex);
                         member.NextIndex.VolatileWrite(currentIndex + 1);
                         result = result.SetValue(replicatedWithCurrentTerm);
                     }
                     else
                     {
-                        logger.ReplicationFailed(member.Endpoint, member.NextIndex.UpdateAndGet(in IndexDecrement));
+                        logger.ReplicationFailed(member.EndPoint, member.NextIndex.UpdateAndGet(in IndexDecrement));
                     }
 
                     SetResult(result);
@@ -112,7 +111,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
                 else
                 {
-                    logger.ReplicaSize(member.Endpoint, entries.Count, precedingIndex, precedingTerm);
+                    logger.ReplicaSize(member.EndPoint, entries.Count, precedingIndex, precedingTerm);
                     replicationAwaiter = member.AppendEntriesAsync<TEntry, TList>(term, entries, precedingIndex, precedingTerm, commitIndex, token).ConfigureAwait(false).GetAwaiter();
                 }
 
@@ -151,15 +150,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             replicationQueue = ImmutableQueue<WaitNode>.Empty;
         }
 
-        private bool CheckTerm(long term)
-        {
-            if (term <= currentTerm)
-                return true;
-            stateMachine.MoveToFollowerState(false, term);
-            return false;
-        }
-
-        [SuppressMessage("Reliability", "CA2012", Justification = "Replicator task should be added to collection to ensure parallelism")]
         private async Task<bool> DoHeartbeats(IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)
         {
             var timeStamp = Timestamp.Current;
@@ -180,7 +170,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             var quorum = 1;  // because we know that the entry is replicated in this node
             var commitQuorum = 1;
-            for (var task = tasks.First; task != null; task.Value = default, task = task.Next)
+            for (var task = tasks.First; task is not null; task.Value = default, task = task.Next)
             {
                 try
                 {
@@ -210,21 +200,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             tasks.Clear();
             Metrics?.ReportBroadcastTime(timeStamp.Elapsed);
 
-            // majority of nodes accept entries with a least one entry from current term
+            // majority of nodes accept entries with a least one entry from the current term
             if (commitQuorum > 0)
             {
                 var count = await auditTrail.CommitAsync(currentIndex, token).ConfigureAwait(false); // commit all entries started from first uncommitted index to the end
                 stateMachine.Logger.CommitSuccessful(commitIndex + 1, count);
-                return CheckTerm(term);
+                goto check_term;
             }
 
             stateMachine.Logger.CommitFailed(quorum, commitIndex);
 
             // majority of nodes replicated, continue leading if current term is not changed
-            if (quorum > 0 || allowPartitioning)
-                return CheckTerm(term);
+            if (quorum <= 0 & !allowPartitioning)
+                goto stop_leading;
+
+            check_term:
+            if (term <= currentTerm)
+                return true;
 
             // it is partitioned network with absolute majority, not possible to have more than one leader
+            stop_leading:
             stateMachine.MoveToFollowerState(false, term);
             return false;
         }
@@ -281,6 +276,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 // cancel queue
                 foreach (var waiter in Interlocked.Exchange(ref replicationQueue, ImmutableQueue<WaitNode>.Empty))
                     waiter.SetCanceled();
+
+                Metrics = null;
             }
 
             base.Dispose(disposing);

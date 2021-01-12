@@ -2,7 +2,6 @@ using System;
 using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -31,6 +30,7 @@ namespace DotNext.Runtime.InteropServices
         /// <summary>
         /// Represents enumerator over raw memory.
         /// </summary>
+        [StructLayout(LayoutKind.Auto)]
         public unsafe struct Enumerator : IEnumerator<T>
         {
             private const long InitialPosition = -1L;
@@ -101,7 +101,7 @@ namespace DotNext.Runtime.InteropServices
         /// Constructs pointer from <see cref="IntPtr"/> value.
         /// </summary>
         /// <param name="ptr">The pointer value.</param>
-        public unsafe Pointer(IntPtr ptr)
+        public unsafe Pointer(nint ptr)
             : this((T*)ptr)
         {
         }
@@ -111,7 +111,7 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="ptr">The pointer value.</param>
         [CLSCompliant(false)]
-        public unsafe Pointer(UIntPtr ptr)
+        public unsafe Pointer(nuint ptr)
             : this((T*)ptr)
         {
         }
@@ -128,7 +128,7 @@ namespace DotNext.Runtime.InteropServices
         /// Determines whether this pointer is aligned
         /// to the size of <typeparamref name="T"/>.
         /// </summary>
-        public unsafe bool IsAligned => new IntPtr(value).Remainder(new IntPtr(sizeof(T))) == default;
+        public unsafe bool IsAligned => Address % sizeof(T) == 0;
 
         /// <summary>
         /// Fills the elements of the array with a specified value.
@@ -162,12 +162,12 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="length">The number of elements located in the unmanaged memory identified by this pointer.</param>
         /// <returns><see cref="Span{T}"/> representing elements in the unmanaged memory.</returns>
-        public unsafe Span<T> ToSpan(int length) => IsNull ? default : new Span<T>(value, length);
+        public unsafe Span<T> ToSpan(int length) => IsNull ? Span<T>.Empty : new Span<T>(value, length);
 
         /// <summary>
         /// Converts this pointer into span of bytes.
         /// </summary>
-        public unsafe Span<byte> Bytes => IsNull ? default : Span.AsBytes(value);
+        public unsafe Span<byte> Bytes => IsNull ? Span<byte>.Empty : Span.AsBytes(value);
 
         /// <summary>
         /// Gets or sets pointer value at the specified position in the memory.
@@ -178,7 +178,6 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="index">Element index.</param>
         /// <returns>Array element.</returns>
         /// <exception cref="NullPointerException">This array is not allocated.</exception>
-        [SuppressMessage("Design", "CA1065", Justification = "Not possible to access null pointer")]
         public unsafe ref T this[long index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -206,10 +205,10 @@ namespace DotNext.Runtime.InteropServices
         }
 
         /// <inheritdoc/>
-        unsafe object IStrongBox.Value
+        unsafe object? IStrongBox.Value
         {
             get => *value;
-            set => *this.value = (T)value;
+            set => *this.value = (T)value!;
         }
 
         internal unsafe MemoryHandle Pin(long elementIndex)
@@ -257,7 +256,7 @@ namespace DotNext.Runtime.InteropServices
                 throw new NullPointerException(ExceptionMessages.NullSource);
             if (destination.IsNull)
                 throw new ArgumentNullException(nameof(destination), ExceptionMessages.NullDestination);
-            Intrinsics.Copy(in value[0], ref destination.value[0], count);
+            Intrinsics.Copy(in value[0], out destination.value[0], count);
         }
 
         /// <summary>
@@ -280,7 +279,7 @@ namespace DotNext.Runtime.InteropServices
                 throw new ArgumentOutOfRangeException(nameof(offset));
             if (destination.LongLength == 0L || (offset + count) > destination.LongLength)
                 return 0L;
-            Intrinsics.Copy(in value[0], ref destination[offset], count);
+            Intrinsics.Copy(in value[0], out destination[offset], count);
             return count;
         }
 
@@ -314,7 +313,7 @@ namespace DotNext.Runtime.InteropServices
             }
         }
 
-        private static async ValueTask WriteToSteamAsync(IntPtr source, long length, Stream destination, CancellationToken token)
+        private static async ValueTask WriteToSteamAsync(nint source, long length, Stream destination, CancellationToken token)
         {
             while (length > 0L)
             {
@@ -370,7 +369,7 @@ namespace DotNext.Runtime.InteropServices
                 throw new ArgumentOutOfRangeException(nameof(offset));
             if (source.LongLength == 0L || (count + offset) > source.LongLength)
                 return 0L;
-            Intrinsics.Copy(in source[offset], ref value[0], count);
+            Intrinsics.Copy(in source[offset], out value[0], count);
             return count;
         }
 
@@ -400,7 +399,7 @@ namespace DotNext.Runtime.InteropServices
                 var total = 0L;
                 while (length > 0)
                 {
-                    var bytesRead = source.Read(new Span<byte>(&destination[total], (int)Math.Min(int.MaxValue, length)));
+                    var bytesRead = source.Read(new Span<byte>(&destination[total], length.Truncate()));
                     if (bytesRead == 0)
                         break;
                     total += bytesRead;
@@ -411,12 +410,12 @@ namespace DotNext.Runtime.InteropServices
             }
         }
 
-        private static async ValueTask<long> ReadFromStreamAsync(Stream source, IntPtr destination, long length, CancellationToken token)
+        private static async ValueTask<long> ReadFromStreamAsync(Stream source, nint destination, long length, CancellationToken token)
         {
             var total = 0L;
             while (length > 0L)
             {
-                using var manager = new MemorySource(destination, (int)Math.Min(int.MaxValue, length));
+                using var manager = new MemorySource(destination, length.Truncate());
                 var bytesRead = await source.ReadAsync(manager.Memory, token).ConfigureAwait(false);
                 if (bytesRead == 0)
                     break;
@@ -481,7 +480,7 @@ namespace DotNext.Runtime.InteropServices
             if (IsNull || length == 0L)
                 return Array.Empty<byte>();
             var result = new byte[sizeof(T) * length];
-            Intrinsics.Copy(in ((byte*)value)[0], ref result[0], length * sizeof(T));
+            Intrinsics.Copy(in ((byte*)value)[0], out result[0], length * sizeof(T));
             return result;
         }
 
@@ -496,19 +495,23 @@ namespace DotNext.Runtime.InteropServices
             if (IsNull || length == 0L)
                 return Array.Empty<T>();
 
-            // TODO: Replace with GC.AllocateUninitializedArray
+#if NETSTANDARD2_1
             var result = new T[length];
-            Intrinsics.Copy(in value[0], ref result[0], length);
+            Intrinsics.Copy(in value[0], out result[0], length);
+#else
+            var result = length <= int.MaxValue ? GC.AllocateUninitializedArray<T>((int)length, true) : new T[length];
+            Intrinsics.Copy(in value[0], out MemoryMarshal.GetArrayDataReference(result), length);
+#endif
             return result;
         }
 
         /// <summary>
         /// Gets pointer address.
         /// </summary>
-        public unsafe IntPtr Address
+        public unsafe nint Address
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => new IntPtr(value);
+            get => (nint)value;
         }
 
         /// <summary>
@@ -536,7 +539,6 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <value>The reference to the memory location.</value>
         /// <exception cref="NullPointerException">The pointer is 0.</exception>
-        [SuppressMessage("Design", "CA1065", Justification = "Not possible to access null pointer")]
         public unsafe ref T Value
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -630,7 +632,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Content hash code.</returns>
         public int BitwiseHashCode(long count, int hash, Func<int, int, int> hashFunction, bool salted = true)
-            => BitwiseHashCode(count, hash, new ValueFunc<int, int, int>(hashFunction, true), salted);
+            => BitwiseHashCode(count, hash, new ValueFunc<int, int, int>(hashFunction), salted);
 
         /// <summary>
         /// Computes 32-bit hash code for the block of memory identified by this pointer.
@@ -663,7 +665,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Content hash code.</returns>
         public long BitwiseHashCode64(long count, long hash, Func<long, long, long> hashFunction, bool salted = true)
-            => BitwiseHashCode64(count, hash, new ValueFunc<long, long, long>(hashFunction, true), salted);
+            => BitwiseHashCode64(count, hash, new ValueFunc<long, long, long>(hashFunction), salted);
 
         /// <summary>
         /// Bitwise comparison of two memory blocks.
@@ -705,8 +707,8 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="offset">The offset to add.</param>
         /// <returns>A new pointer that reflects the addition of offset to pointer.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe Pointer<T> operator +(Pointer<T> pointer, IntPtr offset)
-            => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.Address.Add(offset));
+        public static unsafe Pointer<T> operator +(Pointer<T> pointer, nint offset)
+            => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.value + offset);
 
         /// <summary>
         /// Subtracts an offset from the value of a pointer.
@@ -731,8 +733,8 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="offset">The offset to subtract.</param>
         /// <returns>A new pointer that reflects the subtraction of offset from pointer.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe Pointer<T> operator -(Pointer<T> pointer, IntPtr offset)
-            => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.Address.Subtract(offset));
+        public static unsafe Pointer<T> operator -(Pointer<T> pointer, nint offset)
+            => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.value - offset);
 
         /// <summary>
         /// Adds an offset to the value of a pointer.
@@ -843,7 +845,7 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="ptr">The pointer to be converted.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator IntPtr(Pointer<T> ptr) => ptr.Address;
+        public static implicit operator nint(Pointer<T> ptr) => ptr.Address;
 
         /// <inheritdoc/>
         IntPtr IConvertible<IntPtr>.Convert() => Address;
@@ -854,10 +856,10 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="ptr">The pointer to be converted.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
-        public static unsafe implicit operator UIntPtr(Pointer<T> ptr) => new UIntPtr(ptr.value);
+        public static unsafe implicit operator nuint(Pointer<T> ptr) => (nuint)ptr.value;
 
         /// <inheritdoc/>
-        unsafe UIntPtr IConvertible<UIntPtr>.Convert() => new UIntPtr(value);
+        unsafe UIntPtr IConvertible<UIntPtr>.Convert() => (nuint)value;
 
         /// <summary>
         /// Converts this pointer the memory owner.
@@ -865,14 +867,27 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="length">The number of elements in the memory.</param>
         /// <returns>The instance of memory owner.</returns>
         public unsafe IMemoryOwner<T> ToMemoryOwner(int length)
-            => IsNull ? new Buffers.UnmanagedMemory<T>(IntPtr.Zero, 0) : new Buffers.UnmanagedMemory<T>(new IntPtr(value), length);
+        {
+            nint address;
+            if (IsNull)
+            {
+                length = 0;
+                address = 0;
+            }
+            else
+            {
+                address = (nint)value;
+            }
+
+            return new Buffers.UnmanagedMemory<T>(address, length);
+        }
 
         /// <summary>
         /// Obtains pointer to the memory represented by given memory handle.
         /// </summary>
         /// <param name="handle">The memory handle.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe explicit operator Pointer<T>(in MemoryHandle handle) => new Pointer<T>(new IntPtr(handle.Pointer));
+        public static unsafe explicit operator Pointer<T>(in MemoryHandle handle) => new Pointer<T>((nint)handle.Pointer);
 
         /// <summary>
         /// Checks whether this pointer is not zero.
@@ -929,7 +944,12 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="other">The object of type <see cref="Pointer{T}"/> to be compared.</param>
         /// <returns><see langword="true"/>, if this pointer represents the same memory location as other pointer; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object? other) => other is Pointer<T> ptr && Equals(ptr);
+        public override unsafe bool Equals(object? other) => other switch
+        {
+            Pointer<T> ptr => Equals(ptr),
+            Pointer ptr => value == Pointer.Unbox(ptr),
+            _ => false
+        };
 
         /// <summary>
         /// Returns hexadecimal address represented by this pointer.

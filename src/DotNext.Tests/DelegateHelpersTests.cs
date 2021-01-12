@@ -27,12 +27,12 @@ namespace DotNext
         [Fact]
         public static void ChangeDelegateType()
         {
-            WaitCallback callback = obj => { };
-            callback += obj => { };
+            WaitCallback callback = static obj => { };
+            callback += static obj => { };
             var result = callback.ChangeType<SendOrPostCallback>();
             NotNull(result);
-            var list1 = callback.GetInvocationList().Select(d => d.Method);
-            var list2 = result.GetInvocationList().Select(d => d.Method);
+            var list1 = callback.GetInvocationList().Select(static d => d.Method);
+            var list2 = result.GetInvocationList().Select(static d => d.Method);
             Equal(list1, list2);
         }
 
@@ -47,7 +47,7 @@ namespace DotNext
         [Fact]
         public static void OpenDelegateForProperty()
         {
-            var d = DelegateHelpers.CreateOpenDelegate<Func<string, int>>(str => str.Length);
+            var d = DelegateHelpers.CreateOpenDelegate<Func<string, int>>(static str => str.Length);
             NotNull(d);
             Equal(4, d("abcd"));
         }
@@ -69,7 +69,7 @@ namespace DotNext
         [Fact]
         public static void OpenDelegateConversion()
         {
-            var d = DelegateHelpers.CreateOpenDelegate<Func<decimal, long>>(i => (long)i);
+            var d = DelegateHelpers.CreateOpenDelegate<Func<decimal, long>>(static i => (long)i);
             Equal(42L, d(42M));
         }
 
@@ -195,7 +195,7 @@ namespace DotNext
         {
             var conv = new Converter<string, int>(int.Parse);
             Equal(42, conv.AsFunc().Invoke("42"));
-            Converter<int, bool> odd = i => i % 2 != 0;
+            Converter<int, bool> odd = static i => i % 2 != 0;
             True(odd.AsPredicate().Invoke(3));
             Equal(42, conv.TryInvoke("42"));
             NotNull(conv.TryInvoke("abc").Error);
@@ -210,7 +210,7 @@ namespace DotNext
         public static void OpenDelegateForPropertySetter()
         {
             var obj = new ClassWithProperty();
-            var action = DelegateHelpers.CreateOpenDelegate<ClassWithProperty, int>(obj => obj.Prop);
+            var action = DelegateHelpers.CreateOpenDelegate<ClassWithProperty, int>(static obj => obj.Prop);
             NotNull(action);
             action(obj, 42);
             Equal(42, obj.Prop);
@@ -236,6 +236,245 @@ namespace DotNext
             var builder = new StringBuilder();
             proc.Bind(builder).Invoke(42);
             Equal("42", builder.ToString(), StringComparer.Ordinal);
+        }
+
+        [Fact]
+        public static void Constant()
+        {
+            Equal(42, Func.Constant(42).Invoke());
+            Equal("Hello, world!", Func.Constant("Hello, world!").Invoke());
+        }
+
+        [Fact]
+        public static unsafe void CreateAction()
+        {
+            Action action = DelegateHelpers.CreateDelegate(&DoAction);
+            NotNull(action);
+            action();
+
+            var obj = new ClassWithProperty();
+            action = DelegateHelpers.CreateDelegate(&DoAction2, obj);
+            action();
+            Equal(42, obj.Prop);
+
+            static void DoAction()
+            {
+            }
+
+            static void DoAction2(ClassWithProperty obj)
+                => obj.Prop = 42;
+        }
+
+        [Fact]
+        public static unsafe void CreateAction2()
+        {
+            var obj = new ClassWithProperty();
+            Action<ClassWithProperty> action = DelegateHelpers.CreateDelegate<ClassWithProperty>(&DoAction);
+            action(obj);
+            Equal(42, obj.Prop);
+
+            var action2 = DelegateHelpers.CreateDelegate<ClassWithProperty, int>(&DoAction2, obj);
+            action2(56);
+            Equal(56, obj.Prop);
+
+            static void DoAction(ClassWithProperty obj)
+                => obj.Prop = 42;
+
+            static void DoAction2(ClassWithProperty obj, int value)
+                => obj.Prop = value;
+        }
+
+        [Fact]
+        public static unsafe void CreateAction3()
+        {
+            var obj = new ClassWithProperty();
+            Action<ClassWithProperty, int> action = DelegateHelpers.CreateDelegate<ClassWithProperty, int>(&DoAction);
+            action(obj, 42);
+            Equal(42, obj.Prop);
+
+            var action2 = DelegateHelpers.CreateDelegate<ClassWithProperty, int, Missing>(&DoAction2, obj);
+            action2(56, Missing.Value);
+            Equal(56, obj.Prop);
+
+            static void DoAction(ClassWithProperty obj, int value)
+                => obj.Prop = value;
+
+            static void DoAction2(ClassWithProperty obj, int value, Missing missing)
+                => obj.Prop = value;
+        }
+
+        [Fact]
+        public static unsafe void CreateAction4()
+        {
+            var obj = new ClassWithProperty();
+            var action = DelegateHelpers.CreateDelegate<ClassWithProperty, int, Missing>(&DoAction);
+            action(obj, 42, Missing.Value);
+            Equal(42, obj.Prop);
+
+            var action2 = DelegateHelpers.CreateDelegate<ClassWithProperty, int, Missing, Missing>(&DoAction2, obj);
+            action2(56, Missing.Value, Missing.Value);
+            Equal(56, obj.Prop);
+
+            static void DoAction(ClassWithProperty obj, int value, Missing missing)
+                => obj.Prop = value;
+
+            static void DoAction2(ClassWithProperty obj, int value, Missing arg2, Missing arg3)
+                => obj.Prop = value;
+        }
+
+        [Fact]
+        public static unsafe void CreateAction5()
+        {
+            var obj = new ClassWithProperty();
+            var action = DelegateHelpers.CreateDelegate<ClassWithProperty, int, Missing, Missing>(&DoAction);
+            action(obj, 42, Missing.Value, Missing.Value);
+            Equal(42, obj.Prop);
+
+            var action2 = DelegateHelpers.CreateDelegate<ClassWithProperty, int, Missing, Missing, Missing>(&DoAction2, obj);
+            action2(56, Missing.Value, Missing.Value, Missing.Value);
+            Equal(56, obj.Prop);
+
+            static void DoAction(ClassWithProperty obj, int value, Missing arg2, Missing arg3)
+                => obj.Prop = value;
+
+            static void DoAction2(ClassWithProperty obj, int value, Missing arg2, Missing arg3, Missing arg4)
+                => obj.Prop = value;
+        }
+
+        [Fact]
+        public static unsafe void CreateAction6()
+        {
+            var obj = new ClassWithProperty();
+            var action = DelegateHelpers.CreateDelegate<ClassWithProperty, int, Missing, Missing, Missing>(&DoAction);
+            action(obj, 42, Missing.Value, Missing.Value, Missing.Value);
+            Equal(42, obj.Prop);
+
+            var action2 = DelegateHelpers.CreateDelegate<ClassWithProperty, int, Missing, Missing, Missing, Missing>(&DoAction2, obj);
+            action2(56, Missing.Value, Missing.Value, Missing.Value, Missing.Value);
+            Equal(56, obj.Prop);
+
+            static void DoAction(ClassWithProperty obj, int value, Missing arg2, Missing arg3, Missing arg4)
+                => obj.Prop = value;
+
+            static void DoAction2(ClassWithProperty obj, int value, Missing arg2, Missing arg3, Missing arg4, Missing arg5)
+                => obj.Prop = value;
+        }
+
+        [Fact]
+        public static unsafe void CreateAction7()
+        {
+            var obj = new ClassWithProperty();
+            var action = DelegateHelpers.CreateDelegate<ClassWithProperty, int, Missing, Missing, Missing, Missing>(&DoAction);
+            action(obj, 42, Missing.Value, Missing.Value, Missing.Value, Missing.Value);
+            Equal(42, obj.Prop);
+
+            var action2 = DelegateHelpers.CreateDelegate<ClassWithProperty, int, Missing, Missing, Missing, Missing, Missing>(&DoAction2, obj);
+            action2(56, Missing.Value, Missing.Value, Missing.Value, Missing.Value, Missing.Value);
+            Equal(56, obj.Prop);
+
+            static void DoAction(ClassWithProperty obj, int value, Missing arg2, Missing arg3, Missing arg4, Missing arg5)
+                => obj.Prop = value;
+
+            static void DoAction2(ClassWithProperty obj, int value, Missing arg2, Missing arg3, Missing arg4, Missing arg5, Missing arg6)
+                => obj.Prop = value;
+        }
+
+        [Fact]
+        public static unsafe void CreateFunc()
+        {
+            var fn = DelegateHelpers.CreateDelegate<long>(&GetValue);
+            Equal(42L, fn());
+
+            var fn2 = DelegateHelpers.CreateDelegate<string, string>(&Constant, "Hello, world!");
+            Equal("Hello, world!", fn2());
+
+            static long GetValue() => 42L;
+
+            static string Constant(string value) => value;
+        }
+
+        [Fact]
+        public static unsafe void CreateFunc2()
+        {
+            var fn = DelegateHelpers.CreateDelegate<long, long>(&GetValue);
+            Equal(42L, fn(42L));
+
+            var fn2 = DelegateHelpers.CreateDelegate<string, Missing, string>(&Constant, "Hello, world!");
+            Equal("Hello, world!", fn2(Missing.Value));
+
+            static long GetValue(long value) => 42L;
+
+            static string Constant(string value, Missing arg1) => value;
+        }
+
+        [Fact]
+        public static unsafe void CreateFunc3()
+        {
+            var fn = DelegateHelpers.CreateDelegate<long, Missing, long>(&GetValue);
+            Equal(42L, fn(42L, Missing.Value));
+
+            var fn2 = DelegateHelpers.CreateDelegate<string, Missing, Missing, string>(&Constant, "Hello, world!");
+            Equal("Hello, world!", fn2(Missing.Value, Missing.Value));
+
+            static long GetValue(long value, Missing arg1) => 42L;
+
+            static string Constant(string value, Missing arg1, Missing arg2) => value;
+        }
+
+        [Fact]
+        public static unsafe void CreateFunc4()
+        {
+            var fn = DelegateHelpers.CreateDelegate<long, Missing, Missing, long>(&GetValue);
+            Equal(42L, fn(42L, Missing.Value, Missing.Value));
+
+            var fn2 = DelegateHelpers.CreateDelegate<string, Missing, Missing, Missing, string>(&Constant, "Hello, world!");
+            Equal("Hello, world!", fn2(Missing.Value, Missing.Value, Missing.Value));
+
+            static long GetValue(long value, Missing arg1, Missing arg2) => 42L;
+
+            static string Constant(string value, Missing arg1, Missing arg2, Missing arg3) => value;
+        }
+
+        [Fact]
+        public static unsafe void CreateFunc5()
+        {
+            var fn = DelegateHelpers.CreateDelegate<long, Missing, Missing, Missing, long>(&GetValue);
+            Equal(42L, fn(42L, Missing.Value, Missing.Value, Missing.Value));
+
+            var fn2 = DelegateHelpers.CreateDelegate<string, Missing, Missing, Missing, Missing, string>(&Constant, "Hello, world!");
+            Equal("Hello, world!", fn2(Missing.Value, Missing.Value, Missing.Value, Missing.Value));
+
+            static long GetValue(long value, Missing arg1, Missing arg2, Missing arg3) => 42L;
+
+            static string Constant(string value, Missing arg1, Missing arg2, Missing arg3, Missing arg4) => value;
+        }
+
+        [Fact]
+        public static unsafe void CreateFunc6()
+        {
+            var fn = DelegateHelpers.CreateDelegate<long, Missing, Missing, Missing, Missing, long>(&GetValue);
+            Equal(42L, fn(42L, Missing.Value, Missing.Value, Missing.Value, Missing.Value));
+
+            var fn2 = DelegateHelpers.CreateDelegate<string, Missing, Missing, Missing, Missing, Missing, string>(&Constant, "Hello, world!");
+            Equal("Hello, world!", fn2(Missing.Value, Missing.Value, Missing.Value, Missing.Value, Missing.Value));
+
+            static long GetValue(long value, Missing arg1, Missing arg2, Missing arg3, Missing arg4) => 42L;
+
+            static string Constant(string value, Missing arg1, Missing arg2, Missing arg3, Missing arg4, Missing arg5) => value;
+        }
+
+        [Fact]
+        public static unsafe void CreateFunc7()
+        {
+            var fn = DelegateHelpers.CreateDelegate<long, Missing, Missing, Missing, Missing, Missing, long>(&GetValue);
+            Equal(42L, fn(42L, Missing.Value, Missing.Value, Missing.Value, Missing.Value, Missing.Value));
+
+            var fn2 = DelegateHelpers.CreateDelegate<string, Missing, Missing, Missing, Missing, Missing, Missing, string>(&Constant, "Hello, world!");
+            Equal("Hello, world!", fn2(Missing.Value, Missing.Value, Missing.Value, Missing.Value, Missing.Value, Missing.Value));
+
+            static long GetValue(long value, Missing arg1, Missing arg2, Missing arg3, Missing arg4, Missing arg5) => 42L;
+
+            static string Constant(string value, Missing arg1, Missing arg2, Missing arg3, Missing arg4, Missing arg5, Missing arg6) => value;
         }
     }
 }

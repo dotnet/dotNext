@@ -30,14 +30,7 @@ namespace DotNext.Buffers
         [Benchmark]
         public void AddRangeToBufferWriterSlim()
         {
-            using var builder = new BufferWriterSlim<int>(stackalloc int[10], false);
-            builder.Write(inputArray);
-        }
-
-        [Benchmark]
-        public void AddRangeToBufferWriterSlimCopyOnOverflow()
-        {
-            using var builder = new BufferWriterSlim<int>(stackalloc int[10], true);
+            using var builder = new BufferWriterSlim<int>(stackalloc int[10]);
             builder.Write(inputArray);
         }
 

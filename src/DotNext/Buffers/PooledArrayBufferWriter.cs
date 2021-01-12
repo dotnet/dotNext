@@ -1,11 +1,13 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
-using System.IO;
 using System.Runtime.CompilerServices;
+using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.Buffers
 {
+    using static Runtime.Intrinsics;
+
     /// <summary>
     /// Represents memory writer that is backed by the array obtained from the pool.
     /// </summary>
@@ -13,7 +15,7 @@ namespace DotNext.Buffers
     /// This class provides additional methods for access to array segments in contrast to <see cref="PooledBufferWriter{T}"/>.
     /// </remarks>
     /// <typeparam name="T">The data type that can be written.</typeparam>
-    public sealed class PooledArrayBufferWriter<T> : MemoryWriter<T>, IConvertible<ArraySegment<T>>, IList<T>
+    public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, IConvertible<ArraySegment<T>>, IList<T>
     {
         private readonly ArrayPool<T> pool;
         private T[] buffer;
@@ -79,14 +81,27 @@ namespace DotNext.Buffers
         /// <value>The element at the specified index.</value>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> the index is invalid.</exception>
         /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
-        public new ref T this[int index]
+        public new ref T this[int index] => ref this[(long)index];
+
+        /// <summary>
+        /// Gets the element at the specified index.
+        /// </summary>
+        /// <param name="index">The index of the element to retrieve.</param>
+        /// <value>The element at the specified index.</value>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> the index is invalid.</exception>
+        /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
+        public ref T this[long index]
         {
             get
             {
                 ThrowIfDisposed();
                 if (index < 0 || index >= position)
                     throw new ArgumentOutOfRangeException(nameof(index));
+#if !NETSTANDARD2_1
+                return ref Unsafe.Add(ref GetArrayDataReference(buffer), new IntPtr(index));
+#else
                 return ref buffer[index];
+#endif
             }
         }
 
@@ -139,31 +154,80 @@ namespace DotNext.Buffers
 
         /// <inheritdoc/>
         void IList<T>.Insert(int index, T item)
+            => Insert(index, CreateReadOnlySpan(ref item, 1));
+
+        /// <summary>
+        /// Inserts the elements into this buffer at the specified index.
+        /// </summary>
+        /// <param name="index">The zero-based index at which the new elements should be inserted.</param>
+        /// <param name="items">The span whose elements should be inserted into this buffer.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> the index is invalid.</exception>
+        /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
+        public void Insert(int index, ReadOnlySpan<T> items)
         {
             ThrowIfDisposed();
             if (index < 0 || index > position)
                 throw new ArgumentOutOfRangeException(nameof(index));
 
-            if (position == 0)
+            if (items.IsEmpty)
+                goto exit;
+
+            if (GetLength(buffer) == 0)
             {
-                if (buffer.LongLength == 0L)
-                    buffer = pool.Rent(1);
+                buffer = pool.Rent(items.Length);
             }
-            else if (position < buffer.LongLength)
+            else if (position + items.Length <= GetLength(buffer))
             {
-                Array.Copy(buffer, index, buffer, index + 1, position - index);
+                Array.Copy(buffer, index, buffer, index + items.Length, position - index);
             }
             else
             {
-                var newBuffer = pool.Rent(buffer.Length + 1);
-                Array.Copy(buffer, 0, newBuffer, 0, Math.Min(index + 1, buffer.LongLength));
-                Array.Copy(buffer, index, newBuffer, index + 1, buffer.LongLength - index);
+                var newBuffer = pool.Rent(buffer.Length + items.Length);
+                Array.Copy(buffer, 0, newBuffer, 0, index);
+                Array.Copy(buffer, index, newBuffer, index + items.Length, buffer.LongLength - index);
                 ReleaseBuffer();
                 buffer = newBuffer;
             }
 
-            buffer[index] = item;
-            position += 1;
+            items.CopyTo(buffer.AsSpan(index));
+            position += items.Length;
+
+            exit:
+            return;
+        }
+
+        /// <summary>
+        /// Overwrites the elements in this buffer.
+        /// </summary>
+        /// <param name="index">The zero-based index at which the new elements should be rewritten.</param>
+        /// <param name="items">The span whose elements should be added into this buffer.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> the index is invalid.</exception>
+        /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
+        public void Overwrite(int index, ReadOnlySpan<T> items)
+        {
+            ThrowIfDisposed();
+            if (index < 0 || index > position)
+                throw new ArgumentOutOfRangeException(nameof(index));
+
+            if (GetLength(buffer) == 0)
+            {
+                buffer = pool.Rent(items.Length);
+            }
+            else if (index + items.Length <= GetLength(buffer))
+            {
+                if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+                    Array.Clear(buffer, index, position - index);
+            }
+            else
+            {
+                var newBuffer = pool.Rent(index + items.Length);
+                Array.Copy(buffer, 0, newBuffer, 0, index);
+                ReleaseBuffer();
+                buffer = newBuffer;
+            }
+
+            items.CopyTo(buffer.AsSpan(index));
+            position = index + items.Length;
         }
 
         /// <inheritdoc/>
@@ -172,6 +236,9 @@ namespace DotNext.Buffers
             get => this[index];
             set => this[index] = value;
         }
+
+        /// <inheritdoc/>
+        void ICollection<T>.Clear() => Clear(false);
 
         /// <summary>
         /// Gets the total amount of space within the underlying memory.
@@ -217,15 +284,9 @@ namespace DotNext.Buffers
 
         private void ReleaseBuffer()
         {
-            if (buffer.Length > 0)
+            if (GetLength(buffer) > 0)
                 pool.Return(buffer, RuntimeHelpers.IsReferenceOrContainsReferences<T>());
         }
-
-        /// <summary>
-        /// Clears the data written to the underlying buffer.
-        /// </summary>
-        /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
-        public override void Clear() => Clear(false);   // TODO: Remove this method in future
 
         /// <summary>
         /// Clears the data written to the underlying memory.
@@ -243,7 +304,7 @@ namespace DotNext.Buffers
             }
             else if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
             {
-                if (buffer.LongLength <= int.MaxValue)
+                if (GetLength(buffer) <= int.MaxValue)
                 {
                     Array.Clear(buffer, 0, buffer.Length);
                 }
@@ -376,20 +437,5 @@ namespace DotNext.Buffers
 
             base.Dispose(disposing);
         }
-    }
-
-    /// <summary>
-    /// Represents extension methods for <see cref="PooledArrayBufferWriter{T}"/> class.
-    /// </summary>
-    public static class PooledArrayBufferWriter
-    {
-        /// <summary>
-        /// Gets written content as read-only stream.
-        /// </summary>
-        /// <param name="writer">The buffer writer.</param>
-        /// <returns>The stream representing written bytes.</returns>
-        [Obsolete("Use DotNext.IO.StreamSource.AsStream in combination with WrittenArray or WrittenMemory property instead", true)]
-        public static Stream GetWrittenBytesAsStream(PooledArrayBufferWriter<byte> writer)
-            => IO.StreamSource.GetWrittenBytesAsStream(writer);
     }
 }

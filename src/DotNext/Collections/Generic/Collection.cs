@@ -28,12 +28,16 @@ namespace DotNext.Collections.Generic
         /// <param name="converter">A collection item conversion function.</param>
         /// <returns>Lazily converted read-only collection.</returns>
         public static ReadOnlyCollectionView<TInput, TOutput> Convert<TInput, TOutput>(this IReadOnlyCollection<TInput> collection, Converter<TInput, TOutput> converter)
-            => Convert(collection, converter.AsValueFunc(true));
+            => Convert(collection, converter.AsValueFunc());
 
         private static T[] ToArray<TCollection, T>(TCollection collection, int count)
             where TCollection : class, IEnumerable<T>
         {
+#if NETSTANDARD2_1
             var result = new T[count];
+#else
+            var result = GC.AllocateUninitializedArray<T>(count);
+#endif
             var index = 0L;
             foreach (var item in collection)
                 result[index++] = item;

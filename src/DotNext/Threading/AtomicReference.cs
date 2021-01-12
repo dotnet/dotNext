@@ -64,7 +64,7 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T AccumulateAndGet<T>(ref T value, T x, Func<T, T, T> accumulator)
             where T : class?
-            => AccumulateAndGet(ref value, x, new ValueFunc<T, T, T>(accumulator, true));
+            => AccumulateAndGet(ref value, x, new ValueFunc<T, T, T>(accumulator));
 
         /// <summary>
         /// Atomically updates the current value with the results of applying the given function
@@ -99,7 +99,7 @@ namespace DotNext.Threading
         [return: NotNullIfNotNull("value")]
         public static T GetAndAccumulate<T>(ref T value, T x, Func<T, T, T> accumulator)
             where T : class?
-            => GetAndAccumulate(ref value, x, new ValueFunc<T, T, T>(accumulator, true));
+            => GetAndAccumulate(ref value, x, new ValueFunc<T, T, T>(accumulator));
 
         /// <summary>
         /// Atomically updates the current value with the results of applying the given function
@@ -130,7 +130,7 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T UpdateAndGet<T>(ref T value, Func<T, T> updater)
             where T : class?
-            => UpdateAndGet(ref value, new ValueFunc<T, T>(updater, true));
+            => UpdateAndGet(ref value, new ValueFunc<T, T>(updater));
 
         /// <summary>
         /// Atomically updates the stored value with the results
@@ -157,7 +157,7 @@ namespace DotNext.Threading
         [return: NotNullIfNotNull("value")]
         public static T GetAndUpdate<T>(ref T value, Func<T, T> updater)
             where T : class?
-            => GetAndUpdate(ref value, new ValueFunc<T, T>(updater, true));
+            => GetAndUpdate(ref value, new ValueFunc<T, T>(updater));
 
         /// <summary>
         /// Atomically updates the stored value with the results
@@ -269,7 +269,7 @@ namespace DotNext.Threading
         /// <returns>The updated value.</returns>
         public static T AccumulateAndGet<T>(this T[] array, long index, T x, Func<T, T, T> accumulator)
             where T : class?
-            => AccumulateAndGet(array, index, x, new ValueFunc<T, T, T>(accumulator, true));
+            => AccumulateAndGet(array, index, x, new ValueFunc<T, T, T>(accumulator));
 
         /// <summary>
         /// Atomically updates the array element with the results of applying the given function
@@ -303,7 +303,7 @@ namespace DotNext.Threading
         /// <returns>The original value of the array element.</returns>
         public static T GetAndAccumulate<T>(this T[] array, long index, T x, Func<T, T, T> accumulator)
             where T : class?
-            => GetAndAccumulate(array, index, x, new ValueFunc<T, T, T>(accumulator, true));
+            => GetAndAccumulate(array, index, x, new ValueFunc<T, T, T>(accumulator));
 
         /// <summary>
         /// Atomically updates the array element with the results of applying the given function
@@ -333,7 +333,7 @@ namespace DotNext.Threading
         /// <returns>The updated value.</returns>
         public static T UpdateAndGet<T>(this T[] array, long index, Func<T, T> updater)
             where T : class?
-            => UpdateAndGet(array, index, new ValueFunc<T, T>(updater, true));
+            => UpdateAndGet(array, index, new ValueFunc<T, T>(updater));
 
         /// <summary>
         /// Atomically updates the array element with the results
@@ -359,7 +359,7 @@ namespace DotNext.Threading
         /// <returns>The original value of the array element.</returns>
         public static T GetAndUpdate<T>(this T[] array, long index, Func<T, T> updater)
             where T : class?
-            => GetAndUpdate(array, index, new ValueFunc<T, T>(updater, true));
+            => GetAndUpdate(array, index, new ValueFunc<T, T>(updater));
 
         /// <summary>
         /// Atomically updates the array element with the results
@@ -388,7 +388,6 @@ namespace DotNext.Threading
     /// not referred to the field.
     /// </remarks>
     [Serializable]
-    [SuppressMessage("Design", "CA1066")]
     [SuppressMessage("Usage", "CA2231")]
     public struct AtomicReference<T> : IEquatable<T>, ISerializable
         where T : class?
@@ -405,7 +404,7 @@ namespace DotNext.Threading
 
         private AtomicReference(SerializationInfo info, StreamingContext context)
         {
-            value = (T)info.GetValue(ValueSerData, typeof(T));
+            value = (T)info.GetValue(ValueSerData, typeof(T))!;
         }
 
         /// <summary>

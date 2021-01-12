@@ -2,7 +2,6 @@ using System;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using static System.Buffers.Binary.BinaryPrimitives;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
@@ -47,13 +46,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             var writer = new SpanWriter<byte>(output);
 
-            WriteInt64LittleEndian(writer.Slide(sizeof(long)), result.Term);
+            writer.WriteInt64(result.Term, true);
             writer.Add(result.Value.ToByte());
 
             return writer.WrittenCount;
         }
 
         internal static Result<bool> ReadResult(ReadOnlySpan<byte> input)
-            => new Result<bool>(ReadInt64LittleEndian(input), ValueTypeExtensions.ToBoolean(input[sizeof(long)]));
+        {
+            var reader = new SpanReader<byte>(input);
+            return new Result<bool>(reader.ReadInt64(true), ValueTypeExtensions.ToBoolean(reader.Read()));
+        }
     }
 }
