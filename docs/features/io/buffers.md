@@ -110,21 +110,14 @@ string result = buffer.BuildString();
 # BufferWriterSlim
 [BufferWriterSlim&lt;T&gt;](../../api/DotNext.Buffers.BufferWriterSlim-1.yml) is a lightweight version of [PooledBufferWriter&lt;T&gt;](../../api/DotNext.Buffers.PooledBufferWriter-1.yml) class with its own unique features. The instance of writer always allocated on the stack because the type is declared as ref-like value type. Additionally, the writer allows to use stack-allocated memory for placing new elements.
 
-The type supports the following modes:
-* **Non-contiguous memory re-allocation** mode utilizes pooled memory to place new elements if capacity of pre-allocated buffer exceeded. However, added elements are placed to non-contiguous memory (i.e. divided pre-allocated buffer and pooled memory). In other words, the head of the list of added elements is always in pre-allocated buffer.
-* **Contiguous memory re-allocation** ensures that all elements are placed in contiguous memory, thus can be obtained as [Span&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.span-1). The writer trying to place new elements to pre-allocated buffer. If it's capacity exceeded then the whole content of such buffer moving to pooled memory. Therefore, head and tail are not divided on two buffers.
-
-
-The first mode doesn't allow to obtain written memory as [Span&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.span-1).
+If initial buffer overflows then `BufferWriterSlim<T>` obtains rented buffer from the pool and copies the initial buffer into it.
 ```csharp
 using DotNext.Buffers;
 
-using var builder = new SpanBuilder<byte>(stackalloc byte[128], false); // capacity can be changed at runtime
+using var builder = new BufferWriterSlim<byte>(stackalloc byte[128]); // capacity can be changed at runtime
 builder.Write(new byte[] { 1, 2, 3 });
-ReadOnlySpan<byte> result = builder.WrittenSpan;    // throw NotSupportedException if the content is in non-contiguous memory
+ReadOnlySpan<byte> result = builder.WrittenSpan;
 ```
-
-To enable usage of contiguous memory, just pass **true** to constructor in the example above instead of **false** constant.
 
 This type has the following limitations:
 * Incompatible with async methods
