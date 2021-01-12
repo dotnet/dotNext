@@ -160,19 +160,16 @@ Strongly typed reflection provided by DotNext Reflection library has the same pe
 
 | Method | Mean | Error | StdDev |
 | ---- | ---- | ---- | ---- |
-| Instance method, regular delegate, has implicit **this** | 0.9273 ns | 0.0072 ns | 0.0060 ns |
-| Instance method, Value Delegate, has implicit **this** | 1.8824 ns | 0.0495 ns | 0.0463 ns |
-| Static method, regular delegate, large size of param type, no implicitly captured object | 14.5560 ns | 0.0440 ns | 0.0367 ns |
-| Static method, Value Delegate, large size of param type, no implicitly captured object | 15.7549 ns | 0.0731 ns | 0.0684 ns |
-| Static method, regular delegate, small size of param type, no implicitly captured object | 23.2037 ns | 0.3844 ns | 0.3408 ns |
-| Static method, Value Delegate, small size of param type, no implicitly captured object | 21.8213 ns | 0.1073 ns | 0.0896 ns |
+| Instance method, regular delegate, has implicit **this** | 1.257 ns | 0.0209 ns | 0.0185 ns |
+| Instance method, Value Delegate, has implicit **this** | 1.301 ns | 0.0159 ns | 0.0149 ns |
+| Static method, regular delegate, large size of param type, no implicitly captured object | 14.395 ns | 0.0494 ns | 0.0438 ns |
+| Static method, Value Delegate, large size of param type, no implicitly captured object | 14.730 ns | 0.0821 ns | 0.0768 ns |
+| Static method, regular delegate, small size of param type, no implicitly captured object | 21.270 ns | 0.4357 ns | 0.4279 ns |
+| Static method, Value Delegate, small size of param type, no implicitly captured object | 21.329 ns | 0.4574 ns | 0.4055 ns |
 
 _Large size of param type_ means that the type of the parameter is larger than 64 bit.
 
-Interpretation of benchmark results:
-* _Proxy_ mode of Value Delegate adds a small overhead in comparison with regular delegate
-* If the type of the parameter is less than or equal to the size of CPU register then Value Delegate offers the best performance
-* If the type of the parameter is greater than the size of CPU register then Value Delegate is slower than regular delegate
+Performance of value delegates is the same as of regular .NET delegates.
 
 # File-buffering Writer
 [This benchmark](https://github.com/sakno/dotNext/blob/master/src/DotNext.Benchmarks/IO/FileBufferingWriterBenchmark.cs) compares performance of [FileBufferingWriteStream](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.webutilities.filebufferingwritestream) from ASP.NET Core and [FileBufferingWriter](./api/DotNext.IO.FileBufferingWriter.yml) from .NEXT library.
