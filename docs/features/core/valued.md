@@ -86,34 +86,6 @@ The second `bool` parameter of Value Deleate constructor is not used because _pr
 
 Invocation of Value Delegate has approximately the same performance as regular .NET delegates. To verify that, check out [Benchmarks](../../benchmarks.md).
 
-# Compile-Time Support
-.NEXT offers optional compile-time support of Value Delegates using [Compile-Time Augmentations](../aug.md) feature. This feature helps Roslyn compiler to understand instantiation semantics of Value Delegate and remove creation of regular delegate. Therefore, you don't need to store instance of Value Delegate in **static readonly** field. Instead of this, you can instantiate it in-place.
-
-Let's look at the following code:
-```csharp
-using DotNext;
-
-private static long Sum(long x, long y) => x + y;
-
-var sum = new ValueFunc<long, long, long>(Sum);
-sum.Invoke(2L, 3L);	//returns 5
-```
-
-The code looks fine but Roslyn can't understand your intentions because Value Delegates are not known to it. However, it can be compiled successfully with one side-effect: redundant memory allocation. This is happening because the actual compiler code looks like this:
-```csharp
-using DotNext;
-
-private static long Sum(long x, long y) => x + y;
-
-var sum = new ValueFunc<long, long, long>(new Func<long, long, long>(Sum));
-sum.Invoke(2L, 3L);	//returns 5
-```
-Now you see that `ValueFunc` constructor accepts instance of regular .NET delegate which is allocated on the heap. 
-
-.NEXT Augmented Compilation tells the compiler that this allocation is redundant and pointer to the static method can be passed into Value Delegate directly. The allocation of regular delegate is removed from IL code at compile-time by .NEXT code weaver.
-
-This feature is optional and become available only if .NEXT Augmented Compilation enabled. However, the code above is correct even if augmentations are not enabled for building pipeline. In this case, heap allocation of regular delegate stays in compiled code.
-
 # Instance Methods
 Capturing of instance non-abstract methods are not supported in _normal_ mode. However, the early prototype had such support but later it was dropped. The main reason is IL limitation: it is not possible to express **this** argument in a uniform way for both value and reference types. This magic is only allowed for virtual calls using `.constrained` prefix in combination with `callvirt` instruction but not for `calli` instruction. The second reason is C# compiler which allows to specify static method for open delegate or instance method for closed delegate. There is no syntax for open instance method. As a result, open delegates created for instance methods are used rarely.
 

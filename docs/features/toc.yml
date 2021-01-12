@@ -109,5 +109,3 @@
       href: cluster/wal.md
     - name: Raft
       href: cluster/raft.md
-- name: Augmented Compilation
-  href: aug.md
