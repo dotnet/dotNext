@@ -149,11 +149,11 @@ Strongly typed reflection provided by DotNext Reflection library has the same pe
 # Atomic Access to Arbitrary Value Type
 [This benchmark](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/Threading/AtomicContainerBenchmark.cs) compares performance of [Atomic&lt;T&gt;](./api/DotNext.Threading.Atomic-1.yml) and Synchronized methods. The implementation of the benchmark contains concurrent read/write threads to ensure that lock contention is in place.
 
-| Method | Mean | Error | StdDev | Median |
+| Method | Mean | Error | StdDev |
 | ---- | ---- | ---- | ---- | ---- |
-| Atomic | 352.8 us | 10.00 us | 93.91 us | 341.1 us |
-| Synchronized | 993.8 us | 11.41 us | 104.88 us | 982.4 us |
-| SpinLock | 1,539.2 us | 38.05 us | 337.18 us | 1,603.6 us |
+| Atomic | 342.2 us | 7.82 us | 73.57 us | 329.6 us |
+| Synchronized | 962.1 us | 12.04 us | 111.03 us | 944.3 us |
+| SpinLock | 1,456.6 us | 43.64 us | 408.19 us | 1,548.5 us |
 
 # Value Delegate
 [This benchmark](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/FunctionPointerBenchmark.cs) compares performance of indirect method call using classic delegates from .NET and [value delegates](./features/core/valued.md).
