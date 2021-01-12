@@ -109,15 +109,12 @@ namespace DotNext.Runtime.InteropServices
         [Fact]
         public static unsafe void Swap()
         {
-            var array = new ushort[] { 1, 2 };
-            fixed (ushort* p = array)
-            {
-                var ptr1 = new Pointer<ushort>(p);
-                var ptr2 = ptr1 + 1;
-                Equal(1, ptr1.Value);
-                Equal(2, ptr2.Value);
-                ptr1.Swap(ptr2);
-            }
+            var array = stackalloc ushort[] { 1, 2 };
+            var ptr1 = new Pointer<ushort>(array);
+            var ptr2 = ptr1 + 1;
+            Equal(1, ptr1.Value);
+            Equal(2, ptr2.Value);
+            ptr1.Swap(ptr2);
             Equal(2, array[0]);
             Equal(1, array[1]);
         }
@@ -438,7 +435,7 @@ namespace DotNext.Runtime.InteropServices
         public static unsafe void Operators()
         {
             var ptr1 = new Pointer<int>(new IntPtr(42));
-            var ptr2 = new Pointer<int>(new IntPtr(43));
+            var ptr2 = new Pointer<int>(new IntPtr(46));
             True(ptr1 != ptr2);
             False(ptr1 == ptr2);
             ptr2 -= new IntPtr(1);
@@ -456,10 +453,15 @@ namespace DotNext.Runtime.InteropServices
             ptr1 += 1L;
             Equal(new IntPtr(54), ptr1);
             ptr1 += new IntPtr(2);
-            Equal(new IntPtr(56), ptr1);
+            Equal(new IntPtr(62), ptr1);
 
             ptr1 = new Pointer<int>(new UIntPtr(56U));
             Equal(new UIntPtr(56U), ptr1);
+
+            ptr1 += (nint)1;
+            Equal(new IntPtr(60), ptr1);
+            ptr1 -= (nint)1;
+            Equal(new IntPtr(56), ptr1);
         }
 
         [Fact]
