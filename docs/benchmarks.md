@@ -109,23 +109,23 @@ Strongly typed reflection provided by DotNext Reflection library has the same pe
 
 The benchmark uses series of different strings to run the same set of tests. Worst case means that character lookup is performed for a string that doesn't contain the given character. Best case means that character lookup is performed for a string that has the given character.
 
-| Method | Condition | Mean | Error | StdDev | Median |
+| Method | Condition | Mean | Error | StdDev |
 | ---- | ---- | ---- | ---- | ---- | ---- |
-| Direct call | Empty String | 5.027 ns | 0.0192 ns | 0.0179 ns | 5.029 ns |
-| Direct call | Best Case | 11.265 ns | 0.2595 ns | 0.5473 ns | 11.038 ns |
-| Direct call | Worst Case | 13.702 ns | 0.0381 ns | 0.0357 ns | 13.701 ns |
-| Reflection with DotNext using delegate type `Func<string, char, int, int>` | Empty String | 8.292 ns | 0.1272 ns | 0.1062 ns | 8.292 ns |
-| Reflection with DotNext using delegate type `Func<string, char, int, int>` | Best Case | 10.786 ns | 0.0263 ns |  0.0233 ns |  10.787 ns |
-| Reflection with DotNext using delegate type `Func<string, char, int, int>` | Worst Case | 16.156 ns | 0.0532 ns | 0.0445 ns | 16.164 ns |
-| Reflection with DotNext using delegate type `Function<string, (char, int), int>` | Empty String | 12.920 ns | 0.0802 ns | 0.0711 ns | 12.912 ns |
-| Reflection with DotNext using delegate type `Function<string, (char, int), int>` | Best Case | 16.764 ns | 0.3341 ns | 0.6357 ns | 16.547 ns |
-| Reflection with DotNext using delegate type `Function<string, (char, int), int>` | Worst Case | 19.723 ns | 0.0467 ns | 0.0437 ns | 19.718 ns |
-| Reflection with DotNext using delegate type `Function<object, (object, object), object>` | Empty String | 30.837 ns | 0.9323 ns | 2.6749 ns | 29.444 ns |
-| Reflection with DotNext using delegate type `Function<object, (object, object), object>` | Best Case | 34.313 ns | 0.6684 ns | 1.1168 ns | 34.725 ns |
-| Reflection with DotNext using delegate type `Function<object, (object, object), object>` | Worst Case | 38.278 ns | 0.2308 ns | 0.2159 ns | 38.261 ns |
-| .NET reflection | Empty String | 330.086 ns | 6.4941 ns | 10.4867 ns | 325.026 ns |
-| .NET reflection | Best Case | 332.212 ns | 6.6117 ns | 11.5798 ns | 326.741 ns |
-| .NET reflection | Worst Case | 339.153 ns | 2.0429 ns | 1.7059 ns | 339.822 ns |
+| Direct call | Empty String | 5.326 ns | 0.1191 ns | 0.1783 ns |
+| Direct call | Best Case | 9.883 ns | 0.1057 ns | 0.0988 ns |
+| Direct call | Worst Case | 12.836 ns | 0.0516 ns | 0.0431 ns |
+| Reflection with DotNext using delegate type `Func<string, char, int, int>` | Empty String | 8.619 ns | 0.1266 ns | 0.1184 ns |
+| Reflection with DotNext using delegate type `Func<string, char, int, int>` | Best Case | 12.950 ns | 0.2557 ns | 0.3413 ns |
+| Reflection with DotNext using delegate type `Func<string, char, int, int>` | Worst Case | 19.191 ns | 0.3604 ns | 0.4006 ns |
+| Reflection with DotNext using delegate type `Function<string, (char, int), int>` | Empty String | 12.535 ns | 0.1385 ns | 0.1295 ns |
+| Reflection with DotNext using delegate type `Function<string, (char, int), int>` | Best Case | 17.662 ns | 0.3306 ns | 0.3092 ns |
+| Reflection with DotNext using delegate type `Function<string, (char, int), int>` | Worst Case | 21.126 ns | 0.3728 ns | 0.3487 ns |
+| Reflection with DotNext using delegate type `Function<object, (object, object), object>` | Empty String | 30.211 ns | 0.1373 ns | 0.1284 ns |
+| Reflection with DotNext using delegate type `Function<object, (object, object), object>` | Best Case | 35.754 ns | 0.0965 ns | 0.0806 ns |
+| Reflection with DotNext using delegate type `Function<object, (object, object), object>` | Worst Case | 40.073 ns | 0.2489 ns | 0.2328 ns |
+| .NET reflection | Empty String | 303.852 ns | 1.9509 ns | 1.8249 ns |
+| .NET reflection | Best Case | 324.094 ns | 1.2919 ns | 1.1453 ns |
+| .NET reflection | Worst Case | 324.064 ns | 2.8673 ns | 2.6821 ns |
 
 DotNext Reflection library offers the best result in case when delegate type exactly matches to the reflected method with small overhead measured in a few nanoseconds.
 
