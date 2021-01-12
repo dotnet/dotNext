@@ -1,4 +1,4 @@
-.NEXT 2.x
+.NEXT 3.x
 ====
 
 .NEXT (dotNext) is the family of powerful libaries aimed to improve development productivity and extend .NET API with unique features which potentially will be implemented in the next versions of C# compiler or .NET Runtime.
@@ -9,7 +9,7 @@
 This chapter gives quick overview of these libraries. Read [articles](./features/core/index.md) for closer look at all available features.
 
 Prerequisites:
-* Runtime: any .NET implementation compatible with .NET Standard 2.1 (except **DotNext.AspNetCore.Cluster** library which depends on .NET Core of version 3.1 or higher)
+* Runtime: .NET 5 or any runtime compatible with .NET Standard 2.1
 * OS: Linux, Windows, MacOS
 * Architecture: any if supported by underlying .NET Runtime
 
@@ -25,6 +25,7 @@ This library is the core of .NEXT which extends .NET Standard API with
   * Low-level methods to work with value types
   * Fast comparison of arrays
   * Ad-hoc user data associated with arbitrary object
+  * Rich set of advanced buffer types
 
 # DotNext.Reflection
 <a href="https://www.nuget.org/packages/dotnext.reflection/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.reflection.svg?logo=NuGet"></a>  ![Downloads](https://img.shields.io/nuget/dt/dotnext.reflection.svg)<br/>
@@ -44,7 +45,6 @@ This library provides a special types to work with unmanaged memory in safe mann
 * Interop with unmanaged memory via [Memory](https://docs.microsoft.com/en-us/dotnet/api/system.memory-1) value type
 * CLS-compliant generic pointer type for .NET languages without direct support of such type. Use this feature to work with pointers from VB.NET or F#.
 * Atomic thread-safe operations applicable to data placed into unmanaged memory: increment, decrement, compare-and-set etc, volatile access
-* Calling unmanaged functions by pointer
 
 # DotNext.Threading
 <a href="https://www.nuget.org/packages/dotnext.threading/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.threading.svg?logo=NuGet"></a>  ![Downloads](https://img.shields.io/nuget/dt/dotnext.threading.svg)<br/>
@@ -74,7 +74,3 @@ Provides rich framework for building [clustered microservices](https://en.wikipe
 # DotNext.AspNetCore.Cluster
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.aspnetcore.cluster.svg?logo=NuGet"></a>  ![Downloads](https://img.shields.io/nuget/dt/dotnext.aspnetcore.cluster.svg)<br/>
 Allows to build clustered microservices which rely on network consensus and distributed messaging with [ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/) framework. This library contains HTTP-based implementation of [Raft](https://raft.github.io/) Consensus Algorithm, HTTP-based distributed messaging across cluster nodes, cluster leader detection, automatic redirection to leader node and many other things.
-
-# DotNext.Augmentation
-<a href="https://www.nuget.org/packages/dotnext.augmentation.fody/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.augmentation.fody.svg?logo=NuGet"></a>  ![Downloads](https://img.shields.io/nuget/dt/dotnext.augmentation.fody.svg)<br/>
-.NEXT Augmentations extends compilation pipeline with tricks and optimizations not available in Roslyin Compiler out-of-the-box. It is actually not a library, but IL code weaver implemented as [Fody](https://github.com/Fody/Fody) add-in. Read more about compile-time features [here](./features/aug.md).
