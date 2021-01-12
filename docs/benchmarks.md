@@ -40,14 +40,14 @@ Bitwise equality method has the better performance than field-by-field equality 
 # Equality of Arrays
 [This benchmark](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/ArrayEqualityBenchmark.cs) compares performance of [ReadOnlySpan.SequenceEqual](https://docs.microsoft.com/en-us/dotnet/api/system.memoryextensions.sequenceequal#System_MemoryExtensions_SequenceEqual__1_System_ReadOnlySpan___0__System_ReadOnlySpan___0__), [OneDimensionalArray.BitwiseEquals](./api/DotNext.OneDimensionalArray.yml) and manual equality check between two arrays using `for` loop. The benchmark is applied to the array of [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid) elements.
 
-| Method | Mean | Error | StdDev | Median  |
+| Method | Mean | Error | StdDev |
 | ---- | ---- | ---- | ---- | ---- |
-| `Guid[].BitwiseEquals`, small arrays (~10 elements) | 10.13 ns | 0.083 ns | 0.077 ns | 10.15 ns |
-| `ReadOnlySpan<Guid>.SequenceEqual`, small arrays (~10 elements) | 46.68 ns | 0.200 ns | 0.187 ns | 46.69 ns |
-| `for` loop, small arrays (~10 elements) | 61.23 ns | 0.144 ns | 0.127 ns | 61.27 ns |
-| `Guid[].BitwiseEquals`, large arrays (~100 elements) | 52.30 ns | 0.130 ns | 0.121 ns | 52.25 ns |
-| `ReadOnlySpan<Guid>.SequenceEqual`, large arrays (~100 elements) | 437.96 ns | 8.669 ns | 8.109 ns | 444.44 ns |
-| `for` loop, large arrays (~100 elements) | 607.54 ns | 2.572 ns | 2.406 ns | 607.48 ns |
+| `Guid[].BitwiseEquals`, small arrays (~10 elements) | 9.778 ns | 0.2334 ns | 0.3702 ns |
+| `ReadOnlySpan<Guid>.SequenceEqual`, small arrays (~10 elements) | 39.946 ns | 0.1607 ns | 0.1503 ns |
+| `for` loop, small arrays (~10 elements) | 68.674 ns | 0.1695 ns | 0.1585 ns |
+| `Guid[].BitwiseEquals`, large arrays (~100 elements) | 68.444 ns | 0.1789 ns | 0.1674 ns |
+| `ReadOnlySpan<Guid>.SequenceEqual`, large arrays (~100 elements) | 377.179 ns | 1.0001 ns | 0.8351 ns |
+| `for` loop, large arrays (~100 elements) | 677.581 ns | 1.2724 ns | 1.1279 ns |
 
 Bitwise equality is an absolute winner for equality check between arrays of any size.
 
@@ -56,12 +56,12 @@ Bitwise equality is an absolute winner for equality check between arrays of any 
 
 | Method | Mean | Error | StdDev |
 | ---- | ---- | ---- | ---- |
-| `Guid.GetHashCode` | 1.446 ns | 0.0137 ns | 0.0128 ns |
-| `BitwiseComparer<Guid>.GetHashCode` | 5.646 ns | 0.0256 ns | 0.0214 ns |
-| `BitwiseComparer<LargeStructure>.GetHashCode` | 40.257 ns | 0.1833 ns | 0.1714 ns |
-| `LargeStructure.GetHashCode` | 33.694 ns | 0.7107 ns | 1.5749 ns |
+| `Guid.GetHashCode` | 1.416 ns | 0.0211 ns | 0.0198 ns |
+| `BitwiseComparer<Guid>.GetHashCode` | 6.202 ns | 0.0355 ns | 0.0315 ns |
+| `BitwiseComparer<LargeStructure>.GetHashCode` | 44.327 ns | 0.1936 ns | 0.1716 ns |
+| `LargeStructure.GetHashCode` | 20.520 ns | 0.0666 ns | 0.0623 ns |
 
-Bitwise hash code algorithm is slower than JIT optimizations introduced by .NET Core 3.1 but still convenient in complex cases.
+Bitwise hash code algorithm is slower than JIT optimizations introduced by .NET 5 but still convenient in complex cases.
 
 # Bytes to Hex
 [This benchmark](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/HexConversionBenchmark.cs) demonstrates performance of `DotNext.Span.ToHex` extension method that allows to convert arbitrary set of bytes into hexadecimal form. It is compatible with`Span<T>` data type in constrast to [BitConverter.ToString](https://docs.microsoft.com/en-us/dotnet/api/system.bitconverter.tostring) method.
