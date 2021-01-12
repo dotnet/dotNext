@@ -69,7 +69,6 @@ Statically-typed version of delegate creation method shipped with .NET Standard.
 using DotNext;
 
 var parseInt = typeof(int).GetMethod(nameof(int.Parse)).CreateDelegate<Func<string, int>>();
-
 ```
 
 ## Specialized delegate converters
@@ -179,23 +178,6 @@ array = array.Slice(1, 2);      //array == new []{"b", "c"}
 ```
 
 The same behavior can be achieved using [Span](https://docs.microsoft.com/en-us/dotnet/api/system.span-1) data type. However, these methods support large arrays where index and length cannot be represented by **int** data type.
-
-# Extensions for `IntPtr` and `UIntPtr`
-Natural-sized integer data types [IntPtr](https://docs.microsoft.com/en-us/dotnet/api/system.intptr) and [UIntPtr](https://docs.microsoft.com/en-us/dotnet/api/system.intptr) have no arithmetic, bitwise, and comparison operators as other numeric types in .NET standard library. This is fixed by .NEXT library which provides implementation of these operators in the form of extension methods available for both types from [ValueTypeExtensions](../../api/DotNext.ValueTypeExtensions.yml) class.
-
-These methods are implemented as intrinsics using inline IL code so they can be replaced by equivalent assembly instruction by JIT compiler. As a result, they the methods have the same performance as natively supported operators for regular numeric types.
-
-The following example demonstrates how to use these methods:
-```csharp
-using DotNext;
-
-var i = new IntPtr(40);
-i = i.Add(new IntPtr(2));	//i == 42
-if(i.GreaterThan(IntPtr.Zero))
-	i = i.Subtract(new IntPtr(10));
-else
-	i = i.OnesComplement();	//equivalent to operator ~
-```
 
 # Timestamp
 [Timestamp](https://sakno.github.io/dotNext/api/DotNext.Diagnostics.Timestamp.html) value type can be used as allocation-free alternative to [Stopwatch](https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.stopwatch) when you need to measure time intervals.
