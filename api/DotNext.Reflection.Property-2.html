@@ -1,0 +1,717 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class Property&lt;T, TValue&gt;
+   | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class Property&lt;T, TValue&gt;
+   | .NEXT ">
+    <meta name="generator" content="docfx 2.56.5.0">
+    
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Reflection.Property`2">
+  
+  
+  <h1 id="DotNext_Reflection_Property_2" data-uid="DotNext.Reflection.Property`2" class="text-break">Class Property&lt;T, TValue&gt;
+  </h1>
+  <div class="markdown level0 summary"><p>Provides typed access to instance property declared in type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level1"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.memberinfo">MemberInfo</a></div>
+    <div class="level2"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.propertyinfo">PropertyInfo</a></div>
+    <div class="level3"><a class="xref" href="DotNext.Reflection.PropertyBase-1.html">PropertyBase</a>&lt;TValue&gt;</div>
+    <div class="level4"><span class="xref">Property&lt;T, TValue&gt;</span></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.propertyinfo">PropertyInfo</a>&gt;</div>
+    <div><a class="xref" href="DotNext.Reflection.IProperty-2.html">IProperty</a>&lt;T, TValue&gt;</div>
+    <div><a class="xref" href="DotNext.Reflection.IProperty.html">IProperty</a></div>
+    <div><a class="xref" href="DotNext.Reflection.IMember-1.html">IMember</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.propertyinfo">PropertyInfo</a>&gt;</div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.icustomattributeprovider">ICustomAttributeProvider</a></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="DotNext.Reflection.PropertyBase-1.html#DotNext_Reflection_PropertyBase_1_GetValue_System_Object_System_Object___">PropertyBase&lt;TValue&gt;.GetValue(Object, Object[])</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Reflection.PropertyBase-1.html#DotNext_Reflection_PropertyBase_1_SetValue_System_Object_System_Object_System_Object___">PropertyBase&lt;TValue&gt;.SetValue(Object, Object, Object[])</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Reflection.PropertyBase-1.html#DotNext_Reflection_PropertyBase_1_Name">PropertyBase&lt;TValue&gt;.Name</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Reflection.PropertyBase-1.html#DotNext_Reflection_PropertyBase_1_CanRead">PropertyBase&lt;TValue&gt;.CanRead</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Reflection.PropertyBase-1.html#DotNext_Reflection_PropertyBase_1_CanWrite">PropertyBase&lt;TValue&gt;.CanWrite</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Reflection.PropertyBase-1.html#DotNext_Reflection_PropertyBase_1_Attributes">PropertyBase&lt;TValue&gt;.Attributes</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Reflection.PropertyBase-1.html#DotNext_Reflection_PropertyBase_1_PropertyType">PropertyBase&lt;TValue&gt;.PropertyType</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Reflection.PropertyBase-1.html#DotNext_Reflection_PropertyBase_1_GetAccessors_System_Boolean_">PropertyBase&lt;TValue&gt;.GetAccessors(Boolean)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Reflection.PropertyBase-1.html#DotNext_Reflection_PropertyBase_1_GetConstantValue">PropertyBase&lt;TValue&gt;.GetConstantValue()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Reflection.PropertyBase-1.html#DotNext_Reflection_PropertyBase_1_GetGetMethod_System_Boolean_">PropertyBase&lt;TValue&gt;.GetGetMethod(Boolean)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Reflection.PropertyBase-1.html#DotNext_Reflection_PropertyBase_1_GetIndexParameters">PropertyBase&lt;TValue&gt;.GetIndexParameters()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Reflection.PropertyBase-1.html#DotNext_Reflection_PropertyBase_1_GetOptionalCustomModifiers">PropertyBase&lt;TValue&gt;.GetOptionalCustomModifiers()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Reflection.PropertyBase-1.html#DotNext_Reflection_PropertyBase_1_GetRawConstantValue">PropertyBase&lt;TValue&gt;.GetRawConstantValue()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Reflection.PropertyBase-1.html#DotNext_Reflection_PropertyBase_1_GetRequiredCustomModifiers">PropertyBase&lt;TValue&gt;.GetRequiredCustomModifiers()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Reflection.PropertyBase-1.html#DotNext_Reflection_PropertyBase_1_GetSetMethod_System_Boolean_">PropertyBase&lt;TValue&gt;.GetSetMethod(Boolean)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Reflection.PropertyBase-1.html#DotNext_Reflection_PropertyBase_1_GetValue_System_Object_System_Reflection_BindingFlags_System_Reflection_Binder_System_Object___System_Globalization_CultureInfo_">PropertyBase&lt;TValue&gt;.GetValue(Object, BindingFlags, Binder, Object[], CultureInfo)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Reflection.PropertyBase-1.html#DotNext_Reflection_PropertyBase_1_SetValue_System_Object_System_Object_System_Reflection_BindingFlags_System_Reflection_Binder_System_Object___System_Globalization_CultureInfo_">PropertyBase&lt;TValue&gt;.SetValue(Object, Object, BindingFlags, Binder, Object[], CultureInfo)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Reflection.PropertyBase-1.html#DotNext_Reflection_PropertyBase_1_DeclaringType">PropertyBase&lt;TValue&gt;.DeclaringType</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Reflection.PropertyBase-1.html#DotNext_Reflection_PropertyBase_1_MemberType">PropertyBase&lt;TValue&gt;.MemberType</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Reflection.PropertyBase-1.html#DotNext_Reflection_PropertyBase_1_ReflectedType">PropertyBase&lt;TValue&gt;.ReflectedType</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Reflection.PropertyBase-1.html#DotNext_Reflection_PropertyBase_1_GetCustomAttributes_System_Boolean_">PropertyBase&lt;TValue&gt;.GetCustomAttributes(Boolean)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Reflection.PropertyBase-1.html#DotNext_Reflection_PropertyBase_1_GetCustomAttributes_System_Type_System_Boolean_">PropertyBase&lt;TValue&gt;.GetCustomAttributes(Type, Boolean)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Reflection.PropertyBase-1.html#DotNext_Reflection_PropertyBase_1_IsDefined_System_Type_System_Boolean_">PropertyBase&lt;TValue&gt;.IsDefined(Type, Boolean)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Reflection.PropertyBase-1.html#DotNext_Reflection_PropertyBase_1_MetadataToken">PropertyBase&lt;TValue&gt;.MetadataToken</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Reflection.PropertyBase-1.html#DotNext_Reflection_PropertyBase_1_Module">PropertyBase&lt;TValue&gt;.Module</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Reflection.PropertyBase-1.html#DotNext_Reflection_PropertyBase_1_GetCustomAttributesData">PropertyBase&lt;TValue&gt;.GetCustomAttributesData()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Reflection.PropertyBase-1.html#DotNext_Reflection_PropertyBase_1_CustomAttributes">PropertyBase&lt;TValue&gt;.CustomAttributes</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Reflection.PropertyBase-1.html#DotNext_Reflection_PropertyBase_1_DotNext_Reflection_IMember_System_Reflection_PropertyInfo__RuntimeMember">PropertyBase&lt;TValue&gt;.IMember&lt;PropertyInfo&gt;.RuntimeMember</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Reflection.PropertyBase-1.html#DotNext_Reflection_PropertyBase_1_Equals_System_Reflection_PropertyInfo_">PropertyBase&lt;TValue&gt;.Equals(PropertyInfo)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Reflection.PropertyBase-1.html#DotNext_Reflection_PropertyBase_1_Equals_System_Object_">PropertyBase&lt;TValue&gt;.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Reflection.PropertyBase-1.html#DotNext_Reflection_PropertyBase_1_GetHashCode">PropertyBase&lt;TValue&gt;.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Reflection.PropertyBase-1.html#DotNext_Reflection_PropertyBase_1_ToString">PropertyBase&lt;TValue&gt;.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.propertyinfo.getaccessors#System_Reflection_PropertyInfo_GetAccessors">PropertyInfo.GetAccessors()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.propertyinfo.getgetmethod#System_Reflection_PropertyInfo_GetGetMethod">PropertyInfo.GetGetMethod()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.propertyinfo.getsetmethod#System_Reflection_PropertyInfo_GetSetMethod">PropertyInfo.GetSetMethod()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.propertyinfo.getvalue#System_Reflection_PropertyInfo_GetValue_System_Object_">PropertyInfo.GetValue(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.propertyinfo.setvalue#System_Reflection_PropertyInfo_SetValue_System_Object_System_Object_">PropertyInfo.SetValue(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.propertyinfo.isspecialname#System_Reflection_PropertyInfo_IsSpecialName">PropertyInfo.IsSpecialName</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.memberinfo.hassamemetadatadefinitionas#System_Reflection_MemberInfo_HasSameMetadataDefinitionAs_System_Reflection_MemberInfo_">MemberInfo.HasSameMetadataDefinitionAs(MemberInfo)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Reflection.html">DotNext.Reflection</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.Reflection.dll</h6>
+  <h5 id="DotNext_Reflection_Property_2_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed class Property&lt;T, TValue&gt; : PropertyBase&lt;TValue&gt;, IEquatable&lt;PropertyInfo&gt;, IProperty&lt;T, TValue&gt;, IProperty, IMember&lt;PropertyInfo&gt;, ICustomAttributeProvider</code></pre>
+  </div>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>Declaring type.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">TValue</span></td>
+        <td><p>Type of property.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Property_2_GetMethod.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Property%602.GetMethod%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L408">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Property_2_GetMethod_" data-uid="DotNext.Reflection.Property`2.GetMethod*"></a>
+  <h4 id="DotNext_Reflection_Property_2_GetMethod" data-uid="DotNext.Reflection.Property`2.GetMethod">GetMethod</h4>
+  <div class="markdown level1 summary"><p>Gets property getter.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Method&lt;MemberGetter&lt;T, TValue&gt;&gt; GetMethod { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="DotNext.Reflection.MemberGetter-2.html">MemberGetter</a>&lt;T, TValue&gt;&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Property_2_Item__0__.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Property%602.Item(%600%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L459">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Property_2_Item_" data-uid="DotNext.Reflection.Property`2.Item*"></a>
+  <h4 id="DotNext_Reflection_Property_2_Item__0__" data-uid="DotNext.Reflection.Property`2.Item(`0@)">Item[T]</h4>
+  <div class="markdown level1 summary"><p>Gets or sets property value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public TValue this[in T this] { get; set; }</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">this</span></td>
+        <td><p><code>this</code> argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TValue</span></td>
+        <td><p>Property value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Property_2_SetMethod.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Property%602.SetMethod%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L413">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Property_2_SetMethod_" data-uid="DotNext.Reflection.Property`2.SetMethod*"></a>
+  <h4 id="DotNext_Reflection_Property_2_SetMethod" data-uid="DotNext.Reflection.Property`2.SetMethod">SetMethod</h4>
+  <div class="markdown level1 summary"><p>Gets property setter.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Method&lt;MemberSetter&lt;T, TValue&gt;&gt; SetMethod { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="DotNext.Reflection.MemberSetter-2.html">MemberSetter</a>&lt;T, TValue&gt;&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Property_2_GetValue_System_Object__1__.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Property%602.GetValue(System.Object%2C%601%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L421">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Property_2_GetValue_" data-uid="DotNext.Reflection.Property`2.GetValue*"></a>
+  <h4 id="DotNext_Reflection_Property_2_GetValue_System_Object__1__" data-uid="DotNext.Reflection.Property`2.GetValue(System.Object,`1@)">GetValue(Object, out TValue)</h4>
+  <div class="markdown level1 summary"><p>Returns the value of the property supported by a given object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override bool GetValue(object obj, out TValue value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
+        <td><span class="parametername">obj</span></td>
+        <td><p>The object whose property value will be returned.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TValue</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>An object containing the value of the property reflected by this instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span>, if property value is obtained successfully; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><span class="xref">DotNext.Reflection.PropertyBase&lt;TValue&gt;.GetValue(System.Object, TValue)</span></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Property_2_SetValue_System_Object__1_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Property%602.SetValue(System.Object%2C%601)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L441">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Property_2_SetValue_" data-uid="DotNext.Reflection.Property`2.SetValue*"></a>
+  <h4 id="DotNext_Reflection_Property_2_SetValue_System_Object__1_" data-uid="DotNext.Reflection.Property`2.SetValue(System.Object,`1)">SetValue(Object, TValue)</h4>
+  <div class="markdown level1 summary"><p>Sets the value of the property supported by the given object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override bool SetValue(object obj, TValue value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
+        <td><span class="parametername">obj</span></td>
+        <td><p>The object whose property value will be set.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TValue</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value to assign to the property.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span>, if property value is modified successfully; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><span class="xref">DotNext.Reflection.PropertyBase&lt;TValue&gt;.SetValue(System.Object, TValue)</span></div>
+  <h3 id="operators">Operators
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Property_2_op_Implicit_DotNext_Reflection_Property__0__1___DotNext_Reflection_MemberGetter__0__1_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Property%602.op_Implicit(DotNext.Reflection.Property%7B%600%2C%601%7D)~DotNext.Reflection.MemberGetter%7B%600%2C%601%7D%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L395">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Property_2_op_Implicit_" data-uid="DotNext.Reflection.Property`2.op_Implicit*"></a>
+  <h4 id="DotNext_Reflection_Property_2_op_Implicit_DotNext_Reflection_Property__0__1___DotNext_Reflection_MemberGetter__0__1_" data-uid="DotNext.Reflection.Property`2.op_Implicit(DotNext.Reflection.Property{`0,`1})~DotNext.Reflection.MemberGetter{`0,`1}">Implicit(Property&lt;T, TValue&gt; to MemberGetter&lt;T, TValue&gt;)</h4>
+  <div class="markdown level1 summary"><p>Obtains property getter in the form of the delegate instance.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static implicit operator MemberGetter&lt;T, TValue&gt;(Property&lt;T, TValue&gt; property)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Reflection.Property-2.html">Property</a>&lt;T, TValue&gt;</td>
+        <td><span class="parametername">property</span></td>
+        <td><p>The reflected property.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Reflection.MemberGetter-2.html">MemberGetter</a>&lt;T, TValue&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Property_2_op_Implicit_DotNext_Reflection_Property__0__1___DotNext_Reflection_MemberSetter__0__1_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Property%602.op_Implicit(DotNext.Reflection.Property%7B%600%2C%601%7D)~DotNext.Reflection.MemberSetter%7B%600%2C%601%7D%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L402">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Property_2_op_Implicit_" data-uid="DotNext.Reflection.Property`2.op_Implicit*"></a>
+  <h4 id="DotNext_Reflection_Property_2_op_Implicit_DotNext_Reflection_Property__0__1___DotNext_Reflection_MemberSetter__0__1_" data-uid="DotNext.Reflection.Property`2.op_Implicit(DotNext.Reflection.Property{`0,`1})~DotNext.Reflection.MemberSetter{`0,`1}">Implicit(Property&lt;T, TValue&gt; to MemberSetter&lt;T, TValue&gt;)</h4>
+  <div class="markdown level1 summary"><p>Obtains property setter in the form of the delegate instance.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static implicit operator MemberSetter&lt;T, TValue&gt;(Property&lt;T, TValue&gt; property)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Reflection.Property-2.html">Property</a>&lt;T, TValue&gt;</td>
+        <td><span class="parametername">property</span></td>
+        <td><p>The reflected property.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Reflection.MemberSetter-2.html">MemberSetter</a>&lt;T, TValue&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">System.IEquatable&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Reflection.IProperty-2.html">IProperty&lt;T, TValue&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Reflection.IProperty.html">IProperty</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Reflection.IMember-1.html">IMember&lt;TMember&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.icustomattributeprovider">System.Reflection.ICustomAttributeProvider</a>
+  </div>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireUpgradeableReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireUpgradeableReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_GetUserData__1___0_">ObjectExtensions.GetUserData&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0_System_Collections_Generic_IEnumerable___0__">ObjectExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, T[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2____1____2__">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, Func&lt;T, TResult1&gt;, Func&lt;T, TResult2&gt;, out TResult1, out TResult2)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2_____1____2__">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, ValueFunc&lt;T, TResult1&gt;, ValueFunc&lt;T, TResult2&gt;, out TResult1, out TResult2)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2__">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, Func&lt;T, TResult1&gt;, Func&lt;T, TResult2&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2___">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, ValueFunc&lt;T, TResult1&gt;, ValueFunc&lt;T, TResult2&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_As__1___0_">ObjectExtensions.As&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Reflection.CustomAttribute.html#DotNext_Reflection_CustomAttribute_IsDefined__1_System_Reflection_ICustomAttributeProvider_System_Boolean_">CustomAttribute.IsDefined&lt;TAttribute&gt;(ICustomAttributeProvider, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_">LockAcquisition.AcquireReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_System_TimeSpan_">LockAcquisition.AcquireReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_System_TimeSpan_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_System_TimeSpan_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Property_2.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Property%602%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L374" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In This Article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

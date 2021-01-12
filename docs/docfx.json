@@ -1,0 +1,88 @@
+{
+  "metadata": [
+    {
+      "src": [
+        {
+          "files": [ "**.csproj" ],
+          "src": "../src/DotNext/"
+        },
+        {
+          "files": [ "**.csproj" ],
+          "src": "../src/DotNext.IO/"
+        },
+        {
+          "files": [ "**.csproj" ],
+          "src": "../src/DotNext.Reflection/"
+        },
+        {
+          "files": [ "**.csproj" ],
+          "src": "../src/DotNext.Metaprogramming/"
+        },
+        {
+          "files": [ "**.csproj" ],
+          "src": "../src/DotNext.Unsafe/"
+        },
+        {
+          "files": [ "**.csproj" ],
+          "src": "../src/DotNext.Threading/"
+        },
+        {
+          "files": [ "**.csproj" ],
+          "src": "../src/cluster/DotNext.Net.Cluster"
+        },
+        {
+          "files": [ "**.csproj" ],
+          "src": "../src/cluster/DotNext.AspNetCore.Cluster/"
+        }
+      ],
+      "dest": "api"
+    }
+  ],
+  "build": {
+    "xrefService": ["https://xref.docs.microsoft.com/query?uid={uid}"],
+    "globalMetadata": {
+      "_appTitle": ".NEXT",
+      "_appLogoPath": "doc_logo.png",
+      "_appFaviconPath": "fav.ico"
+    },
+    "content": [
+      {
+        "files": [
+          "api/**.yml",
+          "api/index.md",
+          "features/**.md",
+          "features/**/toc.yml",
+          "toc.yml",
+          "*.md",
+          "migration/**.md",
+          "migration/toc.yml"
+        ]
+      }
+    ],
+    "resource": [
+      {
+        "files": [
+          "images/**"
+        ]
+      }
+    ],
+    "overwrite": [
+      {
+        "files": [
+          "apidoc/**.md"
+        ],
+        "exclude": [
+          "obj/**",
+          "_site/**"
+        ]
+      }
+    ],
+    "dest": "../",
+    "globalMetadataFiles": [],
+    "fileMetadataFiles": [],
+    "template": ["default", "templates/darkfx/darkfx"],
+    "postProcessors": [],
+    "markdownEngineName": "markdig",
+    "noLangKeyword": false
+  }
+}

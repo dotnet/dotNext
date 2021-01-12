@@ -1,0 +1,716 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Struct ArrayRental&lt;T&gt;
+   | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Struct ArrayRental&lt;T&gt;
+   | .NEXT ">
+    <meta name="generator" content="docfx 2.48.0.0">
+    
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Buffers.ArrayRental`1">
+  
+  
+  <h1 id="DotNext_Buffers_ArrayRental_1" data-uid="DotNext.Buffers.ArrayRental`1" class="text-break">Struct ArrayRental&lt;T&gt;
+  </h1>
+  <div class="markdown level0 summary"><p>Represents array obtained from array pool.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><span class="xref">IDisposable</span></div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Buffers.html">DotNext.Buffers</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.dll</h6>
+  <h5 id="DotNext_Buffers_ArrayRental_1_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public struct ArrayRental&lt;T&gt; : IDisposable</code></pre>
+  </div>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>Type of array elements.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_ArrayRental_1__ctor__0___.md&amp;value=---%0Auid%3A%20DotNext.Buffers.ArrayRental%601.%23ctor(%600%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Buffers/ArrayRental.cs/#L64">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_ArrayRental_1__ctor_" data-uid="DotNext.Buffers.ArrayRental`1.#ctor*"></a>
+  <h4 id="DotNext_Buffers_ArrayRental_1__ctor__0___" data-uid="DotNext.Buffers.ArrayRental`1.#ctor(`0[])">ArrayRental(T[])</h4>
+  <div class="markdown level1 summary"><p>Rents the array.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ArrayRental(T[] array)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>T[]</td>
+        <td><span class="parametername">array</span></td>
+        <td><p>The array to rent.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_ArrayRental_1__ctor__0___System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.ArrayRental%601.%23ctor(%600%5B%5D%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Buffers/ArrayRental.cs/#L52">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_ArrayRental_1__ctor_" data-uid="DotNext.Buffers.ArrayRental`1.#ctor*"></a>
+  <h4 id="DotNext_Buffers_ArrayRental_1__ctor__0___System_Int32_" data-uid="DotNext.Buffers.ArrayRental`1.#ctor(`0[],System.Int32)">ArrayRental(T[], Int32)</h4>
+  <div class="markdown level1 summary"><p>Rents the array.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ArrayRental(T[] array, int length)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>T[]</td>
+        <td><span class="parametername">array</span></td>
+        <td><p>The array to rent.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">length</span></td>
+        <td><p>The length of the rented segment.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_ArrayRental_1__ctor_ArrayPool__0__System_Int32_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.ArrayRental%601.%23ctor(ArrayPool%7B%600%7D%2CSystem.Int32%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Buffers/ArrayRental.cs/#L26">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_ArrayRental_1__ctor_" data-uid="DotNext.Buffers.ArrayRental`1.#ctor*"></a>
+  <h4 id="DotNext_Buffers_ArrayRental_1__ctor_ArrayPool__0__System_Int32_System_Boolean_" data-uid="DotNext.Buffers.ArrayRental`1.#ctor(ArrayPool{`0},System.Int32,System.Boolean)">ArrayRental(ArrayPool&lt;T&gt;, Int32, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Obtains a new array from array pool.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ArrayRental(ArrayPool&lt;T&gt; pool, int minimumLength, bool clearArray = false)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ArrayPool</span>&lt;T&gt;</td>
+        <td><span class="parametername">pool</span></td>
+        <td><p>Array pool.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">minimumLength</span></td>
+        <td><p>The minimum length of the array.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">clearArray</span></td>
+        <td><p>Indicates whether the contents of the array should be cleared after calling of <a class="xref" href="DotNext.Buffers.ArrayRental-1.html#DotNext_Buffers_ArrayRental_1_Dispose">Dispose()</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_ArrayRental_1__ctor_System_Int32_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.ArrayRental%601.%23ctor(System.Int32%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Buffers/ArrayRental.cs/#L39">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_ArrayRental_1__ctor_" data-uid="DotNext.Buffers.ArrayRental`1.#ctor*"></a>
+  <h4 id="DotNext_Buffers_ArrayRental_1__ctor_System_Int32_System_Boolean_" data-uid="DotNext.Buffers.ArrayRental`1.#ctor(System.Int32,System.Boolean)">ArrayRental(Int32, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Obtains a new array from <see cref="!:ArrayPool&lt;T>.Shared"></see>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ArrayRental(int minimumLength, bool clearArray = false)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">minimumLength</span></td>
+        <td><p>The minimum length of the array.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">clearArray</span></td>
+        <td><p>Indicates whether the contents of the array should be cleared after calling of <a class="xref" href="DotNext.Buffers.ArrayRental-1.html#DotNext_Buffers_ArrayRental_1_Dispose">Dispose()</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_ArrayRental_1_IsEmpty.md&amp;value=---%0Auid%3A%20DotNext.Buffers.ArrayRental%601.IsEmpty%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Buffers/ArrayRental.cs/#L77">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_ArrayRental_1_IsEmpty_" data-uid="DotNext.Buffers.ArrayRental`1.IsEmpty*"></a>
+  <h4 id="DotNext_Buffers_ArrayRental_1_IsEmpty" data-uid="DotNext.Buffers.ArrayRental`1.IsEmpty">IsEmpty</h4>
+  <div class="markdown level1 summary"><p>Gets value indicating that this object is empty.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsEmpty { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_ArrayRental_1_Item_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.ArrayRental%601.Item(System.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Buffers/ArrayRental.cs/#L99">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_ArrayRental_1_Item_" data-uid="DotNext.Buffers.ArrayRental`1.Item*"></a>
+  <h4 id="DotNext_Buffers_ArrayRental_1_Item_System_Int64_" data-uid="DotNext.Buffers.ArrayRental`1.Item(System.Int64)">Item[Int64]</h4>
+  <div class="markdown level1 summary"><p>Gets the array element by its index.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public T this[long index] { get; }</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The index of the array element.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><p>The managed pointer to the array element.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_ArrayRental_1_Length.md&amp;value=---%0Auid%3A%20DotNext.Buffers.ArrayRental%601.Length%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Buffers/ArrayRental.cs/#L72">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_ArrayRental_1_Length_" data-uid="DotNext.Buffers.ArrayRental`1.Length*"></a>
+  <h4 id="DotNext_Buffers_ArrayRental_1_Length" data-uid="DotNext.Buffers.ArrayRental`1.Length">Length</h4>
+  <div class="markdown level1 summary"><p>Gets length of the rented array.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int Length { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_ArrayRental_1_Memory.md&amp;value=---%0Auid%3A%20DotNext.Buffers.ArrayRental%601.Memory%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Buffers/ArrayRental.cs/#L82">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_ArrayRental_1_Memory_" data-uid="DotNext.Buffers.ArrayRental`1.Memory*"></a>
+  <h4 id="DotNext_Buffers_ArrayRental_1_Memory" data-uid="DotNext.Buffers.ArrayRental`1.Memory">Memory</h4>
+  <div class="markdown level1 summary"><p>Gets the memory associated with the rented array.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Memory&lt;T&gt; Memory { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Memory</span>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_ArrayRental_1_Segment.md&amp;value=---%0Auid%3A%20DotNext.Buffers.ArrayRental%601.Segment%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Buffers/ArrayRental.cs/#L92">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_ArrayRental_1_Segment_" data-uid="DotNext.Buffers.ArrayRental`1.Segment*"></a>
+  <h4 id="DotNext_Buffers_ArrayRental_1_Segment" data-uid="DotNext.Buffers.ArrayRental`1.Segment">Segment</h4>
+  <div class="markdown level1 summary"><p>Gets the rented array.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ArraySegment&lt;T&gt; Segment { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ArraySegment</span>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_ArrayRental_1_Span.md&amp;value=---%0Auid%3A%20DotNext.Buffers.ArrayRental%601.Span%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Buffers/ArrayRental.cs/#L87">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_ArrayRental_1_Span_" data-uid="DotNext.Buffers.ArrayRental`1.Span*"></a>
+  <h4 id="DotNext_Buffers_ArrayRental_1_Span" data-uid="DotNext.Buffers.ArrayRental`1.Span">Span</h4>
+  <div class="markdown level1 summary"><p>Gets the span of array elements.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Span&lt;T&gt; Span { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">DotNext.Span</span>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_ArrayRental_1_Dispose.md&amp;value=---%0Auid%3A%20DotNext.Buffers.ArrayRental%601.Dispose%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Buffers/ArrayRental.cs/#L137">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_ArrayRental_1_Dispose_" data-uid="DotNext.Buffers.ArrayRental`1.Dispose*"></a>
+  <h4 id="DotNext_Buffers_ArrayRental_1_Dispose" data-uid="DotNext.Buffers.ArrayRental`1.Dispose">Dispose()</h4>
+  <div class="markdown level1 summary"><p>Returns the array back to the pool.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_ArrayRental_1_GetPinnableReference.md&amp;value=---%0Auid%3A%20DotNext.Buffers.ArrayRental%601.GetPinnableReference%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Buffers/ArrayRental.cs/#L105">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_ArrayRental_1_GetPinnableReference_" data-uid="DotNext.Buffers.ArrayRental`1.GetPinnableReference*"></a>
+  <h4 id="DotNext_Buffers_ArrayRental_1_GetPinnableReference" data-uid="DotNext.Buffers.ArrayRental`1.GetPinnableReference">GetPinnableReference()</h4>
+  <div class="markdown level1 summary"><p>Obtains managed pointer to the first element of the rented array.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public T GetPinnableReference()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><p>The managed pointer to the first element of the rented array.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_ArrayRental_1_Slice_System_Int32_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.ArrayRental%601.Slice(System.Int32%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Buffers/ArrayRental.cs/#L115">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_ArrayRental_1_Slice_" data-uid="DotNext.Buffers.ArrayRental`1.Slice*"></a>
+  <h4 id="DotNext_Buffers_ArrayRental_1_Slice_System_Int32_System_Int32_" data-uid="DotNext.Buffers.ArrayRental`1.Slice(System.Int32,System.Int32)">Slice(Int32, Int32)</h4>
+  <div class="markdown level1 summary"><p>Returns a slice of the rented array.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ArraySegment&lt;T&gt; Slice(int offset, int count)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">offset</span></td>
+        <td><p>The zero-based index of the first element in the array.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">count</span></td>
+        <td><p>The number of elements in the range.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ArraySegment</span>&lt;T&gt;</td>
+        <td><p>The segment of the rented array.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_ArrayRental_1_ToString.md&amp;value=---%0Auid%3A%20DotNext.Buffers.ArrayRental%601.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Buffers/ArrayRental.cs/#L132">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_ArrayRental_1_ToString_" data-uid="DotNext.Buffers.ArrayRental`1.ToString*"></a>
+  <h4 id="DotNext_Buffers_ArrayRental_1_ToString" data-uid="DotNext.Buffers.ArrayRental`1.ToString">ToString()</h4>
+  <div class="markdown level1 summary"><p>Gets textual representation of the rented memory.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override string ToString()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><p>The textual representation of the rented memory.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="operators">Operators
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_ArrayRental_1_op_Explicit_DotNext_Buffers_ArrayRental__0_____0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.ArrayRental%601.op_Explicit(DotNext.Buffers.ArrayRental%7B%600%7D%40)~%600%5B%5D%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Buffers/ArrayRental.cs/#L126">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_ArrayRental_1_op_Explicit_" data-uid="DotNext.Buffers.ArrayRental`1.op_Explicit*"></a>
+  <h4 id="DotNext_Buffers_ArrayRental_1_op_Explicit_DotNext_Buffers_ArrayRental__0_____0__" data-uid="DotNext.Buffers.ArrayRental`1.op_Explicit(DotNext.Buffers.ArrayRental{`0}@)~`0[]">Explicit(ArrayRental&lt;T&gt; to T[])</h4>
+  <div class="markdown level1 summary"><p>Obtains rented array.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static explicit operator T[](in ArrayRental&lt;T&gt; rental)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.ArrayRental-1.html">ArrayRental</a>&lt;T&gt;</td>
+        <td><span class="parametername">rental</span></td>
+        <td><p>Array rental.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>T[]</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Buffers_ArrayRental_1_op_Explicit_DotNext_Buffers_ArrayRental__0_____0___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This operation is potentially unsafe because the length of
+the returned array may differs from <a class="xref" href="DotNext.Buffers.ArrayRental-1.html#DotNext_Buffers_ArrayRental_1_Length">Length</a>.</p>
+</div>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <span class="xref">IDisposable</span>
+  </div>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_ArrayRental_1.md&amp;value=---%0Auid%3A%20DotNext.Buffers.ArrayRental%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Buffers/ArrayRental.cs/#L12" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

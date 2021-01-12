@@ -1,0 +1,133 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Ranges and Indicies | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Ranges and Indicies | .NEXT ">
+    <meta name="generator" content="docfx 2.56.5.0">
+    
+    <link rel="shortcut icon" href="../../fav.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="ranges-and-indicies">Ranges and Indicies</h1>
+
+<p>C# 8 introduced <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/proposals/csharp-8.0/ranges">ranges and indicies</a> for slicing and indexing collections at runtime. These operators are missing in Expression Trees. To bridge the gap, .NEXT Metaprogramming library offers the following expressions:</p>
+<ul>
+<li><a href="../../api/DotNext.Linq.Expressions.ItemIndexExpression.html">Index Expression</a> allows to construct expression of type <a href="https://docs.microsoft.com/en-us/dotnet/api/system.index">Index</a></li>
+<li><a href="../../api/DotNext.Linq.Expressions.RangeExpression.html">Range Expression</a> allows to construct expression of type <a href="https://docs.microsoft.com/en-us/dotnet/api/system.range">Range</a></li>
+<li><a href="../../api/DotNext.Linq.Expressions.CollectionAccessExpression.html">Element Access Expression</a> allows to construct access to the individual element of the arbitrary collection using <a href="https://docs.microsoft.com/en-us/dotnet/api/system.index">Index</a>. This type of expression is based on <em>Index Expression</em></li>
+<li><a href="../../api/DotNext.Linq.Expressions.SliceExpression.html">Slice Expression</a> allows to obtain a slice of the arbitrary collection using <a href="https://docs.microsoft.com/en-us/dotnet/api/system.range">Range</a>. This type of expression is based on <em>Range Expression</em>.</li>
+</ul>
+<p><em>Element Access</em> and <em>Slice</em> expressions follow the same rules as described <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/proposals/csharp-8.0/ranges">here</a> for C# language so library types such as one-dimensional arrays and strings are supported out-of-the-box.</p>
+<p>The following example demonstrates how to obtain individual character from string and slice the string:</p>
+<pre><code class="lang-csharp">using DotNext.Linq.Expressions;
+using System.Linq.Expressions;
+
+Expression stringValue = &quot;Hello, world&quot;.Const();
+var character = stringValue.ElementAt(2.Index(false));
+var slice = stringValue.Slice(start: 0.Index(false), end: 1.Index(true));
+
+//the code is equivalent to
+var stringValue = &quot;Hello, world&quot;;
+var character = stringValue[new Index(2, false)];
+var slice = stringValue[0..^1];
+</code></pre>
+<p><code>Index</code>, <code>ElementAt</code> and <code>Slice</code> are extension methods from <a href="../../api/DotNext.Linq.Expressions.ExpressionBuilder.html">ExpressionBuilder</a> simplifying construction of <em>Index Expressio</em>, <em>Element Access Expression</em> and <em>Slice Expression</em> respectively.</p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/docs/features/metaprogramming/range.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In This Article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,2063 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class UnmanagedFunction
+   | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class UnmanagedFunction
+   | .NEXT ">
+    <meta name="generator" content="docfx 2.56.5.0">
+    
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction">
+  
+  
+  <h1 id="DotNext_Runtime_InteropServices_UnmanagedFunction" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction" class="text-break">Class UnmanagedFunction
+  </h1>
+  <div class="markdown level0 summary"><p>Allows to call unmanaged functions with <span class="xref">langword_csharp_void</span> return type.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level1"><span class="xref">UnmanagedFunction</span></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Runtime.InteropServices.html">DotNext.Runtime.InteropServices</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.Unsafe.dll</h6>
+  <h5 id="DotNext_Runtime_InteropServices_UnmanagedFunction_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use function pointers in C# 9&quot;)]
+public static class UnmanagedFunction</code></pre>
+  </div>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_Cdecl_System_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction.Cdecl(System.IntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L21">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedFunction_Cdecl_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction.Cdecl*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_Cdecl_System_IntPtr_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction.Cdecl(System.IntPtr)">Cdecl(IntPtr)</h4>
+  <div class="markdown level1 summary"><p>Invokes unmanaged function with CDECL calling convention by its pointer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void Cdecl(IntPtr functionPtr)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">functionPtr</span></td>
+        <td><p>The pointer to the unmanaged function.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_Cdecl__1_System_IntPtr___0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction.Cdecl%60%601(System.IntPtr%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L35">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedFunction_Cdecl_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction.Cdecl*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_Cdecl__1_System_IntPtr___0_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction.Cdecl``1(System.IntPtr,``0)">Cdecl&lt;T&gt;(IntPtr, T)</h4>
+  <div class="markdown level1 summary"><p>Invokes unmanaged function with CDECL calling convention by its pointer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void Cdecl&lt;T&gt;(IntPtr functionPtr, T arg)
+
+    where T : struct</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">functionPtr</span></td>
+        <td><p>The pointer to the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">arg</span></td>
+        <td><p>The first argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of the first argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_Cdecl__2_System_IntPtr___0___1_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction.Cdecl%60%602(System.IntPtr%2C%60%600%2C%60%601)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L53">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedFunction_Cdecl_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction.Cdecl*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_Cdecl__2_System_IntPtr___0___1_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction.Cdecl``2(System.IntPtr,``0,``1)">Cdecl&lt;T1, T2&gt;(IntPtr, T1, T2)</h4>
+  <div class="markdown level1 summary"><p>Invokes unmanaged function with CDECL calling convention by its pointer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void Cdecl&lt;T1, T2&gt;(IntPtr functionPtr, T1 arg1, T2 arg2)
+
+    where T1 : struct where T2 : struct</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">functionPtr</span></td>
+        <td><p>The pointer to the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T1</span></td>
+        <td><span class="parametername">arg1</span></td>
+        <td><p>The first argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T2</span></td>
+        <td><span class="parametername">arg2</span></td>
+        <td><p>The second argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T1</span></td>
+        <td><p>The type of the first argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T2</span></td>
+        <td><p>The type of the second argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_Cdecl__3_System_IntPtr___0___1___2_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction.Cdecl%60%603(System.IntPtr%2C%60%600%2C%60%601%2C%60%602)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L75">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedFunction_Cdecl_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction.Cdecl*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_Cdecl__3_System_IntPtr___0___1___2_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction.Cdecl``3(System.IntPtr,``0,``1,``2)">Cdecl&lt;T1, T2, T3&gt;(IntPtr, T1, T2, T3)</h4>
+  <div class="markdown level1 summary"><p>Invokes unmanaged function with CDECL calling convention by its pointer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void Cdecl&lt;T1, T2, T3&gt;(IntPtr functionPtr, T1 arg1, T2 arg2, T3 arg3)
+
+    where T1 : struct where T2 : struct where T3 : struct</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">functionPtr</span></td>
+        <td><p>The pointer to the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T1</span></td>
+        <td><span class="parametername">arg1</span></td>
+        <td><p>The first argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T2</span></td>
+        <td><span class="parametername">arg2</span></td>
+        <td><p>The second argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T3</span></td>
+        <td><span class="parametername">arg3</span></td>
+        <td><p>The third argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T1</span></td>
+        <td><p>The type of the first argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T2</span></td>
+        <td><p>The type of the second argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T3</span></td>
+        <td><p>The type of the third argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_Cdecl__4_System_IntPtr___0___1___2___3_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction.Cdecl%60%604(System.IntPtr%2C%60%600%2C%60%601%2C%60%602%2C%60%603)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L101">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedFunction_Cdecl_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction.Cdecl*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_Cdecl__4_System_IntPtr___0___1___2___3_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction.Cdecl``4(System.IntPtr,``0,``1,``2,``3)">Cdecl&lt;T1, T2, T3, T4&gt;(IntPtr, T1, T2, T3, T4)</h4>
+  <div class="markdown level1 summary"><p>Invokes unmanaged function with CDECL calling convention by its pointer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void Cdecl&lt;T1, T2, T3, T4&gt;(IntPtr functionPtr, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
+
+    where T1 : struct where T2 : struct where T3 : struct where T4 : struct</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">functionPtr</span></td>
+        <td><p>The pointer to the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T1</span></td>
+        <td><span class="parametername">arg1</span></td>
+        <td><p>The first argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T2</span></td>
+        <td><span class="parametername">arg2</span></td>
+        <td><p>The second argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T3</span></td>
+        <td><span class="parametername">arg3</span></td>
+        <td><p>The third argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T4</span></td>
+        <td><span class="parametername">arg4</span></td>
+        <td><p>The fourth argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T1</span></td>
+        <td><p>The type of the first argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T2</span></td>
+        <td><p>The type of the second argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T3</span></td>
+        <td><p>The type of the third argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T4</span></td>
+        <td><p>The type of the fourth argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_Cdecl__5_System_IntPtr___0___1___2___3___4_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction.Cdecl%60%605(System.IntPtr%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L131">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedFunction_Cdecl_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction.Cdecl*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_Cdecl__5_System_IntPtr___0___1___2___3___4_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction.Cdecl``5(System.IntPtr,``0,``1,``2,``3,``4)">Cdecl&lt;T1, T2, T3, T4, T5&gt;(IntPtr, T1, T2, T3, T4, T5)</h4>
+  <div class="markdown level1 summary"><p>Invokes unmanaged function with CDECL calling convention by its pointer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void Cdecl&lt;T1, T2, T3, T4, T5&gt;(IntPtr functionPtr, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
+
+    where T1 : struct where T2 : struct where T3 : struct where T4 : struct where T5 : struct</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">functionPtr</span></td>
+        <td><p>The pointer to the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T1</span></td>
+        <td><span class="parametername">arg1</span></td>
+        <td><p>The first argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T2</span></td>
+        <td><span class="parametername">arg2</span></td>
+        <td><p>The second argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T3</span></td>
+        <td><span class="parametername">arg3</span></td>
+        <td><p>The third argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T4</span></td>
+        <td><span class="parametername">arg4</span></td>
+        <td><p>The fourth argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T5</span></td>
+        <td><span class="parametername">arg5</span></td>
+        <td><p>The fifth argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T1</span></td>
+        <td><p>The type of the first argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T2</span></td>
+        <td><p>The type of the second argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T3</span></td>
+        <td><p>The type of the third argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T4</span></td>
+        <td><p>The type of the fourth argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T5</span></td>
+        <td><p>The type of the fifth argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_Cdecl__6_System_IntPtr___0___1___2___3___4___5_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction.Cdecl%60%606(System.IntPtr%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L165">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedFunction_Cdecl_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction.Cdecl*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_Cdecl__6_System_IntPtr___0___1___2___3___4___5_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction.Cdecl``6(System.IntPtr,``0,``1,``2,``3,``4,``5)">Cdecl&lt;T1, T2, T3, T4, T5, T6&gt;(IntPtr, T1, T2, T3, T4, T5, T6)</h4>
+  <div class="markdown level1 summary"><p>Invokes unmanaged function with CDECL calling convention by its pointer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void Cdecl&lt;T1, T2, T3, T4, T5, T6&gt;(IntPtr functionPtr, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6)
+
+    where T1 : struct where T2 : struct where T3 : struct where T4 : struct where T5 : struct where T6 : struct</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">functionPtr</span></td>
+        <td><p>The pointer to the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T1</span></td>
+        <td><span class="parametername">arg1</span></td>
+        <td><p>The first argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T2</span></td>
+        <td><span class="parametername">arg2</span></td>
+        <td><p>The second argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T3</span></td>
+        <td><span class="parametername">arg3</span></td>
+        <td><p>The third argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T4</span></td>
+        <td><span class="parametername">arg4</span></td>
+        <td><p>The fourth argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T5</span></td>
+        <td><span class="parametername">arg5</span></td>
+        <td><p>The fifth argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T6</span></td>
+        <td><span class="parametername">arg6</span></td>
+        <td><p>The sixth argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T1</span></td>
+        <td><p>The type of the first argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T2</span></td>
+        <td><p>The type of the second argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T3</span></td>
+        <td><p>The type of the third argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T4</span></td>
+        <td><p>The type of the fourth argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T5</span></td>
+        <td><p>The type of the fifth argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T6</span></td>
+        <td><p>The type of the sixth argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_Cdecl__7_System_IntPtr___0___1___2___3___4___5___6_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction.Cdecl%60%607(System.IntPtr%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L203">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedFunction_Cdecl_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction.Cdecl*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_Cdecl__7_System_IntPtr___0___1___2___3___4___5___6_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction.Cdecl``7(System.IntPtr,``0,``1,``2,``3,``4,``5,``6)">Cdecl&lt;T1, T2, T3, T4, T5, T6, T7&gt;(IntPtr, T1, T2, T3, T4, T5, T6, T7)</h4>
+  <div class="markdown level1 summary"><p>Invokes unmanaged function with CDECL calling convention by its pointer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void Cdecl&lt;T1, T2, T3, T4, T5, T6, T7&gt;(IntPtr functionPtr, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7)
+
+    where T1 : struct where T2 : struct where T3 : struct where T4 : struct where T5 : struct where T6 : struct where T7 : struct</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">functionPtr</span></td>
+        <td><p>The pointer to the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T1</span></td>
+        <td><span class="parametername">arg1</span></td>
+        <td><p>The first argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T2</span></td>
+        <td><span class="parametername">arg2</span></td>
+        <td><p>The second argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T3</span></td>
+        <td><span class="parametername">arg3</span></td>
+        <td><p>The third argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T4</span></td>
+        <td><span class="parametername">arg4</span></td>
+        <td><p>The fourth argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T5</span></td>
+        <td><span class="parametername">arg5</span></td>
+        <td><p>The fifth argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T6</span></td>
+        <td><span class="parametername">arg6</span></td>
+        <td><p>The sixth argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T7</span></td>
+        <td><span class="parametername">arg7</span></td>
+        <td><p>The seventh argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T1</span></td>
+        <td><p>The type of the first argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T2</span></td>
+        <td><p>The type of the second argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T3</span></td>
+        <td><p>The type of the third argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T4</span></td>
+        <td><p>The type of the fourth argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T5</span></td>
+        <td><p>The type of the fifth argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T6</span></td>
+        <td><p>The type of the sixth argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T7</span></td>
+        <td><p>The type of the seventh argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_Cdecl__8_System_IntPtr___0___1___2___3___4___5___6___7_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction.Cdecl%60%608(System.IntPtr%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L245">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedFunction_Cdecl_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction.Cdecl*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_Cdecl__8_System_IntPtr___0___1___2___3___4___5___6___7_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction.Cdecl``8(System.IntPtr,``0,``1,``2,``3,``4,``5,``6,``7)">Cdecl&lt;T1, T2, T3, T4, T5, T6, T7, T8&gt;(IntPtr, T1, T2, T3, T4, T5, T6, T7, T8)</h4>
+  <div class="markdown level1 summary"><p>Invokes unmanaged function with CDECL calling convention by its pointer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void Cdecl&lt;T1, T2, T3, T4, T5, T6, T7, T8&gt;(IntPtr functionPtr, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8)
+
+    where T1 : struct where T2 : struct where T3 : struct where T4 : struct where T5 : struct where T6 : struct where T7 : struct where T8 : struct</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">functionPtr</span></td>
+        <td><p>The pointer to the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T1</span></td>
+        <td><span class="parametername">arg1</span></td>
+        <td><p>The first argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T2</span></td>
+        <td><span class="parametername">arg2</span></td>
+        <td><p>The second argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T3</span></td>
+        <td><span class="parametername">arg3</span></td>
+        <td><p>The third argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T4</span></td>
+        <td><span class="parametername">arg4</span></td>
+        <td><p>The fourth argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T5</span></td>
+        <td><span class="parametername">arg5</span></td>
+        <td><p>The fifth argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T6</span></td>
+        <td><span class="parametername">arg6</span></td>
+        <td><p>The sixth argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T7</span></td>
+        <td><span class="parametername">arg7</span></td>
+        <td><p>The seventh argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T8</span></td>
+        <td><span class="parametername">arg8</span></td>
+        <td><p>The eighth argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T1</span></td>
+        <td><p>The type of the first argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T2</span></td>
+        <td><p>The type of the second argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T3</span></td>
+        <td><p>The type of the third argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T4</span></td>
+        <td><p>The type of the fourth argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T5</span></td>
+        <td><p>The type of the fifth argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T6</span></td>
+        <td><p>The type of the sixth argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T7</span></td>
+        <td><p>The type of the seventh argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T8</span></td>
+        <td><p>The type of the eighth argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_Cdecl__9_System_IntPtr___0___1___2___3___4___5___6___7___8_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction.Cdecl%60%609(System.IntPtr%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2C%60%608)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L291">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedFunction_Cdecl_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction.Cdecl*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_Cdecl__9_System_IntPtr___0___1___2___3___4___5___6___7___8_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction.Cdecl``9(System.IntPtr,``0,``1,``2,``3,``4,``5,``6,``7,``8)">Cdecl&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9&gt;(IntPtr, T1, T2, T3, T4, T5, T6, T7, T8, T9)</h4>
+  <div class="markdown level1 summary"><p>Invokes unmanaged function with CDECL calling convention by its pointer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void Cdecl&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9&gt;(IntPtr functionPtr, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9)
+
+    where T1 : struct where T2 : struct where T3 : struct where T4 : struct where T5 : struct where T6 : struct where T7 : struct where T8 : struct where T9 : struct</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">functionPtr</span></td>
+        <td><p>The pointer to the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T1</span></td>
+        <td><span class="parametername">arg1</span></td>
+        <td><p>The first argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T2</span></td>
+        <td><span class="parametername">arg2</span></td>
+        <td><p>The second argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T3</span></td>
+        <td><span class="parametername">arg3</span></td>
+        <td><p>The third argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T4</span></td>
+        <td><span class="parametername">arg4</span></td>
+        <td><p>The fourth argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T5</span></td>
+        <td><span class="parametername">arg5</span></td>
+        <td><p>The fifth argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T6</span></td>
+        <td><span class="parametername">arg6</span></td>
+        <td><p>The sixth argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T7</span></td>
+        <td><span class="parametername">arg7</span></td>
+        <td><p>The seventh argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T8</span></td>
+        <td><span class="parametername">arg8</span></td>
+        <td><p>The eighth argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T9</span></td>
+        <td><span class="parametername">arg9</span></td>
+        <td><p>The ninth argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T1</span></td>
+        <td><p>The type of the first argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T2</span></td>
+        <td><p>The type of the second argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T3</span></td>
+        <td><p>The type of the third argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T4</span></td>
+        <td><p>The type of the fourth argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T5</span></td>
+        <td><p>The type of the fifth argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T6</span></td>
+        <td><p>The type of the sixth argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T7</span></td>
+        <td><p>The type of the seventh argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T8</span></td>
+        <td><p>The type of the eighth argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T9</span></td>
+        <td><p>The type of the ninth argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_StdCall_System_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction.StdCall(System.IntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L321">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedFunction_StdCall_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction.StdCall*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_StdCall_System_IntPtr_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction.StdCall(System.IntPtr)">StdCall(IntPtr)</h4>
+  <div class="markdown level1 summary"><p>Invokes unmanaged function with STDCALL calling convention by its pointer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void StdCall(IntPtr functionPtr)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">functionPtr</span></td>
+        <td><p>The pointer to the unmanaged function.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_StdCall__1_System_IntPtr___0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction.StdCall%60%601(System.IntPtr%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L335">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedFunction_StdCall_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction.StdCall*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_StdCall__1_System_IntPtr___0_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction.StdCall``1(System.IntPtr,``0)">StdCall&lt;T&gt;(IntPtr, T)</h4>
+  <div class="markdown level1 summary"><p>Invokes unmanaged function with STDCALL calling convention by its pointer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void StdCall&lt;T&gt;(IntPtr functionPtr, T arg)
+
+    where T : struct</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">functionPtr</span></td>
+        <td><p>The pointer to the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">arg</span></td>
+        <td><p>The first argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of the first argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_StdCall__2_System_IntPtr___0___1_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction.StdCall%60%602(System.IntPtr%2C%60%600%2C%60%601)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L353">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedFunction_StdCall_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction.StdCall*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_StdCall__2_System_IntPtr___0___1_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction.StdCall``2(System.IntPtr,``0,``1)">StdCall&lt;T1, T2&gt;(IntPtr, T1, T2)</h4>
+  <div class="markdown level1 summary"><p>Invokes unmanaged function with STDCALL calling convention by its pointer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void StdCall&lt;T1, T2&gt;(IntPtr functionPtr, T1 arg1, T2 arg2)
+
+    where T1 : struct where T2 : struct</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">functionPtr</span></td>
+        <td><p>The pointer to the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T1</span></td>
+        <td><span class="parametername">arg1</span></td>
+        <td><p>The first argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T2</span></td>
+        <td><span class="parametername">arg2</span></td>
+        <td><p>The second argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T1</span></td>
+        <td><p>The type of the first argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T2</span></td>
+        <td><p>The type of the second argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_StdCall__3_System_IntPtr___0___1___2_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction.StdCall%60%603(System.IntPtr%2C%60%600%2C%60%601%2C%60%602)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L375">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedFunction_StdCall_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction.StdCall*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_StdCall__3_System_IntPtr___0___1___2_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction.StdCall``3(System.IntPtr,``0,``1,``2)">StdCall&lt;T1, T2, T3&gt;(IntPtr, T1, T2, T3)</h4>
+  <div class="markdown level1 summary"><p>Invokes unmanaged function with STDCALL calling convention by its pointer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void StdCall&lt;T1, T2, T3&gt;(IntPtr functionPtr, T1 arg1, T2 arg2, T3 arg3)
+
+    where T1 : struct where T2 : struct where T3 : struct</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">functionPtr</span></td>
+        <td><p>The pointer to the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T1</span></td>
+        <td><span class="parametername">arg1</span></td>
+        <td><p>The first argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T2</span></td>
+        <td><span class="parametername">arg2</span></td>
+        <td><p>The second argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T3</span></td>
+        <td><span class="parametername">arg3</span></td>
+        <td><p>The third argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T1</span></td>
+        <td><p>The type of the first argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T2</span></td>
+        <td><p>The type of the second argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T3</span></td>
+        <td><p>The type of the third argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_StdCall__4_System_IntPtr___0___1___2___3_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction.StdCall%60%604(System.IntPtr%2C%60%600%2C%60%601%2C%60%602%2C%60%603)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L401">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedFunction_StdCall_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction.StdCall*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_StdCall__4_System_IntPtr___0___1___2___3_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction.StdCall``4(System.IntPtr,``0,``1,``2,``3)">StdCall&lt;T1, T2, T3, T4&gt;(IntPtr, T1, T2, T3, T4)</h4>
+  <div class="markdown level1 summary"><p>Invokes unmanaged function with STDCALL calling convention by its pointer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void StdCall&lt;T1, T2, T3, T4&gt;(IntPtr functionPtr, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
+
+    where T1 : struct where T2 : struct where T3 : struct where T4 : struct</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">functionPtr</span></td>
+        <td><p>The pointer to the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T1</span></td>
+        <td><span class="parametername">arg1</span></td>
+        <td><p>The first argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T2</span></td>
+        <td><span class="parametername">arg2</span></td>
+        <td><p>The second argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T3</span></td>
+        <td><span class="parametername">arg3</span></td>
+        <td><p>The third argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T4</span></td>
+        <td><span class="parametername">arg4</span></td>
+        <td><p>The fourth argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T1</span></td>
+        <td><p>The type of the first argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T2</span></td>
+        <td><p>The type of the second argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T3</span></td>
+        <td><p>The type of the third argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T4</span></td>
+        <td><p>The type of the fourth argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_StdCall__5_System_IntPtr___0___1___2___3___4_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction.StdCall%60%605(System.IntPtr%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L431">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedFunction_StdCall_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction.StdCall*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_StdCall__5_System_IntPtr___0___1___2___3___4_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction.StdCall``5(System.IntPtr,``0,``1,``2,``3,``4)">StdCall&lt;T1, T2, T3, T4, T5&gt;(IntPtr, T1, T2, T3, T4, T5)</h4>
+  <div class="markdown level1 summary"><p>Invokes unmanaged function with STDCALL calling convention by its pointer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void StdCall&lt;T1, T2, T3, T4, T5&gt;(IntPtr functionPtr, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
+
+    where T1 : struct where T2 : struct where T3 : struct where T4 : struct where T5 : struct</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">functionPtr</span></td>
+        <td><p>The pointer to the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T1</span></td>
+        <td><span class="parametername">arg1</span></td>
+        <td><p>The first argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T2</span></td>
+        <td><span class="parametername">arg2</span></td>
+        <td><p>The second argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T3</span></td>
+        <td><span class="parametername">arg3</span></td>
+        <td><p>The third argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T4</span></td>
+        <td><span class="parametername">arg4</span></td>
+        <td><p>The fourth argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T5</span></td>
+        <td><span class="parametername">arg5</span></td>
+        <td><p>The fifth argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T1</span></td>
+        <td><p>The type of the first argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T2</span></td>
+        <td><p>The type of the second argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T3</span></td>
+        <td><p>The type of the third argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T4</span></td>
+        <td><p>The type of the fourth argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T5</span></td>
+        <td><p>The type of the fifth argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_StdCall__6_System_IntPtr___0___1___2___3___4___5_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction.StdCall%60%606(System.IntPtr%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L465">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedFunction_StdCall_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction.StdCall*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_StdCall__6_System_IntPtr___0___1___2___3___4___5_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction.StdCall``6(System.IntPtr,``0,``1,``2,``3,``4,``5)">StdCall&lt;T1, T2, T3, T4, T5, T6&gt;(IntPtr, T1, T2, T3, T4, T5, T6)</h4>
+  <div class="markdown level1 summary"><p>Invokes unmanaged function with STDCALL calling convention by its pointer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void StdCall&lt;T1, T2, T3, T4, T5, T6&gt;(IntPtr functionPtr, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6)
+
+    where T1 : struct where T2 : struct where T3 : struct where T4 : struct where T5 : struct where T6 : struct</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">functionPtr</span></td>
+        <td><p>The pointer to the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T1</span></td>
+        <td><span class="parametername">arg1</span></td>
+        <td><p>The first argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T2</span></td>
+        <td><span class="parametername">arg2</span></td>
+        <td><p>The second argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T3</span></td>
+        <td><span class="parametername">arg3</span></td>
+        <td><p>The third argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T4</span></td>
+        <td><span class="parametername">arg4</span></td>
+        <td><p>The fourth argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T5</span></td>
+        <td><span class="parametername">arg5</span></td>
+        <td><p>The fifth argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T6</span></td>
+        <td><span class="parametername">arg6</span></td>
+        <td><p>The sixth argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T1</span></td>
+        <td><p>The type of the first argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T2</span></td>
+        <td><p>The type of the second argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T3</span></td>
+        <td><p>The type of the third argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T4</span></td>
+        <td><p>The type of the fourth argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T5</span></td>
+        <td><p>The type of the fifth argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T6</span></td>
+        <td><p>The type of the sixth argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_StdCall__7_System_IntPtr___0___1___2___3___4___5___6_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction.StdCall%60%607(System.IntPtr%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L503">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedFunction_StdCall_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction.StdCall*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_StdCall__7_System_IntPtr___0___1___2___3___4___5___6_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction.StdCall``7(System.IntPtr,``0,``1,``2,``3,``4,``5,``6)">StdCall&lt;T1, T2, T3, T4, T5, T6, T7&gt;(IntPtr, T1, T2, T3, T4, T5, T6, T7)</h4>
+  <div class="markdown level1 summary"><p>Invokes unmanaged function with STDCALL calling convention by its pointer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void StdCall&lt;T1, T2, T3, T4, T5, T6, T7&gt;(IntPtr functionPtr, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7)
+
+    where T1 : struct where T2 : struct where T3 : struct where T4 : struct where T5 : struct where T6 : struct where T7 : struct</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">functionPtr</span></td>
+        <td><p>The pointer to the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T1</span></td>
+        <td><span class="parametername">arg1</span></td>
+        <td><p>The first argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T2</span></td>
+        <td><span class="parametername">arg2</span></td>
+        <td><p>The second argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T3</span></td>
+        <td><span class="parametername">arg3</span></td>
+        <td><p>The third argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T4</span></td>
+        <td><span class="parametername">arg4</span></td>
+        <td><p>The fourth argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T5</span></td>
+        <td><span class="parametername">arg5</span></td>
+        <td><p>The fifth argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T6</span></td>
+        <td><span class="parametername">arg6</span></td>
+        <td><p>The sixth argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T7</span></td>
+        <td><span class="parametername">arg7</span></td>
+        <td><p>The seventh argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T1</span></td>
+        <td><p>The type of the first argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T2</span></td>
+        <td><p>The type of the second argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T3</span></td>
+        <td><p>The type of the third argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T4</span></td>
+        <td><p>The type of the fourth argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T5</span></td>
+        <td><p>The type of the fifth argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T6</span></td>
+        <td><p>The type of the sixth argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T7</span></td>
+        <td><p>The type of the seventh argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_StdCall__8_System_IntPtr___0___1___2___3___4___5___6___7_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction.StdCall%60%608(System.IntPtr%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L545">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedFunction_StdCall_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction.StdCall*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_StdCall__8_System_IntPtr___0___1___2___3___4___5___6___7_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction.StdCall``8(System.IntPtr,``0,``1,``2,``3,``4,``5,``6,``7)">StdCall&lt;T1, T2, T3, T4, T5, T6, T7, T8&gt;(IntPtr, T1, T2, T3, T4, T5, T6, T7, T8)</h4>
+  <div class="markdown level1 summary"><p>Invokes unmanaged function with STDCALL calling convention by its pointer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void StdCall&lt;T1, T2, T3, T4, T5, T6, T7, T8&gt;(IntPtr functionPtr, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8)
+
+    where T1 : struct where T2 : struct where T3 : struct where T4 : struct where T5 : struct where T6 : struct where T7 : struct where T8 : struct</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">functionPtr</span></td>
+        <td><p>The pointer to the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T1</span></td>
+        <td><span class="parametername">arg1</span></td>
+        <td><p>The first argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T2</span></td>
+        <td><span class="parametername">arg2</span></td>
+        <td><p>The second argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T3</span></td>
+        <td><span class="parametername">arg3</span></td>
+        <td><p>The third argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T4</span></td>
+        <td><span class="parametername">arg4</span></td>
+        <td><p>The fourth argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T5</span></td>
+        <td><span class="parametername">arg5</span></td>
+        <td><p>The fifth argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T6</span></td>
+        <td><span class="parametername">arg6</span></td>
+        <td><p>The sixth argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T7</span></td>
+        <td><span class="parametername">arg7</span></td>
+        <td><p>The seventh argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T8</span></td>
+        <td><span class="parametername">arg8</span></td>
+        <td><p>The eighth argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T1</span></td>
+        <td><p>The type of the first argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T2</span></td>
+        <td><p>The type of the second argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T3</span></td>
+        <td><p>The type of the third argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T4</span></td>
+        <td><p>The type of the fourth argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T5</span></td>
+        <td><p>The type of the fifth argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T6</span></td>
+        <td><p>The type of the sixth argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T7</span></td>
+        <td><p>The type of the seventh argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T8</span></td>
+        <td><p>The type of the eighth argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_StdCall__9_System_IntPtr___0___1___2___3___4___5___6___7___8_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction.StdCall%60%609(System.IntPtr%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2C%60%608)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L591">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedFunction_StdCall_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction.StdCall*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_StdCall__9_System_IntPtr___0___1___2___3___4___5___6___7___8_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction.StdCall``9(System.IntPtr,``0,``1,``2,``3,``4,``5,``6,``7,``8)">StdCall&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9&gt;(IntPtr, T1, T2, T3, T4, T5, T6, T7, T8, T9)</h4>
+  <div class="markdown level1 summary"><p>Invokes unmanaged function with STDCALL calling convention by its pointer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void StdCall&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9&gt;(IntPtr functionPtr, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9)
+
+    where T1 : struct where T2 : struct where T3 : struct where T4 : struct where T5 : struct where T6 : struct where T7 : struct where T8 : struct where T9 : struct</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">functionPtr</span></td>
+        <td><p>The pointer to the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T1</span></td>
+        <td><span class="parametername">arg1</span></td>
+        <td><p>The first argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T2</span></td>
+        <td><span class="parametername">arg2</span></td>
+        <td><p>The second argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T3</span></td>
+        <td><span class="parametername">arg3</span></td>
+        <td><p>The third argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T4</span></td>
+        <td><span class="parametername">arg4</span></td>
+        <td><p>The fourth argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T5</span></td>
+        <td><span class="parametername">arg5</span></td>
+        <td><p>The fifth argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T6</span></td>
+        <td><span class="parametername">arg6</span></td>
+        <td><p>The sixth argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T7</span></td>
+        <td><span class="parametername">arg7</span></td>
+        <td><p>The seventh argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T8</span></td>
+        <td><span class="parametername">arg8</span></td>
+        <td><p>The eighth argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T9</span></td>
+        <td><span class="parametername">arg9</span></td>
+        <td><p>The ninth argument to be passed into the unmanaged function.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T1</span></td>
+        <td><p>The type of the first argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T2</span></td>
+        <td><p>The type of the second argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T3</span></td>
+        <td><p>The type of the third argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T4</span></td>
+        <td><p>The type of the fourth argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T5</span></td>
+        <td><p>The type of the fifth argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T6</span></td>
+        <td><p>The type of the sixth argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T7</span></td>
+        <td><p>The type of the seventh argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T8</span></td>
+        <td><p>The type of the eighth argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T9</span></td>
+        <td><p>The type of the ninth argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L14" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In This Article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

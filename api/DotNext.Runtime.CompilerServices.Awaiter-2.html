@@ -1,0 +1,470 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Struct Awaiter&lt;TAwaiter, TResult&gt;
+   | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Struct Awaiter&lt;TAwaiter, TResult&gt;
+   | .NEXT ">
+    <meta name="generator" content="docfx 2.56.5.0">
+    
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Runtime.CompilerServices.Awaiter`2">
+  
+  
+  <h1 id="DotNext_Runtime_CompilerServices_Awaiter_2" data-uid="DotNext.Runtime.CompilerServices.Awaiter`2" class="text-break">Struct Awaiter&lt;TAwaiter, TResult&gt;
+  </h1>
+  <div class="markdown level0 summary"><p>Represents awaiter pattern for type <code data-dev-comment-type="typeparamref" class="typeparamref">TAwaiter</code>
+with non-<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.void">Void</a> result.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.runtime.compilerservices.inotifycompletion">INotifyCompletion</a></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.equals#System_ValueType_Equals_System_Object_">ValueType.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.gethashcode#System_ValueType_GetHashCode">ValueType.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.tostring#System_ValueType_ToString">ValueType.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Runtime.CompilerServices.html">DotNext.Runtime.CompilerServices</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.Reflection.dll</h6>
+  <h5 id="DotNext_Runtime_CompilerServices_Awaiter_2_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public struct Awaiter&lt;TAwaiter, TResult&gt; : INotifyCompletion where TAwaiter : INotifyCompletion</code></pre>
+  </div>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TAwaiter</span></td>
+        <td><p>Any type implementing awaiter pattern.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">TResult</span></td>
+        <td><p>Type of asynchronous result.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_CompilerServices_Awaiter_2__ctor__0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.CompilerServices.Awaiter%602.%23ctor(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Runtime/CompilerServices/Awaiter.cs/#L34">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_CompilerServices_Awaiter_2__ctor_" data-uid="DotNext.Runtime.CompilerServices.Awaiter`2.#ctor*"></a>
+  <h4 id="DotNext_Runtime_CompilerServices_Awaiter_2__ctor__0_" data-uid="DotNext.Runtime.CompilerServices.Awaiter`2.#ctor(`0)">Awaiter(TAwaiter)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new generic awaiter object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Awaiter(TAwaiter awaiter)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TAwaiter</span></td>
+        <td><span class="parametername">awaiter</span></td>
+        <td><p>Underlying awaiter object.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_CompilerServices_Awaiter_2_IsCompleted.md&amp;value=---%0Auid%3A%20DotNext.Runtime.CompilerServices.Awaiter%602.IsCompleted%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Runtime/CompilerServices/Awaiter.cs/#L48">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_CompilerServices_Awaiter_2_IsCompleted_" data-uid="DotNext.Runtime.CompilerServices.Awaiter`2.IsCompleted*"></a>
+  <h4 id="DotNext_Runtime_CompilerServices_Awaiter_2_IsCompleted" data-uid="DotNext.Runtime.CompilerServices.Awaiter`2.IsCompleted">IsCompleted</h4>
+  <div class="markdown level1 summary"><p>Gets a value that indicates whether the asynchronous task has completed.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsCompleted { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_CompilerServices_Awaiter_2_GetResult.md&amp;value=---%0Auid%3A%20DotNext.Runtime.CompilerServices.Awaiter%602.GetResult%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Runtime/CompilerServices/Awaiter.cs/#L42">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_CompilerServices_Awaiter_2_GetResult_" data-uid="DotNext.Runtime.CompilerServices.Awaiter`2.GetResult*"></a>
+  <h4 id="DotNext_Runtime_CompilerServices_Awaiter_2_GetResult" data-uid="DotNext.Runtime.CompilerServices.Awaiter`2.GetResult">GetResult()</h4>
+  <div class="markdown level1 summary"><p>Ends the wait for the completion of the asynchronous task.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public TResult GetResult()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TResult</span></td>
+        <td><p>The result of the completed task.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.taskcanceledexception">TaskCanceledException</a></td>
+        <td><p>The task was cancelled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.exception">Exception</a></td>
+        <td><p>Task is in faulted state.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_CompilerServices_Awaiter_2_GetResult__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.CompilerServices.Awaiter%602.GetResult(%600%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Runtime/CompilerServices/Awaiter.cs/#L66">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_CompilerServices_Awaiter_2_GetResult_" data-uid="DotNext.Runtime.CompilerServices.Awaiter`2.GetResult*"></a>
+  <h4 id="DotNext_Runtime_CompilerServices_Awaiter_2_GetResult__0__" data-uid="DotNext.Runtime.CompilerServices.Awaiter`2.GetResult(`0@)">GetResult(TAwaiter)</h4>
+  <div class="markdown level1 summary"><p>Ends the wait for the completion of the asynchronous task.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static TResult GetResult(in TAwaiter awaiter)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TAwaiter</span></td>
+        <td><span class="parametername">awaiter</span></td>
+        <td><p>An object that waits for the completion of an asynchronous task.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TResult</span></td>
+        <td><p>The result of the completed task.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.taskcanceledexception">TaskCanceledException</a></td>
+        <td><p>The task was cancelled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.exception">Exception</a></td>
+        <td><p>Task is in faulted state.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="operators">Operators
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_CompilerServices_Awaiter_2_op_Implicit_DotNext_Runtime_CompilerServices_Awaiter__0__1_____0.md&amp;value=---%0Auid%3A%20DotNext.Runtime.CompilerServices.Awaiter%602.op_Implicit(DotNext.Runtime.CompilerServices.Awaiter%7B%600%2C%601%7D%40)~%600%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Runtime/CompilerServices/Awaiter.cs/#L57">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_CompilerServices_Awaiter_2_op_Implicit_" data-uid="DotNext.Runtime.CompilerServices.Awaiter`2.op_Implicit*"></a>
+  <h4 id="DotNext_Runtime_CompilerServices_Awaiter_2_op_Implicit_DotNext_Runtime_CompilerServices_Awaiter__0__1_____0" data-uid="DotNext.Runtime.CompilerServices.Awaiter`2.op_Implicit(DotNext.Runtime.CompilerServices.Awaiter{`0,`1}@)~`0">Implicit(Awaiter&lt;TAwaiter, TResult&gt; to TAwaiter)</h4>
+  <div class="markdown level1 summary"><p>Extracts underlying awaiter object from this wrapper.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static implicit operator TAwaiter(in Awaiter&lt;TAwaiter, TResult&gt; awaiter)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.CompilerServices.Awaiter-2.html">Awaiter</a>&lt;TAwaiter, TResult&gt;</td>
+        <td><span class="parametername">awaiter</span></td>
+        <td><p>Generic awaiter object.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TAwaiter</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="eii">Explicit Interface Implementations
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_CompilerServices_Awaiter_2_System_Runtime_CompilerServices_INotifyCompletion_OnCompleted_System_Action_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.CompilerServices.Awaiter%602.System%23Runtime%23CompilerServices%23INotifyCompletion%23OnCompleted(System.Action)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Runtime/CompilerServices/Awaiter.cs/#L51">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_CompilerServices_Awaiter_2_System_Runtime_CompilerServices_INotifyCompletion_OnCompleted_" data-uid="DotNext.Runtime.CompilerServices.Awaiter`2.System#Runtime#CompilerServices#INotifyCompletion#OnCompleted*"></a>
+  <h4 id="DotNext_Runtime_CompilerServices_Awaiter_2_System_Runtime_CompilerServices_INotifyCompletion_OnCompleted_System_Action_" data-uid="DotNext.Runtime.CompilerServices.Awaiter`2.System#Runtime#CompilerServices#INotifyCompletion#OnCompleted(System.Action)">INotifyCompletion.OnCompleted(Action)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">void INotifyCompletion.OnCompleted(Action continuation)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action">Action</a></td>
+        <td><span class="parametername">continuation</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.runtime.compilerservices.inotifycompletion">System.Runtime.CompilerServices.INotifyCompletion</a>
+  </div>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_Skip__2___0__System_Int32_">Sequence.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, Int32)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+  </div>
+  <h3 id="seealso">See Also</h3>
+  <div class="seealso">
+      <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;TResult&gt;</div>
+      <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.runtime.compilerservices.taskawaiter-1">TaskAwaiter</a>&lt;TResult&gt;</div>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_CompilerServices_Awaiter_2.md&amp;value=---%0Auid%3A%20DotNext.Runtime.CompilerServices.Awaiter%602%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Runtime/CompilerServices/Awaiter.cs/#L19" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In This Article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

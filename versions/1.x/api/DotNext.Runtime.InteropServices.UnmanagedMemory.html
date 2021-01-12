@@ -1,0 +1,752 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class UnmanagedMemory
+   | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class UnmanagedMemory
+   | .NEXT ">
+    <meta name="generator" content="docfx 2.48.0.0">
+    
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory">
+  
+  
+  <h1 id="DotNext_Runtime_InteropServices_UnmanagedMemory" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory" class="text-break">Class UnmanagedMemory
+  </h1>
+  <div class="markdown level0 summary"><p>Represents unstructured unmanaged memory.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level1"><a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemoryHandle.html">UnmanagedMemoryHandle</a></div>
+    <div class="level2"><span class="xref">UnmanagedMemory</span></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><span class="xref">ICloneable</span></div>
+    <div><span class="xref">IEquatable</span>&lt;<a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemoryHandle.html">UnmanagedMemoryHandle</a>&gt;</div>
+    <div><a class="xref" href="DotNext.Runtime.InteropServices.IUnmanagedMemory.html">IUnmanagedMemory</a></div>
+    <div><span class="xref">IDisposable</span></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemoryHandle.html#DotNext_Runtime_InteropServices_UnmanagedMemoryHandle_IsInvalid">UnmanagedMemoryHandle.IsInvalid</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemoryHandle.html#DotNext_Runtime_InteropServices_UnmanagedMemoryHandle_Clear">UnmanagedMemoryHandle.Clear()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemoryHandle.html#DotNext_Runtime_InteropServices_UnmanagedMemoryHandle_ReleaseHandle">UnmanagedMemoryHandle.ReleaseHandle()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemoryHandle.html#DotNext_Runtime_InteropServices_UnmanagedMemoryHandle_Pointer">UnmanagedMemoryHandle.Pointer</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemoryHandle.html#DotNext_Runtime_InteropServices_UnmanagedMemoryHandle_Bytes">UnmanagedMemoryHandle.Bytes</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemoryHandle.html#DotNext_Runtime_InteropServices_UnmanagedMemoryHandle_AsStream">UnmanagedMemoryHandle.AsStream()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemoryHandle.html#DotNext_Runtime_InteropServices_UnmanagedMemoryHandle_ToByteArray">UnmanagedMemoryHandle.ToByteArray()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemoryHandle.html#DotNext_Runtime_InteropServices_UnmanagedMemoryHandle_WriteTo_Stream_">UnmanagedMemoryHandle.WriteTo(Stream)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemoryHandle.html#DotNext_Runtime_InteropServices_UnmanagedMemoryHandle_ReadFrom_Stream_">UnmanagedMemoryHandle.ReadFrom(Stream)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemoryHandle.html#DotNext_Runtime_InteropServices_UnmanagedMemoryHandle_WriteToAsync_Stream_">UnmanagedMemoryHandle.WriteToAsync(Stream)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemoryHandle.html#DotNext_Runtime_InteropServices_UnmanagedMemoryHandle_ReadFromAsync_Stream_">UnmanagedMemoryHandle.ReadFromAsync(Stream)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemoryHandle.html#DotNext_Runtime_InteropServices_UnmanagedMemoryHandle_WriteTo_DotNext_Runtime_InteropServices_Pointer_System_Byte__">UnmanagedMemoryHandle.WriteTo(Pointer&lt;Byte&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemoryHandle.html#DotNext_Runtime_InteropServices_UnmanagedMemoryHandle_ReadFrom_DotNext_Runtime_InteropServices_Pointer_System_Byte__">UnmanagedMemoryHandle.ReadFrom(Pointer&lt;Byte&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemoryHandle.html#DotNext_Runtime_InteropServices_UnmanagedMemoryHandle_WriteTo_DotNext_Runtime_InteropServices_UnmanagedMemoryHandle_">UnmanagedMemoryHandle.WriteTo(UnmanagedMemoryHandle)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemoryHandle.html#DotNext_Runtime_InteropServices_UnmanagedMemoryHandle_BitwiseEquals_DotNext_Runtime_InteropServices_UnmanagedMemoryHandle_">UnmanagedMemoryHandle.BitwiseEquals(UnmanagedMemoryHandle)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemoryHandle.html#DotNext_Runtime_InteropServices_UnmanagedMemoryHandle_BitwiseCompare_DotNext_Runtime_InteropServices_UnmanagedMemoryHandle_">UnmanagedMemoryHandle.BitwiseCompare(UnmanagedMemoryHandle)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemoryHandle.html#DotNext_Runtime_InteropServices_UnmanagedMemoryHandle_Equals_DotNext_Runtime_InteropServices_UnmanagedMemoryHandle_">UnmanagedMemoryHandle.Equals(UnmanagedMemoryHandle)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemoryHandle.html#DotNext_Runtime_InteropServices_UnmanagedMemoryHandle_Equals_System_Object_">UnmanagedMemoryHandle.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemoryHandle.html#DotNext_Runtime_InteropServices_UnmanagedMemoryHandle_ToString">UnmanagedMemoryHandle.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemoryHandle.html#DotNext_Runtime_InteropServices_UnmanagedMemoryHandle_GetHashCode">UnmanagedMemoryHandle.GetHashCode()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Runtime.InteropServices.html">DotNext.Runtime.InteropServices</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.Unsafe.dll</h6>
+  <h5 id="DotNext_Runtime_InteropServices_UnmanagedMemory_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed class UnmanagedMemory : UnmanagedMemoryHandle, ICloneable, IEquatable&lt;UnmanagedMemoryHandle&gt;, IUnmanagedMemory, IDisposable</code></pre>
+  </div>
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory__ctor_System_Int64_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory.%23ctor(System.Int64%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L22">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedMemory__ctor_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory.#ctor*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory__ctor_System_Int64_System_Boolean_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory.#ctor(System.Int64,System.Boolean)">UnmanagedMemory(Int64, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Allocates the block of unmanaged memory.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public UnmanagedMemory(long size, bool zeroMem = true)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">size</span></td>
+        <td><p>The size of unmanaged memory to be allocated, in bytes.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">zeroMem</span></td>
+        <td><p>Sets all bytes of allocated memory to zero.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_Size.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory.Size%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L27">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_Size_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory.Size*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_Size" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory.Size">Size</h4>
+  <div class="markdown level1 summary"><p>Gets size of allocated unmanaged memory, in bytes.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override long Size { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemoryHandle.html#DotNext_Runtime_InteropServices_UnmanagedMemoryHandle_Size">UnmanagedMemoryHandle.Size</a></div>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_Copy.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory.Copy%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L54">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_Copy_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory.Copy*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_Copy" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory.Copy">Copy()</h4>
+  <div class="markdown level1 summary"><p>Creates bitwise copy of the unmanaged memory.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public UnmanagedMemory Copy()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemory.html">UnmanagedMemory</a></td>
+        <td><p>The independent copy of unmanaged memory.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_ReadFrom_System_Byte___.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory.ReadFrom(System.Byte%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L102">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_ReadFrom_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory.ReadFrom*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_ReadFrom_System_Byte___" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory.ReadFrom(System.Byte[])">ReadFrom(Byte[])</h4>
+  <div class="markdown level1 summary"><p>Copies bytes from the memory location to the managed array.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public long ReadFrom(byte[] source)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>[]</td>
+        <td><span class="parametername">source</span></td>
+        <td><p>The source array.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><p>The actual number of copied bytes.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_ReadFrom_System_Byte___System_Int64_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory.ReadFrom(System.Byte%5B%5D%2CSystem.Int64%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L84">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_ReadFrom_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory.ReadFrom*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_ReadFrom_System_Byte___System_Int64_System_Int64_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory.ReadFrom(System.Byte[],System.Int64,System.Int64)">ReadFrom(Byte[], Int64, Int64)</h4>
+  <div class="markdown level1 summary"><p>Copies bytes from the specified array into
+the memory block identified by this object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public long ReadFrom(byte[] source, long offset, long count)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>[]</td>
+        <td><span class="parametername">source</span></td>
+        <td><p>The source array.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">offset</span></td>
+        <td><p>The position in the source array from which copying begins.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">count</span></td>
+        <td><p>The number of bytes to be copied.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><p>Actual number of copied bytes.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_Reallocate_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory.Reallocate(System.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L34">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_Reallocate_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory.Reallocate*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_Reallocate_System_Int64_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory.Reallocate(System.Int64)">Reallocate(Int64)</h4>
+  <div class="markdown level1 summary"><p>Resizes a block of memory represented by this instance.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Reallocate(long size)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">size</span></td>
+        <td><p>The new number of bytes in the unmanaged array.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_WriteTo_System_Byte___.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory.WriteTo(System.Byte%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L93">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_WriteTo_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory.WriteTo*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_WriteTo_System_Byte___" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory.WriteTo(System.Byte[])">WriteTo(Byte[])</h4>
+  <div class="markdown level1 summary"><p>Copies bytes from the memory location to the managed array.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public long WriteTo(byte[] destination)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>[]</td>
+        <td><span class="parametername">destination</span></td>
+        <td><p>The destination array.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><p>The actual number of copied bytes.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_WriteTo_System_Byte___System_Int64_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory.WriteTo(System.Byte%5B%5D%2CSystem.Int64%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L73">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_WriteTo_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory.WriteTo*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_WriteTo_System_Byte___System_Int64_System_Int64_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory.WriteTo(System.Byte[],System.Int64,System.Int64)">WriteTo(Byte[], Int64, Int64)</h4>
+  <div class="markdown level1 summary"><p>Copies bytes from the memory location to the managed array.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public long WriteTo(byte[] destination, long offset, long count)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>[]</td>
+        <td><span class="parametername">destination</span></td>
+        <td><p>The destination array.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">offset</span></td>
+        <td><p>The position in the destination array from which copying begins.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">count</span></td>
+        <td><p>The number of bytes to be copied.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><p>The actual number of copied bytes.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="operators">Operators
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_op_Implicit_DotNext_Runtime_InteropServices_UnmanagedMemory__DotNext_Runtime_InteropServices_Pointer_System_Byte_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory.op_Implicit(DotNext.Runtime.InteropServices.UnmanagedMemory)~DotNext.Runtime.InteropServices.Pointer%7BSystem.Byte%7D%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L117">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_op_Implicit_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory.op_Implicit*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_op_Implicit_DotNext_Runtime_InteropServices_UnmanagedMemory__DotNext_Runtime_InteropServices_Pointer_System_Byte_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory.op_Implicit(DotNext.Runtime.InteropServices.UnmanagedMemory)~DotNext.Runtime.InteropServices.Pointer{System.Byte}">Implicit(UnmanagedMemory to Pointer&lt;Byte&gt;)</h4>
+  <div class="markdown level1 summary"><p>Gets a pointer to the allocated unmanaged memory.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static implicit operator Pointer&lt;byte&gt;(UnmanagedMemory owner)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemory.html">UnmanagedMemory</a></td>
+        <td><span class="parametername">owner</span></td>
+        <td><p>The owner of allocated unmanaged memory.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_op_Implicit_DotNext_Runtime_InteropServices_UnmanagedMemory__Span_System_Byte_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory.op_Implicit(DotNext.Runtime.InteropServices.UnmanagedMemory)~Span%7BSystem.Byte%7D%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L110">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_op_Implicit_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory.op_Implicit*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_op_Implicit_DotNext_Runtime_InteropServices_UnmanagedMemory__Span_System_Byte_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory.op_Implicit(DotNext.Runtime.InteropServices.UnmanagedMemory)~Span{System.Byte}">Implicit(UnmanagedMemory to Span&lt;Byte&gt;)</h4>
+  <div class="markdown level1 summary"><p>Gets a span from the specified instance.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static implicit operator Span&lt;byte&gt;(UnmanagedMemory owner)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemory.html">UnmanagedMemory</a></td>
+        <td><span class="parametername">owner</span></td>
+        <td><p>The owner of allocated unmanaged memory.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Span</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <span class="xref">ICloneable</span>
+  </div>
+  <div>
+      <span class="xref">IEquatable&lt;&gt;</span>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Runtime.InteropServices.IUnmanagedMemory.html">IUnmanagedMemory</a>
+  </div>
+  <div>
+      <span class="xref">IDisposable</span>
+  </div>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireUpgradeableReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireUpgradeableReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_GetUserData__1___0_">ObjectExtensions.GetUserData&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0_IEnumerable___0__">ObjectExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, T[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_Func___0___1__DotNext_Func___0___2____1____2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;, out R1, out R2)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2_____1____2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, ValueFunc&lt;T, R1&gt;, ValueFunc&lt;T, R2&gt;, out R1, out R2)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_Func___0___1__DotNext_Func___0___2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2___">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, ValueFunc&lt;T, R1&gt;, ValueFunc&lt;T, R2&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_">LockAcquisition.AcquireReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_TimeSpan_">LockAcquisition.AcquireReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_TimeSpan_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_TimeSpan_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L11" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

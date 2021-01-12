@@ -1,0 +1,918 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class RentedMemoryStream
+   | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class RentedMemoryStream
+   | .NEXT ">
+    <meta name="generator" content="docfx 2.56.5.0">
+    
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.IO.RentedMemoryStream">
+  
+  
+  <h1 id="DotNext_IO_RentedMemoryStream" data-uid="DotNext.IO.RentedMemoryStream" class="text-break">Class RentedMemoryStream
+  </h1>
+  <div class="markdown level0 summary"><p>Represents non-resizable memory stream
+which is backed by rented array of bytes.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level1"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.marshalbyrefobject">MarshalByRefObject</a></div>
+    <div class="level2"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a></div>
+    <div class="level3"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream">MemoryStream</a></div>
+    <div class="level4"><span class="xref">RentedMemoryStream</span></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a></div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
+    <div><a class="xref" href="DotNext.Buffers.IGrowableBuffer-1.html">IGrowableBuffer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.beginread#System_IO_MemoryStream_BeginRead_System_Byte___System_Int32_System_Int32_System_AsyncCallback_System_Object_">MemoryStream.BeginRead(Byte[], Int32, Int32, AsyncCallback, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.beginwrite#System_IO_MemoryStream_BeginWrite_System_Byte___System_Int32_System_Int32_System_AsyncCallback_System_Object_">MemoryStream.BeginWrite(Byte[], Int32, Int32, AsyncCallback, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.copyto#System_IO_MemoryStream_CopyTo_System_IO_Stream_System_Int32_">MemoryStream.CopyTo(Stream, Int32)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.copytoasync#System_IO_MemoryStream_CopyToAsync_System_IO_Stream_System_Int32_System_Threading_CancellationToken_">MemoryStream.CopyToAsync(Stream, Int32, CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.endread#System_IO_MemoryStream_EndRead_System_IAsyncResult_">MemoryStream.EndRead(IAsyncResult)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.endwrite#System_IO_MemoryStream_EndWrite_System_IAsyncResult_">MemoryStream.EndWrite(IAsyncResult)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.flush#System_IO_MemoryStream_Flush">MemoryStream.Flush()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.flushasync#System_IO_MemoryStream_FlushAsync_System_Threading_CancellationToken_">MemoryStream.FlushAsync(CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.getbuffer#System_IO_MemoryStream_GetBuffer">MemoryStream.GetBuffer()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.read#System_IO_MemoryStream_Read_System_Byte___System_Int32_System_Int32_">MemoryStream.Read(Byte[], Int32, Int32)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.read#System_IO_MemoryStream_Read_System_Span_System_Byte__">MemoryStream.Read(Span&lt;Byte&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.readasync#System_IO_MemoryStream_ReadAsync_System_Byte___System_Int32_System_Int32_System_Threading_CancellationToken_">MemoryStream.ReadAsync(Byte[], Int32, Int32, CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.readasync#System_IO_MemoryStream_ReadAsync_System_Memory_System_Byte__System_Threading_CancellationToken_">MemoryStream.ReadAsync(Memory&lt;Byte&gt;, CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.readbyte#System_IO_MemoryStream_ReadByte">MemoryStream.ReadByte()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.seek#System_IO_MemoryStream_Seek_System_Int64_System_IO_SeekOrigin_">MemoryStream.Seek(Int64, SeekOrigin)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.setlength#System_IO_MemoryStream_SetLength_System_Int64_">MemoryStream.SetLength(Int64)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.toarray#System_IO_MemoryStream_ToArray">MemoryStream.ToArray()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.trygetbuffer#System_IO_MemoryStream_TryGetBuffer_System_ArraySegment_System_Byte___">MemoryStream.TryGetBuffer(ArraySegment&lt;Byte&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.write#System_IO_MemoryStream_Write_System_Byte___System_Int32_System_Int32_">MemoryStream.Write(Byte[], Int32, Int32)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.write#System_IO_MemoryStream_Write_System_ReadOnlySpan_System_Byte__">MemoryStream.Write(ReadOnlySpan&lt;Byte&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.writeasync#System_IO_MemoryStream_WriteAsync_System_Byte___System_Int32_System_Int32_System_Threading_CancellationToken_">MemoryStream.WriteAsync(Byte[], Int32, Int32, CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.writeasync#System_IO_MemoryStream_WriteAsync_System_ReadOnlyMemory_System_Byte__System_Threading_CancellationToken_">MemoryStream.WriteAsync(ReadOnlyMemory&lt;Byte&gt;, CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.writebyte#System_IO_MemoryStream_WriteByte_System_Byte_">MemoryStream.WriteByte(Byte)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.writeto#System_IO_MemoryStream_WriteTo_System_IO_Stream_">MemoryStream.WriteTo(Stream)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.canread#System_IO_MemoryStream_CanRead">MemoryStream.CanRead</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.canseek#System_IO_MemoryStream_CanSeek">MemoryStream.CanSeek</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.canwrite#System_IO_MemoryStream_CanWrite">MemoryStream.CanWrite</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.capacity#System_IO_MemoryStream_Capacity">MemoryStream.Capacity</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.length#System_IO_MemoryStream_Length">MemoryStream.Length</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.position#System_IO_MemoryStream_Position">MemoryStream.Position</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream.null">Stream.Null</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream.close#System_IO_Stream_Close">Stream.Close()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream.copyto#System_IO_Stream_CopyTo_System_IO_Stream_">Stream.CopyTo(Stream)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream.copytoasync#System_IO_Stream_CopyToAsync_System_IO_Stream_">Stream.CopyToAsync(Stream)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream.copytoasync#System_IO_Stream_CopyToAsync_System_IO_Stream_System_Int32_">Stream.CopyToAsync(Stream, Int32)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream.copytoasync#System_IO_Stream_CopyToAsync_System_IO_Stream_System_Threading_CancellationToken_">Stream.CopyToAsync(Stream, CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream.createwaithandle#System_IO_Stream_CreateWaitHandle">Stream.CreateWaitHandle()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream.dispose#System_IO_Stream_Dispose">Stream.Dispose()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream.disposeasync#System_IO_Stream_DisposeAsync">Stream.DisposeAsync()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream.flushasync#System_IO_Stream_FlushAsync">Stream.FlushAsync()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream.objectinvariant#System_IO_Stream_ObjectInvariant">Stream.ObjectInvariant()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream.readasync#System_IO_Stream_ReadAsync_System_Byte___System_Int32_System_Int32_">Stream.ReadAsync(Byte[], Int32, Int32)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream.synchronized#System_IO_Stream_Synchronized_System_IO_Stream_">Stream.Synchronized(Stream)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream.writeasync#System_IO_Stream_WriteAsync_System_Byte___System_Int32_System_Int32_">Stream.WriteAsync(Byte[], Int32, Int32)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream.cantimeout#System_IO_Stream_CanTimeout">Stream.CanTimeout</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream.readtimeout#System_IO_Stream_ReadTimeout">Stream.ReadTimeout</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream.writetimeout#System_IO_Stream_WriteTimeout">Stream.WriteTimeout</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.marshalbyrefobject.getlifetimeservice#System_MarshalByRefObject_GetLifetimeService">MarshalByRefObject.GetLifetimeService()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.marshalbyrefobject.initializelifetimeservice#System_MarshalByRefObject_InitializeLifetimeService">MarshalByRefObject.InitializeLifetimeService()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.marshalbyrefobject.memberwiseclone#System_MarshalByRefObject_MemberwiseClone_System_Boolean_">MarshalByRefObject.MemberwiseClone(Boolean)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.IO.html">DotNext.IO</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.IO.dll</h6>
+  <h5 id="DotNext_IO_RentedMemoryStream_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed class RentedMemoryStream : MemoryStream, IAsyncDisposable, IDisposable, IGrowableBuffer&lt;byte&gt;</code></pre>
+  </div>
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_RentedMemoryStream__ctor_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.IO.RentedMemoryStream.%23ctor(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/RentedMemoryStream.cs/#L33">View Source</a>
+  </span>
+  <a id="DotNext_IO_RentedMemoryStream__ctor_" data-uid="DotNext.IO.RentedMemoryStream.#ctor*"></a>
+  <h4 id="DotNext_IO_RentedMemoryStream__ctor_System_Int32_" data-uid="DotNext.IO.RentedMemoryStream.#ctor(System.Int32)">RentedMemoryStream(Int32)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new non-resizable memory stream of rented memory from shared array pool.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public RentedMemoryStream(int capacity)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">capacity</span></td>
+        <td><p>The recommended capacity of the memory stream.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_RentedMemoryStream__ctor_System_Int32_System_Buffers_ArrayPool_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.RentedMemoryStream.%23ctor(System.Int32%2CSystem.Buffers.ArrayPool%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/RentedMemoryStream.cs/#L22">View Source</a>
+  </span>
+  <a id="DotNext_IO_RentedMemoryStream__ctor_" data-uid="DotNext.IO.RentedMemoryStream.#ctor*"></a>
+  <h4 id="DotNext_IO_RentedMemoryStream__ctor_System_Int32_System_Buffers_ArrayPool_System_Byte__" data-uid="DotNext.IO.RentedMemoryStream.#ctor(System.Int32,System.Buffers.ArrayPool{System.Byte})">RentedMemoryStream(Int32, ArrayPool&lt;Byte&gt;)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new non-resizable memory stream of rented memory from shared array pool.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public RentedMemoryStream(int capacity, ArrayPool&lt;byte&gt; pool)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">capacity</span></td>
+        <td><p>The recommended capacity of the memory stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.arraypool-1">ArrayPool</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">pool</span></td>
+        <td><p>The array pool used to rent the underlying buffer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_RentedMemoryStream_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.IO.RentedMemoryStream.Dispose(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/RentedMemoryStream.cs/#L71">View Source</a>
+  </span>
+  <a id="DotNext_IO_RentedMemoryStream_Dispose_" data-uid="DotNext.IO.RentedMemoryStream.Dispose*"></a>
+  <h4 id="DotNext_IO_RentedMemoryStream_Dispose_System_Boolean_" data-uid="DotNext.IO.RentedMemoryStream.Dispose(System.Boolean)">Dispose(Boolean)</h4>
+  <div class="markdown level1 summary"><p>Releases all resources used by this stream.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected override void Dispose(bool disposing)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">disposing</span></td>
+        <td><p><span class="xref">true</span> to release both managed and unmanaged resources; <span class="xref">false</span> to release only unmanaged resources.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.dispose#System_IO_MemoryStream_Dispose_System_Boolean_">MemoryStream.Dispose(Boolean)</a></div>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iasyncdisposable">System.IAsyncDisposable</a>
+  </div>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable">System.IDisposable</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Buffers.IGrowableBuffer-1.html">IGrowableBuffer&lt;T&gt;</a>
+  </div>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireUpgradeableReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireUpgradeableReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_GetUserData__1___0_">ObjectExtensions.GetUserData&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0_System_Collections_Generic_IEnumerable___0__">ObjectExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, T[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2____1____2__">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, Func&lt;T, TResult1&gt;, Func&lt;T, TResult2&gt;, out TResult1, out TResult2)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2_____1____2__">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, ValueFunc&lt;T, TResult1&gt;, ValueFunc&lt;T, TResult2&gt;, out TResult1, out TResult2)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2__">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, Func&lt;T, TResult1&gt;, Func&lt;T, TResult2&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2___">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, ValueFunc&lt;T, TResult1&gt;, ValueFunc&lt;T, TResult2&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_As__1___0_">ObjectExtensions.As&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_">LockAcquisition.AcquireReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_System_TimeSpan_">LockAcquisition.AcquireReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_System_TimeSpan_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_System_TimeSpan_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteString_System_IO_Stream_System_ReadOnlySpan_System_Char__DotNext_Text_EncodingContext__System_Span_System_Byte__System_Nullable_DotNext_IO_StringLengthEncoding__">StreamExtensions.WriteString(Stream, ReadOnlySpan&lt;Char&gt;, EncodingContext, Span&lt;Byte&gt;, Nullable&lt;StringLengthEncoding&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteString_System_IO_Stream_System_ReadOnlySpan_System_Char__System_Text_Encoding_System_Nullable_DotNext_IO_StringLengthEncoding__">StreamExtensions.WriteString(Stream, ReadOnlySpan&lt;Char&gt;, Encoding, Nullable&lt;StringLengthEncoding&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteByte_System_IO_Stream_System_Byte_DotNext_IO_StringLengthEncoding_System_Text_Encoding_System_ReadOnlySpan_System_Char__System_IFormatProvider_">StreamExtensions.WriteByte(Stream, Byte, StringLengthEncoding, Encoding, ReadOnlySpan&lt;Char&gt;, IFormatProvider)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteSByte_System_IO_Stream_System_SByte_DotNext_IO_StringLengthEncoding_System_Text_Encoding_System_ReadOnlySpan_System_Char__System_IFormatProvider_">StreamExtensions.WriteSByte(Stream, SByte, StringLengthEncoding, Encoding, ReadOnlySpan&lt;Char&gt;, IFormatProvider)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteInt16_System_IO_Stream_System_Int16_DotNext_IO_StringLengthEncoding_System_Text_Encoding_System_ReadOnlySpan_System_Char__System_IFormatProvider_">StreamExtensions.WriteInt16(Stream, Int16, StringLengthEncoding, Encoding, ReadOnlySpan&lt;Char&gt;, IFormatProvider)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteUInt16_System_IO_Stream_System_UInt16_DotNext_IO_StringLengthEncoding_System_Text_Encoding_System_ReadOnlySpan_System_Char__System_IFormatProvider_">StreamExtensions.WriteUInt16(Stream, UInt16, StringLengthEncoding, Encoding, ReadOnlySpan&lt;Char&gt;, IFormatProvider)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteInt32_System_IO_Stream_System_Int32_DotNext_IO_StringLengthEncoding_System_Text_Encoding_System_ReadOnlySpan_System_Char__System_IFormatProvider_">StreamExtensions.WriteInt32(Stream, Int32, StringLengthEncoding, Encoding, ReadOnlySpan&lt;Char&gt;, IFormatProvider)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteUInt32_System_IO_Stream_System_UInt32_DotNext_IO_StringLengthEncoding_System_Text_Encoding_System_ReadOnlySpan_System_Char__System_IFormatProvider_">StreamExtensions.WriteUInt32(Stream, UInt32, StringLengthEncoding, Encoding, ReadOnlySpan&lt;Char&gt;, IFormatProvider)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteInt64_System_IO_Stream_System_Int64_DotNext_IO_StringLengthEncoding_System_Text_Encoding_System_ReadOnlySpan_System_Char__System_IFormatProvider_">StreamExtensions.WriteInt64(Stream, Int64, StringLengthEncoding, Encoding, ReadOnlySpan&lt;Char&gt;, IFormatProvider)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteUInt64_System_IO_Stream_System_UInt64_DotNext_IO_StringLengthEncoding_System_Text_Encoding_System_ReadOnlySpan_System_Char__System_IFormatProvider_">StreamExtensions.WriteUInt64(Stream, UInt64, StringLengthEncoding, Encoding, ReadOnlySpan&lt;Char&gt;, IFormatProvider)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteSingle_System_IO_Stream_System_Single_DotNext_IO_StringLengthEncoding_System_Text_Encoding_System_ReadOnlySpan_System_Char__System_IFormatProvider_">StreamExtensions.WriteSingle(Stream, Single, StringLengthEncoding, Encoding, ReadOnlySpan&lt;Char&gt;, IFormatProvider)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteDouble_System_IO_Stream_System_Double_DotNext_IO_StringLengthEncoding_System_Text_Encoding_System_ReadOnlySpan_System_Char__System_IFormatProvider_">StreamExtensions.WriteDouble(Stream, Double, StringLengthEncoding, Encoding, ReadOnlySpan&lt;Char&gt;, IFormatProvider)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteDecimal_System_IO_Stream_System_Decimal_DotNext_IO_StringLengthEncoding_System_Text_Encoding_System_ReadOnlySpan_System_Char__System_IFormatProvider_">StreamExtensions.WriteDecimal(Stream, Decimal, StringLengthEncoding, Encoding, ReadOnlySpan&lt;Char&gt;, IFormatProvider)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteGuid_System_IO_Stream_System_Guid_DotNext_IO_StringLengthEncoding_System_Text_Encoding_System_ReadOnlySpan_System_Char__">StreamExtensions.WriteGuid(Stream, Guid, StringLengthEncoding, Encoding, ReadOnlySpan&lt;Char&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteDateTime_System_IO_Stream_System_DateTime_DotNext_IO_StringLengthEncoding_System_Text_Encoding_System_ReadOnlySpan_System_Char__System_IFormatProvider_">StreamExtensions.WriteDateTime(Stream, DateTime, StringLengthEncoding, Encoding, ReadOnlySpan&lt;Char&gt;, IFormatProvider)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteDateTimeOffset_System_IO_Stream_System_DateTimeOffset_DotNext_IO_StringLengthEncoding_System_Text_Encoding_System_ReadOnlySpan_System_Char__System_IFormatProvider_">StreamExtensions.WriteDateTimeOffset(Stream, DateTimeOffset, StringLengthEncoding, Encoding, ReadOnlySpan&lt;Char&gt;, IFormatProvider)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteTimeSpan_System_IO_Stream_System_TimeSpan_DotNext_IO_StringLengthEncoding_System_Text_Encoding_System_ReadOnlySpan_System_Char__System_IFormatProvider_">StreamExtensions.WriteTimeSpan(Stream, TimeSpan, StringLengthEncoding, Encoding, ReadOnlySpan&lt;Char&gt;, IFormatProvider)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteStringAsync_System_IO_Stream_System_ReadOnlyMemory_System_Char__DotNext_Text_EncodingContext_System_Memory_System_Byte__System_Nullable_DotNext_IO_StringLengthEncoding__System_Threading_CancellationToken_">StreamExtensions.WriteStringAsync(Stream, ReadOnlyMemory&lt;Char&gt;, EncodingContext, Memory&lt;Byte&gt;, Nullable&lt;StringLengthEncoding&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteStringAsync_System_IO_Stream_System_ReadOnlyMemory_System_Char__System_Text_Encoding_System_Nullable_DotNext_IO_StringLengthEncoding__System_Threading_CancellationToken_">StreamExtensions.WriteStringAsync(Stream, ReadOnlyMemory&lt;Char&gt;, Encoding, Nullable&lt;StringLengthEncoding&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteByteAsync_System_IO_Stream_System_Byte_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext_System_Memory_System_Byte__System_String_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.WriteByteAsync(Stream, Byte, StringLengthEncoding, EncodingContext, Memory&lt;Byte&gt;, String, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteByteAsync_System_IO_Stream_System_Byte_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext_System_String_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.WriteByteAsync(Stream, Byte, StringLengthEncoding, EncodingContext, String, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteSByteAsync_System_IO_Stream_System_SByte_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext_System_Memory_System_Byte__System_String_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.WriteSByteAsync(Stream, SByte, StringLengthEncoding, EncodingContext, Memory&lt;Byte&gt;, String, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteSByteAsync_System_IO_Stream_System_SByte_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext_System_String_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.WriteSByteAsync(Stream, SByte, StringLengthEncoding, EncodingContext, String, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteInt16Async_System_IO_Stream_System_Int16_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext_System_Memory_System_Byte__System_String_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.WriteInt16Async(Stream, Int16, StringLengthEncoding, EncodingContext, Memory&lt;Byte&gt;, String, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteInt16Async_System_IO_Stream_System_Int16_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext_System_String_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.WriteInt16Async(Stream, Int16, StringLengthEncoding, EncodingContext, String, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteUInt16Async_System_IO_Stream_System_UInt16_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext_System_Memory_System_Byte__System_String_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.WriteUInt16Async(Stream, UInt16, StringLengthEncoding, EncodingContext, Memory&lt;Byte&gt;, String, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteUInt16Async_System_IO_Stream_System_UInt16_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext_System_String_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.WriteUInt16Async(Stream, UInt16, StringLengthEncoding, EncodingContext, String, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteInt32Async_System_IO_Stream_System_Int32_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext_System_Memory_System_Byte__System_String_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.WriteInt32Async(Stream, Int32, StringLengthEncoding, EncodingContext, Memory&lt;Byte&gt;, String, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteInt32Async_System_IO_Stream_System_Int32_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext_System_String_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.WriteInt32Async(Stream, Int32, StringLengthEncoding, EncodingContext, String, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteUInt32Async_System_IO_Stream_System_UInt32_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext_System_Memory_System_Byte__System_String_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.WriteUInt32Async(Stream, UInt32, StringLengthEncoding, EncodingContext, Memory&lt;Byte&gt;, String, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteUInt32Async_System_IO_Stream_System_UInt32_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext_System_String_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.WriteUInt32Async(Stream, UInt32, StringLengthEncoding, EncodingContext, String, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteInt64Async_System_IO_Stream_System_Int64_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext_System_Memory_System_Byte__System_String_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.WriteInt64Async(Stream, Int64, StringLengthEncoding, EncodingContext, Memory&lt;Byte&gt;, String, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteInt64Async_System_IO_Stream_System_Int64_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext_System_String_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.WriteInt64Async(Stream, Int64, StringLengthEncoding, EncodingContext, String, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteUInt64Async_System_IO_Stream_System_UInt64_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext_System_Memory_System_Byte__System_String_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.WriteUInt64Async(Stream, UInt64, StringLengthEncoding, EncodingContext, Memory&lt;Byte&gt;, String, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteUInt64Async_System_IO_Stream_System_UInt64_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext_System_String_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.WriteUInt64Async(Stream, UInt64, StringLengthEncoding, EncodingContext, String, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteSingleAsync_System_IO_Stream_System_Single_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext_System_Memory_System_Byte__System_String_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.WriteSingleAsync(Stream, Single, StringLengthEncoding, EncodingContext, Memory&lt;Byte&gt;, String, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteSingleAsync_System_IO_Stream_System_Single_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext_System_String_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.WriteSingleAsync(Stream, Single, StringLengthEncoding, EncodingContext, String, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteDoubleAsync_System_IO_Stream_System_Double_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext_System_Memory_System_Byte__System_String_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.WriteDoubleAsync(Stream, Double, StringLengthEncoding, EncodingContext, Memory&lt;Byte&gt;, String, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteDoubleAsync_System_IO_Stream_System_Double_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext_System_String_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.WriteDoubleAsync(Stream, Double, StringLengthEncoding, EncodingContext, String, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteDecimalAsync_System_IO_Stream_System_Decimal_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext_System_Memory_System_Byte__System_String_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.WriteDecimalAsync(Stream, Decimal, StringLengthEncoding, EncodingContext, Memory&lt;Byte&gt;, String, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteDecimalAsync_System_IO_Stream_System_Decimal_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext_System_String_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.WriteDecimalAsync(Stream, Decimal, StringLengthEncoding, EncodingContext, String, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteGuidAsync_System_IO_Stream_System_Guid_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext_System_Memory_System_Byte__System_String_System_Threading_CancellationToken_">StreamExtensions.WriteGuidAsync(Stream, Guid, StringLengthEncoding, EncodingContext, Memory&lt;Byte&gt;, String, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteGuidAsync_System_IO_Stream_System_Guid_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext_System_String_System_Threading_CancellationToken_">StreamExtensions.WriteGuidAsync(Stream, Guid, StringLengthEncoding, EncodingContext, String, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteDateTimeAsync_System_IO_Stream_System_DateTime_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext_System_Memory_System_Byte__System_String_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.WriteDateTimeAsync(Stream, DateTime, StringLengthEncoding, EncodingContext, Memory&lt;Byte&gt;, String, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteDateTimeAsync_System_IO_Stream_System_DateTime_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext_System_String_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.WriteDateTimeAsync(Stream, DateTime, StringLengthEncoding, EncodingContext, String, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteDateTimeOffsetAsync_System_IO_Stream_System_DateTimeOffset_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext_System_Memory_System_Byte__System_String_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.WriteDateTimeOffsetAsync(Stream, DateTimeOffset, StringLengthEncoding, EncodingContext, Memory&lt;Byte&gt;, String, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteDateTimeOffsetAsync_System_IO_Stream_System_DateTimeOffset_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext_System_String_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.WriteDateTimeOffsetAsync(Stream, DateTimeOffset, StringLengthEncoding, EncodingContext, String, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteTimeSpanAsync_System_IO_Stream_System_TimeSpan_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext_System_Memory_System_Byte__System_String_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.WriteTimeSpanAsync(Stream, TimeSpan, StringLengthEncoding, EncodingContext, Memory&lt;Byte&gt;, String, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteTimeSpanAsync_System_IO_Stream_System_TimeSpan_DotNext_IO_StringLengthEncoding_DotNext_Text_EncodingContext_System_String_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.WriteTimeSpanAsync(Stream, TimeSpan, StringLengthEncoding, EncodingContext, String, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_Write_System_IO_Stream_System_Buffers_ReadOnlySequence_System_Byte___System_Threading_CancellationToken_">StreamExtensions.Write(Stream, ReadOnlySequence&lt;Byte&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteAsync_System_IO_Stream_System_Buffers_ReadOnlySequence_System_Byte__System_Threading_CancellationToken_">StreamExtensions.WriteAsync(Stream, ReadOnlySequence&lt;Byte&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadString_System_IO_Stream_System_Int32_DotNext_Text_DecodingContext__System_Span_System_Byte__">StreamExtensions.ReadString(Stream, Int32, DecodingContext, Span&lt;Byte&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadByte_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext__System_Span_System_Byte__System_Globalization_NumberStyles_System_IFormatProvider_">StreamExtensions.ReadByte(Stream, StringLengthEncoding, DecodingContext, Span&lt;Byte&gt;, NumberStyles, IFormatProvider)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadSByte_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext__System_Span_System_Byte__System_Globalization_NumberStyles_System_IFormatProvider_">StreamExtensions.ReadSByte(Stream, StringLengthEncoding, DecodingContext, Span&lt;Byte&gt;, NumberStyles, IFormatProvider)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadInt16_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext__System_Span_System_Byte__System_Globalization_NumberStyles_System_IFormatProvider_">StreamExtensions.ReadInt16(Stream, StringLengthEncoding, DecodingContext, Span&lt;Byte&gt;, NumberStyles, IFormatProvider)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadUInt16_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext__System_Span_System_Byte__System_Globalization_NumberStyles_System_IFormatProvider_">StreamExtensions.ReadUInt16(Stream, StringLengthEncoding, DecodingContext, Span&lt;Byte&gt;, NumberStyles, IFormatProvider)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadInt32_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext__System_Span_System_Byte__System_Globalization_NumberStyles_System_IFormatProvider_">StreamExtensions.ReadInt32(Stream, StringLengthEncoding, DecodingContext, Span&lt;Byte&gt;, NumberStyles, IFormatProvider)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadUInt32_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext__System_Span_System_Byte__System_Globalization_NumberStyles_System_IFormatProvider_">StreamExtensions.ReadUInt32(Stream, StringLengthEncoding, DecodingContext, Span&lt;Byte&gt;, NumberStyles, IFormatProvider)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadInt64_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext__System_Span_System_Byte__System_Globalization_NumberStyles_System_IFormatProvider_">StreamExtensions.ReadInt64(Stream, StringLengthEncoding, DecodingContext, Span&lt;Byte&gt;, NumberStyles, IFormatProvider)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadUInt64_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext__System_Span_System_Byte__System_Globalization_NumberStyles_System_IFormatProvider_">StreamExtensions.ReadUInt64(Stream, StringLengthEncoding, DecodingContext, Span&lt;Byte&gt;, NumberStyles, IFormatProvider)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadSingle_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext__System_Span_System_Byte__System_Globalization_NumberStyles_System_IFormatProvider_">StreamExtensions.ReadSingle(Stream, StringLengthEncoding, DecodingContext, Span&lt;Byte&gt;, NumberStyles, IFormatProvider)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadDouble_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext__System_Span_System_Byte__System_Globalization_NumberStyles_System_IFormatProvider_">StreamExtensions.ReadDouble(Stream, StringLengthEncoding, DecodingContext, Span&lt;Byte&gt;, NumberStyles, IFormatProvider)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadDecimal_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext__System_Span_System_Byte__System_Globalization_NumberStyles_System_IFormatProvider_">StreamExtensions.ReadDecimal(Stream, StringLengthEncoding, DecodingContext, Span&lt;Byte&gt;, NumberStyles, IFormatProvider)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadGuid_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext__System_Span_System_Byte__">StreamExtensions.ReadGuid(Stream, StringLengthEncoding, DecodingContext, Span&lt;Byte&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadGuid_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext__System_Span_System_Byte__System_String_">StreamExtensions.ReadGuid(Stream, StringLengthEncoding, DecodingContext, Span&lt;Byte&gt;, String)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadDateTime_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext__System_Span_System_Byte__System_Globalization_DateTimeStyles_System_IFormatProvider_">StreamExtensions.ReadDateTime(Stream, StringLengthEncoding, DecodingContext, Span&lt;Byte&gt;, DateTimeStyles, IFormatProvider)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadDateTime_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext__System_Span_System_Byte__System_String___System_Globalization_DateTimeStyles_System_IFormatProvider_">StreamExtensions.ReadDateTime(Stream, StringLengthEncoding, DecodingContext, Span&lt;Byte&gt;, String[], DateTimeStyles, IFormatProvider)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadDateTimeOffset_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext__System_Span_System_Byte__System_Globalization_DateTimeStyles_System_IFormatProvider_">StreamExtensions.ReadDateTimeOffset(Stream, StringLengthEncoding, DecodingContext, Span&lt;Byte&gt;, DateTimeStyles, IFormatProvider)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadDateTimeOffset_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext__System_Span_System_Byte__System_String___System_Globalization_DateTimeStyles_System_IFormatProvider_">StreamExtensions.ReadDateTimeOffset(Stream, StringLengthEncoding, DecodingContext, Span&lt;Byte&gt;, String[], DateTimeStyles, IFormatProvider)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadTimeSpan_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext__System_Span_System_Byte__System_IFormatProvider_">StreamExtensions.ReadTimeSpan(Stream, StringLengthEncoding, DecodingContext, Span&lt;Byte&gt;, IFormatProvider)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadTimeSpan_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext__System_Span_System_Byte__System_String___System_Globalization_TimeSpanStyles_System_IFormatProvider_">StreamExtensions.ReadTimeSpan(Stream, StringLengthEncoding, DecodingContext, Span&lt;Byte&gt;, String[], TimeSpanStyles, IFormatProvider)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadString_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext__System_Span_System_Byte__">StreamExtensions.ReadString(Stream, StringLengthEncoding, DecodingContext, Span&lt;Byte&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadString_System_IO_Stream_System_Int32_System_Text_Encoding_">StreamExtensions.ReadString(Stream, Int32, Encoding)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadString_System_IO_Stream_DotNext_IO_StringLengthEncoding_System_Text_Encoding_">StreamExtensions.ReadString(Stream, StringLengthEncoding, Encoding)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadStringAsync_System_IO_Stream_System_Int32_DotNext_Text_DecodingContext_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.ReadStringAsync(Stream, Int32, DecodingContext, Memory&lt;Byte&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadStringAsync_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.ReadStringAsync(Stream, StringLengthEncoding, DecodingContext, Memory&lt;Byte&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadStringAsync_System_IO_Stream_System_Int32_System_Text_Encoding_System_Threading_CancellationToken_">StreamExtensions.ReadStringAsync(Stream, Int32, Encoding, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadStringAsync_System_IO_Stream_DotNext_IO_StringLengthEncoding_System_Text_Encoding_System_Threading_CancellationToken_">StreamExtensions.ReadStringAsync(Stream, StringLengthEncoding, Encoding, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadByteAsync_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Memory_System_Byte__System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ReadByteAsync(Stream, StringLengthEncoding, DecodingContext, Memory&lt;Byte&gt;, NumberStyles, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadSByteAsync_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Memory_System_Byte__System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ReadSByteAsync(Stream, StringLengthEncoding, DecodingContext, Memory&lt;Byte&gt;, NumberStyles, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadInt16Async_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Memory_System_Byte__System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ReadInt16Async(Stream, StringLengthEncoding, DecodingContext, Memory&lt;Byte&gt;, NumberStyles, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadUInt16Async_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Memory_System_Byte__System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ReadUInt16Async(Stream, StringLengthEncoding, DecodingContext, Memory&lt;Byte&gt;, NumberStyles, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadInt32Async_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Memory_System_Byte__System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ReadInt32Async(Stream, StringLengthEncoding, DecodingContext, Memory&lt;Byte&gt;, NumberStyles, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadUInt32Async_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Memory_System_Byte__System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ReadUInt32Async(Stream, StringLengthEncoding, DecodingContext, Memory&lt;Byte&gt;, NumberStyles, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadInt64Async_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Memory_System_Byte__System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ReadInt64Async(Stream, StringLengthEncoding, DecodingContext, Memory&lt;Byte&gt;, NumberStyles, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadUInt64Async_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Memory_System_Byte__System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ReadUInt64Async(Stream, StringLengthEncoding, DecodingContext, Memory&lt;Byte&gt;, NumberStyles, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadSingleAsync_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Memory_System_Byte__System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ReadSingleAsync(Stream, StringLengthEncoding, DecodingContext, Memory&lt;Byte&gt;, NumberStyles, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadDoubleAsync_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Memory_System_Byte__System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ReadDoubleAsync(Stream, StringLengthEncoding, DecodingContext, Memory&lt;Byte&gt;, NumberStyles, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadDecimalAsync_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Memory_System_Byte__System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ReadDecimalAsync(Stream, StringLengthEncoding, DecodingContext, Memory&lt;Byte&gt;, NumberStyles, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadGuidAsync_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.ReadGuidAsync(Stream, StringLengthEncoding, DecodingContext, Memory&lt;Byte&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadGuidAsync_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Memory_System_Byte__System_String_System_Threading_CancellationToken_">StreamExtensions.ReadGuidAsync(Stream, StringLengthEncoding, DecodingContext, Memory&lt;Byte&gt;, String, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadDateTimeAsync_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Memory_System_Byte__System_Globalization_DateTimeStyles_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ReadDateTimeAsync(Stream, StringLengthEncoding, DecodingContext, Memory&lt;Byte&gt;, DateTimeStyles, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadDateTimeAsync_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_String___System_Memory_System_Byte__System_Globalization_DateTimeStyles_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ReadDateTimeAsync(Stream, StringLengthEncoding, DecodingContext, String[], Memory&lt;Byte&gt;, DateTimeStyles, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadDateTimeOffsetAsync_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Memory_System_Byte__System_Globalization_DateTimeStyles_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ReadDateTimeOffsetAsync(Stream, StringLengthEncoding, DecodingContext, Memory&lt;Byte&gt;, DateTimeStyles, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadDateTimeOffsetAsync_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_String___System_Memory_System_Byte__System_Globalization_DateTimeStyles_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ReadDateTimeOffsetAsync(Stream, StringLengthEncoding, DecodingContext, String[], Memory&lt;Byte&gt;, DateTimeStyles, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadTimeSpanAsync_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Memory_System_Byte__System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ReadTimeSpanAsync(Stream, StringLengthEncoding, DecodingContext, Memory&lt;Byte&gt;, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadTimeSpanAsync_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Memory_System_Byte__System_String___System_Globalization_TimeSpanStyles_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ReadTimeSpanAsync(Stream, StringLengthEncoding, DecodingContext, Memory&lt;Byte&gt;, String[], TimeSpanStyles, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadByteAsync_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ReadByteAsync(Stream, StringLengthEncoding, DecodingContext, NumberStyles, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadSByteAsync_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ReadSByteAsync(Stream, StringLengthEncoding, DecodingContext, NumberStyles, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadInt16Async_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ReadInt16Async(Stream, StringLengthEncoding, DecodingContext, NumberStyles, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadUInt16Async_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ReadUInt16Async(Stream, StringLengthEncoding, DecodingContext, NumberStyles, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadInt32Async_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ReadInt32Async(Stream, StringLengthEncoding, DecodingContext, NumberStyles, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadUInt32Async_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ReadUInt32Async(Stream, StringLengthEncoding, DecodingContext, NumberStyles, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadInt64Async_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ReadInt64Async(Stream, StringLengthEncoding, DecodingContext, NumberStyles, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadUInt64Async_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ReadUInt64Async(Stream, StringLengthEncoding, DecodingContext, NumberStyles, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadSingleAsync_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ReadSingleAsync(Stream, StringLengthEncoding, DecodingContext, NumberStyles, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadDoubleAsync_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ReadDoubleAsync(Stream, StringLengthEncoding, DecodingContext, NumberStyles, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadDecimalAsync_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ReadDecimalAsync(Stream, StringLengthEncoding, DecodingContext, NumberStyles, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadGuidAsync_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Threading_CancellationToken_">StreamExtensions.ReadGuidAsync(Stream, StringLengthEncoding, DecodingContext, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadGuidAsync_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_String_System_Threading_CancellationToken_">StreamExtensions.ReadGuidAsync(Stream, StringLengthEncoding, DecodingContext, String, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadDateTimeAsync_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Globalization_DateTimeStyles_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ReadDateTimeAsync(Stream, StringLengthEncoding, DecodingContext, DateTimeStyles, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadDateTimeAsync_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_String___System_Globalization_DateTimeStyles_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ReadDateTimeAsync(Stream, StringLengthEncoding, DecodingContext, String[], DateTimeStyles, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadDateTimeOffsetAsync_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Globalization_DateTimeStyles_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ReadDateTimeOffsetAsync(Stream, StringLengthEncoding, DecodingContext, DateTimeStyles, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadDateTimeOffsetAsync_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_String___System_Globalization_DateTimeStyles_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ReadDateTimeOffsetAsync(Stream, StringLengthEncoding, DecodingContext, String[], DateTimeStyles, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadTimeSpanAsync_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ReadTimeSpanAsync(Stream, StringLengthEncoding, DecodingContext, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadTimeSpanAsync_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_String___System_Globalization_TimeSpanStyles_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ReadTimeSpanAsync(Stream, StringLengthEncoding, DecodingContext, String[], TimeSpanStyles, IFormatProvider, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadBlock_System_IO_Stream_System_Span_System_Byte__">StreamExtensions.ReadBlock(Stream, Span&lt;Byte&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_Read__1_System_IO_Stream_">StreamExtensions.Read&lt;T&gt;(Stream)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadBlockAsync_System_IO_Stream_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.ReadBlockAsync(Stream, Memory&lt;Byte&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadAsync__1_System_IO_Stream_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.ReadAsync&lt;T&gt;(Stream, Memory&lt;Byte&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadAsync__1_System_IO_Stream_System_Threading_CancellationToken_">StreamExtensions.ReadAsync&lt;T&gt;(Stream, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_Write__1_System_IO_Stream___0__">StreamExtensions.Write&lt;T&gt;(Stream, T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteAsync__1_System_IO_Stream___0_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.WriteAsync&lt;T&gt;(Stream, T, Memory&lt;Byte&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteAsync__1_System_IO_Stream___0_System_Threading_CancellationToken_">StreamExtensions.WriteAsync&lt;T&gt;(Stream, T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteAsync__1_System_IO_Stream_System_Func___0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask_System_ReadOnlyMemory_System_Byte______0_System_Threading_CancellationToken_">StreamExtensions.WriteAsync&lt;TArg&gt;(Stream, Func&lt;TArg, CancellationToken, ValueTask&lt;ReadOnlyMemory&lt;Byte&gt;&gt;&gt;, TArg, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_CopyToAsync_System_IO_Stream_System_IO_Stream_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.CopyToAsync(Stream, Stream, Memory&lt;Byte&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_CopyTo_System_IO_Stream_System_IO_Stream_System_Span_System_Byte__System_Threading_CancellationToken_">StreamExtensions.CopyTo(Stream, Stream, Span&lt;Byte&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_AsBufferWriter_System_IO_Stream_System_Nullable_MemoryAllocator_System_Byte___">StreamExtensions.AsBufferWriter(Stream, Nullable&lt;MemoryAllocator&lt;Byte&gt;&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_Read__1_System_IO_Stream_System_Buffers_ReadOnlySpanAction_System_Byte___0____0_System_Span_System_Byte__System_Threading_CancellationToken_">StreamExtensions.Read&lt;TArg&gt;(Stream, ReadOnlySpanAction&lt;Byte, TArg&gt;, TArg, Span&lt;Byte&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_Read__1_System_IO_Stream_System_Buffers_ReadOnlySpanAction_System_Byte___0____0_System_Int32_System_Threading_CancellationToken_">StreamExtensions.Read&lt;TArg&gt;(Stream, ReadOnlySpanAction&lt;Byte, TArg&gt;, TArg, Int32, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadAsync__1_System_IO_Stream_System_Buffers_ReadOnlySpanAction_System_Byte___0____0_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.ReadAsync&lt;TArg&gt;(Stream, ReadOnlySpanAction&lt;Byte, TArg&gt;, TArg, Memory&lt;Byte&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadAsync__1_System_IO_Stream_System_Buffers_ReadOnlySpanAction_System_Byte___0____0_System_Int32_System_Threading_CancellationToken_">StreamExtensions.ReadAsync&lt;TArg&gt;(Stream, ReadOnlySpanAction&lt;Byte, TArg&gt;, TArg, Int32, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadAsync__1_System_IO_Stream_System_Func_System_ReadOnlyMemory_System_Byte____0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask____0_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.ReadAsync&lt;TArg&gt;(Stream, Func&lt;ReadOnlyMemory&lt;Byte&gt;, TArg, CancellationToken, ValueTask&gt;, TArg, Memory&lt;Byte&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadAsync__1_System_IO_Stream_System_Func_System_ReadOnlyMemory_System_Byte____0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask____0_System_Int32_System_Threading_CancellationToken_">StreamExtensions.ReadAsync&lt;TArg&gt;(Stream, Func&lt;ReadOnlyMemory&lt;Byte&gt;, TArg, CancellationToken, ValueTask&gt;, TArg, Int32, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_CopyToAsync_System_IO_Stream_System_Buffers_IBufferWriter_System_Byte__System_Int32_System_Threading_CancellationToken_">StreamExtensions.CopyToAsync(Stream, IBufferWriter&lt;Byte&gt;, Int32, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_CopyTo_System_IO_Stream_System_Buffers_IBufferWriter_System_Byte__System_Int32_System_Threading_CancellationToken_">StreamExtensions.CopyTo(Stream, IBufferWriter&lt;Byte&gt;, Int32, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_RentedMemoryStream.md&amp;value=---%0Auid%3A%20DotNext.IO.RentedMemoryStream%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.IO/IO/RentedMemoryStream.cs/#L13" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In This Article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

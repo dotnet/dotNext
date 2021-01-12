@@ -1,0 +1,51 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <RootNamespace>DotNext</RootNamespace>
+    <StartupObject>DotNext.Program</StartupObject>
+    <IsPackable>false</IsPackable>
+    <Version>1.2.9</Version>
+    <Authors>Roman Sakno</Authors>
+    <Product>.NEXT Family of Libraries</Product>
+    <Description>Various benchmarks demonstrating performance aspects of .NEXT extensions</Description>
+    <Copyright>2018-2019</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/sakno/dotNext</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/sakno/dotNext.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>benchmarks</PackageTags>
+  </PropertyGroup>
+
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <SignAssembly>true</SignAssembly>
+    <DelaySign>false</DelaySign>
+    <AssemblyOriginatorKeyFile>../dotnext.snk</AssemblyOriginatorKeyFile>
+    <TieredCompilation>true</TieredCompilation>
+  </PropertyGroup>
+
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.12.0" />
+    <PackageReference Include="FastMember.Signed" Version="1.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DotNext.Reflection\DotNext.Reflection.csproj" Condition="'$(Configuration)'=='Debug'" />
+    <PackageReference Include="DotNext.Reflection" Version="[1.2.9, 2)" Condition="'$(Configuration)'=='Release'" />
+    
+    <ProjectReference Include="..\DotNext\DotNext.csproj" Condition="'$(Configuration)'=='Debug'" />
+    <PackageReference Include="DotNext" Version="[1.2.9, 2)" Condition="'$(Configuration)'=='Release'" />
+
+    <ProjectReference Include="..\DotNext.Metaprogramming\DotNext.Metaprogramming.csproj" Condition="'$(Configuration)'=='Debug'" />
+    <PackageReference Include="DotNext.Metaprogramming" Version="[1.2.9, 2)" Condition="'$(Configuration)'=='Release'" />
+  </ItemGroup>
+
+</Project>

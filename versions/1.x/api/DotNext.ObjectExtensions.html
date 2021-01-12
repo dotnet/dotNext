@@ -1,0 +1,718 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class ObjectExtensions
+   | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class ObjectExtensions
+   | .NEXT ">
+    <meta name="generator" content="docfx 2.48.0.0">
+    
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.ObjectExtensions">
+  
+  
+  <h1 id="DotNext_ObjectExtensions" data-uid="DotNext.ObjectExtensions" class="text-break">Class ObjectExtensions
+  </h1>
+  <div class="markdown level0 summary"><p>Various extension methods for reference types.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level1"><span class="xref">ObjectExtensions</span></div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.dll</h6>
+  <h5 id="DotNext_ObjectExtensions_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static class ObjectExtensions : object</code></pre>
+  </div>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ObjectExtensions_Decompose__3___0_DotNext_Func___0___1__DotNext_Func___0___2__.md&amp;value=---%0Auid%3A%20DotNext.ObjectExtensions.Decompose%60%603(%60%600%2CDotNext.Func%7B%60%600%2C%60%601%7D%2CDotNext.Func%7B%60%600%2C%60%602%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ObjectExtensions.cs/#L114">View Source</a>
+  </span>
+  <a id="DotNext_ObjectExtensions_Decompose_" data-uid="DotNext.ObjectExtensions.Decompose*"></a>
+  <h4 id="DotNext_ObjectExtensions_Decompose__3___0_DotNext_Func___0___1__DotNext_Func___0___2__" data-uid="DotNext.ObjectExtensions.Decompose``3(``0,DotNext.Func{``0,``1},DotNext.Func{``0,``2})">Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;)</h4>
+  <div class="markdown level1 summary"><p>Performs decomposition of object into tuple.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static (R1, R2) Decompose&lt;T, R1, R2&gt;(this T obj, Func&lt;T, R1&gt; decomposer1, Func&lt;T, R2&gt; decomposer2)
+
+    where T : class</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">obj</span></td>
+        <td><p>An object to decompose.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">DotNext.Func</span>&lt;T, R1&gt;</td>
+        <td><span class="parametername">decomposer1</span></td>
+        <td><p>First decomposition function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">DotNext.Func</span>&lt;T, R2&gt;</td>
+        <td><span class="parametername">decomposer2</span></td>
+        <td><p>Second decomposition function.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetuple-2">ValueTuple</a>&lt;R1, R2&gt;</td>
+        <td><p>Decomposition result.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>Type of object to decompose.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">R1</span></td>
+        <td><p>Type of the first decomposition result.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">R2</span></td>
+        <td><p>Type of the second decomposition result.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ObjectExtensions_Decompose__3___0_DotNext_Func___0___1__DotNext_Func___0___2____1____2__.md&amp;value=---%0Auid%3A%20DotNext.ObjectExtensions.Decompose%60%603(%60%600%2CDotNext.Func%7B%60%600%2C%60%601%7D%2CDotNext.Func%7B%60%600%2C%60%602%7D%2C%60%601%40%2C%60%602%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ObjectExtensions.cs/#L82">View Source</a>
+  </span>
+  <a id="DotNext_ObjectExtensions_Decompose_" data-uid="DotNext.ObjectExtensions.Decompose*"></a>
+  <h4 id="DotNext_ObjectExtensions_Decompose__3___0_DotNext_Func___0___1__DotNext_Func___0___2____1____2__" data-uid="DotNext.ObjectExtensions.Decompose``3(``0,DotNext.Func{``0,``1},DotNext.Func{``0,``2},``1@,``2@)">Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;, out R1, out R2)</h4>
+  <div class="markdown level1 summary"><p>Performs decomposition of object into two values.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void Decompose&lt;T, R1, R2&gt;(this T obj, Func&lt;T, R1&gt; decomposer1, Func&lt;T, R2&gt; decomposer2, out R1 result1, out R2 result2)
+
+    where T : class</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">obj</span></td>
+        <td><p>An object to decompose.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">DotNext.Func</span>&lt;T, R1&gt;</td>
+        <td><span class="parametername">decomposer1</span></td>
+        <td><p>First decomposition function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">DotNext.Func</span>&lt;T, R2&gt;</td>
+        <td><span class="parametername">decomposer2</span></td>
+        <td><p>Second decomposition function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">R1</span></td>
+        <td><span class="parametername">result1</span></td>
+        <td><p>First decomposition result.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">R2</span></td>
+        <td><span class="parametername">result2</span></td>
+        <td><p>Second decomposition result.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>Type of object to decompose.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">R1</span></td>
+        <td><p>Type of the first decomposition result.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">R2</span></td>
+        <td><p>Type of the second decomposition result.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2___.md&amp;value=---%0Auid%3A%20DotNext.ObjectExtensions.Decompose%60%603(%60%600%2CDotNext.ValueFunc%7B%60%600%2C%60%601%7D%40%2CDotNext.ValueFunc%7B%60%600%2C%60%602%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ObjectExtensions.cs/#L128">View Source</a>
+  </span>
+  <a id="DotNext_ObjectExtensions_Decompose_" data-uid="DotNext.ObjectExtensions.Decompose*"></a>
+  <h4 id="DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2___" data-uid="DotNext.ObjectExtensions.Decompose``3(``0,DotNext.ValueFunc{``0,``1}@,DotNext.ValueFunc{``0,``2}@)">Decompose&lt;T, R1, R2&gt;(T, ValueFunc&lt;T, R1&gt;, ValueFunc&lt;T, R2&gt;)</h4>
+  <div class="markdown level1 summary"><p>Performs decomposition of object into tuple.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static (R1, R2) Decompose&lt;T, R1, R2&gt;(this T obj, in ValueFunc&lt;T, R1&gt; decomposer1, in ValueFunc&lt;T, R2&gt; decomposer2)
+
+    where T : class</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">obj</span></td>
+        <td><p>An object to decompose.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;T, R1&gt;</td>
+        <td><span class="parametername">decomposer1</span></td>
+        <td><p>First decomposition function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;T, R2&gt;</td>
+        <td><span class="parametername">decomposer2</span></td>
+        <td><p>Second decomposition function.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetuple-2">ValueTuple</a>&lt;R1, R2&gt;</td>
+        <td><p>Decomposition result.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>Type of object to decompose.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">R1</span></td>
+        <td><p>Type of the first decomposition result.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">R2</span></td>
+        <td><p>Type of the second decomposition result.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2_____1____2__.md&amp;value=---%0Auid%3A%20DotNext.ObjectExtensions.Decompose%60%603(%60%600%2CDotNext.ValueFunc%7B%60%600%2C%60%601%7D%40%2CDotNext.ValueFunc%7B%60%600%2C%60%602%7D%40%2C%60%601%40%2C%60%602%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ObjectExtensions.cs/#L97">View Source</a>
+  </span>
+  <a id="DotNext_ObjectExtensions_Decompose_" data-uid="DotNext.ObjectExtensions.Decompose*"></a>
+  <h4 id="DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2_____1____2__" data-uid="DotNext.ObjectExtensions.Decompose``3(``0,DotNext.ValueFunc{``0,``1}@,DotNext.ValueFunc{``0,``2}@,``1@,``2@)">Decompose&lt;T, R1, R2&gt;(T, ValueFunc&lt;T, R1&gt;, ValueFunc&lt;T, R2&gt;, out R1, out R2)</h4>
+  <div class="markdown level1 summary"><p>Performs decomposition of object into two values.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void Decompose&lt;T, R1, R2&gt;(this T obj, in ValueFunc&lt;T, R1&gt; decomposer1, in ValueFunc&lt;T, R2&gt; decomposer2, out R1 result1, out R2 result2)
+
+    where T : class</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">obj</span></td>
+        <td><p>An object to decompose.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;T, R1&gt;</td>
+        <td><span class="parametername">decomposer1</span></td>
+        <td><p>First decomposition function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;T, R2&gt;</td>
+        <td><span class="parametername">decomposer2</span></td>
+        <td><p>Second decomposition function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">R1</span></td>
+        <td><span class="parametername">result1</span></td>
+        <td><p>First decomposition result.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">R2</span></td>
+        <td><span class="parametername">result2</span></td>
+        <td><p>Second decomposition result.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>Type of object to decompose.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">R1</span></td>
+        <td><p>Type of the first decomposition result.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">R2</span></td>
+        <td><p>Type of the second decomposition result.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ObjectExtensions_GetUserData__1___0_.md&amp;value=---%0Auid%3A%20DotNext.ObjectExtensions.GetUserData%60%601(%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ObjectExtensions.cs/#L29">View Source</a>
+  </span>
+  <a id="DotNext_ObjectExtensions_GetUserData_" data-uid="DotNext.ObjectExtensions.GetUserData*"></a>
+  <h4 id="DotNext_ObjectExtensions_GetUserData__1___0_" data-uid="DotNext.ObjectExtensions.GetUserData``1(``0)">GetUserData&lt;T&gt;(T)</h4>
+  <div class="markdown level1 summary"><p>Provides ad-hoc approach to associate some data with the object
+without modification of it.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static UserDataStorage GetUserData&lt;T&gt;(this T obj)
+
+    where T : class</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">obj</span></td>
+        <td><p>Target object.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.UserDataStorage.html">UserDataStorage</a></td>
+        <td><p>User data storage.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_ObjectExtensions_GetUserData__1___0__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method allows to associate arbitrary user data with any object.
+User data storage is not a part of object type declaration.
+Modification of user data doesn't cause modification of internal state of the object.
+The storage is associated with the object reference.
+Any user data are transient and can't be passed across process boundaries (i.e. serialization is not supported)</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ObjectExtensions_IsOneOf__1___0___0___.md&amp;value=---%0Auid%3A%20DotNext.ObjectExtensions.IsOneOf%60%601(%60%600%2C%60%600%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ObjectExtensions.cs/#L67">View Source</a>
+  </span>
+  <a id="DotNext_ObjectExtensions_IsOneOf_" data-uid="DotNext.ObjectExtensions.IsOneOf*"></a>
+  <h4 id="DotNext_ObjectExtensions_IsOneOf__1___0___0___" data-uid="DotNext.ObjectExtensions.IsOneOf``1(``0,``0[])">IsOneOf&lt;T&gt;(T, T[])</h4>
+  <div class="markdown level1 summary"><p>Checks whether the specified object is equal to one
+of the specified objects.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool IsOneOf&lt;T&gt;(this T value, params T[] values)
+
+    where T : class</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The object to compare with other.</p>
+</td>
+      </tr>
+      <tr>
+        <td>T[]</td>
+        <td><span class="parametername">values</span></td>
+        <td><p>Candidate objects.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span>, if <code data-dev-comment-type="paramref" class="paramref">value</code> is equal to one of <code data-dev-comment-type="paramref" class="paramref">values</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of object to compare.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_ObjectExtensions_IsOneOf__1___0___0____remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method uses <see cref="!:object.Equals(object, object)"></see>
+to check equality between two objects.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ObjectExtensions_IsOneOf__1___0_IEnumerable___0__.md&amp;value=---%0Auid%3A%20DotNext.ObjectExtensions.IsOneOf%60%601(%60%600%2CIEnumerable%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ObjectExtensions.cs/#L46">View Source</a>
+  </span>
+  <a id="DotNext_ObjectExtensions_IsOneOf_" data-uid="DotNext.ObjectExtensions.IsOneOf*"></a>
+  <h4 id="DotNext_ObjectExtensions_IsOneOf__1___0_IEnumerable___0__" data-uid="DotNext.ObjectExtensions.IsOneOf``1(``0,IEnumerable{``0})">IsOneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Checks whether the specified object is equal to one
+of the specified objects.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool IsOneOf&lt;T&gt;(this T value, IEnumerable&lt;T&gt; values)
+
+    where T : class</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The object to compare with other.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">IEnumerable</span>&lt;T&gt;</td>
+        <td><span class="parametername">values</span></td>
+        <td><p>Candidate objects.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span>, if <code data-dev-comment-type="paramref" class="paramref">value</code> is equal to one of <code data-dev-comment-type="paramref" class="paramref">values</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of object to compare.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_ObjectExtensions_IsOneOf__1___0_IEnumerable___0___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method uses <see cref="!:object.Equals(object, object)"></see>
+to check equality between two objects.</p>
+</div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ObjectExtensions.md&amp;value=---%0Auid%3A%20DotNext.ObjectExtensions%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ObjectExtensions.cs/#L10" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

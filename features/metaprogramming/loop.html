@@ -1,0 +1,243 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Loops | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Loops | .NEXT ">
+    <meta name="generator" content="docfx 2.56.5.0">
+    
+    <link rel="shortcut icon" href="../../fav.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="loops">Loops</h1>
+
+<p>Metaprogramming library provides construction of <strong>for</strong>, <strong>foreach</strong> and <strong>while</strong> loops. The lexical scope constructor may have optional parameter of type <a href="../../api/DotNext.Metaprogramming.LoopContext.html">LoopContext</a> that can be used to leave outer loop from inner loop. There is no equivalent instruction in C# except unconditional control transfer using <strong>goto</strong>.</p>
+<p><code>Continue()</code> or <code>Break()</code> methods from <a href="../../api/DotNext.Metaprogramming.CodeGenerator.html">CodeGenerator</a> are used to pass the control to the next iteration or out of scope respectively.</p>
+<h1 id="foreach-loop">foreach Loop</h1>
+<p><strong>foreach</strong> statement may accept any expression of type implementing <a href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.ienumerable">IEnumerable</a> or <a href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable&lt;T&gt;</a> interface, or having public instance parameterless method <code>GetEnumerator()</code> which return type has the public instance property <code>Current</code> and public instance parameterless method <code>MoveNext()</code>.</p>
+<pre><code class="lang-csharp">using System;
+using static DotNext.Metaprogramming.CodeGenerator;
+
+Lambda&lt;Action&lt;string&gt;&gt;(fun =&gt; 
+{
+    ForEach(fun[0], ch =&gt;
+    {
+        WriteLine(ch);
+    });
+});
+
+//generated code is
+
+new Action&lt;string&gt;(str =&gt; 
+{
+    foreach (char ch in str)
+        Console.WriteLine(ch);
+});
+</code></pre>
+<p><code>ch</code> variable provides access to current element in the collection.</p>
+<h1 id="await-foreach-loop">await foreach Loop</h1>
+<p><strong>await foreach</strong> statement allows to enumerate over elements in asynchronous streams implementing <a href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.iasyncenumerable-1">IAsyncEnumerable&lt;T&gt;</a> interface.</p>
+<pre><code class="lang-csharp">using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using static DotNext.Metaprogramming.CodeGenerator;
+
+AsyncLambda&lt;Func&lt;IAsyncEnumerable&lt;char&gt;, Task&gt;&gt;(fun =&gt; 
+{
+    AwaitForEach(fun[0], ch =&gt;
+    {
+        WriteLine(ch);
+    });
+});
+
+//generated code is
+
+new Func&lt;IAsyncEnumerable&lt;char&gt;, Task&gt;(async str =&gt; 
+{
+    await foreach (char ch in str)
+        Console.WriteLine(ch);
+});
+</code></pre>
+<p>This type of statement is allowed within async lambda expression only.</p>
+<h1 id="while-loop">while Loop</h1>
+<p><strong>while</strong> loop statement is supported in two forms: <em>while-do</em> or <em>do-while</em>. Both forms are representing regular <strong>while</strong> loop existing in most popular languages such as C#, C++ and C.</p>
+<pre><code class="lang-csharp">using System;
+using System.Linq.Expressions;
+using static DotNext.Metaprogramming.CodeGenerator;
+using static DotNext.Linq.Expressions.ExpressionBuilder;
+
+Lambda&lt;Fun&lt;long, long&gt;&gt;((fun, result) =&gt; 
+{
+    var arg = fun[0];
+    Assign(result, 1L);  //result = 1L;
+    While((Expression)(arg.AsDynamic() &gt; 1L), () =&gt; 
+	{
+        Assign(result, arg.AsDynamic()-- * fun.Result);  //result *= arg--;
+    });
+});
+
+//generated code is
+
+new Func&lt;long, long&gt;(arg =&gt; 
+{
+    var result = 1L;
+    while (arg &gt; 1L)
+        result *= arg--;
+    return result;
+});
+</code></pre>
+<p><strong>do-while</strong> loop can be constructed using <code>DoWhile</code> method.</p>
+<h1 id="for-loop">for Loop</h1>
+<p><strong>for</strong> loop implementation in Metaprogramming library has many similarities with implementation in other C-like languages with one exception: <em>increment</em> (or <em>post iteration</em>) statement is optional, has access to the local variables declared inside of the loop and can be a compount statement. This statement is separated from main loop body with a special method call <code>StartIteratorBlock</code>.</p>
+<pre><code class="lang-csharp">using System;
+using static DotNext.Metaprogramming.CodeGenerator;
+using static DotNext.Linq.Expressions.ExpressionBuilder;
+
+Lambda&lt;Fun&lt;long, long&gt;&gt;((fun, result) =&gt; 
+{
+    Assign(result, 1L);  //result = 1L;
+    For(fun[0], i =&gt; i.AsDynamic() &gt; 1L, i =&gt; PostDecrementAssign(i), i =&gt; 
+    {
+        Assign(result, i.AsDynamic() * result);    //result *= i;
+    });
+});
+
+//generated code is
+
+new Func&lt;long, long&gt;(arg =&gt; 
+{
+    var result = 1L;
+    for (var i = arg; i &gt; 1L; i--)
+        result *= i;
+    return result;
+});
+</code></pre>
+<h1 id="plain-loop">Plain Loop</h1>
+<p>Plain loop is similar to <code>while(true)</code> loop and doesn't have built-in loop control tools. Developer need to control loop execution by calling <code>Continue()</code> and <code>Break</code> manually.</p>
+<pre><code class="lang-csharp">using System;
+using static DotNext.Metaprogramming.CodeGenerator;
+using static DotNext.Linq.Expressions.ExpressionBuilder;
+
+Lambda&lt;Fun&lt;long, long&gt;&gt;((fun, result) =&gt; 
+{
+    var arg = fun[0];
+    Assign(result, 1L);  //result = 1L;
+    Loop(() =&gt; 
+    {
+        If((Expression)(arg.AsDynamic() &gt; 1L))
+            .Then(() =&gt; Assign(result, arg.AsDynamic()-- * result))
+            .Else(Break)  //break;
+        .End();
+    });
+});
+
+//generated code is
+new Func&lt;long, long&gt;(arg =&gt; 
+{
+    var result = 1L;
+    while (true)
+        if(arg &gt; 1L)
+            result *= arg--;
+        else
+            break;
+    return true;
+});
+</code></pre>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/docs/features/metaprogramming/loop.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In This Article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

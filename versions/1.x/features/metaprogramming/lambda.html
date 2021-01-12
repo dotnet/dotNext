@@ -1,0 +1,175 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Multi-line Lambdas | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Multi-line Lambdas | .NEXT ">
+    <meta name="generator" content="docfx 2.48.0.0">
+    
+    <link rel="shortcut icon" href="../../fav.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="multi-line-lambdas">Multi-line Lambdas</h1>
+
+<p>Expression Trees in C# doesn't support multi-line lambda expressions. This limitation can be avoided using <a href="../../api/DotNext.Metaprogramming.CodeGenerator.html">CodeGenerator.Lambda</a> construction method. The method accepts lexical scope of the lambda expression in the form of the delegate and provides access to parameters.</p>
+<p>The following example shows how to generate lambda function which performs factorial computation using recursion:</p>
+<pre><code class="lang-csharp">using System;
+using static DotNext.Metaprogramming.CodeGenerator;
+using U = DotNext.Linq.Expressions.UniversalExpression;
+
+Func&lt;long, long&gt; fact = Lambda&lt;Func&lt;long, long&gt;&gt;(fun =&gt; 
+{
+    var arg = (U)fun[0];
+    If(arg &gt; 1L)
+        .Then(arg * fun.Invoke(arg - 1L))
+        .Else(arg)
+		.OfType&lt;long&gt;()
+    .End();
+}).Compile();
+fact(3);    // == 6
+</code></pre>
+<p><code>fun</code> parameter is of type <a href="../../api/DotNext.Metaprogramming.LambdaContext.html">LambdaContext</a> and provide access to the function parameters. <code>arg</code> local variable is just a conversion of the lambda function parameter into <a href="universal.html">Universal Expression</a>. <code>If</code> starts construction of <em>if-then-else</em> expression. <code>fun.Invoke</code> method allows to invoke lambda function recursively. <code>OfType</code> describes type of conditional expression that was started by <code>If</code> call. <code>End</code> method call represents end of conditional expression.</p>
+<p><code>LambdaContext</code> type supports decomposition so it is possible to use convenient syntax to obtain function parameters:</p>
+<pre><code class="lang-csharp">using System;
+using static DotNext.Metaprogramming.CodeGenerator;
+using U = DotNext.Linq.Expressions.UniversalExpression;
+
+Lambda&lt;Func&lt;int, int, int&gt;&gt;(fun =&gt; 
+{
+  var (x, y) = fun;
+  Return((U)x + y);
+});
+</code></pre>
+<p>The last expression inside of lamda function is interpreted as return value. However, explicit return is supported.</p>
+<pre><code class="lang-csharp">using System;
+using static DotNext.Metaprogramming.CodeGenerator;
+using U = DotNext.Linq.Expressions.UniversalExpression;
+
+Func&lt;long, bool&gt; isZero = Lambda&lt;Func&lt;long, bool&gt;&gt;(fun =&gt; 
+{
+    var arg = (U)fun[0];
+    If(arg != 0L)
+        .Then(() =&gt; Return(true))
+        .Else(() =&gt; Return(false))
+    .End();
+}).Compile();
+</code></pre>
+<p>The equivalent code is</p>
+<pre><code class="lang-csharp">using System;
+
+new Func&lt;long, long&gt;(arg =&gt; 
+{
+    if(arg != 0L)
+        return true;
+    else
+        return false;
+});
+</code></pre>
+<h1 id="implicit-result">Implicit result</h1>
+<p>Lambda function builder can have optional <em>result</em> variable which is used to set function result without returning from it.</p>
+<pre><code class="lang-csharp">using System;
+using static DotNext.Metaprogramming.CodeGenerator;
+
+Lambda&lt;Fun&lt;long, long&gt;&gt;((fun, result) =&gt; 
+{
+    Assign(result, fun[0]);
+});
+</code></pre>
+<p>This feature is similar to <em>result</em> implicit variable in <a href="https://www.freepascal.org/docs-html/ref/refse90.html">Pascal</a> programming language. Once result assigned, it is not needed to use explicit <em>Return</em> method to return from the lambda function.</p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/docs/features/metaprogramming/lambda.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

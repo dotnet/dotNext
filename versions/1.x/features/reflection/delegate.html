@@ -1,0 +1,162 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Open and Closed Delegates | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Open and Closed Delegates | .NEXT ">
+    <meta name="generator" content="docfx 2.48.0.0">
+    
+    <link rel="shortcut icon" href="../../fav.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="open-and-closed-delegates">Open and Closed Delegates</h1>
+
+<p>Common Language Runtime supports <a href="https://docs.microsoft.com/en-us/dotnet/api/system.delegate.createdelegate#System_Delegate_CreateDelegate_System_Type_System_Object_System_String_System_Boolean_">open and closed delegates</a> but there is no native support of them at syntax level in C#. Java supports <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html">method references</a> to do that. C# syntactically supports closed delegate based created from instance method or open delegate created from static method.</p>
+<p>Additionally, there is no way to create a delegate instance from property getter, index property or overloaded implicit/explicit type cast operator. <a href="../../api/DotNext.DelegateHelpers.html">DelegateHelpers</a> class offers two methods to provide necessary syntactic sugar:</p>
+<ul>
+<li><code>CreateOpenDelegate</code> to create open delegate based on instance method, property, indexer, or overloaded operator</li>
+<li><code>CreateClosedDelegateFactory</code> to create closed delegate based on static method, indexer, or overloaded operator</li>
+</ul>
+<h1 id="open-delegates">Open Delegates</h1>
+<p>Open delegate allows to pass <strong>this</strong> argument explicitly. The only way to do that in C# is to use lambda expression or static method to express this capability:</p>
+<pre><code class="lang-csharp">using System.Collections;
+
+var sizeOf = new Func&lt;ICollection, int&gt;(collection =&gt; collection.Count);
+</code></pre>
+<p>This approach generates unecessary hidden statis method which is used to create instance of <code>Predicate</code> delegate. <code>CreateOpenDelegate</code> allows to create open delegate without usage of non-intuitive method <a href="https://docs.microsoft.com/en-us/dotnet/api/system.delegate.createdelegate#System_Delegate_CreateDelegate_System_Type_System_Object_System_String_System_Boolean_">Delegate.CreateDelegate</a>.</p>
+<pre><code class="lang-csharp">using DotNext;
+using System.Collections;
+
+var sizeOf = DelegateHelpers.CreateOpenDelegate&lt;Func&lt;ICollection, int&gt;&gt;(collection =&gt; collection.Count);
+</code></pre>
+<p><code>sizeOf</code> delegate instance representing <code>get_Count</code> getter method directly instead of wrapping it into static method.</p>
+<div class="WARNING">
+<h5>Warning</h5>
+<p><code>CreateOpenDelegate</code> method utilizes Expression Trees feature of C# programming language. There is no free lunch and you paying for such convenience by performance when instantiating delegate instead of <code>CreateDelegate</code>. That's why it is recommended to create such delegates statically and save them into <strong>static readonly</strong> fields. However, <code>CreateOpenDelegate</code> doesn't use dynamic code compilation feature.</p>
+</div>
+<p>This method is suitable for capturing overloaded operator.</p>
+<pre><code class="lang-csharp">var decimalToInt = DelegateHelpers.CreateOpenDelegate&lt;Func&lt;int, decimal&gt;&gt;(i =&gt; (decimal) i);
+
+decimal d = decimalToInt(42);
+</code></pre>
+<p>Built-in operators cannot be captured as delegates and method return <strong>null</strong>.</p>
+<h1 id="closed-delegates">Closed Delegates</h1>
+<p>Closed delegates allows to pass the first argument into static method implicitly (through <a href="https://docs.microsoft.com/en-us/dotnet/api/system.delegate.target#System_Delegate_Target">Target</a> property). The only way to create closed delegate in C# is to use extension method or closure:</p>
+<pre><code class="lang-csharp">var str = &quot;Hello, world!&quot;;
+var isEmpty = new Func&lt;bool&gt;(() =&gt; string.IsNullOrEmpty(str));
+</code></pre>
+<p>Roslyn Compiler generates anonymous type to capture <code>str</code> local variable and instance method in such type that matches to signature of delegate <code>Func&lt;bool&gt;</code>.</p>
+<p>You can avoid this with some trick from .NEXT library:</p>
+<pre><code class="lang-csharp">using DotNext;
+
+var str = &quot;Hello, world&quot;;
+Func&lt;bool&gt; isEmpty = new Func&lt;string, bool&gt;(string.IsNullOrEmpty).Method.CreateDelegate&lt;Func&lt;bool&gt;&gt;(str);
+</code></pre>
+<p>It is better, but we loosing readability of code. The same behavior can be achieved using <code>CreateClosedDelegateFactory</code>:</p>
+<pre><code class="lang-csharp">using DotNext;
+
+var str1 = &quot;&quot;;
+var str2 = &quot;Hello, world&quot;;
+
+var factory = DelegateHelpers.CreateClosedDelegateFactory&lt;Func&lt;bool&gt;&gt;(() =&gt; string.IsNullOrEmpty(default(string)));
+Func&lt;bool&gt; isEmpty1 = factory(str1);
+Func&lt;bool&gt; isEmpty2 = factory(str2);
+</code></pre>
+<p>The factory returned by method <code>CreateClosedDelegateFactory</code> can be used to create closed delegate instance through passing the first implicit argument into it. This approach doesn't produce anonymous type. Instead of this, captured implicit argument stored in <a href="https://docs.microsoft.com/en-us/dotnet/api/system.delegate.target#System_Delegate_Target">Target</a> property and passed into the method automatically by CLR.</p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/docs/features/reflection/delegate.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

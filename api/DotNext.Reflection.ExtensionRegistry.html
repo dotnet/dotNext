@@ -1,0 +1,548 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class ExtensionRegistry
+   | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class ExtensionRegistry
+   | .NEXT ">
+    <meta name="generator" content="docfx 2.56.5.0">
+    
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Reflection.ExtensionRegistry">
+  
+  
+  <h1 id="DotNext_Reflection_ExtensionRegistry" data-uid="DotNext.Reflection.ExtensionRegistry" class="text-break">Class ExtensionRegistry
+  </h1>
+  <div class="markdown level0 summary"><p>Represents registry of extension methods that can be registered
+for the specified type and be available using strongly typed reflection via <a class="xref" href="DotNext.Reflection.Type-1.html">Type&lt;T&gt;</a>.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level1"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.concurrent.concurrentbag-1">ConcurrentBag</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.methodinfo">MethodInfo</a>&gt;</div>
+    <div class="level2"><span class="xref">ExtensionRegistry</span></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.concurrent.iproducerconsumercollection-1">IProducerConsumerCollection</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.methodinfo">MethodInfo</a>&gt;</div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.icollection">ICollection</a></div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ireadonlycollection-1">IReadOnlyCollection</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.methodinfo">MethodInfo</a>&gt;</div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.methodinfo">MethodInfo</a>&gt;</div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.ienumerable">IEnumerable</a></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.concurrent.concurrentbag-1.add#System_Collections_Concurrent_ConcurrentBag_1_Add__0_">ConcurrentBag&lt;MethodInfo&gt;.Add(MethodInfo)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.concurrent.concurrentbag-1.clear#System_Collections_Concurrent_ConcurrentBag_1_Clear">ConcurrentBag&lt;MethodInfo&gt;.Clear()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.concurrent.concurrentbag-1.copyto#System_Collections_Concurrent_ConcurrentBag_1_CopyTo__0___System_Int32_">ConcurrentBag&lt;MethodInfo&gt;.CopyTo(MethodInfo[], Int32)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.concurrent.concurrentbag-1.getenumerator#System_Collections_Concurrent_ConcurrentBag_1_GetEnumerator">ConcurrentBag&lt;MethodInfo&gt;.GetEnumerator()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.concurrent.concurrentbag-1.system-collections-concurrent-iproducerconsumercollection-t--tryadd#System_Collections_Concurrent_ConcurrentBag_1_System_Collections_Concurrent_IProducerConsumerCollection_T__TryAdd__0_">ConcurrentBag&lt;MethodInfo&gt;.IProducerConsumerCollection&lt;MethodInfo&gt;.TryAdd(MethodInfo)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.concurrent.concurrentbag-1.system-collections-icollection-copyto#System_Collections_Concurrent_ConcurrentBag_1_System_Collections_ICollection_CopyTo_System_Array_System_Int32_">ConcurrentBag&lt;MethodInfo&gt;.ICollection.CopyTo(Array, Int32)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.concurrent.concurrentbag-1.system-collections-ienumerable-getenumerator#System_Collections_Concurrent_ConcurrentBag_1_System_Collections_IEnumerable_GetEnumerator">ConcurrentBag&lt;MethodInfo&gt;.IEnumerable.GetEnumerator()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.concurrent.concurrentbag-1.toarray#System_Collections_Concurrent_ConcurrentBag_1_ToArray">ConcurrentBag&lt;MethodInfo&gt;.ToArray()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.concurrent.concurrentbag-1.trypeek#System_Collections_Concurrent_ConcurrentBag_1_TryPeek__0__">ConcurrentBag&lt;MethodInfo&gt;.TryPeek(MethodInfo)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.concurrent.concurrentbag-1.trytake#System_Collections_Concurrent_ConcurrentBag_1_TryTake__0__">ConcurrentBag&lt;MethodInfo&gt;.TryTake(MethodInfo)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.concurrent.concurrentbag-1.count#System_Collections_Concurrent_ConcurrentBag_1_Count">ConcurrentBag&lt;MethodInfo&gt;.Count</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.concurrent.concurrentbag-1.isempty#System_Collections_Concurrent_ConcurrentBag_1_IsEmpty">ConcurrentBag&lt;MethodInfo&gt;.IsEmpty</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.concurrent.concurrentbag-1.system-collections-icollection-issynchronized#System_Collections_Concurrent_ConcurrentBag_1_System_Collections_ICollection_IsSynchronized">ConcurrentBag&lt;MethodInfo&gt;.ICollection.IsSynchronized</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.concurrent.concurrentbag-1.system-collections-icollection-syncroot#System_Collections_Concurrent_ConcurrentBag_1_System_Collections_ICollection_SyncRoot">ConcurrentBag&lt;MethodInfo&gt;.ICollection.SyncRoot</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Reflection.html">DotNext.Reflection</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.Reflection.dll</h6>
+  <h5 id="DotNext_Reflection_ExtensionRegistry_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed class ExtensionRegistry : ConcurrentBag&lt;MethodInfo&gt;, IProducerConsumerCollection&lt;MethodInfo&gt;, ICollection, IReadOnlyCollection&lt;MethodInfo&gt;, IEnumerable&lt;MethodInfo&gt;, IEnumerable</code></pre>
+  </div>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_ExtensionRegistry_RegisterInstance_System_Reflection_MethodInfo_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.ExtensionRegistry.RegisterInstance(System.Reflection.MethodInfo)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/ExtensionRegistry.cs/#L94">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_ExtensionRegistry_RegisterInstance_" data-uid="DotNext.Reflection.ExtensionRegistry.RegisterInstance*"></a>
+  <h4 id="DotNext_Reflection_ExtensionRegistry_RegisterInstance_System_Reflection_MethodInfo_" data-uid="DotNext.Reflection.ExtensionRegistry.RegisterInstance(System.Reflection.MethodInfo)">RegisterInstance(MethodInfo)</h4>
+  <div class="markdown level1 summary"><p>Registers extension method as instance method which will be included into strongly typed
+reflection lookup performed by <a class="xref" href="DotNext.Reflection.Type-1.Method.html#DotNext_Reflection_Type_1_Method_Get__1_System_String_DotNext_Reflection_MethodLookup_System_Boolean_">Get&lt;TSignature&gt;(String, MethodLookup, Boolean)</a> and related methods.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void RegisterInstance(MethodInfo method)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.methodinfo">MethodInfo</a></td>
+        <td><span class="parametername">method</span></td>
+        <td><p>Static method to register. Cannot be <span class="xref">null</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_ExtensionRegistry_RegisterInstance__1___0_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.ExtensionRegistry.RegisterInstance%60%601(%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/ExtensionRegistry.cs/#L109">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_ExtensionRegistry_RegisterInstance_" data-uid="DotNext.Reflection.ExtensionRegistry.RegisterInstance*"></a>
+  <h4 id="DotNext_Reflection_ExtensionRegistry_RegisterInstance__1___0_" data-uid="DotNext.Reflection.ExtensionRegistry.RegisterInstance``1(``0)">RegisterInstance&lt;TExtension&gt;(TExtension)</h4>
+  <div class="markdown level1 summary"><p>Registers extension method which will be included into strongly typed
+reflection lookup performed by <a class="xref" href="DotNext.Reflection.Reflector.html#DotNext_Reflection_Reflector_Unreflect__1_System_Reflection_MethodInfo_">Unreflect&lt;TDelegate&gt;(MethodInfo)</a>
+or <a class="xref" href="DotNext.Reflection.Type-1.Method.html#DotNext_Reflection_Type_1_Method_Get__1_System_String_DotNext_Reflection_MethodLookup_System_Boolean_">Get&lt;TSignature&gt;(String, MethodLookup, Boolean)</a> methods.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void RegisterInstance&lt;TExtension&gt;(TExtension delegate)
+
+    where TExtension : Delegate</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TExtension</span></td>
+        <td><span class="parametername">delegate</span></td>
+        <td><p>The delegate instance representing extension method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TExtension</span></td>
+        <td><p>The type of the delegate.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_ExtensionRegistry_RegisterStatic__1_System_Reflection_MethodInfo_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.ExtensionRegistry.RegisterStatic%60%601(System.Reflection.MethodInfo)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/ExtensionRegistry.cs/#L76">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_ExtensionRegistry_RegisterStatic_" data-uid="DotNext.Reflection.ExtensionRegistry.RegisterStatic*"></a>
+  <h4 id="DotNext_Reflection_ExtensionRegistry_RegisterStatic__1_System_Reflection_MethodInfo_" data-uid="DotNext.Reflection.ExtensionRegistry.RegisterStatic``1(System.Reflection.MethodInfo)">RegisterStatic&lt;T&gt;(MethodInfo)</h4>
+  <div class="markdown level1 summary"><p>Registers static method for the specified type in ad-hoc manner so
+it will be available using <a class="xref" href="DotNext.Reflection.Type-1.Method.html#DotNext_Reflection_Type_1_Method_Get__1_System_String_DotNext_Reflection_MethodLookup_System_Boolean_">Get&lt;TSignature&gt;(String, MethodLookup, Boolean)</a> and related methods.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void RegisterStatic&lt;T&gt;(MethodInfo method)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.methodinfo">MethodInfo</a></td>
+        <td><span class="parametername">method</span></td>
+        <td><p>The static method implementation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type to be extended with static method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_ExtensionRegistry_RegisterStatic__2___1_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.ExtensionRegistry.RegisterStatic%60%602(%60%601)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/ExtensionRegistry.cs/#L85">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_ExtensionRegistry_RegisterStatic_" data-uid="DotNext.Reflection.ExtensionRegistry.RegisterStatic*"></a>
+  <h4 id="DotNext_Reflection_ExtensionRegistry_RegisterStatic__2___1_" data-uid="DotNext.Reflection.ExtensionRegistry.RegisterStatic``2(``1)">RegisterStatic&lt;T, TExtension&gt;(TExtension)</h4>
+  <div class="markdown level1 summary"><p>Registers static method for the specified type in ad-hoc manner so
+it will be available using <a class="xref" href="DotNext.Reflection.Type-1.Method.html#DotNext_Reflection_Type_1_Method_Get__1_System_String_DotNext_Reflection_MethodLookup_System_Boolean_">Get&lt;TSignature&gt;(String, MethodLookup, Boolean)</a> and related methods.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void RegisterStatic&lt;T, TExtension&gt;(TExtension delegate)
+
+    where TExtension : Delegate</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TExtension</span></td>
+        <td><span class="parametername">delegate</span></td>
+        <td><p>The delegate instance representing extension method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type to be extended with static method.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">TExtension</span></td>
+        <td><p>The type of the delegate.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.concurrent.iproducerconsumercollection-1">System.Collections.Concurrent.IProducerConsumerCollection&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.icollection">System.Collections.ICollection</a>
+  </div>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ireadonlycollection-1">System.Collections.Generic.IReadOnlyCollection&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">System.Collections.Generic.IEnumerable&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.ienumerable">System.Collections.IEnumerable</a>
+  </div>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireUpgradeableReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireUpgradeableReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_GetUserData__1___0_">ObjectExtensions.GetUserData&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0_System_Collections_Generic_IEnumerable___0__">ObjectExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, T[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2____1____2__">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, Func&lt;T, TResult1&gt;, Func&lt;T, TResult2&gt;, out TResult1, out TResult2)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2_____1____2__">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, ValueFunc&lt;T, TResult1&gt;, ValueFunc&lt;T, TResult2&gt;, out TResult1, out TResult2)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2__">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, Func&lt;T, TResult1&gt;, Func&lt;T, TResult2&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2___">ObjectExtensions.Decompose&lt;T, TResult1, TResult2&gt;(T, ValueFunc&lt;T, TResult1&gt;, ValueFunc&lt;T, TResult2&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_As__1___0_">ObjectExtensions.As&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_">LockAcquisition.AcquireReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_System_TimeSpan_">LockAcquisition.AcquireReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_System_TimeSpan_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_System_TimeSpan_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_Convert__2_System_Collections_Generic_IReadOnlyCollection___0__DotNext_ValueFunc___0___1___">Collection.Convert&lt;TInput, TOutput&gt;(IReadOnlyCollection&lt;TInput&gt;, ValueFunc&lt;TInput, TOutput&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_Convert__2_System_Collections_Generic_IReadOnlyCollection___0__System_Converter___0___1__">Collection.Convert&lt;TInput, TOutput&gt;(IReadOnlyCollection&lt;TInput&gt;, Converter&lt;TInput, TOutput&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_ToAsyncEnumerable__1_System_Collections_Generic_IEnumerable___0__">Sequence.ToAsyncEnumerable&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_GetAsyncEnumerator__1_System_Collections_Generic_IEnumerable___0__System_Threading_CancellationToken_">Sequence.GetAsyncEnumerator&lt;T&gt;(IEnumerable&lt;T&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_GetConsumer__1_System_Collections_Concurrent_IProducerConsumerCollection___0__">Sequence.GetConsumer&lt;T&gt;(IProducerConsumerCollection&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_SequenceHashCode_System_Collections_Generic_IEnumerable_System_Object__System_Boolean_">Sequence.SequenceHashCode(IEnumerable&lt;Object&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_ForEach__1_System_Collections_Generic_IEnumerable___0__System_Action___0__">Sequence.ForEach&lt;T&gt;(IEnumerable&lt;T&gt;, Action&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_ForEach__1_System_Collections_Generic_IEnumerable___0__DotNext_ValueAction___0___">Sequence.ForEach&lt;T&gt;(IEnumerable&lt;T&gt;, ValueAction&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_ForEachAsync__1_System_Collections_Generic_IEnumerable___0__System_Func___0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__System_Threading_CancellationToken_">Sequence.ForEachAsync&lt;T&gt;(IEnumerable&lt;T&gt;, Func&lt;T, CancellationToken, ValueTask&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_ForEachAsync__1_System_Collections_Generic_IEnumerable___0__DotNext_ValueFunc___0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__System_Threading_CancellationToken_">Sequence.ForEachAsync&lt;T&gt;(IEnumerable&lt;T&gt;, ValueFunc&lt;T, CancellationToken, ValueTask&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_FirstOrEmpty__1_System_Collections_Generic_IEnumerable___0__">Sequence.FirstOrEmpty&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_FirstOrEmpty__1_System_Collections_Generic_IEnumerable___0__DotNext_ValueFunc___0_System_Boolean___">Sequence.FirstOrEmpty&lt;T&gt;(IEnumerable&lt;T&gt;, ValueFunc&lt;T, Boolean&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_FirstOrEmpty__1_System_Collections_Generic_IEnumerable___0__System_Predicate___0__">Sequence.FirstOrEmpty&lt;T&gt;(IEnumerable&lt;T&gt;, Predicate&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_ElementAt__1_System_Collections_Generic_IEnumerable___0__System_Int32___0__">Sequence.ElementAt&lt;T&gt;(IEnumerable&lt;T&gt;, Int32, out T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_SkipNulls__1_System_Collections_Generic_IEnumerable___0__">Sequence.SkipNulls&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_ToString__1_System_Collections_Generic_IEnumerable___0__System_String_System_String_">Sequence.ToString&lt;T&gt;(IEnumerable&lt;T&gt;, String, String)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_Prepend__1_System_Collections_Generic_IEnumerable___0____0___">Sequence.Prepend&lt;T&gt;(IEnumerable&lt;T&gt;, T[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_Append__1_System_Collections_Generic_IEnumerable___0____0___">Sequence.Append&lt;T&gt;(IEnumerable&lt;T&gt;, T[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_ExtensionRegistry.md&amp;value=---%0Auid%3A%20DotNext.Reflection.ExtensionRegistry%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/ExtensionRegistry.cs/#L16" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In This Article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

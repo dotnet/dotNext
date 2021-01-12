@@ -1,0 +1,11 @@
+NoConsensus=There is no consensus in the cluster
+ReplicationRejected=Cluster member rejects replication
+CannotRemoveLocalNode=Local node cannot be removed
+EntrySetIsEmpty=Unable to append empty set of entries
+LocalNodeNotLeader=The local cluster member is not a leader
+InvalidEntryIndex=Log entry with index {0} doesn't exist in the audit trail
+InvalidAppendIndex=Committed log entry cannot be overwritten
+SnapshotDetected=The method cannot be used for snapshot installation
+RangeTooBig=The requested range is too big
+UnexpectedError=The unexpected exception occurred
+NoAvailableReadSessions=Lack of available read sessions is encountered by persistent audit trail

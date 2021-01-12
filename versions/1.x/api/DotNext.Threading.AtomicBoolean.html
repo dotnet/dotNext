@@ -1,0 +1,1164 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Struct AtomicBoolean
+   | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Struct AtomicBoolean
+   | .NEXT ">
+    <meta name="generator" content="docfx 2.48.0.0">
+    
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Threading.AtomicBoolean">
+  
+  
+  <h1 id="DotNext_Threading_AtomicBoolean" data-uid="DotNext.Threading.AtomicBoolean" class="text-break">Struct AtomicBoolean
+  </h1>
+  <div class="markdown level0 summary"><p>Represents atomic boolean.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><span class="xref">IEquatable</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;</div>
+    <div><span class="xref">ISerializable</span></div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Threading.html">DotNext.Threading</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.dll</h6>
+  <h5 id="DotNext_Threading_AtomicBoolean_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public struct AtomicBoolean : IEquatable&lt;bool&gt;, ISerializable</code></pre>
+  </div>
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicBoolean__ctor_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicBoolean.%23ctor(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicBoolean.cs/#L27">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicBoolean__ctor_" data-uid="DotNext.Threading.AtomicBoolean.#ctor*"></a>
+  <h4 id="DotNext_Threading_AtomicBoolean__ctor_System_Boolean_" data-uid="DotNext.Threading.AtomicBoolean.#ctor(System.Boolean)">AtomicBoolean(Boolean)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new atomic boolean container with initial value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public AtomicBoolean(bool value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Initial value of the atomic boolean.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicBoolean_Value.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicBoolean.Value%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicBoolean.cs/#L38">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicBoolean_Value_" data-uid="DotNext.Threading.AtomicBoolean.Value*"></a>
+  <h4 id="DotNext_Threading_AtomicBoolean_Value" data-uid="DotNext.Threading.AtomicBoolean.Value">Value</h4>
+  <div class="markdown level1 summary"><p>Gets or sets boolean value in volatile manner.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool Value { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicBoolean_AccumulateAndGet_System_Boolean_DotNext_Func_System_Boolean_System_Boolean_System_Boolean__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicBoolean.AccumulateAndGet(System.Boolean%2CDotNext.Func%7BSystem.Boolean%2CSystem.Boolean%2CSystem.Boolean%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicBoolean.cs/#L161">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicBoolean_AccumulateAndGet_" data-uid="DotNext.Threading.AtomicBoolean.AccumulateAndGet*"></a>
+  <h4 id="DotNext_Threading_AtomicBoolean_AccumulateAndGet_System_Boolean_DotNext_Func_System_Boolean_System_Boolean_System_Boolean__" data-uid="DotNext.Threading.AtomicBoolean.AccumulateAndGet(System.Boolean,DotNext.Func{System.Boolean,System.Boolean,System.Boolean})">AccumulateAndGet(Boolean, Func&lt;Boolean, Boolean, Boolean&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the current value with the results of applying the given function
+to the current and given values, returning the updated value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool AccumulateAndGet(bool x, Func&lt;bool, bool, bool&gt; accumulator)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>Accumulator operand.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">DotNext.Func</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;</td>
+        <td><span class="parametername">accumulator</span></td>
+        <td><p>A side-effect-free function of two arguments</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p>The updated value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicBoolean_AccumulateAndGet_System_Boolean_DotNext_Func_System_Boolean_System_Boolean_System_Boolean___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The function is applied with the current value as its first argument, and the given update as the second argument.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicBoolean_AccumulateAndGet_System_Boolean_DotNext_ValueFunc_System_Boolean_System_Boolean_System_Boolean___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicBoolean.AccumulateAndGet(System.Boolean%2CDotNext.ValueFunc%7BSystem.Boolean%2CSystem.Boolean%2CSystem.Boolean%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicBoolean.cs/#L174">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicBoolean_AccumulateAndGet_" data-uid="DotNext.Threading.AtomicBoolean.AccumulateAndGet*"></a>
+  <h4 id="DotNext_Threading_AtomicBoolean_AccumulateAndGet_System_Boolean_DotNext_ValueFunc_System_Boolean_System_Boolean_System_Boolean___" data-uid="DotNext.Threading.AtomicBoolean.AccumulateAndGet(System.Boolean,DotNext.ValueFunc{System.Boolean,System.Boolean,System.Boolean}@)">AccumulateAndGet(Boolean, ValueFunc&lt;Boolean, Boolean, Boolean&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the current value with the results of applying the given function
+to the current and given values, returning the updated value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool AccumulateAndGet(bool x, in ValueFunc&lt;bool, bool, bool&gt; accumulator)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>Accumulator operand.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-3.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;</td>
+        <td><span class="parametername">accumulator</span></td>
+        <td><p>A side-effect-free function of two arguments</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p>The updated value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicBoolean_AccumulateAndGet_System_Boolean_DotNext_ValueFunc_System_Boolean_System_Boolean_System_Boolean____remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The function is applied with the current value as its first argument, and the given update as the second argument.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicBoolean_CompareAndSet_System_Boolean_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicBoolean.CompareAndSet(System.Boolean%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicBoolean.cs/#L75">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicBoolean_CompareAndSet_" data-uid="DotNext.Threading.AtomicBoolean.CompareAndSet*"></a>
+  <h4 id="DotNext_Threading_AtomicBoolean_CompareAndSet_System_Boolean_System_Boolean_" data-uid="DotNext.Threading.AtomicBoolean.CompareAndSet(System.Boolean,System.Boolean)">CompareAndSet(Boolean, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Atomically sets referenced value to the given updated value if the current value == the expected value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool CompareAndSet(bool expected, bool update)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">expected</span></td>
+        <td><p>The expected value.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">update</span></td>
+        <td><p>The new value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if successful. <span class="xref">false</span> return indicates that the actual value was not equal to the expected value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicBoolean_CompareExchange_System_Boolean_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicBoolean.CompareExchange(System.Boolean%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicBoolean.cs/#L65">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicBoolean_CompareExchange_" data-uid="DotNext.Threading.AtomicBoolean.CompareExchange*"></a>
+  <h4 id="DotNext_Threading_AtomicBoolean_CompareExchange_System_Boolean_System_Boolean_" data-uid="DotNext.Threading.AtomicBoolean.CompareExchange(System.Boolean,System.Boolean)">CompareExchange(Boolean, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Atomically sets referenced value to the given updated value if the current value == the expected value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool CompareExchange(bool update, bool expected)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">update</span></td>
+        <td><p>The new value.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">expected</span></td>
+        <td><p>The expected value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p>The original value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicBoolean_Equals_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicBoolean.Equals(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicBoolean.cs/#L251">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicBoolean_Equals_" data-uid="DotNext.Threading.AtomicBoolean.Equals*"></a>
+  <h4 id="DotNext_Threading_AtomicBoolean_Equals_System_Boolean_" data-uid="DotNext.Threading.AtomicBoolean.Equals(System.Boolean)">Equals(Boolean)</h4>
+  <div class="markdown level1 summary"><p>Determines whether stored value is equal to value passed as argument.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool Equals(bool other)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">other</span></td>
+        <td><p>Other value to compare.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span>, if stored value is equal to other value; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicBoolean_Equals_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicBoolean.Equals(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicBoolean.cs/#L265">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicBoolean_Equals_" data-uid="DotNext.Threading.AtomicBoolean.Equals*"></a>
+  <h4 id="DotNext_Threading_AtomicBoolean_Equals_System_Object_" data-uid="DotNext.Threading.AtomicBoolean.Equals(System.Object)">Equals(Object)</h4>
+  <div class="markdown level1 summary"><p>Determines whether stored value is equal to
+value as the passed argument.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override bool Equals(object other)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
+        <td><span class="parametername">other</span></td>
+        <td><p>Other value to compare.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span>, if stored value is equal to other value; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicBoolean_FalseToTrue.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicBoolean.FalseToTrue%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicBoolean.cs/#L84">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicBoolean_FalseToTrue_" data-uid="DotNext.Threading.AtomicBoolean.FalseToTrue*"></a>
+  <h4 id="DotNext_Threading_AtomicBoolean_FalseToTrue" data-uid="DotNext.Threading.AtomicBoolean.FalseToTrue">FalseToTrue()</h4>
+  <div class="markdown level1 summary"><p>Atomically sets <span class="xref">true</span> value if the
+current value is <span class="xref">false</span>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool FalseToTrue()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if current value is modified successfully; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicBoolean_GetAndAccumulate_System_Boolean_DotNext_Func_System_Boolean_System_Boolean_System_Boolean__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicBoolean.GetAndAccumulate(System.Boolean%2CDotNext.Func%7BSystem.Boolean%2CSystem.Boolean%2CSystem.Boolean%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicBoolean.cs/#L187">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicBoolean_GetAndAccumulate_" data-uid="DotNext.Threading.AtomicBoolean.GetAndAccumulate*"></a>
+  <h4 id="DotNext_Threading_AtomicBoolean_GetAndAccumulate_System_Boolean_DotNext_Func_System_Boolean_System_Boolean_System_Boolean__" data-uid="DotNext.Threading.AtomicBoolean.GetAndAccumulate(System.Boolean,DotNext.Func{System.Boolean,System.Boolean,System.Boolean})">GetAndAccumulate(Boolean, Func&lt;Boolean, Boolean, Boolean&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the current value with the results of applying the given function
+to the current and given values, returning the original value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool GetAndAccumulate(bool x, Func&lt;bool, bool, bool&gt; accumulator)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>Accumulator operand.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">DotNext.Func</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;</td>
+        <td><span class="parametername">accumulator</span></td>
+        <td><p>A side-effect-free function of two arguments</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p>The original value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicBoolean_GetAndAccumulate_System_Boolean_DotNext_Func_System_Boolean_System_Boolean_System_Boolean___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The function is applied with the current value as its first argument, and the given update as the second argument.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicBoolean_GetAndAccumulate_System_Boolean_DotNext_ValueFunc_System_Boolean_System_Boolean_System_Boolean___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicBoolean.GetAndAccumulate(System.Boolean%2CDotNext.ValueFunc%7BSystem.Boolean%2CSystem.Boolean%2CSystem.Boolean%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicBoolean.cs/#L200">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicBoolean_GetAndAccumulate_" data-uid="DotNext.Threading.AtomicBoolean.GetAndAccumulate*"></a>
+  <h4 id="DotNext_Threading_AtomicBoolean_GetAndAccumulate_System_Boolean_DotNext_ValueFunc_System_Boolean_System_Boolean_System_Boolean___" data-uid="DotNext.Threading.AtomicBoolean.GetAndAccumulate(System.Boolean,DotNext.ValueFunc{System.Boolean,System.Boolean,System.Boolean}@)">GetAndAccumulate(Boolean, ValueFunc&lt;Boolean, Boolean, Boolean&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the current value with the results of applying the given function
+to the current and given values, returning the original value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool GetAndAccumulate(bool x, in ValueFunc&lt;bool, bool, bool&gt; accumulator)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>Accumulator operand.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-3.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;</td>
+        <td><span class="parametername">accumulator</span></td>
+        <td><p>A side-effect-free function of two arguments</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p>The original value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicBoolean_GetAndAccumulate_System_Boolean_DotNext_ValueFunc_System_Boolean_System_Boolean_System_Boolean____remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The function is applied with the current value as its first argument, and the given update as the second argument.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicBoolean_GetAndNegate.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicBoolean.GetAndNegate%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicBoolean.cs/#L107">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicBoolean_GetAndNegate_" data-uid="DotNext.Threading.AtomicBoolean.GetAndNegate*"></a>
+  <h4 id="DotNext_Threading_AtomicBoolean_GetAndNegate" data-uid="DotNext.Threading.AtomicBoolean.GetAndNegate">GetAndNegate()</h4>
+  <div class="markdown level1 summary"><p>Negates currently stored value atomically.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool GetAndNegate()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p>The original value before negation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicBoolean_GetAndSet_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicBoolean.GetAndSet(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicBoolean.cs/#L114">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicBoolean_GetAndSet_" data-uid="DotNext.Threading.AtomicBoolean.GetAndSet*"></a>
+  <h4 id="DotNext_Threading_AtomicBoolean_GetAndSet_System_Boolean_" data-uid="DotNext.Threading.AtomicBoolean.GetAndSet(System.Boolean)">GetAndSet(Boolean)</h4>
+  <div class="markdown level1 summary"><p>Modifies the current value atomically.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool GetAndSet(bool update)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">update</span></td>
+        <td><p>A new value to be stored into this container.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p>Original value before modification.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicBoolean_GetAndUpdate_DotNext_Func_System_Boolean_System_Boolean__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicBoolean.GetAndUpdate(DotNext.Func%7BSystem.Boolean%2CSystem.Boolean%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicBoolean.cs/#L227">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicBoolean_GetAndUpdate_" data-uid="DotNext.Threading.AtomicBoolean.GetAndUpdate*"></a>
+  <h4 id="DotNext_Threading_AtomicBoolean_GetAndUpdate_DotNext_Func_System_Boolean_System_Boolean__" data-uid="DotNext.Threading.AtomicBoolean.GetAndUpdate(DotNext.Func{System.Boolean,System.Boolean})">GetAndUpdate(Func&lt;Boolean, Boolean&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the stored value with the results
+of applying the given function, returning the original value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool GetAndUpdate(Func&lt;bool, bool&gt; updater)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">DotNext.Func</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;</td>
+        <td><span class="parametername">updater</span></td>
+        <td><p>A side-effect-free function</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p>The original value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicBoolean_GetAndUpdate_DotNext_ValueFunc_System_Boolean_System_Boolean___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicBoolean.GetAndUpdate(DotNext.ValueFunc%7BSystem.Boolean%2CSystem.Boolean%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicBoolean.cs/#L236">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicBoolean_GetAndUpdate_" data-uid="DotNext.Threading.AtomicBoolean.GetAndUpdate*"></a>
+  <h4 id="DotNext_Threading_AtomicBoolean_GetAndUpdate_DotNext_ValueFunc_System_Boolean_System_Boolean___" data-uid="DotNext.Threading.AtomicBoolean.GetAndUpdate(DotNext.ValueFunc{System.Boolean,System.Boolean}@)">GetAndUpdate(ValueFunc&lt;Boolean, Boolean&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the stored value with the results
+of applying the given function, returning the original value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool GetAndUpdate(in ValueFunc&lt;bool, bool&gt; updater)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;</td>
+        <td><span class="parametername">updater</span></td>
+        <td><p>A side-effect-free function</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p>The original value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicBoolean_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicBoolean.GetHashCode%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicBoolean.cs/#L257">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicBoolean_GetHashCode_" data-uid="DotNext.Threading.AtomicBoolean.GetHashCode*"></a>
+  <h4 id="DotNext_Threading_AtomicBoolean_GetHashCode" data-uid="DotNext.Threading.AtomicBoolean.GetHashCode">GetHashCode()</h4>
+  <div class="markdown level1 summary"><p>Computes hash code for the stored value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override int GetHashCode()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>The hash code of the stored boolean value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicBoolean_NegateAndGet.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicBoolean.NegateAndGet%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicBoolean.cs/#L101">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicBoolean_NegateAndGet_" data-uid="DotNext.Threading.AtomicBoolean.NegateAndGet*"></a>
+  <h4 id="DotNext_Threading_AtomicBoolean_NegateAndGet" data-uid="DotNext.Threading.AtomicBoolean.NegateAndGet">NegateAndGet()</h4>
+  <div class="markdown level1 summary"><p>Negates currently stored value atomically.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool NegateAndGet()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p>Negation result.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicBoolean_SetAndGet_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicBoolean.SetAndGet(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicBoolean.cs/#L122">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicBoolean_SetAndGet_" data-uid="DotNext.Threading.AtomicBoolean.SetAndGet*"></a>
+  <h4 id="DotNext_Threading_AtomicBoolean_SetAndGet_System_Boolean_" data-uid="DotNext.Threading.AtomicBoolean.SetAndGet(System.Boolean)">SetAndGet(Boolean)</h4>
+  <div class="markdown level1 summary"><p>Modifies the current value atomically.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool SetAndGet(bool update)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">update</span></td>
+        <td><p>A new value to be stored into this container.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p>A new value passed as argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicBoolean_ToString.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicBoolean.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicBoolean.cs/#L282">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicBoolean_ToString_" data-uid="DotNext.Threading.AtomicBoolean.ToString*"></a>
+  <h4 id="DotNext_Threading_AtomicBoolean_ToString" data-uid="DotNext.Threading.AtomicBoolean.ToString">ToString()</h4>
+  <div class="markdown level1 summary"><p>Returns stored boolean value in the form of <see cref="!:System.String"></see>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override string ToString()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><p>Textual representation of stored boolean value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicBoolean_TrueToFalse.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicBoolean.TrueToFalse%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicBoolean.cs/#L92">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicBoolean_TrueToFalse_" data-uid="DotNext.Threading.AtomicBoolean.TrueToFalse*"></a>
+  <h4 id="DotNext_Threading_AtomicBoolean_TrueToFalse" data-uid="DotNext.Threading.AtomicBoolean.TrueToFalse">TrueToFalse()</h4>
+  <div class="markdown level1 summary"><p>Atomically sets <span class="xref">false</span> value if the
+current value is <span class="xref">true</span>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool TrueToFalse()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if current value is modified successfully; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicBoolean_UpdateAndGet_DotNext_Func_System_Boolean_System_Boolean__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicBoolean.UpdateAndGet(DotNext.Func%7BSystem.Boolean%2CSystem.Boolean%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicBoolean.cs/#L209">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicBoolean_UpdateAndGet_" data-uid="DotNext.Threading.AtomicBoolean.UpdateAndGet*"></a>
+  <h4 id="DotNext_Threading_AtomicBoolean_UpdateAndGet_DotNext_Func_System_Boolean_System_Boolean__" data-uid="DotNext.Threading.AtomicBoolean.UpdateAndGet(DotNext.Func{System.Boolean,System.Boolean})">UpdateAndGet(Func&lt;Boolean, Boolean&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the stored value with the results
+of applying the given function, returning the updated value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool UpdateAndGet(Func&lt;bool, bool&gt; updater)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">DotNext.Func</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;</td>
+        <td><span class="parametername">updater</span></td>
+        <td><p>A side-effect-free function</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p>The updated value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicBoolean_UpdateAndGet_DotNext_ValueFunc_System_Boolean_System_Boolean___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicBoolean.UpdateAndGet(DotNext.ValueFunc%7BSystem.Boolean%2CSystem.Boolean%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicBoolean.cs/#L218">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicBoolean_UpdateAndGet_" data-uid="DotNext.Threading.AtomicBoolean.UpdateAndGet*"></a>
+  <h4 id="DotNext_Threading_AtomicBoolean_UpdateAndGet_DotNext_ValueFunc_System_Boolean_System_Boolean___" data-uid="DotNext.Threading.AtomicBoolean.UpdateAndGet(DotNext.ValueFunc{System.Boolean,System.Boolean}@)">UpdateAndGet(ValueFunc&lt;Boolean, Boolean&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the stored value with the results
+of applying the given function, returning the updated value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool UpdateAndGet(in ValueFunc&lt;bool, bool&gt; updater)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;</td>
+        <td><span class="parametername">updater</span></td>
+        <td><p>A side-effect-free function</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p>The updated value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <span class="xref">IEquatable&lt;&gt;</span>
+  </div>
+  <div>
+      <span class="xref">ISerializable</span>
+  </div>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicBoolean.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicBoolean%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicBoolean.cs/#L15" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,54 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>DotNext</RootNamespace>
+    <StartupObject>DotNext.Program</StartupObject>
+    <IsPackable>false</IsPackable>
+    <Version>2.12.0</Version>
+    <Authors>Roman Sakno</Authors>
+    <Product>.NEXT Family of Libraries</Product>
+    <Description>Various benchmarks demonstrating performance aspects of .NEXT extensions</Description>
+    <Copyright>2018-2020</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/sakno/dotNext</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/sakno/dotNext.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>benchmarks</PackageTags>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <SignAssembly>true</SignAssembly>
+    <DelaySign>false</DelaySign>
+    <AssemblyOriginatorKeyFile>../dotnext.snk</AssemblyOriginatorKeyFile>
+    <TieredCompilation>true</TieredCompilation>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Bench|AnyCPU'">
+    <Optimize>true</Optimize>
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.12.1" />
+    <PackageReference Include="FastMember.Signed" Version="1.5.0" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DotNext.Reflection\DotNext.Reflection.csproj" />    
+    <ProjectReference Include="..\DotNext\DotNext.csproj" />
+    <ProjectReference Include="..\DotNext.Metaprogramming\DotNext.Metaprogramming.csproj" />
+    <ProjectReference Include="..\DotNext.IO\DotNext.IO.csproj" />
+  </ItemGroup>
+
+</Project>

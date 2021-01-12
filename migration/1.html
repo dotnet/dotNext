@@ -1,0 +1,131 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Migration from 1.x | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Migration from 1.x | .NEXT ">
+    <meta name="generator" content="docfx 2.56.5.0">
+    
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="migration-from-1x">Migration from 1.x</h1>
+
+<p>2.x is mostly compatible with 1.x. However, there are several minor and major incompatible changes in API surface.</p>
+<p>Minor changes:</p>
+<ol>
+<li><code>DotNext.IO</code> namespace and its classes moved from <strong>DotNext</strong> library to <strong>DotNext.IO</strong> library</li>
+<li>Encoding and decoding context from <code>DotNext.Text</code> namespace moved to <strong>DotNext.IO</strong> library</li>
+<li><code>DotNext.Runtime.InteropServices.Memory</code> class merged with <code>DotNext.Runtime.Intrinsics</code></li>
+<li>Core interfaces from <code>DotNext.Net.Cluster.Replication</code> namespace moved to <strong>DotNext.IO</strong> library</li>
+<li><code>DotNext.Net.Cluster.Consensus.Raft.PersistentState</code> class from <code>DotNext.Net.Cluster</code> class now completely migrated to <code>ValueTask</code> instead of <code>Task</code></li>
+</ol>
+<p>Major changes:</p>
+<ol>
+<li><strong>DotNext.AspNetCore.Cluster</strong> now relies on .NET Core 3.1 SDK instead of .NET Standard 2.1. This was happened because ASP.NET Core 3.x dependencies are not available from NuGet and became a part of .NET Core SDK.</li>
+<li><strong>DotNext.AspNetCore.Cluster</strong> uses Generic Host Builder instead of Web Host Builder so configuration methods are changed. Examine <a href="../features/cluster/aspnetcore.html">this</a> article for more info.</li>
+<li><code>DotNext.Runtime.InteropServices.UnmanagedMemory</code> and <code>DotNext.Runtime.InteropServices.UnmanagedMemory&lt;T&gt;</code> classes from <strong>DotNext.Unsafe</strong> library are no longer exist. Use <a href="../api/DotNext.Buffers.UnmanagedMemoryPool-1.html">UnmanagedMemoryPool</a> class instead</li>
+<li><code>EnsureConsistencyAsync</code> method removed from <code>IAuditTrail</code> interface. Method with the same is added to <code>IPersistentState</code> interface but it has different semantics aimed to support <em>ClientQuery</em> RPC according with <a href="https://github.com/ongardie/dissertation/blob/master/clients/cheatsheet.pdf">Chapter 6</a> of dissertation</li>
+<li>Default Raft implementation calls <code>InitializeAsync</code> method of audit trail to reconstruct the state machine at initialization time. This functionality was missed in 1.x version</li>
+<li><code>InMemoryAuditTrail</code> class is replaced by <code>ConsensusOnlyState</code> which is optimized for cases when you need consensus functionality only without replication of real data</li>
+<li><code>ForceReplicationAsync</code> method of <code>IReplicationCluster</code> class is introduced and included into Raft implementation and allows to organize <em>ClientQuery</em> RPC according with <a href="https://github.com/ongardie/dissertation/blob/master/clients/cheatsheet.pdf">Chapter 6</a> of dissertation</li>
+<li><code>IMessaheHandler</code> interface moved from <strong>DotNext.AspNetCore.Cluster</strong> library to <strong>DotNext.Net.Cluster</strong> library and renamed to <code>IInputChannel</code>.</li>
+</ol>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/docs/migration/1.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In This Article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

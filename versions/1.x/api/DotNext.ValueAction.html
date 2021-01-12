@@ -1,0 +1,758 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Struct ValueAction
+   | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Struct ValueAction
+   | .NEXT ">
+    <meta name="generator" content="docfx 2.48.0.0">
+    
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.ValueAction">
+  
+  
+  <h1 id="DotNext_ValueAction" data-uid="DotNext.ValueAction" class="text-break">Struct ValueAction
+  </h1>
+  <div class="markdown level0 summary"><p>Represents a pointer to parameterless method with <see cref="!:System.Void"></see> return type.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="DotNext.ICallable-1.html">ICallable</a>&lt;<span class="xref">Action</span>&gt;</div>
+    <div><a class="xref" href="DotNext.ICallable.html">ICallable</a></div>
+    <div><span class="xref">IEquatable</span>&lt;<a class="xref" href="DotNext.ValueAction.html">ValueAction</a>&gt;</div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.dll</h6>
+  <h5 id="DotNext_ValueAction_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public struct ValueAction : ICallable&lt;Action&gt;, ICallable, IEquatable&lt;ValueAction&gt;</code></pre>
+  </div>
+  <h5 id="DotNext_ValueAction_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>This method pointer is intended to call managed methods only.</p>
+</div>
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueAction__ctor_Action_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.ValueAction.%23ctor(Action%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueDelegate.cs/#L54">View Source</a>
+  </span>
+  <a id="DotNext_ValueAction__ctor_" data-uid="DotNext.ValueAction.#ctor*"></a>
+  <h4 id="DotNext_ValueAction__ctor_Action_System_Boolean_" data-uid="DotNext.ValueAction.#ctor(Action,System.Boolean)">ValueAction(Action, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new pointer based on extracted pointer from the delegate.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueAction(Action action, bool wrap = false)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Action</span></td>
+        <td><span class="parametername">action</span></td>
+        <td><p>The delegate representing method.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">wrap</span></td>
+        <td><p><span class="xref">true</span> to wrap <code data-dev-comment-type="paramref" class="paramref">action</code> into this delegate; <span class="xref">false</span> to extract method pointer without holding reference to the passed delegate.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_ValueAction__ctor_Action_System_Boolean__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>You can use this constructor to create value delegate once and cache it using <code>static readonly</code> field
+for subsequent calls.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueAction__ctor_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.ValueAction.%23ctor(IntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueDelegate.cs/#L74">View Source</a>
+  </span>
+  <a id="DotNext_ValueAction__ctor_" data-uid="DotNext.ValueAction.#ctor*"></a>
+  <h4 id="DotNext_ValueAction__ctor_IntPtr_" data-uid="DotNext.ValueAction.#ctor(IntPtr)">ValueAction(IntPtr)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new delegate using pointer to the static managed method.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueAction(IntPtr methodPtr)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">methodPtr</span></td>
+        <td><p>The pointer to the static managed method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueAction__ctor_MethodInfo_.md&amp;value=---%0Auid%3A%20DotNext.ValueAction.%23ctor(MethodInfo)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueDelegate.cs/#L39">View Source</a>
+  </span>
+  <a id="DotNext_ValueAction__ctor_" data-uid="DotNext.ValueAction.#ctor*"></a>
+  <h4 id="DotNext_ValueAction__ctor_MethodInfo_" data-uid="DotNext.ValueAction.#ctor(MethodInfo)">ValueAction(MethodInfo)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new pointer to the method.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueAction(MethodInfo method)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">MethodInfo</span></td>
+        <td><span class="parametername">method</span></td>
+        <td><p>The method to convert into pointer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_ValueAction__ctor_MethodInfo__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This constructor causes heap allocations because Reflection is needed to check compatibility of method's signature
+with the delegate type.</p>
+</div>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueAction_IsEmpty.md&amp;value=---%0Auid%3A%20DotNext.ValueAction.IsEmpty%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueDelegate.cs/#L87">View Source</a>
+  </span>
+  <a id="DotNext_ValueAction_IsEmpty_" data-uid="DotNext.ValueAction.IsEmpty*"></a>
+  <h4 id="DotNext_ValueAction_IsEmpty" data-uid="DotNext.ValueAction.IsEmpty">IsEmpty</h4>
+  <div class="markdown level1 summary"><p>Indicates that this delegate doesn't refer to any method.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsEmpty { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueAction_Target.md&amp;value=---%0Auid%3A%20DotNext.ValueAction.Target%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueDelegate.cs/#L92">View Source</a>
+  </span>
+  <a id="DotNext_ValueAction_Target_" data-uid="DotNext.ValueAction.Target*"></a>
+  <h4 id="DotNext_ValueAction_Target" data-uid="DotNext.ValueAction.Target">Target</h4>
+  <div class="markdown level1 summary"><p>Gets the object on which the current pointer invokes the method.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public object Target { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueAction_Equals_DotNext_ValueAction_.md&amp;value=---%0Auid%3A%20DotNext.ValueAction.Equals(DotNext.ValueAction)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueDelegate.cs/#L158">View Source</a>
+  </span>
+  <a id="DotNext_ValueAction_Equals_" data-uid="DotNext.ValueAction.Equals*"></a>
+  <h4 id="DotNext_ValueAction_Equals_DotNext_ValueAction_" data-uid="DotNext.ValueAction.Equals(DotNext.ValueAction)">Equals(ValueAction)</h4>
+  <div class="markdown level1 summary"><p>Determines whether this object points to the same method as other object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool Equals(ValueAction other)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueAction.html">ValueAction</a></td>
+        <td><span class="parametername">other</span></td>
+        <td><p>The pointer to compare.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if both pointers represent the same method; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueAction_Equals_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.ValueAction.Equals(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueDelegate.cs/#L165">View Source</a>
+  </span>
+  <a id="DotNext_ValueAction_Equals_" data-uid="DotNext.ValueAction.Equals*"></a>
+  <h4 id="DotNext_ValueAction_Equals_System_Object_" data-uid="DotNext.ValueAction.Equals(System.Object)">Equals(Object)</h4>
+  <div class="markdown level1 summary"><p>Determines whether this object points to the same method as other object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override bool Equals(object other)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
+        <td><span class="parametername">other</span></td>
+        <td><p>The object implementing <a class="xref" href="DotNext.ICallable-1.html">ICallable&lt;D&gt;</a> to compare.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if both pointers represent the same method; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueAction_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.ValueAction.GetHashCode%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueDelegate.cs/#L151">View Source</a>
+  </span>
+  <a id="DotNext_ValueAction_GetHashCode_" data-uid="DotNext.ValueAction.GetHashCode*"></a>
+  <h4 id="DotNext_ValueAction_GetHashCode" data-uid="DotNext.ValueAction.GetHashCode">GetHashCode()</h4>
+  <div class="markdown level1 summary"><p>Computes hash code of this pointer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override int GetHashCode()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>The hash code of this pointer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueAction_Invoke.md&amp;value=---%0Auid%3A%20DotNext.ValueAction.Invoke%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueDelegate.cs/#L117">View Source</a>
+  </span>
+  <a id="DotNext_ValueAction_Invoke_" data-uid="DotNext.ValueAction.Invoke*"></a>
+  <h4 id="DotNext_ValueAction_Invoke" data-uid="DotNext.ValueAction.Invoke">Invoke()</h4>
+  <div class="markdown level1 summary"><p>Invokes method by pointer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Invoke()</code></pre>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueAction_ToDelegate.md&amp;value=---%0Auid%3A%20DotNext.ValueAction.ToDelegate%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueDelegate.cs/#L98">View Source</a>
+  </span>
+  <a id="DotNext_ValueAction_ToDelegate_" data-uid="DotNext.ValueAction.ToDelegate*"></a>
+  <h4 id="DotNext_ValueAction_ToDelegate" data-uid="DotNext.ValueAction.ToDelegate">ToDelegate()</h4>
+  <div class="markdown level1 summary"><p>Converts this pointer into <see cref="!:Action"></see>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Action ToDelegate()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Action</span></td>
+        <td><p>The delegate created from this method pointer; or <span class="xref">null</span> if this pointer is zero.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueAction_ToString.md&amp;value=---%0Auid%3A%20DotNext.ValueAction.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueDelegate.cs/#L171">View Source</a>
+  </span>
+  <a id="DotNext_ValueAction_ToString_" data-uid="DotNext.ValueAction.ToString*"></a>
+  <h4 id="DotNext_ValueAction_ToString" data-uid="DotNext.ValueAction.ToString">ToString()</h4>
+  <div class="markdown level1 summary"><p>Obtains pointer value in HEX format.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override string ToString()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><p>The address represented by pointer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="operators">Operators
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueAction_op_Equality_DotNext_ValueAction__DotNext_ValueAction__.md&amp;value=---%0Auid%3A%20DotNext.ValueAction.op_Equality(DotNext.ValueAction%40%2CDotNext.ValueAction%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueDelegate.cs/#L179">View Source</a>
+  </span>
+  <a id="DotNext_ValueAction_op_Equality_" data-uid="DotNext.ValueAction.op_Equality*"></a>
+  <h4 id="DotNext_ValueAction_op_Equality_DotNext_ValueAction__DotNext_ValueAction__" data-uid="DotNext.ValueAction.op_Equality(DotNext.ValueAction@,DotNext.ValueAction@)">Equality(ValueAction, ValueAction)</h4>
+  <div class="markdown level1 summary"><p>Determines whether the pointers represent the same method.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool operator ==(in ValueAction first, in ValueAction second)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueAction.html">ValueAction</a></td>
+        <td><span class="parametername">first</span></td>
+        <td><p>The first pointer to compare.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueAction.html">ValueAction</a></td>
+        <td><span class="parametername">second</span></td>
+        <td><p>The second pointer to compare.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if both pointers represent the same method; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueAction_op_Explicit_DotNext_ValueAction___Action.md&amp;value=---%0Auid%3A%20DotNext.ValueAction.op_Explicit(DotNext.ValueAction%40)~Action%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueDelegate.cs/#L145">View Source</a>
+  </span>
+  <a id="DotNext_ValueAction_op_Explicit_" data-uid="DotNext.ValueAction.op_Explicit*"></a>
+  <h4 id="DotNext_ValueAction_op_Explicit_DotNext_ValueAction___Action" data-uid="DotNext.ValueAction.op_Explicit(DotNext.ValueAction@)~Action">Explicit(ValueAction to Action)</h4>
+  <div class="markdown level1 summary"><p>Converts this pointer into <see cref="!:Action"></see>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static explicit operator Action(in ValueAction pointer)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueAction.html">ValueAction</a></td>
+        <td><span class="parametername">pointer</span></td>
+        <td><p>The pointer to convert.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Action</span></td>
+        <td><p>The delegate created from this method pointer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueAction_op_Inequality_DotNext_ValueAction__DotNext_ValueAction__.md&amp;value=---%0Auid%3A%20DotNext.ValueAction.op_Inequality(DotNext.ValueAction%40%2CDotNext.ValueAction%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueDelegate.cs/#L187">View Source</a>
+  </span>
+  <a id="DotNext_ValueAction_op_Inequality_" data-uid="DotNext.ValueAction.op_Inequality*"></a>
+  <h4 id="DotNext_ValueAction_op_Inequality_DotNext_ValueAction__DotNext_ValueAction__" data-uid="DotNext.ValueAction.op_Inequality(DotNext.ValueAction@,DotNext.ValueAction@)">Inequality(ValueAction, ValueAction)</h4>
+  <div class="markdown level1 summary"><p>Determines whether the pointers represent different methods.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool operator !=(in ValueAction first, in ValueAction second)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueAction.html">ValueAction</a></td>
+        <td><span class="parametername">first</span></td>
+        <td><p>The first pointer to compare.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueAction.html">ValueAction</a></td>
+        <td><span class="parametername">second</span></td>
+        <td><p>The second pointer to compare.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if both pointers represent different methods; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="eii">Explicit Interface Implementations
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueAction_DotNext_ICallable_DynamicInvoke_System_Object___.md&amp;value=---%0Auid%3A%20DotNext.ValueAction.DotNext%23ICallable%23DynamicInvoke(System.Object%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueDelegate.cs/#L134">View Source</a>
+  </span>
+  <a id="DotNext_ValueAction_DotNext_ICallable_DynamicInvoke_" data-uid="DotNext.ValueAction.DotNext#ICallable#DynamicInvoke*"></a>
+  <h4 id="DotNext_ValueAction_DotNext_ICallable_DynamicInvoke_System_Object___" data-uid="DotNext.ValueAction.DotNext#ICallable#DynamicInvoke(System.Object[])">ICallable.DynamicInvoke(Object[])</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">object ICallable.DynamicInvoke(params object[] args)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a>[]</td>
+        <td><span class="parametername">args</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="DotNext.ICallable-1.html">ICallable&lt;D&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ICallable.html">ICallable</a>
+  </div>
+  <div>
+      <span class="xref">IEquatable&lt;&gt;</span>
+  </div>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueAction.md&amp;value=---%0Auid%3A%20DotNext.ValueAction%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueDelegate.cs/#L23" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>
