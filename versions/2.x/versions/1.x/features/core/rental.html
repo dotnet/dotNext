@@ -1,0 +1,175 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Alloc vs Rental | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Alloc vs Rental | .NEXT ">
+    <meta name="generator" content="docfx 2.48.0.0">
+    
+    <link rel="shortcut icon" href="../../fav.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="alloc-vs-rental">Alloc vs Rental</h1>
+
+<p>.NET allows to rent a memory instead of allocation using <strong>new</strong> keyword. It is useful in many cases especially when you need a large block of memory or large array. There a many articles describing benefits of this approach.</p>
+<ul>
+<li><a href="https://adamsitnik.com/Array-Pool/">Pooling large arrays with ArrayPool</a></li>
+<li><a href="https://michaelscodingspot.com/avoid-gc-pressure/">Avoid GC Pressure</a></li>
+</ul>
+<p>The memory can be rented using <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.arraypool-1">ArrayPool</a> or <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.memorypool-1">MemoryPool</a> but their direct usage has several inconveniences:</p>
+<ul>
+<li>Not possible to use <strong>using</strong> statement to return rented array back to the pool in case of <code>ArrayPool&lt;T&gt;</code></li>
+<li>It's hard to mix the code when rental is optional. For instance, in case of small block of memory you can use <strong>stackalloc</strong> instead of renting memory</li>
+<li>The returned memory or array can have larger size so you need to control bounds by yourself</li>
+</ul>
+<p>.NEXT offers convenient wrappers that simplify the rental process and handle situations when renting is optional:</p>
+<ul>
+<li><a href="https://sakno.github.io/dotNext/api/DotNext.Buffers.ArrayRental-1.html">ArrayRental&lt;T&gt;</a> if you need to work with arrays</li>
+<li><a href="https://sakno.github.io/dotNext/api/DotNext.Buffers.ArrayRental-1.html">MemoryRental&lt;T&gt;</a> if you need to work with <a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span&lt;T&gt;</a></li>
+</ul>
+<h1 id="arrayrental">ArrayRental</h1>
+<p><a href="https://sakno.github.io/dotNext/api/DotNext.Buffers.ArrayRental-1.html">ArrayRental&lt;T&gt;</a> allows to rent the array using array pool and supports <strong>using</strong> statement.</p>
+<pre><code class="lang-csharp">using DotNext.Buffers;
+
+using(var array = new ArrayRental&lt;byte&gt;(10))
+{
+  Memory&lt;byte&gt; mem = array.Memory;
+  Span&lt;byte&gt; span = array.Span;
+  ArraySegment&lt;byte&gt; segment = array.Segment;
+}
+
+//the code is equivalent to
+using System.Buffers;
+
+var array = ArrayPool&lt;byte&gt;.Shared.Rent(10);
+try
+{
+}
+finally
+{
+  Array&lt;byte&gt;.Shared.Return(array);
+}
+</code></pre>
+<p><code>ArrayRental</code> provides several accessor to the rented array using <code>Memory</code>, <code>Span</code> and <code>Segment</code> properties. All these properties return the representation of the rented array with exact size that was initially requested. Additionally, it is possible to obtain direct reference to the rented array using explicit cast operator, e.g. <code>(byte[])array</code>.</p>
+<p>The type supports custom array pool that can be passed to the constructor. In some advanced scenarios, you may have already allocated array so you don't to rent a new one from the pool. It is possible to pass such array as an argument of <code>ArrayRental</code> constructor.</p>
+<h1 id="memoryrental">MemoryRental</h1>
+<p><a href="https://sakno.github.io/dotNext/api/DotNext.Buffers.ArrayRental-1.html">MemoryRental&lt;T&gt;</a> is more specialized version of <code>ArrayRental</code> which is useful in hybrid scenarios when renting can be replaced with stack allocation. This type is <strong>ref</strong>-like value type so it cannot be stored in fields or used inside of <strong>async</strong> methods. The rented memory is only accessible using <a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span&lt;T&gt;</a> data type.</p>
+<p>The following example demonstrates how to reverse a string and choose temporary buffers allocation method depending on the size of the string.</p>
+<pre><code class="lang-csharp">using DotNext.Buffers;
+
+public static unsafe string Reverse(this string str)
+{
+  if (str.Length == 0) return str;
+  MemoryRental&lt;char&gt; result = str.Length &lt;= 1024 ? stackalloc char[str.Length] : new MemoryRental&lt;char&gt;(str.Length);
+  try
+  {
+    str.AsSpan().CopyTo(result.Span);
+    result.Span.Reverse();
+    fixed (char* ptr = result.Span)
+      return new string(ptr, 0, result.Length);
+  }
+  finally
+  {
+    result.Dispose();
+  }
+} 
+</code></pre>
+<p>In constrast to <code>ArrayRental&lt;T&gt;</code>, this type uses <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.memorypool-1">MemoryPool</a>. It is possible to pass custom memory pool the constructor.</p>
+<p>The type is typically used in unsafe context when you need a temporary buffer to perform in-memory transformations. If you don't have intentions to use <strong>stackalloc</strong> then choose <code>ArrayRental&lt;T&gt;</code> instead.</p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/docs/features/core/rental.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

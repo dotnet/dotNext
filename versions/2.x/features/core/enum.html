@@ -1,0 +1,178 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Enum Enhancements | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Enum Enhancements | .NEXT ">
+    <meta name="generator" content="docfx 2.56.5.0">
+    
+    <link rel="shortcut icon" href="../../fav.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="enum-enhancements">Enum Enhancements</h1>
+
+<p>Currently, to retrieve both the names and values of an enum's members requires two separate calls and requires you to use a for loop which is quite clumsy. Moreover, static methods from <a href="https://docs.microsoft.com/en-us/dotnet/api/system.enum">Enum</a> to work with arbitrary enum types cause boxing/unboxing. <a href="../../api/DotNext.Enum-1.html">Enum&lt;T&gt;</a> allows to obtain value and name of the enum member as well as to obtain the member by its value or name.</p>
+<pre><code class="lang-csharp">using DotNext;
+using System;
+
+enum Color: int
+{
+    Black = 0,
+    Red = 0xFF0000,
+    Green = 0x00FF00,
+    Blue = 0x0000FF,
+    White = 0xFFFFFF
+}
+
+Enum&lt;Color&gt;.Member member = Enum&lt;Color&gt;.GetMember(&quot;Red&quot;);
+member.Value == Color.Red;  //true
+member = Enum&lt;Color&gt;.GetMember(Color.Green);
+member.Name == &quot;Green&quot;; //true
+member = default;
+member.Name == &quot;Black&quot;; //true
+member.Value == Color.Black;    //true
+</code></pre>
+<p>It is possible to enumerate all members in the order they were declared. Moreover, it is possible to obtain the member by its index</p>
+<pre><code class="lang-csharp">foreach(var member in Enum&lt;Color&gt;.Members)
+    Console.WriteLine(member.Name);
+
+Enum&lt;Color&gt;.Member red = Enum&lt;Color&gt;.Members[1];
+</code></pre>
+<p><a href="../../api/DotNext.EnumConverter.html">EnumConverter</a> allows to convert primitive types into arbitrary enum type and vice versa. It is helpful if enum type is defined as generic parameter and not known at compile time.</p>
+<pre><code class="lang-csharp">using DotNext;
+using System;
+
+public static E Plus&lt;E&gt;(E first, E second, E third) 
+    where E: unmanaged, Enum
+{
+    var result = first.ToInt64() + second.ToInt64() + third.ToInt64();
+    return result.ToEnum&lt;E&gt;();
+}
+
+var white = Plus(Color.Red, Color.Green, Color.Blue);
+white == Color.White;   //true
+</code></pre>
+<h1 id="flag">Flag</h1>
+<p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.enum">System.Enum</a> class has public instance method <code>HasFlag</code> that allows to check whether the one or more bits are set in the enumeration. However, it causes boxing of the argument. There is no generic version of this method in standard library to avoid boxing.</p>
+<p>.NEXT library offers generic and fast version of <code>HasFlag</code> method that prevents boxing:</p>
+<ul>
+<li>Instance method <code>IsFlag</code> of <a href="https://sakno.github.io/dotNext/api/DotNext.Enum-1.html">Enum&lt;T&gt;</a> value type</li>
+<li>Static method <code>HasFlag</code> of <a href="https://sakno.github.io/dotNext/api/DotNext.Runtime.Intrinsics.html">Intrinsics</a> class</li>
+</ul>
+<h1 id="attributes">Attributes</h1>
+<p><a href="https://sakno.github.io/dotNext/api/DotNext.Enum-1.html">Enum&lt;T&gt;</a> value type exposes access to custom attributes attached to the enum member. The attributes can be requested using methods of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.reflection.icustomattributeprovider">ICustomAttributeProvider</a> interface which is implemented by the value type. For convenience, there are extra methods available with the support of generic parameters:</p>
+<pre><code class="lang-csharp">using DotNext;
+
+sealed class EnumMemberAttribute : Attribute
+{
+}
+
+enum MyEnum
+{
+    None = 0,
+
+    [EnumMember]
+    WithAttribute = 1,
+}
+
+Enum&lt;MyEnum&gt; enumMember = Enum&lt;MyEnum&gt;.GetMember(MyEnum.WithAttribute);
+EnumMemberAttribute attr = enumMember.GetCustomAttribute&lt;EnumMemberAttribute&gt;();
+</code></pre>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/docs/features/core/enum.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In This Article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

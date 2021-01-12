@@ -1,0 +1,7 @@
+﻿NullSource=Source pointer is null
+NullDestination=Destination pointer is null
+WrongTargetTypeSize=Target type should be the same size or less than original type
+NullPtr=Zero pointer detected
+StreamNotReadable=Stream is not readable
+StreamNotWritable=Stream is not writable
+SegmentVeryLarge=Memory-mapped file segment is greater than 2 Gb

@@ -1,0 +1,1533 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class CopyOnWriteList&lt;T&gt;
+   | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class CopyOnWriteList&lt;T&gt;
+   | .NEXT ">
+    <meta name="generator" content="docfx 2.48.0.0">
+    
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1">
+  
+  
+  <h1 id="DotNext_Collections_Concurrent_CopyOnWriteList_1" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1" class="text-break">Class CopyOnWriteList&lt;T&gt;
+  </h1>
+  <div class="markdown level0 summary"><p>A thread-safe variant of <see cref="!:List&lt;T>"></see> in which all mutative operations are implemented by making a snapshot copy of the underlying array.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level1"><span class="xref">CopyOnWriteList&lt;T&gt;</span></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><span class="xref">IList</span>&lt;T&gt;</div>
+    <div><span class="xref">ICloneable</span></div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Collections.Concurrent.html">DotNext.Collections.Concurrent</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.dll</h6>
+  <h5 id="DotNext_Collections_Concurrent_CopyOnWriteList_1_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public class CopyOnWriteList&lt;T&gt; : IReadOnlyList&lt;T&gt;, IList&lt;T&gt;, ICloneable</code></pre>
+  </div>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of elements held in this collection.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Collections_Concurrent_CopyOnWriteList_1_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>This list is perfect for scenarios when reads are frequent and concurrent but writes not. Read operation never cause synchronization of the list.
+The enumerator doesn't track additions, removals or changes in the list since enumerator was created. As a result, dirty reads are possible.</p>
+</div>
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Concurrent_CopyOnWriteList_1__ctor.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.CopyOnWriteList%601.%23ctor%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Concurrent/CopyOnWriteList.cs/#L86">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Concurrent_CopyOnWriteList_1__ctor_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.#ctor*"></a>
+  <h4 id="DotNext_Collections_Concurrent_CopyOnWriteList_1__ctor" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.#ctor">CopyOnWriteList()</h4>
+  <div class="markdown level1 summary"><p>Initializes a new empty list.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public CopyOnWriteList()</code></pre>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Concurrent_CopyOnWriteList_1__ctor_IReadOnlyCollection__0__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.CopyOnWriteList%601.%23ctor(IReadOnlyCollection%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Concurrent/CopyOnWriteList.cs/#L64">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Concurrent_CopyOnWriteList_1__ctor_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.#ctor*"></a>
+  <h4 id="DotNext_Collections_Concurrent_CopyOnWriteList_1__ctor_IReadOnlyCollection__0__" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.#ctor(IReadOnlyCollection{`0})">CopyOnWriteList(IReadOnlyCollection&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new list containing elements copied from the given read-only collection.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public CopyOnWriteList(IReadOnlyCollection&lt;T&gt; collection)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IReadOnlyCollection</span>&lt;T&gt;</td>
+        <td><span class="parametername">collection</span></td>
+        <td><p>The source of the items in the creating list.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Concurrent_CopyOnWriteList_1_Count.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.CopyOnWriteList%601.Count%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Concurrent/CopyOnWriteList.cs/#L97">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Concurrent_CopyOnWriteList_1_Count_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.Count*"></a>
+  <h4 id="DotNext_Collections_Concurrent_CopyOnWriteList_1_Count" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.Count">Count</h4>
+  <div class="markdown level1 summary"><p>Gets the number of elements in this list.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public long Count { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Concurrent_CopyOnWriteList_1_Item_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.CopyOnWriteList%601.Item(System.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Concurrent/CopyOnWriteList.cs/#L110">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Concurrent_CopyOnWriteList_1_Item_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.Item*"></a>
+  <h4 id="DotNext_Collections_Concurrent_CopyOnWriteList_1_Item_System_Int64_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.Item(System.Int64)">Item[Int64]</h4>
+  <div class="markdown level1 summary"><p>Gets or sets list item.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public T this[long index] { get; set; }</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The index of the list item.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><p>The list item.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Concurrent_CopyOnWriteList_1_Snapshot.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.CopyOnWriteList%601.Snapshot%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Concurrent/CopyOnWriteList.cs/#L102">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Concurrent_CopyOnWriteList_1_Snapshot_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.Snapshot*"></a>
+  <h4 id="DotNext_Collections_Concurrent_CopyOnWriteList_1_Snapshot" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.Snapshot">Snapshot</h4>
+  <div class="markdown level1 summary"><p>Gets the snapshot view of the current list.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ReadOnlyMemory&lt;T&gt; Snapshot { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ReadOnlyMemory</span>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Concurrent_CopyOnWriteList_1_Add__0_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.CopyOnWriteList%601.Add(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Concurrent/CopyOnWriteList.cs/#L145">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Concurrent_CopyOnWriteList_1_Add_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.Add*"></a>
+  <h4 id="DotNext_Collections_Concurrent_CopyOnWriteList_1_Add__0_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.Add(`0)">Add(T)</h4>
+  <div class="markdown level1 summary"><p>Adds an item to the end of this list.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Add(T item)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">item</span></td>
+        <td><p>The item to be added to the end of this list. <span class="xref">null</span> is allowed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Collections_Concurrent_CopyOnWriteList_1_Add__0__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This operation causes reallocation of underlying array.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Concurrent_CopyOnWriteList_1_Clear.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.CopyOnWriteList%601.Clear%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Concurrent/CopyOnWriteList.cs/#L257">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Concurrent_CopyOnWriteList_1_Clear_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.Clear*"></a>
+  <h4 id="DotNext_Collections_Concurrent_CopyOnWriteList_1_Clear" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.Clear">Clear()</h4>
+  <div class="markdown level1 summary"><p>Removes all items from this list.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Clear()</code></pre>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Concurrent_CopyOnWriteList_1_Clear_Action__0__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.CopyOnWriteList%601.Clear(Action%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Concurrent/CopyOnWriteList.cs/#L282">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Concurrent_CopyOnWriteList_1_Clear_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.Clear*"></a>
+  <h4 id="DotNext_Collections_Concurrent_CopyOnWriteList_1_Clear_Action__0__" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.Clear(Action{`0})">Clear(Action&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Removes all items from this list and performs cleanup operation for each item.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Clear(Action&lt;T&gt; cleaner)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Action</span>&lt;T&gt;</td>
+        <td><span class="parametername">cleaner</span></td>
+        <td><p>The action used to clean item from this list.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Concurrent_CopyOnWriteList_1_Clear_DotNext_ValueAction__0___.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.CopyOnWriteList%601.Clear(DotNext.ValueAction%7B%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Concurrent/CopyOnWriteList.cs/#L267">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Concurrent_CopyOnWriteList_1_Clear_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.Clear*"></a>
+  <h4 id="DotNext_Collections_Concurrent_CopyOnWriteList_1_Clear_DotNext_ValueAction__0___" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.Clear(DotNext.ValueAction{`0}@)">Clear(ValueAction&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Removes all items from this list and performs cleanup operation for each item.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Clear(in ValueAction&lt;T&gt; cleaner)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueAction-1.html">ValueAction</a>&lt;T&gt;</td>
+        <td><span class="parametername">cleaner</span></td>
+        <td><p>The action used to clean item from this list.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Concurrent_CopyOnWriteList_1_Clone.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.CopyOnWriteList%601.Clone%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Concurrent/CopyOnWriteList.cs/#L78">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Concurrent_CopyOnWriteList_1_Clone_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.Clone*"></a>
+  <h4 id="DotNext_Collections_Concurrent_CopyOnWriteList_1_Clone" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.Clone">Clone()</h4>
+  <div class="markdown level1 summary"><p>Creates copy of this list.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public CopyOnWriteList&lt;T&gt; Clone()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Collections.Concurrent.CopyOnWriteList-1.html">CopyOnWriteList</a>&lt;T&gt;</td>
+        <td><p>The copy of this list.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Concurrent_CopyOnWriteList_1_Contains__0_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.CopyOnWriteList%601.Contains(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Concurrent/CopyOnWriteList.cs/#L195">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Concurrent_CopyOnWriteList_1_Contains_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.Contains*"></a>
+  <h4 id="DotNext_Collections_Concurrent_CopyOnWriteList_1_Contains__0_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.Contains(`0)">Contains(T)</h4>
+  <div class="markdown level1 summary"><p>Determines whether an item is in this list.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool Contains(T item)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">item</span></td>
+        <td><p>The object to locate in this list.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span>, if <code data-dev-comment-type="paramref" class="paramref">item</code> is found in this list; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Concurrent_CopyOnWriteList_1_CopyTo__0___System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.CopyOnWriteList%601.CopyTo(%600%5B%5D%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Concurrent/CopyOnWriteList.cs/#L209">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Concurrent_CopyOnWriteList_1_CopyTo_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.CopyTo*"></a>
+  <h4 id="DotNext_Collections_Concurrent_CopyOnWriteList_1_CopyTo__0___System_Int32_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.CopyTo(`0[],System.Int32)">CopyTo(T[], Int32)</h4>
+  <div class="markdown level1 summary"><p>Copies the entire list to a compatible one-dimensional array, starting at the specified index of the target array.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void CopyTo(T[] array, int arrayIndex)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>T[]</td>
+        <td><span class="parametername">array</span></td>
+        <td><p>The one-dimensional array that is the destination of the elements copied from this list.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">arrayIndex</span></td>
+        <td><p>The zero-based index in <code data-dev-comment-type="paramref" class="paramref">array</code> at which copying begins.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Concurrent_CopyOnWriteList_1_Exists_DotNext_Predicate__0__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.CopyOnWriteList%601.Exists(DotNext.Predicate%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Concurrent/CopyOnWriteList.cs/#L202">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Concurrent_CopyOnWriteList_1_Exists_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.Exists*"></a>
+  <h4 id="DotNext_Collections_Concurrent_CopyOnWriteList_1_Exists_DotNext_Predicate__0__" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.Exists(DotNext.Predicate{`0})">Exists(Predicate&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Determines whether this list contains elements that match the conditions defined by the specified predicate.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool Exists(Predicate&lt;T&gt; match)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">DotNext.Predicate</span>&lt;T&gt;</td>
+        <td><span class="parametername">match</span></td>
+        <td><p>The predicate that defines the conditions of the elements to search for.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if array contains one or more elements that match the conditions defined by the specified predicate; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Concurrent_CopyOnWriteList_1_Find_DotNext_Predicate__0__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.CopyOnWriteList%601.Find(DotNext.Predicate%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Concurrent/CopyOnWriteList.cs/#L167">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Concurrent_CopyOnWriteList_1_Find_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.Find*"></a>
+  <h4 id="DotNext_Collections_Concurrent_CopyOnWriteList_1_Find_DotNext_Predicate__0__" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.Find(DotNext.Predicate{`0})">Find(Predicate&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Searches for an element that matches the conditions defined by the specified predicate, and returns the first occurrence within the entire list.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public T Find(Predicate&lt;T&gt; match)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">DotNext.Predicate</span>&lt;T&gt;</td>
+        <td><span class="parametername">match</span></td>
+        <td><p>The predicate that defines the conditions of the element to search for.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><p>The first element that matches the conditions defined by the specified predicate, if found; otherwise, the default value for type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Concurrent_CopyOnWriteList_1_FindIndex_DotNext_Predicate__0__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.CopyOnWriteList%601.FindIndex(DotNext.Predicate%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Concurrent/CopyOnWriteList.cs/#L181">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Concurrent_CopyOnWriteList_1_FindIndex_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.FindIndex*"></a>
+  <h4 id="DotNext_Collections_Concurrent_CopyOnWriteList_1_FindIndex_DotNext_Predicate__0__" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.FindIndex(DotNext.Predicate{`0})">FindIndex(Predicate&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Searches for an element that matches the conditions defined by the specified predicate, and returns the zero-based index of the first occurrence within the entire list</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int FindIndex(Predicate&lt;T&gt; match)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">DotNext.Predicate</span>&lt;T&gt;</td>
+        <td><span class="parametername">match</span></td>
+        <td><p>The predicate that defines the conditions of the element to search for.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>The zero-based index of the first occurrence of an element that matches the conditions defined by match, if found; otherwise, -1.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Concurrent_CopyOnWriteList_1_FindLast_DotNext_Predicate__0__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.CopyOnWriteList%601.FindLast(DotNext.Predicate%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Concurrent/CopyOnWriteList.cs/#L174">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Concurrent_CopyOnWriteList_1_FindLast_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.FindLast*"></a>
+  <h4 id="DotNext_Collections_Concurrent_CopyOnWriteList_1_FindLast_DotNext_Predicate__0__" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.FindLast(DotNext.Predicate{`0})">FindLast(Predicate&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Searches for an element that matches the conditions defined by the specified predicate, and returns the last occurrence within the entire list.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public T FindLast(Predicate&lt;T&gt; match)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">DotNext.Predicate</span>&lt;T&gt;</td>
+        <td><span class="parametername">match</span></td>
+        <td><p>The predicate that defines the conditions of the element to search for.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><p>The last element that matches the conditions defined by the specified predicate, if found; otherwise, the default value for type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Concurrent_CopyOnWriteList_1_FindLastIndex_DotNext_Predicate__0__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.CopyOnWriteList%601.FindLastIndex(DotNext.Predicate%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Concurrent/CopyOnWriteList.cs/#L188">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Concurrent_CopyOnWriteList_1_FindLastIndex_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.FindLastIndex*"></a>
+  <h4 id="DotNext_Collections_Concurrent_CopyOnWriteList_1_FindLastIndex_DotNext_Predicate__0__" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.FindLastIndex(DotNext.Predicate{`0})">FindLastIndex(Predicate&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Searches for an element that matches the conditions defined by the specified predicate, and returns the zero-based index of the last occurrence within the entire list</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int FindLastIndex(Predicate&lt;T&gt; match)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">DotNext.Predicate</span>&lt;T&gt;</td>
+        <td><span class="parametername">match</span></td>
+        <td><p>The predicate that defines the conditions of the element to search for.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>The zero-based index of the last occurrence of an element that matches the conditions defined by match, if found; otherwise, -1.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Concurrent_CopyOnWriteList_1_GetEnumerator.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.CopyOnWriteList%601.GetEnumerator%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Concurrent/CopyOnWriteList.cs/#L371">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Concurrent_CopyOnWriteList_1_GetEnumerator_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.GetEnumerator*"></a>
+  <h4 id="DotNext_Collections_Concurrent_CopyOnWriteList_1_GetEnumerator" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.GetEnumerator">GetEnumerator()</h4>
+  <div class="markdown level1 summary"><p>Gets enumerator over snapshot of this list.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public CopyOnWriteList&lt;T&gt;.Enumerator GetEnumerator()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Collections.Concurrent.CopyOnWriteList-1.Enumerator.html">CopyOnWriteList.Enumerator</a>&lt;&gt;</td>
+        <td><p>The enumerator over snapshot of this list.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Concurrent_CopyOnWriteList_1_IndexOf__0_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.CopyOnWriteList%601.IndexOf(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Concurrent/CopyOnWriteList.cs/#L153">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Concurrent_CopyOnWriteList_1_IndexOf_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.IndexOf*"></a>
+  <h4 id="DotNext_Collections_Concurrent_CopyOnWriteList_1_IndexOf__0_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.IndexOf(`0)">IndexOf(T)</h4>
+  <div class="markdown level1 summary"><p>Returns the zero-based index of the first occurrence of a value in this list.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int IndexOf(T item)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">item</span></td>
+        <td><p>The object to locate in this list.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>The zero-based index of the first occurrence of <code data-dev-comment-type="paramref" class="paramref">item</code>, if found; otherwise, -1.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Concurrent_CopyOnWriteList_1_Insert_System_Int64__0_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.CopyOnWriteList%601.Insert(System.Int64%2C%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Concurrent/CopyOnWriteList.cs/#L325">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Concurrent_CopyOnWriteList_1_Insert_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.Insert*"></a>
+  <h4 id="DotNext_Collections_Concurrent_CopyOnWriteList_1_Insert_System_Int64__0_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.Insert(System.Int64,`0)">Insert(Int64, T)</h4>
+  <div class="markdown level1 summary"><p>Inserts an element into this list at the specified index.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Insert(long index, T item)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The zero-based index at which <code data-dev-comment-type="paramref" class="paramref">item</code> should be inserted.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">item</span></td>
+        <td><p>The object to insert.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Collections_Concurrent_CopyOnWriteList_1_Insert_System_Int64__0__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This operation causes reallocation of underlying array.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Concurrent_CopyOnWriteList_1_LastIndexOf__0_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.CopyOnWriteList%601.LastIndexOf(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Concurrent/CopyOnWriteList.cs/#L160">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Concurrent_CopyOnWriteList_1_LastIndexOf_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.LastIndexOf*"></a>
+  <h4 id="DotNext_Collections_Concurrent_CopyOnWriteList_1_LastIndexOf__0_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.LastIndexOf(`0)">LastIndexOf(T)</h4>
+  <div class="markdown level1 summary"><p>Returns the zero-based index of the last occurrence of a value in this list.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int LastIndexOf(T item)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">item</span></td>
+        <td><p>The object to locate in this list.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>The zero-based index of the last occurrence of <code data-dev-comment-type="paramref" class="paramref">item</code>, if found; otherwise, -1.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Concurrent_CopyOnWriteList_1_Remove__0_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.CopyOnWriteList%601.Remove(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Concurrent/CopyOnWriteList.cs/#L303">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Concurrent_CopyOnWriteList_1_Remove_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.Remove*"></a>
+  <h4 id="DotNext_Collections_Concurrent_CopyOnWriteList_1_Remove__0_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.Remove(`0)">Remove(T)</h4>
+  <div class="markdown level1 summary"><p>Removes the first occurrence of an item from this list.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool Remove(T item)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">item</span></td>
+        <td><p>The item to remove from this list.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if item is successfully removed; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Collections_Concurrent_CopyOnWriteList_1_Remove__0__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This operation causes reallocation of underlying array.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Concurrent_CopyOnWriteList_1_RemoveAll_DotNext_Predicate__0__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.CopyOnWriteList%601.RemoveAll(DotNext.Predicate%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Concurrent/CopyOnWriteList.cs/#L345">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Concurrent_CopyOnWriteList_1_RemoveAll_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.RemoveAll*"></a>
+  <h4 id="DotNext_Collections_Concurrent_CopyOnWriteList_1_RemoveAll_DotNext_Predicate__0__" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.RemoveAll(DotNext.Predicate{`0})">RemoveAll(Predicate&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Removes all the elements that match the conditions defined by the specified predicate.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public long RemoveAll(Predicate&lt;T&gt; match)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">DotNext.Predicate</span>&lt;T&gt;</td>
+        <td><span class="parametername">match</span></td>
+        <td><p>The predicate that defines the conditions of the elements to remove.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><p>The number of elements removed from this list.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Concurrent_CopyOnWriteList_1_RemoveAll_DotNext_Predicate__0__Action__0__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.CopyOnWriteList%601.RemoveAll(DotNext.Predicate%7B%600%7D%2CAction%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Concurrent/CopyOnWriteList.cs/#L361">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Concurrent_CopyOnWriteList_1_RemoveAll_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.RemoveAll*"></a>
+  <h4 id="DotNext_Collections_Concurrent_CopyOnWriteList_1_RemoveAll_DotNext_Predicate__0__Action__0__" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.RemoveAll(DotNext.Predicate{`0},Action{`0})">RemoveAll(Predicate&lt;T&gt;, Action&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Removes all the elements that match the conditions defined by the specified predicate.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void RemoveAll(Predicate&lt;T&gt; match, Action&lt;T&gt; callback)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">DotNext.Predicate</span>&lt;T&gt;</td>
+        <td><span class="parametername">match</span></td>
+        <td><p>The predicate that defines the conditions of the elements to remove.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">Action</span>&lt;T&gt;</td>
+        <td><span class="parametername">callback</span></td>
+        <td><p>The delegate that is used to accept removed items.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Concurrent_CopyOnWriteList_1_RemoveAll_DotNext_ValueFunc__0_System_Boolean__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.CopyOnWriteList%601.RemoveAll(DotNext.ValueFunc%7B%600%2CSystem.Boolean%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Concurrent/CopyOnWriteList.cs/#L333">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Concurrent_CopyOnWriteList_1_RemoveAll_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.RemoveAll*"></a>
+  <h4 id="DotNext_Collections_Concurrent_CopyOnWriteList_1_RemoveAll_DotNext_ValueFunc__0_System_Boolean__" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.RemoveAll(DotNext.ValueFunc{`0,System.Boolean})">RemoveAll(ValueFunc&lt;T, Boolean&gt;)</h4>
+  <div class="markdown level1 summary"><p>Removes all the elements that match the conditions defined by the specified predicate.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public long RemoveAll(ValueFunc&lt;T, bool&gt; match)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;T, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;</td>
+        <td><span class="parametername">match</span></td>
+        <td><p>The predicate that defines the conditions of the elements to remove.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><p>The number of elements removed from this list.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Concurrent_CopyOnWriteList_1_RemoveAll_DotNext_ValueFunc__0_System_Boolean___DotNext_ValueAction__0___.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.CopyOnWriteList%601.RemoveAll(DotNext.ValueFunc%7B%600%2CSystem.Boolean%7D%40%2CDotNext.ValueAction%7B%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Concurrent/CopyOnWriteList.cs/#L352">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Concurrent_CopyOnWriteList_1_RemoveAll_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.RemoveAll*"></a>
+  <h4 id="DotNext_Collections_Concurrent_CopyOnWriteList_1_RemoveAll_DotNext_ValueFunc__0_System_Boolean___DotNext_ValueAction__0___" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.RemoveAll(DotNext.ValueFunc{`0,System.Boolean}@,DotNext.ValueAction{`0}@)">RemoveAll(ValueFunc&lt;T, Boolean&gt;, ValueAction&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Removes all the elements that match the conditions defined by the specified predicate.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void RemoveAll(in ValueFunc&lt;T, bool&gt; match, in ValueAction&lt;T&gt; callback)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;T, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;</td>
+        <td><span class="parametername">match</span></td>
+        <td><p>The predicate that defines the conditions of the elements to remove.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueAction-1.html">ValueAction</a>&lt;T&gt;</td>
+        <td><span class="parametername">callback</span></td>
+        <td><p>The delegate that is used to accept removed items.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Concurrent_CopyOnWriteList_1_RemoveAt_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.CopyOnWriteList%601.RemoveAt(System.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Concurrent/CopyOnWriteList.cs/#L292">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Concurrent_CopyOnWriteList_1_RemoveAt_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.RemoveAt*"></a>
+  <h4 id="DotNext_Collections_Concurrent_CopyOnWriteList_1_RemoveAt_System_Int64_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.RemoveAt(System.Int64)">RemoveAt(Int64)</h4>
+  <div class="markdown level1 summary"><p>Removes the element at the specified index of this list.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void RemoveAt(long index)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The zero-based index of the element to remove.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Collections_Concurrent_CopyOnWriteList_1_RemoveAt_System_Int64__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This operation causes reallocation of underlying array.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Concurrent_CopyOnWriteList_1_Set_ReadOnlySpan__0__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.CopyOnWriteList%601.Set(ReadOnlySpan%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Concurrent/CopyOnWriteList.cs/#L223">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Concurrent_CopyOnWriteList_1_Set_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.Set*"></a>
+  <h4 id="DotNext_Collections_Concurrent_CopyOnWriteList_1_Set_ReadOnlySpan__0__" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.Set(ReadOnlySpan{`0})">Set(ReadOnlySpan&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Replaces all items in this list with given array.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Set(ReadOnlySpan&lt;T&gt; array)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ReadOnlySpan</span>&lt;T&gt;</td>
+        <td><span class="parametername">array</span></td>
+        <td><p>The array of new items.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Concurrent_CopyOnWriteList_1_Set__1_ICollection___0__DotNext_Converter___0__0__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.CopyOnWriteList%601.Set%60%601(ICollection%7B%60%600%7D%2CDotNext.Converter%7B%60%600%2C%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Concurrent/CopyOnWriteList.cs/#L251">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Concurrent_CopyOnWriteList_1_Set_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.Set*"></a>
+  <h4 id="DotNext_Collections_Concurrent_CopyOnWriteList_1_Set__1_ICollection___0__DotNext_Converter___0__0__" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.Set``1(ICollection{``0},DotNext.Converter{``0,`0})">Set&lt;G&gt;(ICollection&lt;G&gt;, Converter&lt;G, T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Replaces all items in this list with new items.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Set&lt;G&gt;(ICollection&lt;G&gt; items, Converter&lt;G, T&gt; converter)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ICollection</span>&lt;G&gt;</td>
+        <td><span class="parametername">items</span></td>
+        <td><p>The source items to be converted and placed into this list.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">DotNext.Converter</span>&lt;G, T&gt;</td>
+        <td><span class="parametername">converter</span></td>
+        <td><p>The convert of source items.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">G</span></td>
+        <td><p>The type of source items.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Concurrent_CopyOnWriteList_1_Set__1_ICollection___0__DotNext_ValueFunc___0__0___.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.CopyOnWriteList%601.Set%60%601(ICollection%7B%60%600%7D%2CDotNext.ValueFunc%7B%60%600%2C%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Concurrent/CopyOnWriteList.cs/#L231">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Concurrent_CopyOnWriteList_1_Set_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.Set*"></a>
+  <h4 id="DotNext_Collections_Concurrent_CopyOnWriteList_1_Set__1_ICollection___0__DotNext_ValueFunc___0__0___" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.Set``1(ICollection{``0},DotNext.ValueFunc{``0,`0}@)">Set&lt;G&gt;(ICollection&lt;G&gt;, ValueFunc&lt;G, T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Replaces all items in this list with new items.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Set&lt;G&gt;(ICollection&lt;G&gt; items, in ValueFunc&lt;G, T&gt; converter)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ICollection</span>&lt;G&gt;</td>
+        <td><span class="parametername">items</span></td>
+        <td><p>The source items to be converted and placed into this list.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;G, T&gt;</td>
+        <td><span class="parametername">converter</span></td>
+        <td><p>The convert of source items.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">G</span></td>
+        <td><p>The type of source items.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="operators">Operators
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Concurrent_CopyOnWriteList_1_op_Explicit_DotNext_Collections_Concurrent_CopyOnWriteList__0___ReadOnlySpan__0_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.CopyOnWriteList%601.op_Explicit(DotNext.Collections.Concurrent.CopyOnWriteList%7B%600%7D)~ReadOnlySpan%7B%600%7D%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Concurrent/CopyOnWriteList.cs/#L381">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Concurrent_CopyOnWriteList_1_op_Explicit_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.op_Explicit*"></a>
+  <h4 id="DotNext_Collections_Concurrent_CopyOnWriteList_1_op_Explicit_DotNext_Collections_Concurrent_CopyOnWriteList__0___ReadOnlySpan__0_" data-uid="DotNext.Collections.Concurrent.CopyOnWriteList`1.op_Explicit(DotNext.Collections.Concurrent.CopyOnWriteList{`0})~ReadOnlySpan{`0}">Explicit(CopyOnWriteList&lt;T&gt; to ReadOnlySpan&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Obtains snapshot of the underlying array in the form of the span.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static explicit operator ReadOnlySpan&lt;T&gt;(CopyOnWriteList&lt;T&gt; list)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Collections.Concurrent.CopyOnWriteList-1.html">CopyOnWriteList</a>&lt;T&gt;</td>
+        <td><span class="parametername">list</span></td>
+        <td><p>The list to be converted into span.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ReadOnlySpan</span>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <span class="xref">IList&lt;&gt;</span>
+  </div>
+  <div>
+      <span class="xref">ICloneable</span>
+  </div>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireUpgradeableReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireUpgradeableReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_GetUserData__1___0_">ObjectExtensions.GetUserData&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0_IEnumerable___0__">ObjectExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, T[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_Func___0___1__DotNext_Func___0___2____1____2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;, out R1, out R2)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2_____1____2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, ValueFunc&lt;T, R1&gt;, ValueFunc&lt;T, R2&gt;, out R1, out R2)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_Func___0___1__DotNext_Func___0___2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2___">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, ValueFunc&lt;T, R1&gt;, ValueFunc&lt;T, R2&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_">LockAcquisition.AcquireReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_TimeSpan_">LockAcquisition.AcquireReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_TimeSpan_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_TimeSpan_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Concurrent_CopyOnWriteList_1.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.CopyOnWriteList%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Concurrent/CopyOnWriteList.cs/#L19" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

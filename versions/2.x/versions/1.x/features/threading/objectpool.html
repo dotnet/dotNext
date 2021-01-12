@@ -1,0 +1,193 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Object Pool | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Object Pool | .NEXT ">
+    <meta name="generator" content="docfx 2.48.0.0">
+    
+    <link rel="shortcut icon" href="../../fav.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="object-pool">Object Pool</h1>
+
+<p><a href="../../api/DotNext.Threading.ConcurrentObjectPool-1.html">ConcurrentObjectPool</a> is a way to share thread-unsafe objects between multiple threads in thread-safe manner. It allows to reause already initialized objects rather than allocating and destroying them on demand.</p>
+<p>It is reasonable to use the pool for performance when the instantiation of the object is too costly and each objets holds reference to some external expensive resource such as network connection. An object lifetime management is covered by Object Pool implementation and very similar to Last Recently Used policy. The object that is least used will be disposed automatically.</p>
+<p>Capacity of the pool indicates how many objects can be provided to the concurrent threads. The pool may blocks the caller thread until another thread returns an object to the pool.</p>
+<div class="WARNING">
+<h5>Warning</h5>
+<p>It is not recommended to use object pool in situations when underlying objects only use memory and hold no external resources.</p>
+</div>
+<p>Selection of the first available object from the pool depends on the chosen algorithm: Round-robin and Shortest Job First.</p>
+<p>Once the object retrieved from the pool it is bounded to the caller exclusively until it is released. This process called <strong>renting</strong>.</p>
+<pre><code class="lang-csharp">using DotNext.Threading;
+using System.Data;
+
+ConcurrentObjectPool&lt;IDbConnection&gt; pool = ...;
+
+using(var rental = pool.Rent())
+{
+    var connection = rental.Resource;   //Resource property returns IDbConnection object from the pool
+    var command = connection.CreateCommand();
+    command.CommandText = &quot;SELECT * FROM Customers&quot;;
+    command.Prepare();
+    command.ExecuteReader();
+}
+</code></pre>
+<p>Rented object is safely accessible inside of <em>using</em> block. If you try to access the object without renting then behavior of object pool is unpredictable.</p>
+<p>When object is rented it is possible to replace object with a new instance except <strong>null</strong> value. It is useful if internal state of the object is broken (for instance, network connection unexpectedly closed or crashed). You can do this using setter of <code>Resource</code> property.</p>
+<pre><code class="lang-csharp">using DotNext.Threading;
+using System.Data;
+
+ConcurrentObjectPool&lt;IDbConnection&gt; pool = ...;
+
+using(var rental = pool.Rent())
+{
+    var connection = rental.Resource;   //Resource property returns IDbConnection object from the pool
+    if(IsBroken(connection))
+        connection = rental.Resource = RestoreConnection(connection);
+}
+</code></pre>
+<p>Method <code>Rent()</code> is synchronous and may block the thread for some time. If waiting time is significant then you should increase the capacity of the object pool passed as constructor parameter.</p>
+<div class="NOTE">
+<h5>Note</h5>
+<p>The capacity cannot be changed for created object pool.</p>
+</div>
+<p>Typical use of object pool:</p>
+<ul>
+<li>Organize connection pool to share multiple database connections between application threads</li>
+<li>Organize pool of logical <a href="https://rabbitmq.github.io/rabbitmq-dotnet-client/api/RabbitMQ.Client.IModel.html">channels</a> for the single RabbitMQ connection</li>
+<li>Reusing TCP connections</li>
+</ul>
+<h1 id="round-robin">Round-robin</h1>
+<p>This strategy shares objects in the pool between all requested threads in circular order. To use this strategy, all objects should be created and initialized before they are pooled. These objects will not be destroyed automatically by object pool.</p>
+<pre><code class="lang-csharp">using DotNext.Threading;
+using System.Data;
+using System.Data.SqlClient;
+
+//create objects for the pool
+var connections = new IDbConnection[10];
+for(var i = 0; i &lt; connections.Length; i++)
+    connections[i] = new SqlConnection(@&quot;Server=(localdb)\V11.0&quot;);
+
+var pool = new ConcurrentObjectPool&lt;IDbConnection&gt;(connections);
+</code></pre>
+<p>The capacity of the pool is determined implicitly from the size of the collection of objects passed into constructor.</p>
+<p>It is recommended to use this strategy if workload is constant over time or unpredictable.</p>
+<p>Read more about this strategy <a href="https://en.wikipedia.org/wiki/Round-robin_scheduling">here</a>.</p>
+<h1 id="shortest-job-first">Shortest Job First</h1>
+<p>This strategy differs from round-robin in the following aspects:</p>
+<ol>
+<li>Objects are creating lazily.</li>
+<li>Objects are destroying automatically by the pool if they are not in use for a long period of time.</li>
+<li>The most recently returned object to the pool will pulled by waiting thread, in contrast to cirtucal-based access.</li>
+</ol>
+<p>You should provide factory as a constructor parameter that will be used by the pool for instantiating objects during pool lifetime.</p>
+<pre><code class="lang-csharp">using DotNext.Threading;
+using System.Data;
+using System.Data.SqlClient;
+
+var pool = new ConcurrentObjectPool&lt;IDbConnection&gt;(10, () =&gt; new SqlConnection(@&quot;Server=(localdb)\V11.0&quot;));
+</code></pre>
+<p>The capacity is determined explicitly as constructor parameter.</p>
+<p>It is recommended to use this strategy if workload is variable but predictable and keeping unused objects in the pool is too costly.</p>
+<p>Read more about this strategy <a href="https://en.wikipedia.org/wiki/Shortest_job_next">here</a>.</p>
+<h1 id="diagnostics">Diagnostics</h1>
+<p>The main question is &quot;how to identify the necessary capacity of the pool?&quot;. There is no universal answer. Moreover, it is not possible to identify it a priori. As usual, it it trade-off between number of expensive objects and real need of the application. Profiling is a good way to find the right way. <code>ConcurrentObjectPool</code> provides special property <code>WaitCount</code> that represents a number of threads waiting for the available objects if all objects are retrieved by another threads. The normal behavior when this property is in range <em>[0, capacity/2]</em> and doesn't grow in time. Growing of this property in time is an evidence of resource starvation. In this case just increase the capacity of the pool.</p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/docs/features/threading/objectpool.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

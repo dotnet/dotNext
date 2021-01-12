@@ -1,0 +1,640 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Benchmarks | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Benchmarks | .NEXT ">
+    <meta name="generator" content="docfx 2.48.0.0">
+    
+    <link rel="shortcut icon" href="fav.ico">
+    <link rel="stylesheet" href="styles/docfx.vendor.css">
+    <link rel="stylesheet" href="styles/docfx.css">
+    <link rel="stylesheet" href="styles/main.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <meta property="docfx:navrel" content="toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="index.html">
+                <img id="logo" class="svg" src="doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        <div class="article row grid">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="benchmarks">Benchmarks</h1>
+
+<p>Microbenchmarks are important part of DotNext library to prove than important features can speed up performance of your application or, at least, is not slowing down it.</p>
+<p>The configuration of all benchmarks:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Configuration</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Host</td>
+<td>.NET Core 2.2.7 (CoreCLR 4.6.28008.02, CoreFX 4.6.28008.03), 64bit RyuJIT</td>
+</tr>
+<tr>
+<td>Job</td>
+<td>.NET Core 2.2.7 (CoreCLR 4.6.28008.02, CoreFX 4.6.28008.03), 64bit RyuJIT</td>
+</tr>
+<tr>
+<td>LaunchCount</td>
+<td>1</td>
+</tr>
+<tr>
+<td>RunStrategy</td>
+<td>Throughput</td>
+</tr>
+<tr>
+<td>OS</td>
+<td>Ubuntu 18.04.2</td>
+</tr>
+<tr>
+<td>CPU</td>
+<td>Intel Core i7-6700HQ CPU 2.60GHz (Skylake)</td>
+</tr>
+<tr>
+<td>Number of CPUs</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Physical Cores</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Logical Cores</td>
+<td>8</td>
+</tr>
+<tr>
+<td>RAM</td>
+<td>24 GB</td>
+</tr>
+</tbody>
+</table>
+<h1 id="bitwise-equality">Bitwise Equality</h1>
+<p><a href="https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/BitwiseEqualityBenchmark.cs">This benchmark</a> compares performance of <a href="api/DotNext.BitwiseComparer-1.html">BitwiseComparer&lt;T&gt;.Equals</a> with overloaded equality <code>==</code> operator. Testing data types: <a href="https://docs.microsoft.com/en-us/dotnet/api/system.guid">Guid</a> and custom value type with multiple fields.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Mean</th>
+<th>Error</th>
+<th>StdDev</th>
+<th>Median</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BitwiseComparer&lt;Guid&gt;.Equals</code></td>
+<td>8.327 ns</td>
+<td>0.0260 ns</td>
+<td>0.0243 ns</td>
+<td>8.326 ns</td>
+</tr>
+<tr>
+<td><code>Guid.Equals</code></td>
+<td>12.155 ns</td>
+<td>0.0492 ns</td>
+<td>0.0411 ns</td>
+<td>12.152 ns</td>
+</tr>
+<tr>
+<td><code>ReadOnlySpan.SequenceEqual</code> for <code>Guid</code></td>
+<td>12.680 ns</td>
+<td>0.1956 ns</td>
+<td>0.1830 ns</td>
+<td>12.625 ns</td>
+</tr>
+<tr>
+<td><code>BitwiseComparer&lt;LargeStruct&gt;.Equals</code></td>
+<td>14.243 ns</td>
+<td>0.3126 ns</td>
+<td>0.4582 ns</td>
+<td>14.000 ns</td>
+</tr>
+<tr>
+<td><code>LargeStruct.Equals</code></td>
+<td>50.952 ns</td>
+<td>0.3261 ns</td>
+<td>0.3050 ns</td>
+<td>50.936 ns</td>
+</tr>
+<tr>
+<td><code>ReadOnlySpan.SequenceEqual</code> for <code>LargeStruct</code></td>
+<td>35.171 ns</td>
+<td>0.2531 ns</td>
+<td>0.2244 ns</td>
+<td>35.110 ns</td>
+</tr>
+</tbody>
+</table>
+<p>Bitwise equality method has the better performance than field-by-field equality check because <code>BitwiseEquals</code> utilizes low-level optimizations performed by .NET Core according with underlying hardware such as SIMD. Additionally, it uses <a href="https://en.wikipedia.org/wiki/Data_structure_alignment">aligned memory access</a> in constrast to <a href="https://docs.microsoft.com/en-us/dotnet/api/system.memoryextensions.sequenceequal">SequenceEqual</a> method.</p>
+<h1 id="equality-of-arrays">Equality of Arrays</h1>
+<p><a href="https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/ArrayEqualityBenchmark.cs">This benchmark</a> compares performance of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.memoryextensions.sequenceequal#System_MemoryExtensions_SequenceEqual__1_System_ReadOnlySpan___0__System_ReadOnlySpan___0__">ReadOnlySpan.SequenceEqual</a>, <a href="api/DotNext.OneDimensionalArray.html">OneDimensionalArray.BitwiseEquals</a> and manual equality check between two arrays using <code>for</code> loop. The benchmark is applied to the array of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.guid">Guid</a> elements.</p>
+<p><code>SequenceEqual</code> requires that array element type should implement <a href="https://docs.microsoft.com/en-us/dotnet/api/system.iequatable-1">IEquatable&lt;T&gt;</a> interface and calls <code>Equals(T other)</code> for each element.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Mean</th>
+<th>Error</th>
+<th>StdDev</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Guid[].BitwiseEquals</code>, small arrays (~10 elements)</td>
+<td>10.66 ns</td>
+<td>0.2459 ns</td>
+<td>0.5397 ns</td>
+</tr>
+<tr>
+<td><code>ReadOnlySpan&lt;Guid&gt;.SequenceEqual</code>, small arrays (~10 elements)</td>
+<td>34.89 ns</td>
+<td>0.6313 ns</td>
+<td>0.5272 ns</td>
+</tr>
+<tr>
+<td><code>for</code> loop, small arrays (~10 elements)</td>
+<td>65.20 ns</td>
+<td>1.3086 ns</td>
+<td>1.2853 ns</td>
+</tr>
+<tr>
+<td><code>Guid[].BitwiseEquals</code>, large arrays (~100 elements)</td>
+<td>50.82 ns</td>
+<td>1.0471 ns</td>
+<td>1.9408 ns</td>
+</tr>
+<tr>
+<td><code>ReadOnlySpan&lt;Guid&gt;.SequenceEqual</code>, large arrays (~100 elements)</td>
+<td>339.25 ns</td>
+<td>6.6708 ns</td>
+<td>12.8525 ns</td>
+</tr>
+<tr>
+<td><code>for</code> loop, large arrays (~100 elements)</td>
+<td>584.56 ns</td>
+<td>4.2687 ns</td>
+<td>3.9930 ns</td>
+</tr>
+</tbody>
+</table>
+<p>Bitwise equality is an absolute winner for equality check between arrays of any size.</p>
+<h1 id="bitwise-hash-code">Bitwise Hash Code</h1>
+<p><a href="https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/BitwiseHashCodeBenchmark.cs">This benchmark</a> compares performance of <a href="api/DotNext.BitwiseComparer-1.html">BitwiseComparer&lt;T&gt;.GetHashCode</a> and <code>GetHashCode</code> instance method for the types <a href="https://docs.microsoft.com/en-us/dotnet/api/system.guid">Guid</a> and custom value type with multiple fields.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Mean</th>
+<th>Error</th>
+<th>StdDev</th>
+<th>Median</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Guid.GetHashCode</code></td>
+<td>2.637 ns</td>
+<td>0.0121 ns</td>
+<td>0.0101 ns</td>
+<td></td>
+</tr>
+<tr>
+<td><code>BitwiseComparer&lt;Guid&gt;.GetHashCode</code></td>
+<td>6.924 ns</td>
+<td>0.0240 ns</td>
+<td>0.0225 ns</td>
+<td></td>
+</tr>
+<tr>
+<td><code>BitwiseComparer&lt;LargeStructure&gt;.GetHashCode</code></td>
+<td>23.206 ns</td>
+<td>0.4926 ns</td>
+<td>0.6743 ns</td>
+<td></td>
+</tr>
+<tr>
+<td><code>LargeStructure.GetHashCode</code></td>
+<td>51.915 ns</td>
+<td>0.0751 ns</td>
+<td>0.0666 ns</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Bitwise hash code algorithm is very efficient for hashing of large value types.</p>
+<h1 id="fast-reflection">Fast Reflection</h1>
+<p>The next series of benchmarks demonstrate performance of strongly typed reflection provided by DotNext Reflection library.</p>
+<h2 id="property-getter">Property Getter</h2>
+<p><a href="https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/Reflection/PropertyGetterReflectionBenchmark.cs">This benchmark</a> demonstrates overhead of getting instance property value caused by different mechanisms:</p>
+<ol>
+<li>Using <a href="https://github.com/mgravell/fast-member">FastMember</a> library</li>
+<li>Using strongly typed reflection from DotNext Reflection library: <code>Type&lt;IndexOfCalculator&gt;.Property&lt;int&gt;.RequireGetter</code></li>
+<li>Using strongly typed reflection from DotNext Reflection library using special delegate type <code>Function&lt;object, ValueTuple, object&gt;</code>. It is assumed that instance type and property type is not known at compile type (th) so the delegate performs type check on every call.</li>
+<li>Classic .NET reflection</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Mean</th>
+<th>Error</th>
+<th>StdDev</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Direct call</td>
+<td>11.52 ns</td>
+<td>0.2284 ns</td>
+<td>0.5109 ns</td>
+</tr>
+<tr>
+<td>Reflection with DotNext using delegate type <code>MemberGetter&lt;IndexOfCalculator, int&gt;</code></td>
+<td>11.58 ns</td>
+<td>0.2291 ns</td>
+<td>0.3136 ns</td>
+</tr>
+<tr>
+<td>Reflection with DotNext using delegate type <code>Function&lt;object, ValueTuple, object&gt;</code></td>
+<td>19.12 ns</td>
+<td>0.3870 ns</td>
+<td>0.9919 ns</td>
+</tr>
+<tr>
+<td><code>ObjectAccess</code> class from <em>FastMember</em> library</td>
+<td>50.25 ns</td>
+<td>0.3870 ns</td>
+<td>0.8247 ns</td>
+</tr>
+<tr>
+<td>.NET reflection</td>
+<td>157.71 ns</td>
+<td>3.1092 ns</td>
+<td>4.5574 ns</td>
+</tr>
+</tbody>
+</table>
+<p>Strongly typed reflection provided by DotNext Reflection library has the same performance as direct call.</p>
+<h2 id="instance-method-call">Instance Method Call</h2>
+<p><a href="https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/Reflection/StringMethodReflectionBenchmark.cs">This benchmark</a> demonstrates overhead of calling instance method <code>IndexOf</code> of type <strong>string</strong> caused by different mechanisms:</p>
+<ol>
+<li>Using strongly typed reflection from DotNext Reflection library: <code>Type&lt;string&gt;.Method&lt;char, int&gt;.Require&lt;int&gt;(nameof(string.IndexOf))</code></li>
+<li>Using strongly typed reflection from DotNext Reflection library using special delegate type: <code>Type&lt;string&gt;.RequireMethod&lt;(char, int), int&gt;(nameof(string.IndexOf));</code></li>
+<li>Using strongly typed reflection from DotNext Reflection library using special delegate type: <code>Function&lt;object, (object, object), object&gt;</code>. It is assumed that types of all parameters are not known at compile time.</li>
+<li>Classic .NET reflection</li>
+</ol>
+<p>The benchmark uses series of different strings to run the same set of tests. Worst case means that character lookup is performed for a string that doesn't contain the given character. Best case means that character lookup is performed for a string that has the given character.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Condition</th>
+<th>Mean</th>
+<th>Error</th>
+<th>StdDev</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Direct call</td>
+<td>Empty String</td>
+<td>4.284 ns</td>
+<td>0.1163 ns</td>
+<td>0.1088 ns</td>
+</tr>
+<tr>
+<td>Direct call</td>
+<td>Best Case</td>
+<td>8.116 ns</td>
+<td>0.1956 ns</td>
+<td>0.2329 ns</td>
+</tr>
+<tr>
+<td>Direct call</td>
+<td>Worst Case</td>
+<td>13.866 ns</td>
+<td>0.3406 ns</td>
+<td>0.6141 ns</td>
+</tr>
+<tr>
+<td>Reflection with DotNext using delegate type <code>Func&lt;string, char, int, int&gt;</code></td>
+<td>Empty String</td>
+<td>9.419 ns</td>
+<td>0.1792 ns</td>
+<td>0.2267 ns</td>
+</tr>
+<tr>
+<td>Reflection with DotNext using delegate type <code>Func&lt;string, char, int, int&gt;</code></td>
+<td>Best Case</td>
+<td>13.120 ns</td>
+<td>0.2540 ns</td>
+<td>0.3802 ns</td>
+</tr>
+<tr>
+<td>Reflection with DotNext using delegate type <code>Func&lt;string, char, int, int&gt;</code></td>
+<td>Worst Case</td>
+<td>18.270 ns</td>
+<td>0.3618 ns</td>
+<td>0.3384 ns</td>
+</tr>
+<tr>
+<td>Reflection with DotNext using delegate type <code>Function&lt;string, (char, int), int&gt;</code></td>
+<td>Empty String</td>
+<td>13.548 ns</td>
+<td>0.2691 ns</td>
+<td>0.3683 ns</td>
+</tr>
+<tr>
+<td>Reflection with DotNext using delegate type <code>Function&lt;string, (char, int), int&gt;</code></td>
+<td>Best Case</td>
+<td>17.618 ns</td>
+<td>0.3591 ns</td>
+<td>0.3687 ns</td>
+</tr>
+<tr>
+<td>Reflection with DotNext using delegate type <code>Function&lt;string, (char, int), int&gt;</code></td>
+<td>Worst Case</td>
+<td>23.436 ns</td>
+<td>0.3828 ns</td>
+<td>0.3581 ns</td>
+</tr>
+<tr>
+<td>Reflection with DotNext using delegate type <code>Function&lt;object, (object, object), object&gt;</code></td>
+<td>Empty String</td>
+<td>41.128 ns</td>
+<td>0.7754 ns</td>
+<td>1.3376 ns</td>
+</tr>
+<tr>
+<td>Reflection with DotNext using delegate type <code>Function&lt;object, (object, object), object&gt;</code></td>
+<td>Best Case</td>
+<td>40.432 ns</td>
+<td>0.7127 ns</td>
+<td>0.6318 ns</td>
+</tr>
+<tr>
+<td>Reflection with DotNext using delegate type <code>Function&lt;object, (object, object), object&gt;</code></td>
+<td>Worst Case</td>
+<td>51.208 ns</td>
+<td>0.3256 ns</td>
+<td>0.3046 ns</td>
+</tr>
+<tr>
+<td>.NET reflection</td>
+<td>Empty String</td>
+<td>335.322 ns</td>
+<td>7.5455 ns</td>
+<td>6.6889 ns</td>
+</tr>
+<tr>
+<td>.NET reflection</td>
+<td>Best Case</td>
+<td>327.107 ns</td>
+<td>1.3891 ns</td>
+<td>1.1600 ns</td>
+</tr>
+<tr>
+<td>.NET reflection</td>
+<td>Worst Case</td>
+<td>332.189 ns</td>
+<td>1.3130 ns</td>
+<td>1.2282 ns</td>
+</tr>
+</tbody>
+</table>
+<p>DotNext Reflection library offers the best result in case when delegate type exactly matches to the reflected method with small overhead measured in a few nanoseconds.</p>
+<h2 id="static-method-call">Static Method Call</h2>
+<p><a href="https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/Reflection/TryParseReflectionBenchmark.cs">This benchmark</a> demonstrates overhead of calling static method <code>TryParse</code> of type <strong>decimal</strong> caused by different mechanisms:</p>
+<ol>
+<li>Using strongly typed reflection from DotNext Reflection library: <code>Type&lt;decimal&gt;.Method.Get&lt;TryParseDelegate&gt;(nameof(decimal.TryParse), MethodLookup.Static)</code>. The delegate type exactly matches to the reflected method signature: <code>delegate bool TryParseDelegate(string text, out decimal result)</code></li>
+<li>Using strongly typed reflection from DotNext Reflection library using special delegate type: <code>Function&lt;(string text, decimal result), bool&gt;</code></li>
+<li>Using strongly typed reflection from DotNext Reflection library using special delegate type: <code>Function&lt;(object text, object result), object&gt;</code>. It is assumed that types of all parameters are not known at compile time.</li>
+<li>Classic .NET reflection</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Mean</th>
+<th>Error</th>
+<th>StdDev</th>
+<th>Median</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Direct call</td>
+<td>169.7 ns</td>
+<td>3.3878 ns</td>
+<td>5.6602 ns</td>
+<td>168.5 ns</td>
+</tr>
+<tr>
+<td>Reflection with DotNext using delegate type <code>TryParseDelegate</code></td>
+<td>167.8 ns</td>
+<td>3.3781 ns</td>
+<td>6.0045 ns</td>
+<td>166.1 ns</td>
+</tr>
+<tr>
+<td>Reflection with DotNext using delegate type <code>Function&lt;(string text, decimal result), bool&gt;</code></td>
+<td>174.5 ns</td>
+<td>1.7939 ns</td>
+<td>1.6780 ns</td>
+<td>174.1 ns</td>
+</tr>
+<tr>
+<td>Reflection with DotNext using delegate type <code>Function&lt;(object text, object result), object&gt;</code></td>
+<td>191.5 ns</td>
+<td>0.5836 ns</td>
+<td>0.5459 ns</td>
+<td>191.6 ns</td>
+</tr>
+<tr>
+<td>.NET reflection</td>
+<td>625.4 ns</td>
+<td>11.3603 ns</td>
+<td>9.4864 ns</td>
+<td>626.2 ns</td>
+</tr>
+</tbody>
+</table>
+<p>Strongly typed reflection provided by DotNext Reflection library has the same performance as direct call.</p>
+<h1 id="atomic-access-to-arbitrary-value-type">Atomic Access to Arbitrary Value Type</h1>
+<p><a href="https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/Threading/AtomicContainerBenchmark.cs">This benchmark</a> compares performance of <a href="api/DotNext.Threading.Atomic-1.html">Atomic&lt;T&gt;</a> and Synchronized methods. The implementation of the benchmark contains concurrent read/write threads to ensure that lock contention is in place.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Mean</th>
+<th>Error</th>
+<th>StdDev</th>
+<th>Median</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Atomic</td>
+<td>494.2 us</td>
+<td>8.263 us</td>
+<td>71.95 us</td>
+<td>482.1 us</td>
+</tr>
+<tr>
+<td>Synchronized</td>
+<td>938.1 us</td>
+<td>7.746 us</td>
+<td>72.56 us</td>
+<td>926.9 us</td>
+</tr>
+</tbody>
+</table>
+<h1 id="value-delegate">Value Delegate</h1>
+<p><a href="https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/FunctionPointerBenchmark.cs">This benchmark</a> compares performance of <a href="api/DotNext.Threading.Atomic-1.html">Atomic&lt;T&gt;</a> and Synchronized methods. The implementation of the benchmark contains concurrent read/write threads to ensure that lock contention is in place.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Mean</th>
+<th>Error</th>
+<th>StdDev</th>
+<th>Median</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Instance method, regular delegate, has implicit <strong>this</strong></td>
+<td>3.042 ns</td>
+<td>0.0969 ns</td>
+<td>0.2842 ns</td>
+<td>2.880 ns</td>
+</tr>
+<tr>
+<td>Instance method, Value Delegate, has implicit <strong>this</strong></td>
+<td>4.209 ns</td>
+<td>0.1174 ns</td>
+<td>0.1793 ns</td>
+<td>4.243 ns</td>
+</tr>
+<tr>
+<td>Static method, regular delegate, large size of param type, no implicitly captured object</td>
+<td>20.651 ns</td>
+<td>0.1441 ns</td>
+<td>0.1277 ns</td>
+<td>20.650 ns</td>
+</tr>
+<tr>
+<td>Static method, Value Delegate, large size of param type, no implicitly captured object</td>
+<td>27.066 ns</td>
+<td>0.2038 ns</td>
+<td>0.1807 ns</td>
+<td>27.046 ns</td>
+</tr>
+<tr>
+<td>Static method, regular delegate, small size of param type, no implicitly captured object</td>
+<td>78.562 ns</td>
+<td>0.4298 ns</td>
+<td>0.3810 ns</td>
+<td>78.526 ns</td>
+</tr>
+<tr>
+<td>Static method, Value Delegate, small size of param type, no implicitly captured object</td>
+<td>68.681 ns</td>
+<td>1.0735 ns</td>
+<td>0.9517 ns</td>
+<td>68.466 ns</td>
+</tr>
+</tbody>
+</table>
+<p><em>Large size of param type</em> means that the type of the parameter is larger than 64 bit.</p>
+<p>Interpretation of benchmark results:</p>
+<ul>
+<li><em>Proxy</em> mode of Value Delegate adds a small overhead in comparison with regular delegate</li>
+<li>If the type of the parameter is less than or equal to the size of CPU register then Value Delegate offers the best performance</li>
+<li>If the type of the parameter is greater than the size of CPU register then Value Delegate is slower than regular delegate</li>
+</ul>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/docs/benchmarks.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="styles/docfx.js"></script>
+    <script type="text/javascript" src="styles/main.js"></script>
+  </body>
+</html>

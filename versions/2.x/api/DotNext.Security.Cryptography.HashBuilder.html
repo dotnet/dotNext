@@ -1,0 +1,793 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Struct HashBuilder
+   | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Struct HashBuilder
+   | .NEXT ">
+    <meta name="generator" content="docfx 2.56.5.0">
+    
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Security.Cryptography.HashBuilder">
+  
+  
+  <h1 id="DotNext_Security_Cryptography_HashBuilder" data-uid="DotNext.Security.Cryptography.HashBuilder" class="text-break">Struct HashBuilder
+  </h1>
+  <div class="markdown level0 summary"><p>Represents convenient facade for <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.security.cryptography.hashalgorithm">HashAlgorithm</a>
+to avoid memory allocations during hash computing.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.security.cryptography.icryptotransform">ICryptoTransform</a></div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.equals#System_ValueType_Equals_System_Object_">ValueType.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.gethashcode#System_ValueType_GetHashCode">ValueType.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.tostring#System_ValueType_ToString">ValueType.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Security.Cryptography.html">DotNext.Security.Cryptography</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.dll</h6>
+  <h5 id="DotNext_Security_Cryptography_HashBuilder_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use System.Security.Cryptography.IncrementalHash instead&quot;)]
+public struct HashBuilder : ICryptoTransform, IDisposable</code></pre>
+  </div>
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Security_Cryptography_HashBuilder__ctor_System_Security_Cryptography_HashAlgorithm_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Security.Cryptography.HashBuilder.%23ctor(System.Security.Cryptography.HashAlgorithm%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Security/Cryptography/HashBuilder.cs/#L48">View Source</a>
+  </span>
+  <a id="DotNext_Security_Cryptography_HashBuilder__ctor_" data-uid="DotNext.Security.Cryptography.HashBuilder.#ctor*"></a>
+  <h4 id="DotNext_Security_Cryptography_HashBuilder__ctor_System_Security_Cryptography_HashAlgorithm_System_Boolean_" data-uid="DotNext.Security.Cryptography.HashBuilder.#ctor(System.Security.Cryptography.HashAlgorithm,System.Boolean)">HashBuilder(HashAlgorithm, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Wraps the specified hash algorithm.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public HashBuilder(HashAlgorithm algorithm, bool leaveOpen = true)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.security.cryptography.hashalgorithm">HashAlgorithm</a></td>
+        <td><span class="parametername">algorithm</span></td>
+        <td><p>Hash algorithm implementation.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">leaveOpen</span></td>
+        <td><p><span class="xref">true</span> to keep <code data-dev-comment-type="paramref" class="paramref">algorithm</code> alive after the builder is disposed; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Security_Cryptography_HashBuilder__ctor_System_String_.md&amp;value=---%0Auid%3A%20DotNext.Security.Cryptography.HashBuilder.%23ctor(System.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Security/Cryptography/HashBuilder.cs/#L60">View Source</a>
+  </span>
+  <a id="DotNext_Security_Cryptography_HashBuilder__ctor_" data-uid="DotNext.Security.Cryptography.HashBuilder.#ctor*"></a>
+  <h4 id="DotNext_Security_Cryptography_HashBuilder__ctor_System_String_" data-uid="DotNext.Security.Cryptography.HashBuilder.#ctor(System.String)">HashBuilder(String)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new hash builder using the specified
+hash algorithm.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public HashBuilder(string hashName)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><span class="parametername">hashName</span></td>
+        <td><p>The name of the algorithm.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Hash algorithm with name <code data-dev-comment-type="paramref" class="paramref">hashName</code> doesn't exist.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Security_Cryptography_HashBuilder_HashSize.md&amp;value=---%0Auid%3A%20DotNext.Security.Cryptography.HashBuilder.HashSize%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Security/Cryptography/HashBuilder.cs/#L75">View Source</a>
+  </span>
+  <a id="DotNext_Security_Cryptography_HashBuilder_HashSize_" data-uid="DotNext.Security.Cryptography.HashBuilder.HashSize*"></a>
+  <h4 id="DotNext_Security_Cryptography_HashBuilder_HashSize" data-uid="DotNext.Security.Cryptography.HashBuilder.HashSize">HashSize</h4>
+  <div class="markdown level1 summary"><p>Gets the size, in bits, of the computed hash code.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int HashSize { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Security_Cryptography_HashBuilder_IsEmpty.md&amp;value=---%0Auid%3A%20DotNext.Security.Cryptography.HashBuilder.IsEmpty%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Security/Cryptography/HashBuilder.cs/#L70">View Source</a>
+  </span>
+  <a id="DotNext_Security_Cryptography_HashBuilder_IsEmpty_" data-uid="DotNext.Security.Cryptography.HashBuilder.IsEmpty*"></a>
+  <h4 id="DotNext_Security_Cryptography_HashBuilder_IsEmpty" data-uid="DotNext.Security.Cryptography.HashBuilder.IsEmpty">IsEmpty</h4>
+  <div class="markdown level1 summary"><p>Gets a value indicating that this object
+is not initialized.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsEmpty { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Security_Cryptography_HashBuilder_Add_System_Buffers_ReadOnlySequence_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.Security.Cryptography.HashBuilder.Add(System.Buffers.ReadOnlySequence%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Security/Cryptography/HashBuilder.cs/#L108">View Source</a>
+  </span>
+  <a id="DotNext_Security_Cryptography_HashBuilder_Add_" data-uid="DotNext.Security.Cryptography.HashBuilder.Add*"></a>
+  <h4 id="DotNext_Security_Cryptography_HashBuilder_Add_System_Buffers_ReadOnlySequence_System_Byte__" data-uid="DotNext.Security.Cryptography.HashBuilder.Add(System.Buffers.ReadOnlySequence{System.Byte})">Add(ReadOnlySequence&lt;Byte&gt;)</h4>
+  <div class="markdown level1 summary"><p>Adds a series of bytes to the hash code.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Add(ReadOnlySequence&lt;byte&gt; bytes)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">bytes</span></td>
+        <td><p>The bytes to add to the hash code.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Security_Cryptography_HashBuilder_Add_System_ReadOnlySpan_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.Security.Cryptography.HashBuilder.Add(System.ReadOnlySpan%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Security/Cryptography/HashBuilder.cs/#L101">View Source</a>
+  </span>
+  <a id="DotNext_Security_Cryptography_HashBuilder_Add_" data-uid="DotNext.Security.Cryptography.HashBuilder.Add*"></a>
+  <h4 id="DotNext_Security_Cryptography_HashBuilder_Add_System_ReadOnlySpan_System_Byte__" data-uid="DotNext.Security.Cryptography.HashBuilder.Add(System.ReadOnlySpan{System.Byte})">Add(ReadOnlySpan&lt;Byte&gt;)</h4>
+  <div class="markdown level1 summary"><p>Adds a series of bytes to the hash code.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Add(ReadOnlySpan&lt;byte&gt; bytes)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">bytes</span></td>
+        <td><p>The bytes to add to the hash code.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Security_Cryptography_HashBuilder_Add__1___0__.md&amp;value=---%0Auid%3A%20DotNext.Security.Cryptography.HashBuilder.Add%60%601(%60%600%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Security/Cryptography/HashBuilder.cs/#L119">View Source</a>
+  </span>
+  <a id="DotNext_Security_Cryptography_HashBuilder_Add_" data-uid="DotNext.Security.Cryptography.HashBuilder.Add*"></a>
+  <h4 id="DotNext_Security_Cryptography_HashBuilder_Add__1___0__" data-uid="DotNext.Security.Cryptography.HashBuilder.Add``1(``0@)">Add&lt;T&gt;(T)</h4>
+  <div class="markdown level1 summary"><p>Adds a single value to the hash code.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Add&lt;T&gt;(in T value)
+
+    where T : struct</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value to add to the hash code.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of the value to add to the hash code.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Security_Cryptography_HashBuilder_Build_System_Span_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.Security.Cryptography.HashBuilder.Build(System.Span%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Security/Cryptography/HashBuilder.cs/#L134">View Source</a>
+  </span>
+  <a id="DotNext_Security_Cryptography_HashBuilder_Build_" data-uid="DotNext.Security.Cryptography.HashBuilder.Build*"></a>
+  <h4 id="DotNext_Security_Cryptography_HashBuilder_Build_System_Span_System_Byte__" data-uid="DotNext.Security.Cryptography.HashBuilder.Build(System.Span{System.Byte})">Build(Span&lt;Byte&gt;)</h4>
+  <div class="markdown level1 summary"><p>Calculates the final hash.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int Build(Span&lt;byte&gt; hash)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">hash</span></td>
+        <td><p>The buffer used to write the final hash.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>The total number of bytes written into <code data-dev-comment-type="paramref" class="paramref">hash</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Length of <code data-dev-comment-type="paramref" class="paramref">hash</code> is not enough to place the final hash.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Security_Cryptography_HashBuilder_Dispose.md&amp;value=---%0Auid%3A%20DotNext.Security.Cryptography.HashBuilder.Dispose%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Security/Cryptography/HashBuilder.cs/#L141">View Source</a>
+  </span>
+  <a id="DotNext_Security_Cryptography_HashBuilder_Dispose_" data-uid="DotNext.Security.Cryptography.HashBuilder.Dispose*"></a>
+  <h4 id="DotNext_Security_Cryptography_HashBuilder_Dispose" data-uid="DotNext.Security.Cryptography.HashBuilder.Dispose">Dispose()</h4>
+  <div class="markdown level1 summary"><p>Releases all resources associated with underlying hash algorithm.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Security_Cryptography_HashBuilder_Reset.md&amp;value=---%0Auid%3A%20DotNext.Security.Cryptography.HashBuilder.Reset%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Security/Cryptography/HashBuilder.cs/#L126">View Source</a>
+  </span>
+  <a id="DotNext_Security_Cryptography_HashBuilder_Reset_" data-uid="DotNext.Security.Cryptography.HashBuilder.Reset*"></a>
+  <h4 id="DotNext_Security_Cryptography_HashBuilder_Reset" data-uid="DotNext.Security.Cryptography.HashBuilder.Reset">Reset()</h4>
+  <div class="markdown level1 summary"><p>Resets internal state of hash algorithm.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Reset()</code></pre>
+  </div>
+  <h3 id="eii">Explicit Interface Implementations
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Security_Cryptography_HashBuilder_System_Security_Cryptography_ICryptoTransform_CanReuseTransform.md&amp;value=---%0Auid%3A%20DotNext.Security.Cryptography.HashBuilder.System%23Security%23Cryptography%23ICryptoTransform%23CanReuseTransform%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Security/Cryptography/HashBuilder.cs/#L78">View Source</a>
+  </span>
+  <a id="DotNext_Security_Cryptography_HashBuilder_System_Security_Cryptography_ICryptoTransform_CanReuseTransform_" data-uid="DotNext.Security.Cryptography.HashBuilder.System#Security#Cryptography#ICryptoTransform#CanReuseTransform*"></a>
+  <h4 id="DotNext_Security_Cryptography_HashBuilder_System_Security_Cryptography_ICryptoTransform_CanReuseTransform" data-uid="DotNext.Security.Cryptography.HashBuilder.System#Security#Cryptography#ICryptoTransform#CanReuseTransform">ICryptoTransform.CanReuseTransform</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">bool ICryptoTransform.CanReuseTransform { get; }</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Security_Cryptography_HashBuilder_System_Security_Cryptography_ICryptoTransform_CanTransformMultipleBlocks.md&amp;value=---%0Auid%3A%20DotNext.Security.Cryptography.HashBuilder.System%23Security%23Cryptography%23ICryptoTransform%23CanTransformMultipleBlocks%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Security/Cryptography/HashBuilder.cs/#L81">View Source</a>
+  </span>
+  <a id="DotNext_Security_Cryptography_HashBuilder_System_Security_Cryptography_ICryptoTransform_CanTransformMultipleBlocks_" data-uid="DotNext.Security.Cryptography.HashBuilder.System#Security#Cryptography#ICryptoTransform#CanTransformMultipleBlocks*"></a>
+  <h4 id="DotNext_Security_Cryptography_HashBuilder_System_Security_Cryptography_ICryptoTransform_CanTransformMultipleBlocks" data-uid="DotNext.Security.Cryptography.HashBuilder.System#Security#Cryptography#ICryptoTransform#CanTransformMultipleBlocks">ICryptoTransform.CanTransformMultipleBlocks</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">bool ICryptoTransform.CanTransformMultipleBlocks { get; }</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Security_Cryptography_HashBuilder_System_Security_Cryptography_ICryptoTransform_InputBlockSize.md&amp;value=---%0Auid%3A%20DotNext.Security.Cryptography.HashBuilder.System%23Security%23Cryptography%23ICryptoTransform%23InputBlockSize%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Security/Cryptography/HashBuilder.cs/#L84">View Source</a>
+  </span>
+  <a id="DotNext_Security_Cryptography_HashBuilder_System_Security_Cryptography_ICryptoTransform_InputBlockSize_" data-uid="DotNext.Security.Cryptography.HashBuilder.System#Security#Cryptography#ICryptoTransform#InputBlockSize*"></a>
+  <h4 id="DotNext_Security_Cryptography_HashBuilder_System_Security_Cryptography_ICryptoTransform_InputBlockSize" data-uid="DotNext.Security.Cryptography.HashBuilder.System#Security#Cryptography#ICryptoTransform#InputBlockSize">ICryptoTransform.InputBlockSize</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">int ICryptoTransform.InputBlockSize { get; }</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Security_Cryptography_HashBuilder_System_Security_Cryptography_ICryptoTransform_OutputBlockSize.md&amp;value=---%0Auid%3A%20DotNext.Security.Cryptography.HashBuilder.System%23Security%23Cryptography%23ICryptoTransform%23OutputBlockSize%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Security/Cryptography/HashBuilder.cs/#L87">View Source</a>
+  </span>
+  <a id="DotNext_Security_Cryptography_HashBuilder_System_Security_Cryptography_ICryptoTransform_OutputBlockSize_" data-uid="DotNext.Security.Cryptography.HashBuilder.System#Security#Cryptography#ICryptoTransform#OutputBlockSize*"></a>
+  <h4 id="DotNext_Security_Cryptography_HashBuilder_System_Security_Cryptography_ICryptoTransform_OutputBlockSize" data-uid="DotNext.Security.Cryptography.HashBuilder.System#Security#Cryptography#ICryptoTransform#OutputBlockSize">ICryptoTransform.OutputBlockSize</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">int ICryptoTransform.OutputBlockSize { get; }</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Security_Cryptography_HashBuilder_System_Security_Cryptography_ICryptoTransform_TransformBlock_System_Byte___System_Int32_System_Int32_System_Byte___System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Security.Cryptography.HashBuilder.System%23Security%23Cryptography%23ICryptoTransform%23TransformBlock(System.Byte%5B%5D%2CSystem.Int32%2CSystem.Int32%2CSystem.Byte%5B%5D%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Security/Cryptography/HashBuilder.cs/#L90">View Source</a>
+  </span>
+  <a id="DotNext_Security_Cryptography_HashBuilder_System_Security_Cryptography_ICryptoTransform_TransformBlock_" data-uid="DotNext.Security.Cryptography.HashBuilder.System#Security#Cryptography#ICryptoTransform#TransformBlock*"></a>
+  <h4 id="DotNext_Security_Cryptography_HashBuilder_System_Security_Cryptography_ICryptoTransform_TransformBlock_System_Byte___System_Int32_System_Int32_System_Byte___System_Int32_" data-uid="DotNext.Security.Cryptography.HashBuilder.System#Security#Cryptography#ICryptoTransform#TransformBlock(System.Byte[],System.Int32,System.Int32,System.Byte[],System.Int32)">ICryptoTransform.TransformBlock(Byte[], Int32, Int32, Byte[], Int32)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">int ICryptoTransform.TransformBlock(byte[] inputBuffer, int inputOffset, int inputCount, byte[] outputBuffer, int outputOffset)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>[]</td>
+        <td><span class="parametername">inputBuffer</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">inputOffset</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">inputCount</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>[]</td>
+        <td><span class="parametername">outputBuffer</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">outputOffset</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Security_Cryptography_HashBuilder_System_Security_Cryptography_ICryptoTransform_TransformFinalBlock_System_Byte___System_Int32_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Security.Cryptography.HashBuilder.System%23Security%23Cryptography%23ICryptoTransform%23TransformFinalBlock(System.Byte%5B%5D%2CSystem.Int32%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Security/Cryptography/HashBuilder.cs/#L94">View Source</a>
+  </span>
+  <a id="DotNext_Security_Cryptography_HashBuilder_System_Security_Cryptography_ICryptoTransform_TransformFinalBlock_" data-uid="DotNext.Security.Cryptography.HashBuilder.System#Security#Cryptography#ICryptoTransform#TransformFinalBlock*"></a>
+  <h4 id="DotNext_Security_Cryptography_HashBuilder_System_Security_Cryptography_ICryptoTransform_TransformFinalBlock_System_Byte___System_Int32_System_Int32_" data-uid="DotNext.Security.Cryptography.HashBuilder.System#Security#Cryptography#ICryptoTransform#TransformFinalBlock(System.Byte[],System.Int32,System.Int32)">ICryptoTransform.TransformFinalBlock(Byte[], Int32, Int32)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">byte[] ICryptoTransform.TransformFinalBlock(byte[] inputBuffer, int inputOffset, int inputCount)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>[]</td>
+        <td><span class="parametername">inputBuffer</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">inputOffset</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">inputCount</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>[]</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.security.cryptography.icryptotransform">System.Security.Cryptography.ICryptoTransform</a>
+  </div>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable">System.IDisposable</a>
+  </div>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_Skip__2___0__System_Int32_">Sequence.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, Int32)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Security_Cryptography_HashBuilder.md&amp;value=---%0Auid%3A%20DotNext.Security.Cryptography.HashBuilder%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Security/Cryptography/HashBuilder.cs/#L18" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In This Article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

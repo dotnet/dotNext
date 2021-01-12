@@ -1,0 +1,881 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Struct ReadOnlyDictionaryView&lt;TKey, TInput, TOutput&gt;
+   | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Struct ReadOnlyDictionaryView&lt;TKey, TInput, TOutput&gt;
+   | .NEXT ">
+    <meta name="generator" content="docfx 2.56.5.0">
+    
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Collections.Generic.ReadOnlyDictionaryView`3">
+  
+  
+  <h1 id="DotNext_Collections_Generic_ReadOnlyDictionaryView_3" data-uid="DotNext.Collections.Generic.ReadOnlyDictionaryView`3" class="text-break">Struct ReadOnlyDictionaryView&lt;TKey, TInput, TOutput&gt;
+  </h1>
+  <div class="markdown level0 summary"><p>Represents lazily converted read-only dictionary.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2">IReadOnlyDictionary</a>&lt;TKey, TOutput&gt;</div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ireadonlycollection-1">IReadOnlyCollection</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.keyvaluepair-2">KeyValuePair</a>&lt;TKey, TOutput&gt;&gt;</div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.keyvaluepair-2">KeyValuePair</a>&lt;TKey, TOutput&gt;&gt;</div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.ienumerable">IEnumerable</a></div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="DotNext.Collections.Generic.ReadOnlyDictionaryView-3.html">ReadOnlyDictionaryView</a>&lt;TKey, TInput, TOutput&gt;&gt;</div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.tostring#System_ValueType_ToString">ValueType.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Collections.Generic.html">DotNext.Collections.Generic</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.dll</h6>
+  <h5 id="DotNext_Collections_Generic_ReadOnlyDictionaryView_3_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public struct ReadOnlyDictionaryView&lt;TKey, TInput, TOutput&gt; : IReadOnlyDictionary&lt;TKey, TOutput&gt;, IReadOnlyCollection&lt;KeyValuePair&lt;TKey, TOutput&gt;&gt;, IEnumerable&lt;KeyValuePair&lt;TKey, TOutput&gt;&gt;, IEnumerable, IEquatable&lt;ReadOnlyDictionaryView&lt;TKey, TInput, TOutput&gt;&gt;</code></pre>
+  </div>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TKey</span></td>
+        <td><p>Type of dictionary keys.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">TInput</span></td>
+        <td><p>Type of values in the source dictionary.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">TOutput</span></td>
+        <td><p>Type of values in the converted dictionary.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_ReadOnlyDictionaryView_3__ctor_System_Collections_Generic_IReadOnlyDictionary__0__1__DotNext_ValueFunc__1__2___.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.ReadOnlyDictionaryView%603.%23ctor(System.Collections.Generic.IReadOnlyDictionary%7B%600%2C%601%7D%2CDotNext.ValueFunc%7B%601%2C%602%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/ReadOnlyDictionaryView.cs/#L28">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Generic_ReadOnlyDictionaryView_3__ctor_" data-uid="DotNext.Collections.Generic.ReadOnlyDictionaryView`3.#ctor*"></a>
+  <h4 id="DotNext_Collections_Generic_ReadOnlyDictionaryView_3__ctor_System_Collections_Generic_IReadOnlyDictionary__0__1__DotNext_ValueFunc__1__2___" data-uid="DotNext.Collections.Generic.ReadOnlyDictionaryView`3.#ctor(System.Collections.Generic.IReadOnlyDictionary{`0,`1},DotNext.ValueFunc{`1,`2}@)">ReadOnlyDictionaryView(IReadOnlyDictionary&lt;TKey, TInput&gt;, ValueFunc&lt;TInput, TOutput&gt;)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new lazily converted view.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ReadOnlyDictionaryView(IReadOnlyDictionary&lt;TKey, TInput&gt; dictionary, in ValueFunc&lt;TInput, TOutput&gt; mapper)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2">IReadOnlyDictionary</a>&lt;TKey, TInput&gt;</td>
+        <td><span class="parametername">dictionary</span></td>
+        <td><p>Read-only dictionary to convert.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;TInput, TOutput&gt;</td>
+        <td><span class="parametername">mapper</span></td>
+        <td><p>Value converter.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_ReadOnlyDictionaryView_3_Count.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.ReadOnlyDictionaryView%603.Count%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/ReadOnlyDictionaryView.cs/#L54">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Generic_ReadOnlyDictionaryView_3_Count_" data-uid="DotNext.Collections.Generic.ReadOnlyDictionaryView`3.Count*"></a>
+  <h4 id="DotNext_Collections_Generic_ReadOnlyDictionaryView_3_Count" data-uid="DotNext.Collections.Generic.ReadOnlyDictionaryView`3.Count">Count</h4>
+  <div class="markdown level1 summary"><p>Count of key/value pairs.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int Count { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_ReadOnlyDictionaryView_3_Item__0_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.ReadOnlyDictionaryView%603.Item(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/ReadOnlyDictionaryView.cs/#L39">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Generic_ReadOnlyDictionaryView_3_Item_" data-uid="DotNext.Collections.Generic.ReadOnlyDictionaryView`3.Item*"></a>
+  <h4 id="DotNext_Collections_Generic_ReadOnlyDictionaryView_3_Item__0_" data-uid="DotNext.Collections.Generic.ReadOnlyDictionaryView`3.Item(`0)">Item[TKey]</h4>
+  <div class="markdown level1 summary"><p>Gets value associated with the key and convert it.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public TOutput this[TKey key] { get; }</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TKey</span></td>
+        <td><span class="parametername">key</span></td>
+        <td><p>The key of the element to get.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TOutput</span></td>
+        <td><p>The converted value associated with the key.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_ReadOnlyDictionaryView_3_Keys.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.ReadOnlyDictionaryView%603.Keys%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/ReadOnlyDictionaryView.cs/#L44">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Generic_ReadOnlyDictionaryView_3_Keys_" data-uid="DotNext.Collections.Generic.ReadOnlyDictionaryView`3.Keys*"></a>
+  <h4 id="DotNext_Collections_Generic_ReadOnlyDictionaryView_3_Keys" data-uid="DotNext.Collections.Generic.ReadOnlyDictionaryView`3.Keys">Keys</h4>
+  <div class="markdown level1 summary"><p>All dictionary keys.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IEnumerable&lt;TKey&gt; Keys { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;TKey&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_ReadOnlyDictionaryView_3_Values.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.ReadOnlyDictionaryView%603.Values%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/ReadOnlyDictionaryView.cs/#L49">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Generic_ReadOnlyDictionaryView_3_Values_" data-uid="DotNext.Collections.Generic.ReadOnlyDictionaryView`3.Values*"></a>
+  <h4 id="DotNext_Collections_Generic_ReadOnlyDictionaryView_3_Values" data-uid="DotNext.Collections.Generic.ReadOnlyDictionaryView`3.Values">Values</h4>
+  <div class="markdown level1 summary"><p>All converted dictionary values.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IEnumerable&lt;TOutput&gt; Values { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;TOutput&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_ReadOnlyDictionaryView_3_ContainsKey__0_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.ReadOnlyDictionaryView%603.ContainsKey(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/ReadOnlyDictionaryView.cs/#L62">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Generic_ReadOnlyDictionaryView_3_ContainsKey_" data-uid="DotNext.Collections.Generic.ReadOnlyDictionaryView`3.ContainsKey*"></a>
+  <h4 id="DotNext_Collections_Generic_ReadOnlyDictionaryView_3_ContainsKey__0_" data-uid="DotNext.Collections.Generic.ReadOnlyDictionaryView`3.ContainsKey(`0)">ContainsKey(TKey)</h4>
+  <div class="markdown level1 summary"><p>Determines whether the wrapped dictionary contains an element
+with the specified key.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool ContainsKey(TKey key)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TKey</span></td>
+        <td><span class="parametername">key</span></td>
+        <td><p>The key to locate in the dictionary.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if the key exists in the wrapped dictionary; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_ReadOnlyDictionaryView_3_Equals_DotNext_Collections_Generic_ReadOnlyDictionaryView__0__1__2__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.ReadOnlyDictionaryView%603.Equals(DotNext.Collections.Generic.ReadOnlyDictionaryView%7B%600%2C%601%2C%602%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/ReadOnlyDictionaryView.cs/#L105">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Generic_ReadOnlyDictionaryView_3_Equals_" data-uid="DotNext.Collections.Generic.ReadOnlyDictionaryView`3.Equals*"></a>
+  <h4 id="DotNext_Collections_Generic_ReadOnlyDictionaryView_3_Equals_DotNext_Collections_Generic_ReadOnlyDictionaryView__0__1__2__" data-uid="DotNext.Collections.Generic.ReadOnlyDictionaryView`3.Equals(DotNext.Collections.Generic.ReadOnlyDictionaryView{`0,`1,`2})">Equals(ReadOnlyDictionaryView&lt;TKey, TInput, TOutput&gt;)</h4>
+  <div class="markdown level1 summary"><p>Determines whether two converted dictionaries are same.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool Equals(ReadOnlyDictionaryView&lt;TKey, TInput, TOutput&gt; other)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Collections.Generic.ReadOnlyDictionaryView-3.html">ReadOnlyDictionaryView</a>&lt;TKey, TInput, TOutput&gt;</td>
+        <td><span class="parametername">other</span></td>
+        <td><p>Other dictionary to compare.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if this view wraps the same source dictionary and contains the same converter as other view; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_ReadOnlyDictionaryView_3_Equals_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.ReadOnlyDictionaryView%603.Equals(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/ReadOnlyDictionaryView.cs/#L119">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Generic_ReadOnlyDictionaryView_3_Equals_" data-uid="DotNext.Collections.Generic.ReadOnlyDictionaryView`3.Equals*"></a>
+  <h4 id="DotNext_Collections_Generic_ReadOnlyDictionaryView_3_Equals_System_Object_" data-uid="DotNext.Collections.Generic.ReadOnlyDictionaryView`3.Equals(System.Object)">Equals(Object)</h4>
+  <div class="markdown level1 summary"><p>Determines whether two converted dictionaries are same.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override bool Equals(object other)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
+        <td><span class="parametername">other</span></td>
+        <td><p>Other dictionary to compare.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if this view wraps the same source dictionary and contains the same converter as other view; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.equals#System_ValueType_Equals_System_Object_">ValueType.Equals(Object)</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_ReadOnlyDictionaryView_3_GetEnumerator.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.ReadOnlyDictionaryView%603.GetEnumerator%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/ReadOnlyDictionaryView.cs/#L69">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Generic_ReadOnlyDictionaryView_3_GetEnumerator_" data-uid="DotNext.Collections.Generic.ReadOnlyDictionaryView`3.GetEnumerator*"></a>
+  <h4 id="DotNext_Collections_Generic_ReadOnlyDictionaryView_3_GetEnumerator" data-uid="DotNext.Collections.Generic.ReadOnlyDictionaryView`3.GetEnumerator">GetEnumerator()</h4>
+  <div class="markdown level1 summary"><p>Returns enumerator over key/value pairs in the wrapped dictionary
+and performs conversion for each value in the pair.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IEnumerator&lt;KeyValuePair&lt;TKey, TOutput&gt;&gt; GetEnumerator()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ienumerator-1">IEnumerator</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.keyvaluepair-2">KeyValuePair</a>&lt;TKey, TOutput&gt;&gt;</td>
+        <td><p>The enumerator over key/value pairs.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_ReadOnlyDictionaryView_3_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.ReadOnlyDictionaryView%603.GetHashCode%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/ReadOnlyDictionaryView.cs/#L112">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Generic_ReadOnlyDictionaryView_3_GetHashCode_" data-uid="DotNext.Collections.Generic.ReadOnlyDictionaryView`3.GetHashCode*"></a>
+  <h4 id="DotNext_Collections_Generic_ReadOnlyDictionaryView_3_GetHashCode" data-uid="DotNext.Collections.Generic.ReadOnlyDictionaryView`3.GetHashCode">GetHashCode()</h4>
+  <div class="markdown level1 summary"><p>Returns hash code for the this view.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override int GetHashCode()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>The hash code of this view.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.gethashcode#System_ValueType_GetHashCode">ValueType.GetHashCode()</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_ReadOnlyDictionaryView_3_TryGetValue__0__2__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.ReadOnlyDictionaryView%603.TryGetValue(%600%2C%602%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/ReadOnlyDictionaryView.cs/#L84">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Generic_ReadOnlyDictionaryView_3_TryGetValue_" data-uid="DotNext.Collections.Generic.ReadOnlyDictionaryView`3.TryGetValue*"></a>
+  <h4 id="DotNext_Collections_Generic_ReadOnlyDictionaryView_3_TryGetValue__0__2__" data-uid="DotNext.Collections.Generic.ReadOnlyDictionaryView`3.TryGetValue(`0,`2@)">TryGetValue(TKey, out TOutput)</h4>
+  <div class="markdown level1 summary"><p>Returns the converted value associated with the specified key.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool TryGetValue(TKey key, out TOutput value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TKey</span></td>
+        <td><span class="parametername">key</span></td>
+        <td><p>The key whose value to get.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TOutput</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The converted value associated with the specified key, if the
+key is found; otherwise, the <span class="xref">langword_csharp_default</span> value for the type of the value parameter.
+This parameter is passed uninitialized.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span>, if the dictionary contains the specified key; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="operators">Operators
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_ReadOnlyDictionaryView_3_op_Equality_DotNext_Collections_Generic_ReadOnlyDictionaryView__0__1__2__DotNext_Collections_Generic_ReadOnlyDictionaryView__0__1__2__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.ReadOnlyDictionaryView%603.op_Equality(DotNext.Collections.Generic.ReadOnlyDictionaryView%7B%600%2C%601%2C%602%7D%2CDotNext.Collections.Generic.ReadOnlyDictionaryView%7B%600%2C%601%2C%602%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/ReadOnlyDictionaryView.cs/#L128">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Generic_ReadOnlyDictionaryView_3_op_Equality_" data-uid="DotNext.Collections.Generic.ReadOnlyDictionaryView`3.op_Equality*"></a>
+  <h4 id="DotNext_Collections_Generic_ReadOnlyDictionaryView_3_op_Equality_DotNext_Collections_Generic_ReadOnlyDictionaryView__0__1__2__DotNext_Collections_Generic_ReadOnlyDictionaryView__0__1__2__" data-uid="DotNext.Collections.Generic.ReadOnlyDictionaryView`3.op_Equality(DotNext.Collections.Generic.ReadOnlyDictionaryView{`0,`1,`2},DotNext.Collections.Generic.ReadOnlyDictionaryView{`0,`1,`2})">Equality(ReadOnlyDictionaryView&lt;TKey, TInput, TOutput&gt;, ReadOnlyDictionaryView&lt;TKey, TInput, TOutput&gt;)</h4>
+  <div class="markdown level1 summary"><p>Determines whether two views are same.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool operator ==(ReadOnlyDictionaryView&lt;TKey, TInput, TOutput&gt; first, ReadOnlyDictionaryView&lt;TKey, TInput, TOutput&gt; second)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Collections.Generic.ReadOnlyDictionaryView-3.html">ReadOnlyDictionaryView</a>&lt;TKey, TInput, TOutput&gt;</td>
+        <td><span class="parametername">first</span></td>
+        <td><p>The first dictionary to compare.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Collections.Generic.ReadOnlyDictionaryView-3.html">ReadOnlyDictionaryView</a>&lt;TKey, TInput, TOutput&gt;</td>
+        <td><span class="parametername">second</span></td>
+        <td><p>The second dictionary to compare.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if the first view wraps the same source dictionary and contains the same converter as the second view; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_ReadOnlyDictionaryView_3_op_Inequality_DotNext_Collections_Generic_ReadOnlyDictionaryView__0__1__2__DotNext_Collections_Generic_ReadOnlyDictionaryView__0__1__2__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.ReadOnlyDictionaryView%603.op_Inequality(DotNext.Collections.Generic.ReadOnlyDictionaryView%7B%600%2C%601%2C%602%7D%2CDotNext.Collections.Generic.ReadOnlyDictionaryView%7B%600%2C%601%2C%602%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/ReadOnlyDictionaryView.cs/#L137">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Generic_ReadOnlyDictionaryView_3_op_Inequality_" data-uid="DotNext.Collections.Generic.ReadOnlyDictionaryView`3.op_Inequality*"></a>
+  <h4 id="DotNext_Collections_Generic_ReadOnlyDictionaryView_3_op_Inequality_DotNext_Collections_Generic_ReadOnlyDictionaryView__0__1__2__DotNext_Collections_Generic_ReadOnlyDictionaryView__0__1__2__" data-uid="DotNext.Collections.Generic.ReadOnlyDictionaryView`3.op_Inequality(DotNext.Collections.Generic.ReadOnlyDictionaryView{`0,`1,`2},DotNext.Collections.Generic.ReadOnlyDictionaryView{`0,`1,`2})">Inequality(ReadOnlyDictionaryView&lt;TKey, TInput, TOutput&gt;, ReadOnlyDictionaryView&lt;TKey, TInput, TOutput&gt;)</h4>
+  <div class="markdown level1 summary"><p>Determines whether two views are not same.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool operator !=(ReadOnlyDictionaryView&lt;TKey, TInput, TOutput&gt; first, ReadOnlyDictionaryView&lt;TKey, TInput, TOutput&gt; second)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Collections.Generic.ReadOnlyDictionaryView-3.html">ReadOnlyDictionaryView</a>&lt;TKey, TInput, TOutput&gt;</td>
+        <td><span class="parametername">first</span></td>
+        <td><p>The first dictionary to compare.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Collections.Generic.ReadOnlyDictionaryView-3.html">ReadOnlyDictionaryView</a>&lt;TKey, TInput, TOutput&gt;</td>
+        <td><span class="parametername">second</span></td>
+        <td><p>The second collection to compare.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if the first view wraps the different source dictionary and contains the different converter as the second view; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="eii">Explicit Interface Implementations
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_ReadOnlyDictionaryView_3_System_Collections_IEnumerable_GetEnumerator.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.ReadOnlyDictionaryView%603.System%23Collections%23IEnumerable%23GetEnumerator%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/ReadOnlyDictionaryView.cs/#L97">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Generic_ReadOnlyDictionaryView_3_System_Collections_IEnumerable_GetEnumerator_" data-uid="DotNext.Collections.Generic.ReadOnlyDictionaryView`3.System#Collections#IEnumerable#GetEnumerator*"></a>
+  <h4 id="DotNext_Collections_Generic_ReadOnlyDictionaryView_3_System_Collections_IEnumerable_GetEnumerator" data-uid="DotNext.Collections.Generic.ReadOnlyDictionaryView`3.System#Collections#IEnumerable#GetEnumerator">IEnumerable.GetEnumerator()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">IEnumerator IEnumerable.GetEnumerator()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.ienumerator">IEnumerator</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2">System.Collections.Generic.IReadOnlyDictionary&lt;TKey,TValue&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ireadonlycollection-1">System.Collections.Generic.IReadOnlyCollection&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">System.Collections.Generic.IEnumerable&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.ienumerable">System.Collections.IEnumerable</a>
+  </div>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">System.IEquatable&lt;T&gt;</a>
+  </div>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_IsOneOf__1___0_System_Collections_Generic_IEnumerable___0__">ValueTypeExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_IsOneOf__1___0___0___">ValueTypeExtensions.IsOneOf&lt;T&gt;(T, T[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_Convert__2_System_Collections_Generic_IReadOnlyCollection___0__DotNext_ValueFunc___0___1___">Collection.Convert&lt;TInput, TOutput&gt;(IReadOnlyCollection&lt;TInput&gt;, ValueFunc&lt;TInput, TOutput&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_Convert__2_System_Collections_Generic_IReadOnlyCollection___0__System_Converter___0___1__">Collection.Convert&lt;TInput, TOutput&gt;(IReadOnlyCollection&lt;TInput&gt;, Converter&lt;TInput, TOutput&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Dictionary.html#DotNext_Collections_Generic_Dictionary_IndexerGetter__2_System_Collections_Generic_IReadOnlyDictionary___0___1__">Dictionary.IndexerGetter&lt;TKey, TValue&gt;(IReadOnlyDictionary&lt;TKey, TValue&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Dictionary.html#DotNext_Collections_Generic_Dictionary_KeysGetter__2_System_Collections_Generic_IReadOnlyDictionary___0___1__">Dictionary.KeysGetter&lt;TKey, TValue&gt;(IReadOnlyDictionary&lt;TKey, TValue&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Dictionary.html#DotNext_Collections_Generic_Dictionary_ValuesGetter__2_System_Collections_Generic_IReadOnlyDictionary___0___1__">Dictionary.ValuesGetter&lt;TKey, TValue&gt;(IReadOnlyDictionary&lt;TKey, TValue&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Dictionary.html#DotNext_Collections_Generic_Dictionary_ConvertValues__3_System_Collections_Generic_IReadOnlyDictionary___0___1__DotNext_ValueFunc___1___2___">Dictionary.ConvertValues&lt;TKey, TValue, TResult&gt;(IReadOnlyDictionary&lt;TKey, TValue&gt;, ValueFunc&lt;TValue, TResult&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Dictionary.html#DotNext_Collections_Generic_Dictionary_ConvertValues__3_System_Collections_Generic_IReadOnlyDictionary___0___1__System_Converter___1___2__">Dictionary.ConvertValues&lt;TKey, TValue, TResult&gt;(IReadOnlyDictionary&lt;TKey, TValue&gt;, Converter&lt;TValue, TResult&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_ToAsyncEnumerable__1_System_Collections_Generic_IEnumerable___0__">Sequence.ToAsyncEnumerable&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_GetAsyncEnumerator__1_System_Collections_Generic_IEnumerable___0__System_Threading_CancellationToken_">Sequence.GetAsyncEnumerator&lt;T&gt;(IEnumerable&lt;T&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_ForEach__1_System_Collections_Generic_IEnumerable___0__System_Action___0__">Sequence.ForEach&lt;T&gt;(IEnumerable&lt;T&gt;, Action&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_ForEach__1_System_Collections_Generic_IEnumerable___0__DotNext_ValueAction___0___">Sequence.ForEach&lt;T&gt;(IEnumerable&lt;T&gt;, ValueAction&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_ForEachAsync__1_System_Collections_Generic_IEnumerable___0__System_Func___0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__System_Threading_CancellationToken_">Sequence.ForEachAsync&lt;T&gt;(IEnumerable&lt;T&gt;, Func&lt;T, CancellationToken, ValueTask&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_ForEachAsync__1_System_Collections_Generic_IEnumerable___0__DotNext_ValueFunc___0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__System_Threading_CancellationToken_">Sequence.ForEachAsync&lt;T&gt;(IEnumerable&lt;T&gt;, ValueFunc&lt;T, CancellationToken, ValueTask&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_FirstOrNull__1_System_Collections_Generic_IEnumerable___0__">Sequence.FirstOrNull&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_FirstOrEmpty__1_System_Collections_Generic_IEnumerable___0__">Sequence.FirstOrEmpty&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_FirstOrEmpty__1_System_Collections_Generic_IEnumerable___0__DotNext_ValueFunc___0_System_Boolean___">Sequence.FirstOrEmpty&lt;T&gt;(IEnumerable&lt;T&gt;, ValueFunc&lt;T, Boolean&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_FirstOrEmpty__1_System_Collections_Generic_IEnumerable___0__System_Predicate___0__">Sequence.FirstOrEmpty&lt;T&gt;(IEnumerable&lt;T&gt;, Predicate&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_Skip__2___0__System_Int32_">Sequence.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, Int32)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_ElementAt__1_System_Collections_Generic_IEnumerable___0__System_Int32___0__">Sequence.ElementAt&lt;T&gt;(IEnumerable&lt;T&gt;, Int32, out T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_ToString__1_System_Collections_Generic_IEnumerable___0__System_String_System_String_">Sequence.ToString&lt;T&gt;(IEnumerable&lt;T&gt;, String, String)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_Prepend__1_System_Collections_Generic_IEnumerable___0____0___">Sequence.Prepend&lt;T&gt;(IEnumerable&lt;T&gt;, T[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_Append__1_System_Collections_Generic_IEnumerable___0____0___">Sequence.Append&lt;T&gt;(IEnumerable&lt;T&gt;, T[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_ReadOnlyDictionaryView_3.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.ReadOnlyDictionaryView%603%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/ReadOnlyDictionaryView.cs/#L17" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In This Article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>
