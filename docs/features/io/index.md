@@ -22,7 +22,6 @@ using System.IO;
 
 //read
 using var fs = new FileStream("content.bin", FileMode.Open, FileAccess.Read, FileShare.Read);
-using var buffer = new ArrayRental<byte>(1024); //rent the buffer
 var str = await fs.ReadStringAsync(StringLengthEncoding.Plain, Encoding.UTF8);
 ```
 
