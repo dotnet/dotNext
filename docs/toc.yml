@@ -17,3 +17,5 @@
       href: migration/index.md
     - name: 1.x
       href: https://sakno.github.io/dotNext/versions/1.x/index.html
+    - name: 2.x
+      href: https://sakno.github.io/dotNext/versions/2.x/index.html
