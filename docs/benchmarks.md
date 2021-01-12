@@ -68,14 +68,14 @@ Bitwise hash code algorithm is slower than JIT optimizations introduced by .NET 
 
 | Method | Num of Bytes | Mean | Error | StdDev |
 | ---- | ---- | ---- | ---- | ---- |
-| `BitConverter.ToString` | 16 bytes |  66.22 ns | 0.481 ns | 0.427 ns |
-| `Span.ToHex` | 16 bytes | 78.10 ns | 0.583 ns | 0.487 ns |
-| `BitConverter.ToString` | 64 bytes | 219.96 ns | 1.742 ns | 1.454 ns |
-| `Span.ToHex` | 64 bytes | 158.60 ns | 0.966 ns | 0.904 ns |
-| `BitConverter.ToString` | 128 bytes | 447.40 ns |  3.989 ns | 3.331 ns |
-| `Span.ToHex` | 128 bytes | 258.58 ns | 1.359 ns | 1.205 ns |
-| `BitConverter.ToString` | 256 bytes | 838.54 ns | 12.750 ns | 9.955 ns |
-| `Span.ToHex` | 256 bytes | 496.05 ns |  3.077 ns | 2.402 ns |
+| `BitConverter.ToString` | 16 bytes | 64.27 ns | 1.259 ns | 1.051 ns |
+| `Span.ToHex` | 16 bytes | 58.78 ns | 0.219 ns | 0.205 ns |
+| `BitConverter.ToString` | 64 bytes | 197.94 ns | 0.620 ns | 0.550 ns |
+| `Span.ToHex` | 64 bytes | 134.83 ns | 1.751 ns | 1.638 ns |
+| `BitConverter.ToString` | 128 bytes | 382.76 ns | 3.908 ns | 3.263 ns |
+| `Span.ToHex` | 128 bytes | 234.62 ns | 1.959 ns | 1.833 ns |
+| `BitConverter.ToString` | 256 bytes | 745.88 ns | 4.340 ns | 3.847 ns |
+| `Span.ToHex` | 256 bytes | 484.20 ns | 1.768 ns | 1.568 ns |
 
 `Span.ToHex` demonstrates the best performance especially for large arrays.
 
