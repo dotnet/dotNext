@@ -176,11 +176,11 @@ Performance of value delegates is the same as of regular .NET delegates.
 
 Both classes switching from in-memory buffer to file-based buffer during benchmark execution. Note that benchmark result highly depends on disk I/O performance. The following results were obtained using NVMe SSD.
 
-| Method | Mean | Error | StdDev |
-| ---- | ---- | ---- | ---- |
-| `FileBufferingWriter` in synchronous mode | 1.001 ms | 0.0111 ms | 0.0104 ms |
-| `FileBufferingWriteStream` in synchronous mode | 26.690 ms | 1.4974 ms | 4.4151 ms |
-| `FileBufferingWriter` in asynchronous mode | 8.947 ms | 0.2014 ms | 0.5412 ms |
-| `FileBufferingWriteStream` in asynchronous mode | 19.300 ms | 1.2528 ms | 3.6546 ms |
+| Method | Mean | Error | StdDev | Median |
+| ---- | ---- | ---- | ---- | ---- |
+| `FileBufferingWriter` in synchronous mode | 975.8 us | 18.39 us | 35.43 us | 964.4 us |
+| `FileBufferingWriteStream` in synchronous mode |  4,318.6 us | 37.99 us | 31.72 us | 4,320.9 us |
+| `FileBufferingWriter` in asynchronous mode | 14,108.0 us | 2,021.26 us | 5,928.00 us | 16,238.9 us |
+| `FileBufferingWriteStream` in asynchronous mode | 21,263.8 us | 1,197.22 us | 3,473.35 us | 22,037.2 us |
 
 `FileBufferingWriter` is a winner in synchronous scenario because it has native support for synchronous mode in contrast to `FileBufferingWriteStream`.
