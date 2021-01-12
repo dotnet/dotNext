@@ -184,3 +184,43 @@ Both classes switching from in-memory buffer to file-based buffer during benchma
 | `FileBufferingWriteStream` in asynchronous mode | 21,263.8 us | 1,197.22 us | 3,473.35 us | 22,037.2 us |
 
 `FileBufferingWriter` is a winner in synchronous scenario because it has native support for synchronous mode in contrast to `FileBufferingWriteStream`.
+
+# Various Buffer Types
+[This benchmark](https://github.com/sakno/dotNext/blob/master/src/DotNext.Benchmarks/Buffers/MemoryStreamingBenchmark.cs) demonstrates the performance of write operation and memory consumption of the following types:
+* [MemoryStream](https://docs.microsoft.com/en-us/dotnet/api/system.io.memorystream)
+* [RecyclableMemoryStream](https://github.com/microsoft/Microsoft.IO.RecyclableMemoryStream)
+* [SparseBufferWriter&lt;byte&gt;](./api/DotNext.Buffers.SparseBufferWriter-1.yml)
+* [PooledArrayBufferWriter&lt;byte&gt;](./api/DotNext.Buffers.PooledArrayBufferWriter-1.yml)
+* [FileBufferingWriter](./api/DotNext.IO.FileBufferingWriter.yml)
+
+|                   Buffer Type   | Written bytes |       Mean |         Error |        StdDev | Ratio | RatioSD |    Gen 0 |    Gen 1 |    Gen 2 | Allocated |
+|-------------------------------- |-------------- |--------------:|--------------:|--------------:|------:|--------:|---------:|---------:|---------:|----------:|
+|                  `MemoryStream` |           100 |      66.91 ns |      1.379 ns |      2.187 ns |  1.00 |    0.00 |   0.1097 |        - |        - |     344 B |
+| `PooledArrayBufferWriter<byte>` |           100 |     237.78 ns |      1.819 ns |      1.519 ns |  3.53 |    0.10 |   0.0405 |        - |        - |     128 B |
+|      `SparseBufferWriter<byte>` |           100 |     249.18 ns |      3.458 ns |      3.234 ns |  3.68 |    0.14 |   0.0663 |        - |        - |     208 B |
+|           `FileBufferingWriter` |           100 |   1,681.56 ns |     31.827 ns |     29.771 ns | 24.85 |    0.94 |   0.0324 |        - |        - |     104 B |
+|        `RecyclableMemoryStream` |           100 |   2,503.46 ns |     10.280 ns |      9.113 ns | 37.16 |    0.93 |   0.1030 |        - |        - |     328 B |
+|                                 |               |               |               |               |       |         |          |          |          |           |
+|                  `MemoryStream` |          1000 |     124.90 ns |      0.882 ns |      1.264 ns |  1.00 |    0.00 |   0.3467 |        - |        - |    1088 B |
+|      `SparseBufferWriter<byte>` |          1000 |     273.03 ns |      2.024 ns |      1.794 ns |  2.20 |    0.03 |   0.0663 |        - |        - |     208 B |
+| `PooledArrayBufferWriter<byte>` |          1000 |     491.45 ns |      2.027 ns |      1.693 ns |  3.96 |    0.04 |   0.0401 |        - |        - |     128 B |
+|           `FileBufferingWriter` |          1000 |   1,704.61 ns |     33.291 ns |     31.141 ns | 13.72 |    0.39 |   0.0324 |        - |        - |     104 B |
+|        `RecyclableMemoryStream` |          1000 |   2,535.13 ns |     20.769 ns |     19.427 ns | 20.40 |    0.21 |   0.1030 |        - |        - |     328 B |
+|                                 |               |               |               |               |       |         |          |          |          |           |
+|      `SparseBufferWriter<byte>` |         10000 |     778.99 ns |      3.440 ns |      3.050 ns |  0.32 |    0.00 |   0.0858 |        - |        - |     272 B |
+| `PooledArrayBufferWriter<byte>` |         10000 |   1,570.87 ns |     11.332 ns |     10.045 ns |  0.64 |    0.01 |   0.0401 |        - |        - |     128 B |
+|                  `MemoryStream` |         10000 |   2,441.00 ns |     43.130 ns |     38.234 ns |  1.00 |    0.00 |   9.8343 |        - |        - |   30880 B |
+|           `FileBufferingWriter` |         10000 |   2,841.10 ns |     54.135 ns |     57.924 ns |  1.17 |    0.02 |   0.0305 |        - |        - |     104 B |
+|        `RecyclableMemoryStream` |         10000 |   2,971.70 ns |     23.778 ns |     22.242 ns |  1.22 |    0.02 |   0.1030 |        - |        - |     328 B |
+|                                 |               |               |               |               |       |         |          |          |          |           |
+|      `SparseBufferWriter<byte>` |        100000 |   5,332.73 ns |     18.125 ns |     16.954 ns |  0.08 |    0.00 |   0.1450 |        - |        - |     464 B |
+|        `RecyclableMemoryStream` |        100000 |   7,589.19 ns |     37.040 ns |     32.835 ns |  0.11 |    0.00 |   0.0916 |        - |        - |     328 B |
+| `PooledArrayBufferWriter<byte>` |        100000 |   8,901.54 ns |     34.404 ns |     28.729 ns |  0.13 |    0.00 |   0.0305 |        - |        - |     128 B |
+|                  `MemoryStream` |        100000 |  66,530.32 ns |  1,048.177 ns |    980.465 ns |  1.00 |    0.00 |  41.6260 |  41.6260 |  41.6260 |  260340 B |
+|           `FileBufferingWriter` |        100000 | 117,812.86 ns |  2,269.839 ns |  3,533.865 ns |  1.79 |    0.06 |        - |        - |        - |     368 B |
+|                                 |               |               |               |               |       |         |          |          |          |           |
+|      `SparseBufferWriter<byte>` |       1000000 |  50,656.44 ns |    906.284 ns |    847.739 ns |  0.05 |    0.00 |   0.1831 |        - |        - |     656 B |
+|        `RecyclableMemoryStream` |       1000000 |  53,671.61 ns |    854.939 ns |    799.711 ns |  0.06 |    0.00 |   0.1831 |        - |        - |     736 B |
+| `PooledArrayBufferWriter<byte>` |       1000000 |  84,345.21 ns |  1,475.370 ns |  1,699.039 ns |  0.09 |    0.00 |        - |        - |        - |     128 B |
+|           `FileBufferingWriter` |       1000000 | 739,081.13 ns | 14,452.230 ns | 17,204.351 ns |  0.79 |    0.02 |        - |        - |        - |     368 B |
+|                  `MemoryStream` |       1000000 | 931,331.53 ns | 17,399.875 ns | 14,529.684 ns |  1.00 |    0.00 | 498.0469 | 498.0469 | 498.0469 | 2095552 B |
