@@ -70,3 +70,15 @@ The **is** operator in C# checks if the result of an expression is compatible wi
 Intrinsics.IsExactTypeOf<object>("a");  //false
 Intrinsics.IsExactTypeOf<string>("a");  //true
 ```
+
+# Array Length
+C# 9 introduces primitive type `nint` that can be used for accessing array elements without hidden conversion of the index. However, there is no way to obtain array length as native integer. `Intrinsics.GetLength` provides this ability so the loop over array elements can be rewritten as follows:
+```csharp
+using DotNext.Runtime;
+
+var array = new int[] { ... };
+for (nint i = 0; i < Intrinsics.GetLength(array); i++)
+{
+    
+}
+```
