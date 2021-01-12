@@ -6,7 +6,7 @@ using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.IO
 {
-    internal abstract class WriterStream<TArg> : Stream
+    internal abstract class WriterStream<TArg> : Stream, IFlushable
     {
         private protected readonly TArg argument;
         private readonly Action<TArg>? flush;
@@ -70,7 +70,7 @@ namespace DotNext.IO
         {
             if (flush is null)
             {
-                if (flushAsync != null)
+                if (flushAsync is not null)
                     flushAsync(argument, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
             }
             else

@@ -51,8 +51,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             var reader = new SpanReader<byte>(input);
 
-            length = ReadInt64LittleEndian(reader.Read(sizeof(long)));
-            term = ReadInt64LittleEndian(reader.Read(sizeof(long)));
+            length = reader.ReadInt64(true);
+            term = reader.ReadInt64(true);
             timeStamp = reader.Read<DateTimeOffset>();
             isSnapshot = ValueTypeExtensions.ToBoolean(reader.Read());
 
@@ -63,24 +63,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             var reader = new SpanReader<byte>(input);
 
-            remotePort = ReadUInt16LittleEndian(reader.Read(sizeof(ushort)));
-            term = ReadInt64LittleEndian(reader.Read(sizeof(long)));
-            prevLogIndex = ReadInt64LittleEndian(reader.Read(sizeof(long)));
-            prevLogTerm = ReadInt64LittleEndian(reader.Read(sizeof(long)));
-            commitIndex = ReadInt64LittleEndian(reader.Read(sizeof(long)));
-            entriesCount = ReadInt32LittleEndian(reader.Read(sizeof(int)));
+            remotePort = reader.ReadUInt16(true);
+            term = reader.ReadInt64(true);
+            prevLogIndex = reader.ReadInt64(true);
+            prevLogTerm = reader.ReadInt64(true);
+            commitIndex = reader.ReadInt64(true);
+            entriesCount = reader.ReadInt32(true);
         }
 
         private protected int WriteAnnouncement(Span<byte> output, int entriesCount)
         {
             var writer = new SpanWriter<byte>(output);
 
-            WriteUInt16LittleEndian(writer.Slide(sizeof(ushort)), myPort);
-            WriteInt64LittleEndian(writer.Slide(sizeof(long)), term);
-            WriteInt64LittleEndian(writer.Slide(sizeof(long)), prevLogIndex);
-            WriteInt64LittleEndian(writer.Slide(sizeof(long)), prevLogTerm);
-            WriteInt64LittleEndian(writer.Slide(sizeof(long)), commitIndex);
-            WriteInt32LittleEndian(writer.Slide(sizeof(int)), entriesCount);
+            writer.WriteUInt16(myPort, true);
+            writer.WriteInt64(term, true);
+            writer.WriteInt64(prevLogIndex, true);
+            writer.WriteInt64(prevLogTerm, true);
+            writer.WriteInt64(commitIndex, true);
+            writer.WriteInt32(entriesCount, true);
 
             return writer.WrittenCount;
         }
@@ -220,7 +220,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         private async Task NextEntryAsync(ReadOnlyMemory<byte> input, CancellationToken token)
         {
             currentIndex = ReadInt32LittleEndian(input.Span);
-            if (writeSession != null)
+            if (writeSession is not null)
             {
                 AbortIO();
                 await writeSession.ConfigureAwait(false);

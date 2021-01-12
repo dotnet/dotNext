@@ -12,6 +12,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             Ready = 0,
             VoteRequestReceived,
+            PreVoteRequestReceived,
             MetadataRequestReceived,
             SendingMetadata,
             ResignRequestReceived,
@@ -56,6 +57,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 case MessageType.Vote:
                     state = State.VoteRequestReceived;
                     BeginVote(payload, endpoint, token);
+                    break;
+                case MessageType.PreVote:
+                    state = State.PreVoteRequestReceived;
+                    BeginPreVote(payload, endpoint, token);
                     break;
                 case MessageType.Metadata:
                     if (headers.Control == FlowControl.None)
@@ -124,6 +129,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                     return default;
                 case State.VoteRequestReceived:
                     return EndVote(output);
+                case State.PreVoteRequestReceived:
+                    return EndPreVote(output);
                 case State.MetadataRequestReceived:
                     return SendMetadataPortionAsync(true, output, token);
                 case State.SendingMetadata:

@@ -2,18 +2,17 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.Serialization.Formatters.Binary;
 using Xunit;
 using Enumerable = System.Linq.Enumerable;
 
 namespace DotNext.Buffers
 {
-    using StreamSource = IO.StreamSource;
+    using IO;
 
     [ExcludeFromCodeCoverage]
     public sealed class MemoryWriterTests : Test
     {
-        private static void WriteReadUsingSpan(MemoryWriter<byte> writer)
+        private static void WriteReadUsingSpan(BufferWriter<byte> writer)
         {
             True(writer.WrittenMemory.IsEmpty);
             Equal(0, writer.WrittenCount);
@@ -44,7 +43,7 @@ namespace DotNext.Buffers
             Equal(60, result[5]);
         }
 
-        private static void WriteReadUsingMemory(MemoryWriter<byte> writer)
+        private static void WriteReadUsingMemory(BufferWriter<byte> writer)
         {
             True(writer.WrittenMemory.IsEmpty);
             Equal(0, writer.WrittenCount);
@@ -133,6 +132,9 @@ namespace DotNext.Buffers
             Equal(10, result[0]);
             Equal(20, result[1]);
             Equal(30, result[2]);
+            Equal(10, writer[0]);
+            Equal(20, writer[1]);
+            Equal(30, writer[2]);
 
             memory = writer.GetArray(3);
             new ArraySegment<byte>(new byte[] { 40, 50, 60 }).CopyTo(memory);
@@ -150,44 +152,6 @@ namespace DotNext.Buffers
         }
 
         [Fact]
-        [Obsolete("This test is for checking obsolete member")]
-        public static void StreamInteropObsolete()
-        {
-            using var writer = new PooledArrayBufferWriter<byte>();
-            var span = writer.GetSpan(10);
-            new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }.AsSpan().CopyTo(span);
-            writer.Advance(10);
-            using var stream = PooledArrayBufferWriter.GetWrittenBytesAsStream(writer);
-            True(stream.CanRead);
-            False(stream.CanWrite);
-            Equal(0, stream.Position);
-            Equal(10, stream.Length);
-            var buffer = new byte[10];
-            Equal(10, stream.Read(buffer, 0, 10));
-            for (var i = 0; i < buffer.Length; i++)
-                Equal(i, buffer[i]);
-        }
-
-        [Fact]
-        [Obsolete("This test is for backward compatibility only")]
-        public static void StreamInterop()
-        {
-            using var writer = new PooledArrayBufferWriter<byte>();
-            var span = writer.GetSpan(10);
-            new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }.AsSpan().CopyTo(span);
-            writer.Advance(10);
-            using var stream = StreamSource.GetWrittenBytesAsStream(writer);
-            True(stream.CanRead);
-            False(stream.CanWrite);
-            Equal(0, stream.Position);
-            Equal(10, stream.Length);
-            var buffer = new byte[10];
-            Equal(10, stream.Read(buffer, 0, 10));
-            for (var i = 0; i < buffer.Length; i++)
-                Equal(i, buffer[i]);
-        }
-
-        [Fact]
         public static void StressTest()
         {
             var dict = new Dictionary<string, string>
@@ -195,17 +159,16 @@ namespace DotNext.Buffers
                 {"Key1", "Value1"},
                 {"Key2", "Value2"}
             };
-            var formatter = new BinaryFormatter();
             using var writer = new PooledArrayBufferWriter<byte>();
             // serialize dictionary to memory
             using (var output = StreamSource.AsStream(writer))
             {
-                formatter.Serialize(output, dict);
+                DictionarySerializer.Serialize(dict, output);
             }
             // deserialize from memory
             using (var input = StreamSource.AsStream(writer.WrittenArray))
             {
-                Equal(dict, formatter.Deserialize(input));
+                Equal(dict, DictionarySerializer.Deserialize(input));
             }
         }
 
@@ -217,7 +180,7 @@ namespace DotNext.Buffers
             span[0] = 20;
             span[9] = 30;
             writer.Advance(10);
-            writer.Clear();
+            writer.Clear(true);
 
             span = writer.GetSpan(10);
             span[0] = 40;
@@ -237,7 +200,7 @@ namespace DotNext.Buffers
             span[0] = 20;
             span[9] = 30;
             writer.Advance(10);
-            writer.Clear();
+            writer.Clear(true);
 
             span = writer.GetSpan(10);
             span[0] = 40;
@@ -246,6 +209,8 @@ namespace DotNext.Buffers
 
             Equal(40, writer.WrittenMemory.Span[0]);
             Equal(50, writer.WrittenMemory.Span[9]);
+            Equal(40, writer[0]);
+            Equal(50, writer[9]);
         }
 
         [Fact]
@@ -330,6 +295,66 @@ namespace DotNext.Buffers
             {
                 list.Insert(0, i + 100);
             }
+        }
+
+        [Fact]
+        public static void Insertion()
+        {
+            Span<byte> block = stackalloc byte[] { 10, 20, 30 };
+            using var writer = new PooledArrayBufferWriter<byte>();
+
+            writer.Insert(0, block);
+            Equal(3, writer.WrittenCount);
+            Equal(10, writer[0]);
+            Equal(20, writer[1]);
+            Equal(30, writer[2]);
+
+            block[0] = 40;
+            block[1] = 50;
+            block[2] = 60;
+            writer.Insert(3, block);
+            Equal(6, writer.WrittenCount);
+            Equal(10, writer[0]);
+            Equal(20, writer[1]);
+            Equal(30, writer[2]);
+            Equal(40, writer[3]);
+            Equal(50, writer[4]);
+            Equal(60, writer[5]);
+
+            writer.Clear(true);
+            var random = RandomBytes(writer.FreeCapacity);
+            writer.Write(random);
+            Equal(0, writer.FreeCapacity);
+
+            block[0] = 100;
+            block[1] = 110;
+            block[2] = 120;
+
+            writer.Insert(writer.WrittenCount - 1, block);
+            Equal(random[0..(random.Length - 1)], writer.WrittenMemory.Span.Slice(0, random.Length - 1).ToArray());
+            Equal(block.ToArray(), writer.WrittenMemory.Span.Slice(random.Length - 1, 3).ToArray());
+        }
+
+        [Fact]
+        public static void Overwrite()
+        {
+            Span<byte> block = stackalloc byte[] { 10, 20, 30 };
+            using var writer = new PooledArrayBufferWriter<byte>();
+
+            writer.Overwrite(0, block);
+            Equal(3, writer.WrittenCount);
+            Equal(10, writer[0]);
+            Equal(20, writer[1]);
+            Equal(30, writer[2]);
+
+            writer.Clear(true);
+            var random = RandomBytes(writer.FreeCapacity);
+            writer.Write(random);
+            Equal(0, writer.FreeCapacity);
+            var random2 = RandomBytes(random.Length + 1);
+            writer.Overwrite(1, random2);
+            Equal(random[0], writer[0]);
+            Equal(random2, writer.WrittenMemory.Span.Slice(1).ToArray());
         }
 
         private sealed class AllocationEventCounter

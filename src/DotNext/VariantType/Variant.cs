@@ -44,12 +44,12 @@ namespace DotNext.VariantType
         /// <summary>
         /// Interprets stored value as <typeparamref name="T1"/>.
         /// </summary>
-        public Optional<T1?> First => value as T1;
+        public Optional<T1> First => value as T1;
 
         /// <summary>
         /// Interprets stored value as <typeparamref name="T2"/>.
         /// </summary>
-        public Optional<T2?> Second => value as T2;
+        public Optional<T2> Second => value as T2;
 
         /// <summary>
         /// Converts the stored value.
@@ -73,7 +73,7 @@ namespace DotNext.VariantType
         /// <param name="mapper2">The converter for the second possible type.</param>
         /// <returns>Conversion result; or <see cref="Optional{T}.None"/> if stored value is <see langword="null"/>.</returns>
         public Optional<TResult> Convert<TResult>(Converter<T1, TResult> mapper1, Converter<T2, TResult> mapper2)
-            => Convert(mapper1.AsValueFunc(true), mapper2.AsValueFunc(true));
+            => Convert(mapper1.AsValueFunc(), mapper2.AsValueFunc());
 
         /// <summary>
         /// Converts this variant value into another value.
@@ -104,7 +104,7 @@ namespace DotNext.VariantType
         public Variant<TResult1, TResult2> Convert<TResult1, TResult2>(Converter<T1, TResult1> mapper1, Converter<T2, TResult2> mapper2)
             where TResult1 : class
             where TResult2 : class
-            => Convert(mapper1.AsValueFunc(true), mapper2.AsValueFunc(true));
+            => Convert(mapper1.AsValueFunc(), mapper2.AsValueFunc());
 
         /// <summary>
         /// Change order of type parameters.
@@ -198,7 +198,7 @@ namespace DotNext.VariantType
         /// Indicates that variant value is non-<see langword="null"/> value.
         /// </summary>
         /// <param name="variant">The variant value to convert.</param>
-        public static bool operator true(Variant<T1, T2> variant) => !(variant.value is null);
+        public static bool operator true(Variant<T1, T2> variant) => variant.value is not null;
 
         /// <summary>
         /// Indicates that variant value is <see langword="null"/> value.
@@ -395,7 +395,7 @@ namespace DotNext.VariantType
         /// Indicates that variant value is non-<see langword="null"/> value.
         /// </summary>
         /// <param name="variant">The variant value to check.</param>
-        public static bool operator true(Variant<T1, T2, T3> variant) => !(variant.value is null);
+        public static bool operator true(Variant<T1, T2, T3> variant) => variant.value is not null;
 
         /// <summary>
         /// Indicates that variant value is <see langword="null"/> value.
@@ -622,7 +622,7 @@ namespace DotNext.VariantType
         /// Indicates that variant value is non-<see langword="null"/> value.
         /// </summary>
         /// <param name="variant">The variant value to check.</param>
-        public static bool operator true(Variant<T1, T2, T3, T4> variant) => !(variant.value is null);
+        public static bool operator true(Variant<T1, T2, T3, T4> variant) => variant.value is not null;
 
         /// <summary>
         /// Indicates that variant value is <see langword="null"/> value.

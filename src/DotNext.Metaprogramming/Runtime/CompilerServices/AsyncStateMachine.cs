@@ -1,7 +1,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using System.Runtime.ConstrainedExecution;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -28,6 +27,7 @@ namespace DotNext.Runtime.CompilerServices
         public TState State;
         private AsyncValueTaskMethodBuilder builder;
         private ExceptionDispatchInfo? exception;
+        private bool suspended;
         private uint guardedRegionsCounter;    // number of entries into try-clause
 
         private AsyncStateMachine(Transition<TState, AsyncStateMachine<TState>> transition, TState state)
@@ -37,7 +37,9 @@ namespace DotNext.Runtime.CompilerServices
             State = state;
             StateId = IAsyncStateMachine<TState>.FinalState;
             exception = null;
+            suspended = false;
             guardedRegionsCounter = 0;
+            suspended = false;
         }
 
         readonly TState IAsyncStateMachine<TState>.State => State;
@@ -47,7 +49,6 @@ namespace DotNext.Runtime.CompilerServices
         /// </summary>
         public uint StateId
         {
-            [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
             readonly get;
             private set;
         }
@@ -58,7 +59,6 @@ namespace DotNext.Runtime.CompilerServices
         /// </summary>
         /// <param name="newState">The identifier of the async state machine representing guarded code.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         public void EnterGuardedCode(uint newState)
         {
             StateId = newState;
@@ -69,12 +69,13 @@ namespace DotNext.Runtime.CompilerServices
         /// Leaves guarded code block.
         /// </summary>
         /// <param name="previousState">The identifier of the async state machine before invocation of <see cref="EnterGuardedCode(uint)"/>.</param>
+        /// <param name="suspendException"><see langword="true"/> to suspend exception then entering finally block; otherwise, <see langword="false"/>.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
-        public void ExitGuardedCode(uint previousState)
+        public void ExitGuardedCode(uint previousState, bool suspendException)
         {
             StateId = previousState;
             guardedRegionsCounter -= 1;
+            suspended = exception is not null && suspendException;
         }
 
         /// <summary>
@@ -84,20 +85,18 @@ namespace DotNext.Runtime.CompilerServices
         /// <typeparam name="TException">Type of expression to be caught.</typeparam>
         /// <param name="restoredException">Reference to the captured exception.</param>
         /// <returns><see langword="true"/>, if caught exception is of type <typeparamref name="TException"/>; otherwise, <see langword="false"/>.</returns>
-        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         public bool TryRecover<TException>([NotNullWhen(true)] out TException? restoredException)
             where TException : Exception
         {
-            switch (exception?.SourceException)
+            if (exception?.SourceException is TException typed)
             {
-                case TException typed:
-                    exception = null;
-                    restoredException = typed;
-                    return true;
-                default:
-                    restoredException = null;
-                    return false;
+                exception = null;
+                restoredException = typed;
+                return true;
             }
+
+            restoredException = null;
+            return false;
         }
 
         /// <summary>
@@ -106,15 +105,17 @@ namespace DotNext.Runtime.CompilerServices
         public readonly bool HasNoException
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
-            get => exception is null;
+            get => exception is null || suspended;
         }
 
         /// <summary>
-        /// Re-throws capture exception.
+        /// Re-throws captured exception.
         /// </summary>
-        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
-        public readonly void Rethrow() => exception?.Throw();
+        public void Rethrow()
+        {
+            suspended = false;
+            exception?.Throw();
+        }
 
         void IAsyncStateMachine.MoveNext()
         {
@@ -125,6 +126,7 @@ namespace DotNext.Runtime.CompilerServices
             }
             catch (Exception e)
             {
+                suspended = false;
                 exception = ExceptionDispatchInfo.Capture(e);
 
                 // try to recover from exception and re-enter into state machine
@@ -174,7 +176,6 @@ namespace DotNext.Runtime.CompilerServices
         /// Turns this state machine into final state.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         public void Complete() => StateId = IAsyncStateMachine<TState>.FinalState;
 
         private ValueTask Start()
@@ -214,18 +215,19 @@ namespace DotNext.Runtime.CompilerServices
         /// Represents internal state.
         /// </summary>
         public TState State;
-        private AsyncValueTaskMethodBuilder<TResult> builder;
+        private AsyncValueTaskMethodBuilder<TResult?> builder;
         private ExceptionDispatchInfo? exception;
+        private bool suspended;
         private uint guardedRegionsCounter;    // number of entries into try-clause
-        [AllowNull]
-        private TResult result;
+        private TResult? result;
 
         private AsyncStateMachine(Transition<TState, AsyncStateMachine<TState, TResult>> transition, TState state)
         {
-            builder = AsyncValueTaskMethodBuilder<TResult>.Create();
+            builder = AsyncValueTaskMethodBuilder<TResult?>.Create();
             StateId = IAsyncStateMachine<TState>.FinalState;
             State = state;
             this.transition = transition;
+            suspended = false;
             guardedRegionsCounter = 0;
             exception = null;
             result = default;
@@ -238,7 +240,6 @@ namespace DotNext.Runtime.CompilerServices
         /// </summary>
         public uint StateId
         {
-            [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
             readonly get;
             private set;
         }
@@ -249,7 +250,6 @@ namespace DotNext.Runtime.CompilerServices
         /// </summary>
         /// <param name="newState">The identifier of the async machine state representing guarded code.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         public void EnterGuardedCode(uint newState)
         {
             StateId = newState;
@@ -260,12 +260,13 @@ namespace DotNext.Runtime.CompilerServices
         /// Leaves guarded code block.
         /// </summary>
         /// <param name="previousState">The identifier of the async state machine before invocation of <see cref="EnterGuardedCode(uint)"/>.</param>
+        /// <param name="suspendException"><see langword="true"/> to suspend exception then entering finally block; otherwise, <see langword="false"/>.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
-        public void ExitGuardedCode(uint previousState)
+        public void ExitGuardedCode(uint previousState, bool suspendException)
         {
             StateId = previousState;
             guardedRegionsCounter -= 1;
+            suspended = exception is not null && suspendException;
         }
 
         /// <summary>
@@ -275,20 +276,18 @@ namespace DotNext.Runtime.CompilerServices
         /// <typeparam name="TException">Type of expression to be caught.</typeparam>
         /// <param name="restoredException">Reference to the captured exception.</param>
         /// <returns><see langword="true"/>, if caught exception is of type <typeparamref name="TException"/>; otherwise, <see langword="false"/>.</returns>
-        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         public bool TryRecover<TException>([NotNullWhen(true)]out TException? restoredException)
             where TException : Exception
         {
-            switch (exception?.SourceException)
+            if (exception?.SourceException is TException typed)
             {
-                case TException typed:
-                    exception = null;
-                    restoredException = typed;
-                    return true;
-                default:
-                    restoredException = null;
-                    return false;
+                exception = null;
+                restoredException = typed;
+                return true;
             }
+
+            restoredException = null;
+            return false;
         }
 
         /// <summary>
@@ -297,17 +296,19 @@ namespace DotNext.Runtime.CompilerServices
         public readonly bool HasNoException
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
-            get => exception is null;
+            get => exception is null || suspended;
         }
 
         /// <summary>
-        /// Re-throws capture exception.
+        /// Re-throws captured exception.
         /// </summary>
-        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
-        public readonly void Rethrow() => exception?.Throw();
+        public void Rethrow()
+        {
+            suspended = false;
+            exception?.Throw();
+        }
 
-        private ValueTask<TResult> Start()
+        private ValueTask<TResult?> Start()
         {
             builder.Start(ref this);
             return builder.Task;
@@ -319,7 +320,7 @@ namespace DotNext.Runtime.CompilerServices
         /// <param name="transition">Async function which execution is controlled by state machine.</param>
         /// <param name="initialState">Initial state.</param>
         /// <returns>The task representing execution of async function.</returns>
-        public static ValueTask<TResult> Start(Transition<TState, AsyncStateMachine<TState, TResult>> transition, TState initialState = default)
+        public static ValueTask<TResult?> Start(Transition<TState, AsyncStateMachine<TState, TResult>> transition, TState initialState = default)
             => new AsyncStateMachine<TState, TResult>(transition, initialState).Start();
 
         /// <summary>
@@ -328,7 +329,6 @@ namespace DotNext.Runtime.CompilerServices
         public TResult Result
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
             set
             {
                 StateId = IAsyncStateMachine<TState>.FinalState;
@@ -351,14 +351,10 @@ namespace DotNext.Runtime.CompilerServices
 
             // avoid boxing of this state machine through continuation action if awaiter is completed already
             if (Awaiter<TAwaiter>.IsCompleted(ref awaiter))
-            {
                 return true;
-            }
-            else
-            {
-                builder.AwaitOnCompleted(ref awaiter, ref this);
-                return false;
-            }
+
+            builder.AwaitOnCompleted(ref awaiter, ref this);
+            return false;
         }
 
         void IAsyncStateMachine.MoveNext()
@@ -370,6 +366,7 @@ namespace DotNext.Runtime.CompilerServices
             }
             catch (Exception e)
             {
+                suspended = true;
                 exception = ExceptionDispatchInfo.Capture(e);
 
                 // try to recover from exception and re-enter into state machine

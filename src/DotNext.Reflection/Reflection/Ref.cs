@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -13,20 +14,19 @@ namespace DotNext.Reflection
     {
         private static bool Is(Type type) => type.IsConstructedGenericType && type.GetGenericTypeDefinition() == typeof(Ref<>);
 
-        internal static bool Reflect(Type byRefType, [NotNullWhen(true)]out Type? underlyingType, [NotNullWhen(true)]out FieldInfo? valueField)
+        internal static bool Reflect(Type byRefType, [MaybeNullWhen(false)]out Type underlyingType, [MaybeNullWhen(false)]out FieldInfo valueField)
         {
             if (Is(byRefType))
             {
                 underlyingType = byRefType.GetGenericArguments()[0];
                 valueField = byRefType.GetField(nameof(Ref<Missing>.Value), BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Instance);
+                Debug.Assert(valueField is not null);
                 return true;
             }
-            else
-            {
-                underlyingType = null;
-                valueField = null;
-                return false;
-            }
+
+            underlyingType = null;
+            valueField = null;
+            return false;
         }
     }
 
@@ -51,7 +51,6 @@ namespace DotNext.Reflection
         /// <summary>
         /// Gets or sets value.
         /// </summary>
-        [SuppressMessage("Design", "CA1051", Justification = "It is by-design due to nature of this type")]
         [AllowNull]
         public T Value;
 

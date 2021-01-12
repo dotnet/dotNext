@@ -34,8 +34,7 @@ namespace DotNext
         public static UserDataSlot<TValue> Allocate() => new UserDataSlot<TValue>(UserDataSlot.NewId);
 
         [return: NotNullIfNotNull("defaultValue")]
-        [return: MaybeNull]
-        internal TValue GetUserData(IDictionary<long, object?> storage, [AllowNull]TValue defaultValue)
+        internal TValue? GetUserData(IDictionary<long, object?> storage, TValue? defaultValue)
             => storage.TryGetValue(id, out var userData) && userData is TValue result ? result : defaultValue;
 
         internal bool GetUserData(IDictionary<long, object?> storage, [MaybeNullWhen(false)]out TValue userData)

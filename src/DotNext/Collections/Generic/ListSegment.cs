@@ -55,7 +55,7 @@ namespace DotNext.Collections.Generic
         /// </summary>
         /// <param name="index">The index of the element in this segment.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than zero; or greater than or equal to <see cref="Count"/>.</exception>
-        public readonly T this[int index]
+        public T this[int index]
         {
             get => list[ToAbsoluteIndex(index)];
             set => list[ToAbsoluteIndex(index)] = value;
@@ -128,6 +128,6 @@ namespace DotNext.Collections.Generic
         }
 
         /// <inheritdoc/>
-        readonly IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

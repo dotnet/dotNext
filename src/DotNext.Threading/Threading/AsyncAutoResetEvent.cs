@@ -12,20 +12,17 @@ namespace DotNext.Threading
     {
         private struct LockManager : ILockManager<WaitNode>
         {
-            internal volatile bool IsSignaled;
+            private AtomicBoolean state;
 
-            public bool TryAcquire()
+            public bool TryAcquire() => state.TrueToFalse();
+
+            internal bool IsSignaled
             {
-                if (IsSignaled)
-                {
-                    IsSignaled = false;
-                    return true;
-                }
-
-                return false;
+                readonly get => state.Value;
+                set => state.Value = value;
             }
 
-            WaitNode ILockManager<WaitNode>.CreateNode(WaitNode? tail) => tail is null ? new WaitNode() : new WaitNode(tail);
+            readonly WaitNode ILockManager<WaitNode>.CreateNode(WaitNode? tail) => tail is null ? new WaitNode() : new WaitNode(tail);
         }
 
         private LockManager manager;

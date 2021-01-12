@@ -13,7 +13,6 @@ namespace DotNext.Buffers
     [StructLayout(LayoutKind.Auto)]
     public ref struct SpanReader<T>
     {
-        // TODO: Support of BinaryPrimitives should be added using function pointers in C# 9
         private readonly ReadOnlySpan<T> span;
         private int position;
 
@@ -150,6 +149,52 @@ namespace DotNext.Buffers
             => TryRead(count, out var result) ? result : throw new EndOfStreamException();
 
         /// <summary>
+        /// Decodes the value from the block of memory.
+        /// </summary>
+        /// <param name="reader">The decoder.</param>
+        /// <param name="count">The numbers of elements to read.</param>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="reader"/> is zero.</exception>
+        /// <exception cref="EndOfStreamException"><paramref name="count"/> is greater than <see cref="RemainingCount"/>.</exception>
+        [CLSCompliant(false)]
+        public unsafe TResult Read<TResult>(delegate*<ReadOnlySpan<T>, TResult> reader, int count)
+        {
+            if (reader == null)
+                throw new ArgumentNullException(nameof(reader));
+
+            if (!TryRead(count, out var buffer))
+                throw new EndOfStreamException();
+
+            return reader(buffer);
+        }
+
+        /// <summary>
+        /// Attempts to decode the value from the block of memory.
+        /// </summary>
+        /// <param name="reader">The decoder.</param>
+        /// <param name="count">The numbers of elements to read.</param>
+        /// <param name="result">The decoded value.</param>
+        /// <typeparam name="TResult">The type of the value to be decoded.</typeparam>
+        /// <returns><see langword="true"/> if the value is decoded successfully; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="reader"/> is zero.</exception>
+        [CLSCompliant(false)]
+        public unsafe bool TryRead<TResult>(delegate*<ReadOnlySpan<T>, TResult> reader, int count, [MaybeNullWhen(false)] out TResult result)
+        {
+            if (reader == null)
+                throw new ArgumentNullException(nameof(reader));
+
+            if (TryRead(count, out var buffer))
+            {
+                result = reader(buffer);
+                return true;
+            }
+
+            result = default;
+            return false;
+        }
+
+        /// <summary>
         /// Reads the rest of the memory block.
         /// </summary>
         /// <returns>The rest of the memory block.</returns>
@@ -159,44 +204,11 @@ namespace DotNext.Buffers
             position = span.Length;
             return result;
         }
-    }
-
-    /// <summary>
-    /// Represents extension methods for <see cref="SpanReader{T}"/> type.
-    /// </summary>
-    public static class SpanReader
-    {
-        /// <summary>
-        /// Reads the value of blittable type from the raw bytes
-        /// represents by memory block.
-        /// </summary>
-        /// <param name="reader">The memory reader.</param>
-        /// <param name="result">The value deserialized from bytes.</param>
-        /// <typeparam name="T">The blittable type.</typeparam>
-        /// <returns>
-        /// <see langword="true"/> if memory block contains enough amount of unread bytes to decode the value;
-        /// otherwise, <see langword="false"/>.
-        /// </returns>
-        public static unsafe bool TryRead<T>(this ref SpanReader<byte> reader, out T result)
-            where T : unmanaged
-        {
-            if (reader.TryRead(sizeof(T), out var block))
-                return MemoryMarshal.TryRead(block, out result);
-
-            result = default;
-            return false;
-        }
 
         /// <summary>
-        /// Reads the value of blittable type from the raw bytes
-        /// represents by memory block.
+        /// Gets the textual representation of the written content.
         /// </summary>
-        /// <param name="reader">The memory reader.</param>
-        /// <typeparam name="T">The blittable type.</typeparam>
-        /// <returns>The value deserialized from bytes.</returns>
-        /// <exception cref="EndOfStreamException">The end of memory block is reached.</exception>
-        public static unsafe T Read<T>(this ref SpanReader<byte> reader)
-            where T : unmanaged
-            => MemoryMarshal.Read<T>(reader.Read(sizeof(T)));
+        /// <returns>The textual representation of the written content.</returns>
+        public override string ToString() => ConsumedSpan.ToString();
     }
 }

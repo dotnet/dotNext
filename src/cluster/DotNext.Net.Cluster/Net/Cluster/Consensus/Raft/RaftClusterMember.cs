@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading;
@@ -22,11 +21,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private volatile IReadOnlyDictionary<string, string>? metadataCache;
         private AtomicEnum<ClusterMemberStatus> status;
 
-        private protected RaftClusterMember(ILocalMember localMember, IPEndPoint endPoint, IClientMetricsCollector? metrics)
+        private protected RaftClusterMember(ILocalMember localMember, EndPoint endPoint, IClientMetricsCollector? metrics)
         {
             this.localMember = localMember;
             this.metrics = metrics;
-            Endpoint = endPoint;
+            EndPoint = endPoint;
             status = new AtomicEnum<ClusterMemberStatus>(ClusterMemberStatus.Unknown);
         }
 
@@ -37,7 +36,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Gets the address of this cluster member.
         /// </summary>
-        public IPEndPoint Endpoint { get; }
+        public EndPoint EndPoint { get; }
 
         /// <summary>
         /// Determines whether this member is a leader.
@@ -47,7 +46,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Determines whether this member is not a local node.
         /// </summary>
-        public bool IsRemote => !Endpoint.Equals(localMember.Address);
+        public bool IsRemote => !EndPoint.Equals(localMember.Address);
 
         /// <summary>
         /// Gets the status of this member.
@@ -65,17 +64,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Cancels pending requests scheduled for this member.
         /// </summary>
-        [Obsolete("Use CancelPendingRequestsAsync method instead")]
-        public virtual void CancelPendingRequests()
-        {
-        }
-
-        /// <summary>
-        /// Cancels pending requests scheduled for this member.
-        /// </summary>
         /// <returns>The task representing asynchronous execution of this method.</returns>
-        public virtual ValueTask CancelPendingRequestsAsync()
-            => new ValueTask(Task.Factory.StartNew(CancelPendingRequests, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Current));
+        public abstract ValueTask CancelPendingRequestsAsync();
 
         private protected void ChangeStatus(ClusterMemberStatus newState)
             => IClusterMember.OnMemberStatusChanged(this, ref status, newState, MemberStatusChanged);
@@ -86,9 +76,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         /// <inheritdoc/>
         Task<Result<bool>> IRaftClusterMember.VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
-            => Endpoint.Equals(localMember.Address) ?
+            => EndPoint.Equals(localMember.Address) ?
                 Task.FromResult(new Result<bool>(term, true)) :
                 VoteAsync(term, lastLogIndex, lastLogTerm, token);
+
+        private protected abstract Task<Result<bool>> PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token);
+
+        /// <inheritdoc/>
+        Task<Result<bool>> IRaftClusterMember.PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
+            => EndPoint.Equals(localMember.Address) ?
+                Task.FromResult(new Result<bool>(term, true)) :
+                PreVoteAsync(term, lastLogIndex, lastLogTerm, token);
 
         private protected abstract Task<Result<bool>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
             where TEntry : IRaftLogEntry
@@ -97,7 +95,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <inheritdoc/>
         Task<Result<bool>> IRaftClusterMember.AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
         {
-            if (Endpoint.Equals(localMember.Address))
+            if (EndPoint.Equals(localMember.Address))
                 return Task.FromResult(new Result<bool>(term, true));
             return AppendEntriesAsync<TEntry, TList>(term, entries, prevLogIndex, prevLogTerm, commitIndex, token);
         }
@@ -107,7 +105,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <inheritdoc/>
         Task<Result<bool>> IRaftClusterMember.InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
         {
-            if (Endpoint.Equals(localMember.Address))
+            if (EndPoint.Equals(localMember.Address))
                 return Task.FromResult(new Result<bool>(term, true));
             return InstallSnapshotAsync(term, snapshot, snapshotIndex, token);
         }
@@ -122,7 +120,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <inheritdoc/>
         async ValueTask<IReadOnlyDictionary<string, string>> IClusterMember.GetMetadataAsync(bool refresh, CancellationToken token)
         {
-            if (Endpoint.Equals(localMember.Address))
+            if (EndPoint.Equals(localMember.Address))
                 return localMember.Metadata;
             if (metadataCache is null || refresh)
                 metadataCache = await GetMetadataAsync(token).ConfigureAwait(false);

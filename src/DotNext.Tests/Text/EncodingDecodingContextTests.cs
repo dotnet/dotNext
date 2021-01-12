@@ -11,7 +11,7 @@ namespace DotNext.Text
         [Fact]
         public static void EncodingContextInstantiation()
         {
-            var context = new EncodingContext(Encoding.UTF8);
+            EncodingContext context = Encoding.UTF8;
             Equal(Encoding.UTF8, context.Encoding);
             object clone = ((ICloneable)context).Clone();
             IsType<EncodingContext>(clone);
@@ -21,7 +21,7 @@ namespace DotNext.Text
         [Fact]
         public static void DecodingContextInstantiation()
         {
-            var context = new DecodingContext(Encoding.UTF8);
+            DecodingContext context = Encoding.UTF8;
             Equal(Encoding.UTF8, context.Encoding);
             object clone = ((ICloneable)context).Clone();
             IsType<DecodingContext>(clone);

@@ -152,7 +152,7 @@ namespace DotNext
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Bitwise hash code.</returns>
         public static int GetHashCode(in T value, int hash, Func<int, int, int> hashFunction, bool salted = true)
-            => GetHashCode(in value, hash, new ValueFunc<int, int, int>(hashFunction, true), salted);
+            => GetHashCode(in value, hash, new ValueFunc<int, int, int>(hashFunction), salted);
 
         /// <inheritdoc/>
         bool IEqualityComparer<T>.Equals(T x, T y) => Equals(in x, in y);

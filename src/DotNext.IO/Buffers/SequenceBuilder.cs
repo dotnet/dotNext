@@ -16,7 +16,7 @@ namespace DotNext.Buffers
         /// <param name="allocator">The allocator used to rent the segments.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="chunkSize"/> is less than or equal to zero.</exception>
         public SequenceBuilder(int chunkSize, MemoryAllocator<T>? allocator = null)
-            : base(chunkSize, allocator)
+            : base(chunkSize, SparseBufferGrowth.Linear, allocator)
         {
         }
 

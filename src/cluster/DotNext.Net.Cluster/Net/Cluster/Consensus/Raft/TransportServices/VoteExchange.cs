@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using static System.Buffers.Binary.BinaryPrimitives;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
@@ -22,20 +21,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             var reader = new SpanReader<byte>(payload);
 
-            remotePort = ReadUInt16LittleEndian(reader.Read(sizeof(ushort)));
-            term = ReadInt64LittleEndian(reader.Read(sizeof(long)));
-            lastLogIndex = ReadInt64LittleEndian(reader.Read(sizeof(long)));
-            lastLogTerm = ReadInt64LittleEndian(reader.Read(sizeof(long)));
+            remotePort = reader.ReadUInt16(true);
+            term = reader.ReadInt64(true);
+            lastLogIndex = reader.ReadInt64(true);
+            lastLogTerm = reader.ReadInt64(true);
         }
 
         private int CreateOutboundMessage(Span<byte> payload)
         {
             var writer = new SpanWriter<byte>(payload);
 
-            WriteUInt16LittleEndian(writer.Slide(sizeof(ushort)), myPort);
-            WriteInt64LittleEndian(writer.Slide(sizeof(long)), currentTerm);
-            WriteInt64LittleEndian(writer.Slide(sizeof(long)), lastLogIndex);
-            WriteInt64LittleEndian(writer.Slide(sizeof(long)), lastLogTerm);
+            writer.WriteUInt16(myPort, true);
+            writer.WriteInt64(currentTerm, true);
+            writer.WriteInt64(lastLogIndex, true);
+            writer.WriteInt64(lastLogTerm, true);
 
             return writer.WrittenCount;
         }

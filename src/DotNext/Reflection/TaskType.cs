@@ -13,6 +13,8 @@ namespace DotNext.Reflection
     /// <seealso cref="Task{TResult}"/>
     public static class TaskType
     {
+        internal static readonly Type CompletedTaskType = Task.CompletedTask.GetType();
+
         /// <summary>
         /// Returns task type for the specified result type.
         /// </summary>
@@ -64,8 +66,13 @@ namespace DotNext.Reflection
             if (taskType.IsValueType)
                 return GetValueTaskType(taskType);
 
+            // this is workaround for .NET 5 and later
+            // because Task.CompletedTask returning instance of generic type Task<TaskVoidResult>
+            if (taskType == CompletedTaskType)
+                return typeof(void);
+
             var result = taskType.FindGenericInstance(typeof(Task<>));
-            if (!(result is null))
+            if (result is not null)
                 return result.GetGenericArguments()[0];
 
             if (typeof(Task).IsAssignableFrom(taskType))

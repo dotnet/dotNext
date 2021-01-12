@@ -12,9 +12,9 @@ namespace DotNext.IO
             private readonly Stream source;
             private ReadSession session;
 
-            internal ReaderStream(FileBufferingWriter writer)
+            internal ReaderStream(FileBufferingWriter writer, bool useAsyncIO)
             {
-                writer.GetWrittenContentAsStream(out source);
+                writer.GetWrittenContentAsStream(out source, useAsyncIO);
                 session = writer.EnterReadMode(this);
             }
 
@@ -49,7 +49,7 @@ namespace DotNext.IO
             public override int Read(byte[] buffer, int offset, int count)
                 => source.Read(buffer, offset, count);
 
-            public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback callback, object? state)
+            public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
                 => source.BeginRead(buffer, offset, count, callback, state);
 
             public override int EndRead(IAsyncResult asyncResult)
@@ -107,7 +107,7 @@ namespace DotNext.IO
             }
         }
 
-        private void GetWrittenContentAsStream(out Stream stream)
+        private void GetWrittenContentAsStream(out Stream stream, bool useAsyncIO)
         {
             if (fileBackend is null)
             {
@@ -117,7 +117,7 @@ namespace DotNext.IO
             {
                 const FileOptions withAsyncIO = FileOptions.Asynchronous | FileOptions.SequentialScan;
                 const FileOptions withoutAsyncIO = FileOptions.SequentialScan;
-                stream = new FileStream(fileBackend.Name, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, FileBufferSize, fileBackend.IsAsync ? withAsyncIO : withoutAsyncIO);
+                stream = new FileStream(fileBackend.Name, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, FileBufferSize, useAsyncIO ? withAsyncIO : withoutAsyncIO);
             }
         }
 
@@ -131,13 +131,13 @@ namespace DotNext.IO
             if (IsReading)
                 throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
 
-            if (!(fileBackend is null))
+            if (fileBackend is not null)
             {
                 PersistBuffer();
                 fileBackend.Flush(true);
             }
 
-            return new ReaderStream(this);
+            return new ReaderStream(this, false);
         }
 
         /// <summary>
@@ -152,13 +152,13 @@ namespace DotNext.IO
             if (IsReading)
                 throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
 
-            if (!(fileBackend is null))
+            if (fileBackend is not null)
             {
                 await PersistBufferAsync(token).ConfigureAwait(false);
                 await fileBackend.FlushAsync(token).ConfigureAwait(false);
             }
 
-            return new ReaderStream(this);
+            return new ReaderStream(this, true);
         }
     }
 }

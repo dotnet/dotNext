@@ -11,7 +11,8 @@ namespace DotNext.Net
 
     internal static class Network
     {
-        internal static bool IsIn(this IPAddress address, IPNetwork network) => network.Contains(address);
+        internal static bool IsIn(this IPAddress? address, IPNetwork network)
+            => address is not null && network.Contains(address);
 
         internal static IPEndPoint? ToEndPoint(this Uri memberUri)
         {
@@ -57,7 +58,7 @@ namespace DotNext.Net
                     }
 
                     // add host address hint if it is available
-                    if (!(hint is null))
+                    if (hint is not null)
                         result.Add(new IPEndPoint(hint, endpoint.Port));
                 }
             }

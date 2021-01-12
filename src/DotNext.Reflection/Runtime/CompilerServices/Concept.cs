@@ -24,11 +24,8 @@ namespace DotNext.Runtime.CompilerServices
             try
             {
                 // run class constructor for concept type and its parents
-                while (!(conceptType is null))
-                {
+                for (Type? lookup = conceptType; lookup is not null; lookup = lookup.BaseType)
                     RunClassConstructor(conceptType.TypeHandle);
-                    conceptType = conceptType.BaseType;
-                }
             }
             catch (TypeInitializationException e) when (e.InnerException is ConstraintViolationException violation)
             {

@@ -30,12 +30,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         // request - represents unique request identifier
         private const string RequestIdHeader = "X-Request-ID";
 
-        private static readonly ValueParser<string> StringParser = (string str, out string value) =>
-        {
-            value = str;
-            return true;
-        };
-
         private protected static readonly ValueParser<long> Int64Parser = long.TryParse;
         private static readonly ValueParser<int> Int32Parser = int.TryParse;
         private static readonly ValueParser<IPAddress> IpAddressParser = IPAddress.TryParse;
@@ -48,7 +42,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             internal OutboundTransferObject(IDataTransferObject dto) => this.dto = dto;
 
-            protected sealed override Task SerializeToStreamAsync(Stream stream, TransportContext context) => dto.WriteToAsync(stream).AsTask();
+            protected sealed override Task SerializeToStreamAsync(Stream stream, TransportContext? context) => dto.WriteToAsync(stream).AsTask();
 
             protected sealed override bool TryComputeLength(out long length)
                 => dto.Length.TryGetValue(out length);
@@ -116,6 +110,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         private protected static string ParseHeader<THeaders>(string headerName, HeadersReader<THeaders> reader)
             where THeaders : IEnumerable<string>
-            => ParseHeader(headerName, reader, StringParser);
+            => ParseHeader(headerName, reader, static (string str, out string value) =>
+        {
+            value = str;
+            return true;
+        });
     }
 }

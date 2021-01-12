@@ -23,8 +23,7 @@ namespace DotNext.Reflection
         /// <summary>
         /// Returns default value for this type.
         /// </summary>
-        [MaybeNull]
-        public static T Default => Intrinsics.DefaultOf<T>();
+        public static T? Default => Intrinsics.DefaultOf<T>();
 
         /// <summary>
         /// Provides smart hash code computation.
@@ -63,7 +62,7 @@ namespace DotNext.Reflection
                     method = typeof(BitwiseComparer<>)
                                 .MakeGenericType(RuntimeType)
                                 .GetMethod(nameof(BitwiseComparer<int>.GetHashCode), new[] { RuntimeType.MakeByRefType(), typeof(bool) });
-                    Debug.Assert(!(method is null));
+                    Debug.Assert(method is not null);
                     GetHashCode = Lambda<Operator<T, int>>(Call(null, method, inputParam, Constant(true)), inputParam).Compile();
                 }
                 else
@@ -78,7 +77,7 @@ namespace DotNext.Reflection
                     if (typeof(IEquatable<T>).IsAssignableFrom(RuntimeType))
                     {
                         method = typeof(IEquatable<T>).GetMethod(nameof(IEquatable<T>.Equals), BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-                        Debug.Assert(!(method is null));
+                        Debug.Assert(method is not null);
                         equalsOp = Lambda<Operator<T, T, bool>>(Call(inputParam, method, secondParam), inputParam, secondParam).Compile();
                     }
 
@@ -88,8 +87,8 @@ namespace DotNext.Reflection
                         method = typeof(BitwiseComparer<>)
                             .MakeGenericType(RuntimeType)
                             .GetMethod(nameof(BitwiseComparer<int>.Equals), BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public)
-                            .MakeGenericMethod(RuntimeType);
-                        Debug.Assert(!(method is null));
+                            ?.MakeGenericMethod(RuntimeType);
+                        Debug.Assert(method is not null);
                         equalsOp = Lambda<Operator<T, T, bool>>(Call(null, method, inputParam, secondParam), inputParam, secondParam).Compile();
                     }
                 }
@@ -97,11 +96,15 @@ namespace DotNext.Reflection
             else
             {
                 // hash code calculator
-                GetHashCode = Lambda<Operator<T, int>>(Call(inputParam, typeof(object).GetHashCodeMethod()), inputParam).Compile();
+                GetHashCode = Lambda<Operator<T, int>>(Call(inputParam, typeof(object).GetHashCodeMethod()!), inputParam).Compile();
 
                 // equality checker
                 if (equalsOp is null)
-                    equalsOp = Lambda<Operator<T, T, bool>>(Call(null, typeof(object).GetMethod(nameof(Equals), BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly), inputParam, secondParam), inputParam, secondParam).Compile();
+                {
+                    var equalsMethod = typeof(object).GetMethod(nameof(Equals), BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
+                    Debug.Assert(equalsMethod is not null);
+                    equalsOp = Lambda<Operator<T, T, bool>>(Call(null, equalsMethod, inputParam, secondParam), inputParam, secondParam).Compile();
+                }
             }
 
             Equals = equalsOp;
@@ -148,7 +151,7 @@ namespace DotNext.Reflection
         /// <param name="value">The value to be converted.</param>
         /// <param name="result">The conversion result.</param>
         /// <returns><see langword="true"/>, if conversion is supported by the given type; otherwise, <see langword="false"/>.</returns>
-        public static bool TryConvert<TSource>(TSource value, [NotNullWhen(true)]out T result) => TryConvert(value).TryGet(out result);
+        public static bool TryConvert<TSource>(TSource value, [MaybeNullWhen(false)]out T result) => TryConvert(value).TryGet(out result);
 
         /// <summary>
         /// Converts object into type <typeparamref name="T"/>.

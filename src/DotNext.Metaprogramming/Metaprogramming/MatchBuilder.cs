@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -253,13 +252,9 @@ namespace DotNext.Metaprogramming
 
             Expression ICaseStatementBuilder.Build(ParameterExpression value) => statement(value);
 
-            [SuppressMessage("Usage", "CA1801", Justification = "Required by delegate signature")]
-            internal static Expression Build(Expression result, ParameterExpression value) => result;
-
             public static implicit operator CaseStatementBuilder(CaseStatement statement) => new CaseStatementBuilder(statement);
         }
 
-        private static readonly MethodInfo PlainCaseStatementBuilder = new Func<Expression, ParameterExpression, Expression>(CaseStatementBuilder.Build).Method;
         private readonly ParameterExpression value;
         private readonly BinaryExpression? assignment;
         private readonly ICollection<PatternMatch> patterns;
@@ -279,9 +274,6 @@ namespace DotNext.Metaprogramming
                 assignment = Expression.Assign(this.value, value);
             }
         }
-
-        private static CaseStatement MakeCaseStatement(Expression value)
-            => PlainCaseStatementBuilder.CreateDelegate<CaseStatement>(value);
 
         private static PatternMatch MatchByCondition<TBuilder>(ParameterExpression value, Pattern condition, TBuilder builder)
             where TBuilder : struct, ICaseStatementBuilder
@@ -347,7 +339,7 @@ namespace DotNext.Metaprogramming
         /// <param name="pattern">The condition representing pattern.</param>
         /// <param name="value">The value to be supplied if the specified pattern matches to the passed object.</param>
         /// <returns><c>this</c> builder.</returns>
-        public MatchBuilder Case(Pattern pattern, Expression value) => Case(pattern, MakeCaseStatement(value));
+        public MatchBuilder Case(Pattern pattern, Expression value) => Case(pattern, new CaseStatement(value.TrivialCaseStatement));
 
         internal MatchStatement<Action<ParameterExpression>> Case(Pattern pattern) => new MatchByConditionStatement(this, pattern);
 
@@ -452,22 +444,26 @@ namespace DotNext.Metaprogramming
         public MatchBuilder Case(string memberName1, Expression memberValue1, string memberName2, Expression memberValue2, string memberName3, Expression memberValue3, Func<MemberExpression, MemberExpression, MemberExpression, Expression> body)
             => Case(StructuralPattern(new[] { (memberName1, memberValue1), (memberName2, memberValue2), (memberName3, memberValue3) }), value => body(Expression.PropertyOrField(value, memberName1), Expression.PropertyOrField(value, memberName2), Expression.PropertyOrField(value, memberName3)));
 
-        private static (string, Expression) GetMemberPattern(object @this, string memberName, Type memberType, Func<object, object> valueProvider)
+        private static (string, Expression) GetMemberPattern(object @this, string memberName, Type memberType, Func<object, object?> valueProvider)
         {
             var value = valueProvider(@this);
-            if (value is null)
-                return (memberName, Expression.Default(memberType));
-            else if (value is Expression expr)
-                return (memberName, expr);
-            else
-                return (memberName, Expression.Constant(value, memberType));
+            return value switch
+            {
+                null => (memberName, Expression.Default(memberType)),
+                Expression expr => (memberName, expr),
+                _ => (memberName, Expression.Constant(value, memberType))
+            };
         }
 
         private static IEnumerable<(string, Expression)> GetProperties(object structPattern)
         {
             const BindingFlags PublicInstance = BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Instance;
             foreach (var property in structPattern.GetType().GetProperties(PublicInstance))
-                yield return GetMemberPattern(structPattern, property.Name, property.PropertyType, property.GetValue);
+            {
+                if (property.CanRead)
+                    yield return GetMemberPattern(structPattern, property.Name, property.PropertyType, property.GetValue);
+            }
+
             foreach (var field in structPattern.GetType().GetFields(PublicInstance))
                 yield return GetMemberPattern(structPattern, field.Name, field.FieldType, field.GetValue);
         }
@@ -488,7 +484,7 @@ namespace DotNext.Metaprogramming
         /// <param name="value">The value to be supplied if the specified structural pattern matches to the passed object.</param>
         /// <returns><c>this</c> builder.</returns>
         public MatchBuilder Case(object structPattern, Expression value)
-            => Case(structPattern, MakeCaseStatement(value));
+            => Case(structPattern, new CaseStatement(value.TrivialCaseStatement));
 
         /// <summary>
         /// Defines default behavior in case when all defined patterns are false positive.
@@ -506,7 +502,7 @@ namespace DotNext.Metaprogramming
         /// </summary>
         /// <param name="value">The expression to be evaluated as default case.</param>
         /// <returns><c>this</c> builder.</returns>
-        public MatchBuilder Default(Expression value) => Default(MakeCaseStatement(value));
+        public MatchBuilder Default(Expression value) => Default(new CaseStatement(value.TrivialCaseStatement));
 
         internal MatchStatement<Action<ParameterExpression>> Default() => new DefaultStatement(this);
 
@@ -516,13 +512,13 @@ namespace DotNext.Metaprogramming
 
             // handle patterns
             ICollection<Expression> instructions = new LinkedList<Expression>();
-            if (!(assignment is null))
+            if (assignment is not null)
                 instructions.Add(assignment);
             foreach (var pattern in patterns)
                 instructions.Add(pattern(endOfMatch));
 
             // handle default
-            if (!(defaultCase is null))
+            if (defaultCase is not null)
                 instructions.Add(Expression.Goto(endOfMatch, defaultCase(value)));
 
             // setup label as last instruction

@@ -11,11 +11,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
     using Text;
     using static IO.Pipelines.PipeExtensions;
     using static IO.Pipelines.ResultExtensions;
-    using StringLengthEncoding = IO.StringLengthEncoding;
+    using LengthFormat = IO.LengthFormat;
 
     internal sealed class MetadataExchange : PipeExchange, IClientExchange<IReadOnlyDictionary<string, string>>
     {
-        private const StringLengthEncoding LengthEncoding = StringLengthEncoding.Compressed;
+        private const LengthFormat LengthEncoding = LengthFormat.Compressed;
 
         private readonly CancellationToken readToken;
         private bool state;

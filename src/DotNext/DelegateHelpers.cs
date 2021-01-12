@@ -2,42 +2,23 @@
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Threading;
 
 namespace DotNext
 {
-    using Runtime.CompilerServices;
-
     /// <summary>
     /// Represents various extensions of delegates.
     /// </summary>
-    [BeforeFieldInit(true)]
     public static partial class DelegateHelpers
     {
-        private static readonly Predicate<Assembly>? IsCollectible;
-        private static readonly SendOrPostCallback SendOrPostInvoker;
-        private static readonly Action<Action> ActionInvoker;
-
-        static DelegateHelpers()
-        {
-            // TODO: Should be replaced with direct call without reflection in .NET Core 5
-            var isCollectibleGetter = typeof(Assembly).GetProperty("IsCollectible", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)?.GetMethod;
-            IsCollectible = isCollectibleGetter?.CreateDelegate<Predicate<Assembly>>();
-            SendOrPostInvoker = UnsafeInvoke;
-            ActionInvoker = UnsafeInvoke;
-
-            static void UnsafeInvoke(object action) => Unsafe.As<Action>(action).Invoke();
-        }
-
         private static MethodInfo GetMethod<TDelegate>(Expression<TDelegate> expression)
             where TDelegate : Delegate
             => expression.Body switch
             {
                 MethodCallExpression expr => expr.Method,
-                MemberExpression expr when expr.Member is PropertyInfo property => property.GetMethod,
-                BinaryExpression expr => expr.Method,
-                IndexExpression expr => expr.Indexer.GetMethod,
-                UnaryExpression expr => expr.Method,
+                MemberExpression expr when expr.Member is PropertyInfo property && property.CanRead => property.GetMethod!,
+                BinaryExpression expr when expr.Method is not null => expr.Method,
+                IndexExpression expr when expr.Indexer is not null && expr.Indexer.CanRead => expr.Indexer.GetMethod!,
+                UnaryExpression expr when expr.Method is not null => expr.Method,
                 _ => throw new ArgumentException(ExceptionMessages.InvalidExpressionTree, nameof(expression))
             };
 
@@ -63,7 +44,7 @@ namespace DotNext
         public static Action<T, TValue> CreateOpenDelegate<T, TValue>(Expression<Func<T, TValue>> properyExpr)
             where T : class
             => properyExpr.Body is MemberExpression expr && expr.Member is PropertyInfo property && property.CanWrite ?
-                property.SetMethod.CreateDelegate<Action<T, TValue>>() :
+                property.SetMethod!.CreateDelegate<Action<T, TValue>>() :
                 throw new ArgumentException(ExceptionMessages.InvalidExpressionTree, nameof(properyExpr));
 
         /// <summary>
@@ -72,12 +53,9 @@ namespace DotNext
         /// <param name="expression">The expression tree containing instance method, property, operator call.</param>
         /// <typeparam name="TDelegate">The type of the delegate describing expression tree.</typeparam>
         /// <returns>The factory of closed delegate.</returns>
-        public static Func<object, TDelegate>? CreateClosedDelegateFactory<TDelegate>(Expression<TDelegate> expression)
+        public static Func<object, TDelegate> CreateClosedDelegateFactory<TDelegate>(Expression<TDelegate> expression)
             where TDelegate : Delegate
-        {
-            var method = GetMethod(expression);
-            return method is null ? null : new Func<object, TDelegate>(method.CreateDelegate<TDelegate>);
-        }
+            => new (GetMethod(expression).CreateDelegate<TDelegate>);
 
         /// <summary>
         /// Performs contravariant conversion
@@ -124,19 +102,5 @@ namespace DotNext
         public static TDelegate ChangeType<TDelegate>(this Delegate d)
             where TDelegate : Delegate
             => d is TDelegate ? Unsafe.As<TDelegate>(d) : ChangeType<TDelegate, EmptyTargetRewriter>(d, new EmptyTargetRewriter());
-
-        internal static void InvokeInContext(this Action action, SynchronizationContext context)
-            => context.Post(SendOrPostInvoker, action);
-
-        internal static void InvokeInThreadPool(this Action action)
-            => ThreadPool.QueueUserWorkItem(ActionInvoker, action, false);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool CanBeUnloaded(Assembly assembly)
-            => assembly.IsDynamic || assembly.ReflectionOnly || (IsCollectible?.Invoke(assembly) ?? false);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static bool IsRegularDelegate(Delegate d)
-            => (d.Method.Attributes & MethodAttributes.Static) == 0 || d.Target != null || CanBeUnloaded(d.Method.Module.Assembly);
     }
 }

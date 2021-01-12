@@ -10,7 +10,7 @@
 | Proposal | Implementation |
 | ---- | ---- |
 | [Static Delegates](https://github.com/dotnet/csharplang/blob/master/proposals/static-delegates.md) | [Value Delegates](https://sakno.github.io/dotNext/features/core/valued.html) |
-| [Operators for IntPtr and UIntPtr](https://github.com/dotnet/corefx/issues/32775) | [Extension methods](https://sakno.github.io/dotNext/api/DotNext.ValueTypeExtensions.html) for arithmetic, bitwise and comparison operations |
+| [Interop between function pointer and delegate](https://github.com/dotnet/csharplang/discussions/3680) | [DelegateHelpers](https://sakno.github.io/dotNext/api/DotNext.DelegateHelpers.html) factory methods |
 | [Enum API](https://github.com/dotnet/corefx/issues/34077) | [Documentation](https://sakno.github.io/dotNext/features/core/enum.html) |
 | [Check if an instance of T is a default(T)](https://github.com/dotnet/corefx/issues/16209) | [IsDefault() method](https://sakno.github.io/dotNext/api/DotNext.Runtime.Intrinsics.html#DotNext_Runtime_Intrinsics_IsDefault__1___0_) |
 | [Concept Types](https://github.com/dotnet/csharplang/issues/110) | [Documentation](https://sakno.github.io/dotNext/features/concept.html) |
@@ -22,17 +22,18 @@
 
 Quick overview of additional features:
 
-* [Attachment of user data to arbitrary objects](https://sakno.github.io/dotNext/features/core/userdata.html)
-* [Automatic generation of Equals/GetHashCode](https://sakno.github.io/dotNext/features/core/autoeh.html) for arbitrary type at runtime which is much better that Visual Studio compile-time helper for generating these methods
+* [Attachment of user data to an arbitrary objects](https://sakno.github.io/dotNext/features/core/userdata.html)
+* [Automatic generation of Equals/GetHashCode](https://sakno.github.io/dotNext/features/core/autoeh.html) for an arbitrary type at runtime which is much better that Visual Studio compile-time helper for generating these methods
 * Extended set of [atomic operations](https://sakno.github.io/dotNext/features/core/atomic.html). Inspired by [AtomicInteger](https://docs.oracle.com/javase/10/docs/api/java/util/concurrent/atomic/AtomicInteger.html) and friends from Java
 * [Fast Reflection](https://sakno.github.io/dotNext/features/reflection/fast.html)
 * Fast conversion of bytes to hexadecimal representation and vice versa using `ToHex` and `FromHex` methods from [Span](https://sakno.github.io/dotNext/api/DotNext.Span.html) static class
 * `ManualResetEvent`, `ReaderWriterLockSlim` and other synchronization primitives now have their [asynchronous versions](https://sakno.github.io/dotNext/features/threading/rwlock.html)
 * [Atomic](https://sakno.github.io/dotNext/features/core/atomic.html) memory access operations for arbitrary value types including enums
 * [PipeExtensions](https://sakno.github.io/dotNext/api/DotNext.IO.Pipelines.PipeExtensions.html) provides high-level I/O operations for pipelines such as string encoding and decoding
+* Various high-performance [growable buffers](https://sakno.github.io/dotNext/features/io/buffers.html) for efficient I/O
 * Fully-featured [Raft implementation](https://github.com/sakno/dotNext/tree/master/src/cluster)
 
-All these things are implemented in 100% managed code on top of existing .NET Standard stack without modifications of Roslyn compiler or CoreFX libraries.
+All these things are implemented in 100% managed code on top of existing .NET API without modifications of Roslyn compiler or CoreFX libraries.
 
 # Quick Links
 
@@ -43,50 +44,75 @@ All these things are implemented in 100% managed code on top of existing .NET St
 
 Documentation for older versions:
 * [1.x](https://sakno.github.io/dotNext/versions/1.x/index.html)
+* [2.x](https://sakno.github.io/dotNext/versions/2.x/index.html)
 
 # What's new
-Release Date: 12-04-2020
+Release Date: 01-XX-2021
 
-<a href="https://www.nuget.org/packages/dotnext/2.12.0">DotNext 2.12.0</a>
-* Added consuming enumerator for [IProducerConsumerCollection&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.collections.concurrent.iproducerconsumercollection-1)
-* Introduced `ServiceProviderFactory` class and its factory methods for producing [Service Providers](https://docs.microsoft.com/en-us/dotnet/api/system.iserviceprovider)
-* Significant performance improvements of `StringExtensions.Reverse` method
-* Introduced a new class `SparseBufferWriter<T>` in addition to existing buffer writes which acts as a growable buffer without memory reallocations
+The next major release is now available. Its primary focus is .NET 5 support while keeping compatibility with .NET Standard 2.1. As a result, .NEXT libraries built for multiple target frameworks. Additional changes include performance optimizations, polishing of existing API, dropping support of members that were deprecated in 2.x, expanding usage of nullable reference types.
+
+Migration guide for 2.x users is [here](https://sakno.github.io/dotNext/migration/2.html). Please consider that this version is not fully backward compatible with 2.x.
+
+<a href="https://www.nuget.org/packages/dotnext/3.0.0">DotNext 3.0.0</a>
+* Improved performance of [SparseBufferWriter&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.SparseBufferWriter-1.html), [BufferWriterSlim&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.BufferWriterSlim-1.html), [PooledArrayBufferWriter&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.PooledArrayBufferWriter-1.html), [PooledBufferWriter&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.PooledBufferWriter-1.html)
+* Fixed nullability attributes
+* `ArrayRental<T>` type is replaced by [MemoryOwner&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.MemoryOwner-1.html) type
+* Removed obsolete members and classes
+* Removed `UnreachableCodeExecutionException` exception
+* Completely rewritten implementation of extension methods provided by [AsyncDelegate](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncDelegate.html) class
+* Added [Base64Decoder](https://sakno.github.io/dotNext/api/DotNext.Text.Base64Decoder.html) type for efficient decoding of base64-encoded bytes in streaming scenarios
+* Removed `Future&lt;T&gt;` type
+* Added `ThreadPoolWorkItemFactory` static class with extension methods for constructing [IThreadPoolWorkItem](https://docs.microsoft.com/en-us/dotnet/api/system.threading.ithreadpoolworkitem) instances from method pointers. Available only for .NET 5 target
+* Introduced factory methods for constructing delegate instances from the pointers to the managed methods
+* `DOTNEXT_STACK_ALLOC_THRESHOLD` environment variable can be used to override stack allocation threshold for all .NEXT routines
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.io/2.12.0">DotNext.IO 2.12.0</a>
-* Introduced `TextBufferReader` class inherited from [TextReader](https://docs.microsoft.com/en-us/dotnet/api/system.io.textreader) that can be used to read the text from [ReadOnlySequence&lt;char&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) or [ReadOnlyMemory&lt;char&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.readonlymemory-1)
-* Added `SequenceBuilder<T>` type for building [ReadOnlySequence&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) instances from the chunk of memory blocks
-* Added `GetWrittenContentAsStream` and `GetWrittenContentAsStreamAsync` methods to [FileBufferingWriter](https://sakno.github.io/dotNext/api/DotNext.IO.FileBufferingWriter.html) class
+<a href="https://www.nuget.org/packages/dotnext.io/3.0.0">DotNext.IO 3.0.0</a>
+* Changed behavior of `FileBufferingWriter.GetWrittenContentAsStream` and `FileBufferingWriter.GetWrittenContentAsStreamAsync` in a way which allows you to use synchronous/asynchronous I/O for writing and reading separately
+* Introduced extension methods for [BufferWriterSlim&lt;char&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.BufferWriterSlim-1.html) type for encoding of primitive data types
+* Fixed nullability attributes
+* Added advanced encoding/decoding methods to [IAsyncBinaryWriter](https://sakno.github.io/dotNext/api/DotNext.IO.IAsyncBinaryWriter.html) and [IAsyncBinaryReader](https://sakno.github.io/dotNext/api/DotNext.IO.IAsyncBinaryReader.html) interfaces
+* Removed obsolete members and classes
+* Simplified signature of `AppendAsync` methods exposed by [IAuditTrail&lt;TEntry&gt;](https://sakno.github.io/dotNext/api/DotNext.IO.Log.IAuditTrail-1.html) interface
+* Improved performances of extension methods declared in [PipeExtensions](https://sakno.github.io/dotNext/api/DotNext.IO.Pipelines.PipeExtensions.html) class
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.12.0">DotNext.Metaprogramming 2.12.0</a>
-* Added support of `await using` statement
-* Added support of `await foreach` statement
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/3.0.0">DotNext.Metaprogramming 3.0.0</a>
+* Fixed nullability attributes
+* Fixed [issue 23](https://github.com/sakno/dotNext/issues/23)
+* Fixed code generation of **finally** blocks inside of asynchronous lambda expressions
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.reflection/2.12.0">DotNext.Reflection 2.12.0</a>
-* More performance optimizations in code generation mechanism responsible for the method or constructor calls
-* Added ability to reflect abstract and interface methods
-* Added support of volatile access to the field via reflection
+<a href="https://www.nuget.org/packages/dotnext.reflection/3.0.0">DotNext.Reflection 3.0.0</a>
+* Improved performance of reflective calls
+* [DynamicInvoker](https://sakno.github.io/dotNext/api/DotNext.Reflection.DynamicInvoker.html) delegate allows to pass arguments for dynamic invocation as [Span&lt;object&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.span-1) instead of `object[]`
+* Fixed nullability attributes
 
-<a href="https://www.nuget.org/packages/dotnext.threading/2.12.0">DotNext.Threading 2.12.0</a>
-* Added support of `Count` and `CanCount` properties inherited from [ChannelReader&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.threading.channels.channelreader-1) by persistent channel reader
-* Added support of diagnostics counters for persistent channel
-* Fixed resuming of suspended callers in [AsyncTrigger](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncTrigger.html) class
+<a href="https://www.nuget.org/packages/dotnext.threading/3.0.0">DotNext.Threading 3.0.0</a>
+* Modified ability to await on [CancellationToken](https://docs.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken) and [WaitHandle](https://docs.microsoft.com/en-us/dotnet/api/system.threading.waithandle). [ValueTask](https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.valuetask) is the primary return type of the appropriate methods
+* Fixed nullability attributes
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/2.12.0">DotNext.Unsafe 2.12.0</a>
-* Fixed ignoring of array offset in `ReadFrom` and `WriteTo` methods of [Pointer&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Runtime.InteropServices.Pointer-1.html) type
-* Added `ToArray` method to [Pointer&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Runtime.InteropServices.Pointer-1.html) type
-* Added indexer property to [IUnmanagedArray&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Runtime.InteropServices.IUnmanagedArray-1.html) interface
+<a href="https://www.nuget.org/packages/dotnext.unsafe/3.0.0">DotNext.Unsafe 3.0.0</a>
+* Removed obsolete members and classes
+* Fixed nullability attributes
+* Added `PinnedArray<T>` as a wrapper of pinned arrays from .NET 5
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/2.12.0">DotNext.Net.Cluster 2.12.0</a>
-* Updated dependencies shipped with .NET Core 3.1.10
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/3.0.0">DotNext.Net.Cluster 3.0.0</a>
+* Improved performance of [persistent WAL](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html)
+* Added support of active-standby configuration of Raft cluster. Standby node cannot become a leader but can be used for reads
+* Introduced [framework](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.Commands.html) for writing interpreters of log entries stored in persistent write-ahead log
+* Added support of JSON-serializable log entries (available for .NET 5 only)
+* Fixed bug causing long shutdown of Raft node which is using TCP transport
+* Added support of **PreVote** extension for Raft preventing _term inflation_
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/2.12.0">DotNext.AspNetCore.Cluster 2.12.0</a>
-* Updated dependencies shipped with .NET Core 3.1.10
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/3.0.0">DotNext.AspNetCore.Cluster 3.0.0</a>
+* Added `UsePersistenceEngine` extension method for correct registration of custom persistence engine derived from [PersistentState](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html) class
+* Added support of HTTP/3 (available for .NET 5 only)
+* Significantly optimized performance and traffic volume of **AppendEntries** Raft RPC call. Now replication performance is comparable to TCP/UDP transports
+
+`DotNext.Augmentation` IL weaver add-on for MSBuild is no longer supported.
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
@@ -96,7 +122,7 @@ The libraries are versioned according with [Semantic Versioning 2.0](https://sem
 | Version | .NET compatibility | Support Level |
 | ---- | ---- | ---- |
 | 0.x | .NET Standard 2.0 | Not Supported |
-| 1.x | .NET Standard 2.0 | Not Supported (since 12/20/2020) |
+| 1.x | .NET Standard 2.0 | Not Supported |
 | 2.x | .NET Standard 2.1 | Maintenance |
 | 3.x | .NET Standard 2.1, .NET 5 | Active Development |
 
@@ -104,10 +130,9 @@ _Maintenance_ support level means that new releases will contain bug fixes only.
 
 # Development Process
 Philosophy of development process:
-1. All libraries in .NEXT family based on .NET Standard to be available for wide range of .NET implementations: Mono, Xamarin, .NET Core
+1. All libraries in .NEXT family are available for the wide range of .NET implementations: Mono, Xamarin, .NET Core, .NET
 1. Compatibility with AOT compiler should be checked for every release
 1. Minimize set of dependencies
-1. Rely on .NET Standard specification
 1. Provide high-quality documentation
 1. Stay cross-platform
 1. Provide benchmarks

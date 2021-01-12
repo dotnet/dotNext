@@ -17,32 +17,40 @@ namespace DotNext
     /// <typeparam name="T">Primitive numeric type.</typeparam>
     [CLSCompliant(false)]
     [Concept]
-    [BeforeFieldInit(false)]
     [StructLayout(LayoutKind.Auto)]
     public readonly struct Number<T> : IEquatable<T>, IEquatable<Number<T>>, IComparable<T>
         where T : struct, IConvertible, IComparable<T>, IEquatable<T>, IFormattable
     {
         #region Concept Definition
-        private static readonly Operator<T, T> UnaryPlus = Type<T>.Operator.Require<T>(UnaryOperator.Plus, OperatorLookup.Predefined)!;
-        private static readonly Operator<T, T> UnaryMinus = Type<T>.Operator.Require<T>(UnaryOperator.Negate, OperatorLookup.Predefined)!;
+        private static readonly Operator<T, T> UnaryPlus, UnaryMinus;
 
-        private static readonly Operator<T, T, T> BinaryPlus = Type<T>.Operator<T>.Require<T>(BinaryOperator.Add, OperatorLookup.Predefined)!;
+        private static readonly Operator<T, T, T> BinaryPlus, BinaryMinus, Multiply, Divide;
 
-        private static readonly Operator<T, T, T> BinaryMinus = Type<T>.Operator<T>.Require<T>(BinaryOperator.Subtract, OperatorLookup.Predefined)!;
+        private static readonly Function<(string text, Ref<T> result), bool> TryParseMethod;
+        private static readonly Function<(string text, NumberStyles styles, IFormatProvider provider, Ref<T> result), bool> AdvancedTryParseMethod;
 
-        private static readonly Operator<T, T, T> Multiply = Type<T>.Operator<T>.Require<T>(BinaryOperator.Multiply, OperatorLookup.Predefined)!;
+        private static readonly Func<string, T> ParseMethod;
 
-        private static readonly Operator<T, T, T> Divide = Type<T>.Operator<T>.Require<T>(BinaryOperator.Divide, OperatorLookup.Predefined)!;
+        private static readonly Operator<T, string> ToStringMethod;
 
-        private static readonly Function<(string text, Ref<T> result), bool> TryParseMethod = Type<T>.RequireStaticMethod<(string, Ref<T>), bool>(nameof(int.TryParse))!;
-        private static readonly Function<(string text, NumberStyles styles, IFormatProvider provider, Ref<T> result), bool> AdvancedTryParseMethod = Type<T>.RequireStaticMethod<(string, NumberStyles, IFormatProvider, Ref<T>), bool>(nameof(int.TryParse))!;
-
-        private static readonly Func<string, T> ParseMethod = Type<T>.Method<string>.RequireStatic<T>(nameof(int.Parse))!;
-
-        private static readonly Operator<T, string> ToStringMethod = Type<T>.Method.Require<Operator<T, string>>(nameof(int.ToString), MethodLookup.Instance)!;
-
-        private static readonly Operator<T, int> GetHashCodeMethod = Type<T>.Method.Require<Operator<T, int>>(nameof(int.GetHashCode), MethodLookup.Instance)!;
+        private static readonly Operator<T, int> GetHashCodeMethod;
         #endregion
+
+        // explicit static ctor sets beforefieldinit flag to false
+        static Number()
+        {
+            UnaryPlus = Type<T>.Operator.Require<T>(UnaryOperator.Plus, OperatorLookup.Predefined);
+            UnaryMinus = Type<T>.Operator.Require<T>(UnaryOperator.Negate, OperatorLookup.Predefined);
+            BinaryPlus = Type<T>.Operator<T>.Require<T>(BinaryOperator.Add, OperatorLookup.Predefined);
+            BinaryMinus = Type<T>.Operator<T>.Require<T>(BinaryOperator.Subtract, OperatorLookup.Predefined);
+            Multiply = Type<T>.Operator<T>.Require<T>(BinaryOperator.Multiply, OperatorLookup.Predefined);
+            Divide = Type<T>.Operator<T>.Require<T>(BinaryOperator.Divide, OperatorLookup.Predefined);
+            TryParseMethod = Type<T>.RequireStaticMethod<(string, Ref<T>), bool>(nameof(int.TryParse));
+            AdvancedTryParseMethod = Type<T>.RequireStaticMethod<(string, NumberStyles, IFormatProvider, Ref<T>), bool>(nameof(int.TryParse));
+            ParseMethod = Type<T>.Method<string>.RequireStatic<T>(nameof(int.Parse));
+            ToStringMethod = Type<T>.Method.Require<Operator<T, string>>(nameof(int.ToString), MethodLookup.Instance);
+            GetHashCodeMethod = Type<T>.Method.Require<Operator<T, int>>(nameof(int.GetHashCode), MethodLookup.Instance);
+        }
 
         private readonly T value;
 

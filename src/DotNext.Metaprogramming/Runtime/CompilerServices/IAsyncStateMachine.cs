@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 
 namespace DotNext.Runtime.CompilerServices
 {
@@ -29,7 +30,7 @@ namespace DotNext.Runtime.CompilerServices
 
         void EnterGuardedCode(uint newState);
 
-        void ExitGuardedCode(uint previousState);
+        void ExitGuardedCode(uint previousState, bool suspendException);
 
         bool TryRecover<TException>([NotNullWhen(true)] out TException? exception)
             where TException : Exception;

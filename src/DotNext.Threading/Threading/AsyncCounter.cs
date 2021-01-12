@@ -22,7 +22,7 @@ namespace DotNext.Threading
 
             internal LockManager(long value) => counter = value;
 
-            internal long Count => counter.VolatileRead();
+            internal readonly long Count => counter.VolatileRead();
 
             internal long Increment() => counter.IncrementAndGet();
 
@@ -30,7 +30,7 @@ namespace DotNext.Threading
 
             internal bool Reset() => Interlocked.Exchange(ref counter, 0L) > 0L;
 
-            WaitNode ILockManager<WaitNode>.CreateNode(WaitNode? tail)
+            readonly WaitNode ILockManager<WaitNode>.CreateNode(WaitNode? tail)
                 => tail is null ? new WaitNode() : new WaitNode(tail);
 
             bool ILockManager<WaitNode>.TryAcquire()
@@ -82,7 +82,7 @@ namespace DotNext.Threading
         {
             ThrowIfDisposed();
             manager.Increment();
-            for (WaitNode? current = head, next; !(current is null) && manager.Count > 0L; manager.Decrement(), current = next)
+            for (WaitNode? current = head, next; current is not null && manager.Count > 0L; manager.Decrement(), current = next)
             {
                 next = current.Next;
                 RemoveNode(current);

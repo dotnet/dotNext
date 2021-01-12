@@ -37,6 +37,8 @@ namespace DotNext.Reflection
         {
             Equal(typeof(string), typeof(MyList).GetItemType(out var enumerable));
             Equal(typeof(IEnumerable<string>), enumerable);
+            Equal(typeof(int), typeof(int[]).GetItemType(out enumerable));
+            Equal(typeof(IEnumerable<int>), enumerable);
         }
 
         private struct ManagedStruct
@@ -116,20 +118,13 @@ namespace DotNext.Reflection
         }
 
         [Fact]
-        [Obsolete("This test is for checking obsolete member")]
-        public static void ReflectMemberObsolete()
-        {
-            NotNull(Reflector.MemberOf<MethodInfo>(() => 23.ToString()));
-        }
-
-        [Fact]
         public static void ReflectMember()
         {
             NotNull(Reflector.MemberOf<FieldInfo, Func<string>>(() => string.Empty));
             NotNull(Reflector.MemberOf<PropertyInfo, Func<Optional<string>>>(() => Optional<string>.None));
             NotNull(Reflector.MemberOf<ConstructorInfo, Func<string>>(() => new string('a', 3)));
-            NotNull(Reflector.MemberOf<MethodInfo, Func<decimal, decimal>>(x => -x));
-            Null(Reflector.MemberOf<MemberInfo, Func<int, int>>(i => -i));
+            NotNull(Reflector.MemberOf<MethodInfo, Func<decimal, decimal>>(static x => -x));
+            Null(Reflector.MemberOf<MemberInfo, Func<int, int>>(static i => -i));
         }
     }
 }

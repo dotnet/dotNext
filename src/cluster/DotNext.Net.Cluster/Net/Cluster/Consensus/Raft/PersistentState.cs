@@ -49,9 +49,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly DirectoryInfo location;
         private readonly AsyncManualResetEvent commitEvent;
         private readonly AsyncSharedLock syncRoot;
-        private readonly IRaftLogEntry initialEntry;
+        private readonly LogEntry initialEntry;
         private readonly long initialSize;
-        private readonly MemoryAllocator<LogEntry> entryPool;
+        private readonly MemoryAllocator<LogEntry>? entryPool;
         private readonly MemoryAllocator<LogEntryMetadata>? metadataPool;
         private readonly StreamSegment nullSegment;
         private readonly int bufferSize;
@@ -95,7 +95,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 if (long.TryParse(file.Name, out var partitionNumber))
                 {
-                    var partition = new Partition(file.Directory, bufferSize, recordsPerPartition, partitionNumber, metadataPool, sessionManager.Capacity);
+                    var partition = new Partition(file.Directory!, bufferSize, recordsPerPartition, partitionNumber, metadataPool, sessionManager.Capacity);
                     partition.PopulateCache(sessionManager.WriteSession);
                     partitionTable[partitionNumber] = partition;
                 }
@@ -118,6 +118,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
         }
 
+        /// <inheritdoc/>
+        bool IAuditTrail.IsLogEntryLengthAlwaysPresented => true;
+
         /// <summary>
         /// Gets the buffer that can be used to perform I/O operations.
         /// </summary>
@@ -132,14 +135,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private Partition CreatePartition(long partitionNumber)
             => new Partition(location, Buffer.Length, recordsPerPartition, partitionNumber, metadataPool, sessionManager.Capacity);
 
-        private LogEntry First
+        private long SquashedIndex
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => Unsafe.Unbox<LogEntry>(initialEntry);
+            get
+            {
+                var commitIndex = state.CommitIndex;
+                return commitIndex - ((commitIndex + 1L) % recordsPerPartition);
+            }
         }
 
-        private async ValueTask<TResult> ReadAsync<TReader, TResult>(TReader reader, DataAccessSession session, long startIndex, long endIndex, CancellationToken token)
-            where TReader : notnull, ILogEntryConsumer<IRaftLogEntry, TResult>
+        private async ValueTask<TResult> ReadAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, DataAccessSession session, long startIndex, long endIndex, CancellationToken token)
         {
             if (startIndex > state.LastIndex)
                 throw new IndexOutOfRangeException(ExceptionMessages.InvalidEntryIndex(endIndex));
@@ -152,19 +157,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             ValueTask<TResult> result;
             if (partitionTable.Count > 0)
             {
-                using var list = entryPool((int)length);
+                using var list = entryPool.Invoke((int)length, true);
                 var listIndex = 0;
                 for (Partition? partition = null; startIndex <= endIndex; list[listIndex++] = entry, startIndex++)
                 {
-                    // handle ephemeral entity
-                    if (startIndex == 0L)
-                    {
-                        entry = First;
-                    }
-                    else if (TryGetPartition(startIndex, ref partition, out var switched))
+                    if (startIndex > 0L && TryGetPartition(startIndex, ref partition, out var switched))
                     {
                         // handle regular record
-                        entry = (await partition.ReadAsync(session, startIndex, true, switched, token).ConfigureAwait(false)).Value;
+                        entry = await partition.ReadAsync(session, startIndex, true, switched, token).ConfigureAwait(false);
                     }
                     else if (snapshot.Length > 0 && startIndex <= state.CommitIndex)
                     {
@@ -172,11 +172,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         entry = await snapshot.ReadAsync(session, token).ConfigureAwait(false);
 
                         // skip squashed log entries
-                        startIndex = state.CommitIndex - ((state.CommitIndex + 1) % recordsPerPartition);
+                        startIndex = SquashedIndex;
                     }
                     else
                     {
-                        break;
+                        Debug.Assert(startIndex == 0L);
+
+                        // handle ephemeral entity
+                        entry = initialEntry;
                     }
                 }
 
@@ -189,7 +192,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             else
             {
-                result = startIndex == 0L ? reader.ReadAsync<LogEntry, SingletonEntryList<LogEntry>>(new SingletonEntryList<LogEntry>(First), null, token) : reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
+                result = startIndex == 0L ? reader.ReadAsync<LogEntry, SingletonEntryList<LogEntry>>(new SingletonEntryList<LogEntry>(initialEntry), null, token) : reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
             }
 
             return await result.ConfigureAwait(false);
@@ -203,7 +206,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// In this case the first entry in the collection is a snapshot entry. Additionally, the caller must call <see cref="IDisposable.Dispose"/> to release resources associated
         /// with the audit trail segment with entries.
         /// </remarks>
-        /// <typeparam name="TReader">The type of the reader.</typeparam>
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="reader">The reader of the log entries.</param>
         /// <param name="startIndex">The index of the first requested log entry, inclusively.</param>
@@ -212,8 +214,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The collection of log entries.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> or <paramref name="endIndex"/> is negative.</exception>
         /// <exception cref="IndexOutOfRangeException"><paramref name="endIndex"/> is greater than the index of the last added entry.</exception>
-        public async ValueTask<TResult> ReadAsync<TReader, TResult>(TReader reader, long startIndex, long endIndex, CancellationToken token)
-            where TReader : notnull, ILogEntryConsumer<IRaftLogEntry, TResult>
+        public async ValueTask<TResult> ReadAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, long endIndex, CancellationToken token)
         {
             if (startIndex < 0L)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
@@ -227,7 +228,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var session = sessionManager.OpenSession(bufferSize);
             try
             {
-                return await ReadAsync<TReader, TResult>(reader, session, startIndex, endIndex, token).ConfigureAwait(false);
+                return await ReadAsync(reader, session, startIndex, endIndex, token).ConfigureAwait(false);
             }
             finally
             {
@@ -236,22 +237,40 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        /// <inheritdoc/>
-        ValueTask<TResult> IAuditTrail.ReadAsync<TReader, TResult>(TReader reader, long startIndex, long endIndex, CancellationToken token)
-            => ReadAsync<TReader, TResult>(reader, startIndex, endIndex, token);
+        /// <inheritdoc />
+        ValueTask<TResult> IAuditTrail<IRaftLogEntry>.ReadAsync<TResult>(ILogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, CancellationToken token)
+            => ReadAsync(new LogEntryConsumer<IRaftLogEntry, TResult>(reader), startIndex, token);
+
+        /// <inheritdoc />
+        ValueTask<TResult> IAuditTrail<IRaftLogEntry>.ReadAsync<TResult>(Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<TResult>> reader, long startIndex, CancellationToken token)
+            => ReadAsync(new LogEntryConsumer<IRaftLogEntry, TResult>(reader), startIndex, token);
+
+        /// <inheritdoc />
+        ValueTask<TResult> IAuditTrail.ReadAsync<TResult>(Func<IReadOnlyList<ILogEntry>, long?, CancellationToken, ValueTask<TResult>> reader, long startIndex, CancellationToken token)
+            => ReadAsync(new LogEntryConsumer<IRaftLogEntry, TResult>(reader), startIndex, token);
+
+        /// <inheritdoc />
+        ValueTask<TResult> IAuditTrail<IRaftLogEntry>.ReadAsync<TResult>(ILogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, long endIndex, CancellationToken token)
+            => ReadAsync(new LogEntryConsumer<IRaftLogEntry, TResult>(reader), startIndex, endIndex, token);
+
+        /// <inheritdoc />
+        ValueTask<TResult> IAuditTrail<IRaftLogEntry>.ReadAsync<TResult>(Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<TResult>> reader, long startIndex, long endIndex, CancellationToken token)
+            => ReadAsync(new LogEntryConsumer<IRaftLogEntry, TResult>(reader), startIndex, endIndex, token);
+
+        /// <inheritdoc />
+        ValueTask<TResult> IAuditTrail.ReadAsync<TResult>(Func<IReadOnlyList<ILogEntry>, long?, CancellationToken, ValueTask<TResult>> reader, long startIndex, long endIndex, CancellationToken token)
+            => ReadAsync(new LogEntryConsumer<IRaftLogEntry, TResult>(reader), startIndex, endIndex, token);
 
         /// <summary>
         /// Gets log entries starting from the specified index to the last log entry.
         /// </summary>
-        /// <typeparam name="TReader">The type of the reader.</typeparam>
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="reader">The reader of the log entries.</param>
         /// <param name="startIndex">The index of the first requested log entry, inclusively.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The collection of log entries.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is negative.</exception>
-        public async ValueTask<TResult> ReadAsync<TReader, TResult>(TReader reader, long startIndex, CancellationToken token)
-            where TReader : notnull, ILogEntryConsumer<IRaftLogEntry, TResult>
+        public async ValueTask<TResult> ReadAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, CancellationToken token)
         {
             if (startIndex < 0L)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
@@ -259,7 +278,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var session = sessionManager.OpenSession(bufferSize);
             try
             {
-                return await ReadAsync<TReader, TResult>(reader, session, startIndex, state.LastIndex, token).ConfigureAwait(false);
+                return await ReadAsync(reader, session, startIndex, state.LastIndex, token).ConfigureAwait(false);
             }
             finally
             {
@@ -267,10 +286,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 syncRoot.Release();
             }
         }
-
-        /// <inheritdoc/>
-        ValueTask<TResult> IAuditTrail.ReadAsync<TReader, TResult>(TReader reader, long startIndex, CancellationToken token)
-            => ReadAsync<TReader, TResult>(reader, startIndex, token);
 
         private async ValueTask InstallSnapshot<TSnapshot>(TSnapshot snapshot, long snapshotIndex)
             where TSnapshot : notnull, IRaftLogEntry
@@ -281,10 +296,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 throw new ArgumentOutOfRangeException(nameof(snapshotIndex));
 
             // 1. Save the snapshot into temporary file to avoid corruption caused by network connection
-            string tempSnapshotFile, snapshotFile = this.snapshot.Name;
+            string tempSnapshotFile, snapshotFile = this.snapshot.FileName;
             using (var tempSnapshot = new Snapshot(location, Buffer.Length, 0, true))
             {
-                tempSnapshotFile = tempSnapshot.Name;
+                tempSnapshotFile = tempSnapshot.FileName;
                 await tempSnapshot.WriteAsync(sessionManager.WriteSession, snapshot, snapshotIndex, CancellationToken.None).ConfigureAwait(false);
             }
 
@@ -564,9 +579,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
                 // take the next partition if startIndex is not a beginning of the calculated partition
                 partitionNumber += (remainder > 0L).ToInt32();
-                for (Partition partition; partitionTable.TryGetValue(partitionNumber, out partition); partitionNumber++)
+                for (Partition? partition; partitionTable.TryGetValue(partitionNumber, out partition); partitionNumber++)
                 {
-                    var fileName = partition.Name;
+                    var fileName = partition.FileName;
                     partitionTable.Remove(partitionNumber);
                     partition.Dispose();
                     File.Delete(fileName);
@@ -635,7 +650,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     // ignore the ephemeral entry
                     if (partition.FirstIndex > 0L || i > 0L)
                     {
-                        entry = (await partition.ReadAsync(sessionManager.WriteSession, i, false, false, token).ConfigureAwait(false)).Value;
+                        entry = await partition.ReadAsync(sessionManager.WriteSession, i, false, false, token).ConfigureAwait(false);
                         entry.Reset();
                         await builder.ApplyCoreAsync(entry).ConfigureAwait(false);
                     }
@@ -656,7 +671,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private ValueTask ForceCompaction(CancellationToken token)
         {
             SnapshotBuilder? builder;
-            if (state.CommitIndex - snapshot.Index > recordsPerPartition && (builder = CreateSnapshotBuilder()) != null)
+            if (state.CommitIndex - snapshot.Index > recordsPerPartition && (builder = CreateSnapshotBuilder()) is not null)
             {
                 try
                 {
@@ -678,7 +693,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var startIndex = state.CommitIndex + 1L;
             try
             {
-                count = (endIndex ?? GetLastIndex(false)) - startIndex + 1L;
+                count = endIndex.HasValue ? Math.Min(state.LastIndex, endIndex.GetValueOrDefault()) : state.LastIndex;
+                count = count - startIndex + 1L;
                 if (count > 0)
                 {
                     state.CommitIndex = startIndex + count - 1;
@@ -728,6 +744,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// The base method does nothing so you don't need to call base implementation.
         /// </remarks>
         /// <returns>The task representing asynchronous execution of this method.</returns>
+        /// <seealso cref="Commands.CommandInterpreter"/>
         protected virtual ValueTask ApplyAsync(LogEntry entry) => new ValueTask();
 
         /// <summary>
@@ -742,14 +759,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 if (TryGetPartition(startIndex, ref partition, out var switched))
                 {
-                    var entry = (await partition.ReadAsync(sessionManager.WriteSession, startIndex, true, switched, token).ConfigureAwait(false)).Value;
+                    var entry = await partition.ReadAsync(sessionManager.WriteSession, startIndex, true, switched, token).ConfigureAwait(false);
                     entry.Reset();
                     await ApplyAsync(entry).ConfigureAwait(false);
                     lastTerm.VolatileWrite(entry.Term);
                 }
                 else
                 {
-                    Debug.Fail($"Log entry with index {startIndex} doesn't have partition");
+                    throw new MissingPartitionException(startIndex);
                 }
             }
 
@@ -836,10 +853,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             => IsConsistent ? Task.CompletedTask : EnsureConsistencyImpl(timeout, token);
 
         /// <inheritdoc/>
-        ref readonly IRaftLogEntry IAuditTrail<IRaftLogEntry>.First => ref initialEntry;
-
-        /// <inheritdoc/>
-        bool IPersistentState.IsVotedFor(IRaftClusterMember? member) => state.IsVotedFor(member?.Endpoint);
+        bool IPersistentState.IsVotedFor(IRaftClusterMember? member) => state.IsVotedFor(member?.Id);
 
         /// <summary>
         /// Gets the current term.
@@ -853,7 +867,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         ValueTask IPersistentState.UpdateTermAsync(long term) => state.UpdateTermAsync(term);
 
         /// <inheritdoc/>
-        ValueTask IPersistentState.UpdateVotedForAsync(IRaftClusterMember? member) => state.UpdateVotedForAsync(member?.Endpoint);
+        ValueTask IPersistentState.UpdateVotedForAsync(IRaftClusterMember? member) => state.UpdateVotedForAsync(member?.Id);
 
         /// <summary>
         /// Releases all resources associated with this audit trail.
@@ -877,11 +891,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             base.Dispose(disposing);
         }
 
-        /// <summary>
-        /// Releases unmanaged resources asynchronously.
-        /// </summary>
-        /// <returns>A task representing state of asynchronous execution.</returns>
-        public virtual async ValueTask DisposeAsync()
+        /// <inheritdoc />
+        protected override async ValueTask DisposeAsyncCore()
         {
             foreach (var partition in partitionTable.Values)
                 await partition.DisposeAsync().ConfigureAwait(false);
@@ -892,8 +903,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             syncRoot.Dispose();
             await snapshot.DisposeAsync().ConfigureAwait(false);
             await nullSegment.DisposeAsync().ConfigureAwait(false);
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
+
+        /// <summary>
+        /// Releases resources associated with this persistent storage asynchronously.
+        /// </summary>
+        /// <returns>A task representing state of asynchronous execution.</returns>
+        public ValueTask DisposeAsync() => DisposeAsync(false);
     }
 }

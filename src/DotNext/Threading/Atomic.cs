@@ -286,17 +286,17 @@ namespace DotNext.Threading
         }
 
         /// <inheritdoc/>
-        object IStrongBox.Value
+        object? IStrongBox.Value
         {
             readonly get => Value;
-            set => Value = (T)value;
+            set => Value = (T)value!;
         }
 
         /// <summary>
         /// Converts the stored value into string atomically.
         /// </summary>
         /// <returns>The string returned from <see cref="object.ToString"/> method called on the stored value.</returns>
-        public override readonly string ToString()
+        public override readonly string? ToString()
         {
             Read(out var result);
             return result.ToString();

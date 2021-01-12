@@ -109,15 +109,12 @@ namespace DotNext.Runtime.InteropServices
         [Fact]
         public static unsafe void Swap()
         {
-            var array = new ushort[] { 1, 2 };
-            fixed (ushort* p = array)
-            {
-                var ptr1 = new Pointer<ushort>(p);
-                var ptr2 = ptr1 + 1;
-                Equal(1, ptr1.Value);
-                Equal(2, ptr2.Value);
-                ptr1.Swap(ptr2);
-            }
+            var array = stackalloc ushort[] { 1, 2 };
+            var ptr1 = new Pointer<ushort>(array);
+            var ptr2 = ptr1 + 1;
+            Equal(1, ptr1.Value);
+            Equal(2, ptr2.Value);
+            ptr1.Swap(ptr2);
             Equal(2, array[0]);
             Equal(1, array[1]);
         }
@@ -186,7 +183,7 @@ namespace DotNext.Runtime.InteropServices
             Equal(new IntPtr(12), ptr.Value);
             False(ptr.CompareAndSetValue(new IntPtr(10), new IntPtr(20)));
             Equal(new IntPtr(12), ptr.Value);
-            Func<IntPtr, IntPtr, IntPtr> sum = ValueTypeExtensions.Add;
+            Func<nint, nint, nint> sum = static (x, y) => x + y;
             Equal(new IntPtr(32), ptr.AccumulateAndGetValue(new IntPtr(20), sum));
             Equal(new IntPtr(32), ptr.Value);
             Equal(new IntPtr(32), ptr.GetAndAccumulateValue(new IntPtr(8), sum));
@@ -258,11 +255,11 @@ namespace DotNext.Runtime.InteropServices
         [Fact]
         public static unsafe void VolatileReadWriteUIntPtr()
         {
-            Pointer<UIntPtr> ptr = stackalloc UIntPtr[3];
+            Pointer<nuint> ptr = stackalloc UIntPtr[3];
             ptr.VolatileWrite(new UIntPtr(1));
-            Equal(new UIntPtr(1), ptr.Value);
-            ptr.Value = ptr.Value.AddChecked(new UIntPtr(10));
-            Equal(new UIntPtr(11), ptr.Value);
+            Equal(new UIntPtr(1), (UIntPtr)ptr.Value);
+            ptr.Value = ptr.Value + 10;
+            Equal(new UIntPtr(11), (UIntPtr)ptr.Value);
             Equal(new UIntPtr(11), ptr.VolatileRead());
         }
 
@@ -325,7 +322,7 @@ namespace DotNext.Runtime.InteropServices
             fixed (ushort* p = array)
             {
                 var ptr = new Pointer<ushort>(p);
-                Equal(new IntPtr(p), ptr.Address);
+                Equal(new IntPtr(p), (IntPtr)ptr.Address);
                 ptr.Value = 20;
                 Equal(20, array[0]);
                 Equal(20, ptr.Value);
@@ -347,7 +344,7 @@ namespace DotNext.Runtime.InteropServices
             fixed (ushort* p = array)
             {
                 var ptr = new Pointer<ushort>(p);
-                Equal(new IntPtr(p), ptr.Address);
+                Equal(new IntPtr(p), (IntPtr)ptr.Address);
                 ptr.Set(20);
                 Equal(20, array[0]);
                 Equal(20, ptr.Get(0));
@@ -438,7 +435,7 @@ namespace DotNext.Runtime.InteropServices
         public static unsafe void Operators()
         {
             var ptr1 = new Pointer<int>(new IntPtr(42));
-            var ptr2 = new Pointer<int>(new IntPtr(43));
+            var ptr2 = new Pointer<int>(new IntPtr(46));
             True(ptr1 != ptr2);
             False(ptr1 == ptr2);
             ptr2 -= new IntPtr(1);
@@ -456,10 +453,15 @@ namespace DotNext.Runtime.InteropServices
             ptr1 += 1L;
             Equal(new IntPtr(54), ptr1);
             ptr1 += new IntPtr(2);
-            Equal(new IntPtr(56), ptr1);
+            Equal(new IntPtr(62), ptr1);
 
             ptr1 = new Pointer<int>(new UIntPtr(56U));
             Equal(new UIntPtr(56U), ptr1);
+
+            ptr1 += (nint)1;
+            Equal(new IntPtr(60), ptr1);
+            ptr1 -= (nint)1;
+            Equal(new IntPtr(56), ptr1);
         }
 
         [Fact]
@@ -513,7 +515,7 @@ namespace DotNext.Runtime.InteropServices
             ptr.Value = 42;
             var obj = ptr.GetBoxedPointer();
             IsType<Pointer>(obj);
-            Equal(ptr.Address, new IntPtr(Pointer.Unbox(obj)));
+            Equal((IntPtr)ptr.Address, new IntPtr(Pointer.Unbox(obj)));
         }
     }
 }

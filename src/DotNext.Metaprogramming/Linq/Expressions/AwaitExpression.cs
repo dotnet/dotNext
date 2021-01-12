@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -24,20 +26,19 @@ namespace DotNext.Linq.Expressions
         /// <exception cref="ArgumentException">Passed expression doesn't implement TAP pattern.</exception>
         public AwaitExpression(Expression expression, bool configureAwait = false)
         {
-            const BindingFlags PublicInstanceMethod = BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy;
+            const BindingFlags PublicInstanceMethod = BindingFlags.Public | BindingFlags.Instance;
             if (configureAwait)
             {
-                MethodInfo? configureMethod = expression.Type.GetMethod(nameof(Task.ConfigureAwait), PublicInstanceMethod, Type.DefaultBinder, new[] { typeof(bool) }, Array.Empty<ParameterModifier>());
-                if (!(configureMethod is null))
+                MethodInfo? configureMethod = expression.Type.GetMethod(nameof(Task.ConfigureAwait), PublicInstanceMethod, Type.DefaultBinder, new[] { typeof(bool) }, null);
+                if (configureMethod is not null)
                     expression = expression.Call(configureMethod, false.Const());
             }
 
             // expression type must have type with GetAwaiter() method
-            MethodInfo? getAwaiter = expression.Type.GetMethod(nameof(Task.GetAwaiter), PublicInstanceMethod, Type.DefaultBinder, Array.Empty<Type>(), Array.Empty<ParameterModifier>());
+            MethodInfo? getAwaiter = expression.Type.GetMethod(nameof(Task.GetAwaiter), PublicInstanceMethod, Type.DefaultBinder, Array.Empty<Type>(), null);
             GetAwaiter = expression.Call(getAwaiter ?? throw new ArgumentException(ExceptionMessages.MissingGetAwaiterMethod(expression.Type)));
-            GetResultMethod = GetAwaiter.Type.GetMethod(nameof(TaskAwaiter.GetResult), PublicInstanceMethod, Type.DefaultBinder, Array.Empty<Type>(), Array.Empty<ParameterModifier>());
-            if (GetResultMethod is null)
-                throw new ArgumentException(ExceptionMessages.MissingGetResultMethod(GetAwaiter.Type));
+            getAwaiter = GetAwaiter.Type.GetMethod(nameof(TaskAwaiter.GetResult), PublicInstanceMethod, Type.DefaultBinder, Array.Empty<Type>(), null);
+            GetResultMethod = getAwaiter ?? throw new ArgumentException(ExceptionMessages.MissingGetResultMethod(GetAwaiter.Type));
         }
 
         internal ParameterExpression NewAwaiterHolder()
@@ -47,8 +48,8 @@ namespace DotNext.Linq.Expressions
             return result;
         }
 
-        internal static bool IsAwaiterHolder(ParameterExpression variable)
-            => variable.GetUserData().Get(IsAwaiterVarSlot);
+        internal static bool IsAwaiterHolder([NotNullWhen(true)] ParameterExpression? variable)
+            => variable?.GetUserData().Get(IsAwaiterVarSlot) ?? false;
 
         internal MethodCallExpression GetAwaiter { get; }
 
@@ -75,6 +76,7 @@ namespace DotNext.Linq.Expressions
         /// <returns>Potentially modified expression if one of children expressions is modified during visit.</returns>
         protected override Expression VisitChildren(ExpressionVisitor visitor)
         {
+            Debug.Assert(GetAwaiter.Object is not null);
             var expression = visitor.Visit(GetAwaiter.Object);
             return ReferenceEquals(expression, GetAwaiter.Object) ? this : new AwaitExpression(expression);
         }

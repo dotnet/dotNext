@@ -14,7 +14,6 @@ namespace DotNext.Threading
     /// Represents atomic boolean.
     /// </summary>
     [Serializable]
-    [SuppressMessage("Design", "CA1066")]
     [SuppressMessage("Usage", "CA2231")]
     public struct AtomicBoolean : IEquatable<bool>, ISerializable
     {
@@ -29,7 +28,7 @@ namespace DotNext.Threading
 
         private AtomicBoolean(SerializationInfo info, StreamingContext context)
         {
-            value = (int)info.GetValue(ValueSerData, typeof(int));
+            value = (int)info.GetValue(ValueSerData, typeof(int))!;
         }
 
         /// <summary>
@@ -99,13 +98,13 @@ namespace DotNext.Threading
         /// Negates currently stored value atomically.
         /// </summary>
         /// <returns>Negation result.</returns>
-        public bool NegateAndGet() => UpdateAndGet(new ValueFunc<bool, bool>(Negate));
+        public unsafe bool NegateAndGet() => UpdateAndGet(new ValueFunc<bool, bool>(&Negate));
 
         /// <summary>
         /// Negates currently stored value atomically.
         /// </summary>
         /// <returns>The original value before negation.</returns>
-        public bool GetAndNegate() => GetAndUpdate(new ValueFunc<bool, bool>(Negate));
+        public unsafe bool GetAndNegate() => GetAndUpdate(new ValueFunc<bool, bool>(&Negate));
 
         /// <summary>
         /// Modifies the current value atomically.
@@ -132,7 +131,7 @@ namespace DotNext.Threading
             bool oldValue, newValue;
             do
             {
-                newValue = updater.Invoke(oldValue = AtomicInt32.VolatileRead(ref value).ToBoolean());
+                newValue = updater.Invoke(oldValue = AtomicInt32.VolatileRead(in value).ToBoolean());
             }
             while (!CompareAndSet(oldValue, newValue));
             return (oldValue, newValue);
@@ -143,7 +142,7 @@ namespace DotNext.Threading
             bool oldValue, newValue;
             do
             {
-                newValue = accumulator.Invoke(oldValue = AtomicInt32.VolatileRead(ref value).ToBoolean(), x);
+                newValue = accumulator.Invoke(oldValue = AtomicInt32.VolatileRead(in value).ToBoolean(), x);
             }
             while (!CompareAndSet(oldValue, newValue));
             return (oldValue, newValue);
@@ -160,7 +159,7 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <returns>The updated value.</returns>
         public bool AccumulateAndGet(bool x, Func<bool, bool, bool> accumulator)
-            => AccumulateAndGet(x, new ValueFunc<bool, bool, bool>(accumulator, true));
+            => AccumulateAndGet(x, new ValueFunc<bool, bool, bool>(accumulator));
 
         /// <summary>
         /// Atomically updates the current value with the results of applying the given function
@@ -186,7 +185,7 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <returns>The original value.</returns>
         public bool GetAndAccumulate(bool x, Func<bool, bool, bool> accumulator)
-            => GetAndAccumulate(x, new ValueFunc<bool, bool, bool>(accumulator, true));
+            => GetAndAccumulate(x, new ValueFunc<bool, bool, bool>(accumulator));
 
         /// <summary>
         /// Atomically updates the current value with the results of applying the given function
@@ -208,7 +207,7 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function.</param>
         /// <returns>The updated value.</returns>
         public bool UpdateAndGet(Func<bool, bool> updater)
-            => UpdateAndGet(new ValueFunc<bool, bool>(updater, true));
+            => UpdateAndGet(new ValueFunc<bool, bool>(updater));
 
         /// <summary>
         /// Atomically updates the stored value with the results
@@ -226,7 +225,7 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function.</param>
         /// <returns>The original value.</returns>
         public bool GetAndUpdate(Func<bool, bool> updater)
-            => GetAndUpdate(new ValueFunc<bool, bool>(updater, true));
+            => GetAndUpdate(new ValueFunc<bool, bool>(updater));
 
         /// <summary>
         /// Atomically updates the stored value with the results

@@ -23,7 +23,7 @@ namespace DotNext.Runtime.CompilerServices
             }
             else if (awaiterType.IsValueType)
             {
-                IsCompleted = isCompletedProperty.GetMethod.CreateDelegate<IsCompletedGetter>();
+                IsCompleted = isCompletedProperty.GetMethod?.CreateDelegate<IsCompletedGetter>() ?? NotCompleted;
             }
             else
             {

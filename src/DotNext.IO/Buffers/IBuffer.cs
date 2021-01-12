@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers
@@ -33,16 +34,14 @@ namespace DotNext.Buffers
     internal readonly struct ArrayBuffer<T> : IBuffer<T>, IDisposable
         where T : unmanaged
     {
-        private readonly ArrayRental<T> buffer;
+        private readonly MemoryOwner<T> buffer;
 
         internal ArrayBuffer(int length)
-        {
-            buffer = new ArrayRental<T>(length);
-        }
+            => buffer = new MemoryOwner<T>(ArrayPool<T>.Shared, length);
 
         int IBuffer<T>.Length => buffer.Length;
 
-        Span<T> IBuffer<T>.Span => buffer.Span;
+        Span<T> IBuffer<T>.Span => buffer.Memory.Span;
 
         public void Dispose() => buffer.Dispose();
     }

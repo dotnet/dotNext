@@ -64,11 +64,11 @@ namespace DotNext.Metaprogramming
         [Fact]
         public static void CatchWithFilter()
         {
-            var lambda = Lambda<Func<long, long, bool>>(fun =>
+            var lambda = Lambda<Func<long, long, bool>>(static fun =>
             {
                 var (arg1, arg2) = fun;
                 Try(Expression.Block((Expression)(arg1.AsDynamic() / arg2), true.Const()))
-                    .Catch(typeof(Exception), e => e.InstanceOf<DivideByZeroException>(), e => InPlaceValue(false))
+                    .Catch(typeof(Exception), static e => e.InstanceOf<DivideByZeroException>(), static e => InPlaceValue(false))
                     .OfType<bool>()
                     .End();
             })

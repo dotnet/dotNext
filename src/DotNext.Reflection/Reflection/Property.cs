@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
@@ -23,7 +24,7 @@ namespace DotNext.Reflection
         /// <param name="obj">The object whose property value will be returned.</param>
         /// <param name="value">An object containing the value of the property reflected by this instance.</param>
         /// <returns><see langword="true"/>, if property value is obtained successfully; otherwise, <see langword="false"/>.</returns>
-        public abstract bool GetValue(object? obj, [MaybeNull]out TValue value);
+        public abstract bool GetValue(object? obj, out TValue? value);
 
         /// <summary>
         /// Sets the value of the property supported by the given object.
@@ -39,7 +40,7 @@ namespace DotNext.Reflection
         /// <param name="obj">The object whose property value will be returned.</param>
         /// <param name="index">Index values for indexed properties.</param>
         /// <returns>The property value of the specified object.</returns>
-        public override object GetValue(object? obj, object?[] index) => property.GetValue(obj, index);
+        public override object? GetValue(object? obj, object?[]? index) => property.GetValue(obj, index);
 
         /// <summary>
         /// Sets the property value of a specified object with optional index values for index properties.
@@ -47,7 +48,7 @@ namespace DotNext.Reflection
         /// <param name="obj">The object whose property value will be set.</param>
         /// <param name="value">The new property value.</param>
         /// <param name="index">The property value of the specified object.</param>
-        public override void SetValue(object? obj, object? value, object?[] index) => property.SetValue(obj, value, index);
+        public override void SetValue(object? obj, object? value, object?[]? index) => property.SetValue(obj, value, index);
 
         /// <summary>
         /// Gets name of the property.
@@ -145,7 +146,7 @@ namespace DotNext.Reflection
         /// <param name="index">Index values for indexed properties.</param>
         /// <param name="culture">Used to govern the coercion of types.</param>
         /// <returns>The property value of the specified object.</returns>
-        public override object GetValue(object? obj, BindingFlags invokeAttr, Binder? binder, object?[] index, CultureInfo culture)
+        public override object? GetValue(object? obj, BindingFlags invokeAttr, Binder? binder, object?[]? index, CultureInfo? culture)
             => property.GetValue(obj, invokeAttr, binder, index, culture);
 
         /// <summary>
@@ -157,13 +158,13 @@ namespace DotNext.Reflection
         /// <param name="binder">Defines a set of properties and enables the binding, coercion of argument types, and invocation of members using reflection.</param>
         /// <param name="index">Index values for indexed properties.</param>
         /// <param name="culture">Used to govern the coercion of types.</param>
-        public override void SetValue(object? obj, object? value, BindingFlags invokeAttr, Binder? binder, object?[] index, CultureInfo culture)
+        public override void SetValue(object? obj, object? value, BindingFlags invokeAttr, Binder? binder, object?[]? index, CultureInfo? culture)
             => property.SetValue(obj, value, invokeAttr, binder, index, culture);
 
         /// <summary>
         /// Gets the class that declares this property.
         /// </summary>
-        public sealed override Type DeclaringType => property.DeclaringType;
+        public sealed override Type? DeclaringType => property.DeclaringType;
 
         /// <summary>
         /// Always returns <see cref="MemberTypes.Property"/>.
@@ -173,7 +174,7 @@ namespace DotNext.Reflection
         /// <summary>
         /// Gets the class object that was used to obtain this instance.
         /// </summary>
-        public sealed override Type ReflectedType => property.ReflectedType;
+        public sealed override Type? ReflectedType => property.ReflectedType;
 
         /// <summary>
         /// Returns an array of all custom attributes applied to this property.
@@ -251,7 +252,7 @@ namespace DotNext.Reflection
         /// Returns textual representation of this property.
         /// </summary>
         /// <returns>The textual representation of this property.</returns>
-        public override string ToString() => property.ToString();
+        public override string? ToString() => property.ToString();
     }
 
     /// <summary>
@@ -310,8 +311,7 @@ namespace DotNext.Reflection
             {
                 if (SetMethod is null)
                     throw new InvalidOperationException(ExceptionMessages.PropertyWithoutSetter(Name));
-                else
-                    SetMethod.Invoke(value);
+                SetMethod.Invoke(value);
             }
         }
 
@@ -321,18 +321,16 @@ namespace DotNext.Reflection
         /// <param name="obj">Must be <see langword="null"/>.</param>
         /// <param name="value">An object containing the value of the property reflected by this instance.</param>
         /// <returns><see langword="true"/>, if property value is obtained successfully; otherwise, <see langword="false"/>.</returns>
-        public override bool GetValue(object? obj, [MaybeNull]out TValue value)
+        public override bool GetValue(object? obj, out TValue? value)
         {
-            if (GetMethod is null || !(obj is null))
+            if (GetMethod is not null && obj is not null)
             {
-                value = default!;
-                return false;
-            }
-            else
-            {
-                value = GetMethod.Invoke()!;
+                value = GetMethod.Invoke();
                 return true;
             }
+
+            value = default;
+            return false;
         }
 
         /// <summary>
@@ -343,15 +341,13 @@ namespace DotNext.Reflection
         /// <returns><see langword="true"/>, if property value is modified successfully; otherwise, <see langword="false"/>.</returns>
         public override bool SetValue(object? obj, TValue value)
         {
-            if (SetMethod is null || !(obj is null))
-            {
-                return false;
-            }
-            else
+            if (SetMethod is not null && obj is not null)
             {
                 SetMethod.Invoke(value);
                 return true;
             }
+
+            return false;
         }
 
         private static Property<TValue>? Reflect(Type declaringType, string propertyName, bool nonPublic)
@@ -378,7 +374,7 @@ namespace DotNext.Reflection
             private protected override Property<T, TValue>? Create(string propertyName, bool nonPublic) => Reflect(propertyName, nonPublic);
         }
 
-        private const BindingFlags PublicFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
+        private const BindingFlags PublicFlags = BindingFlags.Instance | BindingFlags.Public;
         private const BindingFlags NonPublicFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
         private Property(PropertyInfo property)
@@ -418,18 +414,16 @@ namespace DotNext.Reflection
         /// <param name="obj">The object whose property value will be returned.</param>
         /// <param name="value">An object containing the value of the property reflected by this instance.</param>
         /// <returns><see langword="true"/>, if property value is obtained successfully; otherwise, <see langword="false"/>.</returns>
-        public override bool GetValue(object? obj, [MaybeNull]out TValue value)
+        public override bool GetValue(object? obj, out TValue? value)
         {
-            if (GetMethod is null || !(obj is T thisArg))
+            if (GetMethod is not null && obj is T thisArg)
             {
-                value = default!;
-                return false;
-            }
-            else
-            {
-                value = GetMethod.Invoke(thisArg)!;
+                value = GetMethod.Invoke(in thisArg);
                 return true;
             }
+
+            value = default;
+            return false;
         }
 
         /// <summary>
@@ -440,15 +434,13 @@ namespace DotNext.Reflection
         /// <returns><see langword="true"/>, if property value is modified successfully; otherwise, <see langword="false"/>.</returns>
         public override bool SetValue(object? obj, TValue value)
         {
-            if (SetMethod is null || !(obj is T))
+            if (SetMethod is not null && obj is T thisArg)
             {
-                return false;
-            }
-            else
-            {
-                SetMethod.Invoke((T)obj, value);
+                SetMethod.Invoke(thisArg, value);
                 return true;
             }
+
+            return false;
         }
 
         /// <summary>
@@ -460,14 +452,23 @@ namespace DotNext.Reflection
         public TValue this[[DisallowNull]in T @this]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => GetMethod is null ? throw new InvalidOperationException(ExceptionMessages.PropertyWithoutGetter(Name)) : GetMethod.Invoke(@this);
+            get
+            {
+                if (GetMethod is null)
+                    throw new InvalidOperationException(ExceptionMessages.PropertyWithoutGetter(Name));
+
+                Debug.Assert(@this is not null);
+                return GetMethod.Invoke(@this);
+            }
+
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             set
             {
                 if (SetMethod is null)
                     throw new InvalidOperationException(ExceptionMessages.PropertyWithoutSetter(Name));
-                else
-                    SetMethod.Invoke(@this, value);
+
+                Debug.Assert(@this is not null);
+                SetMethod.Invoke(@this, value);
             }
         }
 

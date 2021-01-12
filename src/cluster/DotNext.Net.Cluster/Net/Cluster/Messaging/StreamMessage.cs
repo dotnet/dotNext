@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.IO;
+﻿using System.IO;
 using System.Net.Mime;
 
 namespace DotNext.Net.Cluster.Messaging
@@ -23,19 +22,6 @@ namespace DotNext.Net.Cluster.Messaging
         {
             Name = name;
             Type = type ?? new ContentType(MediaTypeNames.Application.Octet);
-        }
-
-        /// <summary>
-        /// Initializes a new empty message of predefined size.
-        /// </summary>
-        /// <param name="name">The name of the message.</param>
-        /// <param name="type">Media type of the message.</param>
-        /// <param name="size">The initial size of the message, in bytes.</param>
-        /// <param name="growable"><see langword="true"/> if the size is not fixed and can be expanded if necessary; <see langword="false"/> to use strictly limited memory size.</param>
-        [SuppressMessage("Reliability", "CA2000", Justification = "Stream lifetime is controlled by StreamMessage")]
-        public StreamMessage(string name, ContentType type, int size = 1024, bool growable = true)
-            : this(growable ? new MemoryStream(size) : new RentedMemoryStream(size), false, name, type)
-        {
         }
 
         /// <summary>

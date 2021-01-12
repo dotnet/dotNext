@@ -31,8 +31,8 @@ namespace DotNext.Runtime.CompilerServices
         {
             var finallyCode = Content.Finally;
             finallyCode = finallyCode is null ?
-                new ExitGuardedCodeExpression(leavingState) :
-                finallyCode.AddEpilogue(false, new ExitGuardedCodeExpression(leavingState));
+                new ExitGuardedCodeExpression(leavingState, false) :
+                finallyCode.AddEpilogue(false, new ExitGuardedCodeExpression(leavingState, true));
             finallyCode = finallyCode.AddEpilogue(false, epilogue);
             finallyCode = Inliner.Rewrite(finallyCode);
             return visitor.Visit(finallyCode);
@@ -43,21 +43,21 @@ namespace DotNext.Runtime.CompilerServices
             // generate try block
             var tryBody = visitor.Visit(Wrap(Content.Body));
             tryBody = tryBody.AddPrologue(false, prologue);
-            if (!(finallyLabel is null))
+            if (finallyLabel is not null)
                 tryBody = tryBody.AddEpilogue(false, finallyLabel.Goto(), FaultLabel.LandingSite());
 
             // generate exception handlers block
             var handlers = new LinkedList<Expression>();
-            if (finallyLabel != null)
+            if (finallyLabel is not null)
             {
-                handlers.AddLast(new ExitGuardedCodeExpression(previousState));
+                handlers.AddLast(new ExitGuardedCodeExpression(previousState, false));
                 handlers.AddLast(new EnterGuardedCodeExpression(recoveryStateId));
                 foreach (var handler in Content.Handlers)
                     handlers.AddLast(visitor.Visit(new CatchStatement(handler, finallyLabel)));
             }
 
             // generate finally block
-            Expression fault = new FinallyStatement(Content.Finally ?? Content.Fault, previousState, finallyLabel ?? FaultLabel);
+            Expression fault = new FinallyStatement(Content.Finally ?? Content.Fault ?? Expression.Empty(), previousState, finallyLabel ?? FaultLabel);
             fault = visitor.Visit(fault);
             return tryBody.AddEpilogue(false, handlers).AddEpilogue(false, fault);
         }

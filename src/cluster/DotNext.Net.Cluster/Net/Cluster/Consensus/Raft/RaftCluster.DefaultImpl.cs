@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -45,7 +44,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         private static bool IsMatchedByEndPoint(RaftClusterMember member, EndPoint endPoint)
-            => member.Endpoint.Equals(endPoint);
+            => member.EndPoint.Equals(endPoint);
 
         /// <summary>
         /// Starts serving local member.
@@ -84,20 +83,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         protected RaftClusterMember CreateClient(IPEndPoint address)
             => clientFactory(this, address, Metrics as IClientMetricsCollector);
 
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's a member of internal interface")]
+        /// <inheritdoc />
         bool ILocalMember.IsLeader(IRaftClusterMember member) => ReferenceEquals(Leader, member);
 
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's a member of internal interface")]
+        /// <inheritdoc />
         IPEndPoint ILocalMember.Address => publicEndPoint;
 
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's a member of internal interface")]
+        /// <inheritdoc />
         IReadOnlyDictionary<string, string> ILocalMember.Metadata => metadata;
 
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's a member of internal interface")]
+        /// <inheritdoc />
         Task<bool> ILocalMember.ResignAsync(CancellationToken token)
             => ReceiveResignAsync(token);
 
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's a member of internal interface")]
+        /// <inheritdoc />
         Task<Result<bool>> ILocalMember.ReceiveEntriesAsync<TEntry>(EndPoint sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
         {
             var member = FindMember(MatchByEndPoint, sender);
@@ -108,7 +107,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return ReceiveEntriesAsync(member, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, token);
         }
 
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's a member of internal interface")]
+        /// <inheritdoc />
         Task<Result<bool>> ILocalMember.ReceiveVoteAsync(EndPoint sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
         {
             var member = FindMember(MatchByEndPoint, sender);
@@ -119,7 +118,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return ReceiveVoteAsync(member, term, lastLogIndex, lastLogTerm, token);
         }
 
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's a member of internal interface")]
+        /// <inheritdoc />
+        Task<Result<bool>> ILocalMember.ReceivePreVoteAsync(EndPoint sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
+        {
+            var member = FindMember(MatchByEndPoint, sender);
+            if (member is null)
+                return Task.FromResult(new Result<bool>(Term, false));
+
+            member.Touch();
+            return ReceivePreVoteAsync(term + 1L, lastLogIndex, lastLogTerm, token);
+        }
+
+        /// <inheritdoc />
         Task<Result<bool>> ILocalMember.ReceiveSnapshotAsync<TSnapshot>(EndPoint sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
         {
             var member = FindMember(MatchByEndPoint, sender);

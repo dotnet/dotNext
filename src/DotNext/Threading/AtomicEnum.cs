@@ -97,7 +97,6 @@ namespace DotNext.Threading
     /// </summary>
     /// <typeparam name="TEnum">The enum type.</typeparam>
     [Serializable]
-    [SuppressMessage("Design", "CA1066")]
     [SuppressMessage("Usage", "CA2231")]
     public struct AtomicEnum<TEnum> : IEquatable<TEnum>, ISerializable
         where TEnum : struct, Enum
@@ -114,7 +113,7 @@ namespace DotNext.Threading
 
         private AtomicEnum(SerializationInfo info, StreamingContext context)
         {
-            value = (long)info.GetValue(ValueSerData, typeof(long));
+            value = (long)info.GetValue(ValueSerData, typeof(long))!;
         }
 
         /// <summary>
@@ -200,7 +199,7 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <returns>The updated value.</returns>
         public TEnum AccumulateAndGet(TEnum x, Func<TEnum, TEnum, TEnum> accumulator)
-            => AccumulateAndGet(x, new ValueFunc<TEnum, TEnum, TEnum>(accumulator, true));
+            => AccumulateAndGet(x, new ValueFunc<TEnum, TEnum, TEnum>(accumulator));
 
         /// <summary>
         /// Atomically updates the current value with the results of applying the given function
@@ -226,7 +225,7 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <returns>The original value.</returns>
         public TEnum GetAndAccumulate(TEnum x, Func<TEnum, TEnum, TEnum> accumulator)
-            => GetAndAccumulate(x, new ValueFunc<TEnum, TEnum, TEnum>(accumulator, true));
+            => GetAndAccumulate(x, new ValueFunc<TEnum, TEnum, TEnum>(accumulator));
 
         /// <summary>
         /// Atomically updates the current value with the results of applying the given function
@@ -248,7 +247,7 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function.</param>
         /// <returns>The updated value.</returns>
         public TEnum UpdateAndGet(Func<TEnum, TEnum> updater)
-            => UpdateAndGet(new ValueFunc<TEnum, TEnum>(updater, true));
+            => UpdateAndGet(new ValueFunc<TEnum, TEnum>(updater));
 
         /// <summary>
         /// Atomically updates the stored value with the results
@@ -266,7 +265,7 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function.</param>
         /// <returns>The original value.</returns>
         public TEnum GetAndUpdate(Func<TEnum, TEnum> updater)
-            => GetAndUpdate(new ValueFunc<TEnum, TEnum>(updater, true));
+            => GetAndUpdate(new ValueFunc<TEnum, TEnum>(updater));
 
         /// <summary>
         /// Atomically updates the stored value with the results

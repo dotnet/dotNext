@@ -49,18 +49,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         public int UpperValue { get; }
 
-        /// <summary>
-        /// Updates boundaries of the timeout.
-        /// </summary>
-        /// <param name="lowerValue">The lower possible value of leader election timeout, in milliseconds.</param>
-        /// <param name="upperValue">The upper possible value of leader election timeout, in milliseconds.</param>
-        /// <returns>The modified leader election timeout.</returns>
-        [Obsolete("Use ElectionTimeoutExtensions.Update method instead", true)]
-        public ElectionTimeout Modify(int lowerValue, int upperValue)
-            => new ElectionTimeout(lowerValue, upperValue, random);
-
         internal static void Modify(ref ElectionTimeout timeout, int lowerValue, int upperValue)
-            => timeout = new ElectionTimeout(lowerValue, upperValue);
+            => timeout = new ElectionTimeout(lowerValue, upperValue, timeout.random);
     }
 
     /// <summary>

@@ -8,6 +8,7 @@ namespace DotNext.Reflection
     using ReaderWriterSpinLock = Threading.ReaderWriterSpinLock;
 
     internal abstract class Cache<TKey, TValue>
+        where TKey : notnull
         where TValue : class
     {
         /*
@@ -44,7 +45,7 @@ namespace DotNext.Reflection
                 try
                 {
                     item = Create(cacheKey);
-                    if (item != null)
+                    if (item is not null)
                         elements.Add(cacheKey, item);
                 }
                 finally

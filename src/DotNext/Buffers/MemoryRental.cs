@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Buffers;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -14,11 +13,10 @@ namespace DotNext.Buffers
     /// <remarks>
     /// This type is aimed to be compatible with memory allocated using <c>stackalloc</c> operator.
     /// If stack allocation threshold is reached (e.g. <see cref="StackallocThreshold"/>) then it's possible to use pooled memory from
-    /// arbitrary <see cref="MemoryPool{T}"/> or <see cref="ArrayPool{T}.Shared"/>. Arbitrary
+    /// arbitrary <see cref="MemoryPool{T}"/> or <see cref="ArrayPool{T}.Shared"/>. Custom
     /// <see cref="ArrayPool{T}"/> is not supported because default <see cref="ArrayPool{T}.Shared"/>
     /// is optimized for per-CPU core allocation which is perfectly for situation when the same
-    /// thread is responsible for renting and releasing array. Otherwise, it's recommended to
-    /// use <see cref="ArrayRental{T}"/>.
+    /// thread is responsible for renting and releasing of an array.
     /// </remarks>
     /// <example>
     /// <code>
@@ -30,8 +28,6 @@ namespace DotNext.Buffers
     [StructLayout(LayoutKind.Auto)]
     public readonly ref struct MemoryRental<T>
     {
-        private const int StackallocThresholdInBytes = 512;
-
         /// <summary>
         /// Global recommended number of elements that can be allocated on the stack.
         /// </summary>
@@ -41,11 +37,7 @@ namespace DotNext.Buffers
         /// </remarks>
         [EditorBrowsable(EditorBrowsableState.Never)]
         [CLSCompliant(false)]
-        public static int StackallocThreshold
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => Unsafe.SizeOf<T>() > StackallocThresholdInBytes ? 1 : StackallocThresholdInBytes / Unsafe.SizeOf<T>();
-        }
+        public static int StackallocThreshold { get; } = 1 + (LibrarySettings.StackallocThreshold / Unsafe.SizeOf<T>());
 
         private readonly object? owner;
         private readonly Span<T> memory;
@@ -76,16 +68,19 @@ namespace DotNext.Buffers
         /// </summary>
         /// <param name="pool">The memory pool.</param>
         /// <param name="minBufferSize">The minimum size of the memory to rent.</param>
+        /// <param name="exactSize"><see langword="true"/> to return the buffer of <paramref name="minBufferSize"/> length; otherwise, the returned buffer is at least of <paramref name="minBufferSize"/>.</param>
         /// <exception cref="ArgumentNullException"><paramref name="pool"/> is <see langword="null"/>.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="minBufferSize"/> is less than or equal to zero.</exception>
-        public MemoryRental(MemoryPool<T> pool, int minBufferSize)
+        public MemoryRental(MemoryPool<T> pool, int minBufferSize, bool exactSize = true)
         {
             if (pool is null)
                 throw new ArgumentNullException(nameof(pool));
             if (minBufferSize <= 0)
                 throw new ArgumentOutOfRangeException(nameof(minBufferSize));
             var owner = pool.Rent(minBufferSize);
-            memory = owner.Memory.Span.Slice(0, minBufferSize);
+            memory = owner.Memory.Span;
+            if (exactSize)
+                memory = memory.Slice(0, minBufferSize);
             this.owner = owner;
         }
 
@@ -107,14 +102,15 @@ namespace DotNext.Buffers
         /// Rents the memory from <see cref="ArrayPool{T}.Shared"/>.
         /// </summary>
         /// <param name="minBufferSize">The minimum size of the memory to rent.</param>
+        /// <param name="exactSize"><see langword="true"/> to return the buffer of <paramref name="minBufferSize"/> length; otherwise, the returned buffer is at least of <paramref name="minBufferSize"/>.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="minBufferSize"/> is less than or equal to zero.</exception>
-        public MemoryRental(int minBufferSize)
+        public MemoryRental(int minBufferSize, bool exactSize = true)
         {
             if (minBufferSize <= 0)
                 throw new ArgumentOutOfRangeException(nameof(minBufferSize));
 
             var owner = ArrayPool<T>.Shared.Rent(minBufferSize);
-            memory = owner.AsSpan(0, minBufferSize);
+            memory = exactSize ? owner.AsSpan(0, minBufferSize) : new Span<T>(owner);
             this.owner = owner;
         }
 

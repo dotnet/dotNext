@@ -69,7 +69,7 @@ namespace DotNext.Buffers
             if (length < 0)
                 length = defaultBufferSize;
             var result = new UnmanagedMemoryOwner<T>(length, true, true) { OnDisposed = removeMemory };
-            if (removeMemory != null)
+            if (removeMemory is not null)
                 AddTracking(result);
             return result;
         }

@@ -8,7 +8,8 @@ using System.Threading.Tasks;
 
 namespace DotNext.IO
 {
-    using static Buffers.BufferReader;
+    using Buffers;
+    using static Pipelines.ResultExtensions;
     using DecodingContext = Text.DecodingContext;
 
     /// <summary>
@@ -61,7 +62,7 @@ namespace DotNext.IO
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-        async ValueTask<long> ReadInt64Async(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+        async ValueTask<long> ReadInt64Async(LengthFormat lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
             => long.Parse(await ReadStringAsync(lengthFormat, context, token).ConfigureAwait(false), style, provider);
 
         /// <summary>
@@ -91,7 +92,7 @@ namespace DotNext.IO
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-        async ValueTask<int> ReadInt32Async(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+        async ValueTask<int> ReadInt32Async(LengthFormat lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
             => int.Parse(await ReadStringAsync(lengthFormat, context, token).ConfigureAwait(false), style, provider);
 
         /// <summary>
@@ -121,7 +122,7 @@ namespace DotNext.IO
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-        async ValueTask<short> ReadInt16Async(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+        async ValueTask<short> ReadInt16Async(LengthFormat lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
             => short.Parse(await ReadStringAsync(lengthFormat, context, token).ConfigureAwait(false), style, provider);
 
         /// <summary>
@@ -136,7 +137,7 @@ namespace DotNext.IO
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-        async ValueTask<float> ReadSingleAsync(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.AllowThousands | NumberStyles.Float, IFormatProvider? provider = null, CancellationToken token = default)
+        async ValueTask<float> ReadSingleAsync(LengthFormat lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.AllowThousands | NumberStyles.Float, IFormatProvider? provider = null, CancellationToken token = default)
             => float.Parse(await ReadStringAsync(lengthFormat, context, token).ConfigureAwait(false), style, provider);
 
         /// <summary>
@@ -151,7 +152,7 @@ namespace DotNext.IO
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-        async ValueTask<double> ReadDoubleAsync(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.AllowThousands | NumberStyles.Float, IFormatProvider? provider = null, CancellationToken token = default)
+        async ValueTask<double> ReadDoubleAsync(LengthFormat lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.AllowThousands | NumberStyles.Float, IFormatProvider? provider = null, CancellationToken token = default)
             => double.Parse(await ReadStringAsync(lengthFormat, context, token).ConfigureAwait(false), style, provider);
 
         /// <summary>
@@ -166,7 +167,7 @@ namespace DotNext.IO
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-        async ValueTask<byte> ReadByteAsync(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+        async ValueTask<byte> ReadByteAsync(LengthFormat lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
             => byte.Parse(await ReadStringAsync(lengthFormat, context, token).ConfigureAwait(false), style, provider);
 
         /// <summary>
@@ -181,7 +182,7 @@ namespace DotNext.IO
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-        async ValueTask<decimal> ReadDecimalAsync(StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Number, IFormatProvider? provider = null, CancellationToken token = default)
+        async ValueTask<decimal> ReadDecimalAsync(LengthFormat lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Number, IFormatProvider? provider = null, CancellationToken token = default)
             => decimal.Parse(await ReadStringAsync(lengthFormat, context, token).ConfigureAwait(false), style, provider);
 
         /// <summary>
@@ -196,7 +197,7 @@ namespace DotNext.IO
         /// <exception cref="FormatException">The date/time is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-        async ValueTask<DateTime> ReadDateTimeAsync(StringLengthEncoding lengthFormat, DecodingContext context, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
+        async ValueTask<DateTime> ReadDateTimeAsync(LengthFormat lengthFormat, DecodingContext context, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
             => DateTime.Parse(await ReadStringAsync(lengthFormat, context, token).ConfigureAwait(false), provider, style);
 
         /// <summary>
@@ -212,7 +213,7 @@ namespace DotNext.IO
         /// <exception cref="FormatException">The date/time is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-        async ValueTask<DateTime> ReadDateTimeAsync(StringLengthEncoding lengthFormat, DecodingContext context, string[] formats, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
+        async ValueTask<DateTime> ReadDateTimeAsync(LengthFormat lengthFormat, DecodingContext context, string[] formats, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
             => DateTime.ParseExact(await ReadStringAsync(lengthFormat, context, token).ConfigureAwait(false), formats, provider, style);
 
         /// <summary>
@@ -227,7 +228,7 @@ namespace DotNext.IO
         /// <exception cref="FormatException">The date/time is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-        async ValueTask<DateTimeOffset> ReadDateTimeOffsetAsync(StringLengthEncoding lengthFormat, DecodingContext context, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
+        async ValueTask<DateTimeOffset> ReadDateTimeOffsetAsync(LengthFormat lengthFormat, DecodingContext context, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
             => DateTimeOffset.Parse(await ReadStringAsync(lengthFormat, context, token).ConfigureAwait(false), provider, style);
 
         /// <summary>
@@ -243,7 +244,7 @@ namespace DotNext.IO
         /// <exception cref="FormatException">The date/time is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-        async ValueTask<DateTimeOffset> ReadDateTimeOffsetAsync(StringLengthEncoding lengthFormat, DecodingContext context, string[] formats, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
+        async ValueTask<DateTimeOffset> ReadDateTimeOffsetAsync(LengthFormat lengthFormat, DecodingContext context, string[] formats, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
             => DateTimeOffset.ParseExact(await ReadStringAsync(lengthFormat, context, token).ConfigureAwait(false), formats, provider, style);
 
         /// <summary>
@@ -257,7 +258,7 @@ namespace DotNext.IO
         /// <exception cref="FormatException">The time span is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-        async ValueTask<TimeSpan> ReadTimeSpanAsync(StringLengthEncoding lengthFormat, DecodingContext context, IFormatProvider? provider = null, CancellationToken token = default)
+        async ValueTask<TimeSpan> ReadTimeSpanAsync(LengthFormat lengthFormat, DecodingContext context, IFormatProvider? provider = null, CancellationToken token = default)
             => TimeSpan.Parse(await ReadStringAsync(lengthFormat, context, token).ConfigureAwait(false), provider);
 
         /// <summary>
@@ -273,7 +274,7 @@ namespace DotNext.IO
         /// <exception cref="FormatException">The time span is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-        async ValueTask<TimeSpan> ReadTimeSpanAsync(StringLengthEncoding lengthFormat, DecodingContext context, string[] formats, TimeSpanStyles style = TimeSpanStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
+        async ValueTask<TimeSpan> ReadTimeSpanAsync(LengthFormat lengthFormat, DecodingContext context, string[] formats, TimeSpanStyles style = TimeSpanStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
             => TimeSpan.ParseExact(await ReadStringAsync(lengthFormat, context, token).ConfigureAwait(false), formats, provider, style);
 
         /// <summary>
@@ -286,7 +287,7 @@ namespace DotNext.IO
         /// <exception cref="FormatException">GUID is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-        async ValueTask<Guid> ReadGuidAsync(StringLengthEncoding lengthFormat, DecodingContext context, CancellationToken token = default)
+        async ValueTask<Guid> ReadGuidAsync(LengthFormat lengthFormat, DecodingContext context, CancellationToken token = default)
             => Guid.Parse(await ReadStringAsync(lengthFormat, context, token).ConfigureAwait(false));
 
         /// <summary>
@@ -300,7 +301,7 @@ namespace DotNext.IO
         /// <exception cref="FormatException">GUID is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-        async ValueTask<Guid> ReadGuidAsync(StringLengthEncoding lengthFormat, DecodingContext context, string format, CancellationToken token = default)
+        async ValueTask<Guid> ReadGuidAsync(LengthFormat lengthFormat, DecodingContext context, string format, CancellationToken token = default)
             => Guid.ParseExact(await ReadStringAsync(lengthFormat, context, token).ConfigureAwait(false), format);
 
         /// <summary>
@@ -314,6 +315,17 @@ namespace DotNext.IO
         ValueTask ReadAsync(Memory<byte> output, CancellationToken token = default);
 
         /// <summary>
+        /// Reads length-prefixed block of bytes.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the block length encoded in the underlying stream.</param>
+        /// <param name="allocator">The memory allocator used to place the decoded block of bytes.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The decoded block of bytes.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        ValueTask<MemoryOwner<byte>> ReadAsync(LengthFormat lengthFormat, MemoryAllocator<byte>? allocator = null, CancellationToken token = default);
+
+        /// <summary>
         /// Decodes the string.
         /// </summary>
         /// <param name="length">The length of the encoded string, in bytes.</param>
@@ -322,7 +334,12 @@ namespace DotNext.IO
         /// <returns>The decoded string.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-        ValueTask<string> ReadStringAsync(int length, DecodingContext context, CancellationToken token = default);
+        async ValueTask<string> ReadStringAsync(int length, DecodingContext context, CancellationToken token = default)
+        {
+            using var buffer = Buffers.BufferWriter.DefaultByteAllocator.Invoke(length, true);
+            await ReadAsync(buffer.Memory, token).ConfigureAwait(false);
+            return context.Encoding.GetString(buffer.Memory.Span);
+        }
 
         /// <summary>
         /// Decodes the string.
@@ -334,7 +351,7 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        ValueTask<string> ReadStringAsync(StringLengthEncoding lengthFormat, DecodingContext context, CancellationToken token = default);
+        ValueTask<string> ReadStringAsync(LengthFormat lengthFormat, DecodingContext context, CancellationToken token = default);
 
         /// <summary>
         /// Copies the content to the specified stream.
@@ -342,7 +359,13 @@ namespace DotNext.IO
         /// <param name="output">The output stream receiving object content.</param>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        Task CopyToAsync(Stream output, CancellationToken token = default); // TODO: This method should have default implementation
+        Task CopyToAsync(Stream output, CancellationToken token = default)
+        {
+            return CopyToAsync(CopyToStream, output, token);
+
+            static ValueTask CopyToStream(Stream output, ReadOnlyMemory<byte> input, CancellationToken token)
+                => output.WriteAsync(input, token);
+        }
 
         /// <summary>
         /// Copies the content to the specified pipe writer.
@@ -351,7 +374,16 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel operation.</param>
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        Task CopyToAsync(PipeWriter output, CancellationToken token = default); // TODO: This method should have default implementation
+        Task CopyToAsync(PipeWriter output, CancellationToken token = default)
+        {
+            return CopyToAsync(CopyToPipe, output, token);
+
+            static async ValueTask CopyToPipe(PipeWriter output, ReadOnlyMemory<byte> input, CancellationToken token)
+            {
+                var result = await output.WriteAsync(input, token).ConfigureAwait(false);
+                result.ThrowIfCancellationRequested(token);
+            }
+        }
 
         /// <summary>
         /// Copies the content to the specified buffer.
@@ -360,11 +392,32 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel operation.</param>
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        async Task CopyToAsync(IBufferWriter<byte> writer, CancellationToken token = default)
+        Task CopyToAsync(IBufferWriter<byte> writer, CancellationToken token = default)
         {
-            using var stream = writer.AsStream();
-            await CopyToAsync(stream, token).ConfigureAwait(false);
-            await stream.FlushAsync(token).ConfigureAwait(false);
+            return CopyToAsync(Write, writer, token);
+
+            static ValueTask Write(IBufferWriter<byte> writer, ReadOnlyMemory<byte> input, CancellationToken token)
+            {
+                Task result;
+                if (token.IsCancellationRequested)
+                {
+                    result = Task.FromCanceled(token);
+                }
+                else
+                {
+                    result = Task.CompletedTask;
+                    try
+                    {
+                        writer.Write(input.Span);
+                    }
+                    catch (Exception e)
+                    {
+                        result = Task.FromException(e);
+                    }
+                }
+
+                return new ValueTask(result);
+            }
         }
 
         /// <summary>
@@ -376,12 +429,8 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel operation.</param>
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        async Task CopyToAsync<TArg>(ReadOnlySpanAction<byte, TArg> consumer, TArg arg, CancellationToken token = default)
-        {
-            // TODO: This method should not have default implementation
-            using var stream = consumer.AsStream(arg);
-            await CopyToAsync(stream, token).ConfigureAwait(false);
-        }
+        Task CopyToAsync<TArg>(ReadOnlySpanAction<byte, TArg> consumer, TArg arg, CancellationToken token = default)
+            => CopyToAsync(new Func<TArg, ReadOnlyMemory<byte>, CancellationToken, ValueTask>(consumer.Invoke), arg, token);
 
         /// <summary>
         /// Reads the entire content using the specified delegate.
@@ -392,12 +441,7 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel operation.</param>
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        async Task CopyToAsync<TArg>(Func<ReadOnlyMemory<byte>, TArg, CancellationToken, ValueTask> consumer, TArg arg, CancellationToken token = default)
-        {
-            // TODO: This method should not have default implementation
-            using var stream = consumer.AsStream(arg);
-            await CopyToAsync(stream, token).ConfigureAwait(false);
-        }
+        Task CopyToAsync<TArg>(Func<TArg, ReadOnlyMemory<byte>, CancellationToken, ValueTask> consumer, TArg arg, CancellationToken token = default);
 
         /// <summary>
         /// Creates default implementation of binary reader for the stream.
@@ -412,7 +456,7 @@ namespace DotNext.IO
         /// <returns>The stream reader.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="input"/> is <see langword="null"/>.</exception>
         /// <exception cref="ArgumentException"><paramref name="buffer"/> is empty.</exception>
-        public static IAsyncBinaryReader Create(Stream input, Memory<byte> buffer) => new AsyncStreamBinaryReader(input, buffer);
+        public static IAsyncBinaryReader Create(Stream input, Memory<byte> buffer) => new AsyncStreamBinaryAccessor(input, buffer);
 
         /// <summary>
         /// Creates default implementation of binary reader over sequence of bytes.

@@ -1,4 +1,5 @@
-﻿using DotNext.Net.Cluster.Consensus.Raft;
+﻿using DotNext.IO;
+using DotNext.Net.Cluster.Consensus.Raft;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Threading;
@@ -17,7 +18,7 @@ namespace RaftNode
             private long value;
 
             protected override async ValueTask ApplyAsync(LogEntry entry)
-                => value = await entry.ReadAsync<long>().ConfigureAwait(false);
+                => value = await entry.ToTypeAsync<long, LogEntry>().ConfigureAwait(false);
 
             public override ValueTask WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
                 => writer.WriteAsync(value, token);
@@ -39,7 +40,7 @@ namespace RaftNode
 
         private async ValueTask UpdateValue(LogEntry entry)
         {
-            var value = await entry.ReadAsync<long>().ConfigureAwait(false);
+            var value = await entry.ToTypeAsync<long, LogEntry>().ConfigureAwait(false);
             content.VolatileWrite(value);
             Console.WriteLine($"Accepting value {value}");
         }

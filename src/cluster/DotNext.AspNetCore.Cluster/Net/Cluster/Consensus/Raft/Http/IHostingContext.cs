@@ -12,6 +12,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         bool IsLeader(IRaftClusterMember member);
 
+        bool UseEfficientTransferOfLogEntries { get; }
+
         ILogger Logger { get; }
 
         IPEndPoint LocalEndpoint { get; }

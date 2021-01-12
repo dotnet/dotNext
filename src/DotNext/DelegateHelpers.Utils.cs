@@ -35,7 +35,7 @@ namespace DotNext
                 return ReferenceEquals(list[0], d) ? d.Method.CreateDelegate<TDelegate>(rewriter.Rewrite(d)) : ChangeType<TDelegate, TRewriter>(list[0], rewriter);
             foreach (ref var sub in list.AsSpan())
                 sub = sub.Method.CreateDelegate<TDelegate>(rewriter.Rewrite(sub));
-            return (TDelegate)Delegate.Combine(list);
+            return (TDelegate)Delegate.Combine(list)!;
         }
     }
 }

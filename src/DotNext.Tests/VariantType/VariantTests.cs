@@ -54,11 +54,11 @@ namespace DotNext.VariantType
         public static void Conversion()
         {
             Variant<string, object> obj = new object();
-            var result = obj.Convert<string>(Func.Identity<string>().AsConverter(), value => value.ToString());
+            var result = obj.Convert<string>(Func.Identity<string>().AsConverter(), static value => value.ToString());
             True(result.HasValue);
             NotNull(result.Value);
             obj = default;
-            result = obj.Convert<string>(Func.Identity<string>().AsConverter(), value => value.ToString());
+            result = obj.Convert<string>(Func.Identity<string>().AsConverter(), static value => value.ToString());
             False(result.HasValue);
         }
 

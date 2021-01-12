@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -11,14 +12,13 @@ namespace DotNext.Reflection
 
     public static partial class Reflector
     {
-        // TODO: Replace resultBuilder with method pointer in C# 9
-        private static DynamicInvoker Unreflect<TMethod>(TMethod method, Func<Expression?, TMethod, IEnumerable<Expression>, Expression> resultBuilder)
+        private static unsafe DynamicInvoker Unreflect<TMethod>(TMethod method, delegate*<Expression?, TMethod, IEnumerable<Expression>, Expression> resultBuilder)
             where TMethod : MethodBase
         {
             var target = Expression.Parameter(typeof(object));
-            var arguments = Expression.Parameter(typeof(object[]));
+            var arguments = Expression.Parameter(typeof(Span<object?>));
             Expression? thisArg;
-            if (method.IsStatic || method.MemberType == MemberTypes.Constructor)
+            if (method.IsStatic || method.MemberType == MemberTypes.Constructor || method.DeclaringType is null)
                 thisArg = null;
             else if (method.DeclaringType.IsValueType)
                 thisArg = Expression.Unbox(target, method.DeclaringType);
@@ -31,7 +31,11 @@ namespace DotNext.Reflection
             // handle parameters
             foreach (var parameter in method.GetParameters())
             {
-                Expression argument = Expression.ArrayAccess(arguments, Expression.Constant(parameter.Position));
+                var position = Expression.Constant(parameter.Position);
+                var getter = Get(arguments, position);
+                Func<Expression, MethodCallExpression> setter = value => Set(arguments, position, value);
+                Expression argument;
+
                 if (parameter.ParameterType.IsByRefLike)
                 {
                     throw new NotSupportedException();
@@ -39,31 +43,32 @@ namespace DotNext.Reflection
                 else if (parameter.ParameterType.IsByRef)
                 {
                     var parameterType = parameter.ParameterType.GetElementType();
+                    Debug.Assert(parameterType is not null);
 
                     // value type parameter can be passed as unboxed reference
                     if (parameterType.IsValueType)
                     {
-                        argument = Expression.Unbox(argument, parameterType);
+                        argument = Expression.Unbox(getter, parameterType);
                     }
                     else
                     {
                         var tempVar = Expression.Variable(parameterType);
                         tempVars.Add(tempVar);
-                        prologue.Add(Expression.Assign(tempVar, parameterType.IsPointer ? Unwrap(argument, parameterType) : Expression.Convert(argument, parameterType)));
+                        prologue.Add(Expression.Assign(tempVar, parameterType.IsPointer ? Unwrap(getter, parameterType) : Expression.Convert(getter, parameterType)));
                         if (parameterType.IsPointer)
-                            epilogue.Add(Expression.Assign(argument, Wrap(tempVar)));
+                            epilogue.Add(setter(Wrap(tempVar)));
                         else
-                            epilogue.Add(Expression.Assign(argument, tempVar));
+                            epilogue.Add(setter(tempVar));
                         argument = tempVar;
                     }
                 }
                 else if (parameter.ParameterType.IsPointer)
                 {
-                    argument = Unwrap(argument, parameter.ParameterType);
+                    argument = Unwrap(getter, parameter.ParameterType);
                 }
                 else
                 {
-                    argument = Expression.Convert(argument, parameter.ParameterType);
+                    argument = Expression.Convert(getter, parameter.ParameterType);
                 }
 
                 arglist.Add(argument);

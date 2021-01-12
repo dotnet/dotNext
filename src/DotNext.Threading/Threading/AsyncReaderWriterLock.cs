@@ -7,6 +7,7 @@ using static System.Threading.Timeout;
 
 namespace DotNext.Threading
 {
+    using Runtime;
     using Runtime.CompilerServices;
 
     /// <summary>
@@ -94,7 +95,7 @@ namespace DotNext.Threading
             internal void IncrementVersion() => version.IncrementAndGet();
 
             // write lock management
-            WriteLockNode ILockManager<WriteLockNode>.CreateNode(WaitNode? node) => node is null ? new WriteLockNode() : new WriteLockNode(node);
+            readonly WriteLockNode ILockManager<WriteLockNode>.CreateNode(WaitNode? node) => node is null ? new WriteLockNode() : new WriteLockNode(node);
 
             bool ILockManager<WriteLockNode>.TryAcquire()
             {
@@ -113,7 +114,7 @@ namespace DotNext.Threading
             }
 
             // read lock management
-            ReadLockNode ILockManager<ReadLockNode>.CreateNode(WaitNode? node) => node is null ? new ReadLockNode() : new ReadLockNode(node);
+            readonly ReadLockNode ILockManager<ReadLockNode>.CreateNode(WaitNode? node) => node is null ? new ReadLockNode() : new ReadLockNode(node);
 
             bool ILockManager<ReadLockNode>.TryAcquire()
             {
@@ -124,7 +125,7 @@ namespace DotNext.Threading
             }
 
             // upgradeable read lock management
-            UpgradeableReadLockNode ILockManager<UpgradeableReadLockNode>.CreateNode(WaitNode? node) => node is null ? new UpgradeableReadLockNode() : new UpgradeableReadLockNode(node);
+            readonly UpgradeableReadLockNode ILockManager<UpgradeableReadLockNode>.CreateNode(WaitNode? node) => node is null ? new UpgradeableReadLockNode() : new UpgradeableReadLockNode(node);
 
             bool ILockManager<UpgradeableReadLockNode>.TryAcquire()
             {
@@ -156,13 +157,8 @@ namespace DotNext.Threading
             /// </summary>
             public bool IsValid => !state.IsEmpty && state.Value.Version == version;
 
-            /// <summary>
-            /// Determines whether this stamp represents the same version of the lock state
-            /// as the given stamp.
-            /// </summary>
-            /// <param name="other">The lock stamp to compare.</param>
-            /// <returns><see langword="true"/> of this stamp is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-            public bool Equals(LockStamp other) => state == other.state && version == other.version;
+            private bool Equals(in LockStamp other)
+                => state == other.state && version == other.version;
 
             /// <summary>
             /// Determines whether this stamp represents the same version of the lock state
@@ -170,7 +166,15 @@ namespace DotNext.Threading
             /// </summary>
             /// <param name="other">The lock stamp to compare.</param>
             /// <returns><see langword="true"/> of this stamp is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-            public override bool Equals(object? other) => other is LockStamp stamp && Equals(stamp);
+            public bool Equals(LockStamp other) => Equals(in other);
+
+            /// <summary>
+            /// Determines whether this stamp represents the same version of the lock state
+            /// as the given stamp.
+            /// </summary>
+            /// <param name="other">The lock stamp to compare.</param>
+            /// <returns><see langword="true"/> of this stamp is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
+            public override bool Equals(object? other) => other is LockStamp stamp && Equals(in stamp);
 
             /// <summary>
             /// Computes hash code for this stamp.
@@ -186,7 +190,7 @@ namespace DotNext.Threading
             /// <param name="second">The second lock stamp to compare.</param>
             /// <returns><see langword="true"/> of <paramref name="first"/> stamp is equal to <paramref name="second"/>; otherwise, <see langword="false"/>.</returns>
             public static bool operator ==(in LockStamp first, in LockStamp second)
-                => first.state == second.state && first.version == second.version;
+                => first.Equals(in second);
 
             /// <summary>
             /// Determines whether the first stamp represents the different version of the lock state
@@ -196,7 +200,7 @@ namespace DotNext.Threading
             /// <param name="second">The second lock stamp to compare.</param>
             /// <returns><see langword="true"/> of <paramref name="first"/> stamp is not equal to <paramref name="second"/>; otherwise, <see langword="false"/>.</returns>
             public static bool operator !=(in LockStamp first, in LockStamp second)
-                => first.state != second.state || first.version != second.version;
+                => !first.Equals(in second);
         }
 
         private readonly Box<State> state;
@@ -209,7 +213,7 @@ namespace DotNext.Threading
         /// <summary>
         /// Gets the total number of unique readers.
         /// </summary>
-        public long CurrentReadCount => AtomicInt64.VolatileRead(ref state.Value.ReadLocks);
+        public long CurrentReadCount => AtomicInt64.VolatileRead(in state.Value.ReadLocks);
 
         /// <summary>
         /// Gets a value that indicates whether the read lock taken.
@@ -419,7 +423,7 @@ namespace DotNext.Threading
         {
             var readLock = head as ReadLockNode;
             ref var currentState = ref state.Value;
-            for (WaitNode? next; !(readLock is null); readLock = next as ReadLockNode)
+            for (WaitNode? next; readLock is not null; readLock = next as ReadLockNode)
             {
                 next = readLock.Next;
 
@@ -539,11 +543,11 @@ namespace DotNext.Threading
         /// Otherwise, it waits for calling of <see cref="ExitReadLock"/>,  method.
         /// </remarks>
         /// <returns>The task representing graceful shutdown of this lock.</returns>
-        public ValueTask DisposeAsync()
+        public unsafe ValueTask DisposeAsync()
         {
-            static bool IsLockHeld(AsyncReaderWriterLock rwLock) => rwLock.IsReadLockHeld || rwLock.IsWriteLockHeld;
+            return IsDisposed ? new ValueTask() : DisposeAsync(this, &IsLockHeld);
 
-            return IsDisposed ? new ValueTask() : DisposeAsync(this, IsLockHeld);
+            static bool IsLockHeld(AsyncReaderWriterLock rwLock) => rwLock.IsReadLockHeld || rwLock.IsWriteLockHeld;
         }
     }
 }

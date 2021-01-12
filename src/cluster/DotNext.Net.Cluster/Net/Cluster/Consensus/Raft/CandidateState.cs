@@ -90,15 +90,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         stateMachine.MoveToFollowerState(false);
                         return;
                     case VotingResult.Granted:
-                        stateMachine.Logger.VoteGranted(state.Voter.Endpoint);
+                        stateMachine.Logger.VoteGranted(state.Voter.EndPoint);
                         votes += 1;
                         break;
                     case VotingResult.Rejected:
-                        stateMachine.Logger.VoteRejected(state.Voter.Endpoint);
+                        stateMachine.Logger.VoteRejected(state.Voter.EndPoint);
                         votes -= 1;
                         break;
                     case VotingResult.NotAvailable:
-                        stateMachine.Logger.MemberUnavailable(state.Voter.Endpoint);
+                        stateMachine.Logger.MemberUnavailable(state.Voter.EndPoint);
                         votes -= 1;
                         break;
                 }
@@ -148,7 +148,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 votingCancellation.Dispose();
                 var task = Interlocked.Exchange(ref votingTask, null);
-                if (task != null && task.IsCompleted)
+                if (task is not null && task.IsCompleted)
                     task.Dispose();
             }
 

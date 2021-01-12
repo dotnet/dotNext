@@ -14,6 +14,9 @@ namespace DotNext.Collections.Generic
     {
         private const int HashSalt = -1521134295;
 
+        // cached to avoid allocation
+        private static readonly Func<int, object?, int> ObjectHashCode = GetHashCode;
+
         private static int GetHashCode(int hash, object? obj) => (hash * HashSalt) + obj?.GetHashCode() ?? 0;
 
         /// <summary>
@@ -24,7 +27,7 @@ namespace DotNext.Collections.Generic
         /// <returns>The hash code computed from each element in the sequence.</returns>
         public static int SequenceHashCode(this IEnumerable<object?> sequence, bool salted = true)
         {
-            var hashCode = sequence.Aggregate(-910176598, GetHashCode);
+            var hashCode = sequence.Aggregate(-910176598, ObjectHashCode);
             return salted ? (hashCode * HashSalt) + RandomExtensions.BitwiseHashSalt : hashCode;
         }
 
@@ -37,7 +40,7 @@ namespace DotNext.Collections.Generic
         /// <typeparam name="T">Type of elements in the collection.</typeparam>
         /// <param name="collection">A collection to enumerate. Cannot be <see langword="null"/>.</param>
         /// <param name="action">An action to applied for each element.</param>
-        public static void ForEach<T>(this IEnumerable<T> collection, Action<T> action) => ForEach(collection, new ValueAction<T>(action, true));
+        public static void ForEach<T>(this IEnumerable<T> collection, Action<T> action) => ForEach(collection, new ValueAction<T>(action));
 
         /// <summary>
         /// Applies specified action to each collection element.
@@ -61,7 +64,7 @@ namespace DotNext.Collections.Generic
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The enumeration has been canceled.</exception>
         public static ValueTask ForEachAsync<T>(this IEnumerable<T> collection, Func<T, CancellationToken, ValueTask> action, CancellationToken token = default)
-            => ForEachAsync(collection, new ValueFunc<T, CancellationToken, ValueTask>(action, true), token);
+            => ForEachAsync(collection, new ValueFunc<T, CancellationToken, ValueTask>(action), token);
 
         /// <summary>
         /// Applies the specified asynchronous action to each collection element.
@@ -133,7 +136,7 @@ namespace DotNext.Collections.Generic
         /// <returns>The first element in the sequence that matches to the specified filter; or empty value.</returns>
         public static Optional<T> FirstOrEmpty<T>(this IEnumerable<T> seq, Predicate<T> filter)
             where T : notnull
-            => FirstOrEmpty(seq, filter.AsValueFunc(true));
+            => FirstOrEmpty(seq, filter.AsValueFunc());
 
         /// <summary>
         /// Bypasses a specified number of elements in a sequence.
@@ -146,10 +149,10 @@ namespace DotNext.Collections.Generic
         {
             while (count > 0)
             {
-                if (enumerator.MoveNext())
-                    count--;
-                else
+                if (!enumerator.MoveNext())
                     return false;
+
+                count--;
             }
 
             return true;
@@ -168,10 +171,10 @@ namespace DotNext.Collections.Generic
         {
             while (count > 0)
             {
-                if (enumerator.MoveNext())
-                    count--;
-                else
+                if (!enumerator.MoveNext())
                     return false;
+
+                count--;
             }
 
             return true;

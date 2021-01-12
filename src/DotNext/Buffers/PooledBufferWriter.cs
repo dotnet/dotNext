@@ -7,7 +7,7 @@ namespace DotNext.Buffers
     /// Represents memory writer that uses pooled memory.
     /// </summary>
     /// <typeparam name="T">The data type that can be written.</typeparam>
-    public sealed class PooledBufferWriter<T> : MemoryWriter<T>
+    public sealed class PooledBufferWriter<T> : BufferWriter<T>
     {
         private readonly MemoryAllocator<T>? allocator;
         private MemoryOwner<T> buffer;
@@ -60,12 +60,6 @@ namespace DotNext.Buffers
                 return buffer.Memory.Slice(0, position);
             }
         }
-
-        /// <summary>
-        /// Clears the data written to the underlying buffer.
-        /// </summary>
-        /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
-        public override void Clear() => Clear(false);   // TODO: Remove this method in future
 
         /// <summary>
         /// Clears the data written to the underlying memory.

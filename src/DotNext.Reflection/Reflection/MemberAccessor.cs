@@ -7,8 +7,7 @@ namespace DotNext.Reflection
     /// </summary>
     /// <typeparam name="TValue">Type of the property of field.</typeparam>
     /// <returns>The value of the property of field.</returns>
-    [return: MaybeNull]
-    public delegate TValue MemberGetter<out TValue>();
+    public delegate TValue? MemberGetter<out TValue>();
 
     /// <summary>
     /// Represents static property or field setter.
@@ -24,8 +23,7 @@ namespace DotNext.Reflection
     /// <typeparam name="T">Declaring type.</typeparam>
     /// <typeparam name="TValue">Member type.</typeparam>
     /// <returns>Field value.</returns>
-    [return: MaybeNull]
-    public delegate TValue MemberGetter<T, out TValue>([DisallowNull]in T @this);
+    public delegate TValue? MemberGetter<T, out TValue>([DisallowNull]in T @this);
 
     /// <summary>
     /// Represents field setter.

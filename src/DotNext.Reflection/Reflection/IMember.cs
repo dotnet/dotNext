@@ -56,8 +56,7 @@ namespace DotNext.Reflection
         /// <param name="arguments">Invocation arguments placed onto stack.</param>
         /// <returns>Invocation result.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [return: MaybeNull]
-        public static TResult Invoke<TMember, TArgs, TResult>(this IMember<TMember, Function<TArgs, TResult>> member, [DisallowNull]in TArgs arguments)
+        public static TResult? Invoke<TMember, TArgs, TResult>(this IMember<TMember, Function<TArgs, TResult>> member, [DisallowNull]in TArgs arguments)
             where TMember : MemberInfo
             where TArgs : struct
             => member.Invoker(in arguments);
@@ -74,8 +73,7 @@ namespace DotNext.Reflection
         /// <param name="arguments">Invocation arguments placed onto stack.</param>
         /// <returns>Invocation result.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [return: MaybeNull]
-        public static TResult Invoke<TMember, T, TArgs, TResult>(this IMember<TMember, Function<T, TArgs, TResult>> member, [DisallowNull]in T @this, in TArgs arguments)
+        public static TResult? Invoke<TMember, T, TArgs, TResult>(this IMember<TMember, Function<T, TArgs, TResult>> member, [DisallowNull]in T @this, in TArgs arguments)
             where TMember : MemberInfo
             where TArgs : struct
             => member.Invoker(in @this, in arguments);
@@ -90,8 +88,7 @@ namespace DotNext.Reflection
         /// <param name="this"><c>this</c> argument.</param>
         /// <returns>Invocation result.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [return: MaybeNull]
-        public static TResult Invoke<TMember, T, TResult>(this IMember<TMember, Function<T, ValueTuple, TResult>> member, [DisallowNull]in T @this)
+        public static TResult? Invoke<TMember, T, TResult>(this IMember<TMember, Function<T, ValueTuple, TResult>> member, [DisallowNull]in T @this)
             where TMember : MemberInfo
             => member.Invoke(in @this, default);
 
@@ -103,8 +100,7 @@ namespace DotNext.Reflection
         /// <param name="member">Callable member.</param>
         /// <returns>Invocation result.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [return: MaybeNull]
-        public static TResult Invoke<TMember, TResult>(this IMember<TMember, Function<ValueTuple, TResult>> member)
+        public static TResult? Invoke<TMember, TResult>(this IMember<TMember, Function<ValueTuple, TResult>> member)
             where TMember : MemberInfo
             => member.Invoke(default);
 
@@ -641,8 +637,7 @@ namespace DotNext.Reflection
         /// <param name="member">The property or field.</param>
         /// <returns>The member value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [return: MaybeNull]
-        public static TValue Invoke<TMember, TValue>(this IMember<TMember, MemberGetter<TValue>> member)
+        public static TValue? Invoke<TMember, TValue>(this IMember<TMember, MemberGetter<TValue>> member)
             where TMember : MemberInfo
             => member.Invoker();
 
@@ -656,8 +651,7 @@ namespace DotNext.Reflection
         /// <param name="this">The object whose property or field value will be returned.</param>
         /// <returns>The member value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [return: MaybeNull]
-        public static TValue Invoke<TMember, T, TValue>(this IMember<TMember, MemberGetter<T, TValue>> member, [DisallowNull]in T @this)
+        public static TValue? Invoke<TMember, T, TValue>(this IMember<TMember, MemberGetter<T, TValue>> member, [DisallowNull]in T @this)
             where TMember : MemberInfo
             => member.Invoker(@this);
 
@@ -669,7 +663,6 @@ namespace DotNext.Reflection
         /// <param name="member">The property or field.</param>
         /// <param name="value">The new value of the field or property.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [return: MaybeNull]
         public static void Invoke<TMember, TValue>(this IMember<TMember, MemberSetter<TValue>> member, TValue value)
             where TMember : MemberInfo
             => member.Invoker(value);
@@ -684,7 +677,6 @@ namespace DotNext.Reflection
         /// <param name="this">The object whose property or field value will be set.</param>
         /// <param name="value">The new value of the field or property.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [return: MaybeNull]
         public static void Invoke<TMember, T, TValue>(this IMember<TMember, MemberSetter<T, TValue>> member, [DisallowNull]in T @this, TValue value)
             where TMember : MemberInfo
             => member.Invoker(@this, value);

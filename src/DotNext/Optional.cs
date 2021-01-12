@@ -33,7 +33,7 @@ namespace DotNext
         /// <param name="task">The task returning optional value.</param>
         /// <param name="defaultValue">The value to be returned if there is no value present.</param>
         /// <returns>The value, if present, otherwise default.</returns>
-        public static async Task<T> Or<T>(this Task<Optional<T>> task, T defaultValue)
+        public static async Task<T?> Or<T>(this Task<Optional<T>> task, T? defaultValue)
             => (await task.ConfigureAwait(false)).Or(defaultValue);
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace DotNext
         /// <typeparam name="T">Type of the value.</typeparam>
         /// <param name="task">The task returning optional value.</param>
         /// <returns>The value, if present, otherwise default.</returns>
-        public static async Task<T> OrDefault<T>(this Task<Optional<T>> task)
+        public static async Task<T?> OrDefault<T>(this Task<Optional<T>> task)
             => (await task.ConfigureAwait(false)).OrDefault();
 
         /// <summary>
@@ -192,8 +192,7 @@ namespace DotNext
             IsOptional = type.IsConstructedGenericType && type.GetGenericTypeDefinition() == typeof(Optional<>);
         }
 
-        [AllowNull]
-        private readonly T value;
+        private readonly T? value;
         private readonly byte kind;
 
         /// <summary>
@@ -205,44 +204,29 @@ namespace DotNext
         /// if <paramref name="value"/> is <see langword="null"/>.
         /// The property <see langword="IsUndefined"/> of the constructed object is always <see langword="false"/>.
         /// </remarks>
-        public Optional([AllowNull]T value)
+        public Optional(T? value)
         {
             this.value = value;
-            if (value is null)
-                kind = NullValue;
-            else if (IsOptional)
-                kind = GetKindUnsafe(ref value!);
-            else
-                kind = NotEmptyValue;
-        }
+            kind = value is null ? NullValue : IsOptional ? GetKindUnsafe(ref value!) : NotEmptyValue;
 
-        // TODO: Convert to local function in C# 9
-        private static byte GetKindUnsafe([DisallowNull] ref T optionalValue)
-        {
-            Debug.Assert(IsOptional);
-            if (optionalValue.Equals(null))
-                return NullValue;
+            static byte GetKindUnsafe([DisallowNull] ref T optionalValue)
+            {
+                Debug.Assert(IsOptional);
+                if (optionalValue.Equals(null))
+                    return NullValue;
 
-            if (optionalValue.Equals(Missing.Value))
-                return UndefinedValue;
+                if (optionalValue.Equals(Missing.Value))
+                    return UndefinedValue;
 
-            return NotEmptyValue;
+                return NotEmptyValue;
+            }
         }
 
         private Optional(SerializationInfo info, StreamingContext context)
         {
-            value = (T)info.GetValue(ValueSerData, typeof(T));
+            value = (T?)info.GetValue(ValueSerData, typeof(T));
             kind = info.GetByte(KindSerData);
         }
-
-        /// <summary>
-        /// Represents optional container without value.
-        /// </summary>
-        /// <remarks>
-        /// The property <see cref="IsUndefined"/> of returned object is always <see langword="true"/>.
-        /// </remarks>
-        [Obsolete("Use None static property instead")]
-        public static Optional<T> Empty => None;
 
         /// <summary>
         /// Represents optional container without value.
@@ -287,9 +271,9 @@ namespace DotNext
         /// </summary>
         /// <param name="value">Extracted value.</param>
         /// <returns><see langword="true"/> if value is present; otherwise, <see langword="false"/>.</returns>
-        public bool TryGet([NotNullWhen(true)]out T value)
+        public bool TryGet([MaybeNullWhen(false)]out T value)
         {
-            value = this.value;
+            value = this.value!;
             return HasValue;
         }
 
@@ -301,7 +285,7 @@ namespace DotNext
         /// <returns><see langword="true"/> if value is present; otherwise, <see langword="false"/>.</returns>
         public bool TryGet([NotNullWhen(true)]out T value, out bool isNull)
         {
-            value = this.value;
+            value = this.value!;
             switch (kind)
             {
                 default:
@@ -311,7 +295,7 @@ namespace DotNext
                     isNull = true;
                     return false;
                 case NotEmptyValue:
-                    Debug.Assert(value != null);
+                    Debug.Assert(value is not null);
                     isNull = false;
                     return true;
             }
@@ -323,7 +307,7 @@ namespace DotNext
         /// <param name="defaultValue">The value to be returned if there is no value present.</param>
         /// <returns>The value, if present, otherwise <paramref name="defaultValue"/>.</returns>
         [return: NotNullIfNotNull("defaultValue")]
-        public T Or(T defaultValue) => HasValue ? value : defaultValue;
+        public T? Or(T? defaultValue) => HasValue ? value : defaultValue;
 
         /// <summary>
         /// If a value is present, returns the value, otherwise throw exception.
@@ -355,27 +339,27 @@ namespace DotNext
         [return: NotNull]
         public T OrThrow<TException>(Func<TException> exceptionFactory)
             where TException : Exception
-            => OrThrow(new ValueFunc<TException>(exceptionFactory, true));
+            => OrThrow(new ValueFunc<TException>(exceptionFactory));
 
         /// <summary>
         /// Returns the value if present; otherwise invoke delegate.
         /// </summary>
         /// <param name="defaultFunc">A delegate to be invoked if value is not present.</param>
         /// <returns>The value, if present, otherwise returned from delegate.</returns>
-        public T OrInvoke(in ValueFunc<T> defaultFunc) => HasValue ? value : defaultFunc.Invoke();
+        public T OrInvoke(in ValueFunc<T> defaultFunc) => HasValue ? value! : defaultFunc.Invoke();
 
         /// <summary>
         /// Returns the value if present; otherwise invoke delegate.
         /// </summary>
         /// <param name="defaultFunc">A delegate to be invoked if value is not present.</param>
         /// <returns>The value, if present, otherwise returned from delegate.</returns>
-        public T OrInvoke(Func<T> defaultFunc) => OrInvoke(new ValueFunc<T>(defaultFunc, true));
+        public T OrInvoke(Func<T> defaultFunc) => OrInvoke(new ValueFunc<T>(defaultFunc));
 
         /// <summary>
         /// If a value is present, returns the value, otherwise return default value.
         /// </summary>
         /// <returns>The value, if present, otherwise default.</returns>
-        public T OrDefault() => value;
+        public T? OrDefault() => value;
 
         /// <summary>
         /// If a value is present, returns the value, otherwise throw exception.
@@ -390,7 +374,7 @@ namespace DotNext
                 switch (kind)
                 {
                     default:
-                        return value;
+                        return value!;
                     case UndefinedValue:
                         msg = ExceptionMessages.OptionalNoValue;
                         break;
@@ -410,7 +394,7 @@ namespace DotNext
         /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
         /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
         /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="None"/>.</returns>
-        public Optional<TResult> Convert<TResult>(in ValueFunc<T, TResult> mapper) => HasValue ? mapper.Invoke(value) : Optional<TResult>.None;
+        public Optional<TResult> Convert<TResult>(in ValueFunc<T, TResult> mapper) => HasValue ? mapper.Invoke(value!) : Optional<TResult>.None;
 
         /// <summary>
         /// If a value is present, apply the provided mapping function to it, and if the result is
@@ -419,7 +403,7 @@ namespace DotNext
         /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
         /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
         /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="None"/>.</returns>
-        public Optional<TResult> Convert<TResult>(Converter<T, TResult> mapper) => Convert(mapper.AsValueFunc(true));
+        public Optional<TResult> Convert<TResult>(Converter<T, TResult> mapper) => Convert(mapper.AsValueFunc());
 
         /// <summary>
         /// If a value is present, apply the provided mapping function to it, and if the result is
@@ -428,7 +412,7 @@ namespace DotNext
         /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
         /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
         /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="None"/>.</returns>
-        public Optional<TResult> Convert<TResult>(in ValueFunc<T, Optional<TResult>> mapper) => HasValue ? mapper.Invoke(value) : Optional<TResult>.None;
+        public Optional<TResult> Convert<TResult>(in ValueFunc<T, Optional<TResult>> mapper) => HasValue ? mapper.Invoke(value!) : Optional<TResult>.None;
 
         /// <summary>
         /// If a value is present, apply the provided mapping function to it, and if the result is
@@ -437,7 +421,7 @@ namespace DotNext
         /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
         /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
         /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="None"/>.</returns>
-        public Optional<TResult> Convert<TResult>(Converter<T, Optional<TResult>> mapper) => Convert(mapper.AsValueFunc(true));
+        public Optional<TResult> Convert<TResult>(Converter<T, Optional<TResult>> mapper) => Convert(mapper.AsValueFunc());
 
         /// <summary>
         /// If a value is present, and the value matches the given predicate,
@@ -445,7 +429,7 @@ namespace DotNext
         /// </summary>
         /// <param name="condition">A predicate to apply to the value, if present.</param>
         /// <returns>An Optional describing the value of this Optional if a value is present and the value matches the given predicate, otherwise an empty Optional.</returns>
-        public Optional<T> If(in ValueFunc<T, bool> condition) => HasValue && condition.Invoke(value) ? this : None;
+        public Optional<T> If(in ValueFunc<T, bool> condition) => HasValue && condition.Invoke(value!) ? this : None;
 
         /// <summary>
         /// If a value is present, and the value matches the given predicate,
@@ -453,17 +437,17 @@ namespace DotNext
         /// </summary>
         /// <param name="condition">A predicate to apply to the value, if present.</param>
         /// <returns>An Optional describing the value of this Optional if a value is present and the value matches the given predicate, otherwise an empty Optional.</returns>
-        public Optional<T> If(Predicate<T> condition) => If(condition.AsValueFunc(true));
+        public Optional<T> If(Predicate<T> condition) => If(condition.AsValueFunc());
 
         /// <summary>
         /// Returns textual representation of this object.
         /// </summary>
         /// <returns>The textual representation of this object.</returns>
-        public override string ToString() => kind switch
+        public override string? ToString() => kind switch
         {
             UndefinedValue => "<Undefined>",
             NullValue => "<Null>",
-            _ => value!.ToString()
+            _ => value?.ToString()
         };
 
         /// <summary>
@@ -474,7 +458,7 @@ namespace DotNext
         /// This method calls <see cref="object.GetHashCode()"/>
         /// for the object <see cref="Value"/>.
         /// </remarks>
-        public override int GetHashCode() => HasValue ? EqualityComparer<T>.Default.GetHashCode(value) : 0;
+        public override int GetHashCode() => HasValue ? EqualityComparer<T>.Default.GetHashCode(value!) : 0;
 
         /// <summary>
         /// Determines whether this container stored the same
@@ -482,7 +466,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">Other value to compare.</param>
         /// <returns><see langword="true"/> if <see cref="Value"/> is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(T other) => HasValue && EqualityComparer<T>.Default.Equals(value, other);
+        public bool Equals(T? other) => HasValue && EqualityComparer<T?>.Default.Equals(value, other);
 
         private bool Equals(in Optional<T> other)
         {
@@ -494,7 +478,7 @@ namespace DotNext
                 case NotEmptyValue + NullValue:
                     return false;
                 case NotEmptyValue + NotEmptyValue:
-                    return EqualityComparer<T>.Default.Equals(value, other.value);
+                    return EqualityComparer<T?>.Default.Equals(value, other.value);
             }
         }
 
@@ -546,14 +530,14 @@ namespace DotNext
         /// <param name="comparer">The comparer implementing hash code function.</param>
         /// <returns>The hash code of <see cref="Value"/>.</returns>
         public int GetHashCode(IEqualityComparer comparer)
-            => HasValue ? comparer.GetHashCode(value) : 0;
+            => HasValue ? comparer.GetHashCode(value!) : 0;
 
         /// <summary>
         /// Wraps value into Optional container.
         /// </summary>
         /// <param name="value">The value to convert.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator Optional<T>([AllowNull]T value) => new Optional<T>(value);
+        public static implicit operator Optional<T>(T? value) => new Optional<T>(value);
 
         /// <summary>
         /// Extracts value stored in the Optional container.

@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -26,7 +27,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
         /// <param name="memberConfig">The configuration of local cluster node.</param>
         /// <returns>The modified collection of services.</returns>
         public static IServiceCollection ConfigureLocalNode(this IServiceCollection services, IConfiguration memberConfig)
-            => services.AddClusterAsSingleton<RaftEmbeddedCluster, RaftEmbeddedClusterMemberConfiguration>(memberConfig);
+            => RaftHttpCluster.AddClusterAsSingleton<RaftEmbeddedCluster, RaftEmbeddedClusterMemberConfiguration>(services, memberConfig);
 
         private static void JoinCluster(HostBuilderContext context, IServiceCollection services)
             => ConfigureLocalNode(services, context.Configuration);
@@ -36,7 +37,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
         /// to application services and establishes network communication with other cluster members.
         /// </summary>
         /// <remarks>
-        /// Should be called exactly after <see cref="GenericHostWebHostBuilderExtensions.ConfigureWebHost"/>
+        /// Should be called exactly after <see cref="GenericHostWebHostBuilderExtensions.ConfigureWebHost(IHostBuilder, Action{IWebHostBuilder})"/>
         /// or <see cref="GenericHostBuilderExtensions.ConfigureWebHostDefaults"/>.
         /// </remarks>
         /// <param name="builder">The host builder.</param>
@@ -52,7 +53,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
         /// to application services and establishes network communication with other cluster members.
         /// </summary>
         /// <remarks>
-        /// Should be called exactly after <see cref="GenericHostWebHostBuilderExtensions.ConfigureWebHost"/>
+        /// Should be called exactly after <see cref="GenericHostWebHostBuilderExtensions.ConfigureWebHost(IHostBuilder, Action{IWebHostBuilder})"/>
         /// or <see cref="GenericHostBuilderExtensions.ConfigureWebHostDefaults"/>.
         /// </remarks>
         /// <param name="builder">The host builder.</param>
@@ -69,7 +70,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
         /// to application services and establishes network communication with other cluster members.
         /// </summary>
         /// <remarks>
-        /// Should be called exactly after <see cref="GenericHostWebHostBuilderExtensions.ConfigureWebHost"/>
+        /// Should be called exactly after <see cref="GenericHostWebHostBuilderExtensions.ConfigureWebHost(IHostBuilder, Action{IWebHostBuilder})"/>
         /// or <see cref="GenericHostBuilderExtensions.ConfigureWebHostDefaults"/>.
         /// </remarks>
         /// <param name="builder">The host builder.</param>
@@ -79,7 +80,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             => builder.ConfigureServices(memberConfigSection.JoinCluster);
 
         private static void ConfigureConsensusProtocolHandler(this RaftHttpCluster cluster, IApplicationBuilder builder)
-            => builder.UseExceptionHandler(new ExceptionHandlerOptions { ExceptionHandler = RaftHttpConfigurator.WriteExceptionContent }).Run(cluster.ProcessRequest);
+            => builder.UseExceptionHandler(new ExceptionHandlerOptions { ExceptionHandler = RaftHttpCluster.WriteExceptionContent }).Run(cluster.ProcessRequest);
 
         /// <summary>
         /// Setup Raft protocol handler as middleware for the specified application.

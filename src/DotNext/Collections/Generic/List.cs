@@ -42,17 +42,17 @@ namespace DotNext.Collections.Generic
                 Pop(out RuntimeMethodHandle method);
                 Ldtoken(Type<IReadOnlyList<T>>());
                 Pop(out RuntimeTypeHandle type);
-                ReadOnly = DelegateHelpers.CreateDelegate<Func<IReadOnlyList<T>, int, T>>((MethodInfo)MethodBase.GetMethodFromHandle(method, type));
+                ReadOnly = DelegateHelpers.CreateDelegate<Func<IReadOnlyList<T>, int, T>>((MethodInfo)MethodBase.GetMethodFromHandle(method, type)!);
 
                 Ldtoken(PropertyGet(Type<IList<T>>(), ItemIndexerName));
                 Pop(out method);
                 Ldtoken(Type<IList<T>>());
                 Pop(out type);
-                Getter = DelegateHelpers.CreateDelegate<Func<IList<T>, int, T>>((MethodInfo)MethodBase.GetMethodFromHandle(method, type));
+                Getter = DelegateHelpers.CreateDelegate<Func<IList<T>, int, T>>((MethodInfo)MethodBase.GetMethodFromHandle(method, type)!);
 
                 Ldtoken(PropertySet(Type<IList<T>>(), ItemIndexerName));
                 Pop(out method);
-                Setter = DelegateHelpers.CreateDelegate<Action<IList<T>, int, T>>((MethodInfo)MethodBase.GetMethodFromHandle(method, type));
+                Setter = DelegateHelpers.CreateDelegate<Action<IList<T>, int, T>>((MethodInfo)MethodBase.GetMethodFromHandle(method, type)!);
             }
         }
 
@@ -115,7 +115,11 @@ namespace DotNext.Collections.Generic
         /// <returns>An array of list items.</returns>
         public static TOutput[] ToArray<TInput, TOutput>(this IList<TInput> input, in ValueFunc<TInput, TOutput> mapper)
         {
+#if NETSTANDARD2_1
             var output = OneDimensionalArray.New<TOutput>(input.Count);
+#else
+            var output = GC.AllocateUninitializedArray<TOutput>(input.Count);
+#endif
             for (var i = 0; i < input.Count; i++)
                 output[i] = mapper.Invoke(input[i]);
             return output;
@@ -130,7 +134,7 @@ namespace DotNext.Collections.Generic
         /// <param name="input">A list to convert. Cannot be <see langword="null"/>.</param>
         /// <param name="mapper">Element mapping function.</param>
         /// <returns>An array of list items.</returns>
-        public static TOutput[] ToArray<TInput, TOutput>(this IList<TInput> input, Converter<TInput, TOutput> mapper) => ToArray(input, mapper.AsValueFunc(true));
+        public static TOutput[] ToArray<TInput, TOutput>(this IList<TInput> input, Converter<TInput, TOutput> mapper) => ToArray(input, mapper.AsValueFunc());
 
         /// <summary>
         /// Converts list into array and perform mapping for each
@@ -143,7 +147,11 @@ namespace DotNext.Collections.Generic
         /// <returns>An array of list items.</returns>
         public static TOutput[] ToArray<TInput, TOutput>(this IList<TInput> input, in ValueFunc<int, TInput, TOutput> mapper)
         {
+#if NETSTANDARD2_1
             var output = OneDimensionalArray.New<TOutput>(input.Count);
+#else
+            var output = GC.AllocateUninitializedArray<TOutput>(input.Count);
+#endif
             for (var i = 0; i < input.Count; i++)
                 output[i] = mapper.Invoke(i, input[i]);
             return output;
@@ -159,7 +167,7 @@ namespace DotNext.Collections.Generic
         /// <param name="mapper">Index-aware element mapping function.</param>
         /// <returns>An array of list items.</returns>
         public static TOutput[] ToArray<TInput, TOutput>(this IList<TInput> input, Func<int, TInput, TOutput> mapper)
-            => ToArray(input, new ValueFunc<int, TInput, TOutput>(mapper, true));
+            => ToArray(input, new ValueFunc<int, TInput, TOutput>(mapper));
 
         /// <summary>
         /// Returns lazily converted read-only list.
@@ -180,7 +188,7 @@ namespace DotNext.Collections.Generic
         /// <typeparam name="TOutput">Type of items in the target list.</typeparam>
         /// <returns>Lazily converted read-only list.</returns>
         public static ReadOnlyListView<TInput, TOutput> Convert<TInput, TOutput>(this IReadOnlyList<TInput> list, Converter<TInput, TOutput> converter)
-            => Convert(list, converter.AsValueFunc(true));
+            => Convert(list, converter.AsValueFunc());
 
         /// <summary>
         /// Constructs read-only list with single item in it.

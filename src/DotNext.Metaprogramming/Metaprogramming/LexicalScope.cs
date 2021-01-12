@@ -68,7 +68,7 @@ namespace DotNext.Metaprogramming
         internal static TScope? FindScope<TScope>()
             where TScope : class, ILexicalScope
         {
-            for (var current = LexicalScope.current; !(current is null); current = current.Parent)
+            for (var current = LexicalScope.current; current is not null; current = current.Parent)
             {
                 if (current is TScope scope)
                     return scope;
@@ -78,7 +78,7 @@ namespace DotNext.Metaprogramming
         }
 
         internal static bool IsInScope<TScope>()
-            where TScope : class, ILexicalScope => !(FindScope<TScope>() is null);
+            where TScope : class, ILexicalScope => FindScope<TScope>() is not null;
 
         internal static ILexicalScope Current => current ?? throw new InvalidOperationException(ExceptionMessages.OutOfLexicalScope);
 
@@ -99,7 +99,7 @@ namespace DotNext.Metaprogramming
         {
             get
             {
-                for (LexicalScope? current = this; current != null; current = current.Parent)
+                for (LexicalScope? current = this; current is not null; current = current.Parent)
                 {
                     if (current.variables.TryGetValue(variableName, out var variable))
                         return variable;
@@ -114,7 +114,12 @@ namespace DotNext.Metaprogramming
         public void AddStatement(Expression statement)
             => last = first is null || last is null ? first = new StatementNode(statement) : last.CreateNext(statement);
 
-        public void DeclareVariable(ParameterExpression variable) => variables.Add(variable.Name, variable);
+        public void DeclareVariable(ParameterExpression variable)
+        {
+            if (string.IsNullOrEmpty(variable.Name))
+                throw new ArgumentException(ExceptionMessages.VariableNameIsNullOrEmpty, nameof(variable));
+            variables.Add(variable.Name, variable);
+        }
 
         private protected Expression Build()
         {
@@ -134,7 +139,7 @@ namespace DotNext.Metaprogramming
 
         public virtual void Dispose()
         {
-            for (var current = first; !(current is null); current = current.Next)
+            for (var current = first; current is not null; current = current.Next)
                 current.Dispose();
             first = last = null;
             variables.Clear();

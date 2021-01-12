@@ -31,7 +31,7 @@ namespace DotNext.Runtime.CompilerServices
         /// Initializes a new generic awaiter object.
         /// </summary>
         /// <param name="awaiter">Underlying awaiter object.</param>
-        public Awaiter(TAwaiter awaiter) => this.awaiter = awaiter;
+        public Awaiter([DisallowNull] TAwaiter awaiter) => this.awaiter = awaiter;
 
         /// <summary>
         /// Ends the wait for the completion of the asynchronous task.
@@ -39,8 +39,7 @@ namespace DotNext.Runtime.CompilerServices
         /// <returns>The result of the completed task.</returns>
         /// <exception cref="TaskCanceledException">The task was cancelled.</exception>
         /// <exception cref="Exception">Task is in faulted state.</exception>
-        [return: MaybeNull]
-        public TResult GetResult() => GetResult(in awaiter);
+        public TResult? GetResult() => GetResult(in awaiter);
 
         /// <summary>
         /// Gets a value that indicates whether the asynchronous task has completed.
@@ -64,8 +63,7 @@ namespace DotNext.Runtime.CompilerServices
         /// <exception cref="TaskCanceledException">The task was cancelled.</exception>
         /// <exception cref="Exception">Task is in faulted state.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [return: MaybeNull]
-        public static TResult GetResult(in TAwaiter awaiter) => GetResultMethod(in awaiter);
+        public static TResult? GetResult(in TAwaiter awaiter) => GetResultMethod(in awaiter);
     }
 
     /// <summary>
@@ -92,7 +90,7 @@ namespace DotNext.Runtime.CompilerServices
         /// Initializes a new generic awaiter object.
         /// </summary>
         /// <param name="awaiter">Underlying awaiter object.</param>
-        public Awaiter(TAwaiter awaiter) => this.awaiter = awaiter;
+        public Awaiter([DisallowNull] TAwaiter awaiter) => this.awaiter = awaiter;
 
         /// <summary>
         /// Ends the wait for the completion of the asynchronous task.

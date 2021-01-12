@@ -58,7 +58,7 @@ namespace DotNext.Threading
         }
 
         /// <inheritdoc/>
-        bool ISynchronizer.HasWaiters => !(node is null);
+        bool ISynchronizer.HasAnticipants => node is not null;
 
         /// <summary>
         /// Determines whether this event in signaled state.

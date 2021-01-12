@@ -65,7 +65,7 @@ namespace DotNext.Linq.Expressions
         /// </summary>
         public override Type Type
         {
-            get => alwaysNotNull || Body.Type == typeof(void) || Body.Type.IsClass || Body.Type.IsInterface || !(Nullable.GetUnderlyingType(Body.Type) is null) || !(Optional.GetUnderlyingType(Body.Type) is null) ?
+            get => alwaysNotNull || Body.Type == typeof(void) || Body.Type.IsClass || Body.Type.IsInterface || Nullable.GetUnderlyingType(Body.Type) is not null || Optional.GetUnderlyingType(Body.Type) is not null ?
                 Body.Type :
                 typeof(Nullable<>).MakeGenericType(Body.Type);
         }
