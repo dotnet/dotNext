@@ -19,15 +19,17 @@ namespace DotNext
         }
 
         private static readonly Func<string, int> ParseToIntMethod = int.Parse;
-        private static readonly ValueFunc<string, int> ParseToIntMethodPtr = new ValueFunc<string, int>(ParseToIntMethod);
+        private static unsafe readonly ValueFunc<string, int> ParseToIntMethodPtr = new ValueFunc<string, int>(&int.Parse);
 
-        private static readonly Func<decimal, decimal> NegateDecimal = DelegateHelpers.CreateOpenDelegate<Func<decimal, decimal>>(static arg => -arg);
+        private static readonly Func<decimal, decimal> NegateDecimal = Negate;
 
-        private static readonly ValueFunc<decimal, decimal> NegateDecimalPtr = new ValueFunc<decimal, decimal>(NegateDecimal);
+        private static unsafe readonly ValueFunc<decimal, decimal> NegateDecimalPtr = new ValueFunc<decimal, decimal>(&Negate);
 
         private static readonly Func<int, int> ClosedDelegate = new Func<int, int>(new TestObject(10).Add);
 
         private static readonly ValueFunc<int, int> ClosedPtr = new ValueFunc<int, int>(ClosedDelegate);
+
+        private static decimal Negate(decimal value) => -value;
 
         [Benchmark]
         public int InvokeStaticUsingDelegate() => ParseToIntMethod("123");
