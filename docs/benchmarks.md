@@ -27,7 +27,7 @@ dotnet run -c Bench
 [This benchmark](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/BitwiseEqualityBenchmark.cs) compares performance of [BitwiseComparer&lt;T&gt;.Equals](./api/DotNext.BitwiseComparer-1.yml) with overloaded equality `==` operator. Testing data types: [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid) and custom value type with multiple fields.
 
 | Method | Mean | Error | StdDev |
-| ---- | ---- | ---- | ---- | ---- |
+| ---- | ---- | ---- | ---- |
 | `BitwiseComparer<Guid>.Equals` | 3.4195 ns |  0.0145 ns |  0.0135 ns |
 | `Guid.Equals` | 1.8179 ns |  0.0132 ns |  0.0123 ns |
 | `ReadOnlySpan.SequenceEqual` for `Guid` | 6.1847 ns |  0.0471 ns |  0.0440 ns |
@@ -41,7 +41,7 @@ Bitwise equality method has the better performance than field-by-field equality 
 [This benchmark](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/ArrayEqualityBenchmark.cs) compares performance of [ReadOnlySpan.SequenceEqual](https://docs.microsoft.com/en-us/dotnet/api/system.memoryextensions.sequenceequal#System_MemoryExtensions_SequenceEqual__1_System_ReadOnlySpan___0__System_ReadOnlySpan___0__), [OneDimensionalArray.BitwiseEquals](./api/DotNext.OneDimensionalArray.yml) and manual equality check between two arrays using `for` loop. The benchmark is applied to the array of [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid) elements.
 
 | Method | Mean | Error | StdDev |
-| ---- | ---- | ---- | ---- | ---- |
+| ---- | ---- | ---- | ---- |
 | `Guid[].BitwiseEquals`, small arrays (~10 elements) | 9.778 ns | 0.2334 ns | 0.3702 ns |
 | `ReadOnlySpan<Guid>.SequenceEqual`, small arrays (~10 elements) | 39.946 ns | 0.1607 ns | 0.1503 ns |
 | `for` loop, small arrays (~10 elements) | 68.674 ns | 0.1695 ns | 0.1585 ns |
@@ -110,7 +110,7 @@ Strongly typed reflection provided by DotNext Reflection library has the same pe
 The benchmark uses series of different strings to run the same set of tests. Worst case means that character lookup is performed for a string that doesn't contain the given character. Best case means that character lookup is performed for a string that has the given character.
 
 | Method | Condition | Mean | Error | StdDev |
-| ---- | ---- | ---- | ---- | ---- | ---- |
+| ---- | ---- | ---- | ---- | ---- |
 | Direct call | Empty String | 5.326 ns | 0.1191 ns | 0.1783 ns |
 | Direct call | Best Case | 9.883 ns | 0.1057 ns | 0.0988 ns |
 | Direct call | Worst Case | 12.836 ns | 0.0516 ns | 0.0431 ns |
@@ -149,7 +149,7 @@ Strongly typed reflection provided by DotNext Reflection library has the same pe
 # Atomic Access to Arbitrary Value Type
 [This benchmark](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/Threading/AtomicContainerBenchmark.cs) compares performance of [Atomic&lt;T&gt;](./api/DotNext.Threading.Atomic-1.yml) and Synchronized methods. The implementation of the benchmark contains concurrent read/write threads to ensure that lock contention is in place.
 
-| Method | Mean | Error | StdDev |
+| Method | Mean | Error | StdDev | Median |
 | ---- | ---- | ---- | ---- | ---- |
 | Atomic | 342.2 us | 7.82 us | 73.57 us | 329.6 us |
 | Synchronized | 962.1 us | 12.04 us | 111.03 us | 944.3 us |
