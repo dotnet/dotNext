@@ -273,6 +273,9 @@ namespace DotNext.Runtime
         public static unsafe int Compare([In] void* first, [In] void* second, long length)
             => Compare(ref Unsafe.AsRef<byte>(first), ref Unsafe.AsRef<byte>(second), length);
 
+#if !NETSTANDARD2_1
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+#endif
         internal static unsafe bool EqualsAligned(ref byte first, ref byte second, long length)
         {
             var result = false;
