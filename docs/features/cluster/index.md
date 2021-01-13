@@ -31,6 +31,7 @@ Usually, you don't to implement `IMessage` interface directly due to existence o
 1. [BinaryMessage](../../api/DotNext.Net.Cluster.Messaging.BinaryMessage.yml) for raw binary content
 1. [StreamMessage](../../api/DotNext.Net.Cluster.Messaging.StreamMessage.yml) for message which payload is represented by [Stream](https://docs.microsoft.com/en-us/dotnet/api/system.io.stream). It it suitable for large payload when it is stored on the disk
 1. [TextMessage](../../api/DotNext.Net.Cluster.Messaging.TextMessage.yml) for textual content
+1. [JsonMessage&lt;T&gt;](../../api/DotNext.Net.Cluster.Messaging.JsonMessage-1.yml) for JSON-serializable types
 
 # Distributed Consensus
 Consensus Algorithm allows to achieve overall reliability in the presence of faulty nodes. The most commonly used consensus algorithms are:
