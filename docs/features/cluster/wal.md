@@ -275,4 +275,5 @@ var interpreter = new CommandInterpreter.Builder()
 	.Add<SubtractCommand>(SubtractAsync, CommandFormatter.Instance)
 	.Build();
 ```
+
 Builder style can be used when you don't want to derive state machine engine from `CommandInterpreter` class for some reason.
