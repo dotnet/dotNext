@@ -83,7 +83,7 @@ namespace DotNext
         }
 
         /// <inheritdoc/>
-        object? ICallable.DynamicInvoke(params object?[] args)
+        object? ICallable.DynamicInvoke(Span<object?> args)
         {
             Invoke();
             return null;
@@ -220,7 +220,7 @@ namespace DotNext
             => methodPtr == null ? func!() : methodPtr();
 
         /// <inheritdoc/>
-        object? ICallable.DynamicInvoke(params object?[] args) => Invoke();
+        object? ICallable.DynamicInvoke(Span<object?> args) => Invoke();
 
         /// <summary>
         /// Converts this pointer into <see cref="Func{TResult}"/>.
@@ -347,7 +347,7 @@ namespace DotNext
             => methodPtr == null ? func!(arg) : methodPtr(arg);
 
         /// <inheritdoc/>
-        object? ICallable.DynamicInvoke(params object?[] args) => Invoke(Intrinsics.NullAwareCast<T>(args[0])!);
+        object? ICallable.DynamicInvoke(Span<object?> args) => Invoke(Intrinsics.NullAwareCast<T>(args[0])!);
 
         /// <summary>
         /// Converts this pointer into <see cref="Func{T, TResult}"/>.
@@ -479,7 +479,7 @@ namespace DotNext
         }
 
         /// <inheritdoc/>
-        object? ICallable.DynamicInvoke(params object?[] args)
+        object? ICallable.DynamicInvoke(Span<object?> args)
         {
             Invoke(Intrinsics.NullAwareCast<T>(args[0])!);
             return null;
@@ -606,7 +606,7 @@ namespace DotNext
             => methodPtr == null ? func!(arg1, arg2) : methodPtr(arg1, arg2);
 
         /// <inheritdoc/>
-        object? ICallable.DynamicInvoke(params object?[] args)
+        object? ICallable.DynamicInvoke(Span<object?> args)
             => Invoke(Intrinsics.NullAwareCast<T1>(args[0])!, Intrinsics.NullAwareCast<T2>(args[1])!);
 
         /// <summary>
@@ -733,7 +733,7 @@ namespace DotNext
         }
 
         /// <inheritdoc/>
-        object? ICallable.DynamicInvoke(params object?[] args)
+        object? ICallable.DynamicInvoke(Span<object?> args)
         {
             Invoke(Intrinsics.NullAwareCast<T1>(args[0])!, Intrinsics.NullAwareCast<T2>(args[1])!);
             return null;
@@ -862,7 +862,7 @@ namespace DotNext
             => methodPtr == null ? func!(arg1, arg2, arg3) : methodPtr(arg1, arg2, arg3);
 
         /// <inheritdoc/>
-        object? ICallable.DynamicInvoke(params object?[] args)
+        object? ICallable.DynamicInvoke(Span<object?> args)
             => Invoke(Intrinsics.NullAwareCast<T1>(args[0])!, Intrinsics.NullAwareCast<T2>(args[1])!, Intrinsics.NullAwareCast<T3>(args[2])!);
 
         /// <summary>
@@ -991,7 +991,7 @@ namespace DotNext
         }
 
         /// <inheritdoc/>
-        object? ICallable.DynamicInvoke(params object?[] args)
+        object? ICallable.DynamicInvoke(Span<object?> args)
         {
             Invoke(Intrinsics.NullAwareCast<T1>(args[0])!, Intrinsics.NullAwareCast<T2>(args[1])!, Intrinsics.NullAwareCast<T3>(args[2])!);
             return null;
@@ -1122,7 +1122,7 @@ namespace DotNext
             => methodPtr == null ? func!(arg1, arg2, arg3, arg4) : methodPtr(arg1, arg2, arg3, arg4);
 
         /// <inheritdoc/>
-        object? ICallable.DynamicInvoke(params object?[] args)
+        object? ICallable.DynamicInvoke(Span<object?> args)
             => Invoke(Intrinsics.NullAwareCast<T1>(args[0])!, Intrinsics.NullAwareCast<T2>(args[1])!, Intrinsics.NullAwareCast<T3>(args[2])!, Intrinsics.NullAwareCast<T4>(args[3])!);
 
         /// <summary>
@@ -1253,7 +1253,7 @@ namespace DotNext
         }
 
         /// <inheritdoc/>
-        object? ICallable.DynamicInvoke(params object?[] args)
+        object? ICallable.DynamicInvoke(Span<object?> args)
         {
             Invoke(Intrinsics.NullAwareCast<T1>(args[0])!, Intrinsics.NullAwareCast<T2>(args[1])!, Intrinsics.NullAwareCast<T3>(args[2])!, Intrinsics.NullAwareCast<T4>(args[3])!);
             return null;
@@ -1386,7 +1386,7 @@ namespace DotNext
             => methodPtr == null ? func!(arg1, arg2, arg3, arg4, arg5) : methodPtr(arg1, arg2, arg3, arg4, arg5);
 
         /// <inheritdoc/>
-        object? ICallable.DynamicInvoke(params object?[] args)
+        object? ICallable.DynamicInvoke(Span<object?> args)
             => Invoke(Intrinsics.NullAwareCast<T1>(args[0])!, Intrinsics.NullAwareCast<T2>(args[1])!, Intrinsics.NullAwareCast<T3>(args[2])!, Intrinsics.NullAwareCast<T4>(args[3])!, Intrinsics.NullAwareCast<T5>(args[4])!);
 
         /// <summary>
@@ -1519,7 +1519,7 @@ namespace DotNext
         }
 
         /// <inheritdoc/>
-        object? ICallable.DynamicInvoke(params object?[] args)
+        object? ICallable.DynamicInvoke(Span<object?> args)
         {
             Invoke(Intrinsics.NullAwareCast<T1>(args[0])!, Intrinsics.NullAwareCast<T2>(args[1])!, Intrinsics.NullAwareCast<T3>(args[2])!, Intrinsics.NullAwareCast<T4>(args[3])!, Intrinsics.NullAwareCast<T5>(args[4])!);
             return null;
@@ -1649,7 +1649,7 @@ namespace DotNext
         }
 
         /// <inheritdoc/>
-        object? ICallable.DynamicInvoke(params object?[] args)
+        object? ICallable.DynamicInvoke(Span<object?> args)
         {
             var reference = Intrinsics.NullAwareCast<T>(args[0]);
             Invoke(ref reference!, Intrinsics.NullAwareCast<TArgs>(args[1])!);
@@ -1778,7 +1778,7 @@ namespace DotNext
             => methodPtr == null ? func!(ref reference, args) : methodPtr(ref reference, args);
 
         /// <inheritdoc/>
-        object? ICallable.DynamicInvoke(params object?[] args)
+        object? ICallable.DynamicInvoke(Span<object?> args)
         {
             var reference = Intrinsics.NullAwareCast<T>(args[0]);
             var result = Invoke(ref reference!, Intrinsics.NullAwareCast<TArgs>(args[1])!);
@@ -1910,7 +1910,7 @@ namespace DotNext
         }
 
         /// <inheritdoc/>
-        object? ICallable.DynamicInvoke(params object?[] args)
+        object? ICallable.DynamicInvoke(Span<object?> args)
         {
             Invoke(new ReadOnlySpan<T>((T[]?)args[0]), Intrinsics.NullAwareCast<TArg>(args[1])!);
             return null;
@@ -2040,7 +2040,7 @@ namespace DotNext
         }
 
         /// <inheritdoc/>
-        object? ICallable.DynamicInvoke(params object?[] args)
+        object? ICallable.DynamicInvoke(Span<object?> args)
         {
             Invoke(new Span<T>((T[]?)args[0]), Intrinsics.NullAwareCast<TArg>(args[1])!);
             return null;

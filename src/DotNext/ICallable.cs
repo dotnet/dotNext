@@ -18,7 +18,7 @@ namespace DotNext
         /// </summary>
         /// <param name="args">The arguments to be passed into the method.</param>
         /// <returns>Invocation result.</returns>
-        object? DynamicInvoke(params object?[] args);
+        object? DynamicInvoke(Span<object?> args);
     }
 
     /// <summary>
