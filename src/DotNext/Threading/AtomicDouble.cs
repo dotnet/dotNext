@@ -110,6 +110,9 @@ namespace DotNext.Threading
             return update;
         }
 
+#if !NETSTANDARD2_1
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+#endif
         private static (double OldValue, double NewValue) Update(ref double value, in ValueFunc<double, double> updater)
         {
             double oldValue, newValue;
@@ -121,6 +124,9 @@ namespace DotNext.Threading
             return (oldValue, newValue);
         }
 
+#if !NETSTANDARD2_1
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+#endif
         private static (double OldValue, double NewValue) Accumulate(ref double value, double x, in ValueFunc<double, double, double> accumulator)
         {
             double oldValue, newValue;

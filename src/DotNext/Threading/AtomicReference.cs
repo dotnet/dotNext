@@ -25,6 +25,9 @@ namespace DotNext.Threading
             where T : class?
             => ReferenceEquals(Interlocked.CompareExchange(ref value, update, expected), expected);
 
+#if !NETSTANDARD2_1
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+#endif
         private static (T OldValue, T NewValue) Update<T>(ref T value, in ValueFunc<T, T> updater)
             where T : class?
         {
@@ -37,6 +40,9 @@ namespace DotNext.Threading
             return (oldValue, newValue);
         }
 
+#if !NETSTANDARD2_1
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+#endif
         private static (T OldValue, T NewValue) Accumulate<T>(ref T value, T x, in ValueFunc<T, T, T> accumulator)
             where T : class?
         {

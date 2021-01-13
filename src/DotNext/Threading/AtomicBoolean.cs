@@ -126,6 +126,9 @@ namespace DotNext.Threading
             return update;
         }
 
+#if !NETSTANDARD2_1
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+#endif
         private (bool OldValue, bool NewValue) Update(in ValueFunc<bool, bool> updater)
         {
             bool oldValue, newValue;
@@ -137,6 +140,9 @@ namespace DotNext.Threading
             return (oldValue, newValue);
         }
 
+#if !NETSTANDARD2_1
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+#endif
         private (bool OldValue, bool NewValue) Accumulate(bool x, in ValueFunc<bool, bool, bool> accumulator)
         {
             bool oldValue, newValue;
@@ -236,6 +242,9 @@ namespace DotNext.Threading
         public bool GetAndUpdate(in ValueFunc<bool, bool> updater)
             => Update(updater).OldValue;
 
+#if !NETSTANDARD2_1
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+#endif
         internal void Acquire()
         {
             for (var spinner = new SpinWait(); CompareExchange(false, true); spinner.SpinOnce())

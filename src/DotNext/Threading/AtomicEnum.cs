@@ -166,6 +166,9 @@ namespace DotNext.Threading
             return update;
         }
 
+#if !NETSTANDARD2_1
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+#endif
         private (TEnum OldValue, TEnum NewValue) Update(in ValueFunc<TEnum, TEnum> updater)
         {
             TEnum oldValue, newValue;
@@ -177,6 +180,9 @@ namespace DotNext.Threading
             return (oldValue, newValue);
         }
 
+#if !NETSTANDARD2_1
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+#endif
         private (TEnum OldValue, TEnum NewValue) Accumulate(TEnum x, in ValueFunc<TEnum, TEnum, TEnum> accumulator)
         {
             TEnum oldValue, newValue;
