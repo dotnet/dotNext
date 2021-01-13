@@ -15,8 +15,6 @@ namespace DotNext.Threading
     /// <seealso cref="Interlocked"/>
     public static class AtomicSingle
     {
-        private static float SumImpl(float x, float y) => x + y;
-
         /// <summary>
         /// Reads the value of the specified field. On systems that require it, inserts a
         /// memory barrier that prevents the processor from reordering memory operations
@@ -52,7 +50,12 @@ namespace DotNext.Threading
         /// <param name="value">Reference to a value to be modified.</param>
         /// <returns>Incremented value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe float IncrementAndGet(ref this float value) => AccumulateAndGet(ref value, 1F, new ValueFunc<float, float, float>(&SumImpl));
+        public static unsafe float IncrementAndGet(ref this float value)
+        {
+            return UpdateAndGet(ref value, new ValueFunc<float, float>(&Increment));
+
+            static float Increment(float value) => value + 1F;
+        }
 
         /// <summary>
         /// Atomically decrements by one the current value.
@@ -60,7 +63,12 @@ namespace DotNext.Threading
         /// <param name="value">Reference to a value to be modified.</param>
         /// <returns>Decremented value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe float DecrementAndGet(ref this float value) => AccumulateAndGet(ref value, -1F, new ValueFunc<float, float, float>(&SumImpl));
+        public static unsafe float DecrementAndGet(ref this float value)
+        {
+            return UpdateAndGet(ref value, new ValueFunc<float, float>(&Decrement));
+
+            static float Decrement(float value) => value - 1F;
+        }
 
         /// <summary>
         /// Adds two 64-bit floating-point numbers and replaces referenced storage with the sum,
@@ -70,7 +78,12 @@ namespace DotNext.Threading
         /// <param name="operand">The value to be added to the currently stored integer.</param>
         /// <returns>Result of sum operation.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe float Add(ref this float value, float operand) => AccumulateAndGet(ref value, operand, new ValueFunc<float, float, float>(&SumImpl));
+        public static unsafe float Add(ref this float value, float operand)
+        {
+            return AccumulateAndGet(ref value, operand, new ValueFunc<float, float, float>(&Add));
+
+            static float Add(float x, float y) => x + y;
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool Equals(float x, float y)
