@@ -293,23 +293,31 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 this.entries = entries;
             }
 
-            protected override async Task SerializeToStreamAsync(Stream stream, TransportContext? context)
+            protected override Task SerializeToStreamAsync(Stream stream, TransportContext? context)
+                => SerializeToStreamAsync(stream, context, CancellationToken.None);
+
+#if NETCOREAPP3_1
+            private
+#else
+            protected override
+#endif
+            async Task SerializeToStreamAsync(Stream stream, TransportContext? context, CancellationToken token)
             {
                 using var buffer = new MemoryOwner<byte>(ArrayPool<byte>.Shared, 512);
                 var writer = IAsyncBinaryWriter.Create(stream, buffer.Memory);
                 foreach (var entry in entries)
                 {
                     // write term
-                    await writer.WriteInt64Async(entry.Term, true).ConfigureAwait(false);
+                    await writer.WriteInt64Async(entry.Term, true, token).ConfigureAwait(false);
 
                     // write timestamp
-                    await writer.WriteInt64Async(entry.Timestamp.Ticks, true).ConfigureAwait(false);
+                    await writer.WriteInt64Async(entry.Timestamp.Ticks, true, token).ConfigureAwait(false);
 
                     // write length
-                    await writer.WriteInt64Async(entry.Length.GetValueOrDefault(), true).ConfigureAwait(false);
+                    await writer.WriteInt64Async(entry.Length.GetValueOrDefault(), true, token).ConfigureAwait(false);
 
                     // write log entry payload
-                    await entry.WriteToAsync(writer, CancellationToken.None).ConfigureAwait(false);
+                    await entry.WriteToAsync(writer, token).ConfigureAwait(false);
                 }
             }
 
@@ -363,7 +371,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 builder.Write(CrLf);
             }
 
-            private static ValueTask EncodeHeadersToStreamAsync(Stream output, BufferWriter<char> builder, TEntry entry, bool writeDivider, string boundary, EncodingContext context, Memory<byte> buffer)
+            private static ValueTask EncodeHeadersToStreamAsync(Stream output, BufferWriter<char> builder, TEntry entry, bool writeDivider, string boundary, EncodingContext context, Memory<byte> buffer, CancellationToken token)
             {
                 if (writeDivider)
                 {
@@ -378,10 +386,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
                 // Extra CRLF to end headers (even if there are no headers)
                 builder.Write(CrLf);
-                return output.WriteStringAsync(builder.WrittenMemory, context, buffer);
+                return output.WriteStringAsync(builder.WrittenMemory, context, buffer, token: token);
             }
 
-            protected override async Task SerializeToStreamAsync(Stream stream, TransportContext? context)
+            protected override Task SerializeToStreamAsync(Stream stream, TransportContext? context)
+                => SerializeToStreamAsync(stream, context, CancellationToken.None);
+
+#if NETCOREAPP3_1
+            private
+#else
+            protected override
+#endif
+            async Task SerializeToStreamAsync(Stream stream, TransportContext? context, CancellationToken token)
             {
                 const int maxChars = 128;   // it is empiric value measured using Console.WriteLine(builder.Length)
                 EncodingContext encodingContext = DefaultHttpEncoding;
@@ -393,7 +409,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                     builder.Write(CrLf);
 
                     // write start boundary
-                    await stream.WriteStringAsync(builder.WrittenMemory, encodingContext, encodingBuffer.Memory).ConfigureAwait(false);
+                    await stream.WriteStringAsync(builder.WrittenMemory, encodingContext, encodingBuffer.Memory, token: token).ConfigureAwait(false);
                     encodingContext.Reset();
 
                     // write each nested content
@@ -401,11 +417,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                     foreach (var entry in entries)
                     {
                         builder.Clear(true);
-                        await EncodeHeadersToStreamAsync(stream, builder, entry, writeDivider, boundary, encodingContext, encodingBuffer.Memory).ConfigureAwait(false);
+                        await EncodeHeadersToStreamAsync(stream, builder, entry, writeDivider, boundary, encodingContext, encodingBuffer.Memory, token).ConfigureAwait(false);
                         encodingContext.Reset();
                         Debug.Assert(builder.WrittenCount <= maxChars);
                         writeDivider = true;
-                        await entry.WriteToAsync(stream).ConfigureAwait(false);
+                        await entry.WriteToAsync(stream, token: token).ConfigureAwait(false);
                     }
 
                     // write footer
@@ -413,7 +429,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                     builder.Write(CrLf + DoubleDash);
                     builder.Write(boundary);
                     builder.Write(DoubleDash + CrLf);
-                    await stream.WriteStringAsync(builder.WrittenMemory, encodingContext, encodingBuffer.Memory).ConfigureAwait(false);
+                    await stream.WriteStringAsync(builder.WrittenMemory, encodingContext, encodingBuffer.Memory, token: token).ConfigureAwait(false);
                 }
 
                 encodingContext.Reset();
