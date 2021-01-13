@@ -102,7 +102,7 @@ The application should be configured properly to work as a cluster node. The fol
 | keepAliveTimeout | Hosted | No | 2 minutes | TCP keep-alive timeout |
 | requestTimeout | Hosted, Embedded | No | `upperElectionTimeout` | Request timeout used to access cluster members across the network using HTTP client |
 | rpcTimeout | Hosted, Embedded | No | `upperElectionTimeout` / 2 | Request timeout used to send Raft-specific messages to cluster members. Must be less than or equal to _requestTimeout_ parameter |
-| standby | Hosted, Embedded | No | false | **true** to prevent election of the cluster member as a leader. It's useful to configure nodes available for read-only operations where eventual consistency is allowed |
+| standby | Hosted, Embedded | No | false | **true** to prevent election of the cluster member as a leader. It's useful to configure nodes available for read-only operations |
 
 `requestJournal` configuration section is rarely used and useful for high-load scenario only.
 
