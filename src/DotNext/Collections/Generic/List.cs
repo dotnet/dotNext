@@ -42,17 +42,17 @@ namespace DotNext.Collections.Generic
                 Pop(out RuntimeMethodHandle method);
                 Ldtoken(Type<IReadOnlyList<T>>());
                 Pop(out RuntimeTypeHandle type);
-                ReadOnly = DelegateHelpers.CreateDelegate<Func<IReadOnlyList<T>, int, T>>((MethodInfo)MethodBase.GetMethodFromHandle(method, type)!);
+                ReadOnly = ((MethodInfo)MethodBase.GetMethodFromHandle(method, type)!).CreateDelegate<Func<IReadOnlyList<T>, int, T>>();
 
                 Ldtoken(PropertyGet(Type<IList<T>>(), ItemIndexerName));
                 Pop(out method);
                 Ldtoken(Type<IList<T>>());
                 Pop(out type);
-                Getter = DelegateHelpers.CreateDelegate<Func<IList<T>, int, T>>((MethodInfo)MethodBase.GetMethodFromHandle(method, type)!);
+                Getter = ((MethodInfo)MethodBase.GetMethodFromHandle(method, type)!).CreateDelegate<Func<IList<T>, int, T>>();
 
                 Ldtoken(PropertySet(Type<IList<T>>(), ItemIndexerName));
                 Pop(out method);
-                Setter = DelegateHelpers.CreateDelegate<Action<IList<T>, int, T>>((MethodInfo)MethodBase.GetMethodFromHandle(method, type)!);
+                Setter = ((MethodInfo)MethodBase.GetMethodFromHandle(method, type)!).CreateDelegate<Action<IList<T>, int, T>>();
             }
         }
 

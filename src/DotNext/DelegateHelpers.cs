@@ -78,6 +78,7 @@ namespace DotNext
             where T : class, TBase
             => handler.ChangeType<EventHandler<T>>();
 
+#if NETSTANDARD2_1
         /// <summary>
         /// Creates a delegate of the specified type with the specified target from this method.
         /// </summary>
@@ -90,6 +91,7 @@ namespace DotNext
         public static TDelegate CreateDelegate<TDelegate>(this MethodInfo method, object? target = null)
             where TDelegate : Delegate
             => (TDelegate)method.CreateDelegate(typeof(TDelegate), target);
+#endif
 
         /// <summary>
         /// Returns a new delegate of different type which

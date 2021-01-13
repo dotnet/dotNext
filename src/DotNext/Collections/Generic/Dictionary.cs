@@ -44,17 +44,17 @@ namespace DotNext.Collections.Generic
                 Pop(out RuntimeMethodHandle method);
                 Ldtoken(Type<IReadOnlyDictionary<TKey, TValue>>());
                 Pop(out RuntimeTypeHandle type);
-                ReadOnly = DelegateHelpers.CreateDelegate<Func<IReadOnlyDictionary<TKey, TValue>, TKey, TValue>>((MethodInfo)MethodBase.GetMethodFromHandle(method, type)!);
+                ReadOnly = ((MethodInfo)MethodBase.GetMethodFromHandle(method, type)!).CreateDelegate<Func<IReadOnlyDictionary<TKey, TValue>, TKey, TValue>>();
 
                 Ldtoken(PropertyGet(Type<IDictionary<TKey, TValue>>(), ItemIndexerName));
                 Pop(out method);
                 Ldtoken(Type<IDictionary<TKey, TValue>>());
                 Pop(out type);
-                Getter = DelegateHelpers.CreateDelegate<Func<IDictionary<TKey, TValue>, TKey, TValue>>((MethodInfo)MethodBase.GetMethodFromHandle(method, type)!);
+                Getter = ((MethodInfo)MethodBase.GetMethodFromHandle(method, type)!).CreateDelegate<Func<IDictionary<TKey, TValue>, TKey, TValue>>();
 
                 Ldtoken(PropertySet(Type<IDictionary<TKey, TValue>>(), ItemIndexerName));
                 Pop(out method);
-                Setter = DelegateHelpers.CreateDelegate<Action<IDictionary<TKey, TValue>, TKey, TValue>>((MethodInfo)MethodBase.GetMethodFromHandle(method, type)!);
+                Setter = ((MethodInfo)MethodBase.GetMethodFromHandle(method, type)!).CreateDelegate<Action<IDictionary<TKey, TValue>, TKey, TValue>>();
             }
         }
 
