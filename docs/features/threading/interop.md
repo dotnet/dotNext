@@ -13,16 +13,6 @@ CancellationToken token = ...;
 await token.WaitAsync();
 ```
 
-The awaitable object returned by `WaitAsync` is not `System.Threading.Tasks.Task` but it can be converted into it:
-
-```csharp
-using DotNext.Threading;
-using System.Threading;
-
-CancellationToken token = ...;
-Task task = token.WaitAsync().AsTask();
-```
-
 # Wait Handles
 [WaitHandle](https://docs.microsoft.com/en-us/dotnet/api/system.threading.waithandle) represents OS-specific object that wait for exclusive access to shared resources. It can be converted into awaitable object using `WaitAsync` static method.
 
@@ -32,14 +22,4 @@ using System.Threading;
 
 var resetEvent = new ManualResetEvent(false);
 await resetEvent.WaitAsync();  
-```
-
-The awaitable object returned by `WaitAsync` is not `System.Threading.Tasks.Task` but it can be converted into it:
-
-```csharp
-using DotNext.Threading;
-using System.Threading;
-
-WaitHandle handle = ...;
-Task<bool> task = handle.WaitAsync().AsTask();
 ```
