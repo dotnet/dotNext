@@ -67,7 +67,21 @@ using Stream writable = buffer.AsStream(false); // create writable stream
 using Stream readable = buffer.AsStream(true);  // create readable stream
 ```
 
-# String Buffer
+Sparse buffer supports various strategies for allocation of the memory chunks:
+1. Default behavior when size of each memory chunk is the same
+1. Linear growth, when the size of each new memory chunk is a multiple of the chunk index
+1. Exponential growth, when each new memory chunk doubles in size
+
+The first strategy is effective when potential max size of the resulting buffer is hundreds of elements and volatility is small. The last two are effective when max size of the result buffer can be potentially large (kilobytes) and volatility is unpredictable.
+
+The following example demonstrates usage of exponential growth strategy with predefined size of initial memory chunk:
+```csharp
+using DotNext.Buffers;
+
+using var buffer = new SparseBufferWriter<byte>(256, SparseBufferGrowth.Exponential);
+```
+
+# Char Buffer
 [StringBuilder](https://docs.microsoft.com/en-us/dotnet/api/system.text.stringbuilder) is a great tool from .NET standard library to construct strings dynamically. However, it uses heap-based allocation of chunks and increases GC workload. The solution is to use pooled memory for growing buffer and release it when no longer needed. This approach is implemented by `PooledBufferWriter<T>`, `PooledArrayBufferWriter<T>` and `SparseBufferWriter<T>` classes as described above. But we need suitable methods for adding portions of data to the builder similar to the methods of `StringBuilder`. They are provided as extension methods declared in [BufferWriter](../../api/DotNext.Buffers.BufferWriter.yml) class for all objects implementing [IBufferWriter&lt;char&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) interface:
 ```csharp
 using DotNext.Buffers;
