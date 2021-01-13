@@ -35,7 +35,6 @@ Let's write a simple custom audit trail based on the `PersistentState` to demons
 The example below additionally requires **DotNext.IO** library to simplify I/O work. 
 ```csharp
 using DotNext.IO;
-using DotNext.IO.Pipelines;
 using DotNext.Net.Cluster.Consensus.Raft;
 using System.Threading.Tasks;
 using static System.Buffers.Binary.BinaryPrimitives;
@@ -96,3 +95,184 @@ The following methods allows to implement this scenario:
 
 # State Reconstruction
 `PersistentState` is designed with assumption that underlying state machine can be reconstructed through sequential interpretation of each committed log entry stored in the log. When persistent WAL used in combination with other Raft infrastructure such as extensions for ASP.NET Core provided by **DotNext.AspNetCore.Cluster** library then this action performed automatically in host initialization code. However, if WAL used separately then reconstruction process should be initiated manually. To do that you need to call `ReplayAsync` method which reads all committed log entry and pass each entry to `ApplyAsync` protected method. Usually, `ApplyAsync` method implementation implements data state machine logic so sequential processing of all committed entries can restore its state correctly.
+
+# Interpreter Framework
+`ApplyAsync` method and snapshot builder responsible for interpretation of custom log entries usually containing the commands and applying these commands to the underlying database engine. [LogEntry](../../api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.yml) is a generic representation of the log entry written to persistent WAL and it has no knowledge about semantics of the command. Therefore, you need to decode and interpret it manually.
+
+There are two ways to do that:
+1. JSON serialization
+1. Deriving from [CommandInterpreter](../../api/DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.yml) class
+
+The first approach is very simple but may be not optimal for real application because each log entry must be represented as JSON in the form of UTF-8 encoded characters. Moreover, decoding procedure causes heap allocation of each decoded log entry.
+
+## JSON log entries
+At the time of appending of a new log entry, it can be created as follows:
+```csharp
+using DotNext.Net.Cluster.Consensus.Raft;
+
+struct SubtractCommand
+{
+	public int X { get; set; }
+	public int Y { get; set; }
+}
+
+PersistentState state = ...;
+var entry = state.CreateJsonLogEntry(new SubtractCommand { X = 10, Y = 20 });
+await state.AppendAsync(entry);
+```
+
+`SubtractCommand` must be JSON-serializable type. Its content will be serialialized to JSON and written as log entry. It's recommended to explicitly specify the optional parameters of `CreateJsonLogEntry` method to provide type identification independent from .NET type system.
+
+Now the written log entry can be deserialized and interpreted easily inside of `AppendAsync` method:
+```csharp
+using DotNext.IO;
+using DotNext.Net.Cluster.Consensus.Raft;
+using System.Threading.Tasks;
+
+sealed class SimpleAuditTrail : PersistentState
+{
+	internal long Value;
+	
+    protected override async ValueTask ApplyAsync(LogEntry entry)
+	{
+		switch (await entry.DeserializeFromJsonAsync())
+		{
+			case SubtractCommand command:
+				Value = command.X - command.Y; // interpreting the command
+				break;
+		}
+	}
+}
+```
+
+`DeserializeFromJsonAsync` accepts type resolver as an optional argument. If default type resolution mechanism is used then persistent state stores type information in the form of fullt-qualified type name including assembly name.
+
+## Command Interpreter
+Interpreting of the custom log entries can be implemented with help of [Command Pattern](https://en.wikipedia.org/wiki/Command_pattern). [CommandInterpreter](../../api/DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.yml) is a foundation for building custom interpreters in declarative way using such pattern. Each command has command handler described as separated method in the derived class.
+
+First of all, it's needed to decorate command type with necessary attribute and write serialization and deserialization logic:
+```csharp
+using DotNext.Runtime.Serialization;
+using DotNext.Net.Cluster.Consensus.Raft.Commands;
+using System.Threading;
+using System.Threading.Tasks;
+
+sealed class CommandFormatter : IFormatter<SubtractCommand>, IFormatter<NegateCommand>
+{
+	public static readonly CommandFormatter Instance = new CommandFormatter();
+
+	private CommandFormatter()
+	{
+	}
+
+    async ValueTask IFormatter<SubtractCommand>.SerializeAsync<TWriter>(SubtractCommand command, TWriter writer, CancellationToken token)
+	{
+		await writer.WriteInt32Async(command.X, true, token);
+		await writer.WriteInt32Async(command.Y, true, token);
+	}
+
+	async ValueTask<SubtractCommand> IFormatter<SubtractCommand>.DeserializeAsync<TReader>(TReader reader, CancellationToken token)
+	{
+		return new SubtractCommand
+		{
+			X = await reader.ReadInt32Async(true, token),
+			Y = await reader.ReadInt32Async(true, token)
+		};
+	}
+
+	async ValueTask IFormatter<NegateCommand>.SerializeAsync<TWriter>(NegateCommand command, TWriter writer, CancellationToken token)
+	{
+		await writer.WriteInt32Async(command.X, true, token);
+	}
+
+	async ValueTask<NegateCommand> IFormatter<NegateCommand>.DeserializeAsync<TReader>(TReader reader, CancellationToken token)
+	{
+		return new NegateCommand
+		{
+			X = await reader.ReadInt32Async(true, token),
+		};
+	}
+}
+
+[CommandAttribute(0, Formatter = typeof(CommandFormatter), FormatterMember = nameof(CommandFormatter.Instance))]
+struct SubtractCommand
+{
+	public int X { get; set; }
+	public int Y { get; set; }
+}
+
+[CommandAttribute(1, Formatter = typeof(CommandFormatter), FormatterMember = nameof(CommandFormatter.Instance))]
+struct NegateCommand
+{
+	public int X { get; set; }
+}
+```
+
+Each command must have unique identifier which is encoded transparently as a part of the log entry in WAL. This identifier is required by interpreter to correctly identify which serializer/deserializer must be called. Encoding of this identifier as a part of the custom serialization logic is not needed.
+
+Now the commands are described with their serialization logic. However, the interpreter still doesn't know how to interpet them. Let's derive from `CommandInterpreter` and write command handler for each command described above:
+```csharp
+using DotNext.Net.Cluster.Consensus.Raft.Commands;
+
+public class MyInterpreter : CommandInterpreter
+{
+	private long state;
+
+	[CommandHandler]
+	public async ValueTask SubtractAsync(SubtractCommand command, CancellationToken token)
+	{
+		state = command.X - command.Y;
+	}
+
+	[CommandHandler]
+	public async ValueTask NegateAsync(NegateCommand command, CancellationToken token)
+	{
+		state = -command.X;
+	}
+}
+```
+Each command handler must be decorated with `CommandHandlerAttribute` attribute and have the following signature:
+* Return type is [ValueTask](https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.valuetask)
+* The first parameter is of command type
+* The second parameter is [CancellationToken](https://docs.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken)
+* Must be public instance method
+
+`CommandInterpreter` automatically discovers all declared command handlers and associated command types. Now the log entry can be appended easily:
+```csharp
+MyInterpreter interpreter = ...;
+PersistentState state = ...;
+var entry = interpreter.CreateLogEntry(new SubtractCommand { X = 10, Y = 20 }, state.Term);
+await state.AppendAsync(entry);
+```
+
+The last step is to combine the class derived from `PersistentState` and the custom interpreter.
+```csharp
+using DotNext.IO;
+using DotNext.Net.Cluster.Consensus.Raft;
+using System.Threading.Tasks;
+
+sealed class SimpleAuditTrail : PersistentState
+{
+	private readonly MyInterpreter interpreter;
+	
+    protected override async ValueTask ApplyAsync(LogEntry entry)
+	{
+		await interpreter.InterpretAsync(entry);
+	}
+}
+```
+
+`InterpretAsync` is a method declared in base class `CommandInterpreter`. It decods the command identifier and delegates interpretation to the appropriate command handler.
+
+Additionally, `CommandInterpreter` can be constructed without inheritance using Builder pattern:
+```csharp
+ValueTask SubtractAsync(SubtractCommand command, CancellationToken token)
+{
+	// interpretation logic
+}
+
+var interpreter = new CommandInterpreter.Builder()
+	.Add<SubtractCommand>(SubtractAsync, CommandFormatter.Instance)
+	.Build();
+```
+Builder style can be used when you don't want to derive state machine engine from `CommandInterpreter` class for some reason.

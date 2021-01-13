@@ -167,11 +167,13 @@ This section contains recommendations about implementation of your own database 
     1. This class aggregates reference to `IDataEngine`
     1. This class encapsulates logic for messaging with leader node
     1. This class acting as controller for API exposed to external clients
-    1. Utilize `PersistentState.EnsureConsistencyAsync` and `RaftCluster.ForceReplicationAsync` methods for read-only operations
-    1. Utilize `PersistentState.WaitForCommitAsync` for write operations
+    1. Utilize `PersistentState.EnsureConsistencyAsync` method for read-only operations
+    1. Utilize `RaftCluster.ForceReplicationAsync` and `PersistentState.WaitForCommitAsync` methods for write operations
 1. Expose data manipulation methods from class described above to clients using selected network transport
 1. Implement duplicates elimination logic for write requests from clients
 1. Call `ReplayAsync` method which is inherited from `PersistentState` class at application startup. This step is not need if you're using Raft implementation for ASP.NET Core.
+
+Designing binary format for custom log entries and interpreter for them may be hard. Examine [this](./wal.md) article to learn how to use Interpreter Framework shipped with the library.
 
 # Guide: Custom Transport
 Transport-agnostic implementation of Raft is represented by [RaftCluster&lt;TMember&gt;](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html) class. It contains core consensus and replication logic but it's not aware about network-specific details. You can use this class as foundation for your own Raft implementation for particular network protocol. All you need is to implementation protocol-specific communication logic.  This chapter will guide you through all necessary steps.
