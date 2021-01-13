@@ -55,19 +55,10 @@ The value type implements [IMemoryOwner&lt;T&gt;](https://docs.microsoft.com/en-
 
 Additionally, .NEXT offers special abstraction layer for memory pooling which is compatible with existing mechanisms in .NET. [MemoryAllocator&lt;T&gt;](../../api/DotNext.Buffers.MemoryAllocator-1.yml) delegate represents universal way to rent the memory. The consumer of your library can supply concrete instance of this delegate to supply appropriate allocation mechanism. [MemoryAllocator](../../api/DotNext.Buffers.MemoryAllocator-1.yml) static class provides extension methods for interop between memory allocator and existing .NET memory pooling APIs.
 
-# RentedMemoryStream
-Another way to represent the rented memory is [RentedMemoryStream](../../api/DotNext.IO.RentedMemoryStream.yml) that allows to work with pooled memory in [stream](https://docs.microsoft.com/en-us/dotnet/api/system.io.stream)-like manner. The stream is available for read/write operations. However, it's capacity is fixed and cannot grow. Therefore, you need to request sufficient capacity.
-```csharp
-using DotNext.IO;
-
-using var stream = new RentedMemoryStream(1024);  //rent 1 KB of memory and wrap it to stream
-stream.Write(new byte[512], 0, 512);
-```
-
 # Growable Buffers
 If size of the required buffer is not known and can grow dynamically then you need to use [Dynamic Buffers](./buffers.md) that are based on memory pooling mechanism as well.
 
-Dynamic buffers can be combined with [streams](https://docs.microsoft.com/en-us/dotnet/api/system.io.stream) easily using extension methods from [StreamSource](../../api/DotNext.IO.StreamSource.yml) class, so you can avoid limitation of `RentedMemoryStream` class. With [PooledArrayBufferWriter&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.PooledArrayBufferWriter-1.html) class, it's possible to read/write bytes using stream and utilize memory pooling:
+Dynamic buffers can be combined with [streams](https://docs.microsoft.com/en-us/dotnet/api/system.io.stream) easily using extension methods from [StreamSource](../../api/DotNext.IO.StreamSource.yml) class. With [PooledArrayBufferWriter&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.PooledArrayBufferWriter-1.html) class, it's possible to read/write bytes using stream and utilize memory pooling:
 ```csharp
 using DotNext.Buffers;
 using DotNext.IO;
