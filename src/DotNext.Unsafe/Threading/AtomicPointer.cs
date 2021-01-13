@@ -1082,5 +1082,335 @@ namespace DotNext.Threading
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IntPtr GetAndUpdateValue(this Pointer<IntPtr> pointer, in ValueFunc<IntPtr, IntPtr> updater) => AtomicIntPtr.GetAndUpdate(ref pointer.Value, in updater);
+
+#if !NETSTANDARD2_1
+        /// <summary>
+        /// Increments a value located in the memory at the address specified by pointer and stores the result, as an atomic operation.
+        /// </summary>
+        /// <param name="pointer">A pointer to a value to be incremented.</param>
+        /// <returns>The incremented value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static ulong IncrementValue(this Pointer<ulong> pointer) => AtomicUInt64.IncrementAndGet(ref pointer.Value);
+
+        /// <summary>
+        /// Decrements a value located in the memory at the address specified by pointer and stores the result, as an atomic operation.
+        /// </summary>
+        /// <param name="pointer">A pointer to a value to be decremented.</param>
+        /// <returns>The decremented value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static ulong DecrementValue(this Pointer<ulong> pointer) => AtomicUInt64.DecrementAndGet(ref pointer.Value);
+
+        /// <summary>
+        /// Sets a value located in the memory at the address specified by pointer to a specified value as an atomic operation.
+        /// </summary>
+        /// <param name="pointer">A pointer to a value to be modified.</param>
+        /// <param name="update">The value to which the memory is set.</param>
+        /// <returns>The original value in the memory.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static ulong GetAndSetValue(this Pointer<ulong> pointer, ulong update) => AtomicUInt64.GetAndSet(ref pointer.Value, update);
+
+        /// <summary>
+        /// Adds two integers and replaces the first integer with the sum, as an atomic operation.
+        /// </summary>
+        /// <param name="pointer">A pointer to a value to be modified.</param>
+        /// <param name="value">The value to be added to the integer located in the memory at the address specified by pointer.</param>
+        /// <returns>The new value stored at memory address.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static ulong AddValue(this Pointer<ulong> pointer, ulong value) => AtomicUInt64.Add(ref pointer.Value, value);
+
+        /// <summary>
+        /// Compares two 64-bit signed integers for equality and, if they are equal, replaces the first value.
+        /// </summary>
+        /// <param name="pointer">A pointer to a value to be modified.</param>
+        /// <param name="value">The value that replaces the destination value if the comparison results in equality.</param>
+        /// <param name="comparand">The value that is compared to the value at the memory address.</param>
+        /// <returns>The original value that was in the memory before.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static ulong CompareExchangeValue(this Pointer<ulong> pointer, ulong value, ulong comparand) => Interlocked.CompareExchange(ref pointer.Value, value, comparand);
+
+        /// <summary>
+        /// Atomically sets a value located at the specified address in the memory to the given updated value if the current value == the expected value.
+        /// </summary>
+        /// <param name="pointer">A pointer to a value to be modified.</param>
+        /// <param name="expected">The expected value.</param>
+        /// <param name="update">The new value.</param>
+        /// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static bool CompareAndSetValue(this Pointer<ulong> pointer, ulong expected, ulong update) => AtomicUInt64.CompareAndSet(ref pointer.Value, expected, update);
+
+        /// <summary>
+        /// Atomically updates the current value referenced by pointer with the results of applying the given function
+        /// to the current and given values, returning the updated value.
+        /// </summary>
+        /// <remarks>
+        /// The function is applied with the current value as its first argument, and the given update as the second argument.
+        /// </remarks>
+        /// <param name="pointer">A pointer to a value to be modified.</param>
+        /// <param name="x">Accumulator operand.</param>
+        /// <param name="accumulator">A side-effect-free function of two arguments.</param>
+        /// <returns>The updated value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static ulong AccumulateAndGetValue(this Pointer<ulong> pointer, ulong x, Func<ulong, ulong, ulong> accumulator) => AtomicUInt64.AccumulateAndGet(ref pointer.Value, x, accumulator);
+
+        /// <summary>
+        /// Atomically updates the current value referenced by pointer with the results of applying the given function
+        /// to the current and given values, returning the updated value.
+        /// </summary>
+        /// <remarks>
+        /// The function is applied with the current value as its first argument, and the given update as the second argument.
+        /// </remarks>
+        /// <param name="pointer">A pointer to a value to be modified.</param>
+        /// <param name="x">Accumulator operand.</param>
+        /// <param name="accumulator">A side-effect-free function of two arguments.</param>
+        /// <returns>The updated value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static ulong AccumulateAndGetValue(this Pointer<ulong> pointer, ulong x, in ValueFunc<ulong, ulong, ulong> accumulator) => AtomicUInt64.AccumulateAndGet(ref pointer.Value, x, in accumulator);
+
+        /// <summary>
+        /// Atomically updates the current value referenced by pointer with the results of applying the given function
+        /// to the current and given values, returning the original value.
+        /// </summary>
+        /// <remarks>
+        /// The function is applied with the current value as its first argument, and the given update as the second argument.
+        /// </remarks>
+        /// <param name="pointer">A pointer to a value to be modified.</param>
+        /// <param name="x">Accumulator operand.</param>
+        /// <param name="accumulator">A side-effect-free function of two arguments.</param>
+        /// <returns>The original value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static ulong GetAndAccumulateValue(this Pointer<ulong> pointer, ulong x, Func<ulong, ulong, ulong> accumulator) => AtomicUInt64.GetAndAccumulate(ref pointer.Value, x, accumulator);
+
+        /// <summary>
+        /// Atomically updates the current value referenced by pointer with the results of applying the given function
+        /// to the current and given values, returning the original value.
+        /// </summary>
+        /// <remarks>
+        /// The function is applied with the current value as its first argument, and the given update as the second argument.
+        /// </remarks>
+        /// <param name="pointer">A pointer to a value to be modified.</param>
+        /// <param name="x">Accumulator operand.</param>
+        /// <param name="accumulator">A side-effect-free function of two arguments.</param>
+        /// <returns>The original value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static ulong GetAndAccumulateValue(this Pointer<ulong> pointer, ulong x, in ValueFunc<ulong, ulong, ulong> accumulator) => AtomicUInt64.GetAndAccumulate(ref pointer.Value, x, in accumulator);
+
+        /// <summary>
+        /// Atomically updates the value referenced by pointer with the results
+        /// of applying the given function, returning the updated value.
+        /// </summary>
+        /// <param name="pointer">A pointer to a value to be modified.</param>
+        /// <param name="updater">A side-effect-free function.</param>
+        /// <returns>The updated value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static ulong UpdateAndGetValue(this Pointer<ulong> pointer, Func<ulong, ulong> updater) => AtomicUInt64.UpdateAndGet(ref pointer.Value, updater);
+
+        /// <summary>
+        /// Atomically updates the value referenced by pointer with the results
+        /// of applying the given function, returning the updated value.
+        /// </summary>
+        /// <param name="pointer">A pointer to a value to be modified.</param>
+        /// <param name="updater">A side-effect-free function.</param>
+        /// <returns>The updated value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static ulong UpdateAndGetValue(this Pointer<ulong> pointer, in ValueFunc<ulong, ulong> updater) => AtomicUInt64.UpdateAndGet(ref pointer.Value, in updater);
+
+        /// <summary>
+        /// Atomically updates the value referenced by pointer with the results
+        /// of applying the given function, returning the original value.
+        /// </summary>
+        /// <param name="pointer">A pointer to a value to be modified.</param>
+        /// <param name="updater">A side-effect-free function.</param>
+        /// <returns>The original value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static ulong GetAndUpdateValue(this Pointer<ulong> pointer, Func<ulong, ulong> updater) => AtomicUInt64.GetAndUpdate(ref pointer.Value, updater);
+
+        /// <summary>
+        /// Atomically updates the value referenced by pointer with the results
+        /// of applying the given function, returning the original value.
+        /// </summary>
+        /// <param name="pointer">A pointer to a value to be modified.</param>
+        /// <param name="updater">A side-effect-free function.</param>
+        /// <returns>The original value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static ulong GetAndUpdateValue(this Pointer<ulong> pointer, in ValueFunc<ulong, ulong> updater) => AtomicUInt64.GetAndUpdate(ref pointer.Value, in updater);
+
+        /// <summary>
+        /// Increments a value located in the memory at the address specified by pointer and stores the result, as an atomic operation.
+        /// </summary>
+        /// <param name="pointer">A pointer to a value to be incremented.</param>
+        /// <returns>The incremented value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static uint IncrementValue(this Pointer<uint> pointer) => AtomicUInt32.IncrementAndGet(ref pointer.Value);
+
+        /// <summary>
+        /// Decrements a value located in the memory at the address specified by pointer and stores the result, as an atomic operation.
+        /// </summary>
+        /// <param name="pointer">A pointer to a value to be decremented.</param>
+        /// <returns>The decremented value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static uint DecrementValue(this Pointer<uint> pointer) => AtomicUInt32.DecrementAndGet(ref pointer.Value);
+
+        /// <summary>
+        /// Sets a value located in the memory at the address specified by pointer to a specified value as an atomic operation.
+        /// </summary>
+        /// <param name="pointer">A pointer to a value to be modified.</param>
+        /// <param name="update">The value to which the memory is set.</param>
+        /// <returns>The original value in the memory.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static uint GetAndSetValue(this Pointer<uint> pointer, uint update) => AtomicUInt32.GetAndSet(ref pointer.Value, update);
+
+        /// <summary>
+        /// Adds two integers and replaces the first integer with the sum, as an atomic operation.
+        /// </summary>
+        /// <param name="pointer">A pointer to a value to be modified.</param>
+        /// <param name="value">The value to be added to the integer located in the memory at the address specified by pointer.</param>
+        /// <returns>The new value stored at memory address.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static uint AddValue(this Pointer<uint> pointer, uint value) => AtomicUInt32.Add(ref pointer.Value, value);
+
+        /// <summary>
+        /// Compares two 64-bit signed integers for equality and, if they are equal, replaces the first value.
+        /// </summary>
+        /// <param name="pointer">A pointer to a value to be modified.</param>
+        /// <param name="value">The value that replaces the destination value if the comparison results in equality.</param>
+        /// <param name="comparand">The value that is compared to the value at the memory address.</param>
+        /// <returns>The original value that was in the memory before.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static uint CompareExchangeValue(this Pointer<uint> pointer, uint value, uint comparand) => Interlocked.CompareExchange(ref pointer.Value, value, comparand);
+
+        /// <summary>
+        /// Atomically sets a value located at the specified address in the memory to the given updated value if the current value == the expected value.
+        /// </summary>
+        /// <param name="pointer">A pointer to a value to be modified.</param>
+        /// <param name="expected">The expected value.</param>
+        /// <param name="update">The new value.</param>
+        /// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static bool CompareAndSetValue(this Pointer<uint> pointer, uint expected, uint update) => AtomicUInt32.CompareAndSet(ref pointer.Value, expected, update);
+
+        /// <summary>
+        /// Atomically updates the current value referenced by pointer with the results of applying the given function
+        /// to the current and given values, returning the updated value.
+        /// </summary>
+        /// <remarks>
+        /// The function is applied with the current value as its first argument, and the given update as the second argument.
+        /// </remarks>
+        /// <param name="pointer">A pointer to a value to be modified.</param>
+        /// <param name="x">Accumulator operand.</param>
+        /// <param name="accumulator">A side-effect-free function of two arguments.</param>
+        /// <returns>The updated value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static uint AccumulateAndGetValue(this Pointer<uint> pointer, uint x, Func<uint, uint, uint> accumulator) => AtomicUInt32.AccumulateAndGet(ref pointer.Value, x, accumulator);
+
+        /// <summary>
+        /// Atomically updates the current value referenced by pointer with the results of applying the given function
+        /// to the current and given values, returning the updated value.
+        /// </summary>
+        /// <remarks>
+        /// The function is applied with the current value as its first argument, and the given update as the second argument.
+        /// </remarks>
+        /// <param name="pointer">A pointer to a value to be modified.</param>
+        /// <param name="x">Accumulator operand.</param>
+        /// <param name="accumulator">A side-effect-free function of two arguments.</param>
+        /// <returns>The updated value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static uint AccumulateAndGetValue(this Pointer<uint> pointer, uint x, in ValueFunc<uint, uint, uint> accumulator) => AtomicUInt32.AccumulateAndGet(ref pointer.Value, x, in accumulator);
+
+        /// <summary>
+        /// Atomically updates the current value referenced by pointer with the results of applying the given function
+        /// to the current and given values, returning the original value.
+        /// </summary>
+        /// <remarks>
+        /// The function is applied with the current value as its first argument, and the given update as the second argument.
+        /// </remarks>
+        /// <param name="pointer">A pointer to a value to be modified.</param>
+        /// <param name="x">Accumulator operand.</param>
+        /// <param name="accumulator">A side-effect-free function of two arguments.</param>
+        /// <returns>The original value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static uint GetAndAccumulateValue(this Pointer<uint> pointer, uint x, Func<uint, uint, uint> accumulator) => AtomicUInt32.GetAndAccumulate(ref pointer.Value, x, accumulator);
+
+        /// <summary>
+        /// Atomically updates the current value referenced by pointer with the results of applying the given function
+        /// to the current and given values, returning the original value.
+        /// </summary>
+        /// <remarks>
+        /// The function is applied with the current value as its first argument, and the given update as the second argument.
+        /// </remarks>
+        /// <param name="pointer">A pointer to a value to be modified.</param>
+        /// <param name="x">Accumulator operand.</param>
+        /// <param name="accumulator">A side-effect-free function of two arguments.</param>
+        /// <returns>The original value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static uint GetAndAccumulateValue(this Pointer<uint> pointer, uint x, in ValueFunc<uint, uint, uint> accumulator) => AtomicUInt32.GetAndAccumulate(ref pointer.Value, x, in accumulator);
+
+        /// <summary>
+        /// Atomically updates the value referenced by pointer with the results
+        /// of applying the given function, returning the updated value.
+        /// </summary>
+        /// <param name="pointer">A pointer to a value to be modified.</param>
+        /// <param name="updater">A side-effect-free function.</param>
+        /// <returns>The updated value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static uint UpdateAndGetValue(this Pointer<uint> pointer, Func<uint, uint> updater) => AtomicUInt32.UpdateAndGet(ref pointer.Value, updater);
+
+        /// <summary>
+        /// Atomically updates the value referenced by pointer with the results
+        /// of applying the given function, returning the updated value.
+        /// </summary>
+        /// <param name="pointer">A pointer to a value to be modified.</param>
+        /// <param name="updater">A side-effect-free function.</param>
+        /// <returns>The updated value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static uint UpdateAndGetValue(this Pointer<uint> pointer, in ValueFunc<uint, uint> updater) => AtomicUInt32.UpdateAndGet(ref pointer.Value, in updater);
+
+        /// <summary>
+        /// Atomically updates the value referenced by pointer with the results
+        /// of applying the given function, returning the original value.
+        /// </summary>
+        /// <param name="pointer">A pointer to a value to be modified.</param>
+        /// <param name="updater">A side-effect-free function.</param>
+        /// <returns>The original value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static uint GetAndUpdateValue(this Pointer<uint> pointer, Func<uint, uint> updater) => AtomicUInt32.GetAndUpdate(ref pointer.Value, updater);
+
+        /// <summary>
+        /// Atomically updates the value referenced by pointer with the results
+        /// of applying the given function, returning the original value.
+        /// </summary>
+        /// <param name="pointer">A pointer to a value to be modified.</param>
+        /// <param name="updater">A side-effect-free function.</param>
+        /// <returns>The original value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static uint GetAndUpdateValue(this Pointer<uint> pointer, in ValueFunc<uint, uint> updater) => AtomicUInt32.GetAndUpdate(ref pointer.Value, in updater);
+#endif
     }
 }
