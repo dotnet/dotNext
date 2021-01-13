@@ -453,6 +453,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private HttpContent CreateContentProvider()
             => optimizedTransfer ? new OctetStreamLogEntriesWriter(in entries) : new MultipartLogEntriesWriter(in entries);
 
-        Task<Result<bool>> IHttpMessageReader<Result<bool>>.ParseResponse(HttpResponseMessage response, CancellationToken token) => ParseBoolResponse(response);
+        Task<Result<bool>> IHttpMessageReader<Result<bool>>.ParseResponse(HttpResponseMessage response, CancellationToken token) => ParseBoolResponse(response, token);
     }
 }
