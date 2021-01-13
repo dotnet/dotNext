@@ -119,6 +119,56 @@ namespace DotNext.Runtime.InteropServices
             Equal(1, array[1]);
         }
 
+#if !NETCOREAPP3_1
+        [Fact]
+        public static unsafe void VolatileReadWriteUInt64()
+        {
+            Pointer<ulong> ptr = stackalloc ulong[3];
+            ptr.VolatileWrite(1);
+            Equal(1UL, ptr.Value);
+            Equal(1UL, ptr.Get());
+            ptr.AddValue(10);
+            Equal(11UL, ptr.Value);
+            Equal(11UL, ptr.Get());
+            Equal(11UL, ptr.VolatileRead());
+            ptr.DecrementValue();
+            Equal(10UL, ptr.Value);
+            Equal(10UL, ptr.VolatileRead());
+            True(ptr.CompareAndSetValue(10, 12));
+            Equal(12UL, ptr.Value);
+            False(ptr.CompareAndSetValue(10, 20));
+            Equal(12UL, ptr.Value);
+            Func<ulong, ulong, ulong> sum = static (x, y) => x + y;
+            Equal(32UL, ptr.AccumulateAndGetValue(20L, sum));
+            Equal(32UL, ptr.Value);
+            Equal(32UL, ptr.GetAndAccumulateValue(8L, sum));
+            Equal(40UL, ptr.Value);
+        }
+
+        [Fact]
+        public static unsafe void VolatileReadWriteUInt32()
+        {
+            Pointer<uint> ptr = stackalloc uint[3];
+            ptr.VolatileWrite(1);
+            Equal(1U, ptr.Value);
+            ptr.AddValue(10);
+            Equal(11U, ptr.Value);
+            Equal(11U, ptr.VolatileRead());
+            ptr.DecrementValue();
+            Equal(10U, ptr.Value);
+            Equal(10U, ptr.VolatileRead());
+            True(ptr.CompareAndSetValue(10, 12));
+            Equal(12U, ptr.Value);
+            False(ptr.CompareAndSetValue(10, 20));
+            Equal(12U, ptr.Value);
+            Func<uint, uint, uint> sum = static (x, y) => x + y;
+            Equal(32U, ptr.AccumulateAndGetValue(20, sum));
+            Equal(32U, ptr.Value);
+            Equal(32U, ptr.GetAndAccumulateValue(8, sum));
+            Equal(40U, ptr.Value);
+        }
+#endif
+
         [Fact]
         public static unsafe void VolatileReadWriteInt64()
         {
@@ -137,7 +187,7 @@ namespace DotNext.Runtime.InteropServices
             Equal(12, ptr.Value);
             False(ptr.CompareAndSetValue(10, 20));
             Equal(12, ptr.Value);
-            Func<long, long, long> sum = (x, y) => x + y;
+            Func<long, long, long> sum = static (x, y) => x + y;
             Equal(32L, ptr.AccumulateAndGetValue(20L, sum));
             Equal(32L, ptr.Value);
             Equal(32L, ptr.GetAndAccumulateValue(8L, sum));
@@ -160,7 +210,7 @@ namespace DotNext.Runtime.InteropServices
             Equal(12, ptr.Value);
             False(ptr.CompareAndSetValue(10, 20));
             Equal(12, ptr.Value);
-            Func<int, int, int> sum = (x, y) => x + y;
+            Func<int, int, int> sum = static (x, y) => x + y;
             Equal(32, ptr.AccumulateAndGetValue(20, sum));
             Equal(32, ptr.Value);
             Equal(32, ptr.GetAndAccumulateValue(8, sum));
@@ -224,32 +274,6 @@ namespace DotNext.Runtime.InteropServices
             Equal(12D, ptr.Value);
             False(ptr.CompareAndSetValue(10D, 20D));
             Equal(12D, ptr.Value);
-        }
-
-        [Fact]
-        public static unsafe void VolatileReadWriteUInt64()
-        {
-            Pointer<ulong> ptr = stackalloc ulong[3];
-            ptr.VolatileWrite(1UL);
-            Equal(1UL, ptr.Value);
-            Equal(1UL, ptr.Get());
-            ptr.Value += 10UL;
-            Equal(11UL, ptr.Value);
-            Equal(11UL, ptr.Get());
-            Equal(11UL, ptr.VolatileRead());
-        }
-
-        [Fact]
-        public static unsafe void VolatileReadWriteUInt32()
-        {
-            Pointer<uint> ptr = stackalloc uint[3];
-            ptr.VolatileWrite(1U);
-            Equal(1U, ptr.Value);
-            Equal(1U, ptr.Get());
-            ptr.Value += 10U;
-            Equal(11UL, ptr.Value);
-            Equal(11UL, ptr.Get());
-            Equal(11UL, ptr.VolatileRead());
         }
 
         [Fact]
