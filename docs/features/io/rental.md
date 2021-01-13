@@ -72,3 +72,6 @@ writeStream.Write(new byte[1024]);
 // read bytes using stream
 using Stream readStream = StreamSource.AsStream(writer.WrittenMemory);
 ```
+
+# Tuning
+Many operations in .NEXT use stack-allocated memory in combination with `MemoryRental<T>` type for better performance. It's possible to configure the size of stack-allocated memory used as initial buffer using `DOTNEXT_STACK_ALLOC_THRESHOLD` environment variable. By default, it is equal to _512_ bytes. It means that if the size of the data inside of I/O operations is less that this value then stack memory will be used. Otherwise, the buffer will be rented from the pool.
