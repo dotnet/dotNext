@@ -159,6 +159,104 @@ namespace DotNext.Threading
             Equal(52, array.VolatileRead(0L));
         }
 
+#if !NETCOREAPP3_1
+        [Fact]
+        public static void AtomicUIntTest()
+        {
+            uint i = 10U;
+            Equal(11U, i.IncrementAndGet());
+            Equal(10U, i.DecrementAndGet());
+            i = 20U;
+            True(i.CompareAndSet(20U, 30U));
+            Equal(30U, i);
+            False(i.CompareAndSet(20U, 50U));
+            Equal(30U, i);
+            Equal(80U, i.Add(50U));
+            Equal(80U, i);
+            Equal(80U, i.GetAndAccumulate(10, static (x, y) => x + y));
+            Equal(90U, i);
+            Equal(10U, i.AccumulateAndGet(80, static (x, y) => x - y));
+            Equal(10U, i);
+            Equal(10U, i.GetAndSet(25U));
+            Equal(25U, i);
+            Equal(42U, i.UpdateAndGet(static current => 42U));
+            Equal(42U, i.GetAndUpdate(static current => 52U));
+            Equal(52U, i);
+        }
+
+        [Fact]
+        public static void AtomicUIntArray()
+        {
+            uint[] array = { 10U };
+            Equal(11U, array.IncrementAndGet(0L));
+            Equal(10U, array.DecrementAndGet(0L));
+            array.VolatileWrite(0L, 20U);
+            True(array.CompareAndSet(0L, 20U, 30U));
+            Equal(30U, array.VolatileRead(0L));
+            False(array.CompareAndSet(0L, 20U, 50U));
+            Equal(30U, array.VolatileRead(0L));
+            Equal(80U, array.Add(0L, 50U));
+            Equal(80U, array.VolatileRead(0L));
+            Equal(80U, array.GetAndAccumulate(0L, 10U, static (x, y) => x + y));
+            Equal(90U, array.VolatileRead(0L));
+            Equal(10U, array.AccumulateAndGet(0L, 80U, static (x, y) => x - y));
+            Equal(10U, array.VolatileRead(0L));
+            Equal(10U, array.GetAndSet(0L, 25U));
+            Equal(25U, array.VolatileRead(0L));
+            Equal(42U, array.UpdateAndGet(0L, static current => 42U));
+            Equal(42U, array.GetAndUpdate(0L, static current => 52U));
+            Equal(52U, array.VolatileRead(0L));
+        }
+
+        [Fact]
+        public static void AtomicULongTest()
+        {
+            ulong i = 10UL;
+            Equal(11UL, i.IncrementAndGet());
+            Equal(10UL, i.DecrementAndGet());
+            i = 20UL;
+            True(i.CompareAndSet(20UL, 30UL));
+            Equal(30UL, i);
+            False(i.CompareAndSet(20UL, 50UL));
+            Equal(30UL, i);
+            Equal(80UL, i.Add(50UL));
+            Equal(80UL, i);
+            Equal(80UL, i.GetAndAccumulate(10UL, static (x, y) => x + y));
+            Equal(90UL, i);
+            Equal(10UL, i.AccumulateAndGet(80UL, static (x, y) => x - y));
+            Equal(10UL, i);
+            Equal(10UL, i.GetAndSet(25UL));
+            Equal(25UL, i);
+            Equal(42UL, i.UpdateAndGet(static current => 42UL));
+            Equal(42UL, i.GetAndUpdate(static current => 52UL));
+            Equal(52UL, i);
+        }
+
+        [Fact]
+        public static void AtomicULongArray()
+        {
+            ulong[] array = { 10UL };
+            Equal(11UL, array.IncrementAndGet(0L));
+            Equal(10UL, array.DecrementAndGet(0L));
+            array.VolatileWrite(0L, 20UL);
+            True(array.CompareAndSet(0L, 20UL, 30UL));
+            Equal(30UL, array.VolatileRead(0L));
+            False(array.CompareAndSet(0L, 20UL, 50UL));
+            Equal(30UL, array.VolatileRead(0L));
+            Equal(80UL, array.Add(0L, 50UL));
+            Equal(80UL, array.VolatileRead(0L));
+            Equal(80UL, array.GetAndAccumulate(0L, 10UL, static (x, y) => x + y));
+            Equal(90UL, array.VolatileRead(0L));
+            Equal(10UL, array.AccumulateAndGet(0L, 80UL, static (x, y) => x - y));
+            Equal(10UL, array.VolatileRead(0L));
+            Equal(10UL, array.GetAndSet(0L, 25UL));
+            Equal(25UL, array.VolatileRead(0L));
+            Equal(42UL, array.UpdateAndGet(0L, static current => 42UL));
+            Equal(42UL, array.GetAndUpdate(0L, static current => 52UL));
+            Equal(52UL, array.VolatileRead(0L));
+        }
+#endif
+
         [Fact]
         public static void AtomicLongTest()
         {
