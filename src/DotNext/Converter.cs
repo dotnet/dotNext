@@ -85,15 +85,5 @@ namespace DotNext
 
             return result;
         }
-
-        /// <summary>
-        /// Converts <see cref="Converter{TInput, TOutput}"/> into <see cref="ValueFunc{T, R}"/>.
-        /// </summary>
-        /// <typeparam name="TInput">The type of object that is to be converted.</typeparam>
-        /// <typeparam name="TOutput">The result of conversion.</typeparam>
-        /// <param name="converter">The type the input object is to be converted to.</param>
-        /// <returns>The value delegate representing converter.</returns>
-        public static ValueFunc<TInput, TOutput> AsValueFunc<TInput, TOutput>(this Converter<TInput, TOutput> converter)
-            => new ValueFunc<TInput, TOutput>(Unsafe.As<Func<TInput, TOutput>>(converter));
     }
 }

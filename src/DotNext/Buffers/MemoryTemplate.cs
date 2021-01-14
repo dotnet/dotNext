@@ -1,5 +1,6 @@
 using System;
 using System.Buffers;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -30,6 +31,43 @@ namespace DotNext.Buffers
             internal Placeholder? Next;
 
             internal Placeholder(int offset) => Offset = offset;
+        }
+
+        [StructLayout(LayoutKind.Auto)]
+        private readonly struct BufferConsumer<TWriter> : IReadOnlySpanConsumer<T>, IConsumer<int>
+            where TWriter : class, IBufferWriter<T>
+        {
+            private readonly TWriter buffer;
+            private readonly Action<int, TWriter> rewriter;
+
+            internal BufferConsumer(TWriter buffer, Action<int, TWriter> rewriter)
+            {
+                this.buffer = buffer;
+                this.rewriter = rewriter;
+            }
+
+            void IReadOnlySpanConsumer<T>.Invoke(ReadOnlySpan<T> input) => buffer.Write(input);
+
+            void IConsumer<int>.Invoke(int index) => rewriter(index, buffer);
+        }
+
+        [StructLayout(LayoutKind.Auto)]
+        private readonly struct DelegatingConsumer<TArg> : IReadOnlySpanConsumer<T>, IConsumer<int>
+        {
+            private readonly ReadOnlySpanAction<T, TArg> output;
+            private readonly Action<int, TArg> rewriter;
+            private readonly TArg state;
+
+            internal DelegatingConsumer(ReadOnlySpanAction<T, TArg> output, Action<int, TArg> rewriter, TArg state)
+            {
+                this.output = output;
+                this.rewriter = rewriter;
+                this.state = state;
+            }
+
+            void IReadOnlySpanConsumer<T>.Invoke(ReadOnlySpan<T> input) => output(input, state);
+
+            void IConsumer<int>.Invoke(int index) => rewriter(index, state);
         }
 
         private readonly ReadOnlyMemory<T> template;
@@ -97,15 +135,38 @@ namespace DotNext.Buffers
         /// <summary>
         /// Replaces all placeholders in the template with custom content.
         /// </summary>
+        /// <param name="consumer">The consumer of the rendered content.</param>
+        /// <typeparam name="TConsumer">The type of the consumer.</typeparam>
+        public void Render<TConsumer>(TConsumer consumer)
+            where TConsumer : notnull, IReadOnlySpanConsumer<T>, IConsumer<int>
+        {
+            ReadOnlySpan<T> source = template.Span;
+            var placeholder = firstOccurence;
+            for (int cursor = 0, offset = 0, index = 0; MoveNext(ref cursor, ref placeholder, out var isPlaceholder); offset = cursor)
+            {
+                if (isPlaceholder)
+                {
+                    consumer.Invoke(index++);
+                }
+                else
+                {
+                    consumer.Invoke(source.Slice(offset, cursor - offset));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Replaces all placeholders in the template with custom content.
+        /// </summary>
         /// <param name="output">The buffer writer used to build rendered content.</param>
         /// <param name="rewriter">
         /// The action responsible for replacing placeholder with custom content.
         /// The first argument of the action indicates placeholder index.
         /// </param>
         /// <typeparam name="TWriter">The type of the buffer writer.</typeparam>
-        public unsafe void Render<TWriter>(TWriter output, Action<int, TWriter> rewriter)
+        public void Render<TWriter>(TWriter output, Action<int, TWriter> rewriter)
             where TWriter : class, IBufferWriter<T>
-            => Render(output, rewriter, new (&Span.CopyTo<T>));
+            => Render(new BufferConsumer<TWriter>(output ?? throw new ArgumentNullException(nameof(output)), rewriter ?? throw new ArgumentNullException(nameof(rewriter))));
 
         /// <summary>
         /// Replaces all placeholders in the template with custom content.
@@ -117,22 +178,8 @@ namespace DotNext.Buffers
         /// </param>
         /// <param name="output">The action responsible for writing unmodified segments from the original template.</param>
         /// <typeparam name="TArg">The type of the argument to be passed to <paramref name="rewriter"/> and <paramref name="output"/>.</typeparam>
-        public void Render<TArg>(TArg arg, Action<int, TArg> rewriter, in ValueReadOnlySpanAction<T, TArg> output)
-        {
-            ReadOnlySpan<T> source = template.Span;
-            var placeholder = firstOccurence;
-            for (int cursor = 0, offset = 0, index = 0; MoveNext(ref cursor, ref placeholder, out var isPlaceholder); offset = cursor)
-            {
-                if (isPlaceholder)
-                {
-                    rewriter(index++, arg);
-                }
-                else
-                {
-                    output.Invoke(source.Slice(offset, cursor - offset), arg);
-                }
-            }
-        }
+        public void Render<TArg>(TArg arg, Action<int, TArg> rewriter, ReadOnlySpanAction<T, TArg> output)
+            => Render(new DelegatingConsumer<TArg>(output, rewriter, arg));
 
         private bool MoveNext(ref int offset, ref Placeholder? placeholder, out bool isPlaceholder)
         {
@@ -168,8 +215,56 @@ namespace DotNext.Buffers
     /// </summary>
     public static class MemoryTemplate
     {
-        private static void Rewrite(this string[] replacement, int index, StringBuilder output)
-            => output.Append(replacement[index]);
+        [StructLayout(LayoutKind.Auto)]
+        private readonly struct StringBuilderRenderer: IReadOnlySpanConsumer<char>, IConsumer<int>
+        {
+            private readonly IReadOnlyList<string> replacement;
+            private readonly StringBuilder output;
+
+            internal StringBuilderRenderer(StringBuilder output, IReadOnlyList<string> replacement)
+            {
+                this.output = output;
+                this.replacement = replacement;
+            }
+
+            void IReadOnlySpanConsumer<char>.Invoke(ReadOnlySpan<char> input) => output.Append(input);
+
+            void IConsumer<int>.Invoke(int index) => output.Append(replacement[index]);
+        }
+
+        [StructLayout(LayoutKind.Auto)]
+        private readonly struct CharBufferRenderer: IReadOnlySpanConsumer<char>, IConsumer<int>
+        {
+            private readonly IReadOnlyList<string> replacement;
+            private readonly IBufferWriter<char> output;
+
+            internal CharBufferRenderer(IBufferWriter<char> output, IReadOnlyList<string> replacement)
+            {
+                this.output = output;
+                this.replacement = replacement;
+            }
+
+            void IReadOnlySpanConsumer<char>.Invoke(ReadOnlySpan<char> input) => output.Write(input);
+
+            void IConsumer<int>.Invoke(int index) => output.Write(replacement[index]);
+        }
+
+        [StructLayout(LayoutKind.Auto)]
+        private readonly struct TextRenderer: IReadOnlySpanConsumer<char>, IConsumer<int>
+        {
+            private readonly IReadOnlyList<string> replacement;
+            private readonly TextWriter output;
+
+            internal TextRenderer(TextWriter output, IReadOnlyList<string> replacement)
+            {
+                this.output = output;
+                this.replacement = replacement;
+            }
+
+            void IReadOnlySpanConsumer<char>.Invoke(ReadOnlySpan<char> input) => output.Write(input);
+
+            void IConsumer<int>.Invoke(int index) => output.Write(replacement[index]);
+        }
 
         /// <summary>
         /// Replaces all occurences of placeholders in the template with
@@ -178,11 +273,8 @@ namespace DotNext.Buffers
         /// <param name="template">The string template.</param>
         /// <param name="output">The string builder used to write rendered template.</param>
         /// <param name="replacement">An array of actual values used to replace placeholders.</param>
-        public static unsafe void Render(this in MemoryTemplate<char> template, StringBuilder output, params string[] replacement)
-            => template.Render(output, replacement.Rewrite, new (&Span.CopyTo));
-
-        private static void Rewrite(this string[] replacement, int index, IBufferWriter<char> output)
-            => output.Write(replacement[index]);
+        public static void Render(this in MemoryTemplate<char> template, StringBuilder output, params string[] replacement)
+            => template.Render(new StringBuilderRenderer(output, replacement));
 
         /// <summary>
         /// Replaces all occurences of placeholders in the template with
@@ -194,12 +286,9 @@ namespace DotNext.Buffers
         public static string Render(this in MemoryTemplate<char> template, params string[] replacement)
         {
             using var writer = new PooledArrayBufferWriter<char>(template.Value.Length);
-            template.Render(writer, replacement.Rewrite);
+            template.Render(new CharBufferRenderer(writer, replacement));
             return new string(writer.WrittenArray);
         }
-
-        private static void Rewrite(this string[] replacement, int index, TextWriter output)
-            => output.Write(replacement[index]);
 
         /// <summary>
         /// Replaces all occurences of placeholders in the template with
@@ -209,6 +298,6 @@ namespace DotNext.Buffers
         /// <param name="output">The text writer used to write rendered template.</param>
         /// <param name="replacement">An array of actual values used to replace placeholders.</param>
         public static unsafe void Render(this in MemoryTemplate<char> template, TextWriter output, params string[] replacement)
-            => template.Render(output, replacement.Rewrite, new (&Span.CopyTo));
+            => template.Render(new TextRenderer(output, replacement));
     }
 }

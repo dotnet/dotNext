@@ -169,7 +169,8 @@ namespace DotNext.Threading
 #if !NETSTANDARD2_1
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
 #endif
-        private (TEnum OldValue, TEnum NewValue) Update(in ValueFunc<TEnum, TEnum> updater)
+        private (TEnum OldValue, TEnum NewValue) Update<TUpdater>(TUpdater updater)
+            where TUpdater : struct, ISupplier<TEnum, TEnum>
         {
             TEnum oldValue, newValue;
             do
@@ -183,7 +184,8 @@ namespace DotNext.Threading
 #if !NETSTANDARD2_1
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
 #endif
-        private (TEnum OldValue, TEnum NewValue) Accumulate(TEnum x, in ValueFunc<TEnum, TEnum, TEnum> accumulator)
+        private (TEnum OldValue, TEnum NewValue) Accumulate<TAccumulator>(TEnum x, TAccumulator accumulator)
+            where TAccumulator : struct, ISupplier<TEnum, TEnum, TEnum>
         {
             TEnum oldValue, newValue;
             do
@@ -205,7 +207,7 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <returns>The updated value.</returns>
         public TEnum AccumulateAndGet(TEnum x, Func<TEnum, TEnum, TEnum> accumulator)
-            => AccumulateAndGet(x, new ValueFunc<TEnum, TEnum, TEnum>(accumulator));
+            => Accumulate<DelegatingSupplier<TEnum, TEnum, TEnum>>(x, accumulator).NewValue;
 
         /// <summary>
         /// Atomically updates the current value with the results of applying the given function
@@ -217,8 +219,9 @@ namespace DotNext.Threading
         /// <param name="x">Accumulator operand.</param>
         /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <returns>The updated value.</returns>
-        public TEnum AccumulateAndGet(TEnum x, in ValueFunc<TEnum, TEnum, TEnum> accumulator)
-            => Accumulate(x, accumulator).NewValue;
+        [CLSCompliant(false)]
+        public unsafe TEnum AccumulateAndGet(TEnum x, delegate*<TEnum, TEnum, TEnum> accumulator)
+            => Accumulate<Supplier<TEnum, TEnum, TEnum>>(x, accumulator).NewValue;
 
         /// <summary>
         /// Atomically updates the current value with the results of applying the given function
@@ -231,7 +234,7 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <returns>The original value.</returns>
         public TEnum GetAndAccumulate(TEnum x, Func<TEnum, TEnum, TEnum> accumulator)
-            => GetAndAccumulate(x, new ValueFunc<TEnum, TEnum, TEnum>(accumulator));
+            => Accumulate<DelegatingSupplier<TEnum, TEnum, TEnum>>(x, accumulator).OldValue;
 
         /// <summary>
         /// Atomically updates the current value with the results of applying the given function
@@ -243,8 +246,9 @@ namespace DotNext.Threading
         /// <param name="x">Accumulator operand.</param>
         /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <returns>The original value.</returns>
-        public TEnum GetAndAccumulate(TEnum x, in ValueFunc<TEnum, TEnum, TEnum> accumulator)
-            => Accumulate(x, accumulator).OldValue;
+        [CLSCompliant(false)]
+        public unsafe TEnum GetAndAccumulate(TEnum x, delegate*<TEnum, TEnum, TEnum> accumulator)
+            => Accumulate<Supplier<TEnum, TEnum, TEnum>>(x, accumulator).OldValue;
 
         /// <summary>
         /// Atomically updates the stored value with the results
@@ -253,7 +257,7 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function.</param>
         /// <returns>The updated value.</returns>
         public TEnum UpdateAndGet(Func<TEnum, TEnum> updater)
-            => UpdateAndGet(new ValueFunc<TEnum, TEnum>(updater));
+            => Update<DelegatingSupplier<TEnum, TEnum>>(updater).NewValue;
 
         /// <summary>
         /// Atomically updates the stored value with the results
@@ -261,8 +265,9 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="updater">A side-effect-free function.</param>
         /// <returns>The updated value.</returns>
-        public TEnum UpdateAndGet(in ValueFunc<TEnum, TEnum> updater)
-            => Update(updater).NewValue;
+        [CLSCompliant(false)]
+        public unsafe TEnum UpdateAndGet(delegate*<TEnum, TEnum> updater)
+            => Update<Supplier<TEnum, TEnum>>(updater).NewValue;
 
         /// <summary>
         /// Atomically updates the stored value with the results
@@ -271,7 +276,7 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function.</param>
         /// <returns>The original value.</returns>
         public TEnum GetAndUpdate(Func<TEnum, TEnum> updater)
-            => GetAndUpdate(new ValueFunc<TEnum, TEnum>(updater));
+            => Update<DelegatingSupplier<TEnum, TEnum>>(updater).OldValue;
 
         /// <summary>
         /// Atomically updates the stored value with the results
@@ -279,8 +284,9 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="updater">A side-effect-free function.</param>
         /// <returns>The original value.</returns>
-        public TEnum GetAndUpdate(in ValueFunc<TEnum, TEnum> updater)
-            => Update(updater).OldValue;
+        [CLSCompliant(false)]
+        public unsafe TEnum GetAndUpdate(delegate*<TEnum, TEnum> updater)
+            => Update<Supplier<TEnum, TEnum>>(updater).OldValue;
 
         /// <summary>
         /// Determines whether stored value is equal to

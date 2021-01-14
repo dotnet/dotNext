@@ -9,15 +9,6 @@ namespace DotNext
     public static class Comparison
     {
         /// <summary>
-        /// Converts comparison method into <see cref="ValueFunc{T1, T2, R}"/>.
-        /// </summary>
-        /// <typeparam name="T">The type of the object to compare.</typeparam>
-        /// <param name="comparison">The delegate representing comparison method.</param>
-        /// <returns>The value delegate represeting comparison method.</returns>
-        public static ValueFunc<T, T, int> AsValueFunc<T>(this Comparison<T> comparison)
-            => new ValueFunc<T, T, int>(Unsafe.As<Func<T, T, int>>(comparison));
-
-        /// <summary>
         /// Restricts a <paramref name="value" /> in specific range.
         /// </summary>
         /// <typeparam name="T">Type of the values.</typeparam>

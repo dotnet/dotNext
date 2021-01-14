@@ -16,18 +16,24 @@ namespace DotNext.Runtime
     /// </summary>
     public static class Intrinsics
     {
-        private static class FNV1a32
+        [StructLayout(LayoutKind.Auto)]
+        private readonly struct FNV1a32 : ISupplier<int, int, int>
         {
             internal const int Offset = unchecked((int)2166136261);
             private const int Prime = 16777619;
 
+            int ISupplier<int, int, int>.Invoke(int hash, int data) => GetHashCode(hash, data);
+
             internal static int GetHashCode(int hash, int data) => (hash ^ data) * Prime;
         }
 
-        private static class FNV1a64
+        [StructLayout(LayoutKind.Auto)]
+        private readonly struct FNV1a64 : ISupplier<long, long, long>
         {
             internal const long Offset = unchecked((long)14695981039346656037);
             private const long Prime = 1099511628211;
+
+            long ISupplier<long, long, long>.Invoke(long hash, long data) => GetHashCode(hash, data);
 
             internal static long GetHashCode(long hash, long data) => (hash ^ data) * Prime;
         }
@@ -549,7 +555,8 @@ namespace DotNext.Runtime
 #if !NETSTANDARD2_1
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
 #endif
-        internal static unsafe long GetHashCode64([In] ref byte source, long length, long hash, in ValueFunc<long, long, long> hashFunction, bool salted)
+        internal static unsafe long GetHashCode64<THashFunction>([In] ref byte source, long length, long hash, THashFunction hashFunction, bool salted)
+            where THashFunction : struct, ISupplier<long, long, long>
         {
             switch (length)
             {
@@ -581,41 +588,8 @@ namespace DotNext.Runtime
             return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
         }
 
-#if !NETSTANDARD2_1
-        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-#endif
         internal static unsafe long GetHashCode64([In] ref byte source, long length, bool salted)
-        {
-            var hash = FNV1a64.Offset;
-            switch (length)
-            {
-                default:
-                    for (; length >= sizeof(long); source = ref source.Advance<long>(&length))
-                        hash = FNV1a64.GetHashCode(hash, Unsafe.ReadUnaligned<long>(ref source));
-                    for (; length > 0L; source = ref source.Advance<byte>(&length))
-                        hash = FNV1a64.GetHashCode(hash, source);
-                    break;
-                case 0L:
-                    break;
-                case sizeof(byte):
-                    hash = FNV1a64.GetHashCode(hash, source);
-                    break;
-                case sizeof(ushort):
-                    hash = FNV1a64.GetHashCode(hash, Unsafe.ReadUnaligned<ushort>(ref source));
-                    break;
-                case 3:
-                    goto default;
-                case sizeof(uint):
-                    hash = FNV1a64.GetHashCode(hash, Unsafe.ReadUnaligned<uint>(ref source));
-                    break;
-                case 5:
-                case 6:
-                case 7:
-                    goto default;
-            }
-
-            return salted ? FNV1a64.GetHashCode(hash, RandomExtensions.BitwiseHashSalt) : hash;
-        }
+            => GetHashCode64(ref source, length, FNV1a64.Offset, new FNV1a64(), salted);
 
         /// <summary>
         /// Computes 64-bit hash code for the vector.
@@ -674,7 +648,7 @@ namespace DotNext.Runtime
         /// <returns>Hash code of the memory block.</returns>
         [CLSCompliant(false)]
         public static unsafe long GetHashCode64([In] void* source, long length, long hash, Func<long, long, long> hashFunction, bool salted = true)
-            => GetHashCode64(source, length, hash, new ValueFunc<long, long, long>(hashFunction), salted);
+            => GetHashCode64<DelegatingSupplier<long, long, long>>(source, length, hash, hashFunction, salted);
 
         /// <summary>
         /// Computes 64-bit hash code for the block of memory, 64-bit version.
@@ -683,6 +657,7 @@ namespace DotNext.Runtime
         /// This method may give different value each time you run the program for
         /// the same data. To disable this behavior, pass false to <paramref name="salted"/>.
         /// </remarks>
+        /// <typeparam name="THashFunction">The type providing implementation of the hash function.</typeparam>
         /// <param name="source">A pointer to the block of memory.</param>
         /// <param name="length">Length of memory block to be hashed, in bytes.</param>
         /// <param name="hash">Initial value of the hash.</param>
@@ -690,8 +665,9 @@ namespace DotNext.Runtime
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Hash code of the memory block.</returns>
         [CLSCompliant(false)]
-        public static unsafe long GetHashCode64([In] void* source, long length, long hash, in ValueFunc<long, long, long> hashFunction, bool salted = true)
-            => GetHashCode64(ref ((byte*)source)[0], length, hash, in hashFunction, salted);
+        public static unsafe long GetHashCode64<THashFunction>([In] void* source, long length, long hash, THashFunction hashFunction, bool salted = true)
+            where THashFunction : struct, ISupplier<long, long, long>
+            => GetHashCode64(ref ((byte*)source)[0], length, hash, hashFunction, salted);
 
         /// <summary>
         /// Computes 64-bit hash code for the block of memory.
@@ -723,12 +699,13 @@ namespace DotNext.Runtime
         /// <returns>Hash code of the memory block.</returns>
         [CLSCompliant(false)]
         public static unsafe int GetHashCode32([In] void* source, long length, int hash, Func<int, int, int> hashFunction, bool salted = true)
-            => GetHashCode32(source, length, hash, new ValueFunc<int, int, int>(hashFunction), salted);
+            => GetHashCode32<DelegatingSupplier<int, int, int>>(source, length, hash, hashFunction, salted);
 
 #if !NETSTANDARD2_1
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
 #endif
-        internal static unsafe int GetHashCode32([In] ref byte source, long length, int hash, in ValueFunc<int, int, int> hashFunction, bool salted)
+        internal static unsafe int GetHashCode32<THashFunction>([In] ref byte source, long length, int hash, THashFunction hashFunction, bool salted)
+            where THashFunction : struct, ISupplier<int, int, int>
         {
             switch (length)
             {
@@ -751,32 +728,8 @@ namespace DotNext.Runtime
             return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
         }
 
-#if !NETSTANDARD2_1
-        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-#endif
         internal static unsafe int GetHashCode32([In] ref byte source, long length, bool salted)
-        {
-            var hash = FNV1a32.Offset;
-            switch (length)
-            {
-                default:
-                    for (; length >= sizeof(int); source = ref source.Advance<int>(&length))
-                        hash = FNV1a32.GetHashCode(hash, Unsafe.ReadUnaligned<int>(ref source));
-                    for (; length > 0L; source = ref source.Advance<byte>(&length))
-                        hash = FNV1a32.GetHashCode(hash, source);
-                    break;
-                case 0L:
-                    break;
-                case sizeof(byte):
-                    hash = FNV1a32.GetHashCode(hash, source);
-                    break;
-                case sizeof(ushort):
-                    hash = FNV1a32.GetHashCode(hash, Unsafe.ReadUnaligned<ushort>(ref source));
-                    break;
-            }
-
-            return salted ? FNV1a32.GetHashCode(hash, RandomExtensions.BitwiseHashSalt) : hash;
-        }
+            => GetHashCode32(ref source, length, FNV1a32.Offset, new FNV1a32(), salted);
 
         /// <summary>
         /// Computes 32-bit hash code for the block of memory.
@@ -785,6 +738,7 @@ namespace DotNext.Runtime
         /// This method may give different value each time you run the program for
         /// the same data. To disable this behavior, pass false to <paramref name="salted"/>.
         /// </remarks>
+        /// <typeparam name="THashFunction">The type providing implementation of the hash function.</typeparam>
         /// <param name="source">A pointer to the block of memory.</param>
         /// <param name="length">Length of memory block to be hashed, in bytes.</param>
         /// <param name="hash">Initial value of the hash.</param>
@@ -792,8 +746,9 @@ namespace DotNext.Runtime
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Hash code of the memory block.</returns>
         [CLSCompliant(false)]
-        public static unsafe int GetHashCode32([In] void* source, long length, int hash, in ValueFunc<int, int, int> hashFunction, bool salted = true)
-            => GetHashCode32(ref ((byte*)source)[0], length, hash, in hashFunction, salted);
+        public static unsafe int GetHashCode32<THashFunction>([In] void* source, long length, int hash, THashFunction hashFunction, bool salted = true)
+            where THashFunction : struct, ISupplier<int, int, int>
+            => GetHashCode32(ref ((byte*)source)[0], length, hash, hashFunction, salted);
 
         /// <summary>
         /// Computes 32-bit hash code for the block of memory.

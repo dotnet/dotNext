@@ -8,16 +8,15 @@ namespace DotNext.IO
     using Buffers;
     using static Threading.Tasks.Continuation;
 
-    internal sealed class MemoryWriterStream<TArg> : WriterStream<TArg>
+    internal sealed class AsyncWriterStream<TOutput> : WriterStream<TOutput>
+        where TOutput : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>, IFlushable
     {
         private const int DefaultTimeout = 4000;
-        private readonly Func<ReadOnlyMemory<byte>, TArg, CancellationToken, ValueTask> writer;
         private int timeout;
 
-        internal MemoryWriterStream(Func<ReadOnlyMemory<byte>, TArg, CancellationToken, ValueTask> writer, TArg arg, Action<TArg>? flush, Func<TArg, CancellationToken, Task>? flushAsync)
-            : base(arg, flush, flushAsync)
+        internal AsyncWriterStream(TOutput output)
+            : base(output)
         {
-            this.writer = writer ?? throw new ArgumentNullException(nameof(writer));
             timeout = DefaultTimeout;
         }
 
@@ -31,7 +30,7 @@ namespace DotNext.IO
 
         public override async ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken token)
         {
-            await writer(buffer, argument, token).ConfigureAwait(false);
+            await output.Invoke(buffer, token).ConfigureAwait(false);
             writtenBytes += buffer.Length;
         }
 

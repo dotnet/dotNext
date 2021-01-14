@@ -82,8 +82,8 @@ namespace DotNext.Buffers
             => BuffersExtensions.Write(this, input);
 
         /// <inheritdoc />
-        void IGrowableBuffer<T>.CopyTo<TState>(in ValueReadOnlySpanAction<T, TState> callback, TState state)
-            => callback.Invoke(WrittenMemory.Span, state);
+        void IGrowableBuffer<T>.CopyTo<TConsumer>(TConsumer consumer)
+            => consumer.Invoke(WrittenMemory.Span);
 
         /// <inheritdoc />
         void IGrowableBuffer<T>.Clear() => Clear();

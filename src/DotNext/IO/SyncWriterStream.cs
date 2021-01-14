@@ -4,23 +4,21 @@ using System.Threading.Tasks;
 
 namespace DotNext.IO
 {
+    using IReadOnlySpanConsumer = Buffers.IReadOnlySpanConsumer<byte>;
     using static Threading.AsyncDelegate;
 
-    internal sealed class SpanWriterStream<TArg> : WriterStream<TArg>
+    internal sealed class SyncWriterStream<TOutput> : WriterStream<TOutput>
+        where TOutput : notnull, IReadOnlySpanConsumer, IFlushable
     {
-        private readonly ValueReadOnlySpanAction<byte, TArg> writer;
-
-        internal SpanWriterStream(ValueReadOnlySpanAction<byte, TArg> writer, TArg arg, Action<TArg>? flush, Func<TArg, CancellationToken, Task>? flushAsync)
-            : base(arg, flush, flushAsync)
-            => this.writer = writer;
+        internal SyncWriterStream(TOutput output)
+            : base(output)
+        {
+        }
 
         public override void Write(ReadOnlySpan<byte> buffer)
         {
-            if (!buffer.IsEmpty)
-            {
-                writer.Invoke(buffer, argument);
-                writtenBytes += buffer.Length;
-            }
+            output.Invoke(buffer);
+            writtenBytes += buffer.Length;
         }
 
         public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken token)

@@ -6,19 +6,14 @@ using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.IO
 {
-    internal abstract class WriterStream<TArg> : Stream, IFlushable
+    internal abstract class WriterStream<TOutput> : Stream, IFlushable
+        where TOutput : notnull, IFlushable
     {
-        private protected readonly TArg argument;
-        private readonly Action<TArg>? flush;
-        private readonly Func<TArg, CancellationToken, Task>? flushAsync;
+        // not readonly to avoid defensive copying
+        private protected TOutput output;
         private protected long writtenBytes;
 
-        private protected WriterStream(TArg arg, Action<TArg>? flush, Func<TArg, CancellationToken, Task>? flushAsync)
-        {
-            this.flush = flush;
-            this.flushAsync = flushAsync;
-            argument = arg;
-        }
+        private protected WriterStream(TOutput output) => this.output = output;
 
         public sealed override bool CanRead => false;
 
@@ -66,32 +61,9 @@ namespace DotNext.IO
         public sealed override Task CopyToAsync(Stream destination, int bufferSize, CancellationToken token)
             => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.FromException(new NotSupportedException());
 
-        public sealed override void Flush()
-        {
-            if (flush is null)
-            {
-                if (flushAsync is not null)
-                    flushAsync(argument, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
-            }
-            else
-            {
-                flush(argument);
-            }
-        }
+        public sealed override void Flush() => output.Flush();
 
-        public sealed override Task FlushAsync(CancellationToken token)
-        {
-            if (flushAsync is null)
-            {
-                return flush is null ?
-                    Task.CompletedTask
-                    : Task.Factory.StartNew(() => flush(argument), token, TaskCreationOptions.None, TaskScheduler.Current);
-            }
-            else
-            {
-                return flushAsync(argument, token);
-            }
-        }
+        public sealed override Task FlushAsync(CancellationToken token) => output.FlushAsync(token);
 
         public sealed override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
             => throw new NotSupportedException();

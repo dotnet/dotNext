@@ -18,17 +18,27 @@ namespace DotNext.Collections.Generic
     public readonly struct ReadOnlyDictionaryView<TKey, TInput, TOutput> : IReadOnlyDictionary<TKey, TOutput>, IEquatable<ReadOnlyDictionaryView<TKey, TInput, TOutput>>
     {
         private readonly IReadOnlyDictionary<TKey, TInput>? source;
-        private readonly ValueFunc<TInput, TOutput> mapper;
+        private readonly Func<TInput, TOutput> mapper;
 
         /// <summary>
         /// Initializes a new lazily converted view.
         /// </summary>
         /// <param name="dictionary">Read-only dictionary to convert.</param>
         /// <param name="mapper">Value converter.</param>
-        public ReadOnlyDictionaryView(IReadOnlyDictionary<TKey, TInput> dictionary, in ValueFunc<TInput, TOutput> mapper)
+        public ReadOnlyDictionaryView(IReadOnlyDictionary<TKey, TInput> dictionary, Func<TInput, TOutput> mapper)
         {
             source = dictionary ?? throw new ArgumentNullException(nameof(dictionary));
-            this.mapper = mapper;
+            this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        }
+
+        /// <summary>
+        /// Initializes a new lazily converted view.
+        /// </summary>
+        /// <param name="dictionary">Read-only dictionary to convert.</param>
+        /// <param name="mapper">Value converter.</param>
+        public ReadOnlyDictionaryView(IReadOnlyDictionary<TKey, TInput> dictionary, Converter<TInput, TOutput> mapper)
+            : this(dictionary, Unsafe.As<Func<TInput, TOutput>>(mapper))
+        {
         }
 
         /// <summary>
@@ -57,13 +67,7 @@ namespace DotNext.Collections.Generic
         /// All converted dictionary values.
         /// </summary>
         public IEnumerable<TOutput> Values
-        {
-            get
-            {
-                var selector = mapper.ToDelegate();
-                return source is null || selector is null ? Enumerable.Empty<TOutput>() : source.Values.Select(selector);
-            }
-        }
+            => source is null || mapper is null ? Enumerable.Empty<TOutput>() : source.Values.Select(mapper);
 
         /// <summary>
         /// Count of key/value pairs.

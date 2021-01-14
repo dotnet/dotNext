@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 namespace DotNext.Text
 {
     using Buffers;
+    using StreamConsumer = IO.StreamConsumer;
 
     public partial struct Base64Decoder
     {
@@ -78,7 +79,8 @@ namespace DotNext.Text
 #if !NETSTANDARD2_1
         [SkipLocalsInit]
 #endif
-        private void DecodeCore<TArg>(ReadOnlySpan<byte> utf8Chars, in ValueReadOnlySpanAction<byte, TArg> output, TArg arg)
+        private void DecodeCore<TConsumer>(ReadOnlySpan<byte> utf8Chars, TConsumer output)
+            where TConsumer : notnull, IReadOnlySpanConsumer<byte>
         {
             Span<byte> buffer = stackalloc byte[DecodingBufferSize];
 
@@ -102,7 +104,7 @@ namespace DotNext.Text
 
             if (produced > 0 && consumed > 0)
             {
-                output.Invoke(buffer.Slice(0, produced), arg);
+                output.Invoke(buffer.Slice(0, produced));
                 utf8Chars = utf8Chars.Slice(consumed);
                 goto consume_next_chunk;
             }
@@ -111,29 +113,30 @@ namespace DotNext.Text
 #if !NETSTANDARD2_1
         [SkipLocalsInit]
 #endif
-        private void CopyAndDecode<TArg>(ReadOnlySpan<byte> utf8Chars, in ValueReadOnlySpanAction<byte, TArg> output, TArg arg)
+        private void CopyAndDecode<TConsumer>(ReadOnlySpan<byte> utf8Chars, TConsumer output)
+            where TConsumer : notnull, IReadOnlySpanConsumer<byte>
         {
             var newSize = reservedBufferSize + utf8Chars.Length;
             using var tempBuffer = newSize <= MemoryRental<byte>.StackallocThreshold ? stackalloc byte[newSize] : new MemoryRental<byte>(newSize);
             ReservedBytes.Slice(0, reservedBufferSize).CopyTo(tempBuffer.Span);
             utf8Chars.CopyTo(tempBuffer.Span.Slice(reservedBufferSize));
-            DecodeCore(tempBuffer.Span, in output, arg);
+            DecodeCore(tempBuffer.Span, output);
         }
 
         /// <summary>
-        /// Decodes UTF-8 encoded base64 string.
+        /// Decodes base64-encoded bytes.
         /// </summary>
-        /// <typeparam name="TArg">The type of the argument to be passed to the callback.</typeparam>
-        /// <param name="utf8Chars">UTF-8 encoded portion of base64 string.</param>
-        /// <param name="output">The callback called for decoded portion of data.</param>
-        /// <param name="arg">The argument to be passed to the callback.</param>
+        /// <typeparam name="TConsumer">The type of the consumer.</typeparam>
+        /// <param name="utf8Chars">The span containing base64-encoded bytes.</param>
+        /// <param name="output">The consumer called for decoded portion of data.</param>
         /// <exception cref="FormatException">The input base64 string is malformed.</exception>
-        public void Decode<TArg>(ReadOnlySpan<byte> utf8Chars, in ValueReadOnlySpanAction<byte, TArg> output, TArg arg)
+        public void Decode<TConsumer>(ReadOnlySpan<byte> utf8Chars, TConsumer output)
+            where TConsumer : notnull, IReadOnlySpanConsumer<byte>
         {
             if (reservedBufferSize > 0)
-                CopyAndDecode(utf8Chars, in output, arg);
+                CopyAndDecode(utf8Chars, output);
             else
-                DecodeCore(utf8Chars, in output, arg);
+                DecodeCore(utf8Chars, output);
         }
 
         /// <summary>
@@ -144,11 +147,20 @@ namespace DotNext.Text
         /// <param name="output">The callback called for decoded portion of data.</param>
         /// <param name="arg">The argument to be passed to the callback.</param>
         /// <exception cref="FormatException">The input base64 string is malformed.</exception>
-        public void Decode<TArg>(in ReadOnlySequence<byte> utf8Chars, in ValueReadOnlySpanAction<byte, TArg> output, TArg arg)
-        {
-            foreach (var chunk in utf8Chars)
-                Decode(chunk.Span, in output, arg);
-        }
+        public void Decode<TArg>(ReadOnlySpan<byte> utf8Chars, ReadOnlySpanAction<byte, TArg> output, TArg arg)
+            => Decode(utf8Chars, new DelegatingReadOnlySpanConsumer<byte, TArg>(output, arg));
+
+        /// <summary>
+        /// Decodes UTF-8 encoded base64 string.
+        /// </summary>
+        /// <typeparam name="TArg">The type of the argument to be passed to the callback.</typeparam>
+        /// <param name="utf8Chars">UTF-8 encoded portion of base64 string.</param>
+        /// <param name="output">The callback called for decoded portion of data.</param>
+        /// <param name="arg">The argument to be passed to the callback.</param>
+        /// <exception cref="FormatException">The input base64 string is malformed.</exception>
+        [CLSCompliant(false)]
+        public unsafe void Decode<TArg>(ReadOnlySpan<byte> utf8Chars, delegate*<ReadOnlySpan<byte>, TArg, void> output, TArg arg)
+            => Decode(utf8Chars, new ReadOnlySpanConsumer<byte, TArg>(output, arg));
 
         /// <summary>
         /// Decodes UTF-8 encoded base64 string and writes result to the stream synchronously.
@@ -157,19 +169,6 @@ namespace DotNext.Text
         /// <param name="output">The stream used as destination for decoded bytes.</param>
         /// <exception cref="FormatException">The input base64 string is malformed.</exception>
         public unsafe void Decode(ReadOnlySpan<byte> utf8Chars, Stream output)
-            => Decode(utf8Chars, new ValueReadOnlySpanAction<byte, Stream>(&Span.CopyTo), output);
-
-        /// <summary>
-        /// Decodes UTF-8 encoded base64 string and writes result to the stream synchronously.
-        /// </summary>
-        /// <param name="utf8Chars">UTF-8 encoded portion of base64 string.</param>
-        /// <param name="output">The stream used as destination for decoded bytes.</param>
-        /// <exception cref="FormatException">The input base64 string is malformed.</exception>
-        public unsafe void Decode(in ReadOnlySequence<byte> utf8Chars, Stream output)
-        {
-            var callback = new ValueReadOnlySpanAction<byte, Stream>(&Span.CopyTo);
-            foreach (var chunk in utf8Chars)
-                Decode(chunk.Span, in callback, output);
-        }
+            => Decode<StreamConsumer>(utf8Chars, output);
     }
 }

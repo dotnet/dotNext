@@ -112,7 +112,8 @@ namespace DotNext.Threading
 #if !NETSTANDARD2_1
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
 #endif
-        private static (ulong OldValue, ulong NewValue) Update(ref ulong value, in ValueFunc<ulong, ulong> updater)
+        private static (ulong OldValue, ulong NewValue) Update<TUpdater>(ref ulong value, TUpdater updater)
+            where TUpdater : struct, ISupplier<ulong, ulong>
         {
             ulong oldValue, newValue;
             do
@@ -126,7 +127,8 @@ namespace DotNext.Threading
 #if !NETSTANDARD2_1
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
 #endif
-        private static (ulong OldValue, ulong NewValue) Accumulate(ref ulong value, ulong x, in ValueFunc<ulong, ulong, ulong> accumulator)
+        private static (ulong OldValue, ulong NewValue) Accumulate<TAccumulator>(ref ulong value, ulong x, TAccumulator accumulator)
+            where TAccumulator : struct, ISupplier<ulong, ulong, ulong>
         {
             ulong oldValue, newValue;
             do
@@ -150,7 +152,7 @@ namespace DotNext.Threading
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ulong AccumulateAndGet(ref this ulong value, ulong x, Func<ulong, ulong, ulong> accumulator)
-            => AccumulateAndGet(ref value, x, new ValueFunc<ulong, ulong, ulong>(accumulator));
+            => Accumulate<DelegatingSupplier<ulong, ulong, ulong>>(ref value, x, accumulator).NewValue;
 
         /// <summary>
         /// Atomically updates the current value with the results of applying the given function
@@ -164,8 +166,8 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ulong AccumulateAndGet(ref this ulong value, ulong x, in ValueFunc<ulong, ulong, ulong> accumulator)
-            => Accumulate(ref value, x, accumulator).NewValue;
+        public static unsafe ulong AccumulateAndGet(ref this ulong value, ulong x, delegate*<ulong, ulong, ulong> accumulator)
+            => Accumulate<Supplier<ulong, ulong, ulong>>(ref value, x, accumulator).NewValue;
 
         /// <summary>
         /// Atomically updates the current value with the results of applying the given function
@@ -180,7 +182,7 @@ namespace DotNext.Threading
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ulong GetAndAccumulate(ref this ulong value, ulong x, Func<ulong, ulong, ulong> accumulator)
-            => GetAndAccumulate(ref value, x, new ValueFunc<ulong, ulong, ulong>(accumulator));
+            => Accumulate<DelegatingSupplier<ulong, ulong, ulong>>(ref value, x, accumulator).OldValue;
 
         /// <summary>
         /// Atomically updates the current value with the results of applying the given function
@@ -194,8 +196,8 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ulong GetAndAccumulate(ref this ulong value, ulong x, in ValueFunc<ulong, ulong, ulong> accumulator)
-            => Accumulate(ref value, x, accumulator).OldValue;
+        public static unsafe ulong GetAndAccumulate(ref this ulong value, ulong x, delegate*<ulong, ulong, ulong> accumulator)
+            => Accumulate<Supplier<ulong, ulong, ulong>>(ref value, x, accumulator).OldValue;
 
         /// <summary>
         /// Atomically updates the stored value with the results
@@ -206,7 +208,7 @@ namespace DotNext.Threading
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ulong UpdateAndGet(ref this ulong value, Func<ulong, ulong> updater)
-            => UpdateAndGet(ref value, new ValueFunc<ulong, ulong>(updater));
+            => Update<DelegatingSupplier<ulong, ulong>>(ref value, updater).NewValue;
 
         /// <summary>
         /// Atomically updates the stored value with the results
@@ -216,8 +218,8 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function.</param>
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ulong UpdateAndGet(ref this ulong value, in ValueFunc<ulong, ulong> updater)
-            => Update(ref value, updater).NewValue;
+        public static unsafe ulong UpdateAndGet(ref this ulong value, delegate*<ulong, ulong> updater)
+            => Update<Supplier<ulong, ulong>>(ref value, updater).NewValue;
 
         /// <summary>
         /// Atomically updates the stored value with the results
@@ -228,7 +230,7 @@ namespace DotNext.Threading
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ulong GetAndUpdate(ref this ulong value, Func<ulong, ulong> updater)
-            => GetAndUpdate(ref value, new ValueFunc<ulong, ulong>(updater));
+            => Update<DelegatingSupplier<ulong, ulong>>(ref value, updater).OldValue;
 
         /// <summary>
         /// Atomically updates the stored value with the results
@@ -238,8 +240,8 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function.</param>
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ulong GetAndUpdate(ref this ulong value, in ValueFunc<ulong, ulong> updater)
-            => Update(ref value, updater).OldValue;
+        public static unsafe ulong GetAndUpdate(ref this ulong value, delegate*<ulong, ulong> updater)
+            => Update<Supplier<ulong, ulong>>(ref value, updater).OldValue;
 
         /// <summary>
         /// Performs volatile read of the array element.
@@ -355,7 +357,7 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <returns>The updated value.</returns>
         public static ulong AccumulateAndGet(this ulong[] array, long index, ulong x, Func<ulong, ulong, ulong> accumulator)
-            => AccumulateAndGet(array, index, x, new ValueFunc<ulong, ulong, ulong>(accumulator));
+            => AccumulateAndGet(ref array[index], x, accumulator);
 
         /// <summary>
         /// Atomically updates the array element with the results of applying the given function
@@ -369,7 +371,7 @@ namespace DotNext.Threading
         /// <param name="x">Accumulator operand.</param>
         /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <returns>The updated value.</returns>
-        public static ulong AccumulateAndGet(this ulong[] array, long index, ulong x, in ValueFunc<ulong, ulong, ulong> accumulator)
+        public static unsafe ulong AccumulateAndGet(this ulong[] array, long index, ulong x, delegate*<ulong, ulong, ulong> accumulator)
             => AccumulateAndGet(ref array[index], x, accumulator);
 
         /// <summary>
@@ -385,7 +387,7 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <returns>The original value of the array element.</returns>
         public static ulong GetAndAccumulate(this ulong[] array, long index, ulong x, Func<ulong, ulong, ulong> accumulator)
-            => GetAndAccumulate(array, index, x, new ValueFunc<ulong, ulong, ulong>(accumulator));
+            => GetAndAccumulate(ref array[index], x, accumulator);
 
         /// <summary>
         /// Atomically updates the array element with the results of applying the given function
@@ -399,7 +401,7 @@ namespace DotNext.Threading
         /// <param name="x">Accumulator operand.</param>
         /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <returns>The original value of the array element.</returns>
-        public static ulong GetAndAccumulate(this ulong[] array, long index, ulong x, in ValueFunc<ulong, ulong, ulong> accumulator)
+        public static unsafe ulong GetAndAccumulate(this ulong[] array, long index, ulong x, delegate*<ulong, ulong, ulong> accumulator)
             => GetAndAccumulate(ref array[index], x, accumulator);
 
         /// <summary>
@@ -411,7 +413,7 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function.</param>
         /// <returns>The updated value.</returns>
         public static ulong UpdateAndGet(this ulong[] array, long index, Func<ulong, ulong> updater)
-            => UpdateAndGet(array, index, new ValueFunc<ulong, ulong>(updater));
+            => UpdateAndGet(ref array[index], updater);
 
         /// <summary>
         /// Atomically updates the array element with the results
@@ -421,7 +423,7 @@ namespace DotNext.Threading
         /// <param name="index">The index of the array element to be modified.</param>
         /// <param name="updater">A side-effect-free function.</param>
         /// <returns>The updated value.</returns>
-        public static ulong UpdateAndGet(this ulong[] array, long index, in ValueFunc<ulong, ulong> updater)
+        public static unsafe ulong UpdateAndGet(this ulong[] array, long index, delegate*<ulong, ulong> updater)
             => UpdateAndGet(ref array[index], updater);
 
         /// <summary>
@@ -433,7 +435,7 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function.</param>
         /// <returns>The original value of the array element.</returns>
         public static ulong GetAndUpdate(this ulong[] array, long index, Func<ulong, ulong> updater)
-            => GetAndUpdate(array, index, new ValueFunc<ulong, ulong>(updater));
+            => GetAndUpdate(ref array[index], updater);
 
         /// <summary>
         /// Atomically updates the array element with the results
@@ -443,7 +445,7 @@ namespace DotNext.Threading
         /// <param name="index">The index of the array element to be modified.</param>
         /// <param name="updater">A side-effect-free function.</param>
         /// <returns>The original value of the array element.</returns>
-        public static ulong GetAndUpdate(this ulong[] array, long index, in ValueFunc<ulong, ulong> updater)
+        public static unsafe ulong GetAndUpdate(this ulong[] array, long index, delegate*<ulong, ulong> updater)
             => GetAndUpdate(ref array[index], updater);
     }
 }

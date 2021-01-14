@@ -180,21 +180,30 @@ namespace DotNext.Buffers
         }
 
         /// <summary>
+        /// Passes the contents of this builder to the consumer.
+        /// </summary>
+        /// <param name="consumer">The consumer of this buffer.</param>
+        /// <typeparam name="TConsumer">The type of the consumer.</typeparam>
+        public void CopyTo<TConsumer>(TConsumer consumer)
+            where TConsumer : notnull, IReadOnlySpanConsumer<T>
+        {
+            ThrowIfDisposed();
+            for (MemoryChunk? current = first; current is not null; current = current.Next)
+            {
+                var buffer = current.WrittenMemory.Span;
+                consumer.Invoke(buffer);
+            }
+        }
+
+        /// <summary>
         /// Passes the contents of this builder to the callback.
         /// </summary>
         /// <param name="writer">The callback used to accept memory segments representing the contents of this builder.</param>
         /// <param name="arg">The argument to be passed to the callback.</param>
         /// <typeparam name="TArg">The type of the argument to tbe passed to the callback.</typeparam>
         /// <exception cref="ObjectDisposedException">The builder has been disposed.</exception>
-        public void CopyTo<TArg>(in ValueReadOnlySpanAction<T, TArg> writer, TArg arg)
-        {
-            ThrowIfDisposed();
-            for (MemoryChunk? current = first; current is not null; current = current.Next)
-            {
-                var buffer = current.WrittenMemory.Span;
-                writer.Invoke(buffer, arg);
-            }
-        }
+        public void CopyTo<TArg>(ReadOnlySpanAction<T, TArg> writer, TArg arg)
+            => CopyTo(new DelegatingReadOnlySpanConsumer<T, TArg>(writer, arg));
 
         /// <summary>
         /// Copies the contents of this builder to the specified memory block.

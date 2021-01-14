@@ -91,15 +91,6 @@ namespace DotNext.Buffers
                 writer.Write(segment.Span);
         }
 
-        /// <summary>
-        /// Creates <see cref="ReadOnlySpanAction{T, TArg}"/> delegate
-        /// that can be used to write the block of elements to the buffer.
-        /// </summary>
-        /// <typeparam name="T">The type of the elements in the buffer.</typeparam>
-        /// <returns>The delegate instance.</returns>
-        public static ReadOnlySpanAction<T, IBufferWriter<T>> GetBufferWriter<T>()
-            => Span.CopyTo;
-
 #if !NETSTANDARD2_1
         /// <summary>
         /// Writes the contents of string builder to the buffer.

@@ -43,6 +43,7 @@ namespace DotNext
         {
             if (SizeOf<T>() != SizeOf<TOther>())
                 return false;
+
             switch (SizeOf<T>())
             {
                 default:
@@ -72,6 +73,7 @@ namespace DotNext
         {
             if (SizeOf<T>() != SizeOf<TOther>())
                 return SizeOf<T>() - SizeOf<TOther>();
+
             switch (SizeOf<TOther>())
             {
                 default:
@@ -124,20 +126,9 @@ namespace DotNext
             return hash;
         }
 
-        /// <summary>
-        /// Computes bitwise hash code for the specified value.
-        /// </summary>
-        /// <remarks>
-        /// This method doesn't use <see cref="object.GetHashCode"/>
-        /// even if it is overridden by value type.
-        /// </remarks>
-        /// <param name="value">A value to be hashed.</param>
-        /// <param name="hash">Initial value of the hash.</param>
-        /// <param name="hashFunction">Hashing function.</param>
-        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
-        /// <returns>Bitwise hash code.</returns>
-        public static int GetHashCode(in T value, int hash, in ValueFunc<int, int, int> hashFunction, bool salted)
-            => GetHashCode32(ref InToRef<T, byte>(value), SizeOf<T>(), hash, in hashFunction, salted);
+        private static int GetHashCode<THashFunction>(in T value, int hash, THashFunction hashFunction, bool salted)
+            where THashFunction : struct, ISupplier<int, int, int>
+            => GetHashCode32(ref InToRef<T, byte>(value), SizeOf<T>(), hash, hashFunction, salted);
 
         /// <summary>
         /// Computes bitwise hash code for the specified value.
@@ -152,7 +143,23 @@ namespace DotNext
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Bitwise hash code.</returns>
         public static int GetHashCode(in T value, int hash, Func<int, int, int> hashFunction, bool salted = true)
-            => GetHashCode(in value, hash, new ValueFunc<int, int, int>(hashFunction), salted);
+            => GetHashCode<DelegatingSupplier<int, int, int>>(in value, hash, hashFunction, salted);
+
+        /// <summary>
+        /// Computes bitwise hash code for the specified value.
+        /// </summary>
+        /// <remarks>
+        /// This method doesn't use <see cref="object.GetHashCode"/>
+        /// even if it is overridden by value type.
+        /// </remarks>
+        /// <param name="value">A value to be hashed.</param>
+        /// <param name="hash">Initial value of the hash.</param>
+        /// <param name="hashFunction">Hashing function.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <returns>Bitwise hash code.</returns>
+        [CLSCompliant(false)]
+        public static unsafe int GetHashCode(in T value, int hash, delegate*<int, int, int> hashFunction, bool salted = true)
+            => GetHashCode<Supplier<int, int, int>>(in value, hash, hashFunction, salted);
 
         /// <inheritdoc/>
         bool IEqualityComparer<T>.Equals(T x, T y) => Equals(in x, in y);
