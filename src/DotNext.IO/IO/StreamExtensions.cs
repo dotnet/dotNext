@@ -2592,10 +2592,13 @@ namespace DotNext.IO
         /// <summary>
         /// Asynchronously reads the bytes from the source stream and passes them to the consumer, using a specified buffer.
         /// </summary>
+        /// <typeparam name="TConsumer">The type of the consumer.</typeparam>
         /// <param name="source">The source stream to read from.</param>
         /// <param name="consumer">The destination stream to write into.</param>
         /// <param name="buffer">The buffer used to hold copied content temporarily.</param>
         /// <param name="token">The token that can be used to cancel this operation.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static async Task CopyToAsync<TConsumer>(this Stream source, TConsumer consumer, Memory<byte> buffer, CancellationToken token = default)
             where TConsumer : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
         {
@@ -2612,6 +2615,8 @@ namespace DotNext.IO
         /// <param name="destination">The destination stream to write into.</param>
         /// <param name="buffer">The buffer used to hold copied content temporarily.</param>
         /// <param name="token">The token that can be used to cancel this operation.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static Task CopyToAsync(this Stream source, Stream destination, Memory<byte> buffer, CancellationToken token = default)
             => CopyToAsync<StreamConsumer>(source, destination, buffer, token);
 
@@ -2623,6 +2628,7 @@ namespace DotNext.IO
         /// <param name="consumer">The destination stream to write into.</param>
         /// <param name="buffer">The buffer used to hold copied content temporarily.</param>
         /// <param name="token">The token that can be used to cancel this operation.</param>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static void CopyTo<TConsumer>(this Stream source, TConsumer consumer, Span<byte> buffer, CancellationToken token = default)
             where TConsumer : notnull, IReadOnlySpanConsumer<byte>
         {
@@ -2639,6 +2645,7 @@ namespace DotNext.IO
         /// <param name="destination">The destination stream to write into.</param>
         /// <param name="buffer">The buffer used to hold copied content temporarily.</param>
         /// <param name="token">The token that can be used to cancel this operation.</param>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static void CopyTo(this Stream source, Stream destination, Span<byte> buffer, CancellationToken token = default)
             => CopyTo<StreamConsumer>(source, destination, buffer, token);
 

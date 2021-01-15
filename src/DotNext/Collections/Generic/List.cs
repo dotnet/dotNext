@@ -139,7 +139,7 @@ namespace DotNext.Collections.Generic
         /// <param name="mapper">Element mapping function.</param>
         /// <returns>An array of list items.</returns>
         [CLSCompliant(false)]
-        public unsafe static TOutput[] ToArray<TInput, TOutput>(this IList<TInput> input, delegate*<TInput, TOutput> mapper)
+        public static unsafe TOutput[] ToArray<TInput, TOutput>(this IList<TInput> input, delegate*<TInput, TOutput> mapper)
             => ToArray<TInput, TOutput, Supplier<TInput, TOutput>>(input, mapper);
 
         private static TOutput[] ToArrayWithIndex<TInput, TOutput, TConverter>(this IList<TInput> input, TConverter mapper)

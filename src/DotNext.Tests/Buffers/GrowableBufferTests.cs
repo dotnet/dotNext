@@ -44,7 +44,7 @@ namespace DotNext.Buffers
             var expected = RandomBytes(5000);
             writer.Write(expected);
             actual = new byte[expected.Length];
-            writer.CopyTo(new ValueReadOnlySpanAction<byte, ArrayCopyOperation>(&ArrayCopyOperation.Append), new ArrayCopyOperation(actual));
+            writer.CopyTo<ReadOnlySpanConsumer<byte, ArrayCopyOperation>>(new ReadOnlySpanConsumer<byte, ArrayCopyOperation>(&ArrayCopyOperation.Append, new ArrayCopyOperation(actual)));
             Equal(expected, actual);
         }
 

@@ -308,21 +308,11 @@ namespace DotNext.Threading
         [Fact]
         public static void AtomicReferenceTest()
         {
-            var stref = new AtomicReference<string>("");
-            Equal("", stref.Value);
-            Empty(stref.GetAndSet(null));
-            Null(stref.Value);
-            NotEmpty(stref.SetAndGet("Hello"));
-            Equal("Hello, world!", stref.AccumulateAndGet(", world!", static (x, y) => x + y));
-            Equal("Hello, world!", stref.Value);
-            Equal("Hello, world!", stref.GetAndUpdate(static current => ""));
-            Empty(stref.Value);
-            stref.Value = null;
-            Equal("Hello", stref.SetIfNull(static () => "Hello"));
-            Equal("Hello", stref.SetIfNull(static () => ""));
-            Equal("Hello", stref.Value);
-            Equal("Hello", stref.ToString());
-            Equal("Hello".GetHashCode(), stref.GetHashCode());
+            var stref = "";
+            Equal("Hello, world!", AtomicReference.AccumulateAndGet<string>(ref stref, ", world!", static (x, y) => x + y));
+            Equal("Hello, world!", stref);
+            Equal("Hello, world!", AtomicReference.GetAndUpdate(ref stref, static current => ""));
+            Empty(stref);
         }
 
         [Fact]
@@ -364,7 +354,6 @@ namespace DotNext.Threading
         public static void Serialization()
         {
             True(SerializeDeserialize(new AtomicBoolean(true)).Value);
-            Equal("Frank Underwood", SerializeDeserialize(new AtomicReference<string>("Frank Underwood")).Value);
             Equal(EnvironmentVariableTarget.Machine, SerializeDeserialize(new AtomicEnum<EnvironmentVariableTarget>(EnvironmentVariableTarget.Machine)).Value);
         }
 

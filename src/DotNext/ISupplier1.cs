@@ -148,7 +148,7 @@ namespace DotNext
 
     /// <summary>
     /// Represents implementation of <see cref="ISupplier{T, TResult}"/> that delegates
-    /// invocation to the delegate of type <see cref="Func{T, TResult}"/>
+    /// invocation to the delegate of type <see cref="Func{T, TResult}"/>.
     /// </summary>
     /// <typeparam name="T">The type of the argument.</typeparam>
     /// <typeparam name="TResult">The type of the result.</typeparam>

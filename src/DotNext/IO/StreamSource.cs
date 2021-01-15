@@ -113,7 +113,6 @@ namespace DotNext.IO
         /// <param name="output">The consumer of the stream content.</param>
         /// <typeparam name="TOutput">The type of the consumer.</typeparam>
         /// <returns>The stream wrapping <typeparamref name="TOutput"/>.</returns>
-
         public static Stream AsAsynchronousStream<TOutput>(TOutput output)
             where TOutput : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>, IFlushable
             => new AsyncWriterStream<TOutput>(output);

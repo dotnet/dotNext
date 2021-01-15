@@ -538,6 +538,7 @@ namespace DotNext.IO
         /// <param name="consumer">The consumer of the written content.</param>
         /// <param name="bufferSize">The size, in bytes, of the buffer used to copy bytes.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public async Task CopyToAsync<TConsumer>(TConsumer consumer, int bufferSize, CancellationToken token)
             where TConsumer : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
@@ -553,7 +554,7 @@ namespace DotNext.IO
             }
 
             if (buffer.Length > 0 && position > 0)
-                await consumer.Invoke(buffer.Memory.Slice(0, position), token);
+                await consumer.Invoke(buffer.Memory.Slice(0, position), token).ConfigureAwait(false);
         }
 
         /// <summary>

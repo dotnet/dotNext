@@ -112,8 +112,8 @@ namespace DotNext
     /// Represents implementation of <see cref="IConsumer{T}"/> interface
     /// with the support of closure that is not allocated on the heap.
     /// </summary>
-    /// <typeparam name="T">The type of the consumer argument.</typeparam>
     /// <typeparam name="TContext">The type describing closure.</typeparam>
+    /// <typeparam name="T">The type of the consumer argument.</typeparam>
     [CLSCompliant(false)]
     [StructLayout(LayoutKind.Auto)]
     public readonly unsafe struct ConsumerClosure<TContext, T> : IConsumer<T>
@@ -144,7 +144,7 @@ namespace DotNext
 
     /// <summary>
     /// Represents implementation of <see cref="IConsumer{T}"/> that delegates
-    /// invocation to the delegate of type <see cref="Action{T}"/>
+    /// invocation to the delegate of type <see cref="Action{T}"/>.
     /// </summary>
     /// <typeparam name="T">The type of the consumer argument.</typeparam>
     [StructLayout(LayoutKind.Auto)]

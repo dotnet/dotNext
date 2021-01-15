@@ -28,7 +28,7 @@ namespace DotNext
         /// Invokes the supplier.
         /// </summary>
         /// <param name="arg1">The first argument.</param>
-        /// <param name="arg2">The first argument.</param>
+        /// <param name="arg2">The second argument.</param>
         /// <returns>The value returned by this supplier.</returns>
         TResult Invoke(T1 arg1, T2 arg2);
     }
@@ -153,7 +153,7 @@ namespace DotNext
 
     /// <summary>
     /// Represents implementation of <see cref="ISupplier{T1, T2, TResult}"/> that delegates
-    /// invocation to the delegate of type <see cref="Func{T1, T2, TResult}"/>
+    /// invocation to the delegate of type <see cref="Func{T1, T2, TResult}"/>.
     /// </summary>
     /// <typeparam name="T1">The type of the first argument.</typeparam>
     /// <typeparam name="T2">The type of the second argument.</typeparam>

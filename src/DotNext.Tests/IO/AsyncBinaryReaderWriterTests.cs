@@ -59,6 +59,9 @@ namespace DotNext.IO
 
                 Task IAsyncBinaryReader.CopyToAsync<TArg>(Func<TArg, ReadOnlyMemory<byte>, CancellationToken, ValueTask> consumer, TArg arg, CancellationToken token)
                     => reader.CopyToAsync(consumer, arg, token);
+
+                Task IAsyncBinaryReader.CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token)
+                    => reader.CopyToAsync(consumer, token);
             }
 
             private sealed class DefaultAsyncBinaryWriter : IAsyncBinaryWriter

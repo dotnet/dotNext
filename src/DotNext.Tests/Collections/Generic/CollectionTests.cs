@@ -36,7 +36,7 @@ namespace DotNext.Collections.Generic
         [Fact]
         public static void ReadOnlyView()
         {
-            var view = new ReadOnlyCollectionView<string, int>(new[] { "1", "2", "3" }, new ValueFunc<string, int>(int.Parse));
+            var view = new ReadOnlyCollectionView<string, int>(new[] { "1", "2", "3" }, new Converter<string, int>(int.Parse));
             Equal(3, view.Count);
             NotEmpty(view);
             foreach (var value in view)

@@ -93,7 +93,7 @@ namespace DotNext.Buffers
 
     /// <summary>
     /// Represents implementation of <see cref="IReadOnlySpanConsumer{T}"/> that delegates
-    /// invocation to the delegate of type <see cref="ReadOnlySpanAction{T, TArg}"/>
+    /// invocation to the delegate of type <see cref="ReadOnlySpanAction{T, TArg}"/>.
     /// </summary>
     /// <typeparam name="T">The type of the consumer argument.</typeparam>
     /// <typeparam name="TArg">The type of the argument to be passed to the delegate.</typeparam>

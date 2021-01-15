@@ -155,7 +155,7 @@ namespace DotNext
 
     /// <summary>
     /// Represents implementation of <see cref="ISupplier{TResult}"/> that delegates
-    /// invocation to the delegate of type <see cref="Func{TResult}"/>
+    /// invocation to the delegate of type <see cref="Func{TResult}"/>.
     /// </summary>
     /// <typeparam name="TResult">The type of the result.</typeparam>
     [StructLayout(LayoutKind.Auto)]

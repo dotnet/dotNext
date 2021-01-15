@@ -216,7 +216,7 @@ namespace DotNext.Buffers
     public static class MemoryTemplate
     {
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct StringBuilderRenderer: IReadOnlySpanConsumer<char>, IConsumer<int>
+        private readonly struct StringBuilderRenderer : IReadOnlySpanConsumer<char>, IConsumer<int>
         {
             private readonly IReadOnlyList<string> replacement;
             private readonly StringBuilder output;
@@ -233,7 +233,7 @@ namespace DotNext.Buffers
         }
 
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct CharBufferRenderer: IReadOnlySpanConsumer<char>, IConsumer<int>
+        private readonly struct CharBufferRenderer : IReadOnlySpanConsumer<char>, IConsumer<int>
         {
             private readonly IReadOnlyList<string> replacement;
             private readonly IBufferWriter<char> output;
@@ -250,7 +250,7 @@ namespace DotNext.Buffers
         }
 
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct TextRenderer: IReadOnlySpanConsumer<char>, IConsumer<int>
+        private readonly struct TextRenderer : IReadOnlySpanConsumer<char>, IConsumer<int>
         {
             private readonly IReadOnlyList<string> replacement;
             private readonly TextWriter output;
