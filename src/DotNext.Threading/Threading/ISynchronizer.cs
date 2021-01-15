@@ -14,7 +14,7 @@ namespace DotNext.Threading
             {
             }
 
-            internal void Complete() => SetResult(true);
+            internal void SetResult() => SetResult(true);
         }
 
         /// <summary>

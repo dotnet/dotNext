@@ -84,7 +84,7 @@ namespace DotNext.Threading
                 next = current.Next;
                 if (IsExactTypeOf<WaitNode>(current))
                 {
-                    current.Complete();
+                    current.SetResult();
                     RemoveNode(current);
                 }
             }
@@ -99,7 +99,7 @@ namespace DotNext.Threading
                 next = current.Next;
                 if (current is not ConditionalNode conditional || conditional.Invoke(state))
                 {
-                    current.Complete();
+                    current.SetResult();
                     RemoveNode(current);
                 }
             }

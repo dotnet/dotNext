@@ -105,7 +105,7 @@ namespace DotNext.Threading
             }
             else
             {
-                head.Complete();
+                head.SetResult();
                 RemoveNode(head);
             }
         }

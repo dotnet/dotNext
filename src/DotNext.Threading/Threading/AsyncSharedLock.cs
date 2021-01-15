@@ -163,7 +163,7 @@ namespace DotNext.Threading
             {
                 next = current.Next;
                 RemoveNode(current);
-                current.Complete();
+                current.SetResult();
             }
         }
 
@@ -174,7 +174,7 @@ namespace DotNext.Threading
             if (stateHolder.IncrementLocks() == ConcurrencyLevel && head is StrongLockNode exclusiveNode)
             {
                 RemoveNode(exclusiveNode);
-                exclusiveNode.Complete();
+                exclusiveNode.SetResult();
                 stateHolder.RemainingLocks = ExclusiveMode;
             }
             else

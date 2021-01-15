@@ -25,7 +25,7 @@ namespace DotNext.Threading
             {
                 if ((count -= value) <= 0L)
                 {
-                    Complete();
+                    SetResult();
                     return true;
                 }
 

@@ -65,7 +65,7 @@ namespace DotNext.Threading
             if (head is null)
                 return manager.IsSignaled = true;
 
-            head.Complete();
+            head.SetResult();
             RemoveNode(head);
             manager.IsSignaled = false;
             return true;
