@@ -28,7 +28,7 @@ namespace DotNext.Reflection
     /// </summary>
     /// <typeparam name="TMember">Type of reflected member.</typeparam>
     /// <typeparam name="TInvoker">Type of delegate.</typeparam>
-    public interface IMember<out TMember, out TInvoker> : IMember<TMember>, IConvertible<TInvoker>
+    public interface IMember<out TMember, out TInvoker> : IMember<TMember>, ISupplier<TInvoker>
         where TMember : MemberInfo
         where TInvoker : Delegate
     {
@@ -38,7 +38,7 @@ namespace DotNext.Reflection
         TInvoker Invoker { get; }
 
         /// <inheritdoc/>
-        TInvoker IConvertible<TInvoker>.Convert() => Invoker;
+        TInvoker ISupplier<TInvoker>.Invoke() => Invoker;
     }
 
     /// <summary>

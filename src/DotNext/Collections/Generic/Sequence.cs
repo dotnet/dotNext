@@ -40,15 +40,7 @@ namespace DotNext.Collections.Generic
         /// <typeparam name="T">Type of elements in the collection.</typeparam>
         /// <param name="collection">A collection to enumerate. Cannot be <see langword="null"/>.</param>
         /// <param name="action">An action to applied for each element.</param>
-        public static void ForEach<T>(this IEnumerable<T> collection, Action<T> action) => ForEach(collection, new ValueAction<T>(action));
-
-        /// <summary>
-        /// Applies specified action to each collection element.
-        /// </summary>
-        /// <typeparam name="T">Type of elements in the collection.</typeparam>
-        /// <param name="collection">A collection to enumerate. Cannot be <see langword="null"/>.</param>
-        /// <param name="action">An action to applied for each element.</param>
-        public static void ForEach<T>(this IEnumerable<T> collection, in ValueAction<T> action)
+        public static void ForEach<T>(this IEnumerable<T> collection, Action<T> action)
         {
             foreach (var item in collection)
                 action.Invoke(item);
@@ -63,19 +55,7 @@ namespace DotNext.Collections.Generic
         /// <param name="token">The token that can be used to cancel the enumeration.</param>
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The enumeration has been canceled.</exception>
-        public static ValueTask ForEachAsync<T>(this IEnumerable<T> collection, Func<T, CancellationToken, ValueTask> action, CancellationToken token = default)
-            => ForEachAsync(collection, new ValueFunc<T, CancellationToken, ValueTask>(action), token);
-
-        /// <summary>
-        /// Applies the specified asynchronous action to each collection element.
-        /// </summary>
-        /// <typeparam name="T">Type of elements in the collection.</typeparam>
-        /// <param name="collection">A collection to enumerate. Cannot be <see langword="null"/>.</param>
-        /// <param name="action">An action to applied for each element.</param>
-        /// <param name="token">The token that can be used to cancel the enumeration.</param>
-        /// <returns>The task representing asynchronous execution of this method.</returns>
-        /// <exception cref="OperationCanceledException">The enumeration has been canceled.</exception>
-        public static async ValueTask ForEachAsync<T>(this IEnumerable<T> collection, ValueFunc<T, CancellationToken, ValueTask> action, CancellationToken token = default)
+        public static async ValueTask ForEachAsync<T>(this IEnumerable<T> collection, Func<T, CancellationToken, ValueTask> action, CancellationToken token = default)
         {
             foreach (var item in collection)
                 await action.Invoke(item, token).ConfigureAwait(false);
@@ -115,7 +95,7 @@ namespace DotNext.Collections.Generic
         /// <param name="seq">A collection to return an element from.</param>
         /// <param name="filter">A function to test each element for a condition.</param>
         /// <returns>The first element in the sequence that matches to the specified filter; or empty value.</returns>
-        public static Optional<T> FirstOrEmpty<T>(this IEnumerable<T> seq, in ValueFunc<T, bool> filter)
+        public static Optional<T> FirstOrEmpty<T>(this IEnumerable<T> seq, Predicate<T> filter)
             where T : notnull
         {
             foreach (var item in seq)
@@ -126,17 +106,6 @@ namespace DotNext.Collections.Generic
 
             return Optional<T>.None;
         }
-
-        /// <summary>
-        /// Returns the first element in a sequence that satisfies a specified condition.
-        /// </summary>
-        /// <typeparam name="T">The type of the elements of source.</typeparam>
-        /// <param name="seq">A collection to return an element from.</param>
-        /// <param name="filter">A function to test each element for a condition.</param>
-        /// <returns>The first element in the sequence that matches to the specified filter; or empty value.</returns>
-        public static Optional<T> FirstOrEmpty<T>(this IEnumerable<T> seq, Predicate<T> filter)
-            where T : notnull
-            => FirstOrEmpty(seq, filter.AsValueFunc());
 
         /// <summary>
         /// Bypasses a specified number of elements in a sequence.

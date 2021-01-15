@@ -42,9 +42,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private static bool TryParseRfc1123FormattedDateTime(string input, out DateTimeOffset result)
             => HeaderUtils.TryParseDate(input, out result);
 
-        private protected static new async Task<Result<bool>> ParseBoolResponse(HttpResponseMessage response)
+        private protected static new async Task<Result<bool>> ParseBoolResponse(HttpResponseMessage response, CancellationToken token)
         {
-            var result = await HttpMessage.ParseBoolResponse(response).ConfigureAwait(false);
+            var result = await HttpMessage.ParseBoolResponse(response, token).ConfigureAwait(false);
             var term = ParseHeader<IEnumerable<string>, long>(TermHeader, response.Headers.TryGetValues, Int64Parser);
             return new Result<bool>(term, result);
         }

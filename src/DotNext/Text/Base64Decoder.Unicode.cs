@@ -77,7 +77,8 @@ namespace DotNext.Text
 #if !NETSTANDARD2_1
         [SkipLocalsInit]
 #endif
-        private void DecodeCore<TArg>(ReadOnlySpan<char> chars, in ValueReadOnlySpanAction<byte, TArg> output, TArg arg)
+        private void DecodeCore<TConsumer>(ReadOnlySpan<char> chars, TConsumer output)
+            where TConsumer : notnull, IReadOnlySpanConsumer<byte>
         {
             const int maxInputBlockSize = 340; // 340 chars can be decoded as 255 bytes which is <= DecodingBufferSize
             Span<byte> buffer = stackalloc byte[DecodingBufferSize];
@@ -96,7 +97,7 @@ namespace DotNext.Text
 
             if (consumed > 0 && produced > 0)
             {
-                output.Invoke(buffer.Slice(0, produced), arg);
+                output.Invoke(buffer.Slice(0, produced));
                 chars = chars.Slice(consumed);
                 goto consume_next_chunk;
             }
@@ -124,29 +125,30 @@ namespace DotNext.Text
 #if !NETSTANDARD2_1
         [SkipLocalsInit]
 #endif
-        private void CopyAndDecode<TArg>(ReadOnlySpan<char> chars, in ValueReadOnlySpanAction<byte, TArg> output, TArg arg)
+        private void CopyAndDecode<TConsumer>(ReadOnlySpan<char> chars, TConsumer output)
+            where TConsumer : notnull, IReadOnlySpanConsumer<byte>
         {
             var newSize = reservedBufferSize + chars.Length;
             using var tempBuffer = newSize <= MemoryRental<char>.StackallocThreshold ? stackalloc char[newSize] : new MemoryRental<char>(newSize);
             ReservedChars.Slice(0, reservedBufferSize).CopyTo(tempBuffer.Span);
             chars.CopyTo(tempBuffer.Span.Slice(reservedBufferSize));
-            DecodeCore(tempBuffer.Span, in output, arg);
+            DecodeCore(tempBuffer.Span, output);
         }
 
         /// <summary>
         /// Decodes base64-encoded bytes.
         /// </summary>
-        /// <typeparam name="TArg">The type of the argument to be passed to the callback.</typeparam>
+        /// <typeparam name="TConsumer">The type of the consumer.</typeparam>
         /// <param name="chars">The span containing base64-encoded bytes.</param>
-        /// <param name="output">The callback called for decoded portion of data.</param>
-        /// <param name="arg">The argument to be passed to the callback.</param>
+        /// <param name="output">The consumer called for decoded portion of data.</param>
         /// <exception cref="FormatException">The input base64 string is malformed.</exception>
-        public void Decode<TArg>(ReadOnlySpan<char> chars, in ValueReadOnlySpanAction<byte, TArg> output, TArg arg)
+        public void Decode<TConsumer>(ReadOnlySpan<char> chars, TConsumer output)
+            where TConsumer : notnull, IReadOnlySpanConsumer<byte>
         {
             if (reservedBufferSize > 0)
-                CopyAndDecode(chars, in output, arg);
+                CopyAndDecode(chars, output);
             else
-                DecodeCore(chars, in output, arg);
+                DecodeCore(chars, output);
         }
 
         /// <summary>
@@ -154,13 +156,22 @@ namespace DotNext.Text
         /// </summary>
         /// <typeparam name="TArg">The type of the argument to be passed to the callback.</typeparam>
         /// <param name="chars">The span containing base64-encoded bytes.</param>
-        /// <param name="output">The callback called for decoded portion of data.</param>
+        /// <param name="callback">The callback called for decoded portion of data.</param>
         /// <param name="arg">The argument to be passed to the callback.</param>
         /// <exception cref="FormatException">The input base64 string is malformed.</exception>
-        public void Decode<TArg>(in ReadOnlySequence<char> chars, in ValueReadOnlySpanAction<byte, TArg> output, TArg arg)
-        {
-            foreach (var chunk in chars)
-                Decode(chunk.Span, in output, arg);
-        }
+        public void Decode<TArg>(ReadOnlySpan<char> chars, ReadOnlySpanAction<byte, TArg> callback, TArg arg)
+            => Decode(chars, new DelegatingReadOnlySpanConsumer<byte, TArg>(callback, arg));
+
+        /// <summary>
+        /// Decodes base64-encoded bytes.
+        /// </summary>
+        /// <typeparam name="TArg">The type of the argument to be passed to the callback.</typeparam>
+        /// <param name="chars">The span containing base64-encoded bytes.</param>
+        /// <param name="callback">The callback called for decoded portion of data.</param>
+        /// <param name="arg">The argument to be passed to the callback.</param>
+        /// <exception cref="FormatException">The input base64 string is malformed.</exception>
+        [CLSCompliant(false)]
+        public unsafe void Decode<TArg>(ReadOnlySpan<char> chars, delegate*<ReadOnlySpan<byte>, TArg, void> callback, TArg arg)
+            => Decode(chars, new ReadOnlySpanConsumer<byte, TArg>(callback, arg));
     }
 }

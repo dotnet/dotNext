@@ -60,6 +60,9 @@ namespace DotNext.Threading
         /// Performs atomic read.
         /// </summary>
         /// <param name="result">The result of atomic read.</param>
+#if !NETSTANDARD2_1
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+#endif
         public readonly void Read(out T result)
         {
             var spinner = new SpinWait();
@@ -104,6 +107,9 @@ namespace DotNext.Threading
         /// Performs atomic write.
         /// </summary>
         /// <param name="newValue">The value to be stored into this container.</param>
+#if !NETSTANDARD2_1
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+#endif
         public void Write(in T newValue)
         {
             lockState.Acquire();
@@ -119,6 +125,9 @@ namespace DotNext.Threading
         /// <param name="expected">The value that is compared to the stored value.</param>
         /// <param name="result">The origin value stored in this container before modification.</param>
         /// <returns><see langword="true"/> if the current value is replaced by <paramref name="update"/>; otherwise, <see langword="false"/>.</returns>
+#if !NETSTANDARD2_1
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+#endif
         public bool CompareExchange(in T update, in T expected, out T result)
         {
             bool successful;
@@ -138,6 +147,9 @@ namespace DotNext.Threading
         /// <param name="expected">The expected value.</param>
         /// <param name="update">The new value.</param>
         /// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
+#if !NETSTANDARD2_1
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+#endif
         public bool CompareAndSet(in T expected, in T update)
         {
             lockState.Acquire();
@@ -154,6 +166,9 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="update">The value that replaces the stored value.</param>
         /// <param name="previous">The original stored value before modification.</param>
+#if !NETSTANDARD2_1
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+#endif
         public void Exchange(in T update, out T previous)
         {
             lockState.Acquire();
@@ -169,6 +184,9 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function.</param>
         /// <param name="result">The updated value.</param>
         /// <exception cref="ArgumentNullException"><paramref name="updater"/> is <see langword="null"/>.</exception>
+#if !NETSTANDARD2_1
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+#endif
         public void UpdateAndGet(Updater updater, out T result)
         {
             if (updater is null)
@@ -193,6 +211,9 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function.</param>
         /// <param name="result">The original value.</param>
         /// <exception cref="ArgumentNullException"><paramref name="updater"/> is <see langword="null"/>.</exception>
+#if !NETSTANDARD2_1
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+#endif
         public void GetAndUpdate(Updater updater, out T result)
         {
             if (updater is null)
@@ -222,6 +243,9 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <param name="result">The updated value.</param>
         /// <exception cref="ArgumentNullException"><paramref name="accumulator"/> is <see langword="null"/>.</exception>
+#if !NETSTANDARD2_1
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+#endif
         public void AccumulateAndGet(in T x, Accumulator accumulator, out T result)
         {
             if (accumulator is null)
@@ -250,6 +274,9 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <param name="result">The original value.</param>
         /// <exception cref="ArgumentNullException"><paramref name="accumulator"/> is <see langword="null"/>.</exception>
+#if !NETSTANDARD2_1
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+#endif
         public void GetAndAccumulate(in T x, Accumulator accumulator, out T result)
         {
             if (accumulator is null)

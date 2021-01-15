@@ -319,15 +319,11 @@ namespace DotNext
             where TException : Exception, new()
             => HasValue ? value! : throw new TException();
 
-        /// <summary>
-        /// If a value is present, returns the value, otherwise throw exception.
-        /// </summary>
-        /// <typeparam name="TException">Type of exception to throw.</typeparam>
-        /// <param name="exceptionFactory">Exception factory.</param>
-        /// <returns>The value, if present.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [return: NotNull]
-        public T OrThrow<TException>(in ValueFunc<TException> exceptionFactory)
+        private T OrThrow<TException, TFactory>(TFactory exceptionFactory)
             where TException : Exception
+            where TFactory : struct, ISupplier<TException>
             => HasValue ? value! : throw exceptionFactory.Invoke();
 
         /// <summary>
@@ -339,21 +335,39 @@ namespace DotNext
         [return: NotNull]
         public T OrThrow<TException>(Func<TException> exceptionFactory)
             where TException : Exception
-            => OrThrow(new ValueFunc<TException>(exceptionFactory));
+            => OrThrow<TException, DelegatingSupplier<TException>>(exceptionFactory);
+
+        /// <summary>
+        /// If a value is present, returns the value, otherwise throw exception.
+        /// </summary>
+        /// <typeparam name="TException">Type of exception to throw.</typeparam>
+        /// <param name="exceptionFactory">Exception factory.</param>
+        /// <returns>The value, if present.</returns>
+        [return: NotNull]
+        [CLSCompliant(false)]
+        public unsafe T OrThrow<TException>(delegate*<TException> exceptionFactory)
+            where TException : Exception
+            => OrThrow<TException, Supplier<TException>>(exceptionFactory);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private T OrInvoke<TSupplier>(TSupplier defaultFunc)
+            where TSupplier : struct, ISupplier<T>
+            => HasValue ? value! : defaultFunc.Invoke();
 
         /// <summary>
         /// Returns the value if present; otherwise invoke delegate.
         /// </summary>
         /// <param name="defaultFunc">A delegate to be invoked if value is not present.</param>
         /// <returns>The value, if present, otherwise returned from delegate.</returns>
-        public T OrInvoke(in ValueFunc<T> defaultFunc) => HasValue ? value! : defaultFunc.Invoke();
+        public T OrInvoke(Func<T> defaultFunc) => OrInvoke<DelegatingSupplier<T>>(defaultFunc);
 
         /// <summary>
         /// Returns the value if present; otherwise invoke delegate.
         /// </summary>
         /// <param name="defaultFunc">A delegate to be invoked if value is not present.</param>
         /// <returns>The value, if present, otherwise returned from delegate.</returns>
-        public T OrInvoke(Func<T> defaultFunc) => OrInvoke(new ValueFunc<T>(defaultFunc));
+        [CLSCompliant(false)]
+        public unsafe T OrInvoke(delegate*<T> defaultFunc) => OrInvoke<Supplier<T>>(defaultFunc);
 
         /// <summary>
         /// If a value is present, returns the value, otherwise return default value.
@@ -387,14 +401,10 @@ namespace DotNext
             }
         }
 
-        /// <summary>
-        /// If a value is present, apply the provided mapping function to it, and if the result is
-        /// non-null, return an Optional describing the result. Otherwise returns <see cref="None"/>.
-        /// </summary>
-        /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
-        /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
-        /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="None"/>.</returns>
-        public Optional<TResult> Convert<TResult>(in ValueFunc<T, TResult> mapper) => HasValue ? mapper.Invoke(value!) : Optional<TResult>.None;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private Optional<TResult> Convert<TResult, TConverter>(TConverter converter)
+            where TConverter : struct, ISupplier<T, TResult>
+            => HasValue ? converter.Invoke(value!) : Optional<TResult>.None;
 
         /// <summary>
         /// If a value is present, apply the provided mapping function to it, and if the result is
@@ -403,7 +413,8 @@ namespace DotNext
         /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
         /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
         /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="None"/>.</returns>
-        public Optional<TResult> Convert<TResult>(Converter<T, TResult> mapper) => Convert(mapper.AsValueFunc());
+        public Optional<TResult> Convert<TResult>(Converter<T, TResult> mapper)
+            => Convert<TResult, DelegatingConverter<T, TResult>>(mapper);
 
         /// <summary>
         /// If a value is present, apply the provided mapping function to it, and if the result is
@@ -412,7 +423,14 @@ namespace DotNext
         /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
         /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
         /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="None"/>.</returns>
-        public Optional<TResult> Convert<TResult>(in ValueFunc<T, Optional<TResult>> mapper) => HasValue ? mapper.Invoke(value!) : Optional<TResult>.None;
+        [CLSCompliant(false)]
+        public unsafe Optional<TResult> Convert<TResult>(delegate*<T, TResult> mapper)
+            => Convert<TResult, Supplier<T, TResult>>(mapper);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private Optional<TResult> ConvertOptional<TResult, TConverter>(TConverter converter)
+            where TConverter : struct, ISupplier<T, Optional<TResult>>
+            => HasValue ? converter.Invoke(value!) : Optional<TResult>.None;
 
         /// <summary>
         /// If a value is present, apply the provided mapping function to it, and if the result is
@@ -421,7 +439,24 @@ namespace DotNext
         /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
         /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
         /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="None"/>.</returns>
-        public Optional<TResult> Convert<TResult>(Converter<T, Optional<TResult>> mapper) => Convert(mapper.AsValueFunc());
+        public Optional<TResult> Convert<TResult>(Converter<T, Optional<TResult>> mapper)
+            => ConvertOptional<TResult, DelegatingConverter<T, Optional<TResult>>>(mapper);
+
+        /// <summary>
+        /// If a value is present, apply the provided mapping function to it, and if the result is
+        /// non-null, return an Optional describing the result. Otherwise returns <see cref="None"/>.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
+        /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
+        /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="None"/>.</returns>
+        [CLSCompliant(false)]
+        public unsafe Optional<TResult> Convert<TResult>(delegate*<T, Optional<TResult>> mapper)
+            => ConvertOptional<TResult, Supplier<T, Optional<TResult>>>(mapper);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private Optional<T> If<TPredicate>(TPredicate condition)
+            where TPredicate : struct, ISupplier<T, bool>
+            => HasValue && condition.Invoke(value!) ? this : None;
 
         /// <summary>
         /// If a value is present, and the value matches the given predicate,
@@ -429,7 +464,7 @@ namespace DotNext
         /// </summary>
         /// <param name="condition">A predicate to apply to the value, if present.</param>
         /// <returns>An Optional describing the value of this Optional if a value is present and the value matches the given predicate, otherwise an empty Optional.</returns>
-        public Optional<T> If(in ValueFunc<T, bool> condition) => HasValue && condition.Invoke(value!) ? this : None;
+        public Optional<T> If(Predicate<T> condition) => If<DelegatingPredicate<T>>(condition);
 
         /// <summary>
         /// If a value is present, and the value matches the given predicate,
@@ -437,7 +472,8 @@ namespace DotNext
         /// </summary>
         /// <param name="condition">A predicate to apply to the value, if present.</param>
         /// <returns>An Optional describing the value of this Optional if a value is present and the value matches the given predicate, otherwise an empty Optional.</returns>
-        public Optional<T> If(Predicate<T> condition) => If(condition.AsValueFunc());
+        [CLSCompliant(false)]
+        public unsafe Optional<T> If(delegate*<T, bool> condition) => If<Supplier<T, bool>>(condition);
 
         /// <summary>
         /// Returns textual representation of this object.

@@ -29,17 +29,6 @@ namespace DotNext
 
             int ISupplier<T, T, int>.Invoke(T arg1, T arg2) => comparer.Compare(arg1, arg2);
         }
-#else
-        [StructLayout(LayoutKind.Auto)]
-        private readonly struct ComparerWrapper<T> : IComparer<T>
-        {
-            private readonly ValueFunc<T?, T?, int> comparer;
-
-            internal ComparerWrapper(in ValueFunc<T?, T?, int> comparer)
-                => this.comparer = comparer;
-
-            int IComparer<T>.Compare(T? x, T? y) => comparer.Invoke(x, y);
-        }
 #endif
 
         private static readonly char[] HexTable = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
@@ -79,19 +68,6 @@ namespace DotNext
         /// <param name="hashFunction">Custom hashing algorithm.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>32-bit hash code of the array content.</returns>
-        public static int BitwiseHashCode<T>(this Span<T> span, int hash, in ValueFunc<int, int, int> hashFunction, bool salted = true)
-            where T : unmanaged
-            => BitwiseHashCode((ReadOnlySpan<T>)span, hash, hashFunction, salted);
-
-        /// <summary>
-        /// Computes bitwise hash code for the memory identified by the given span using custom hash function.
-        /// </summary>
-        /// <typeparam name="T">The type of elements in the span.</typeparam>
-        /// <param name="span">The span whose content to be hashed.</param>
-        /// <param name="hash">Initial value of the hash.</param>
-        /// <param name="hashFunction">Custom hashing algorithm.</param>
-        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
-        /// <returns>32-bit hash code of the array content.</returns>
         public static int BitwiseHashCode<T>(this Span<T> span, int hash, Func<int, int, int> hashFunction, bool salted = true)
             where T : unmanaged
             => BitwiseHashCode((ReadOnlySpan<T>)span, hash, hashFunction, salted);
@@ -104,10 +80,11 @@ namespace DotNext
         /// <param name="hash">Initial value of the hash.</param>
         /// <param name="hashFunction">Custom hashing algorithm.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
-        /// <returns>64-bit hash code of the array content.</returns>
-        public static long BitwiseHashCode64<T>(this Span<T> span, long hash, in ValueFunc<long, long, long> hashFunction, bool salted = true)
+        /// <returns>32-bit hash code of the array content.</returns>
+        [CLSCompliant(false)]
+        public static unsafe int BitwiseHashCode<T>(this Span<T> span, int hash, delegate*<int, int, int> hashFunction, bool salted = true)
             where T : unmanaged
-            => BitwiseHashCode64((ReadOnlySpan<T>)span, hash, hashFunction, salted);
+            => BitwiseHashCode((ReadOnlySpan<T>)span, hash, hashFunction, salted);
 
         /// <summary>
         /// Computes bitwise hash code for the memory identified by the given span using custom hash function.
@@ -130,13 +107,20 @@ namespace DotNext
         /// <param name="hash">Initial value of the hash.</param>
         /// <param name="hashFunction">Custom hashing algorithm.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
-        /// <returns>32-bit hash code of the array content.</returns>
-        public static unsafe int BitwiseHashCode<T>(this ReadOnlySpan<T> span, int hash, in ValueFunc<int, int, int> hashFunction, bool salted = true)
+        /// <returns>64-bit hash code of the array content.</returns>
+        [CLSCompliant(false)]
+        public static unsafe long BitwiseHashCode64<T>(this Span<T> span, long hash, delegate*<long, long, long> hashFunction, bool salted = true)
             where T : unmanaged
+            => BitwiseHashCode64((ReadOnlySpan<T>)span, hash, hashFunction, salted);
+
+        private static unsafe int BitwiseHashCode<T, THashFunction>(ReadOnlySpan<T> span, int hash, THashFunction hashFunction, bool salted)
+            where T : unmanaged
+            where THashFunction : struct, ISupplier<int, int, int>
         {
             if (span.IsEmpty)
                 return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
-            return Intrinsics.GetHashCode32(ref As<T, byte>(ref MemoryMarshal.GetReference(span)), span.Length * sizeof(T), hash, in hashFunction, salted);
+
+            return Intrinsics.GetHashCode32(ref As<T, byte>(ref MemoryMarshal.GetReference(span)), span.Length * sizeof(T), hash, hashFunction, salted);
         }
 
         /// <summary>
@@ -150,7 +134,7 @@ namespace DotNext
         /// <returns>32-bit hash code of the array content.</returns>
         public static int BitwiseHashCode<T>(this ReadOnlySpan<T> span, int hash, Func<int, int, int> hashFunction, bool salted = true)
             where T : unmanaged
-            => BitwiseHashCode(span, hash, new ValueFunc<int, int, int>(hashFunction), salted);
+            => BitwiseHashCode<T, DelegatingSupplier<int, int, int>>(span, hash, hashFunction, salted);
 
         /// <summary>
         /// Computes bitwise hash code for the memory identified by the given span using custom hash function.
@@ -160,13 +144,20 @@ namespace DotNext
         /// <param name="hash">Initial value of the hash.</param>
         /// <param name="hashFunction">Custom hashing algorithm.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
-        /// <returns>64-bit hash code of the array content.</returns>
-        public static unsafe long BitwiseHashCode64<T>(this ReadOnlySpan<T> span, long hash, in ValueFunc<long, long, long> hashFunction, bool salted = true)
+        /// <returns>32-bit hash code of the array content.</returns>
+        [CLSCompliant(false)]
+        public static unsafe int BitwiseHashCode<T>(this ReadOnlySpan<T> span, int hash, delegate*<int, int, int> hashFunction, bool salted = true)
             where T : unmanaged
+            => BitwiseHashCode<T, Supplier<int, int, int>>(span, hash, hashFunction, salted);
+
+        private static unsafe long BitwiseHashCode64<T, THashFunction>(ReadOnlySpan<T> span, long hash, THashFunction hashFunction, bool salted)
+            where T : unmanaged
+            where THashFunction : struct, ISupplier<long, long, long>
         {
             if (span.IsEmpty)
                 return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
-            return Intrinsics.GetHashCode64(ref As<T, byte>(ref MemoryMarshal.GetReference(span)), span.Length * sizeof(T), hash, in hashFunction, salted);
+
+            return Intrinsics.GetHashCode64(ref As<T, byte>(ref MemoryMarshal.GetReference(span)), span.Length * sizeof(T), hash, hashFunction, salted);
         }
 
         /// <summary>
@@ -180,7 +171,21 @@ namespace DotNext
         /// <returns>64-bit hash code of the array content.</returns>
         public static long BitwiseHashCode64<T>(this ReadOnlySpan<T> span, long hash, Func<long, long, long> hashFunction, bool salted = true)
             where T : unmanaged
-            => BitwiseHashCode64(span, hash, new ValueFunc<long, long, long>(hashFunction), salted);
+            => BitwiseHashCode64<T, DelegatingSupplier<long, long, long>>(span, hash, hashFunction, salted);
+
+        /// <summary>
+        /// Computes bitwise hash code for the memory identified by the given span using custom hash function.
+        /// </summary>
+        /// <typeparam name="T">The type of elements in the span.</typeparam>
+        /// <param name="span">The span whose content to be hashed.</param>
+        /// <param name="hash">Initial value of the hash.</param>
+        /// <param name="hashFunction">Custom hashing algorithm.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <returns>64-bit hash code of the array content.</returns>
+        [CLSCompliant(false)]
+        public static unsafe long BitwiseHashCode64<T>(this ReadOnlySpan<T> span, long hash, delegate*<long, long, long> hashFunction, bool salted = true)
+            where T : unmanaged
+            => BitwiseHashCode64<T, Supplier<long, long, long>>(span, hash, hashFunction, salted);
 
         /// <summary>
         /// Computes bitwise hash code for the memory identified by the given span.
@@ -259,13 +264,13 @@ namespace DotNext
             => MemoryMarshal.AsBytes(first).SequenceCompareTo(MemoryMarshal.AsBytes(second));
 
 #if NETSTANDARD2_1
-        private static void QuickSort<T, TComparer>(Span<T> span, int startIndex, int endIndex, ref TComparer comparison)
+        private static void QuickSort<T, TComparer>(Span<T> span, int startIndex, int endIndex, TComparer comparison)
             where TComparer : struct, ISupplier<T, T, int>
         {
             while (startIndex < endIndex)
             {
                 var partitionIndex = Partition(span, startIndex, endIndex, ref comparison);
-                QuickSort(span, startIndex, partitionIndex - 1, ref comparison);
+                QuickSort(span, startIndex, partitionIndex - 1, comparison);
                 startIndex = partitionIndex + 1;
             }
 
@@ -301,8 +306,7 @@ namespace DotNext
         public static void Sort<T>(this Span<T> span, IComparer<T>? comparison = null)
         {
 #if NETSTANDARD2_1
-            var cmp = new ValueComparer<T>(comparison ?? Comparer<T>.Default);
-            QuickSort(span, 0, span.Length - 1, ref cmp);
+            QuickSort(span, 0, span.Length - 1, new ValueComparer<T>(comparison ?? Comparer<T>.Default));
 #else
             MemoryExtensions.Sort(span, comparison ?? Comparer<T>.Default);
 #endif
@@ -317,25 +321,9 @@ namespace DotNext
 #if !NETSTANDARD2_1
         [Obsolete("Use MemoryExtensions.Sort() extension method instead")]
 #endif
-        public static void Sort<T>(this Span<T> span, in ValueFunc<T?, T?, int> comparison)
-#if NETSTANDARD2_1
-            => QuickSort(span, 0, span.Length - 1, ref AsRef(comparison));
-#else
-            => MemoryExtensions.Sort(span, new ComparerWrapper<T>(comparison));
-#endif
-
-        /// <summary>
-        /// Sorts the elements.
-        /// </summary>
-        /// <param name="span">The contiguous region of arbitrary memory to sort.</param>
-        /// <param name="comparison">The comparer used for sorting.</param>
-        /// <typeparam name="T">The type of the elements.</typeparam>
-#if !NETSTANDARD2_1
-        [Obsolete("Use MemoryExtensions.Sort() extension method instead")]
-#endif
         public static void Sort<T>(this Span<T> span, Comparison<T?> comparison)
 #if NETSTANDARD2_1
-            => Sort(span, comparison.AsValueFunc());
+            => QuickSort(span, 0, span.Length - 1, new DelegatingComparer<T>(comparison));
 #else
             => MemoryExtensions.Sort(span, comparison);
 #endif
@@ -362,20 +350,13 @@ namespace DotNext
         public static ReadOnlySpan<T> TrimLength<T>(this ReadOnlySpan<T> span, int maxLength)
             => span.Length <= maxLength ? span : span.Slice(0, maxLength);
 
-        /// <summary>
-        /// Returns the zero-based index of the first occurrence of the specified value in the <see cref="Span{T}"/>. The search starts at a specified position.
-        /// </summary>
-        /// <typeparam name="T">The of the elements in the span.</typeparam>
-        /// <param name="span">The span to search.</param>
-        /// <param name="value">The value to search for.</param>
-        /// <param name="startIndex">The search starting position.</param>
-        /// <param name="comparer">The comparer used to compare the expected value and the actual value from the span.</param>
-        /// <returns>The zero-based index position of <paramref name="value"/> from the start of the given span if that value is found, or -1 if it is not.</returns>
-        public static int IndexOf<T>(this ReadOnlySpan<T> span, T value, int startIndex, in ValueFunc<T, T, bool> comparer)
+        private static int IndexOf<T, TComparer>(ReadOnlySpan<T> span, T value, int startIndex, TComparer comparer)
+            where TComparer : struct, ISupplier<T, T, bool>
         {
             if (span.IsEmpty)
                 return -1;
-            ref var reference = ref AsRef(in span[0]);
+
+            ref var reference = ref MemoryMarshal.GetReference(span);
             for (var i = startIndex; i < span.Length; i++)
             {
                 if (comparer.Invoke(reference, value))
@@ -395,7 +376,21 @@ namespace DotNext
         /// <param name="startIndex">The search starting position.</param>
         /// <param name="comparer">The comparer used to compare the expected value and the actual value from the span.</param>
         /// <returns>The zero-based index position of <paramref name="value"/> from the start of the given span if that value is found, or -1 if it is not.</returns>
-        public static int IndexOf<T>(this ReadOnlySpan<T> span, T value, int startIndex, Func<T, T, bool> comparer) => IndexOf(span, value, startIndex, new ValueFunc<T, T, bool>(comparer));
+        public static int IndexOf<T>(this ReadOnlySpan<T> span, T value, int startIndex, Func<T, T, bool> comparer)
+            => IndexOf<T, DelegatingSupplier<T, T, bool>>(span, value, startIndex, comparer);
+
+        /// <summary>
+        /// Returns the zero-based index of the first occurrence of the specified value in the <see cref="Span{T}"/>. The search starts at a specified position.
+        /// </summary>
+        /// <typeparam name="T">The of the elements in the span.</typeparam>
+        /// <param name="span">The span to search.</param>
+        /// <param name="value">The value to search for.</param>
+        /// <param name="startIndex">The search starting position.</param>
+        /// <param name="comparer">The comparer used to compare the expected value and the actual value from the span.</param>
+        /// <returns>The zero-based index position of <paramref name="value"/> from the start of the given span if that value is found, or -1 if it is not.</returns>
+        [CLSCompliant(false)]
+        public static unsafe int IndexOf<T>(this ReadOnlySpan<T> span, T value, int startIndex, delegate*<T, T, bool> comparer)
+            => IndexOf<T, Supplier<T, T, bool>>(span, value, startIndex, comparer);
 
         /// <summary>
         /// Iterates over elements of the span.
@@ -403,7 +398,7 @@ namespace DotNext
         /// <typeparam name="T">The type of the elements.</typeparam>
         /// <param name="span">The span to iterate.</param>
         /// <param name="action">The action to be applied for each element of the span.</param>
-        public static void ForEach<T>(this Span<T> span, in ValueRefAction<T, int> action)
+        public static void ForEach<T>(this Span<T> span, RefAction<T, int> action)
         {
             if (span.IsEmpty)
                 return;
@@ -411,14 +406,6 @@ namespace DotNext
             for (var i = 0; i < span.Length; i++, reference = ref Add(ref reference, 1))
                 action.Invoke(ref reference, i);
         }
-
-        /// <summary>
-        /// Iterates over elements of the span.
-        /// </summary>
-        /// <typeparam name="T">The type of the elements.</typeparam>
-        /// <param name="span">The span to iterate.</param>
-        /// <param name="action">The action to be applied for each element of the span.</param>
-        public static void ForEach<T>(this Span<T> span, RefAction<T, int> action) => ForEach(span, new ValueRefAction<T, int>(action));
 
         /// <summary>
         /// Converts set of bytes into hexadecimal representation.
@@ -595,25 +582,6 @@ namespace DotNext
 
             return result;
         }
-
-        internal static void CopyTo<T>(ReadOnlySpan<T> source, IBufferWriter<T> writer)
-        {
-            if (!source.IsEmpty)
-            {
-                var destination = writer.GetSpan(source.Length);
-                source.CopyTo(destination);
-                writer.Advance(source.Length);
-            }
-        }
-
-        internal static void CopyTo(ReadOnlySpan<char> source, StringBuilder builder)
-            => builder.Append(source);
-
-        internal static void CopyTo(ReadOnlySpan<char> source, TextWriter writer)
-            => writer.Write(source);
-
-        internal static void CopyTo(ReadOnlySpan<byte> source, Stream stream)
-            => stream.Write(source);
 
         /// <summary>
         /// Copies the contents from the source span into a destination span.

@@ -258,7 +258,8 @@ namespace DotNext.IO
             using var source = new MemoryStream(new byte[] { 2, 4, 5 });
             using var destination = new MemoryStream();
             var buffer = new byte[2];
-            Equal(3L, source.CopyTo(destination, buffer));
+            source.CopyTo(destination, buffer);
+            Equal(3L, destination.Length);
         }
 
         [Fact]

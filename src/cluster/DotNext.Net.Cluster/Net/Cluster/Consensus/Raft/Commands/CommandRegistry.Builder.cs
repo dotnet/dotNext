@@ -14,7 +14,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
         /// <summary>
         /// Represents builder of the interpreter.
         /// </summary>
-        public sealed class Builder : IConvertible<CommandInterpreter>
+        public sealed class Builder : ISupplier<CommandInterpreter>
         {
             private readonly Dictionary<int, CommandHandler> interpreters;
             private readonly Dictionary<Type, FormatterInfo> formatters;
@@ -100,7 +100,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
             public CommandInterpreter Build() => new CommandInterpreter(interpreters, formatters);
 
             /// <inheritdoc />
-            CommandInterpreter IConvertible<CommandInterpreter>.Convert() => Build();
+            CommandInterpreter ISupplier<CommandInterpreter>.Invoke() => Build();
         }
     }
 }

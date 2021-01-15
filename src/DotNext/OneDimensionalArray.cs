@@ -58,24 +58,11 @@ namespace DotNext
         /// <typeparam name="T">Type of array elements.</typeparam>
         /// <param name="array">An array to iterate.</param>
         /// <param name="action">An action to be applied for each element.</param>
-        public static void ForEach<T>(this T[] array, in ValueRefAction<T, long> action)
+        public static void ForEach<T>(this T[] array, RefAction<T, long> action)
         {
             for (nint i = 0; i < Intrinsics.GetLength(array); i++)
                 action.Invoke(ref array[i], i);
         }
-
-        /// <summary>
-        /// Applies specific action to each array element.
-        /// </summary>
-        /// <remarks>
-        /// This method support modification of array elements
-        /// because each array element is passed by reference into action.
-        /// </remarks>
-        /// <typeparam name="T">Type of array elements.</typeparam>
-        /// <param name="array">An array to iterate.</param>
-        /// <param name="action">An action to be applied for each element.</param>
-        public static void ForEach<T>(this T[] array, RefAction<T, long> action)
-            => ForEach(array, new ValueRefAction<T, long>(action));
 
         /// <summary>
         /// Insert a new element into array and return modified array.
@@ -129,7 +116,8 @@ namespace DotNext
             return newStore;
         }
 
-        private static T[] RemoveAll<T, TConsumer>(T[] array, in ValueFunc<T, bool> match, ref TConsumer callback)
+        private static T[] RemoveAll<T, TPredicate, TConsumer>(T[] array, TPredicate condition, ref TConsumer callback)
+            where TPredicate : struct, ISupplier<T, bool>
             where TConsumer : struct, IConsumer<T>
         {
             var length = Intrinsics.GetLength(array);
@@ -139,7 +127,7 @@ namespace DotNext
             var tempArray = new T[length];
             foreach (var item in array)
             {
-                if (match.Invoke(item))
+                if (condition.Invoke(item))
                     callback.Invoke(item);
                 else
                     tempArray[newLength++] = item;
@@ -156,18 +144,11 @@ namespace DotNext
             return array;
         }
 
-        /// <summary>
-        /// Removes all the elements that match the conditions defined by the specified predicate.
-        /// </summary>
-        /// <typeparam name="T">The type of the elements in array.</typeparam>
-        /// <param name="array">Source array. Cannot be <see langword="null"/>.</param>
-        /// <param name="match">The predicate that defines the conditions of the elements to remove.</param>
-        /// <param name="count">The number of elements removed from this list.</param>
-        /// <returns>A modified array with removed elements.</returns>
-        public static T[] RemoveAll<T>(this T[] array, in ValueFunc<T, bool> match, out long count)
+        private static T[] RemoveAll<T, TPredicate>(T[] array, TPredicate condition, out long count)
+            where TPredicate : struct, ISupplier<T, bool>
         {
             var counter = new RemovalCounter<T>();
-            var result = RemoveAll(array, match, ref counter);
+            var result = RemoveAll(array, condition, ref counter);
             count = counter.Count;
             return result;
         }
@@ -181,7 +162,7 @@ namespace DotNext
         /// <param name="count">The number of elements removed from this list.</param>
         /// <returns>A modified array with removed elements.</returns>
         public static T[] RemoveAll<T>(this T[] array, Predicate<T> match, out long count)
-            => RemoveAll(array, match.AsValueFunc(), out count);
+            => RemoveAll<T, DelegatingPredicate<T>>(array, match, out count);
 
         /// <summary>
         /// Removes all the elements that match the conditions defined by the specified predicate.
@@ -189,10 +170,11 @@ namespace DotNext
         /// <typeparam name="T">The type of the elements in array.</typeparam>
         /// <param name="array">Source array. Cannot be <see langword="null"/>.</param>
         /// <param name="match">The predicate that defines the conditions of the elements to remove.</param>
-        /// <param name="callback">The delegate that is used to accept removed items.</param>
+        /// <param name="count">The number of elements removed from this list.</param>
         /// <returns>A modified array with removed elements.</returns>
-        public static T[] RemoveAll<T>(this T[] array, in ValueFunc<T, bool> match, in ValueAction<T> callback)
-            => RemoveAll(array, match, ref AsRef(callback));
+        [CLSCompliant(false)]
+        public static unsafe T[] RemoveAll<T>(this T[] array, delegate*<T, bool> match, out long count)
+            => RemoveAll<T, Supplier<T, bool>>(array, match, out count);
 
         /// <summary>
         /// Removes all the elements that match the conditions defined by the specified predicate.
@@ -203,7 +185,25 @@ namespace DotNext
         /// <param name="callback">The delegate that is used to accept removed items.</param>
         /// <returns>A modified array with removed elements.</returns>
         public static T[] RemoveAll<T>(this T[] array, Predicate<T> match, Action<T> callback)
-            => RemoveAll(array, match.AsValueFunc(), new ValueAction<T>(callback));
+        {
+            var action = new DelegatingConsumer<T>(callback);
+            return RemoveAll(array, new DelegatingPredicate<T>(match), ref action);
+        }
+
+        /// <summary>
+        /// Removes all the elements that match the conditions defined by the specified predicate.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements in array.</typeparam>
+        /// <param name="array">Source array. Cannot be <see langword="null"/>.</param>
+        /// <param name="match">The predicate that defines the conditions of the elements to remove.</param>
+        /// <param name="callback">The delegate that is used to accept removed items.</param>
+        /// <returns>A modified array with removed elements.</returns>
+        [CLSCompliant(false)]
+        public static unsafe T[] RemoveAll<T>(this T[] array, delegate*<T, bool> match, Action<T> callback)
+        {
+            var action = new DelegatingConsumer<T>(callback);
+            return RemoveAll(array, new Supplier<T, bool>(match), ref action);
+        }
 
         internal static T[] New<T>(long length) => length == 0L ? Array.Empty<T>() : new T[length];
 
@@ -325,17 +325,9 @@ namespace DotNext
             => Intrinsics.GetLength(array) > 0 ? Intrinsics.GetHashCode32(ref As<T, byte>(ref GetArrayDataReference(array)), array.LongLength * sizeof(T), salted) : 0;
 #endif
 
-        /// <summary>
-        /// Computes bitwise hash code for the array content using custom hash function.
-        /// </summary>
-        /// <typeparam name="T">The type of array elements.</typeparam>
-        /// <param name="array">The array to be hashed.</param>
-        /// <param name="hash">Initial value of the hash.</param>
-        /// <param name="hashFunction">Custom hashing algorithm.</param>
-        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
-        /// <returns>32-bit hash code of the array content.</returns>
-        public static unsafe int BitwiseHashCode<T>(this T[] array, int hash, in ValueFunc<int, int, int> hashFunction, bool salted = true)
+        private static unsafe int BitwiseHashCode<T, THashFunction>(T[] array, int hash, THashFunction hashFunction, bool salted)
             where T : unmanaged
+            where THashFunction : struct, ISupplier<int, int, int>
 #if NETSTANDARD2_1
             => Intrinsics.GetLength(array) > 0 ? Intrinsics.GetHashCode32(ref As<T, byte>(ref array[0]), array.LongLength * sizeof(T), hash, hashFunction, salted) : hash;
 #else
@@ -353,7 +345,7 @@ namespace DotNext
         /// <returns>32-bit hash code of the array content.</returns>
         public static int BitwiseHashCode<T>(this T[] array, int hash, Func<int, int, int> hashFunction, bool salted = true)
             where T : unmanaged
-            => BitwiseHashCode(array, hash, new ValueFunc<int, int, int>(hashFunction), salted);
+            => BitwiseHashCode<T, DelegatingSupplier<int, int, int>>(array, hash, hashFunction, salted);
 
         /// <summary>
         /// Computes bitwise hash code for the array content using custom hash function.
@@ -363,9 +355,15 @@ namespace DotNext
         /// <param name="hash">Initial value of the hash.</param>
         /// <param name="hashFunction">Custom hashing algorithm.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
-        /// <returns>64-bit hash code of the array content.</returns>
-        public static unsafe long BitwiseHashCode64<T>(this T[] array, long hash, in ValueFunc<long, long, long> hashFunction, bool salted = true)
+        /// <returns>32-bit hash code of the array content.</returns>
+        [CLSCompliant(false)]
+        public static unsafe int BitwiseHashCode<T>(this T[] array, int hash, delegate*<int, int, int> hashFunction, bool salted = true)
             where T : unmanaged
+            => BitwiseHashCode<T, Supplier<int, int, int>>(array, hash, hashFunction, salted);
+
+        private static unsafe long BitwiseHashCode64<T, THashFunction>(T[] array, long hash, THashFunction hashFunction, bool salted)
+            where T : unmanaged
+            where THashFunction : struct, ISupplier<long, long, long>
 #if NETSTANDARD2_1
             => Intrinsics.GetLength(array) > 0 ? Intrinsics.GetHashCode64(ref As<T, byte>(ref array[0]), array.LongLength * sizeof(T), hash, hashFunction, salted) : hash;
 #else
@@ -383,7 +381,21 @@ namespace DotNext
         /// <returns>64-bit hash code of the array content.</returns>
         public static long BitwiseHashCode64<T>(this T[] array, long hash, Func<long, long, long> hashFunction, bool salted = true)
             where T : unmanaged
-            => BitwiseHashCode64(array, hash, new ValueFunc<long, long, long>(hashFunction), salted);
+            => BitwiseHashCode64<T, DelegatingSupplier<long, long, long>>(array, hash, hashFunction, salted);
+
+        /// <summary>
+        /// Computes bitwise hash code for the array content using custom hash function.
+        /// </summary>
+        /// <typeparam name="T">The type of array elements.</typeparam>
+        /// <param name="array">The array to be hashed.</param>
+        /// <param name="hash">Initial value of the hash.</param>
+        /// <param name="hashFunction">Custom hashing algorithm.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <returns>64-bit hash code of the array content.</returns>
+        [CLSCompliant(false)]
+        public static unsafe long BitwiseHashCode64<T>(this T[] array, long hash, delegate*<long, long, long> hashFunction, bool salted = true)
+            where T : unmanaged
+            => BitwiseHashCode64<T, Supplier<long, long, long>>(array, hash, hashFunction, salted);
 
         /// <summary>
         /// Computes bitwise hash code for the array content.

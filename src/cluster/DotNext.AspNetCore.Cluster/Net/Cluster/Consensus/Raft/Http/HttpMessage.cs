@@ -42,7 +42,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             internal OutboundTransferObject(IDataTransferObject dto) => this.dto = dto;
 
-            protected sealed override Task SerializeToStreamAsync(Stream stream, TransportContext? context) => dto.WriteToAsync(stream).AsTask();
+            protected sealed override Task SerializeToStreamAsync(Stream stream, TransportContext? context)
+                => SerializeToStreamAsync(stream, context, CancellationToken.None);
+
+#if NETCOREAPP3_1
+            private
+#else
+            protected sealed override
+#endif
+            Task SerializeToStreamAsync(Stream stream, TransportContext? context, CancellationToken token) => dto.WriteToAsync(stream, token: token).AsTask();
 
             protected sealed override bool TryComputeLength(out long length)
                 => dto.Length.TryGetValue(out length);
@@ -82,8 +90,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             request.Method = HttpMethod.Post;
         }
 
-        private protected static async Task<bool> ParseBoolResponse(HttpResponseMessage response)
+        private protected static async Task<bool> ParseBoolResponse(HttpResponseMessage response, CancellationToken token)
+#if NETCOREAPP3_1
             => bool.TryParse(await response.Content.ReadAsStringAsync().ConfigureAwait(false), out var result)
+#else
+            => bool.TryParse(await response.Content.ReadAsStringAsync(token).ConfigureAwait(false), out var result)
+#endif
                 ? result
                 : throw new RaftProtocolException(ExceptionMessages.IncorrectResponse);
 

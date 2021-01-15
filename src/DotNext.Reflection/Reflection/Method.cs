@@ -594,8 +594,8 @@ namespace DotNext.Reflection
                 return UnreflectInstance(method);
         }
 
-        internal static Method<TSignature>? GetOrCreate(MethodInfo method)
-            => method.GetUserData().GetOrSet(CacheSlot, method, new ValueFunc<MethodInfo, Method<TSignature>?>(Unreflect));
+        internal static unsafe Method<TSignature>? GetOrCreate(MethodInfo method)
+            => method.GetUserData().GetOrSet(CacheSlot, method, &Unreflect);
 
         internal static Method<TSignature>? GetOrCreate<T>(string methodName, bool nonPublic, MethodLookup lookup)
         {

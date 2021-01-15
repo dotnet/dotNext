@@ -1,6 +1,8 @@
 using System;
 using System.Buffers;
+using System.Diagnostics;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,10 +25,25 @@ namespace DotNext.IO
         public static TextWriter AsTextWriter<TWriter>(this TWriter writer, IFormatProvider? provider = null, Action<TWriter>? flush = null, Func<TWriter, CancellationToken, Task>? flushAsync = null)
             where TWriter : class, IBufferWriter<char>
         {
-            flush ??= IFlushable.TryReflectFlushMethod(writer);
-            flushAsync ??= IFlushable.TryReflectAsyncFlushMethod(writer);
+            if (writer is IFlushable)
+            {
+                flush ??= Flush;
+                flushAsync ??= FlushAsync;
+            }
 
             return new TextBufferWriter<TWriter>(writer, provider, flush, flushAsync);
+
+            static void Flush(TWriter writer)
+            {
+                Debug.Assert(writer is IFlushable);
+                Unsafe.As<IFlushable>(writer).Flush();
+            }
+
+            static Task FlushAsync(TWriter writer, CancellationToken token)
+            {
+                Debug.Assert(writer is IFlushable);
+                return Unsafe.As<IFlushable>(writer).FlushAsync(token);
+            }
         }
     }
 }

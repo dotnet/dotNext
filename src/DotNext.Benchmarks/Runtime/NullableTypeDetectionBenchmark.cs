@@ -1,6 +1,7 @@
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Order;
+using System;
 using System.Text;
 
 namespace DotNext.Runtime
@@ -12,14 +13,14 @@ namespace DotNext.Runtime
         [Benchmark]
         public bool DetectNullableType()
         {
-            var vt = Intrinsics.IsNullable<ValueFunc<int, int>>();
+            var vt = Intrinsics.IsNullable<Guid>();
             return vt |= Intrinsics.IsNullable<StringBuilder>();
         }
 
         [Benchmark]
         public bool DetectNullableUsingReflection()
         {
-            var vt = typeof(ValueFunc<int, int>).IsValueType;
+            var vt = typeof(Guid).IsValueType;
             return vt |= typeof(StringBuilder).IsValueType;
         }
     }

@@ -13,7 +13,7 @@ namespace DotNext.Threading
     /// Provides set of methods for asynchronous invocation of various delegates.
     /// </summary>
     /// <remarks>
-    /// In .NET Core, BeginInvoke and EndInvoke methods of delegate type are not supported.
+    /// BeginInvoke and EndInvoke methods of delegate type are supported only in .NET Framework.
     /// This class provides alternative approach which allows to invoke delegate asynchronously
     /// with full support of async/await feature.
     /// </remarks>

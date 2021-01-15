@@ -42,17 +42,17 @@ namespace DotNext.Collections.Generic
                 Pop(out RuntimeMethodHandle method);
                 Ldtoken(Type<IReadOnlyList<T>>());
                 Pop(out RuntimeTypeHandle type);
-                ReadOnly = DelegateHelpers.CreateDelegate<Func<IReadOnlyList<T>, int, T>>((MethodInfo)MethodBase.GetMethodFromHandle(method, type)!);
+                ReadOnly = ((MethodInfo)MethodBase.GetMethodFromHandle(method, type)!).CreateDelegate<Func<IReadOnlyList<T>, int, T>>();
 
                 Ldtoken(PropertyGet(Type<IList<T>>(), ItemIndexerName));
                 Pop(out method);
                 Ldtoken(Type<IList<T>>());
                 Pop(out type);
-                Getter = DelegateHelpers.CreateDelegate<Func<IList<T>, int, T>>((MethodInfo)MethodBase.GetMethodFromHandle(method, type)!);
+                Getter = ((MethodInfo)MethodBase.GetMethodFromHandle(method, type)!).CreateDelegate<Func<IList<T>, int, T>>();
 
                 Ldtoken(PropertySet(Type<IList<T>>(), ItemIndexerName));
                 Pop(out method);
-                Setter = DelegateHelpers.CreateDelegate<Action<IList<T>, int, T>>((MethodInfo)MethodBase.GetMethodFromHandle(method, type)!);
+                Setter = ((MethodInfo)MethodBase.GetMethodFromHandle(method, type)!).CreateDelegate<Action<IList<T>, int, T>>();
             }
         }
 
@@ -104,16 +104,8 @@ namespace DotNext.Collections.Generic
             return Return<Action<int, T>>();
         }
 
-        /// <summary>
-        /// Converts list into array and perform mapping for each
-        /// element.
-        /// </summary>
-        /// <typeparam name="TInput">Type of elements in the list.</typeparam>
-        /// <typeparam name="TOutput">Type of elements in the output array.</typeparam>
-        /// <param name="input">A list to convert. Cannot be <see langword="null"/>.</param>
-        /// <param name="mapper">Element mapping function.</param>
-        /// <returns>An array of list items.</returns>
-        public static TOutput[] ToArray<TInput, TOutput>(this IList<TInput> input, in ValueFunc<TInput, TOutput> mapper)
+        private static TOutput[] ToArray<TInput, TOutput, TConverter>(this IList<TInput> input, TConverter mapper)
+            where TConverter : struct, ISupplier<TInput, TOutput>
         {
 #if NETSTANDARD2_1
             var output = OneDimensionalArray.New<TOutput>(input.Count);
@@ -134,7 +126,8 @@ namespace DotNext.Collections.Generic
         /// <param name="input">A list to convert. Cannot be <see langword="null"/>.</param>
         /// <param name="mapper">Element mapping function.</param>
         /// <returns>An array of list items.</returns>
-        public static TOutput[] ToArray<TInput, TOutput>(this IList<TInput> input, Converter<TInput, TOutput> mapper) => ToArray(input, mapper.AsValueFunc());
+        public static TOutput[] ToArray<TInput, TOutput>(this IList<TInput> input, Converter<TInput, TOutput> mapper)
+            => ToArray<TInput, TOutput, DelegatingConverter<TInput, TOutput>>(input, mapper);
 
         /// <summary>
         /// Converts list into array and perform mapping for each
@@ -143,9 +136,14 @@ namespace DotNext.Collections.Generic
         /// <typeparam name="TInput">Type of elements in the list.</typeparam>
         /// <typeparam name="TOutput">Type of elements in the output array.</typeparam>
         /// <param name="input">A list to convert. Cannot be <see langword="null"/>.</param>
-        /// <param name="mapper">Index-aware element mapping function.</param>
+        /// <param name="mapper">Element mapping function.</param>
         /// <returns>An array of list items.</returns>
-        public static TOutput[] ToArray<TInput, TOutput>(this IList<TInput> input, in ValueFunc<int, TInput, TOutput> mapper)
+        [CLSCompliant(false)]
+        public static unsafe TOutput[] ToArray<TInput, TOutput>(this IList<TInput> input, delegate*<TInput, TOutput> mapper)
+            => ToArray<TInput, TOutput, Supplier<TInput, TOutput>>(input, mapper);
+
+        private static TOutput[] ToArrayWithIndex<TInput, TOutput, TConverter>(this IList<TInput> input, TConverter mapper)
+            where TConverter : struct, ISupplier<int, TInput, TOutput>
         {
 #if NETSTANDARD2_1
             var output = OneDimensionalArray.New<TOutput>(input.Count);
@@ -167,17 +165,20 @@ namespace DotNext.Collections.Generic
         /// <param name="mapper">Index-aware element mapping function.</param>
         /// <returns>An array of list items.</returns>
         public static TOutput[] ToArray<TInput, TOutput>(this IList<TInput> input, Func<int, TInput, TOutput> mapper)
-            => ToArray(input, new ValueFunc<int, TInput, TOutput>(mapper));
+            => ToArrayWithIndex<TInput, TOutput, DelegatingSupplier<int, TInput, TOutput>>(input, mapper);
 
         /// <summary>
-        /// Returns lazily converted read-only list.
+        /// Converts list into array and perform mapping for each
+        /// element.
         /// </summary>
-        /// <param name="list">Read-only list to convert.</param>
-        /// <param name="converter">A list item conversion function.</param>
-        /// <typeparam name="TInput">Type of items in the source list.</typeparam>
-        /// <typeparam name="TOutput">Type of items in the target list.</typeparam>
-        /// <returns>Lazily converted read-only list.</returns>
-        public static ReadOnlyListView<TInput, TOutput> Convert<TInput, TOutput>(this IReadOnlyList<TInput> list, in ValueFunc<TInput, TOutput> converter) => new ReadOnlyListView<TInput, TOutput>(list, converter);
+        /// <typeparam name="TInput">Type of elements in the list.</typeparam>
+        /// <typeparam name="TOutput">Type of elements in the output array.</typeparam>
+        /// <param name="input">A list to convert. Cannot be <see langword="null"/>.</param>
+        /// <param name="mapper">Index-aware element mapping function.</param>
+        /// <returns>An array of list items.</returns>
+        [CLSCompliant(false)]
+        public static unsafe TOutput[] ToArray<TInput, TOutput>(this IList<TInput> input, delegate*<int, TInput, TOutput> mapper)
+            => ToArrayWithIndex<TInput, TOutput, Supplier<int, TInput, TOutput>>(input, mapper);
 
         /// <summary>
         /// Returns lazily converted read-only list.
@@ -188,7 +189,7 @@ namespace DotNext.Collections.Generic
         /// <typeparam name="TOutput">Type of items in the target list.</typeparam>
         /// <returns>Lazily converted read-only list.</returns>
         public static ReadOnlyListView<TInput, TOutput> Convert<TInput, TOutput>(this IReadOnlyList<TInput> list, Converter<TInput, TOutput> converter)
-            => Convert(list, converter.AsValueFunc());
+            => new ReadOnlyListView<TInput, TOutput>(list, converter);
 
         /// <summary>
         /// Constructs read-only list with single item in it.
@@ -205,17 +206,19 @@ namespace DotNext.Collections.Generic
         /// Time complexity of this operation is O(log N), where N is a size of the list.
         /// </remarks>
         /// <typeparam name="T">The type of the items in the list.</typeparam>
+        /// <typeparam name="TComparer">The type of the comparer providing comparison logic.</typeparam>
         /// <param name="list">The list to insert into.</param>
         /// <param name="item">The item to be added into the list.</param>
         /// <param name="comparer">The comparer function.</param>
         /// <returns>The actual index of the inserted item.</returns>
-        public static int InsertOrdered<T>(this IList<T> list, T item, in ValueFunc<T, T, int> comparer)
+        public static int InsertOrdered<T, TComparer>(this IList<T> list, T item, TComparer comparer)
+            where TComparer : IComparer<T>
         {
             int low = 0, high = list.Count;
             while (low < high)
             {
                 var mid = (low + high) / 2;
-                var cmp = comparer.Invoke(list[mid], item);
+                var cmp = comparer.Compare(list[mid], item);
                 if (cmp > 0)
                     high = mid;
                 else
@@ -237,7 +240,8 @@ namespace DotNext.Collections.Generic
         /// <param name="item">The item to be added into the list.</param>
         /// <param name="comparer">The comparer function.</param>
         /// <returns>The actual index of the inserted item.</returns>
-        public static int InsertOrdered<T>(this IList<T> list, T item, Comparison<T> comparer) => InsertOrdered(list, item, comparer.AsValueFunc());
+        public static int InsertOrdered<T>(this IList<T> list, T item, Comparison<T?> comparer)
+            => InsertOrdered<T, DelegatingComparer<T>>(list, item, comparer);
 
         /// <summary>
         /// Removes a range of elements from list.

@@ -18,8 +18,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     {
         private sealed class Replicator : TaskCompletionSource<Result<bool>>, ILogEntryConsumer<IRaftLogEntry, Result<bool>>
         {
-            private static readonly ValueFunc<long, long> IndexDecrement = new ValueFunc<long, long>(DecrementIndex);
-
             private readonly IRaftClusterMember member;
             private readonly long commitIndex, precedingIndex, precedingTerm, term;
             private readonly ILogger logger;
@@ -50,8 +48,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 this.token = token;
             }
 
-            private static long DecrementIndex(long index) => index > 0L ? index - 1L : index;
-
             internal ValueTask<Result<bool>> Start(IAuditTrail<IRaftLogEntry> auditTrail)
             {
                 logger.ReplicationStarted(member.EndPoint, currentIndex);
@@ -76,7 +72,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     }
                     else
                     {
-                        logger.ReplicationFailed(member.EndPoint, member.NextIndex.UpdateAndGet(in IndexDecrement));
+                        logger.ReplicationFailed(member.EndPoint, member.NextIndex.UpdateAndGet(static index => index > 0L ? index - 1L : index));
                     }
 
                     SetResult(result);

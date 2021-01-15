@@ -21,11 +21,20 @@ namespace DotNext
     /// instead of manually written implementation of overridden <see cref="object.GetHashCode"/> and <see cref="object.Equals(object)"/> methods.
     /// </remarks>
     [RuntimeFeatures(RuntimeGenericInstantiation = true, DynamicCodeCompilation = true, PrivateReflection = true)]
+#if NETSTANDARD2_1
     public struct EqualityComparerBuilder<T>
+#else
+    public readonly struct EqualityComparerBuilder<T>
+#endif
     {
         private const BindingFlags PublicStaticFlags = BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly;
+#if NETSTANDARD2_1
         private bool salted;
         private ICollection<string>? excludedFields;
+#else
+        private readonly bool salted;
+        private readonly IReadOnlySet<string> excludedFields;
+#endif
 
         /// <summary>
         /// Sets an array of excluded field names.
@@ -263,6 +272,6 @@ namespace DotNext
         /// <returns>The generated equality comparer.</returns>
         /// <exception cref="PlatformNotSupportedException">Dynamic code generation is not supported by underlying CLR implementation.</exception>
         public IEqualityComparer<T> Build()
-            => typeof(T).IsPrimitive ? (IEqualityComparer<T>)EqualityComparer<T>.Default : new ConstructedEqualityComparer(BuildEquals(), BuildGetHashCode());
+            => typeof(T).IsPrimitive ? EqualityComparer<T>.Default : new ConstructedEqualityComparer(BuildEquals(), BuildGetHashCode());
     }
 }

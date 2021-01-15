@@ -26,7 +26,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
         }
 
-        Task<bool> IHttpMessageReader<bool>.ParseResponse(HttpResponseMessage response, CancellationToken token) => ParseBoolResponse(response);
+        Task<bool> IHttpMessageReader<bool>.ParseResponse(HttpResponseMessage response, CancellationToken token) => ParseBoolResponse(response, token);
 
         public new Task SaveResponse(HttpResponse response, bool result, CancellationToken token) => HttpMessage.SaveResponse(response, result, token);
     }

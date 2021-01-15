@@ -16,17 +16,27 @@ namespace DotNext.Collections.Generic
     public readonly struct ReadOnlyListView<TInput, TOutput> : IReadOnlyList<TOutput>, IEquatable<ReadOnlyListView<TInput, TOutput>>
     {
         private readonly IReadOnlyList<TInput>? source;
-        private readonly ValueFunc<TInput, TOutput> mapper;
+        private readonly Func<TInput, TOutput> mapper;
 
         /// <summary>
         /// Initializes a new lazily converted view.
         /// </summary>
         /// <param name="list">Read-only list to convert.</param>
         /// <param name="mapper">List items converter.</param>
-        public ReadOnlyListView(IReadOnlyList<TInput> list, in ValueFunc<TInput, TOutput> mapper)
+        public ReadOnlyListView(IReadOnlyList<TInput> list, Func<TInput, TOutput> mapper)
         {
             source = list ?? throw new ArgumentNullException(nameof(list));
-            this.mapper = mapper;
+            this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        }
+
+        /// <summary>
+        /// Initializes a new lazily converted view.
+        /// </summary>
+        /// <param name="list">Read-only list to convert.</param>
+        /// <param name="mapper">List items converter.</param>
+        public ReadOnlyListView(IReadOnlyList<TInput> list, Converter<TInput, TOutput> mapper)
+            : this(list, Unsafe.As<Func<TInput, TOutput>>(mapper))
+        {
         }
 
         /// <summary>
@@ -56,13 +66,7 @@ namespace DotNext.Collections.Generic
         /// </summary>
         /// <returns>The enumerator over converted items.</returns>
         public IEnumerator<TOutput> GetEnumerator()
-        {
-            var selector = mapper.ToDelegate();
-            if (source is null || selector is null)
-                return Enumerable.Empty<TOutput>().GetEnumerator();
-
-            return source.Select(selector).GetEnumerator();
-        }
+            => (source is null || mapper is null ? Enumerable.Empty<TOutput>() : source.Select(mapper)).GetEnumerator();
 
         /// <inheritdoc/>
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

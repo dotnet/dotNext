@@ -521,13 +521,13 @@ namespace DotNext.IO
         }
 
         [Fact]
-        public static unsafe void SpanActionToStream()
+        public static void SpanActionToStream()
         {
             static void WriteToBuffer(ReadOnlySpan<byte> block, ArrayBufferWriter<byte> writer)
                 => writer.Write(block);
 
             var writer = new ArrayBufferWriter<byte>();
-            var callback = new ValueReadOnlySpanAction<byte, ArrayBufferWriter<byte>>(&WriteToBuffer);
+            ReadOnlySpanAction<byte, ArrayBufferWriter<byte>> callback = WriteToBuffer;
             using var stream = callback.AsStream(writer);
             byte[] content = { 1, 2, 3 };
             stream.Write(content);
@@ -544,7 +544,7 @@ namespace DotNext.IO
                 => writer.Write(block);
 
             var writer = new ArrayBufferWriter<byte>();
-            var callback = new ValueReadOnlySpanAction<byte, ArrayBufferWriter<byte>>(WriteToBuffer);
+            ReadOnlySpanAction<byte, ArrayBufferWriter<byte>> callback = WriteToBuffer;
             using var stream = callback.AsStream(writer);
             byte[] content = { 1, 2, 3 };
             await stream.WriteAsync(content);

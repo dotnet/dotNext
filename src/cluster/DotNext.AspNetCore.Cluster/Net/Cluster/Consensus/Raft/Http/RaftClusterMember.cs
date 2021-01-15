@@ -111,12 +111,23 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
                 throw new UnexpectedStatusCodeException(response, e);
             }
+#if NETCOREAPP3_1
             catch (OperationCanceledException e) when (!token.IsCancellationRequested)
             {
+                // see blog post https://devblogs.microsoft.com/dotnet/net-5-new-networking-improvements/ for
+                // more info about handling timeouts in .NET 5
                 context.Logger.MemberUnavailable(EndPoint, e);
                 ChangeStatus(ClusterMemberStatus.Unavailable);
                 throw new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, e);
             }
+#else
+            catch (OperationCanceledException e) when (e.InnerException is TimeoutException timeoutEx)
+            {
+                context.Logger.MemberUnavailable(EndPoint, timeoutEx);
+                ChangeStatus(ClusterMemberStatus.Unavailable);
+                throw new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, timeoutEx);
+            }
+#endif
             finally
             {
                 timeoutControl?.Dispose();

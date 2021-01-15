@@ -64,7 +64,7 @@ namespace DotNext.Reflection
             _ => Enumerable.Empty<MethodInfo>(),
         };
 
-        private static ExtensionRegistry GetOrCreateRegistry(Type target, MethodLookup lookup)
+        private static unsafe ExtensionRegistry GetOrCreateRegistry(Type target, MethodLookup lookup)
         {
             var registrySlot = lookup switch
             {
@@ -72,7 +72,8 @@ namespace DotNext.Reflection
                 MethodLookup.Static => StaticMethods,
                 _ => throw new ArgumentOutOfRangeException(nameof(lookup)),
             };
-            return target.GetUserData().GetOrSet(registrySlot, new ValueFunc<ExtensionRegistry>(Create));
+
+            return target.GetUserData().GetOrSet(registrySlot, &Create);
         }
 
         /// <summary>

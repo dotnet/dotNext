@@ -9,7 +9,7 @@ namespace DotNext.Runtime.InteropServices
     /// <summary>
     /// Represents common interface for the wrapper of the unmanaged memory.
     /// </summary>
-    public interface IUnmanagedMemory : IDisposable, IConvertible<Stream>
+    public interface IUnmanagedMemory : IDisposable, ISupplier<Stream>
     {
         /// <summary>
         /// Gets size of referenced unmanaged memory, in bytes.
@@ -42,7 +42,7 @@ namespace DotNext.Runtime.InteropServices
         Stream AsStream();
 
         /// <inheritdoc/>
-        Stream IConvertible<Stream>.Convert() => AsStream();
+        Stream ISupplier<Stream>.Invoke() => AsStream();
 
         /// <summary>
         /// Copies bytes from the memory location to the stream.
@@ -112,10 +112,10 @@ namespace DotNext.Runtime.InteropServices
     /// Represents unmanaged memory owner.
     /// </summary>
     /// <typeparam name="T">The type of elements in the unmanaged memory.</typeparam>
-    public interface IUnmanagedMemory<T> : IUnmanagedMemory, IMemoryOwner<T>, IConvertible<Memory<T>>
+    public interface IUnmanagedMemory<T> : IUnmanagedMemory, IMemoryOwner<T>, ISupplier<Memory<T>>
         where T : unmanaged
     {
         /// <inheritdoc/>
-        Memory<T> IConvertible<Memory<T>>.Convert() => Memory;
+        Memory<T> ISupplier<Memory<T>>.Invoke() => Memory;
     }
 }

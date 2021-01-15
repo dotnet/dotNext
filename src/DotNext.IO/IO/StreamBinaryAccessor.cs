@@ -122,10 +122,13 @@ namespace DotNext.IO
             => stream.CopyToAsync(writer, token: token);
 
         Task IAsyncBinaryReader.CopyToAsync<TArg>(ReadOnlySpanAction<byte, TArg> reader, TArg arg, CancellationToken token)
-            => stream.ReadAsync(reader, arg, buffer, token);
+            => stream.CopyToAsync(reader, arg, buffer, token);
 
         Task IAsyncBinaryReader.CopyToAsync<TArg>(Func<TArg, ReadOnlyMemory<byte>, CancellationToken, ValueTask> reader, TArg arg, CancellationToken token)
-            => stream.ReadAsync(reader, arg, buffer, token);
+            => stream.CopyToAsync(reader, arg, buffer, token);
+
+        Task IAsyncBinaryReader.CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token)
+            => stream.CopyToAsync(consumer, buffer, token);
 #endregion
 
 #region Writer

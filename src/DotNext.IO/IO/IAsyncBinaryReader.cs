@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 namespace DotNext.IO
 {
     using Buffers;
-    using static Pipelines.ResultExtensions;
     using DecodingContext = Text.DecodingContext;
+    using PipeConsumer = Pipelines.PipeConsumer;
 
     /// <summary>
     /// Providers a uniform way to decode the data
@@ -360,12 +360,7 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         Task CopyToAsync(Stream output, CancellationToken token = default)
-        {
-            return CopyToAsync(CopyToStream, output, token);
-
-            static ValueTask CopyToStream(Stream output, ReadOnlyMemory<byte> input, CancellationToken token)
-                => output.WriteAsync(input, token);
-        }
+            => CopyToAsync<StreamConsumer>(output, token);
 
         /// <summary>
         /// Copies the content to the specified pipe writer.
@@ -375,15 +370,7 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         Task CopyToAsync(PipeWriter output, CancellationToken token = default)
-        {
-            return CopyToAsync(CopyToPipe, output, token);
-
-            static async ValueTask CopyToPipe(PipeWriter output, ReadOnlyMemory<byte> input, CancellationToken token)
-            {
-                var result = await output.WriteAsync(input, token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested(token);
-            }
-        }
+            => CopyToAsync<PipeConsumer>(output, token);
 
         /// <summary>
         /// Copies the content to the specified buffer.
@@ -393,32 +380,7 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         Task CopyToAsync(IBufferWriter<byte> writer, CancellationToken token = default)
-        {
-            return CopyToAsync(Write, writer, token);
-
-            static ValueTask Write(IBufferWriter<byte> writer, ReadOnlyMemory<byte> input, CancellationToken token)
-            {
-                Task result;
-                if (token.IsCancellationRequested)
-                {
-                    result = Task.FromCanceled(token);
-                }
-                else
-                {
-                    result = Task.CompletedTask;
-                    try
-                    {
-                        writer.Write(input.Span);
-                    }
-                    catch (Exception e)
-                    {
-                        result = Task.FromException(e);
-                    }
-                }
-
-                return new ValueTask(result);
-            }
-        }
+            => CopyToAsync(new BufferConsumer<byte>(writer), token);
 
         /// <summary>
         /// Reads the entire content using the specified delegate.
@@ -430,7 +392,7 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         Task CopyToAsync<TArg>(ReadOnlySpanAction<byte, TArg> consumer, TArg arg, CancellationToken token = default)
-            => CopyToAsync(new Func<TArg, ReadOnlyMemory<byte>, CancellationToken, ValueTask>(consumer.Invoke), arg, token);
+            => CopyToAsync(new DelegatingReadOnlySpanConsumer<byte, TArg>(consumer, arg), token);
 
         /// <summary>
         /// Reads the entire content using the specified delegate.
@@ -438,10 +400,22 @@ namespace DotNext.IO
         /// <typeparam name="TArg">The type of the argument to be passed to the content reader.</typeparam>
         /// <param name="consumer">The content reader.</param>
         /// <param name="arg">The argument to be passed to the content reader.</param>
-        /// <param name="token">The token that can be used to cancel operation.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        Task CopyToAsync<TArg>(Func<TArg, ReadOnlyMemory<byte>, CancellationToken, ValueTask> consumer, TArg arg, CancellationToken token = default);
+        Task CopyToAsync<TArg>(Func<TArg, ReadOnlyMemory<byte>, CancellationToken, ValueTask> consumer, TArg arg, CancellationToken token = default)
+            => CopyToAsync(new DelegatingMemoryConsumer<byte, TArg>(consumer, arg), token);
+
+        /// <summary>
+        /// Reads the entire content using the specified delegate.
+        /// </summary>
+        /// <param name="consumer">The content reader.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <typeparam name="TConsumer">The type of the consumer.</typeparam>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        Task CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token = default)
+            where TConsumer : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>;
 
         /// <summary>
         /// Creates default implementation of binary reader for the stream.

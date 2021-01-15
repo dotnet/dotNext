@@ -8,6 +8,8 @@ using static System.Globalization.CultureInfo;
 
 namespace DotNext
 {
+    using Intrinsics = Runtime.Intrinsics;
+
     internal static unsafe class EnumConverter<TInput, TOutput>
             where TInput : struct, IConvertible, IComparable, IFormattable
             where TOutput : struct, IConvertible, IComparable, IFormattable
@@ -261,9 +263,9 @@ namespace DotNext
         public static bool IsOneOf<T>(this T value, params T[] values)
             where T : struct, Enum
         {
-            foreach (var item in values)
+            for (nint i = 0; i < Intrinsics.GetLength(values); i++)
             {
-                if (EqualityComparer<T>.Default.Equals(value, item))
+                if (EqualityComparer<T>.Default.Equals(value, values[i]))
                     return true;
             }
 

@@ -2590,23 +2590,52 @@ namespace DotNext.IO
         }
 
         /// <summary>
+        /// Asynchronously reads the bytes from the source stream and passes them to the consumer, using a specified buffer.
+        /// </summary>
+        /// <typeparam name="TConsumer">The type of the consumer.</typeparam>
+        /// <param name="source">The source stream to read from.</param>
+        /// <param name="consumer">The destination stream to write into.</param>
+        /// <param name="buffer">The buffer used to hold copied content temporarily.</param>
+        /// <param name="token">The token that can be used to cancel this operation.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static async Task CopyToAsync<TConsumer>(this Stream source, TConsumer consumer, Memory<byte> buffer, CancellationToken token = default)
+            where TConsumer : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
+        {
+            for (int count; (count = await source.ReadAsync(buffer, token).ConfigureAwait(false)) > 0; )
+            {
+                await consumer.Invoke(buffer.Slice(0, count), token).ConfigureAwait(false);
+            }
+        }
+
+        /// <summary>
         /// Asynchronously reads the bytes from the source stream and writes them to another stream, using a specified buffer.
         /// </summary>
         /// <param name="source">The source stream to read from.</param>
         /// <param name="destination">The destination stream to write into.</param>
         /// <param name="buffer">The buffer used to hold copied content temporarily.</param>
         /// <param name="token">The token that can be used to cancel this operation.</param>
-        /// <returns>The total number of copied bytes.</returns>
-        public static async ValueTask<long> CopyToAsync(this Stream source, Stream destination, Memory<byte> buffer, CancellationToken token = default)
-        {
-            var totalBytes = 0L;
-            for (int count; (count = await source.ReadAsync(buffer, token).ConfigureAwait(false)) > 0; )
-            {
-                totalBytes += count;
-                await destination.WriteAsync(buffer.Slice(0, count), token).ConfigureAwait(false);
-            }
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static Task CopyToAsync(this Stream source, Stream destination, Memory<byte> buffer, CancellationToken token = default)
+            => CopyToAsync<StreamConsumer>(source, destination, buffer, token);
 
-            return totalBytes;
+        /// <summary>
+        /// Synchronously reads the bytes from the source stream and passes them to the consumer, using a specified buffer.
+        /// </summary>
+        /// <typeparam name="TConsumer">The type of the consumer.</typeparam>
+        /// <param name="source">The source stream to read from.</param>
+        /// <param name="consumer">The destination stream to write into.</param>
+        /// <param name="buffer">The buffer used to hold copied content temporarily.</param>
+        /// <param name="token">The token that can be used to cancel this operation.</param>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static void CopyTo<TConsumer>(this Stream source, TConsumer consumer, Span<byte> buffer, CancellationToken token = default)
+            where TConsumer : notnull, IReadOnlySpanConsumer<byte>
+        {
+            for (int count; (count = source.Read(buffer)) > 0; token.ThrowIfCancellationRequested())
+            {
+                consumer.Invoke(buffer.Slice(0, count));
+            }
         }
 
         /// <summary>
@@ -2616,18 +2645,9 @@ namespace DotNext.IO
         /// <param name="destination">The destination stream to write into.</param>
         /// <param name="buffer">The buffer used to hold copied content temporarily.</param>
         /// <param name="token">The token that can be used to cancel this operation.</param>
-        /// <returns>The total number of copied bytes.</returns>
-        public static long CopyTo(this Stream source, Stream destination, Span<byte> buffer, CancellationToken token = default)
-        {
-            var totalBytes = 0L;
-            for (int count; (count = source.Read(buffer)) > 0; token.ThrowIfCancellationRequested())
-            {
-                totalBytes += count;
-                destination.Write(buffer.Slice(0, count));
-            }
-
-            return totalBytes;
-        }
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static void CopyTo(this Stream source, Stream destination, Span<byte> buffer, CancellationToken token = default)
+            => CopyTo<StreamConsumer>(source, destination, buffer, token);
 
         /// <summary>
         /// Converts the stream to <see cref="System.Buffers.IBufferWriter{T}"/>.
@@ -2658,28 +2678,8 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel operation.</param>
         /// <exception cref="ArgumentException"><paramref name="buffer"/> is empty.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static void Read<TArg>(this Stream stream, in ValueReadOnlySpanAction<byte, TArg> reader, TArg arg, Span<byte> buffer, CancellationToken token = default)
-        {
-            if (buffer.IsEmpty)
-                throw new ArgumentException(ExceptionMessages.BufferTooSmall);
-
-            for (int count; (count = stream.Read(buffer)) > 0; token.ThrowIfCancellationRequested())
-                reader.Invoke(buffer.Slice(0, count), arg);
-        }
-
-        /// <summary>
-        /// Reads the entire content using the specified delegate.
-        /// </summary>
-        /// <typeparam name="TArg">The type of the argument to be passed to the content reader.</typeparam>
-        /// <param name="stream">The stream to read from.</param>
-        /// <param name="reader">The content reader.</param>
-        /// <param name="arg">The argument to be passed to the content reader.</param>
-        /// <param name="buffer">The buffer allocated by the caller.</param>
-        /// <param name="token">The token that can be used to cancel operation.</param>
-        /// <exception cref="ArgumentException"><paramref name="buffer"/> is empty.</exception>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static void Read<TArg>(this Stream stream, ReadOnlySpanAction<byte, TArg> reader, TArg arg, Span<byte> buffer, CancellationToken token = default)
-            => Read(stream, new ValueReadOnlySpanAction<byte, TArg>(reader), arg, buffer, token);
+        public static void CopyTo<TArg>(this Stream stream, ReadOnlySpanAction<byte, TArg> reader, TArg arg, Span<byte> buffer, CancellationToken token = default)
+            => CopyTo(stream, new DelegatingReadOnlySpanConsumer<byte, TArg>(reader, arg), buffer, token);
 
         /// <summary>
         /// Reads the entire content using the specified delegate.
@@ -2695,69 +2695,13 @@ namespace DotNext.IO
 #if !NETSTANDARD2_1
         [SkipLocalsInit]
 #endif
-        public static void Read<TArg>(this Stream stream, in ValueReadOnlySpanAction<byte, TArg> reader, TArg arg, int bufferSize = DefaultBufferSize, CancellationToken token = default)
+        public static void CopyTo<TArg>(this Stream stream, ReadOnlySpanAction<byte, TArg> reader, TArg arg, int bufferSize = DefaultBufferSize, CancellationToken token = default)
         {
             if (bufferSize <= 0)
                 throw new ArgumentOutOfRangeException(nameof(bufferSize));
 
             using var owner = bufferSize <= MemoryRental<byte>.StackallocThreshold ? new MemoryRental<byte>(stackalloc byte[bufferSize]) : new MemoryRental<byte>(bufferSize);
-            Read(stream, in reader, arg, owner.Span, token);
-        }
-
-        /// <summary>
-        /// Reads the entire content using the specified delegate.
-        /// </summary>
-        /// <typeparam name="TArg">The type of the argument to be passed to the content reader.</typeparam>
-        /// <param name="stream">The stream to read from.</param>
-        /// <param name="reader">The content reader.</param>
-        /// <param name="arg">The argument to be passed to the content reader.</param>
-        /// <param name="bufferSize">The size of the buffer used to read data.</param>
-        /// <param name="token">The token that can be used to cancel operation.</param>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="bufferSize"/> is less than or equal to zero.</exception>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static void Read<TArg>(this Stream stream, ReadOnlySpanAction<byte, TArg> reader, TArg arg, int bufferSize = DefaultBufferSize, CancellationToken token = default)
-            => Read(stream, new ValueReadOnlySpanAction<byte, TArg>(reader), arg, bufferSize, token);
-
-        /// <summary>
-        /// Reads the entire content using the specified delegate.
-        /// </summary>
-        /// <typeparam name="TArg">The type of the argument to be passed to the content reader.</typeparam>
-        /// <param name="stream">The stream to read from.</param>
-        /// <param name="reader">The content reader.</param>
-        /// <param name="arg">The argument to be passed to the content reader.</param>
-        /// <param name="buffer">The buffer allocated by the caller.</param>
-        /// <param name="token">The token that can be used to cancel operation.</param>
-        /// <returns>The task representing asynchronous execution of this method.</returns>
-        /// <exception cref="ArgumentException"><paramref name="buffer"/> is empty.</exception>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static async Task ReadAsync<TArg>(this Stream stream, ReadOnlySpanAction<byte, TArg> reader, TArg arg, Memory<byte> buffer, CancellationToken token = default)
-        {
-            if (buffer.IsEmpty)
-                throw new ArgumentException(ExceptionMessages.BufferTooSmall);
-
-            for (int count; (count = await stream.ReadAsync(buffer, token).ConfigureAwait(false)) > 0; token.ThrowIfCancellationRequested())
-                reader(buffer.Span.Slice(0, count), arg);
-        }
-
-        /// <summary>
-        /// Reads the entire content using the specified delegate.
-        /// </summary>
-        /// <typeparam name="TArg">The type of the argument to be passed to the content reader.</typeparam>
-        /// <param name="stream">The stream to read from.</param>
-        /// <param name="reader">The content reader.</param>
-        /// <param name="arg">The argument to be passed to the content reader.</param>
-        /// <param name="bufferSize">The size of the buffer used to read data.</param>
-        /// <param name="token">The token that can be used to cancel operation.</param>
-        /// <returns>The task representing asynchronous execution of this method.</returns>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="bufferSize"/> is less than or equal to zero.</exception>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static async Task ReadAsync<TArg>(this Stream stream, ReadOnlySpanAction<byte, TArg> reader, TArg arg, int bufferSize = DefaultBufferSize, CancellationToken token = default)
-        {
-            if (bufferSize <= 0)
-                throw new ArgumentOutOfRangeException(nameof(bufferSize));
-
-            using var owner = DefaultByteAllocator.Invoke(bufferSize, false);
-            await ReadAsync(stream, reader, arg, owner.Memory, token).ConfigureAwait(false);
+            CopyTo(stream, reader, arg, owner.Span, token);
         }
 
         /// <summary>
@@ -2772,14 +2716,8 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="ArgumentException"><paramref name="buffer"/> is empty.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static async Task ReadAsync<TArg>(this Stream stream, Func<TArg, ReadOnlyMemory<byte>, CancellationToken, ValueTask> reader, TArg arg, Memory<byte> buffer, CancellationToken token = default)
-        {
-            if (buffer.IsEmpty)
-                throw new ArgumentException(ExceptionMessages.BufferTooSmall);
-
-            for (int count; (count = await stream.ReadAsync(buffer, token).ConfigureAwait(false)) > 0; )
-                await reader(arg, buffer.Slice(0, count), token).ConfigureAwait(false);
-        }
+        public static Task CopyToAsync<TArg>(this Stream stream, ReadOnlySpanAction<byte, TArg> reader, TArg arg, Memory<byte> buffer, CancellationToken token = default)
+            => CopyToAsync(stream, new DelegatingReadOnlySpanConsumer<byte, TArg>(reader, arg), buffer, token);
 
         /// <summary>
         /// Reads the entire content using the specified delegate.
@@ -2793,13 +2731,49 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="bufferSize"/> is less than or equal to zero.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static async Task ReadAsync<TArg>(this Stream stream, Func<TArg, ReadOnlyMemory<byte>, CancellationToken, ValueTask> reader, TArg arg, int bufferSize = DefaultBufferSize, CancellationToken token = default)
+        public static async Task CopyToAsync<TArg>(this Stream stream, ReadOnlySpanAction<byte, TArg> reader, TArg arg, int bufferSize = DefaultBufferSize, CancellationToken token = default)
         {
             if (bufferSize <= 0)
                 throw new ArgumentOutOfRangeException(nameof(bufferSize));
 
             using var owner = DefaultByteAllocator.Invoke(bufferSize, false);
-            await ReadAsync(stream, reader, arg, owner.Memory, token).ConfigureAwait(false);
+            await CopyToAsync(stream, reader, arg, owner.Memory, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Reads the entire content using the specified delegate.
+        /// </summary>
+        /// <typeparam name="TArg">The type of the argument to be passed to the content reader.</typeparam>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="reader">The content reader.</param>
+        /// <param name="arg">The argument to be passed to the content reader.</param>
+        /// <param name="buffer">The buffer allocated by the caller.</param>
+        /// <param name="token">The token that can be used to cancel operation.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> is empty.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static Task CopyToAsync<TArg>(this Stream stream, Func<TArg, ReadOnlyMemory<byte>, CancellationToken, ValueTask> reader, TArg arg, Memory<byte> buffer, CancellationToken token = default)
+            => CopyToAsync(stream, new DelegatingMemoryConsumer<byte, TArg>(reader, arg), buffer, token);
+
+        /// <summary>
+        /// Reads the entire content using the specified delegate.
+        /// </summary>
+        /// <typeparam name="TArg">The type of the argument to be passed to the content reader.</typeparam>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="reader">The content reader.</param>
+        /// <param name="arg">The argument to be passed to the content reader.</param>
+        /// <param name="bufferSize">The size of the buffer used to read data.</param>
+        /// <param name="token">The token that can be used to cancel operation.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="bufferSize"/> is less than or equal to zero.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static async Task CopyToAsync<TArg>(this Stream stream, Func<TArg, ReadOnlyMemory<byte>, CancellationToken, ValueTask> reader, TArg arg, int bufferSize = DefaultBufferSize, CancellationToken token = default)
+        {
+            if (bufferSize <= 0)
+                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+
+            using var owner = DefaultByteAllocator.Invoke(bufferSize, false);
+            await CopyToAsync(stream, reader, arg, owner.Memory, token).ConfigureAwait(false);
         }
 
         /// <summary>

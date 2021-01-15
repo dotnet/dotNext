@@ -182,14 +182,5 @@ namespace DotNext
 
             return result;
         }
-
-        /// <summary>
-        /// Converts predicate into <see cref="ValueFunc{T, R}"/>.
-        /// </summary>
-        /// <typeparam name="T">The type of the object to check.</typeparam>
-        /// <param name="predicate">The predicate.</param>
-        /// <returns>The value delegate representing predicate.</returns>
-        public static ValueFunc<T, bool> AsValueFunc<T>(this Predicate<T> predicate)
-            => new ValueFunc<T, bool>(As<Func<T, bool>>(predicate));
     }
 }

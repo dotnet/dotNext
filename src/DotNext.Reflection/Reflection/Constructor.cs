@@ -393,13 +393,13 @@ namespace DotNext.Reflection
             }
         }
 
-        internal static Constructor<TSignature>? GetOrCreate(ConstructorInfo ctor)
-            => ctor.GetUserData().GetOrSet(CacheSlot, ctor, new ValueFunc<ConstructorInfo, Constructor<TSignature>?>(Unreflect));
+        internal static unsafe Constructor<TSignature>? GetOrCreate(ConstructorInfo ctor)
+            => ctor.GetUserData().GetOrSet(CacheSlot, ctor, &Unreflect);
 
-        internal static Constructor<TSignature>? GetOrCreate<T>(bool nonPublic)
+        internal static unsafe Constructor<TSignature>? GetOrCreate<T>(bool nonPublic)
         {
             var type = typeof(T);
-            var ctor = type.GetUserData().GetOrSet(CacheSlot, nonPublic, new ValueFunc<bool, Constructor<TSignature>?>(Reflect));
+            var ctor = type.GetUserData().GetOrSet(CacheSlot, nonPublic, &Reflect);
             return ctor?.DeclaringType == type ? ctor : null;
         }
     }

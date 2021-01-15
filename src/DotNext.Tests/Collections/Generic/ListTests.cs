@@ -21,7 +21,7 @@ namespace DotNext.Collections.Generic
         [Fact]
         public static void OrderedInsertion()
         {
-            var comparer = new ValueFunc<long, long, int>(Compare);
+            Comparison<long> comparer = Compare;
             var list = new List<long> { 2L };
             list.InsertOrdered(1L, comparer);
             Equal(1L, list[0]);
@@ -40,7 +40,7 @@ namespace DotNext.Collections.Generic
         [Fact]
         public static void ReadOnlyView()
         {
-            var view = new ReadOnlyListView<string, int>(new[] { "1", "2", "3" }, new ValueFunc<string, int>(int.Parse));
+            var view = new ReadOnlyListView<string, int>(new[] { "1", "2", "3" }, new Converter<string, int>(int.Parse));
             Equal(3, view.Count);
             Equal(1, view[0]);
             Equal(2, view[1]);

@@ -8,7 +8,7 @@ namespace DotNext
         /// <summary>
         /// Represents builder of the service provider.
         /// </summary>
-        public sealed class Builder : IConvertible<IServiceProvider>
+        public sealed class Builder : ISupplier<IServiceProvider>
         {
             private readonly IDictionary<Type, object?> services = new Dictionary<Type, object?>();
 
@@ -46,7 +46,7 @@ namespace DotNext
             public void Clear() => services.Clear();
 
             /// <inheritdoc />
-            IServiceProvider IConvertible<IServiceProvider>.Convert() => Build();
+            IServiceProvider ISupplier<IServiceProvider>.Invoke() => Build();
         }
     }
 }

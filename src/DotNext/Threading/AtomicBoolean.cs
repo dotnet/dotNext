@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Threading;
 using static InlineIL.FieldRef;
@@ -17,6 +18,12 @@ namespace DotNext.Threading
     [SuppressMessage("Usage", "CA2231")]
     public struct AtomicBoolean : IEquatable<bool>, ISerializable
     {
+        [StructLayout(LayoutKind.Auto)]
+        private readonly struct Negation : ISupplier<bool, bool>
+        {
+            bool ISupplier<bool, bool>.Invoke(bool value) => !value;
+        }
+
         private const string ValueSerData = "value";
         private int value;
 
@@ -92,19 +99,17 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool TrueToFalse() => CompareAndSet(true, false);
 
-        private static bool Negate(bool value) => !value;
-
         /// <summary>
         /// Negates currently stored value atomically.
         /// </summary>
         /// <returns>Negation result.</returns>
-        public unsafe bool NegateAndGet() => UpdateAndGet(new ValueFunc<bool, bool>(&Negate));
+        public unsafe bool NegateAndGet() => Update(new Negation()).NewValue;
 
         /// <summary>
         /// Negates currently stored value atomically.
         /// </summary>
         /// <returns>The original value before negation.</returns>
-        public unsafe bool GetAndNegate() => GetAndUpdate(new ValueFunc<bool, bool>(&Negate));
+        public unsafe bool GetAndNegate() => Update(new Negation()).OldValue;
 
         /// <summary>
         /// Modifies the current value atomically.
@@ -126,7 +131,11 @@ namespace DotNext.Threading
             return update;
         }
 
-        private (bool OldValue, bool NewValue) Update(in ValueFunc<bool, bool> updater)
+#if !NETSTANDARD2_1
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+#endif
+        private (bool OldValue, bool NewValue) Update<TUpdater>(TUpdater updater)
+            where TUpdater : struct, ISupplier<bool, bool>
         {
             bool oldValue, newValue;
             do
@@ -137,7 +146,11 @@ namespace DotNext.Threading
             return (oldValue, newValue);
         }
 
-        private (bool OldValue, bool NewValue) Accumulate(bool x, in ValueFunc<bool, bool, bool> accumulator)
+#if !NETSTANDARD2_1
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+#endif
+        private (bool OldValue, bool NewValue) Accumulate<TAccumulator>(bool x, TAccumulator accumulator)
+            where TAccumulator : struct, ISupplier<bool, bool, bool>
         {
             bool oldValue, newValue;
             do
@@ -159,7 +172,7 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <returns>The updated value.</returns>
         public bool AccumulateAndGet(bool x, Func<bool, bool, bool> accumulator)
-            => AccumulateAndGet(x, new ValueFunc<bool, bool, bool>(accumulator));
+            => Accumulate<DelegatingSupplier<bool, bool, bool>>(x, accumulator).NewValue;
 
         /// <summary>
         /// Atomically updates the current value with the results of applying the given function
@@ -171,8 +184,9 @@ namespace DotNext.Threading
         /// <param name="x">Accumulator operand.</param>
         /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <returns>The updated value.</returns>
-        public bool AccumulateAndGet(bool x, in ValueFunc<bool, bool, bool> accumulator)
-            => Accumulate(x, accumulator).NewValue;
+        [CLSCompliant(false)]
+        public unsafe bool AccumulateAndGet(bool x, delegate*<bool, bool, bool> accumulator)
+            => Accumulate<Supplier<bool, bool, bool>>(x, accumulator).NewValue;
 
         /// <summary>
         /// Atomically updates the current value with the results of applying the given function
@@ -185,7 +199,7 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <returns>The original value.</returns>
         public bool GetAndAccumulate(bool x, Func<bool, bool, bool> accumulator)
-            => GetAndAccumulate(x, new ValueFunc<bool, bool, bool>(accumulator));
+            => Accumulate<DelegatingSupplier<bool, bool, bool>>(x, accumulator).OldValue;
 
         /// <summary>
         /// Atomically updates the current value with the results of applying the given function
@@ -197,8 +211,9 @@ namespace DotNext.Threading
         /// <param name="x">Accumulator operand.</param>
         /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <returns>The original value.</returns>
-        public bool GetAndAccumulate(bool x, in ValueFunc<bool, bool, bool> accumulator)
-            => Accumulate(x, accumulator).OldValue;
+        [CLSCompliant(false)]
+        public unsafe bool GetAndAccumulate(bool x, delegate*<bool, bool, bool> accumulator)
+            => Accumulate<Supplier<bool, bool, bool>>(x, accumulator).OldValue;
 
         /// <summary>
         /// Atomically updates the stored value with the results
@@ -207,7 +222,7 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function.</param>
         /// <returns>The updated value.</returns>
         public bool UpdateAndGet(Func<bool, bool> updater)
-            => UpdateAndGet(new ValueFunc<bool, bool>(updater));
+            => Update<DelegatingSupplier<bool, bool>>(updater).NewValue;
 
         /// <summary>
         /// Atomically updates the stored value with the results
@@ -215,8 +230,9 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="updater">A side-effect-free function.</param>
         /// <returns>The updated value.</returns>
-        public bool UpdateAndGet(in ValueFunc<bool, bool> updater)
-            => Update(updater).NewValue;
+        [CLSCompliant(false)]
+        public unsafe bool UpdateAndGet(delegate*<bool, bool> updater)
+            => Update<Supplier<bool, bool>>(updater).NewValue;
 
         /// <summary>
         /// Atomically updates the stored value with the results
@@ -225,7 +241,7 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function.</param>
         /// <returns>The original value.</returns>
         public bool GetAndUpdate(Func<bool, bool> updater)
-            => GetAndUpdate(new ValueFunc<bool, bool>(updater));
+            => Update<DelegatingSupplier<bool, bool>>(updater).OldValue;
 
         /// <summary>
         /// Atomically updates the stored value with the results
@@ -233,9 +249,13 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="updater">A side-effect-free function.</param>
         /// <returns>The original value.</returns>
-        public bool GetAndUpdate(in ValueFunc<bool, bool> updater)
-            => Update(updater).OldValue;
+        [CLSCompliant(false)]
+        public unsafe bool GetAndUpdate(delegate*<bool, bool> updater)
+            => Update<Supplier<bool, bool>>(updater).OldValue;
 
+#if !NETSTANDARD2_1
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+#endif
         internal void Acquire()
         {
             for (var spinner = new SpinWait(); CompareExchange(false, true); spinner.SpinOnce())

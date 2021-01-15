@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
@@ -129,14 +130,9 @@ namespace DotNext
             }
         }
 
-        /// <summary>
-        /// If successful result is present, apply the provided mapping function hiding any exception
-        /// caused by the converter.
-        /// </summary>
-        /// <param name="converter">A mapping function to be applied to the value, if present.</param>
-        /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
-        /// <returns>The conversion result.</returns>
-        public Result<TResult> Convert<TResult>(in ValueFunc<T, TResult> converter)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private Result<TResult> Convert<TResult, TConverter>(TConverter converter)
+            where TConverter : struct, ISupplier<T, TResult>
         {
             Result<TResult> result;
             if (exception is null)
@@ -165,7 +161,19 @@ namespace DotNext
         /// <param name="converter">A mapping function to be applied to the value, if present.</param>
         /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
         /// <returns>The conversion result.</returns>
-        public Result<TResult> Convert<TResult>(Converter<T, TResult> converter) => Convert(converter.AsValueFunc());
+        public Result<TResult> Convert<TResult>(Converter<T, TResult> converter)
+            => Convert<TResult, DelegatingConverter<T, TResult>>(converter);
+
+        /// <summary>
+        /// If successful result is present, apply the provided mapping function hiding any exception
+        /// caused by the converter.
+        /// </summary>
+        /// <param name="converter">A mapping function to be applied to the value, if present.</param>
+        /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
+        /// <returns>The conversion result.</returns>
+        [CLSCompliant(false)]
+        public unsafe Result<TResult> Convert<TResult>(delegate*<T, TResult> converter)
+            => Convert<TResult, Supplier<T, TResult>>(converter);
 
         /// <summary>
         /// Attempts to extract value from container if it is present.
@@ -191,33 +199,49 @@ namespace DotNext
         /// <returns>The value, if present, otherwise <c>default</c>.</returns>
         public T OrDefault() => value;
 
-        /// <summary>
-        /// Returns the value if present; otherwise invoke delegate.
-        /// </summary>
-        /// <param name="defaultFunc">A delegate to be invoked if value is not present.</param>
-        /// <returns>The value, if present, otherwise returned from delegate.</returns>
-        public T OrInvoke(in ValueFunc<T> defaultFunc) => exception is null ? value : defaultFunc.Invoke();
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private T OrInvoke<TSupplier>(TSupplier defaultFunc)
+            where TSupplier : struct, ISupplier<T>
+            => exception is null ? value : defaultFunc.Invoke();
 
         /// <summary>
         /// Returns the value if present; otherwise invoke delegate.
         /// </summary>
         /// <param name="defaultFunc">A delegate to be invoked if value is not present.</param>
         /// <returns>The value, if present, otherwise returned from delegate.</returns>
-        public T OrInvoke(Func<T> defaultFunc) => OrInvoke(new ValueFunc<T>(defaultFunc));
+        public T OrInvoke(Func<T> defaultFunc)
+            => OrInvoke<DelegatingSupplier<T>>(defaultFunc);
 
         /// <summary>
         /// Returns the value if present; otherwise invoke delegate.
         /// </summary>
         /// <param name="defaultFunc">A delegate to be invoked if value is not present.</param>
         /// <returns>The value, if present, otherwise returned from delegate.</returns>
-        public T OrInvoke(in ValueFunc<Exception, T> defaultFunc) => exception is null ? value : defaultFunc.Invoke(exception.SourceException);
+        [CLSCompliant(false)]
+        public unsafe T OrInvoke(delegate*<T> defaultFunc)
+            => OrInvoke<Supplier<T>>(defaultFunc);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private T OrInvokeWithException<TSupplier>(TSupplier defaultFunc)
+            where TSupplier : struct, ISupplier<Exception, T>
+            => exception is null ? value : defaultFunc.Invoke(exception.SourceException);
 
         /// <summary>
         /// Returns the value if present; otherwise invoke delegate.
         /// </summary>
         /// <param name="defaultFunc">A delegate to be invoked if value is not present.</param>
         /// <returns>The value, if present, otherwise returned from delegate.</returns>
-        public T OrInvoke(Func<Exception, T> defaultFunc) => OrInvoke(new ValueFunc<Exception, T>(defaultFunc));
+        public T OrInvoke(Func<Exception, T> defaultFunc)
+            => OrInvokeWithException<DelegatingSupplier<Exception, T>>(defaultFunc);
+
+        /// <summary>
+        /// Returns the value if present; otherwise invoke delegate.
+        /// </summary>
+        /// <param name="defaultFunc">A delegate to be invoked if value is not present.</param>
+        /// <returns>The value, if present, otherwise returned from delegate.</returns>
+        [CLSCompliant(false)]
+        public unsafe T OrInvoke(delegate*<Exception, T> defaultFunc)
+            => OrInvokeWithException<Supplier<Exception, T>>(defaultFunc);
 
         /// <summary>
         /// Gets exception associated with this result.

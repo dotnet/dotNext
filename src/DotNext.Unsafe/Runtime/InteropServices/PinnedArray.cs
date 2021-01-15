@@ -173,7 +173,7 @@ namespace DotNext.Runtime.InteropServices
         T[] IUnmanagedArray<T>.ToArray() => Array;
 
         /// <inheritdoc />
-        T[] IConvertible<T[]>.Convert() => Array;
+        T[] ISupplier<T[]>.Invoke() => Array;
 
         /// <summary>
         /// Computes bitwise equality between this array and the specified managed array.

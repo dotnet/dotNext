@@ -15,7 +15,7 @@ namespace DotNext
     /// <seealso href="https://github.com/dotnet/corefx/issues/34077">EnumMember API</seealso>
     [Serializable]
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct Enum<TEnum> : IEquatable<TEnum>, IComparable<TEnum>, IFormattable, IEquatable<Enum<TEnum>>, ISerializable, IConvertible<TEnum>, ICustomAttributeProvider
+    public readonly struct Enum<TEnum> : IEquatable<TEnum>, IComparable<TEnum>, IFormattable, IEquatable<Enum<TEnum>>, ISerializable, ISupplier<TEnum>, ICustomAttributeProvider
         where TEnum : struct, Enum
     {
         private sealed class Mapping : Dictionary<TEnum, string>
@@ -210,7 +210,7 @@ namespace DotNext
         public TEnum Value { get; }
 
         /// <inheritdoc/>
-        TEnum IConvertible<TEnum>.Convert() => Value;
+        TEnum ISupplier<TEnum>.Invoke() => Value;
 
         /// <summary>
         /// Represents name of the enum member.
