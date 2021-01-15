@@ -383,7 +383,7 @@ namespace DotNext.Reflection
         private static Field<T, TValue> Unreflect(FieldInfo field)
             => field.IsStatic ? throw new ArgumentException(ExceptionMessages.InstanceFieldExpected, nameof(field)) : new Field<T, TValue>(field);
 
-        internal static Field<T, TValue> GetOrCreate(FieldInfo field) => field.GetUserData().GetOrSet(CacheSlot, field, new ValueFunc<FieldInfo, Field<T, TValue>>(Unreflect));
+        internal static unsafe Field<T, TValue> GetOrCreate(FieldInfo field) => field.GetUserData().GetOrSet(CacheSlot, field, &Unreflect);
     }
 
     /// <summary>
@@ -532,7 +532,7 @@ namespace DotNext.Reflection
         private static Field<TValue> Unreflect(FieldInfo field)
             => field.IsStatic ? new Field<TValue>(field) : throw new ArgumentException(ExceptionMessages.StaticFieldExpected, nameof(field));
 
-        internal static Field<TValue> GetOrCreate(FieldInfo field) => field.GetUserData().GetOrSet(CacheSlot, field, new ValueFunc<FieldInfo, Field<TValue>>(Unreflect));
+        internal static unsafe Field<TValue> GetOrCreate(FieldInfo field) => field.GetUserData().GetOrSet(CacheSlot, field, &Unreflect);
 
         internal static Field<TValue>? GetOrCreate<T>(string fieldName, bool nonPublic)
             => Cache<T>.Of<Cache<T>>(typeof(T)).GetOrCreate(fieldName, nonPublic);
