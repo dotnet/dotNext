@@ -17,7 +17,6 @@ namespace DotNext.Buffers
     {
         private const int MaxBufferSize = int.MaxValue / 2;
         internal const MemoryAllocator<byte>? DefaultByteAllocator = null;
-        internal static readonly ReadOnlySpanAction<byte, IBufferWriter<byte>> ByteBufferWriter = BufferHelpers.GetBufferWriter<byte>();
 
         [StructLayout(LayoutKind.Auto)]
         internal struct LengthWriter : SevenBitEncodedInt.IWriter
