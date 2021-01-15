@@ -27,18 +27,18 @@ namespace DotNext.IO
             if (writer is null)
                 throw new ArgumentNullException(nameof(writer));
 
-            writeImpl = writer is IGrowableBuffer<char> ?
-                &WriteToGrowableBuffer :
+            writeImpl = writer is IReadOnlySpanConsumer<char> ?
+                &DirectWrite :
                 &BuffersExtensions.Write<char>;
 
             this.writer = writer;
             this.flush = flush;
             this.flushAsync = flushAsync;
 
-            static void WriteToGrowableBuffer(TWriter output, ReadOnlySpan<char> input)
+            static void DirectWrite(TWriter output, ReadOnlySpan<char> input)
             {
-                Debug.Assert(output is IGrowableBuffer<char>);
-                Unsafe.As<IGrowableBuffer<char>>(output).Write(input);
+                Debug.Assert(output is IReadOnlySpanConsumer<char>);
+                Unsafe.As<IReadOnlySpanConsumer<char>>(output).Invoke(input);
             }
         }
 
