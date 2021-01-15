@@ -629,7 +629,8 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int AccumulateAndGetValue(this Pointer<int> pointer, int x, in ValueFunc<int, int, int> accumulator) => AtomicInt32.AccumulateAndGet(ref pointer.Value, x, in accumulator);
+        [CLSCompliant(false)]
+        public static unsafe int AccumulateAndGetValue(this Pointer<int> pointer, int x, delegate*<int, int, int> accumulator) => AtomicInt32.AccumulateAndGet(ref pointer.Value, x, accumulator);
 
         /// <summary>
         /// Atomically updates the current value referenced by pointer with the results of applying the given function
@@ -657,7 +658,8 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int GetAndAccumulateValue(this Pointer<int> pointer, int x, in ValueFunc<int, int, int> accumulator) => AtomicInt32.GetAndAccumulate(ref pointer.Value, x, in accumulator);
+        [CLSCompliant(false)]
+        public static unsafe int GetAndAccumulateValue(this Pointer<int> pointer, int x, delegate*<int, int, int> accumulator) => AtomicInt32.GetAndAccumulate(ref pointer.Value, x, accumulator);
 
         /// <summary>
         /// Atomically updates the value referenced by pointer with the results
@@ -677,7 +679,8 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function.</param>
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int UpdateAndGetValue(this Pointer<int> pointer, in ValueFunc<int, int> updater) => AtomicInt32.UpdateAndGet(ref pointer.Value, in updater);
+        [CLSCompliant(false)]
+        public static unsafe int UpdateAndGetValue(this Pointer<int> pointer, delegate*<int, int> updater) => AtomicInt32.UpdateAndGet(ref pointer.Value, updater);
 
         /// <summary>
         /// Atomically updates the value referenced by pointer with the results
@@ -697,7 +700,8 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function.</param>
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int GetAndUpdateValue(this Pointer<int> pointer, in ValueFunc<int, int> updater) => AtomicInt32.GetAndUpdate(ref pointer.Value, in updater);
+        [CLSCompliant(false)]
+        public static unsafe int GetAndUpdateValue(this Pointer<int> pointer, delegate*<int, int> updater) => AtomicInt32.GetAndUpdate(ref pointer.Value, updater);
 
         /// <summary>
         /// Atomically updates the current value referenced by pointer with the results of applying the given function
@@ -725,7 +729,8 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static long AccumulateAndGetValue(this Pointer<long> pointer, long x, in ValueFunc<long, long, long> accumulator) => AtomicInt64.AccumulateAndGet(ref pointer.Value, x, in accumulator);
+        [CLSCompliant(false)]
+        public static unsafe long AccumulateAndGetValue(this Pointer<long> pointer, long x, delegate*<long, long, long> accumulator) => AtomicInt64.AccumulateAndGet(ref pointer.Value, x, accumulator);
 
         /// <summary>
         /// Atomically updates the current value referenced by pointer with the results of applying the given function
@@ -753,7 +758,8 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static long GetAndAccumulateValue(this Pointer<long> pointer, long x, in ValueFunc<long, long, long> accumulator) => AtomicInt64.GetAndAccumulate(ref pointer.Value, x, in accumulator);
+        [CLSCompliant(false)]
+        public static unsafe long GetAndAccumulateValue(this Pointer<long> pointer, long x, delegate*<long, long, long> accumulator) => AtomicInt64.GetAndAccumulate(ref pointer.Value, x, accumulator);
 
         /// <summary>
         /// Atomically updates the value referenced by pointer with the results
@@ -773,7 +779,8 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function.</param>
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static long UpdateAndGetValue(this Pointer<long> pointer, in ValueFunc<long, long> updater) => AtomicInt64.UpdateAndGet(ref pointer.Value, in updater);
+        [CLSCompliant(false)]
+        public static unsafe long UpdateAndGetValue(this Pointer<long> pointer, delegate*<long, long> updater) => AtomicInt64.UpdateAndGet(ref pointer.Value, updater);
 
         /// <summary>
         /// Atomically updates the value referenced by pointer with the results
@@ -793,7 +800,8 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function.</param>
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static long GetAndUpdateValue(this Pointer<long> pointer, in ValueFunc<long, long> updater) => AtomicInt64.GetAndUpdate(ref pointer.Value, in updater);
+        [CLSCompliant(false)]
+        public static unsafe long GetAndUpdateValue(this Pointer<long> pointer, delegate*<long, long> updater) => AtomicInt64.GetAndUpdate(ref pointer.Value, updater);
 
         /// <summary>
         /// Atomically updates the current value referenced by pointer with the results of applying the given function
@@ -821,7 +829,8 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float AccumulateAndGetValue(this Pointer<float> pointer, float x, in ValueFunc<float, float, float> accumulator) => AtomicSingle.AccumulateAndGet(ref pointer.Value, x, in accumulator);
+        [CLSCompliant(false)]
+        public static unsafe float AccumulateAndGetValue(this Pointer<float> pointer, float x, delegate*<float, float, float> accumulator) => AtomicSingle.AccumulateAndGet(ref pointer.Value, x, accumulator);
 
         /// <summary>
         /// Atomically updates the current value referenced by pointer with the results of applying the given function
@@ -849,7 +858,8 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float GetAndAccumulateValue(this Pointer<float> pointer, float x, in ValueFunc<float, float, float> accumulator) => AtomicSingle.GetAndAccumulate(ref pointer.Value, x, in accumulator);
+        [CLSCompliant(false)]
+        public static unsafe float GetAndAccumulateValue(this Pointer<float> pointer, float x, delegate*<float, float, float> accumulator) => AtomicSingle.GetAndAccumulate(ref pointer.Value, x, accumulator);
 
         /// <summary>
         /// Atomically updates the value referenced by pointer with the results
@@ -869,7 +879,8 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function.</param>
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float UpdateAndGetValue(this Pointer<float> pointer, in ValueFunc<float, float> updater) => AtomicSingle.UpdateAndGet(ref pointer.Value, in updater);
+        [CLSCompliant(false)]
+        public static unsafe float UpdateAndGetValue(this Pointer<float> pointer, delegate*<float, float> updater) => AtomicSingle.UpdateAndGet(ref pointer.Value, updater);
 
         /// <summary>
         /// Atomically updates the value referenced by pointer with the results
@@ -889,7 +900,8 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function.</param>
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float GetAndUpdateValue(this Pointer<float> pointer, in ValueFunc<float, float> updater) => AtomicSingle.GetAndUpdate(ref pointer.Value, in updater);
+        [CLSCompliant(false)]
+        public static unsafe float GetAndUpdateValue(this Pointer<float> pointer, delegate*<float, float> updater) => AtomicSingle.GetAndUpdate(ref pointer.Value, updater);
 
         /// <summary>
         /// Atomically updates the current value referenced by pointer with the results of applying the given function
@@ -917,7 +929,8 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static double AccumulateAndGetValue(this Pointer<double> pointer, double x, in ValueFunc<double, double, double> accumulator) => AtomicDouble.AccumulateAndGet(ref pointer.Value, x, in accumulator);
+        [CLSCompliant(false)]
+        public static unsafe double AccumulateAndGetValue(this Pointer<double> pointer, double x, delegate*<double, double, double> accumulator) => AtomicDouble.AccumulateAndGet(ref pointer.Value, x, accumulator);
 
         /// <summary>
         /// Atomically updates the current value referenced by pointer with the results of applying the given function
@@ -945,7 +958,8 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static double GetAndAccumulateValue(this Pointer<double> pointer, double x, in ValueFunc<double, double, double> accumulator) => AtomicDouble.GetAndAccumulate(ref pointer.Value, x, in accumulator);
+        [CLSCompliant(false)]
+        public static unsafe double GetAndAccumulateValue(this Pointer<double> pointer, double x, delegate*<double, double, double> accumulator) => AtomicDouble.GetAndAccumulate(ref pointer.Value, x, accumulator);
 
         /// <summary>
         /// Atomically updates the value referenced by pointer with the results
@@ -965,7 +979,8 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function.</param>
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static double UpdateAndGetValue(this Pointer<double> pointer, in ValueFunc<double, double> updater) => AtomicDouble.UpdateAndGet(ref pointer.Value, in updater);
+        [CLSCompliant(false)]
+        public static unsafe double UpdateAndGetValue(this Pointer<double> pointer, delegate*<double, double> updater) => AtomicDouble.UpdateAndGet(ref pointer.Value, updater);
 
         /// <summary>
         /// Atomically updates the value referenced by pointer with the results
@@ -985,7 +1000,8 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function.</param>
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static double GetAndUpdateValue(this Pointer<double> pointer, in ValueFunc<double, double> updater) => AtomicDouble.GetAndUpdate(ref pointer.Value, in updater);
+        [CLSCompliant(false)]
+        public static unsafe double GetAndUpdateValue(this Pointer<double> pointer, delegate*<double, double> updater) => AtomicDouble.GetAndUpdate(ref pointer.Value, updater);
 
         /// <summary>
         /// Atomically updates the current value referenced by pointer with the results of applying the given function
@@ -1013,7 +1029,8 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static IntPtr AccumulateAndGetValue(this Pointer<IntPtr> pointer, IntPtr x, in ValueFunc<IntPtr, IntPtr, IntPtr> accumulator) => AtomicIntPtr.AccumulateAndGet(ref pointer.Value, x, in accumulator);
+        [CLSCompliant(false)]
+        public static unsafe IntPtr AccumulateAndGetValue(this Pointer<IntPtr> pointer, IntPtr x, delegate*<IntPtr, IntPtr, IntPtr> accumulator) => AtomicIntPtr.AccumulateAndGet(ref pointer.Value, x, accumulator);
 
         /// <summary>
         /// Atomically updates the current value referenced by pointer with the results of applying the given function
@@ -1041,7 +1058,8 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static IntPtr GetAndAccumulateValue(this Pointer<IntPtr> pointer, IntPtr x, in ValueFunc<IntPtr, IntPtr, IntPtr> accumulator) => AtomicIntPtr.GetAndAccumulate(ref pointer.Value, x, in accumulator);
+        [CLSCompliant(false)]
+        public static unsafe IntPtr GetAndAccumulateValue(this Pointer<IntPtr> pointer, IntPtr x, delegate*<IntPtr, IntPtr, IntPtr> accumulator) => AtomicIntPtr.GetAndAccumulate(ref pointer.Value, x, accumulator);
 
         /// <summary>
         /// Atomically updates the value referenced by pointer with the results
@@ -1061,7 +1079,8 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function.</param>
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static IntPtr UpdateAndGetValue(this Pointer<IntPtr> pointer, in ValueFunc<IntPtr, IntPtr> updater) => AtomicIntPtr.UpdateAndGet(ref pointer.Value, in updater);
+        [CLSCompliant(false)]
+        public static unsafe IntPtr UpdateAndGetValue(this Pointer<IntPtr> pointer, delegate*<IntPtr, IntPtr> updater) => AtomicIntPtr.UpdateAndGet(ref pointer.Value, updater);
 
         /// <summary>
         /// Atomically updates the value referenced by pointer with the results
@@ -1081,7 +1100,8 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function.</param>
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static IntPtr GetAndUpdateValue(this Pointer<IntPtr> pointer, in ValueFunc<IntPtr, IntPtr> updater) => AtomicIntPtr.GetAndUpdate(ref pointer.Value, in updater);
+        [CLSCompliant(false)]
+        public static unsafe IntPtr GetAndUpdateValue(this Pointer<IntPtr> pointer, delegate*<IntPtr, IntPtr> updater) => AtomicIntPtr.GetAndUpdate(ref pointer.Value, updater);
 
 #if !NETSTANDARD2_1
         /// <summary>
@@ -1172,7 +1192,7 @@ namespace DotNext.Threading
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
-        public static ulong AccumulateAndGetValue(this Pointer<ulong> pointer, ulong x, in ValueFunc<ulong, ulong, ulong> accumulator) => AtomicUInt64.AccumulateAndGet(ref pointer.Value, x, in accumulator);
+        public static unsafe ulong AccumulateAndGetValue(this Pointer<ulong> pointer, ulong x, delegate*<ulong, ulong, ulong> accumulator) => AtomicUInt64.AccumulateAndGet(ref pointer.Value, x, accumulator);
 
         /// <summary>
         /// Atomically updates the current value referenced by pointer with the results of applying the given function
@@ -1202,7 +1222,7 @@ namespace DotNext.Threading
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
-        public static ulong GetAndAccumulateValue(this Pointer<ulong> pointer, ulong x, in ValueFunc<ulong, ulong, ulong> accumulator) => AtomicUInt64.GetAndAccumulate(ref pointer.Value, x, in accumulator);
+        public static unsafe ulong GetAndAccumulateValue(this Pointer<ulong> pointer, ulong x, delegate*<ulong, ulong, ulong> accumulator) => AtomicUInt64.GetAndAccumulate(ref pointer.Value, x, accumulator);
 
         /// <summary>
         /// Atomically updates the value referenced by pointer with the results
@@ -1224,7 +1244,7 @@ namespace DotNext.Threading
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
-        public static ulong UpdateAndGetValue(this Pointer<ulong> pointer, in ValueFunc<ulong, ulong> updater) => AtomicUInt64.UpdateAndGet(ref pointer.Value, in updater);
+        public static unsafe ulong UpdateAndGetValue(this Pointer<ulong> pointer, delegate*<ulong, ulong> updater) => AtomicUInt64.UpdateAndGet(ref pointer.Value, updater);
 
         /// <summary>
         /// Atomically updates the value referenced by pointer with the results
@@ -1246,7 +1266,7 @@ namespace DotNext.Threading
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
-        public static ulong GetAndUpdateValue(this Pointer<ulong> pointer, in ValueFunc<ulong, ulong> updater) => AtomicUInt64.GetAndUpdate(ref pointer.Value, in updater);
+        public static unsafe ulong GetAndUpdateValue(this Pointer<ulong> pointer, delegate*<ulong, ulong> updater) => AtomicUInt64.GetAndUpdate(ref pointer.Value, updater);
 
         /// <summary>
         /// Increments a value located in the memory at the address specified by pointer and stores the result, as an atomic operation.
@@ -1336,7 +1356,7 @@ namespace DotNext.Threading
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
-        public static uint AccumulateAndGetValue(this Pointer<uint> pointer, uint x, in ValueFunc<uint, uint, uint> accumulator) => AtomicUInt32.AccumulateAndGet(ref pointer.Value, x, in accumulator);
+        public static unsafe uint AccumulateAndGetValue(this Pointer<uint> pointer, uint x, delegate*<uint, uint, uint> accumulator) => AtomicUInt32.AccumulateAndGet(ref pointer.Value, x, accumulator);
 
         /// <summary>
         /// Atomically updates the current value referenced by pointer with the results of applying the given function
@@ -1366,7 +1386,7 @@ namespace DotNext.Threading
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
-        public static uint GetAndAccumulateValue(this Pointer<uint> pointer, uint x, in ValueFunc<uint, uint, uint> accumulator) => AtomicUInt32.GetAndAccumulate(ref pointer.Value, x, in accumulator);
+        public static unsafe uint GetAndAccumulateValue(this Pointer<uint> pointer, uint x, delegate*<uint, uint, uint> accumulator) => AtomicUInt32.GetAndAccumulate(ref pointer.Value, x, accumulator);
 
         /// <summary>
         /// Atomically updates the value referenced by pointer with the results
@@ -1388,7 +1408,7 @@ namespace DotNext.Threading
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
-        public static uint UpdateAndGetValue(this Pointer<uint> pointer, in ValueFunc<uint, uint> updater) => AtomicUInt32.UpdateAndGet(ref pointer.Value, in updater);
+        public static unsafe uint UpdateAndGetValue(this Pointer<uint> pointer, delegate*<uint, uint> updater) => AtomicUInt32.UpdateAndGet(ref pointer.Value, updater);
 
         /// <summary>
         /// Atomically updates the value referenced by pointer with the results
@@ -1410,7 +1430,7 @@ namespace DotNext.Threading
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
-        public static uint GetAndUpdateValue(this Pointer<uint> pointer, in ValueFunc<uint, uint> updater) => AtomicUInt32.GetAndUpdate(ref pointer.Value, in updater);
+        public static unsafe uint GetAndUpdateValue(this Pointer<uint> pointer, delegate*<uint, uint> updater) => AtomicUInt32.GetAndUpdate(ref pointer.Value, updater);
 #endif
     }
 }

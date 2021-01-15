@@ -24,7 +24,7 @@ namespace DotNext.Runtime.InteropServices
     /// Null-pointer is the only check performed by methods.
     /// </remarks>
     [StructLayout(LayoutKind.Sequential)]
-    public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IStrongBox, IConvertible<IntPtr>, IConvertible<UIntPtr>, IPinnable
+    public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IStrongBox, ISupplier<IntPtr>, ISupplier<UIntPtr>, IPinnable
         where T : unmanaged
     {
         /// <summary>
@@ -631,8 +631,8 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="hashFunction">The custom hash function.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Content hash code.</returns>
-        public int BitwiseHashCode(long count, int hash, Func<int, int, int> hashFunction, bool salted = true)
-            => BitwiseHashCode(count, hash, new ValueFunc<int, int, int>(hashFunction), salted);
+        public unsafe int BitwiseHashCode(long count, int hash, Func<int, int, int> hashFunction, bool salted = true)
+            => IsNull ? 0 : Intrinsics.GetHashCode32(value, count * sizeof(T), hash, hashFunction, salted);
 
         /// <summary>
         /// Computes 32-bit hash code for the block of memory identified by this pointer.
@@ -642,8 +642,9 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="hashFunction">The custom hash function.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Content hash code.</returns>
-        public unsafe int BitwiseHashCode(long count, int hash, in ValueFunc<int, int, int> hashFunction, bool salted = true)
-            => IsNull ? 0 : Intrinsics.GetHashCode32(value, count * sizeof(T), hash, hashFunction, salted);
+        [CLSCompliant(false)]
+        public unsafe int BitwiseHashCode(long count, int hash, delegate*<int, int, int> hashFunction, bool salted = true)
+            => IsNull ? 0 : Intrinsics.GetHashCode32<Supplier<int, int, int>>(value, count * sizeof(T), hash, hashFunction, salted);
 
         /// <summary>
         /// Computes 64-bit hash code for the block of memory identified by this pointer.
@@ -653,19 +654,20 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="hashFunction">The custom hash function.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Content hash code.</returns>
-        public unsafe long BitwiseHashCode64(long count, long hash, in ValueFunc<long, long, long> hashFunction, bool salted = true)
+        [CLSCompliant(false)]
+        public unsafe long BitwiseHashCode64(long count, long hash, delegate*<long, long, long> hashFunction, bool salted = true)
+            => IsNull ? 0 : Intrinsics.GetHashCode64<Supplier<long, long, long>>(value, count * sizeof(T), hash, hashFunction, salted);
+
+        /// <summary>
+        /// Computes 64-bit hash code for the block of memory identified by this pointer.
+        /// </summary>
+        /// <param name="count">The number of elements of type <typeparamref name="T"/> referenced by this pointer.</param>
+        /// <param name="hash">Initial value of the hash to be passed into hashing function.</param>
+        /// <param name="hashFunction">The custom hash function.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <returns>Content hash code.</returns>
+        public unsafe long BitwiseHashCode64(long count, long hash, Func<long, long, long> hashFunction, bool salted = true)
             => IsNull ? 0 : Intrinsics.GetHashCode64(value, count * sizeof(T), hash, hashFunction, salted);
-
-        /// <summary>
-        /// Computes 64-bit hash code for the block of memory identified by this pointer.
-        /// </summary>
-        /// <param name="count">The number of elements of type <typeparamref name="T"/> referenced by this pointer.</param>
-        /// <param name="hash">Initial value of the hash to be passed into hashing function.</param>
-        /// <param name="hashFunction">The custom hash function.</param>
-        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
-        /// <returns>Content hash code.</returns>
-        public long BitwiseHashCode64(long count, long hash, Func<long, long, long> hashFunction, bool salted = true)
-            => BitwiseHashCode64(count, hash, new ValueFunc<long, long, long>(hashFunction), salted);
 
         /// <summary>
         /// Bitwise comparison of two memory blocks.
@@ -848,7 +850,7 @@ namespace DotNext.Runtime.InteropServices
         public static implicit operator nint(Pointer<T> ptr) => ptr.Address;
 
         /// <inheritdoc/>
-        IntPtr IConvertible<IntPtr>.Convert() => Address;
+        IntPtr ISupplier<IntPtr>.Invoke() => Address;
 
         /// <summary>
         /// Obtains pointer value (address) as <see cref="UIntPtr"/>.
@@ -859,7 +861,7 @@ namespace DotNext.Runtime.InteropServices
         public static unsafe implicit operator nuint(Pointer<T> ptr) => (nuint)ptr.value;
 
         /// <inheritdoc/>
-        unsafe UIntPtr IConvertible<UIntPtr>.Convert() => (nuint)value;
+        unsafe UIntPtr ISupplier<UIntPtr>.Invoke() => (nuint)value;
 
         /// <summary>
         /// Converts this pointer the memory owner.

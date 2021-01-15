@@ -8,7 +8,7 @@ namespace DotNext.Runtime.InteropServices
     /// in the unmanaged memory.
     /// </summary>
     /// <typeparam name="T">The type of the array elements.</typeparam>
-    public interface IUnmanagedArray<T> : IUnmanagedMemory, IEnumerable<T>, ICloneable, IConvertible<T[]>
+    public interface IUnmanagedArray<T> : IUnmanagedMemory, IEnumerable<T>, ICloneable, ISupplier<T[]>
         where T : unmanaged
     {
         /// <summary>
@@ -68,7 +68,7 @@ namespace DotNext.Runtime.InteropServices
         T[] ToArray() => Pointer.ToArray(Length);
 
         /// <inheritdoc/>
-        T[] IConvertible<T[]>.Convert() => ToArray();
+        T[] ISupplier<T[]>.Invoke() => ToArray();
 
         /// <summary>
         /// Copies elements from the specified array into
