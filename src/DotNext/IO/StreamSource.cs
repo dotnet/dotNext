@@ -84,7 +84,7 @@ namespace DotNext.IO
         /// <returns>The writable stream wrapping buffer writer.</returns>
         public static Stream AsStream<TWriter>(this TWriter writer, Action<TWriter>? flush = null, Func<TWriter, CancellationToken, Task>? flushAsync = null)
             where TWriter : class, IBufferWriter<byte>
-            => AsSynchronousStream<BufferWriter<TWriter>>(new BufferWriter<TWriter>(writer, flush, flushAsync));
+            => writer is IReadOnlySpanConsumer<byte> ? AsSynchronousStream<DelegatingWriter<TWriter>>(new DelegatingWriter<TWriter>(writer, flush, flushAsync)) : AsSynchronousStream<BufferWriter<TWriter>>(new BufferWriter<TWriter>(writer, flush, flushAsync));
 
         /// <summary>
         /// Creates a stream over sparse memory.

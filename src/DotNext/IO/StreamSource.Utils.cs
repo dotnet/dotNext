@@ -1,5 +1,6 @@
 using System;
 using System.Buffers;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -63,7 +64,6 @@ namespace DotNext.IO
             where TBuffer : class, IBufferWriter<byte>
         {
             private readonly TBuffer output;
-            private readonly bool useConsumerInterface;
             private readonly Action<TBuffer>? flush;
             private readonly Func<TBuffer, CancellationToken, Task>? flushAsync;
 
@@ -72,20 +72,37 @@ namespace DotNext.IO
                 this.output = output;
                 this.flush = flush;
                 this.flushAsync = flushAsync;
-                useConsumerInterface = output is IReadOnlySpanConsumer;
             }
 
             void IFlushable.Flush() => Flush(flush, flushAsync, output);
 
             Task IFlushable.FlushAsync(CancellationToken token) => FlushAsync(flush, flushAsync, output, token);
 
-            void IReadOnlySpanConsumer.Invoke(ReadOnlySpan<byte> input)
+            void IReadOnlySpanConsumer.Invoke(ReadOnlySpan<byte> input) => output.Write(input);
+        }
+
+        // should be used if TBuffer is IReadOnlySpanConsumer
+        [StructLayout(LayoutKind.Auto)]
+        private readonly struct DelegatingWriter<TBuffer> : IReadOnlySpanConsumer, IFlushable
+            where TBuffer : class, IBufferWriter<byte>
+        {
+            private readonly TBuffer output;
+            private readonly Action<TBuffer>? flush;
+            private readonly Func<TBuffer, CancellationToken, Task>? flushAsync;
+
+            internal DelegatingWriter(TBuffer output, Action<TBuffer>? flush, Func<TBuffer, CancellationToken, Task>? flushAsync)
             {
-                if (useConsumerInterface)
-                    Unsafe.As<IReadOnlySpanConsumer>(output).Invoke(input);
-                else
-                    output.Write(input);
+                Debug.Assert(output is IReadOnlySpanConsumer);
+                this.output = output;
+                this.flush = flush;
+                this.flushAsync = flushAsync;
             }
+
+            void IFlushable.Flush() => Flush(flush, flushAsync, output);
+
+            Task IFlushable.FlushAsync(CancellationToken token) => FlushAsync(flush, flushAsync, output, token);
+
+            void IReadOnlySpanConsumer.Invoke(ReadOnlySpan<byte> input) => Unsafe.As<IReadOnlySpanConsumer>(output).Invoke(input);
         }
 
         private static void Flush<TArg>(Action<TArg>? flush, Func<TArg, CancellationToken, Task>? flushAsync, TArg arg)
