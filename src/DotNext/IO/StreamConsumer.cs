@@ -1,6 +1,8 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 using RuntimeHelpers = System.Runtime.CompilerServices.RuntimeHelpers;
 
 namespace DotNext.IO
@@ -30,6 +32,10 @@ namespace DotNext.IO
 
         /// <inheritdoc />
         void IReadOnlySpanConsumer.Invoke(ReadOnlySpan<byte> input) => output.Write(input);
+
+        /// <inheritdoc />
+        ValueTask ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<byte> input, CancellationToken token)
+            => output.WriteAsync(input, token);
 
         /// <summary>
         /// Determines whether this object contains the same stream instance as the specified object.

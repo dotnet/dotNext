@@ -20,7 +20,7 @@ namespace DotNext.IO.MemoryMappedFiles
     /// The class uses lazy initialization of memory-mapped file segment
     /// every time when <see cref="ReadOnlySequence{T}"/> switching between segments.
     /// </remarks>
-    public sealed class ReadOnlySequenceAccessor : Disposable, IReadOnlySequenceSource, IConvertible<ReadOnlySequence<byte>>
+    public sealed class ReadOnlySequenceAccessor : Disposable, IReadOnlySequenceSource
     {
         [StructLayout(LayoutKind.Auto)]
         private readonly struct Segment : IEquatable<Segment>
@@ -225,10 +225,6 @@ namespace DotNext.IO.MemoryMappedFiles
                 return new ReadOnlySequence<byte>(head, 0, tail, tail.Memory.Length);
             }
         }
-
-        /// <inheritdoc/>
-        ReadOnlySequence<byte> IConvertible<ReadOnlySequence<byte>>.Convert()
-            => Sequence;
 
         private unsafe byte* GetMemory(in Segment window)
         {

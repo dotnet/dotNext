@@ -1,6 +1,8 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 using RuntimeHelpers = System.Runtime.CompilerServices.RuntimeHelpers;
 
 namespace DotNext.Text
@@ -31,6 +33,10 @@ namespace DotNext.Text
 
         /// <inheritdoc />
         void IReadOnlySpanConsumer.Invoke(ReadOnlySpan<char> input) => output.Write(input);
+
+        /// <inheritdoc />
+        ValueTask ISupplier<ReadOnlyMemory<char>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<char> input, CancellationToken token)
+            => new ValueTask(output.WriteAsync(input, token));
 
         /// <summary>
         /// Determines whether this object contains the same text writer as the specified object.

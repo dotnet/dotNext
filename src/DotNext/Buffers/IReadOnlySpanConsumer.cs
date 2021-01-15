@@ -1,6 +1,8 @@
 using System;
 using System.Buffers;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 using RuntimeHelpers = System.Runtime.CompilerServices.RuntimeHelpers;
 
 namespace DotNext.Buffers
@@ -20,13 +22,37 @@ namespace DotNext.Buffers
     /// </remarks>
     /// <typeparam name="T">The type of the elements in the span.</typeparam>
     [FunctionalInterface]
-    public interface IReadOnlySpanConsumer<T>
+    public interface IReadOnlySpanConsumer<T> : ISupplier<ReadOnlyMemory<T>, CancellationToken, ValueTask>
     {
         /// <summary>
         /// Invokes the consumer.
         /// </summary>
         /// <param name="span">The span of elements.</param>
         void Invoke(ReadOnlySpan<T> span);
+
+        /// <inheritdoc />
+        ValueTask ISupplier<ReadOnlyMemory<T>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<T> input, CancellationToken token)
+        {
+            Task result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled(token);
+            }
+            else
+            {
+                result = Task.CompletedTask;
+                try
+                {
+                    Invoke(input.Span);
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException(e);
+                }
+            }
+
+            return new ValueTask(result);
+        }
     }
 
     /// <summary>
@@ -96,6 +122,30 @@ namespace DotNext.Buffers
 
         /// <inheritdoc />
         void IReadOnlySpanConsumer<T>.Invoke(ReadOnlySpan<T> span) => action(span, arg);
+
+        /// <inheritdoc />
+        ValueTask ISupplier<ReadOnlyMemory<T>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<T> input, CancellationToken token)
+        {
+            Task result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled(token);
+            }
+            else
+            {
+                result = Task.CompletedTask;
+                try
+                {
+                    action(input.Span, arg);
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException(e);
+                }
+            }
+
+            return new ValueTask(result);
+        }
     }
 
     /// <summary>
@@ -122,6 +172,30 @@ namespace DotNext.Buffers
 
         /// <inheritdoc />
         void IReadOnlySpanConsumer<T>.Invoke(ReadOnlySpan<T> span) => output.Write(span);
+
+        /// <inheritdoc />
+        ValueTask ISupplier<ReadOnlyMemory<T>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<T> input, CancellationToken token)
+        {
+            Task result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled(token);
+            }
+            else
+            {
+                result = Task.CompletedTask;
+                try
+                {
+                    output.Write(input.Span);
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException(e);
+                }
+            }
+
+            return new ValueTask(result);
+        }
 
         /// <summary>
         /// Determines whether this object contains the same buffer instance as the specified object.

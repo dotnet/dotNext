@@ -277,7 +277,7 @@ namespace DotNext.IO.Pipelines
             var pipe = new Pipe();
             WriteValuesAsync(pipe.Writer);
             var buffer = new ArrayBufferWriter<byte>();
-            await pipe.Reader.ReadAsync<ArrayBufferWriter<byte>>(static (writer, block, token) =>
+            await pipe.Reader.CopyToAsync<ArrayBufferWriter<byte>>(static (writer, block, token) =>
             {
                 writer.Write(block.Span);
                 return new ValueTask();
@@ -309,7 +309,7 @@ namespace DotNext.IO.Pipelines
             var pipe = new Pipe();
             WriteValuesAsync(pipe.Writer);
             var buffer = new ArrayBufferWriter<byte>();
-            await pipe.Reader.ReadAsync<ArrayBufferWriter<byte>>(static (block, writer) => writer.Write(block), buffer);
+            await pipe.Reader.CopyToAsync<ArrayBufferWriter<byte>>(static (block, writer) => writer.Write(block), buffer);
             Equal(28, buffer.WrittenCount);
             var reader = IAsyncBinaryReader.Create(buffer.WrittenMemory);
             Equal(42L, reader.ReadInt64(true));

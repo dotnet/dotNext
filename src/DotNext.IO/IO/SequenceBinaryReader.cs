@@ -1103,5 +1103,12 @@ namespace DotNext.IO
             foreach (var segment in sequence.Slice(position))
                 await reader(arg, segment, token).ConfigureAwait(false);
         }
+
+        /// <inheritdoc/>
+        async Task IAsyncBinaryReader.CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token)
+        {
+            foreach (var segment in sequence.Slice(position))
+                await consumer.Invoke(segment, token).ConfigureAwait(false);
+        }
     }
 }
