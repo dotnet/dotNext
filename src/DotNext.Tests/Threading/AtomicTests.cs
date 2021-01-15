@@ -308,7 +308,7 @@ namespace DotNext.Threading
         [Fact]
         public static void AtomicReferenceTest()
         {
-            var stref = "";
+            var stref = "Hello";
             Equal("Hello, world!", AtomicReference.AccumulateAndGet<string>(ref stref, ", world!", static (x, y) => x + y));
             Equal("Hello, world!", stref);
             Equal("Hello, world!", AtomicReference.GetAndUpdate(ref stref, static current => ""));
