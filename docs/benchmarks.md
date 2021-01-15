@@ -155,22 +155,6 @@ Strongly typed reflection provided by DotNext Reflection library has the same pe
 | Synchronized | 962.1 us | 12.04 us | 111.03 us | 944.3 us |
 | SpinLock | 1,456.6 us | 43.64 us | 408.19 us | 1,548.5 us |
 
-# Value Delegate
-[This benchmark](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/FunctionPointerBenchmark.cs) compares performance of indirect method call using classic delegates from .NET and [value delegates](./features/core/valued.md).
-
-| Method | Mean | Error | StdDev |
-| ---- | ---- | ---- | ---- |
-| Instance method, regular delegate, has implicit **this** | 0.8176 ns | 0.0192 ns | 0.0160 ns |
-| Instance method, Value Delegate, has implicit **this** | 1.5130 ns | 0.0104 ns | 0.0097 ns |
-| Static method, regular delegate, large size of param type, no implicitly captured object | 10.0363 ns | 0.0599 ns | 0.0560 ns |
-| Static method, Value Delegate, large size of param type, no implicitly captured object | 9.9476 ns | 0.0642 ns | 0.0569 ns |
-| Static method, regular delegate, small size of param type, no implicitly captured object | 21.4590 ns | 0.1720 ns | 0.1343 ns |
-| Static method, Value Delegate, small size of param type, no implicitly captured object | 22.3372 ns | 0.4040 ns | 0.3373 ns |
-
-_Large size of param type_ means that the type of the parameter is larger than 64 bit.
-
-Performance of value delegates is the same as of regular .NET delegates.
-
 # File-buffering Writer
 [This benchmark](https://github.com/sakno/dotNext/blob/master/src/DotNext.Benchmarks/IO/FileBufferingWriterBenchmark.cs) compares performance of [FileBufferingWriteStream](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.webutilities.filebufferingwritestream) from ASP.NET Core and [FileBufferingWriter](./api/DotNext.IO.FileBufferingWriter.yml) from .NEXT library.
 
