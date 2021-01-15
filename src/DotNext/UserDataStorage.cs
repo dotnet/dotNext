@@ -287,7 +287,7 @@ namespace DotNext
         /// <returns>The data associated with the slot.</returns>
         public TValue GetOrSet<TValue>(UserDataSlot<TValue> slot)
             where TValue : notnull, new()
-            => GetOrSet(slot, Supplier<TValue>.Activator);
+            => GetOrSet(slot, new Activator<TValue>());
 
         /// <summary>
         /// Gets existing user data or creates a new data and return it.
@@ -298,7 +298,7 @@ namespace DotNext
         /// <returns>The data associated with the slot.</returns>
         public TBase GetOrSet<TBase, T>(UserDataSlot<TBase> slot)
             where T : class, TBase, new()
-            => GetOrSet(slot, Supplier<T>.Activator);
+            => GetOrSet(slot, new Activator<T>());
 
         /// <summary>
         /// Gets existing user data or creates a new data and return it.

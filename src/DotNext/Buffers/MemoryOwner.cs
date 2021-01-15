@@ -12,7 +12,7 @@ namespace DotNext.Buffers
     /// </summary>
     /// <typeparam name="T">The type of the items in the memory pool.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct MemoryOwner<T> : IMemoryOwner<T>, IConvertible<Memory<T>>
+    public readonly struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>
     {
         // Of type ArrayPool<T> or IMemoryOwner<T>.
         // If support of another type is needed then reconsider implementation
@@ -176,7 +176,7 @@ namespace DotNext.Buffers
         }
 
         /// <inheritdoc/>
-        Memory<T> IConvertible<Memory<T>>.Convert() => Memory;
+        Memory<T> ISupplier<Memory<T>>.Invoke() => Memory;
 
         /// <summary>
         /// Gets managed pointer to the item in the rented memory.

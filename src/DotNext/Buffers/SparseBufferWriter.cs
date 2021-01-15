@@ -20,7 +20,7 @@ namespace DotNext.Buffers
     /// <seealso cref="PooledArrayBufferWriter{T}"/>
     /// <seealso cref="PooledBufferWriter{T}"/>
     [DebuggerDisplay("WrittenCount = {" + nameof(WrittenCount) + "}, FragmentedBytes = {" + nameof(FragmentedBytes) + "}")]
-    public partial class SparseBufferWriter<T> : Disposable, IEnumerable<ReadOnlyMemory<T>>, IGrowableBuffer<T>, IConvertible<ReadOnlySequence<T>>
+    public partial class SparseBufferWriter<T> : Disposable, IEnumerable<ReadOnlyMemory<T>>, IGrowableBuffer<T>, ISupplier<ReadOnlySequence<T>>
     {
         private readonly int chunkSize;
         private readonly MemoryAllocator<T>? allocator;
@@ -238,7 +238,7 @@ namespace DotNext.Buffers
         }
 
         /// <inheritdoc />
-        ReadOnlySequence<T> IConvertible<ReadOnlySequence<T>>.Convert()
+        ReadOnlySequence<T> ISupplier<ReadOnlySequence<T>>.Invoke()
         {
             if (first is null)
                 return ReadOnlySequence<T>.Empty;

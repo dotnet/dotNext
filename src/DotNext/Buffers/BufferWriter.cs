@@ -15,7 +15,7 @@ namespace DotNext.Buffers
     /// </summary>
     /// <typeparam name="T">The data type that can be written.</typeparam>
     [DebuggerDisplay("WrittenCount = {" + nameof(WrittenCount) + "}, FreeCapacity = {" + nameof(FreeCapacity) + "}")]
-    public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, IConvertible<ReadOnlyMemory<T>>, IReadOnlyList<T>, IGrowableBuffer<T>
+    public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<ReadOnlyMemory<T>>, IReadOnlyList<T>, IGrowableBuffer<T>
     {
         private object? diagObj;
 
@@ -59,7 +59,7 @@ namespace DotNext.Buffers
         public abstract ReadOnlyMemory<T> WrittenMemory { get; }
 
         /// <inheritdoc/>
-        ReadOnlyMemory<T> IConvertible<ReadOnlyMemory<T>>.Convert() => WrittenMemory;
+        ReadOnlyMemory<T> ISupplier<ReadOnlyMemory<T>>.Invoke() => WrittenMemory;
 
         /// <summary>
         /// Gets the amount of data written to the underlying memory so far.
