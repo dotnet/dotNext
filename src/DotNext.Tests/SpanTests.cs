@@ -44,11 +44,24 @@ namespace DotNext
             Equal(4UL, span[2]);
             Equal(6UL, span[3]);
 
-            span.Sort((x1, x2) => (int)(x2 - x1));
+            span.Sort(static (x1, x2) => (int)(x2 - x1));
             Equal(6UL, span[0]);
             Equal(4UL, span[1]);
             Equal(3UL, span[2]);
             Equal(2UL, span[3]);
+        }
+
+        [Fact]
+        public static unsafe void SortingUsingPointer()
+        {
+            Span<ulong> span = new ulong[] { 3, 2, 6, 4 };
+            span.Sort(&Sort);
+            Equal(6UL, span[0]);
+            Equal(4UL, span[1]);
+            Equal(3UL, span[2]);
+            Equal(2UL, span[3]);
+
+            static int Sort(ulong x, ulong y) => (int)(y - x);
         }
 
         [Fact]
