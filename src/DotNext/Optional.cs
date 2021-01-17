@@ -573,7 +573,7 @@ namespace DotNext
         /// </summary>
         /// <param name="value">The value to convert.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator Optional<T>(T? value) => new Optional<T>(value);
+        public static implicit operator Optional<T>(T? value) => new (value);
 
         /// <summary>
         /// Extracts value stored in the Optional container.
