@@ -188,7 +188,7 @@ namespace DotNext.Threading
         {
             if (head is DisposeAsyncNode disposeNode)
             {
-                disposeNode.Complete();
+                disposeNode.SetResult();
                 RemoveNode(disposeNode);
                 Dispose();
                 return true;
@@ -205,7 +205,7 @@ namespace DotNext.Threading
             {
                 next = current.CleanupAndGotoNext();
                 if (current is DisposeAsyncNode disposeNode)
-                    disposeNode.Complete();
+                    disposeNode.SetResult();
                 else
                     current.TrySetException(e);
             }

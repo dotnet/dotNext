@@ -437,7 +437,7 @@ namespace DotNext.Threading
                 }
 
                 RemoveNode(readLock);
-                readLock.Complete();
+                readLock.SetResult();
                 currentState.ReadLocks += 1L;
 
                 if (IsTerminalNode(next))
@@ -470,7 +470,7 @@ namespace DotNext.Threading
             if (--currentState.ReadLocks == 0L && head is WriteLockNode writeLock)
             {
                 RemoveNode(writeLock);
-                writeLock.Complete();
+                writeLock.SetResult();
                 currentState.WriteLock = true;
             }
             else
@@ -501,7 +501,7 @@ namespace DotNext.Threading
             if (head is WriteLockNode writeLock)
             {
                 RemoveNode(writeLock);
-                writeLock.Complete();
+                writeLock.SetResult();
             }
             else
             {
@@ -530,7 +530,7 @@ namespace DotNext.Threading
             if (!ProcessDisposeQueue() && --currentState.ReadLocks == 0L && head is WriteLockNode writeLock)
             {
                 RemoveNode(writeLock);
-                writeLock.Complete();
+                writeLock.SetResult();
                 currentState.WriteLock = true;
             }
         }

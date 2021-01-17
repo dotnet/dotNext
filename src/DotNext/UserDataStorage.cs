@@ -264,7 +264,7 @@ namespace DotNext
             }
         }
 
-        private static readonly ConditionalWeakTable<object, BackingStorage> UserData = new ConditionalWeakTable<object, BackingStorage>();
+        private static readonly ConditionalWeakTable<object, BackingStorage> UserData = new ();
 
         private readonly object source;
 

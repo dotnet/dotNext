@@ -1,10 +1,8 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
-using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text;
 using static System.Globalization.CultureInfo;
 using static System.Runtime.CompilerServices.Unsafe;
 using NumberStyles = System.Globalization.NumberStyles;
@@ -329,6 +327,20 @@ namespace DotNext
 #endif
 
         /// <summary>
+        /// Sorts the elements.
+        /// </summary>
+        /// <param name="span">The contiguous region of arbitrary memory to sort.</param>
+        /// <param name="comparison">The comparer used for sorting.</param>
+        /// <typeparam name="T">The type of the elements.</typeparam>
+        [CLSCompliant(false)]
+        public static unsafe void Sort<T>(this Span<T> span, delegate*<T?, T?, int> comparison)
+#if NETSTANDARD2_1
+            => QuickSort<T, ComparerWrapper<T>>(span, 0, span.Length - 1, comparison);
+#else
+            => MemoryExtensions.Sort<T, ComparerWrapper<T>>(span, comparison);
+#endif
+
+        /// <summary>
         /// Trims the span to specified length if it exceeds it.
         /// If length is less that <paramref name="maxLength" /> then the original span returned.
         /// </summary>
@@ -354,16 +366,15 @@ namespace DotNext
             where TComparer : struct, ISupplier<T, T, bool>
         {
             if (span.IsEmpty)
-                return -1;
+                goto not_found;
 
-            ref var reference = ref MemoryMarshal.GetReference(span);
             for (var i = startIndex; i < span.Length; i++)
             {
-                if (comparer.Invoke(reference, value))
+                if (comparer.Invoke(span[i], value))
                     return i;
-                reference = ref Add(ref reference, 1);
             }
 
+            not_found:
             return -1;
         }
 
@@ -400,11 +411,8 @@ namespace DotNext
         /// <param name="action">The action to be applied for each element of the span.</param>
         public static void ForEach<T>(this Span<T> span, RefAction<T, int> action)
         {
-            if (span.IsEmpty)
-                return;
-            ref var reference = ref MemoryMarshal.GetReference(span);
-            for (var i = 0; i < span.Length; i++, reference = ref Add(ref reference, 1))
-                action.Invoke(ref reference, i);
+            for (var i = 0; i < span.Length; i++)
+                action.Invoke(ref span[i], i);
         }
 
         /// <summary>

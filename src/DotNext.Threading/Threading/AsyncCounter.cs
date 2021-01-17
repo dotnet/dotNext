@@ -86,7 +86,7 @@ namespace DotNext.Threading
             {
                 next = current.Next;
                 RemoveNode(current);
-                current.Complete();
+                current.SetResult();
             }
         }
 

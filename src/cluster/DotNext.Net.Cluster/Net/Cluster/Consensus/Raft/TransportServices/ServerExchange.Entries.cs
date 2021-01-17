@@ -61,10 +61,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         static ServerExchange()
         {
-            IsReadyToReadEntryPredicate = DelegateHelpers.CreateOpenDelegate<Predicate<ServerExchange>>(server => server.IsReadyToReadEntry());
-            IsValidStateForResponsePredicate = DelegateHelpers.CreateOpenDelegate<Predicate<ServerExchange>>(server => server.IsValidStateForResponse());
-            IsValidForTransitionPredicate = DelegateHelpers.CreateOpenDelegate<Predicate<ServerExchange>>(server => server.IsValidForTransition());
-            SetStateAction = DelegateHelpers.CreateOpenDelegate<Action<ServerExchange, State>>((server, state) => server.SetState(state));
+            IsReadyToReadEntryPredicate = IsReadyToReadEntry;
+            IsValidStateForResponsePredicate = IsValidStateForResponse;
+            IsValidForTransitionPredicate = IsValidForTransition;
+            SetStateAction = SetState;
+
+            static bool IsReadyToReadEntry(ServerExchange server) => server.IsReadyToReadEntry();
+            static bool IsValidStateForResponse(ServerExchange server) => server.IsValidStateForResponse();
+            static bool IsValidForTransition(ServerExchange server) => server.IsValidForTransition();
+            static void SetState(ServerExchange server, State state) => server.SetState(state);
         }
 
         private readonly AsyncTrigger transmissionStateTrigger = new AsyncTrigger();

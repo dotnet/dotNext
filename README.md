@@ -9,7 +9,6 @@
 
 | Proposal | Implementation |
 | ---- | ---- |
-| [Static Delegates](https://github.com/dotnet/csharplang/blob/master/proposals/static-delegates.md) | [Value Delegates](https://sakno.github.io/dotNext/features/core/valued.html) |
 | [Interop between function pointer and delegate](https://github.com/dotnet/csharplang/discussions/3680) | [DelegateHelpers](https://sakno.github.io/dotNext/api/DotNext.DelegateHelpers.html) factory methods |
 | [Enum API](https://github.com/dotnet/corefx/issues/34077) | [Documentation](https://sakno.github.io/dotNext/features/core/enum.html) |
 | [Check if an instance of T is a default(T)](https://github.com/dotnet/corefx/issues/16209) | [IsDefault() method](https://sakno.github.io/dotNext/api/DotNext.Runtime.Intrinsics.html#DotNext_Runtime_Intrinsics_IsDefault__1___0_) |
@@ -65,6 +64,7 @@ Migration guide for 2.x users is [here](https://sakno.github.io/dotNext/migratio
 * Added `ThreadPoolWorkItemFactory` static class with extension methods for constructing [IThreadPoolWorkItem](https://docs.microsoft.com/en-us/dotnet/api/system.threading.ithreadpoolworkitem) instances from method pointers. Available only for .NET 5 target
 * Introduced factory methods for constructing delegate instances from the pointers to the managed methods
 * `DOTNEXT_STACK_ALLOC_THRESHOLD` environment variable can be used to override stack allocation threshold for all .NEXT routines
+* Dropped support of value delegates. They are replaced by functional interfaces. However, they are hiddent from the library consumer so every public API that was based on value delegates now has at least two overloads: CLS-compliant version using regular delegate type and unsafe version using function pointer syntax.
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.io/3.0.0">DotNext.IO 3.0.0</a>

@@ -95,16 +95,19 @@ namespace DotNext.IO
         ValueTask<Guid> IAsyncBinaryReader.ReadGuidAsync(LengthFormat lengthFormat, DecodingContext context, string format, CancellationToken token)
             => EndOfStream<Guid>();
 
-        Task IAsyncBinaryReader.CopyToAsync(IBufferWriter<byte> writer, CancellationToken token)
+        private static Task GetCompletedOrCanceledTask(CancellationToken token)
             => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.CompletedTask;
+
+        Task IAsyncBinaryReader.CopyToAsync(IBufferWriter<byte> writer, CancellationToken token)
+            => GetCompletedOrCanceledTask(token);
 
         Task IAsyncBinaryReader.CopyToAsync<TArg>(Func<TArg, ReadOnlyMemory<byte>, CancellationToken, ValueTask> consumer, TArg arg, CancellationToken token)
-            => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.CompletedTask;
+            => GetCompletedOrCanceledTask(token);
 
         Task IAsyncBinaryReader.CopyToAsync<TArg>(ReadOnlySpanAction<byte, TArg> consumer, TArg arg, CancellationToken token)
-            => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.CompletedTask;
+            => GetCompletedOrCanceledTask(token);
 
         Task IAsyncBinaryReader.CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token)
-            => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.CompletedTask;
+            => GetCompletedOrCanceledTask(token);
     }
 }
