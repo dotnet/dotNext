@@ -22,6 +22,39 @@ namespace DotNext.Threading
     public struct Atomic<T> : IStrongBox, ICloneable
         where T : struct
     {
+        private interface IEqualityComparer
+        {
+            bool Equals(in T x, in T y);
+        }
+
+        [StructLayout(LayoutKind.Auto)]
+        private readonly struct BitwiseEqualityComparer : IEqualityComparer
+        {
+            bool IEqualityComparer.Equals(in T x, in T y) => BitwiseComparer<T>.Equals(in x, in y);
+        }
+
+        [StructLayout(LayoutKind.Auto)]
+        private readonly struct DelegatingEqualityComparer : IEqualityComparer
+        {
+            private readonly Func<T, T, bool> func;
+
+            internal DelegatingEqualityComparer(Func<T, T, bool> func)
+                => this.func = func ?? throw new ArgumentNullException(nameof(func));
+
+            bool IEqualityComparer.Equals(in T x, in T y) => func(x, y);
+        }
+
+        [StructLayout(LayoutKind.Auto)]
+        private readonly unsafe struct EqualityComparer : IEqualityComparer
+        {
+            private readonly delegate*<in T, in T, bool> ptr;
+
+            internal EqualityComparer(delegate*<in T, in T, bool> ptr)
+                => this.ptr = ptr == null ? throw new ArgumentNullException(nameof(ptr)) : ptr;
+
+            bool IEqualityComparer.Equals(in T x, in T y) => ptr(in x, in y);
+        }
+
         /// <summary>
         /// Represents atomic update action.
         /// </summary>
@@ -118,6 +151,23 @@ namespace DotNext.Threading
             lockState.Release();
         }
 
+#if !NETSTANDARD2_1
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+#endif
+        private bool CompareExchange<TComparer>(TComparer comparer, in T update, in T expected, out T result)
+            where TComparer : struct, IEqualityComparer
+        {
+            bool successful;
+            lockState.Acquire();
+            Increment(ref version);
+            var current = value;
+            if (successful = comparer.Equals(in current, in expected))
+                Copy(in update, out value);
+            Copy(in current, out result);
+            lockState.Release();
+            return successful;
+        }
+
         /// <summary>
         /// Compares two values of type <typeparamref name="T"/> for bitwise equality and, if they are equal, replaces the stored value.
         /// </summary>
@@ -125,20 +175,45 @@ namespace DotNext.Threading
         /// <param name="expected">The value that is compared to the stored value.</param>
         /// <param name="result">The origin value stored in this container before modification.</param>
         /// <returns><see langword="true"/> if the current value is replaced by <paramref name="update"/>; otherwise, <see langword="false"/>.</returns>
+        public bool CompareExchange(in T update, in T expected, out T result)
+            => CompareExchange(new BitwiseEqualityComparer(), in update, in expected, out result);
+
+        /// <summary>
+        /// Compares two values of type <typeparamref name="T"/> for equality and, if they are equal, replaces the stored value.
+        /// </summary>
+        /// <param name="comparer">The function representing comparison logic.</param>
+        /// <param name="update">The value that replaces the stored value if the comparison results in equality.</param>
+        /// <param name="expected">The value that is compared to the stored value.</param>
+        /// <param name="result">The origin value stored in this container before modification.</param>
+        /// <returns><see langword="true"/> if the current value is replaced by <paramref name="update"/>; otherwise, <see langword="false"/>.</returns>
+        public bool CompareExchange(Func<T, T, bool> comparer, in T update, in T expected, out T result)
+            => CompareExchange(new DelegatingEqualityComparer(comparer), in update, in expected, out result);
+
+        /// <summary>
+        /// Compares two values of type <typeparamref name="T"/> for equality and, if they are equal, replaces the stored value.
+        /// </summary>
+        /// <param name="comparer">The function representing comparison logic.</param>
+        /// <param name="update">The value that replaces the stored value if the comparison results in equality.</param>
+        /// <param name="expected">The value that is compared to the stored value.</param>
+        /// <param name="result">The origin value stored in this container before modification.</param>
+        /// <returns><see langword="true"/> if the current value is replaced by <paramref name="update"/>; otherwise, <see langword="false"/>.</returns>
+        [CLSCompliant(false)]
+        public unsafe bool CompareExchange(delegate*<in T, in T, bool> comparer, in T update, in T expected, out T result)
+            => CompareExchange(new EqualityComparer(comparer), in update, in expected, out result);
+
 #if !NETSTANDARD2_1
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
 #endif
-        public bool CompareExchange(in T update, in T expected, out T result)
+        private bool CompareAndSet<TComparer>(TComparer comparer, in T expected, in T update)
+            where TComparer : struct, IEqualityComparer
         {
-            bool successful;
             lockState.Acquire();
             Increment(ref version);
-            var current = value;
-            if (successful = BitwiseComparer<T>.Equals(current, expected))
+            bool result;
+            if (result = comparer.Equals(in value, in expected))
                 Copy(in update, out value);
-            Copy(in current, out result);
             lockState.Release();
-            return successful;
+            return result;
         }
 
         /// <summary>
@@ -147,19 +222,29 @@ namespace DotNext.Threading
         /// <param name="expected">The expected value.</param>
         /// <param name="update">The new value.</param>
         /// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
-#if !NETSTANDARD2_1
-        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-#endif
         public bool CompareAndSet(in T expected, in T update)
-        {
-            lockState.Acquire();
-            Increment(ref version);
-            bool result;
-            if (result = BitwiseComparer<T>.Equals(value, expected))
-                Copy(in update, out value);
-            lockState.Release();
-            return result;
-        }
+            => CompareAndSet(new BitwiseEqualityComparer(), in expected, in update);
+
+        /// <summary>
+        /// Atomically sets the stored value to the given updated value if the current value == the expected value.
+        /// </summary>
+        /// <param name="comparer">The function representing comparison logic.</param>
+        /// <param name="expected">The expected value.</param>
+        /// <param name="update">The new value.</param>
+        /// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
+        public bool CompareAndSet(Func<T, T, bool> comparer, in T expected, in T update)
+            => CompareAndSet(new DelegatingEqualityComparer(comparer), in expected, in update);
+
+        /// <summary>
+        /// Atomically sets the stored value to the given updated value if the current value == the expected value.
+        /// </summary>
+        /// <param name="comparer">The function representing comparison logic.</param>
+        /// <param name="expected">The expected value.</param>
+        /// <param name="update">The new value.</param>
+        /// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
+        [CLSCompliant(false)]
+        public unsafe bool CompareAndSet(delegate*<in T, in T, bool> comparer, in T expected, in T update)
+            => CompareAndSet(new EqualityComparer(comparer), in expected, in update);
 
         /// <summary>
         /// Sets a value stored in this container to a specified value and returns the original value, as an atomic operation.
