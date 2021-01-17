@@ -1,10 +1,8 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
-using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text;
 using static System.Globalization.CultureInfo;
 using static System.Runtime.CompilerServices.Unsafe;
 using NumberStyles = System.Globalization.NumberStyles;
@@ -370,12 +368,10 @@ namespace DotNext
             if (span.IsEmpty)
                 goto not_found;
 
-            ref var reference = ref MemoryMarshal.GetReference(span);
             for (var i = startIndex; i < span.Length; i++)
             {
-                if (comparer.Invoke(reference, value))
+                if (comparer.Invoke(span[i], value))
                     return i;
-                reference = ref Add(ref reference, 1);
             }
 
             not_found:
@@ -415,11 +411,8 @@ namespace DotNext
         /// <param name="action">The action to be applied for each element of the span.</param>
         public static void ForEach<T>(this Span<T> span, RefAction<T, int> action)
         {
-            if (span.IsEmpty)
-                return;
-            ref var reference = ref MemoryMarshal.GetReference(span);
-            for (var i = 0; i < span.Length; i++, reference = ref Add(ref reference, 1))
-                action.Invoke(ref reference, i);
+            for (var i = 0; i < span.Length; i++)
+                action.Invoke(ref span[i], i);
         }
 
         /// <summary>
