@@ -22,6 +22,6 @@ var decoder = new Base64Decoder();
 Span<byte> buffer = stackalloc byte[128];
 for (int count; (count = input.Read(buffer)) > 0; )
 {
-    decoder.Decode(buffer.Slice(0, count), new ValueReadOnlySpanAction<byte, MemoryStream>(&WriteToStream), output);
+    decoder.Decode(buffer.Slice(0, count), &WriteToStream, output);
 }
 ```
