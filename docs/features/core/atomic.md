@@ -6,7 +6,9 @@ Most .NET programming languages provide primitive atomic operations to work with
 The library provides advanced atomic operations for the following types:
 * Scalar types
     * [long](https://docs.microsoft.com/en-us/dotnet/api/system.int64)
+	* [ulong](https://docs.microsoft.com/en-us/dotnet/api/system.uint64)
     * [int](https://docs.microsoft.com/en-us/dotnet/api/system.int32)
+	* [uint](https://docs.microsoft.com/en-us/dotnet/api/system.uint32)
     * [bool](https://docs.microsoft.com/en-us/dotnet/api/system.boolean)
     * [double](https://docs.microsoft.com/en-us/dotnet/api/system.double)
     * [float](https://docs.microsoft.com/en-us/dotnet/api/system.single)
@@ -30,7 +32,9 @@ Reference types have similar set of atomic operations except arithmetic operatio
 # Atomic operations for scalar types
 Atomic operations are extension methods grouped by specific target scalar types:
 * [AtomcInt32](../../api/DotNext.Threading.AtomicInt32.yml) for [int](https://docs.microsoft.com/en-us/dotnet/api/system.int32)
+* [AtomcUInt32](../../api/DotNext.Threading.AtomicUInt32.yml) for [int](https://docs.microsoft.com/en-us/dotnet/api/system.uint32)
 * [AtomicInt64](../../api/DotNext.Threading.AtomicInt64.yml) for [long](https://docs.microsoft.com/en-us/dotnet/api/system.int64)
+* [AtomicUInt64](../../api/DotNext.Threading.AtomicUInt64.yml) for [long](https://docs.microsoft.com/en-us/dotnet/api/system.uint64)
 * [AtomicSingle](../../api/DotNext.Threading.AtomicSingle.yml) for [float](https://docs.microsoft.com/en-us/dotnet/api/system.single)
 * [AtomicDouble](../../api/DotNext.Threading.AtomicDouble.yml) for [double](https://docs.microsoft.com/en-us/dotnet/api/system.double)
 * [AtomicIntPtr](../../api/DotNext.Threading.AtomicIntPtr.yml) for [IntPtr](https://docs.microsoft.com/en-us/dotnet/api/system.intptr)
