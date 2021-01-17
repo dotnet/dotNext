@@ -116,7 +116,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 else
                 {
                     consumed = true;
-                    result = reader.ReadBlockAsync(length, new AsyncBinaryWriter<TWriter>(writer), token);
+                    result = reader.ReadBlockAsync(length, writer, token);
                 }
 
                 return result;

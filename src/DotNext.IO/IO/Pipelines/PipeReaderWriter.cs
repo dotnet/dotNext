@@ -111,13 +111,8 @@ namespace DotNext.IO.Pipelines
     [StructLayout(LayoutKind.Auto)]
     internal readonly struct PipeBinaryWriter : IAsyncBinaryWriter
     {
-        private interface IWriter
-        {
-            ValueTask<FlushResult> Invoke(PipeWriter pipe, CancellationToken token);
-        }
-
         [StructLayout(LayoutKind.Auto)]
-        private readonly unsafe struct Writer<TArg> : IWriter
+        private readonly unsafe struct Writer<TArg> : ISupplier<PipeWriter, CancellationToken, ValueTask<FlushResult>>
             where TArg : struct
         {
             private readonly TArg arg;
@@ -134,7 +129,7 @@ namespace DotNext.IO.Pipelines
         }
 
         [StructLayout(LayoutKind.Auto)]
-        private readonly unsafe struct Writer<T1, T2> : IWriter
+        private readonly unsafe struct Writer<T1, T2> : ISupplier<PipeWriter, CancellationToken, ValueTask<FlushResult>>
         {
             private readonly T1 arg1;
             private readonly T2 arg2;
@@ -152,7 +147,7 @@ namespace DotNext.IO.Pipelines
         }
 
         [StructLayout(LayoutKind.Auto)]
-        private readonly unsafe struct Writer<T1, T2, T3> : IWriter
+        private readonly unsafe struct Writer<T1, T2, T3> : ISupplier<PipeWriter, CancellationToken, ValueTask<FlushResult>>
         {
             private readonly T1 arg1;
             private readonly T2 arg2;
@@ -172,7 +167,7 @@ namespace DotNext.IO.Pipelines
         }
 
         [StructLayout(LayoutKind.Auto)]
-        private readonly unsafe struct Writer<T1, T2, T3, T4> : IWriter
+        private readonly unsafe struct Writer<T1, T2, T3, T4> : ISupplier<PipeWriter, CancellationToken, ValueTask<FlushResult>>
         {
             private readonly T1 arg1;
             private readonly T2 arg2;
@@ -194,7 +189,7 @@ namespace DotNext.IO.Pipelines
         }
 
         [StructLayout(LayoutKind.Auto)]
-        private readonly unsafe struct Writer<T1, T2, T3, T4, T5> : IWriter
+        private readonly unsafe struct Writer<T1, T2, T3, T4, T5> : ISupplier<PipeWriter, CancellationToken, ValueTask<FlushResult>>
         {
             private readonly T1 arg1;
             private readonly T2 arg2;
@@ -229,7 +224,7 @@ namespace DotNext.IO.Pipelines
         }
 
         private static async ValueTask WriteAsync<TWriter>(PipeWriter output, TWriter writer, CancellationToken token)
-            where TWriter : struct, IWriter
+            where TWriter : struct, ISupplier<PipeWriter, CancellationToken, ValueTask<FlushResult>>
         {
             var result = await writer.Invoke(output, token).ConfigureAwait(false);
             result.ThrowIfCancellationRequested(token);
@@ -241,6 +236,14 @@ namespace DotNext.IO.Pipelines
 
         public unsafe ValueTask WriteAsync(ReadOnlyMemory<byte> input, LengthFormat? lengthFormat, CancellationToken token)
             => WriteAsync(output, new Writer<ReadOnlyMemory<byte>, LengthFormat?>(input, lengthFormat, &PipeExtensions.WriteBlockAsync), token);
+
+        unsafe ValueTask ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<byte> input, CancellationToken token)
+        {
+            return WriteAsync(output, new Writer<ReadOnlyMemory<byte>>(input, &WriteMemoryAsync), token);
+
+            static ValueTask<FlushResult> WriteMemoryAsync(PipeWriter output, ReadOnlyMemory<byte> input, CancellationToken token)
+                => output.WriteAsync(input, token);
+        }
 
         unsafe ValueTask IAsyncBinaryWriter.WriteAsync<TArg>(Action<TArg, IBufferWriter<byte>> writer, TArg arg, CancellationToken token)
         {

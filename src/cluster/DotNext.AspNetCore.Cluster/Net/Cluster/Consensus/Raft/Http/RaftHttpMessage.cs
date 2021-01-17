@@ -11,8 +11,6 @@ using HeaderUtils = Microsoft.Net.Http.Headers.HeaderUtilities;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
-    using IAsyncBinaryWriter = IO.IAsyncBinaryWriter;
-
     internal abstract class RaftHttpMessage : HttpMessage
     {
         // cached to avoid memory allocation
@@ -21,19 +19,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         // request - represents Term value according with Raft protocol
         // response - represents Term value of the reply node
         private const string TermHeader = "X-Raft-Term";
-
-        private protected struct AsyncBinaryWriter<TWriter> : ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
-            where TWriter : notnull, IAsyncBinaryWriter
-        {
-            // not readonly to avoid defensive copying
-            private TWriter writer;
-
-            internal AsyncBinaryWriter(TWriter writer)
-                => this.writer = writer;
-
-            ValueTask ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<byte> input, CancellationToken token)
-                => writer.WriteAsync(input, null, token);
-        }
 
         internal readonly long ConsensusTerm;
 

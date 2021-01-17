@@ -139,6 +139,9 @@ namespace DotNext.IO
         public ValueTask WriteAsync(ReadOnlyMemory<byte> input, LengthFormat? lengthFormat, CancellationToken token)
             => lengthFormat is null ? stream.WriteAsync(input, token) : stream.WriteBlockAsync(input, lengthFormat.GetValueOrDefault(), buffer, token);
 
+        ValueTask ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<byte> input, CancellationToken token)
+            => stream.WriteAsync(input, token);
+
         public ValueTask WriteAsync(ReadOnlyMemory<char> chars, EncodingContext context, LengthFormat? lengthFormat, CancellationToken token)
             => stream.WriteStringAsync(chars, context, buffer, lengthFormat, token);
 
