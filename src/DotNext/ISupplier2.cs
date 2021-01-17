@@ -245,4 +245,20 @@ namespace DotNext
         public static implicit operator DelegatingComparer<T>(Comparison<T?> comparison)
             => new (comparison);
     }
+
+    [StructLayout(LayoutKind.Auto)]
+    internal readonly unsafe struct ComparerWrapper<T> : IComparer<T>, ISupplier<T?, T?, int>
+    {
+        private readonly delegate*<T?, T?, int> ptr;
+
+        internal ComparerWrapper(delegate*<T?, T?, int> ptr)
+            => this.ptr = ptr == null ? throw new ArgumentNullException(nameof(ptr)) : ptr;
+
+        int ISupplier<T?, T?, int>.Invoke(T? x, T? y) => ptr(x, y);
+
+        int IComparer<T>.Compare(T? x, T? y) => ptr(x, y);
+
+        public static implicit operator ComparerWrapper<T>(delegate*<T?, T?, int> ptr)
+            => new ComparerWrapper<T>(ptr);
+    }
 }

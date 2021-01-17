@@ -329,6 +329,20 @@ namespace DotNext
 #endif
 
         /// <summary>
+        /// Sorts the elements.
+        /// </summary>
+        /// <param name="span">The contiguous region of arbitrary memory to sort.</param>
+        /// <param name="comparison">The comparer used for sorting.</param>
+        /// <typeparam name="T">The type of the elements.</typeparam>
+        [CLSCompliant(false)]
+        public static unsafe void Sort<T>(this Span<T> span, delegate*<T?, T?, int> comparison)
+#if NETSTANDARD2_1
+            => QuickSort<T, ComparerWrapper<T>>(span, 0, span.Length - 1, comparison);
+#else
+            => MemoryExtensions.Sort<T, ComparerWrapper<T>>(span, comparison);
+#endif
+
+        /// <summary>
         /// Trims the span to specified length if it exceeds it.
         /// If length is less that <paramref name="maxLength" /> then the original span returned.
         /// </summary>

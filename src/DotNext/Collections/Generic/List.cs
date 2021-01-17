@@ -244,6 +244,21 @@ namespace DotNext.Collections.Generic
             => InsertOrdered<T, DelegatingComparer<T>>(list, item, comparer);
 
         /// <summary>
+        /// Inserts the item into sorted list.
+        /// </summary>
+        /// <remarks>
+        /// Time complexity of this operation is O(log N), where N is a size of the list.
+        /// </remarks>
+        /// <typeparam name="T">The type of the items in the list.</typeparam>
+        /// <param name="list">The list to insert into.</param>
+        /// <param name="item">The item to be added into the list.</param>
+        /// <param name="comparer">The comparer function.</param>
+        /// <returns>The actual index of the inserted item.</returns>
+        [CLSCompliant(false)]
+        public static unsafe int InsertOrdered<T>(this IList<T> list, T item, delegate*<T?, T?, int> comparer)
+            => InsertOrdered<T, ComparerWrapper<T>>(list, item, comparer);
+
+        /// <summary>
         /// Removes a range of elements from list.
         /// </summary>
         /// <typeparam name="T">The type of elements in the list.</typeparam>
