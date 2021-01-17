@@ -23,7 +23,7 @@ namespace DotNext.Threading
             private readonly int version;
             private readonly bool valid;
 
-            internal LockStamp(ref int version)
+            internal LockStamp(in int version)
             {
                 this.version = version.VolatileRead();
                 valid = true;
@@ -54,7 +54,7 @@ namespace DotNext.Threading
             /// Computes hash code for this stamp.
             /// </summary>
             /// <returns>The hash code of this stamp.</returns>
-            public override int GetHashCode() => version;
+            public override int GetHashCode() => HashCode.Combine(valid, version);
 
             /// <summary>
             /// Determines whether the first stamp represents the same version of the lock state
@@ -89,7 +89,7 @@ namespace DotNext.Threading
         /// <returns>Optimistic read stamp. May be invalid.</returns>
         public LockStamp TryOptimisticRead()
         {
-            var stamp = new LockStamp(ref version);
+            var stamp = new LockStamp(in version);
             return state == WriteLockState ? new LockStamp() : stamp;
         }
 

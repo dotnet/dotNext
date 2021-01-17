@@ -429,7 +429,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry and <paramref name="entry"/> is not a snapshot.</exception>
         public ValueTask AppendAsync<TEntry>(in WriteLockToken writeLock, TEntry entry, long startIndex)
             where TEntry : notnull, IRaftLogEntry
-            => IsValidToken(in writeLock) ? UnsafeAppendAsync(entry, startIndex) : throw new ArgumentException(ExceptionMessages.InvalidLockToken);
+            => Validate(in writeLock) ? UnsafeAppendAsync(entry, startIndex) : throw new ArgumentException(ExceptionMessages.InvalidLockToken);
 
         /// <summary>
         /// Adds uncommitted log entry to the end of this log.
@@ -489,7 +489,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             if (entry.IsSnapshot)
                 throw new InvalidOperationException(ExceptionMessages.SnapshotDetected);
-            return IsValidToken(in writeLock) ? UnsafeAppendAsync(entry, token) : throw new ArgumentException(ExceptionMessages.InvalidLockToken, nameof(writeLock));
+            return Validate(in writeLock) ? UnsafeAppendAsync(entry, token) : throw new ArgumentException(ExceptionMessages.InvalidLockToken, nameof(writeLock));
         }
 
         /// <summary>
