@@ -368,7 +368,7 @@ namespace DotNext
             where TComparer : struct, ISupplier<T, T, bool>
         {
             if (span.IsEmpty)
-                return -1;
+                goto not_found;
 
             ref var reference = ref MemoryMarshal.GetReference(span);
             for (var i = startIndex; i < span.Length; i++)
@@ -378,6 +378,7 @@ namespace DotNext
                 reference = ref Add(ref reference, 1);
             }
 
+            not_found:
             return -1;
         }
 
