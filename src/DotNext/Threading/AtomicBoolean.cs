@@ -258,9 +258,7 @@ namespace DotNext.Threading
 #endif
         internal void Acquire()
         {
-            for (var spinner = new SpinWait(); CompareExchange(false, true); spinner.SpinOnce())
-            {
-            }
+            for (var spinner = new SpinWait(); CompareExchange(false, true); spinner.SpinOnce());
         }
 
         internal void Release() => Value = false;
