@@ -192,10 +192,13 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if writer lock is acquired; otherwise, <see langword="false"/>.</returns>
         public bool TryEnterWriteLock()
         {
-            var result = Interlocked.CompareExchange(ref state, WriteLockState, NoLockState) == NoLockState;
-            if (result)
+            if (Interlocked.CompareExchange(ref state, WriteLockState, NoLockState) == NoLockState)
+            {
                 Interlocked.Increment(ref version);
-            return result;
+                return true;
+            }
+
+            return false;
         }
 
         private bool TryEnterWriteLock(Timeout timeout, CancellationToken token)
