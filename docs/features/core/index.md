@@ -43,12 +43,15 @@ var str = "abc".Reverse(); //str is "cba"
 ```
 
 ## Trim by length
-Extension method _TrimLength_ limits string length:
+Extension method _TrimLength_ limits the length of string or span:
 ```csharp
 using DotNext;
 
 var str = "abc".TrimLength(2);  //str is "ab"
 str = "abc".TrimLength(4);  //str is "abc"
+
+Span<int> array = new int[] { 10, 20, 30 };
+array = array.TrimLength(2);    //array is { 10, 20 }
 ```
 
 # Delegates
@@ -61,14 +64,6 @@ using DotNext;
 
 Func<string, int> lengthOf = str => str.Length;
 Converter<string, int> lengthOf2 = lengthOf.ChangeType<Converter<string, int>>();
-```
-
-## Create delegate instance
-Statically-typed version of delegate creation method shipped with .NET Standard.
-```csharp
-using DotNext;
-
-var parseInt = typeof(int).GetMethod(nameof(int.Parse)).CreateDelegate<Func<string, int>>();
 ```
 
 ## Specialized delegate converters
@@ -106,6 +101,20 @@ predicate = predicate.Negate();
 predicate = predicate.And(str => str.Length > 2);
 predicate = predicate.Or(str => str.Length % 2 == 0);
 predicate = predicate.Xor(Predicate.IsNull<string>());
+```
+
+## Delegate Factories
+C# 9 introduces typed function pointers. However, conversion between regular delegates and function pointers is not supported. `DelegateHelpers` offers factory methods allowing creation of delegate instances from function pointers. These factory methods support implicit capturing of the first argument as well:
+```csharp
+using DotNext;
+
+static int GetHashCode(string s)
+{
+}
+
+delegate*<string, int> hashCode = &GetHashCode;
+Func<string, int> openDelegate = DelegateHelpers.CreateDelegate<string, int>(hashCode);
+Func<int> closedDelegate = DelegateHelpers.CreateDelegate<string, int>(hashCode, "Hello, world!");
 ```
 
 # Comparable data types
