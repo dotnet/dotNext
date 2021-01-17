@@ -18,15 +18,15 @@ using System.Threading;
 using var semaphore = new SemaphoreSlim();
 using var @lock = Lock.Semaphore(semaphore);
 //acquires the lock
-using(@lock.Acquire())
+using (@lock.Acquire())
 {
 }
 
 using var rwlock = new ReaderWriterLockSlim();
 using var @lock = Lock.WriteLock(rwLock);
 //acquires the writer lock
-if(@lock.TryAcquire(out Lock.Holder holder))
-    using(holder)
+if (@lock.TryAcquire(out Lock.Holder holder))
+    using (holder)
     {
 
     }
