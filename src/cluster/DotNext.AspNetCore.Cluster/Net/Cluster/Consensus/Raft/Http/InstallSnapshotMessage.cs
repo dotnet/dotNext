@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.IO.Pipelines;
 using System.Net;
 using System.Net.Http;
@@ -54,7 +53,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 else
                 {
                     touched = true;
-                    result = reader.CopyToAsync(WriteToAsync<TWriter>, writer, token);
+                    result = reader.CopyToAsync(new AsyncBinaryWriter<TWriter>(writer), token);
                 }
 
                 return new ValueTask(result);

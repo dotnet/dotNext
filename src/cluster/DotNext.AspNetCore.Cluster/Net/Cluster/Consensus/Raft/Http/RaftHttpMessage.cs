@@ -22,6 +22,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         // response - represents Term value of the reply node
         private const string TermHeader = "X-Raft-Term";
 
+        private protected struct AsyncBinaryWriter<TWriter> : ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
+            where TWriter : notnull, IAsyncBinaryWriter
+        {
+            // not readonly to avoid defensive copying
+            private TWriter writer;
+
+            internal AsyncBinaryWriter(TWriter writer)
+                => this.writer = writer;
+
+            ValueTask ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<byte> input, CancellationToken token)
+                => writer.WriteAsync(input, null, token);
+        }
+
         internal readonly long ConsensusTerm;
 
         private protected RaftHttpMessage(string messageType, IPEndPoint sender, long term)
@@ -55,9 +68,5 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             response.Headers.Add(TermHeader, result.Term.ToString(InvariantCulture));
             return response.WriteAsync(result.Value.ToString(InvariantCulture), token);
         }
-
-        private protected static ValueTask WriteToAsync<TWriter>(TWriter writer, ReadOnlyMemory<byte> block, CancellationToken token)
-            where TWriter : notnull, IAsyncBinaryWriter
-            => writer.WriteAsync(block, null, token);
     }
 }
