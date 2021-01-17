@@ -174,3 +174,6 @@ dotnet_diagnostic.CA2011.severity = error
 
 # CA2014: Do not use stackalloc in loops
 dotnet_diagnostic.CA2014.severity = error
+
+# SA1106: Code should not contain empty statements
+dotnet_diagnostic.SA1106.severity = none
