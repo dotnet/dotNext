@@ -16,7 +16,7 @@ namespace DotNext.IO
     /// Represents binary reader for the stream.
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
-    internal readonly struct AsyncStreamBinaryAccessor : IAsyncBinaryReader, IAsyncBinaryWriter
+    internal readonly struct AsyncStreamBinaryAccessor : IAsyncBinaryReader, IAsyncBinaryWriter, IFlushable
     {
         private readonly Memory<byte> buffer;
         private readonly Stream stream;
@@ -28,6 +28,10 @@ namespace DotNext.IO
             this.stream = stream ?? throw new ArgumentNullException(nameof(stream));
             this.buffer = buffer;
         }
+
+        void IFlushable.Flush() => stream.Flush();
+
+        Task IFlushable.FlushAsync(CancellationToken token) => stream.FlushAsync(token);
 
 #region Reader
         public ValueTask<T> ReadAsync<T>(CancellationToken token = default)
