@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using RuntimeHelpers = System.Runtime.CompilerServices.RuntimeHelpers;
 
-namespace DotNext.Text
+namespace DotNext.IO
 {
     using IReadOnlySpanConsumer = Buffers.IReadOnlySpanConsumer<char>;
 
