@@ -24,8 +24,7 @@ namespace DotNext.Text
             {
                 default:
                     throw new FormatException(ExceptionMessages.MalformedBase64);
-                case OperationStatus.DestinationTooSmall:
-                case OperationStatus.Done:
+                case OperationStatus.DestinationTooSmall or OperationStatus.Done:
                     reservedBufferSize = 0;
                     break;
                 case OperationStatus.NeedMoreData:
@@ -91,8 +90,7 @@ namespace DotNext.Text
             {
                 default:
                     throw new FormatException(ExceptionMessages.MalformedBase64);
-                case OperationStatus.Done:
-                case OperationStatus.DestinationTooSmall:
+                case OperationStatus.DestinationTooSmall or OperationStatus.Done:
                     reservedBufferSize = 0;
                     break;
                 case OperationStatus.NeedMoreData:

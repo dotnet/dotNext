@@ -504,19 +504,12 @@ namespace DotNext
         /// <returns><see langword="true"/> if <see cref="Value"/> is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
         public bool Equals(T? other) => HasValue && EqualityComparer<T?>.Default.Equals(value, other);
 
-        private bool Equals(in Optional<T> other)
+        private bool Equals(in Optional<T> other) => (kind + other.kind) switch
         {
-            switch (kind + other.kind)
-            {
-                default:
-                    return true;
-                case NotEmptyValue:
-                case NotEmptyValue + NullValue:
-                    return false;
-                case NotEmptyValue + NotEmptyValue:
-                    return EqualityComparer<T?>.Default.Equals(value, other.value);
-            }
-        }
+            NotEmptyValue or NotEmptyValue + NullValue => false,
+            NotEmptyValue + NotEmptyValue => EqualityComparer<T?>.Default.Equals(value, other.value),
+            _ => true,
+        };
 
         /// <summary>
         /// Determines whether this container stores
@@ -532,22 +525,13 @@ namespace DotNext
         /// </summary>
         /// <param name="other">Other container to compare.</param>
         /// <returns><see langword="true"/> if this container stores the same value as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object? other)
+        public override bool Equals(object? other) => other switch
         {
-            if (other is null)
-                return kind == NullValue;
-
-            if (other is Optional<T> optional)
-                return Equals(in optional);
-
-            if (other is T value)
-                return Equals(value);
-
-            if (ReferenceEquals(other, Missing.Value))
-                return kind == UndefinedValue;
-
-            return false;
-        }
+            null => kind == NullValue,
+            Optional<T> optional => Equals(in optional),
+            T value => Equals(value),
+            _ => ReferenceEquals(other, Missing.Value) && kind == UndefinedValue
+        };
 
         /// <summary>
         /// Performs equality check between stored value
@@ -615,23 +599,13 @@ namespace DotNext
         /// </summary>
         /// <param name="first">The first container.</param>
         /// <param name="second">The second container.</param>
-        /// <returns><see langword="true"/>, if both containers are empty or have values; otherwise, <see langword="false"/>.</returns>
-        public static Optional<T> operator ^(in Optional<T> first, in Optional<T> second)
+        /// <returns><see cref="None"/>, if both containers are empty or have values; otherwise, non-empty container.</returns>
+        public static Optional<T> operator ^(in Optional<T> first, in Optional<T> second) => (first.kind - second.kind) switch
         {
-            switch (first.kind - second.kind)
-            {
-                default:
-                    return default;
-                case UndefinedValue - NullValue:
-                case NullValue - NotEmptyValue:
-                case UndefinedValue - NotEmptyValue:
-                    return second;
-                case NotEmptyValue - UndefinedValue:
-                case NotEmptyValue - NullValue:
-                case NullValue - UndefinedValue:
-                    return first;
-            }
-        }
+            UndefinedValue - NullValue or NullValue - NotEmptyValue or UndefinedValue - NotEmptyValue => second,
+            NotEmptyValue - UndefinedValue or NotEmptyValue - NullValue or NullValue - UndefinedValue => first,
+            _ => None
+        };
 
         /// <summary>
         /// Checks whether the container has value.
