@@ -35,7 +35,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             this.context = context;
             status = new AtomicEnum<ClusterMemberStatus>(ClusterMemberStatus.Unknown);
             BaseAddress = remoteMember;
-            Endpoint = remoteMember.ToEndPoint() ?? throw new UriFormatException(ExceptionMessages.UnresolvedHostName(remoteMember.Host));
             DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(UserAgent, (GetType().Assembly.GetName().Version ?? new Version()).ToString()));
         }
 
@@ -162,7 +161,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             return metadata;
         }
 
-        public IPEndPoint Endpoint { get; }
+        public IPEndPoint Endpoint =>
+            BaseAddress.ToEndPoint() ?? throw new UriFormatException(ExceptionMessages.UnresolvedHostName(BaseAddress.Host));
 
         bool IClusterMember.IsLeader => context.IsLeader(this);
 
