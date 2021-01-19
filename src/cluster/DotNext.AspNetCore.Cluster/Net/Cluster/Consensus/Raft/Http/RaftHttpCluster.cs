@@ -138,8 +138,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         private async Task<ClusterMemberId> DetectLocalMemberAsync()
         {
-            var addresses = await GetHostingAddressesAsync().ConfigureAwait(false);
-            return FindMember(addresses.Contains)?.Id ?? throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
+            Predicate<IRaftClusterMember>? selector = configurator?.LocalMemberSelector;
+            if (selector is null)
+            {
+                var addresses = await GetHostingAddressesAsync().ConfigureAwait(false);
+                selector = addresses.Contains;
+            }
+
+            return FindMember(selector)?.Id ?? throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
         }
 
         public override async Task StartAsync(CancellationToken token)
