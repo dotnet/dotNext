@@ -42,14 +42,14 @@ namespace DotNext.Net
                         case IPEndPoint ip:
                             if (ip.Address.IsOneOf(IPAddress.Any, IPAddress.IPv6Any))
                             {
+                                // advertise the current host as DNS endpoint reachable via 0.0.0.0
+                                result.Add(new DnsEndPoint(Dns.GetHostName(), ip.Port));
+
                                 foreach (var nic in NetworkInterface.GetAllNetworkInterfaces())
                                 {
                                     foreach (var nicAddr in nic.GetIPProperties().UnicastAddresses)
                                         result.Add(new IPEndPoint(nicAddr.Address, ip.Port));
                                 }
-
-                                // advertise the current host as DNS endpoint reachable via 0.0.0.0
-                                result.Add(new DnsEndPoint(Dns.GetHostName(), ip.Port));
                             }
                             else
                             {
