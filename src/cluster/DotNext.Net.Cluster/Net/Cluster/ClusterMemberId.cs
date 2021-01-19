@@ -141,6 +141,15 @@ namespace DotNext.Net.Cluster
         }
 
         /// <summary>
+        /// Attempts to parse cluster member identifier.
+        /// </summary>
+        /// <param name="identifier">The hexadecimal representation of identifier.</param>
+        /// <param name="value">The parsed identifier.</param>
+        /// <returns><see langword="true"/> if identifier parsed successfully; otherwise, <see langword="false"/>.</returns>
+        public static bool TryParse(string identifier, out ClusterMemberId value)
+            => TryParse(identifier.AsSpan(), out value);
+
+        /// <summary>
         /// Determines whether the two identifiers are equal.
         /// </summary>
         /// <param name="x">The first identifier to compare.</param>

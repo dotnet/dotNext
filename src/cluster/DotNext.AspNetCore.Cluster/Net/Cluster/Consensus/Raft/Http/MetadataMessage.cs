@@ -13,7 +13,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private const JsonSerializerOptions? JsonOptions = null;
         internal new const string MessageType = "Metadata";
 
-        internal MetadataMessage(IPEndPoint sender)
+        internal MetadataMessage(ClusterMemberId sender)
             : base(MessageType, sender)
         {
         }

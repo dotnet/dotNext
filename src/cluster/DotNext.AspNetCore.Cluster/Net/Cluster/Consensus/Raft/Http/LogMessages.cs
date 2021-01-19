@@ -10,10 +10,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     {
         private static readonly ResourceManager Resources = new ResourceManager("DotNext.Net.Cluster.Consensus.Raft.Http.LogMessages", Assembly.GetExecutingAssembly());
 
-        internal static void SendingRequestToMember(this ILogger logger, IPEndPoint member, string messageType)
+        internal static void SendingRequestToMember(this ILogger logger, EndPoint member, string messageType)
             => logger.LogDebug(Resources.GetString("SendingRequestToMember"), messageType, member);
 
-        internal static void MemberUnavailable(this ILogger logger, IPEndPoint member, Exception e)
+        internal static void MemberUnavailable(this ILogger logger, EndPoint member, Exception e)
             => logger.LogWarning(e, Resources.GetString("MemberUnavailable"), member);
 
         internal static void UnhandledException(this ILogger logger, Exception e)

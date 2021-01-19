@@ -17,7 +17,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         internal readonly long LastLogIndex;
         internal readonly long LastLogTerm;
 
-        internal RequestVoteMessage(IPEndPoint sender, long term, long lastLogIndex, long lastLogTerm)
+        internal RequestVoteMessage(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm)
             : base(MessageType, sender, term)
         {
             LastLogIndex = lastLogIndex;

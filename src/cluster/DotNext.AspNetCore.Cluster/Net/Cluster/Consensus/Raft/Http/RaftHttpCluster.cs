@@ -25,7 +25,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private readonly bool openConnectionForEachRequest;
         private readonly string clientHandlerName;
         private readonly HttpVersion protocolVersion;
-        private IPEndPoint? localMember;
+        private ClusterMemberId? localMember;
 
         private RaftHttpCluster(HttpClusterMemberConfiguration config, IServiceProvider dependencies, out MemberCollectionBuilder members, Func<Action<HttpClusterMemberConfiguration, string>, IDisposable> configTracker)
             : base(config, out members)
@@ -123,7 +123,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         bool IHostingContext.IsLeader(IRaftClusterMember member) => ReferenceEquals(Leader, member);
 
-        IPEndPoint IHostingContext.LocalEndpoint => localMember ?? throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
+        ClusterMemberId IHostingContext.LocalEndpoint => localMember ?? throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
 
         HttpMessageHandler IHostingContext.CreateHttpHandler()
             => httpHandlerFactory?.CreateHandler(clientHandlerName) ?? new SocketsHttpHandler { ConnectTimeout = connectTimeout };
@@ -143,7 +143,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             // detect local member
             var localMember = FindMember(LocalMemberFinder) ?? throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
-            this.localMember = localMember.EndPoint;
+            this.localMember = localMember.Id;
             configurator?.Initialize(this, metadata);
             return base.StartAsync(token);
         }

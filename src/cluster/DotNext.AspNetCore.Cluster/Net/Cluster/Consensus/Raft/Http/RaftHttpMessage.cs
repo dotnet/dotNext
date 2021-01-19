@@ -22,7 +22,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         internal readonly long ConsensusTerm;
 
-        private protected RaftHttpMessage(string messageType, IPEndPoint sender, long term)
+        private protected RaftHttpMessage(string messageType, ClusterMemberId sender, long term)
             : base(messageType, sender) => ConsensusTerm = term;
 
         private protected RaftHttpMessage(HeadersReader<StringValues> headers)

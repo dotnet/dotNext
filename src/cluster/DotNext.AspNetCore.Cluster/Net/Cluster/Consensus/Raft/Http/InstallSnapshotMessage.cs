@@ -63,7 +63,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         internal readonly IRaftLogEntry Snapshot;
         internal readonly long Index;
 
-        internal InstallSnapshotMessage(IPEndPoint sender, long term, long index, IRaftLogEntry snapshot)
+        internal InstallSnapshotMessage(ClusterMemberId sender, long term, long index, IRaftLogEntry snapshot)
             : base(MessageType, sender, term)
         {
             Index = index;
