@@ -134,18 +134,23 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         public event ClusterChangedEventHandler? MemberRemoved;
 
-        private protected abstract Predicate<RaftClusterMember> LocalMemberFinder { get; }
+        private protected abstract Task<ICollection<EndPoint>> GetHostingAddressesAsync();
 
-        public override Task StartAsync(CancellationToken token)
+        private async Task<ClusterMemberId> DetectLocalMemberAsync()
+        {
+            var addresses = await GetHostingAddressesAsync().ConfigureAwait(false);
+            return FindMember(addresses.Contains)?.Id ?? throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
+        }
+
+        public override async Task StartAsync(CancellationToken token)
         {
             if (raftRpcTimeout > requestTimeout)
-                return Task.FromException(new RaftProtocolException(ExceptionMessages.InvalidRpcTimeout));
+                throw new RaftProtocolException(ExceptionMessages.InvalidRpcTimeout);
 
             // detect local member
-            var localMember = FindMember(LocalMemberFinder) ?? throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
-            this.localMember = localMember.Id;
+            localMember = await DetectLocalMemberAsync().ConfigureAwait(false);
             configurator?.Initialize(this, metadata);
-            return base.StartAsync(token);
+            await base.StartAsync(token).ConfigureAwait(false);
         }
 
         public override Task StopAsync(CancellationToken token)

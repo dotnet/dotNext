@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Threading.Tasks;
 using IServer = Microsoft.AspNetCore.Hosting.Server.IServer;
 using IServerAddresses = Microsoft.AspNetCore.Hosting.Server.Features.IServerAddressesFeature;
 
@@ -14,48 +16,64 @@ namespace DotNext.Net
         internal static bool IsIn(this IPAddress? address, IPNetwork network)
             => address is not null && network.Contains(address);
 
-        internal static IPEndPoint? ToEndPoint(this Uri memberUri) => memberUri.HostNameType switch
+        internal static EndPoint? ToEndPoint(this Uri memberUri) => memberUri.HostNameType switch
         {
             UriHostNameType.IPv4 or UriHostNameType.IPv6 => new IPEndPoint(IPAddress.Parse(memberUri.Host), memberUri.Port),
-            UriHostNameType.Dns when memberUri.IsLoopback => new IPEndPoint(IPAddress.Loopback, memberUri.Port),
+            UriHostNameType.Dns => memberUri.IsLoopback ? new IPEndPoint(IPAddress.Loopback, memberUri.Port) : new DnsEndPoint(memberUri.IdnHost, memberUri.Port),
             _ => null
         };
 
-        internal static ICollection<IPEndPoint> GetHostingAddresses(this IServer server)
+        // TODO: Return type must be changed to IReadOnlySet<EndPoint> in .NET 6
+        internal static async Task<ICollection<EndPoint>> GetHostingAddressesAsync(this IServer server)
         {
             var feature = server.Features.Get<IServerAddresses>();
             if (feature is null || feature.Addresses.Count == 0)
-                return Array.Empty<IPEndPoint>();
-            var result = new HashSet<IPEndPoint>();
+                return ImmutableHashSet<EndPoint>.Empty;
+            var result = new HashSet<EndPoint>();
             var hint = server.Features.Get<HostAddressHintFeature>()?.Address;
             foreach (var address in feature.Addresses)
             {
                 if (Uri.TryCreate(address, UriKind.Absolute, out var uri))
                 {
                     var endpoint = uri.ToEndPoint();
-                    if (endpoint is null)
+                    switch (endpoint)
                     {
-                        continue;
-                    }
-                    else if (endpoint.Address.IsOneOf(IPAddress.Any, IPAddress.IPv6Any))
-                    {
-                        foreach (var nic in NetworkInterface.GetAllNetworkInterfaces())
-                        {
-                            foreach (var nicAddr in nic.GetIPProperties().UnicastAddresses)
-                                result.Add(new IPEndPoint(nicAddr.Address, endpoint.Port));
-                        }
-                    }
-                    else
-                    {
-                        result.Add(endpoint);
-                    }
+                        case IPEndPoint ip:
+                            if (ip.Address.IsOneOf(IPAddress.Any, IPAddress.IPv6Any))
+                            {
+                                foreach (var nic in NetworkInterface.GetAllNetworkInterfaces())
+                                {
+                                    foreach (var nicAddr in nic.GetIPProperties().UnicastAddresses)
+                                        result.Add(new IPEndPoint(nicAddr.Address, ip.Port));
+                                }
+                            }
+                            else
+                            {
+                                result.Add(endpoint);
 
-                    // add host address hint if it is available
-                    if (hint is not null)
-                        result.Add(new IPEndPoint(hint, endpoint.Port));
+                                // converts IP address to know host names
+                                foreach (var alias in (await Dns.GetHostEntryAsync(ip.Address).ConfigureAwait(false)).Aliases)
+                                    result.Add(new DnsEndPoint(alias, ip.Port));
+                            }
+
+                            // add host address hint if it is available
+                            if (hint is not null)
+                                result.Add(new IPEndPoint(hint, ip.Port));
+                            break;
+                        case DnsEndPoint dns:
+                            result.Add(dns);
+
+                            // convert DNS name to IP addresses
+                            foreach (var ip in await Dns.GetHostAddressesAsync(dns.Host).ConfigureAwait(false))
+                                result.Add(new IPEndPoint(ip, dns.Port));
+                            break;
+                        default:
+                            continue;
+                    }
                 }
             }
 
+            result.TrimExcess();
             return result;
         }
     }
