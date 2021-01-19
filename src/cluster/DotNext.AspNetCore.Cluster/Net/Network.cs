@@ -45,6 +45,7 @@ namespace DotNext.Net
                 if (Uri.TryCreate(address, UriKind.Absolute, out var uri))
                 {
                     var endpoint = uri.ToEndPoint();
+                    int portHint;
                     switch (endpoint)
                     {
                         case IPEndPoint ip:
@@ -61,9 +62,7 @@ namespace DotNext.Net
                                 await result.AddAddressAndAliasesAsync(ip).ConfigureAwait(false);
                             }
 
-                            // add host address hint if it is available
-                            if (hint is not null)
-                                result.Add(new IPEndPoint(hint, ip.Port));
+                            portHint = ip.Port;
                             break;
                         case DnsEndPoint dns:
                             result.Add(dns);
@@ -71,10 +70,16 @@ namespace DotNext.Net
                             // convert DNS name to IP addresses
                             foreach (var ip in await Dns.GetHostAddressesAsync(dns.Host).ConfigureAwait(false))
                                 result.Add(new IPEndPoint(ip, dns.Port));
+
+                            portHint = dns.Port;
                             break;
                         default:
                             continue;
                     }
+
+                    // add host address hint if it is available
+                    if (hint is not null)
+                        result.Add(new IPEndPoint(hint, portHint));
                 }
             }
 
