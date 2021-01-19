@@ -56,6 +56,9 @@ namespace DotNext.Net
                                     foreach (var nicAddr in nic.GetIPProperties().UnicastAddresses)
                                         await result.AddAddressAndAliasesAsync(new IPEndPoint(nicAddr.Address, ip.Port)).ConfigureAwait(false);
                                 }
+
+                                // advertise the current host as DNS endpoint reachable via 0.0.0.0
+                                result.Add(new DnsEndPoint(Environment.MachineName, ip.Port));
                             }
                             else
                             {
