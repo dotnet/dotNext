@@ -23,15 +23,6 @@ namespace DotNext.Net
             _ => null
         };
 
-        private static async Task AddAddressAndAliasesAsync(this ICollection<EndPoint> endpoints, IPEndPoint ip)
-        {
-            endpoints.Add(ip);
-
-            // converts IP address to know host names
-            foreach (var alias in (await Dns.GetHostEntryAsync(ip.Address).ConfigureAwait(false)).Aliases)
-                endpoints.Add(new DnsEndPoint(alias, ip.Port));
-        }
-
         // TODO: Return type must be changed to IReadOnlySet<EndPoint> in .NET 6
         internal static async Task<ICollection<EndPoint>> GetHostingAddressesAsync(this IServer server)
         {
@@ -54,15 +45,19 @@ namespace DotNext.Net
                                 foreach (var nic in NetworkInterface.GetAllNetworkInterfaces())
                                 {
                                     foreach (var nicAddr in nic.GetIPProperties().UnicastAddresses)
-                                        await result.AddAddressAndAliasesAsync(new IPEndPoint(nicAddr.Address, ip.Port)).ConfigureAwait(false);
+                                        result.Add(new IPEndPoint(nicAddr.Address, ip.Port));
                                 }
 
                                 // advertise the current host as DNS endpoint reachable via 0.0.0.0
-                                result.Add(new DnsEndPoint(Environment.MachineName, ip.Port));
+                                result.Add(new DnsEndPoint(Dns.GetHostName(), ip.Port));
                             }
                             else
                             {
-                                await result.AddAddressAndAliasesAsync(ip).ConfigureAwait(false);
+                                result.Add(ip);
+
+                                // converts IP address to know host names
+                                foreach (var alias in (await Dns.GetHostEntryAsync(ip.Address).ConfigureAwait(false)).Aliases)
+                                    result.Add(new DnsEndPoint(alias, ip.Port));
                             }
 
                             portHint = ip.Port;
