@@ -23,7 +23,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private volatile MemberMetadata metadata;
 
         private static bool IsMatchedByEndPoint(RaftClusterMember member, IPEndPoint endPoint)
-            => member.EndPoint.Equals(endPoint);
+            => member.Endpoint.Equals(endPoint);
 
         [MethodImpl(MethodImplOptions.Synchronized)]
         void IMessageBus.AddListener(IInputChannel handler)

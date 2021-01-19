@@ -143,7 +143,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             // detect local member
             var localMember = FindMember(LocalMemberFinder) ?? throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
-            this.localMember = localMember.EndPoint;
+            this.localMember = localMember.Endpoint;
             configurator?.Initialize(this, metadata);
             return base.StartAsync(token);
         }
