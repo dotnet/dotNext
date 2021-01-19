@@ -23,6 +23,15 @@ namespace DotNext.Net
             _ => null
         };
 
+        private static async Task AddAddressAndAliasesAsync(this ICollection<EndPoint> endpoints, IPEndPoint ip)
+        {
+            endpoints.Add(ip);
+
+            // converts IP address to know host names
+            foreach (var alias in (await Dns.GetHostEntryAsync(ip.Address).ConfigureAwait(false)).Aliases)
+                endpoints.Add(new DnsEndPoint(alias, ip.Port));
+        }
+
         // TODO: Return type must be changed to IReadOnlySet<EndPoint> in .NET 6
         internal static async Task<ICollection<EndPoint>> GetHostingAddressesAsync(this IServer server)
         {
@@ -44,16 +53,12 @@ namespace DotNext.Net
                                 foreach (var nic in NetworkInterface.GetAllNetworkInterfaces())
                                 {
                                     foreach (var nicAddr in nic.GetIPProperties().UnicastAddresses)
-                                        result.Add(new IPEndPoint(nicAddr.Address, ip.Port));
+                                        await result.AddAddressAndAliasesAsync(new IPEndPoint(nicAddr.Address, ip.Port)).ConfigureAwait(false);
                                 }
                             }
                             else
                             {
-                                result.Add(endpoint);
-
-                                // converts IP address to know host names
-                                foreach (var alias in (await Dns.GetHostEntryAsync(ip.Address).ConfigureAwait(false)).Aliases)
-                                    result.Add(new DnsEndPoint(alias, ip.Port));
+                                await result.AddAddressAndAliasesAsync(ip).ConfigureAwait(false);
                             }
 
                             // add host address hint if it is available
