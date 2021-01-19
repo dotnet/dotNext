@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -17,12 +18,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private sealed class RedirectionMiddleware
         {
             private readonly RequestDelegate next;
-            private readonly RaftHttpCluster cluster;
+            private readonly ICluster cluster;
             private readonly int? applicationPortHint;
             private readonly Func<HttpResponse, Uri, Task> redirection;
             private readonly PathString pathMatch;
 
-            internal RedirectionMiddleware(RaftHttpCluster cluster, RequestDelegate next, PathString pathMatch, int? applicationPortHint, Func<HttpResponse, Uri, Task>? redirection)
+            internal RedirectionMiddleware(ICluster cluster, RequestDelegate next, PathString pathMatch, int? applicationPortHint, Func<HttpResponse, Uri, Task>? redirection)
             {
                 this.cluster = cluster;
                 this.next = next;
@@ -38,6 +39,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 return Task.CompletedTask;
             }
 
+            private Task Redirect(HttpContext context, EndPoint leader)
+            {
+                string targetHost;
+                switch (leader)
+                {
+                    case IPEndPoint ip:
+                        targetHost = ip.Address.ToString();
+                        break;
+                    case DnsEndPoint dns:
+                        targetHost = dns.Host;
+                        break;
+                    default:
+                        // endpoint type is unknown so respond to the client without redirection
+                        context.Response.StatusCode = StatusCodes.Status501NotImplemented;
+                        return context.Response.WriteAsync(ExceptionMessages.UnsupportedRedirection);
+                }
+
+                return redirection(context.Response, new UriBuilder(context.Request.GetEncodedUrl()) { Host = targetHost, Port = applicationPortHint ?? context.Connection.LocalPort }.Uri);
+            }
+
             internal Task Redirect(HttpContext context)
             {
                 if (context.Request.Path.StartsWithSegments(pathMatch, StringComparison.OrdinalIgnoreCase))
@@ -48,10 +69,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                         context.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
                         return Task.CompletedTask;
                     }
-                    else if (leader.IsRemote)
-                    {
-                        return redirection(context.Response, new UriBuilder(context.Request.GetEncodedUrl()) { Host = leader.Endpoint.Address.ToString(), Port = applicationPortHint ?? context.Connection.LocalPort }.Uri);
-                    }
+
+                    if (leader.IsRemote)
+                        return Redirect(context, leader.EndPoint);
                 }
 
                 return next(context);
@@ -66,7 +86,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         /// redirected automatically to the leader node with 302 (Moved Permanently).
         /// If there are no consensus then the request will be failed with 503 (Service Unavailable).
         /// You can override redirection behavior using custom <paramref name="redirection"/>.
-        /// <paramref name="applicationPortHint"/> used to highligh real port of the application endpoints in the cluster.
+        /// <paramref name="applicationPortHint"/> used to highlight the real port of the application endpoints in the cluster.
         /// This parameter can be used if your deployment is based on Docker. If it is not specified then router trying to add
         /// local port of the TCP listener. This may be invalid due to port mappings in Docker.
         /// </remarks>
@@ -77,7 +97,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         /// <returns>The request pipeline builder.</returns>
         public static IApplicationBuilder RedirectToLeader(this IApplicationBuilder builder, PathString path, int? applicationPortHint = null, Func<HttpResponse, Uri, Task>? redirection = null)
         {
-            var cluster = builder.ApplicationServices.GetRequiredService<RaftHttpCluster>();
+            var cluster = builder.ApplicationServices.GetRequiredService<ICluster>();
             return builder.Use(next => new RedirectionMiddleware(cluster, next, path, applicationPortHint, redirection).Redirect);
         }
     }

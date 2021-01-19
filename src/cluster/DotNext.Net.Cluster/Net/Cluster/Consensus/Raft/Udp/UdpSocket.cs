@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Concurrent;
-using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -102,15 +102,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
         private protected abstract void EndReceive(SocketAsyncEventArgs args);
 
-        private void EndReceive(object sender, SocketAsyncEventArgs args)
+        private void EndReceive(object? sender, SocketAsyncEventArgs args)
         {
             switch (args.SocketError)
             {
                 default:
                     ReportError(args.SocketError);
                     break;
-                case SocketError.OperationAborted:
-                case SocketError.ConnectionAborted:
+                case SocketError.OperationAborted or SocketError.ConnectionAborted:
                     break;
                 case SocketError.Success:
                     EndReceive(args);
@@ -179,6 +178,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             bool stateFlag;
             var error = default(Exception);
             var ep = args.RemoteEndPoint;
+            Debug.Assert(ep is not null);
 
             // handle received packet
             try
@@ -215,13 +215,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             {
                 using (channel)
                 {
-                    if (!(error is null))
+                    if (error is not null)
                         channel.Exchange.OnException(error);
                 }
             }
         }
 
-        [SuppressMessage("Reliability", "CA2000", Justification = "Task is from pool and its lifetime controlled by entire socket instance")]
         private ValueTask SendToAsync(Memory<byte> datagram, EndPoint endPoint)
         {
             // obtain sender task from the pool

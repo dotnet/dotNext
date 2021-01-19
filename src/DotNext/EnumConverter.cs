@@ -1,26 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using static System.Globalization.CultureInfo;
-using static InlineIL.IL;
-using static InlineIL.IL.Emit;
-using static InlineIL.MethodRef;
-using static InlineIL.StandAloneMethodSig;
-using static InlineIL.TypeRef;
 
 namespace DotNext
 {
-    internal static class EnumConverter<TInput, TOutput>
+    using Intrinsics = Runtime.Intrinsics;
+
+    internal static unsafe class EnumConverter<TInput, TOutput>
             where TInput : struct, IConvertible, IComparable, IFormattable
             where TOutput : struct, IConvertible, IComparable, IFormattable
     {
-        private static readonly IntPtr Converter;
+        private static readonly delegate*<TInput, TOutput> Converter;
 
+#if !NETSTANDARD2_1
+        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicMethods, typeof(Convert))]
+#endif
         static EnumConverter()
         {
-            // TODO: Should be replaced with function pointers in C# 9
             var conversionMethod = System.Type.GetTypeCode(typeof(TOutput)) switch
             {
                 TypeCode.Byte => nameof(System.Convert.ToByte),
@@ -47,38 +47,20 @@ namespace DotNext
             MethodInfo? method = typeof(Convert).GetMethod(conversionMethod, new[] { type });
             if (method is null)
             {
-                Ldftn(Method(typeof(EnumConverter<TInput, TOutput>), nameof(ConvertSlow), Type<TInput>()));
-                Pop(out IntPtr methodPtr);
-                Converter = methodPtr;
+                Converter = &ConvertSlow;
             }
             else
             {
                 Debug.Assert(method.IsStatic & method.IsPublic);
-                Converter = method.MethodHandle.GetFunctionPointer();
+                Converter = (delegate*<TInput, TOutput>)method.MethodHandle.GetFunctionPointer();
             }
-        }
 
-        private static TOutput ConvertSlow(TInput value) => (TOutput)value.ToType(typeof(TOutput), CurrentCulture);
+            static TOutput ConvertSlow(TInput value) => (TOutput)value.ToType(typeof(TOutput), CurrentCulture);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static TOutput Convert(TInput value)
-        {
-            const string slowPath = "slow";
-
-            // if sizeof(I)==sizeof(O) then do fast path
-            Sizeof(typeof(TInput));
-            Sizeof(typeof(TOutput));
-            Bne_Un(slowPath);
-            Push(ref value);
-            Ldobj(typeof(TOutput));
-            Ret();
-
-            MarkLabel(slowPath);
-            Push(value);
-            Push(Converter);
-            Calli(ManagedMethod(CallingConventions.Standard, Type<TOutput>(), Type<TInput>()));
-            return Return<TOutput>();
-        }
+            => Unsafe.SizeOf<TInput>() == Unsafe.SizeOf<TOutput>() ? Unsafe.As<TInput, TOutput>(ref value) : Converter(value);
     }
 
     /// <summary>
@@ -281,9 +263,9 @@ namespace DotNext
         public static bool IsOneOf<T>(this T value, params T[] values)
             where T : struct, Enum
         {
-            foreach (var item in values)
+            for (nint i = 0; i < Intrinsics.GetLength(values); i++)
             {
-                if (EqualityComparer<T>.Default.Equals(value, item))
+                if (EqualityComparer<T>.Default.Equals(value, values[i]))
                     return true;
             }
 

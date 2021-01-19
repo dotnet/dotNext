@@ -22,6 +22,7 @@ namespace DotNext
             private Closure(T target, MulticastDelegate action)
                 : base(action) => this.target = target;
 
+            // TODO: Convert to covariant return type in C# 10
             internal override object Target => target;
 
             private void InvokeAction() => Unsafe.As<Action<T>>(Delegate).Invoke(target);

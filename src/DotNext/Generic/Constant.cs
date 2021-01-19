@@ -10,7 +10,7 @@ namespace DotNext.Generic
     /// then it should have at least one constructor without parameters.
     /// </remarks>
     /// <typeparam name="T">Type of constant to be passed as generic parameter.</typeparam>
-    public abstract class Constant<T> : IConvertible<T>
+    public abstract class Constant<T> : ISupplier<T>
     {
         /// <summary>
         /// Initializes a new generic-level constant.
@@ -24,7 +24,7 @@ namespace DotNext.Generic
         public T Value { get; }
 
         /// <inheritdoc/>
-        T IConvertible<T>.Convert() => Value;
+        T ISupplier<T>.Invoke() => Value;
 
         /// <summary>
         /// Returns textual representation of the constant value.
@@ -54,7 +54,7 @@ namespace DotNext.Generic
         /// Extracts constant value.
         /// </summary>
         /// <param name="const">The constant value holder.</param>
-        [return: MaybeNull]
-        public static implicit operator T(Constant<T>? @const) => @const is null ? default : @const.Value;
+        [return: NotNullIfNotNull("const")]
+        public static implicit operator T?(Constant<T>? @const) => @const is null ? default : @const.Value;
     }
 }

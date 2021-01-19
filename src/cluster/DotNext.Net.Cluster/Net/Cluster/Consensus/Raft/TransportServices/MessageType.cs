@@ -9,6 +9,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         AppendEntries = 0B_0000_0100,
         InstallSnapshot = 0B_0000_0101,
         Metadata = 0B_0000_0110,
+        PreVote = 0B_0000_0111,
 
         // response message types
         None = 0,

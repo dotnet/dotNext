@@ -5,12 +5,12 @@ namespace DotNext.Buffers
 {
     public partial class SparseBufferWriter<T> : IBufferWriter<T>
     {
-        private Memory<T> GetMemory()
+        private unsafe Memory<T> GetMemory()
         {
             if (last is null)
                 first = last = new PooledMemoryChunk(allocator, chunkSize);
             else if (last.FreeCapacity == 0)
-                last = new PooledMemoryChunk(allocator, chunkSize, last);
+                last = new PooledMemoryChunk(allocator, growth(chunkSize, ref chunkIndex), last);
 
             return last.FreeMemory;
         }
@@ -58,7 +58,7 @@ namespace DotNext.Buffers
         void IBufferWriter<T>.Advance(int count)
         {
             ThrowIfDisposed();
-            if (!(last is PooledMemoryChunk chunk))
+            if (last is not PooledMemoryChunk chunk)
                 throw new InvalidOperationException();
             chunk.Advance(count);
             length += count;

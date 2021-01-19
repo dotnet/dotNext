@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using static System.Diagnostics.Debug;
 using static System.Linq.Enumerable;
@@ -28,8 +30,8 @@ namespace DotNext.Runtime.CompilerServices
         // small optimization - reuse variable for awaiters of the same type
         private sealed class VariableEqualityComparer : IEqualityComparer<ParameterExpression>
         {
-            public bool Equals(ParameterExpression x, ParameterExpression y)
-                => AwaitExpression.IsAwaiterHolder(x) && AwaitExpression.IsAwaiterHolder(y) ? x?.Type == y?.Type : object.Equals(x, y);
+            public bool Equals(ParameterExpression? x, ParameterExpression? y)
+                => AwaitExpression.IsAwaiterHolder(x) && AwaitExpression.IsAwaiterHolder(y) ? x.Type == y.Type : object.Equals(x, y);
 
             public int GetHashCode(ParameterExpression variable)
                 => AwaitExpression.IsAwaiterHolder(variable) ? variable.Type.GetHashCode() : variable.GetHashCode();
@@ -183,20 +185,21 @@ namespace DotNext.Runtime.CompilerServices
 
         protected override SwitchCase VisitSwitchCase(SwitchCase node)
         {
-            var testValues = Visit(node.TestValues, tst => context.Rewrite(tst, Visit));
-            var body = context.Rewrite(node.Body, Visit);
+            Converter<Expression, Expression> visitor = Visit;
+            var testValues = Visit(node.TestValues, tst => context.Rewrite(tst, visitor));
+            var body = context.Rewrite(node.Body, visitor);
             return node.Update(testValues, body);
         }
 
         protected override ElementInit VisitElementInit(ElementInit node)
         {
-            var arguments = Visit(node.Arguments, arg => context.Rewrite(arg, Visit));
+            var arguments = Visit(node.Arguments, arg => context.Rewrite(arg, new Converter<Expression, Expression>(Visit)));
             return node.Update(arguments);
         }
 
         protected override MemberAssignment VisitMemberAssignment(MemberAssignment node)
         {
-            var expression = context.Rewrite(node.Expression, Visit);
+            var expression = context.Rewrite(node.Expression, new Converter<Expression, Expression>(Visit));
             return ReferenceEquals(expression, node.Expression) ? node : node.Update(expression);
         }
 
@@ -354,7 +357,7 @@ namespace DotNext.Runtime.CompilerServices
         }
 
         private static MethodCallExpression UpdateArguments(MethodCallExpression node, IReadOnlyCollection<Expression> arguments)
-            => node.Update(node.Object, arguments);
+            => node.Update(node.Object!, arguments);
 
         protected override Expression VisitMethodCall(MethodCallExpression node)
             => context.Rewrite(node, n => RewriteCallable(n, n.Arguments.ToArray(), base.VisitMethodCall, UpdateArguments));
@@ -366,7 +369,7 @@ namespace DotNext.Runtime.CompilerServices
             => context.Rewrite(node, n => RewriteCallable(n, n.Arguments.ToArray(), base.VisitInvocation, UpdateArguments));
 
         private static IndexExpression UpdateArguments(IndexExpression node, IReadOnlyCollection<Expression> arguments)
-            => node.Update(node.Object, arguments);
+            => node.Update(node.Object!, arguments);
 
         protected override Expression VisitIndex(IndexExpression node)
             => context.Rewrite(node, n => RewriteCallable(n, n.Arguments.ToArray(), base.VisitIndex, UpdateArguments));
@@ -397,7 +400,8 @@ namespace DotNext.Runtime.CompilerServices
         }
 
         // do not rewrite the body of inner lambda expression
-        public override Expression Visit(Expression node)
+        [return: NotNullIfNotNull("node")]
+        public override Expression? Visit(Expression? node)
             => node is LambdaExpression ? node.ReduceExtensions() : base.Visit(node);
 
         protected override Expression VisitDynamic(DynamicExpression node)
@@ -415,19 +419,11 @@ namespace DotNext.Runtime.CompilerServices
             return holder is null ? new RethrowExpression() : RethrowExpression.Dispatch(holder);
         }
 
-        protected override Expression VisitUnary(UnaryExpression node)
+        protected override Expression VisitUnary(UnaryExpression node) => node.NodeType switch
         {
-            switch (node.NodeType)
-            {
-                case ExpressionType.Throw:
-                    if (node.Operand is null)
-                        return context.Rewrite(node, Rethrow);
-                    else
-                        goto default;
-                default:
-                    return context.Rewrite(node, base.VisitUnary);
-            }
-        }
+            ExpressionType.Throw when node.Operand is null => context.Rewrite(node, Rethrow),
+            _ => context.Rewrite(node, base.VisitUnary)
+        };
 
         private SwitchExpression MakeSwitch()
         {
@@ -477,7 +473,7 @@ namespace DotNext.Runtime.CompilerServices
 
         private Expression<TDelegate> Build(LambdaExpression stateMachineMethod)
         {
-            Assert(stateMachine != null);
+            Assert(stateMachine is not null);
             var stateVariable = Expression.Variable(GetStateField(stateMachine).Type);
             var parameters = methodBuilder.Parameters;
             ICollection<Expression> newBody = new LinkedList<Expression>();
@@ -485,7 +481,9 @@ namespace DotNext.Runtime.CompilerServices
             // save all parameters into fields
             foreach (var parameter in parameters)
                 newBody.Add(methodBuilder.Variables[parameter]!.Update(stateVariable).Assign(parameter));
-            newBody.Add(methodBuilder.Task.AdjustTaskType(Expression.Call(stateMachine.Type.GetMethod(nameof(AsyncStateMachine<ValueTuple>.Start)), stateMachineMethod, stateVariable)));
+            var startMethod = stateMachine.Type.GetMethod(nameof(AsyncStateMachine<ValueTuple>.Start));
+            Debug.Assert(startMethod is not null);
+            newBody.Add(methodBuilder.Task.AdjustTaskType(Expression.Call(startMethod, stateMachineMethod, stateVariable)));
             return Expression.Lambda<TDelegate>(Expression.Block(new[] { stateVariable }, newBody), true, parameters);
         }
 
@@ -517,7 +515,7 @@ namespace DotNext.Runtime.CompilerServices
                 slots = builder.Build(sm.Build, out _);
             }
 
-            Assert(sm.StateMachine != null);
+            Assert(sm.StateMachine is not null);
             stateMachine = sm.StateMachine;
             return slots;
         }
@@ -532,17 +530,20 @@ namespace DotNext.Runtime.CompilerServices
         }
 
         // replace local variables with appropriate state fields
-        protected override Expression? VisitParameter(ParameterExpression node)
+        protected override Expression VisitParameter(ParameterExpression node)
         {
             if (methodBuilder.Variables.TryGetValue(node, out var stateSlot))
+            {
+                Debug.Assert(stateSlot is not null);
                 return stateSlot;
-            else
-                return node;
+            }
+
+            return node;
         }
 
         protected override Expression VisitExtension(Expression node)
         {
-            Assert(stateMachine != null);
+            Assert(stateMachine is not null);
             return node switch
             {
                 StatePlaceholderExpression placeholder => placeholder.Reduce(),

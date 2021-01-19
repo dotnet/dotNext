@@ -28,8 +28,8 @@ namespace DotNext
         [Fact]
         public static void ConversionTest()
         {
-            True(Predicate.AsConverter<string>(str => str.Length == 0).Invoke(""));
-            False(Predicate.AsFunc<string>(str => str.Length > 0).Invoke(""));
+            True(Predicate.AsConverter<string>(static str => str.Length == 0).Invoke(""));
+            False(Predicate.AsFunc<string>(static str => str.Length > 0).Invoke(""));
         }
 
         [Fact]
@@ -43,13 +43,13 @@ namespace DotNext
         [Fact]
         public static void OrAndXor()
         {
-            Predicate<int> pred1 = i => i > 10;
-            Predicate<int> pred2 = i => i < 0;
+            Predicate<int> pred1 = static i => i > 10;
+            Predicate<int> pred2 = static i => i < 0;
             True(pred1.Or(pred2).Invoke(11));
             True(pred1.Or(pred2).Invoke(-1));
             False(pred1.Or(pred2).Invoke(8));
 
-            pred2 = i => i > 20;
+            pred2 = static i => i > 20;
             True(pred1.And(pred2).Invoke(21));
             False(pred1.And(pred2).Invoke(19));
             False(pred1.Xor(pred2).Invoke(21));
@@ -60,7 +60,7 @@ namespace DotNext
         [Fact]
         public static void TryInvoke()
         {
-            Predicate<int> pred = i => i > 10 ? true : throw new ArithmeticException();
+            Predicate<int> pred = static i => i > 10 ? true : throw new ArithmeticException();
             Equal(true, pred.TryInvoke(11));
             IsType<ArithmeticException>(pred.TryInvoke(9).Error);
         }

@@ -17,10 +17,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private readonly MemoryOwner<byte> owner;
 
             // read session ctor
-            internal DataAccessSession(int sessionId, MemoryAllocator<byte> bufferPool, int bufferSize)
+            internal DataAccessSession(int sessionId, MemoryAllocator<byte>? bufferPool, int bufferSize)
             {
                 SessionId = sessionId;
-                owner = bufferPool(bufferSize);
+                owner = bufferPool.Invoke(bufferSize, false);
             }
 
             internal readonly Memory<byte> Buffer => owner.Memory;
@@ -38,10 +38,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             private readonly ConcurrentBag<int>? tokens;
             internal readonly int Capacity;
-            private readonly MemoryAllocator<byte> bufferPool;
+            private readonly MemoryAllocator<byte>? bufferPool;
             internal readonly DataAccessSession WriteSession;
 
-            internal DataAccessSessionManager(int readersCount, MemoryAllocator<byte> sharedPool, int writeBufferSize)
+            internal DataAccessSessionManager(int readersCount, MemoryAllocator<byte>? sharedPool, int writeBufferSize)
             {
                 Capacity = readersCount;
                 bufferPool = sharedPool;
@@ -51,7 +51,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal DataAccessSession OpenSession(int bufferSize)
             {
-                if (tokens is null || bufferPool is null)
+                if (tokens is null)
                     return WriteSession;
                 if (tokens.TryTake(out var sessionId))
                     return new DataAccessSession(sessionId, bufferPool, bufferSize);

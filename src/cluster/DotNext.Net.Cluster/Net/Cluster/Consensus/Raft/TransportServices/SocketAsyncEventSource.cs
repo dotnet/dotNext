@@ -19,7 +19,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         ValueTaskSourceStatus IValueTaskSource.GetStatus(short token)
             => taskSource.GetStatus(token);
 
-        void IValueTaskSource.OnCompleted(Action<object> continuation, object state, short token, ValueTaskSourceOnCompletedFlags flags)
+        void IValueTaskSource.OnCompleted(Action<object?> continuation, object? state, short token, ValueTaskSourceOnCompletedFlags flags)
             => taskSource.OnCompleted(continuation, state, token, flags);
 
         internal virtual void Reset() => taskSource.Reset();
@@ -39,18 +39,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 case SocketError.Success:
                     taskSource.SetResult(true);
                     break;
-                case SocketError.OperationAborted:
-                case SocketError.ConnectionAborted:
-                    if (IsCancellationRequested(out var token))
-                    {
-                        taskSource.SetException(new OperationCanceledException(token));
-                        break;
-                    }
-                    else
-                    {
-                        goto default;
-                    }
-
+                case (SocketError.OperationAborted or SocketError.ConnectionAborted) when IsCancellationRequested(out var token):
+                    taskSource.SetException(new OperationCanceledException(token));
+                    break;
                 default:
                     taskSource.SetException(new SocketException((int)e.SocketError));
                     break;

@@ -93,7 +93,7 @@ namespace DotNext.Threading
             ThreadPool.QueueUserWorkItem(async state =>
             {
                 False(await rwLock.TryEnterReadLockAsync(TimeSpan.FromMilliseconds(10)));
-                True(ThreadPool.QueueUserWorkItem(ev => ev.Set(), are, false));
+                True(ThreadPool.QueueUserWorkItem(static ev => ev.Set(), are, false));
                 await rwLock.EnterReadLockAsync(DefaultTimeout);
                 rwLock.ExitReadLock();
                 task.SetResult(true);
@@ -113,7 +113,7 @@ namespace DotNext.Threading
             ThreadPool.QueueUserWorkItem(async state =>
             {
                 False(await rwLock.TryEnterUpgradeableReadLockAsync(TimeSpan.FromMilliseconds(10)));
-                True(ThreadPool.QueueUserWorkItem(ev => ev.Set(), are, false));
+                True(ThreadPool.QueueUserWorkItem(static ev => ev.Set(), are, false));
                 await rwLock.EnterUpgradeableReadLockAsync(DefaultTimeout);
                 rwLock.ExitUpgradeableReadLock();
                 task.SetResult(true);
@@ -128,16 +128,16 @@ namespace DotNext.Threading
         {
             using var rwLock = new AsyncReaderWriterLock();
             var stamp = rwLock.TryOptimisticRead();
-            True(stamp.IsValid);
+            True(rwLock.Validate(stamp));
             True(rwLock.TryEnterReadLock());
             Equal(1, rwLock.CurrentReadCount);
-            True(stamp.IsValid);
+            True(rwLock.Validate(stamp));
             rwLock.ExitReadLock();
             Equal(stamp, rwLock.TryOptimisticRead());
             True(rwLock.TryEnterWriteLock());
             False(rwLock.IsReadLockHeld);
             True(rwLock.IsWriteLockHeld);
-            False(stamp.IsValid);
+            False(rwLock.Validate(stamp));
         }
 
         [Fact]

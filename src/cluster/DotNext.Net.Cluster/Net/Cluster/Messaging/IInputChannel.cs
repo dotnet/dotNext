@@ -1,4 +1,3 @@
-using System.Runtime.ConstrainedExecution;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,7 +14,6 @@ namespace DotNext.Net.Cluster.Messaging
         /// <param name="messageName">The name of the message.</param>
         /// <param name="oneWay"><see langword="true"/> if message is one-way; <see langword="false"/> if message is request message that requires a response.</param>
         /// <returns><see langword="true"/> if message can be processed by this handler; otherwise, <see langword="false"/>.</returns>
-        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         bool IsSupported(string messageName, bool oneWay) => true;
 
         /// <summary>
@@ -30,7 +28,6 @@ namespace DotNext.Net.Cluster.Messaging
         /// <param name="context">The context of the underlying network request.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The response message.</returns>
-        [ReliabilityContract(Consistency.MayCorruptProcess, Cer.Success)]
         Task<IMessage> ReceiveMessage(ISubscriber sender, IMessage message, object? context, CancellationToken token);
 
         /// <summary>

@@ -1,22 +1,25 @@
 ﻿using System;
-using System.IO;
-using System.IO.Pipelines;
 using System.Runtime.InteropServices;
+#if !NETSTANDARD2_1
+using System.Text.Json;
+#endif
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using IO;
-    using Text;
 
     public partial class PersistentState
     {
         /// <summary>
         /// Represents persistent log entry.
         /// </summary>
+        /// <remarks>
+        /// Use <see cref="TransformAsync"/> to decode the log entry.
+        /// </remarks>
         [StructLayout(LayoutKind.Auto)]
-        protected readonly struct LogEntry : IRaftLogEntry, IAsyncBinaryReader
+        protected readonly struct LogEntry : IRaftLogEntry
         {
             private readonly StreamSegment content;
             private readonly LogEntryMetadata metadata;
@@ -54,80 +57,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal void Reset()
                 => content.Adjust(metadata.Offset, Length);
 
-            /// <summary>
-            /// Reads the value of blittable type from the log entry
-            /// and advances position in the underlying stream.
-            /// </summary>
-            /// <param name="token">The token that can be used to cancel the operation.</param>
-            /// <typeparam name="T">The type of value to read.</typeparam>
-            /// <returns>Decoded value of blittable type.</returns>
-            /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-            /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
-            public ValueTask<T> ReadAsync<T>(CancellationToken token = default)
-                where T : unmanaged
-                => content.ReadAsync<T>(buffer, token);
-
-            private static async ValueTask ReadAsync(Stream input, Memory<byte> output, CancellationToken token)
-            {
-                if ((await input.ReadAsync(output, token).ConfigureAwait(false)) != output.Length)
-                    throw new EndOfStreamException();
-            }
-
-            /// <summary>
-            /// Reads the data of exact size.
-            /// </summary>
-            /// <param name="output">The buffer to be modified with the data from log entry.</param>
-            /// <param name="token">The token that can be used to cancel the operation.</param>
-            /// <returns>The task representing state of asynchronous execution.</returns>
-            /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-            /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
-            public ValueTask ReadAsync(Memory<byte> output, CancellationToken token = default)
-                => ReadAsync(content, output, token);
-
-            /// <summary>
-            /// Reads the string of the specified encoding and length.
-            /// </summary>
-            /// <param name="length">The length of the string, in bytes.</param>
-            /// <param name="context">The context of string decoding.</param>
-            /// <param name="token">The token that can be used to cancel the operation.</param>
-            /// <returns>The decoded string.</returns>
-            /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-            /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
-            public ValueTask<string> ReadStringAsync(int length, DecodingContext context, CancellationToken token = default)
-                => content.ReadStringAsync(length, context, buffer, token);
-
-            /// <summary>
-            /// Reads the string of the specified encoding.
-            /// </summary>
-            /// <param name="lengthFormat">Indicates how the string length is encoded in underlying stream.</param>
-            /// <param name="context">The context of string decoding.</param>
-            /// <param name="token">The token that can be used to cancel the operation.</param>
-            /// <returns>The decoded string.</returns>
-            /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-            /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
-            public ValueTask<string> ReadStringAsync(StringLengthEncoding lengthFormat, DecodingContext context, CancellationToken token = default)
-                => content.ReadStringAsync(lengthFormat, context, buffer, token);
-
-            /// <summary>
-            /// Copies the remaining content from this log entry to the specified stream.
-            /// </summary>
-            /// <param name="output">The stream used as copy destination.</param>
-            /// <param name="token">The token that can be used to cancel the operation.</param>
-            /// <returns>The task representing state of asynchronous execution.</returns>
-            /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-            public Task CopyToAsync(Stream output, CancellationToken token = default)
-                => content.CopyToAsync(output, token);
-
-            /// <summary>
-            /// Copies the remaining content from this log entry to the specified stream.
-            /// </summary>
-            /// <param name="output">The stream used as copy destination.</param>
-            /// <param name="token">The token that can be used to cancel the operation.</param>
-            /// <returns>The task representing state of asynchronous execution.</returns>
-            /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-            public Task CopyToAsync(PipeWriter output, CancellationToken token = default)
-                => content.CopyToAsync(output, token);
-
             /// <inheritdoc/>
             ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
             {
@@ -152,11 +81,51 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public DateTimeOffset Timestamp => new DateTimeOffset(metadata.Timestamp, TimeSpan.Zero);
 
             /// <inheritdoc/>
-            ValueTask<TResult> IDataTransferObject.GetObjectDataAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token)
+            public ValueTask<TResult> TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
+                where TTransformation : notnull, IDataTransferObject.ITransformation<TResult>
             {
                 Reset();
-                return IDataTransferObject.DecodeAsync<TResult, TDecoder>(content, parser, false, token);
+                return IDataTransferObject.TransformAsync<TResult, TTransformation>(content, transformation, false, buffer, token);
             }
+
+#if !NETSTANDARD2_1
+            /// <summary>
+            /// Deserializes JSON content represented by this log entry.
+            /// </summary>
+            /// <param name="typeLoader">
+            /// The type loader responsible for resolving the type to be deserialized.
+            /// If <see langword="null"/> then <see cref="Type.GetType(string, bool)"/> is used
+            /// for type resolution.
+            /// </param>
+            /// <param name="options">Deserialization options.</param>
+            /// <param name="token">The token that can be used to cancel the deserialization.</param>
+            /// <returns>The deserialized object.</returns>
+            /// <exception cref="TypeLoadException"><paramref name="typeLoader"/> unable to resolve the type.</exception>
+            /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+            /// <seealso cref="CreateJsonLogEntry"/>
+            public ValueTask<object?> DeserializeFromJsonAsync(Func<string, Type>? typeLoader = null, JsonSerializerOptions? options = null, CancellationToken token = default)
+            {
+                Reset();
+                return JsonLogEntry.DeserializeAsync(content, typeLoader ?? JsonLogEntry.DefaultTypeLoader, options, token);
+            }
+#endif
         }
+
+#if !NETSTANDARD2_1
+        /// <summary>
+        /// Creates a log entry with JSON-serializable payload.
+        /// </summary>
+        /// <typeparam name="T">JSON-serializable type.</typeparam>
+        /// <param name="content">JSON-serializable content of the log entry.</param>
+        /// <param name="typeId">
+        /// The type identifier required to recognize the correct type during deserialization.
+        /// If <see langword="null"/> then <see cref="Type.AssemblyQualifiedName"/> of <typeparamref name="T"/> is used as type identifier.
+        /// </param>
+        /// <param name="options">Serialization options.</param>
+        /// <returns>The log entry representing JSON-serializable content.</returns>
+        /// <seealso cref="LogEntry.DeserializeFromJsonAsync"/>
+        public JsonLogEntry<T> CreateJsonLogEntry<T>(T content, string? typeId = null, JsonSerializerOptions? options = null)
+            => new JsonLogEntry<T>(Term, content, typeId, options);
+#endif
     }
 }

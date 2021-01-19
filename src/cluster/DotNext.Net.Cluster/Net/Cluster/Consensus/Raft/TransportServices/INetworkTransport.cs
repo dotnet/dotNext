@@ -39,9 +39,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 Clear();
             }
 
-            internal void CancellationRequested(object correlationId)
+            internal void CancellationRequested(object? correlationId)
             {
-                if (TryRemove((CorrelationId)correlationId, out var channel))
+                if (correlationId is CorrelationId id && TryRemove(id, out var channel))
                 {
                     try
                     {

@@ -4,7 +4,6 @@ using System.Linq.Expressions;
 
 namespace DotNext.Runtime.CompilerServices
 {
-    using static Collections.Generic.Stack;
     using AwaitExpression = Linq.Expressions.AwaitExpression;
 
     internal sealed class VisitorContext : Disposable
@@ -46,7 +45,7 @@ namespace DotNext.Runtime.CompilerServices
                                 return guarded.FaultLabel;
                             skipNextGuardedStatement = false;
                             break;
-                        case FinallyStatement _:
+                        case FinallyStatement:
                             skipNextGuardedStatement = true;
                             break;
                     }
@@ -68,7 +67,7 @@ namespace DotNext.Runtime.CompilerServices
             return null;
         }
 
-        internal bool IsInFinally => !(FindStatement<FinallyStatement>() is null);
+        internal bool IsInFinally => FindStatement<FinallyStatement>() is not null;
 
         internal bool HasAwait
         {
@@ -94,17 +93,17 @@ namespace DotNext.Runtime.CompilerServices
             {
                 if (ReferenceEquals(ExpressionAttributes.Get(CurrentStatement), attr))
                     return;
-                else
-                    attr.ContainsAwait = true;
+                attr.ContainsAwait = true;
             }
         }
 
-        private void AttachLabel(LabelTarget target)
+        private void AttachLabel(LabelTarget? target)
         {
-            if (target is null)
-                return;
-            ExpressionAttributes.Get(CurrentStatement)?.Labels.Add(target);
-            target.GetUserData().GetOrSet(StateIdPlaceholder).StateId = stateId;
+            if (target is not null)
+            {
+                ExpressionAttributes.Get(CurrentStatement)?.Labels.Add(target);
+                target.GetUserData().GetOrSet(StateIdPlaceholder).StateId = stateId;
+            }
         }
 
         internal TOutput Rewrite<TInput, TOutput, TAttributes>(TInput expression, Converter<TInput, TOutput> rewriter, Action<TAttributes>? initializer = null)
@@ -169,7 +168,7 @@ namespace DotNext.Runtime.CompilerServices
             var result = new LinkedList<Expression>();
 
             // iterate through snapshot of statements because collection can be modified
-            var statements = this.statements.Clone();
+            var statements = this.statements.ToArray();
             foreach (var lookup in statements)
             {
                 if (ExpressionAttributes.Get(lookup)?.Labels.Contains(@goto.Target) ?? false)
@@ -178,7 +177,7 @@ namespace DotNext.Runtime.CompilerServices
                     result.AddLast(statement.InlineFinally(visitor, state));
             }
 
-            statements.Clear();
+            Array.Clear(statements, 0, statements.Length);
             return result;
         }
 

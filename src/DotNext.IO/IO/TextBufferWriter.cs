@@ -12,12 +12,11 @@ using static System.Runtime.InteropServices.MemoryMarshal;
 namespace DotNext.IO
 {
     using Buffers;
-    using CharBufferWriter = Buffers.MemoryWriter<char>;
 
-    internal sealed class TextBufferWriter<TWriter> : TextWriter
+    internal sealed unsafe class TextBufferWriter<TWriter> : TextWriter
         where TWriter : class, IBufferWriter<char>
     {
-        private readonly ReadOnlySpanAction<char, TWriter> writeImpl;
+        private readonly delegate*<TWriter, ReadOnlySpan<char>, void> writeImpl;
         private readonly TWriter writer;
         private readonly Action<TWriter>? flush;
         private readonly Func<TWriter, CancellationToken, Task>? flushAsync;
@@ -28,20 +27,18 @@ namespace DotNext.IO
             if (writer is null)
                 throw new ArgumentNullException(nameof(writer));
 
-            writeImpl = writer is IGrowableBuffer<char> ?
-                new ReadOnlySpanAction<char, TWriter>(WriteToGrowableBuffer) :
-                new ReadOnlySpanAction<char, TWriter>(WriteToBuffer);
+            writeImpl = writer is IReadOnlySpanConsumer<char> ?
+                &DirectWrite :
+                &BuffersExtensions.Write<char>;
+
             this.writer = writer;
             this.flush = flush;
             this.flushAsync = flushAsync;
 
-            static void WriteToBuffer(ReadOnlySpan<char> input, TWriter output)
-                => output.Write(input);
-
-            static void WriteToGrowableBuffer(ReadOnlySpan<char> input, TWriter output)
+            static void DirectWrite(TWriter output, ReadOnlySpan<char> input)
             {
-                Debug.Assert(output is IGrowableBuffer<char>);
-                Unsafe.As<IGrowableBuffer<char>>(output).Write(input);
+                Debug.Assert(output is IReadOnlySpanConsumer<char>);
+                Unsafe.As<IReadOnlySpanConsumer<char>>(output).Invoke(input);
             }
         }
 
@@ -51,7 +48,7 @@ namespace DotNext.IO
         {
             if (flush is null)
             {
-                if (flushAsync != null)
+                if (flushAsync is not null)
                     flushAsync(writer, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
             }
             else
@@ -74,18 +71,67 @@ namespace DotNext.IO
             }
         }
 
-        public override void Write(ReadOnlySpan<char> buffer) => writeImpl(buffer, writer);
+        public override void Write(ReadOnlySpan<char> buffer) => writeImpl(writer, buffer);
+
+        public override void WriteLine() => Write(new ReadOnlySpan<char>(CoreNewLine));
+
+        public override Task WriteLineAsync()
+        {
+            var result = Task.CompletedTask;
+            try
+            {
+                WriteLine();
+            }
+            catch (Exception e)
+            {
+                result = Task.FromException(e);
+            }
+
+            return result;
+        }
 
         public override void Write(char value) => Write(CreateReadOnlySpan(ref value, 1));
+
+        public override Task WriteLineAsync(char value)
+        {
+            var result = Task.CompletedTask;
+            try
+            {
+                Write(value);
+                WriteLine();
+            }
+            catch (Exception e)
+            {
+                result = Task.FromException(e);
+            }
+
+            return result;
+        }
 
         public override void Write(bool value) => Write(value ? bool.TrueString : bool.FalseString);
 
         public override void Write(char[] buffer, int index, int count)
             => Write(new ReadOnlySpan<char>(buffer, index, count));
 
-        public override void Write(char[] buffer) => Write(new ReadOnlySpan<char>(buffer));
+        public override void Write(char[]? buffer) => Write(new ReadOnlySpan<char>(buffer));
 
-        public override void Write(string value) => Write(value.AsSpan());
+        public override void Write(string? value) => Write(value.AsSpan());
+
+        public override Task WriteLineAsync(string? value)
+        {
+            var result = Task.CompletedTask;
+            try
+            {
+                Write(value);
+                WriteLine();
+            }
+            catch (Exception e)
+            {
+                result = Task.FromException(e);
+            }
+
+            return result;
+        }
 
         public override void Write(decimal value)
             => writer.WriteDecimal(value, string.Empty, FormatProvider);
@@ -165,6 +211,12 @@ namespace DotNext.IO
             }
         }
 
+        public override void WriteLine(object? value)
+        {
+            Write(value);
+            WriteLine();
+        }
+
         public override void WriteLine(ReadOnlySpan<char> buffer)
         {
             Write(buffer);
@@ -209,7 +261,7 @@ namespace DotNext.IO
             return result;
         }
 
-        public override Task WriteAsync(string value)
+        public override Task WriteAsync(string? value)
         {
             var result = Task.CompletedTask;
             try
@@ -226,6 +278,22 @@ namespace DotNext.IO
 
         public override Task WriteAsync(char[] buffer, int index, int count)
             => WriteAsync(buffer.AsMemory(index, count), CancellationToken.None);
+
+        public override Task WriteLineAsync(char[] buffer, int index, int count)
+        {
+            var result = Task.CompletedTask;
+            try
+            {
+                Write(buffer, index, count);
+                WriteLine();
+            }
+            catch (Exception e)
+            {
+                result = Task.FromException(e);
+            }
+
+            return result;
+        }
 
         public override Task WriteLineAsync(ReadOnlyMemory<char> buffer, CancellationToken token)
         {
@@ -250,17 +318,70 @@ namespace DotNext.IO
             return result;
         }
 
-        public override string ToString()
+#if !NETSTANDARD2_1
+        public override void Write(StringBuilder? sb)
         {
-            switch (writer)
-            {
-                case CharBufferWriter buffer:
-                    return buffer.BuildString();
-                case ArrayBufferWriter<char> buffer:
-                    return buffer.BuildString();
-                default:
-                    return writer.ToString();
-            }
+            if (sb.IsNullOrEmpty())
+                return;
+
+            foreach (var chunk in sb.GetChunks())
+                Write(chunk.Span);
         }
+
+        public override void WriteLine(StringBuilder? sb)
+        {
+            Write(sb);
+            WriteLine();
+        }
+
+        public override Task WriteAsync(StringBuilder? value, CancellationToken token)
+        {
+            Task result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled(token);
+            }
+            else
+            {
+                result = Task.CompletedTask;
+                try
+                {
+                    Write(value);
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException(e);
+                }
+            }
+
+            return result;
+        }
+
+        public override Task WriteLineAsync(StringBuilder? value, CancellationToken token)
+        {
+            Task result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled(token);
+            }
+            else
+            {
+                result = Task.CompletedTask;
+                try
+                {
+                    WriteLine(value);
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException(e);
+                }
+            }
+
+            return result;
+        }
+#endif
+
+        public override string ToString()
+            => writer is ArrayBufferWriter<char> buffer ? buffer.BuildString() : writer.ToString() ?? string.Empty;
     }
 }

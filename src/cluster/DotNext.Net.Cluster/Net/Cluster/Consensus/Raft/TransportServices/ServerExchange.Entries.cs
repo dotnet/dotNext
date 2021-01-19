@@ -50,8 +50,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
             => new ValueTask(writer.CopyFromAsync(reader, token));
 
-        ValueTask<TResult> IDataTransferObject.GetObjectDataAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token)
-            => IDataTransferObject.DecodeAsync<TResult, TDecoder>(reader, parser, token);
+        ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
+            => IDataTransferObject.TransformAsync<TResult, TTransformation>(reader, transformation, token);
     }
 
     internal partial class ServerExchange : ILogEntryProducer<ReceivedLogEntry>
@@ -61,10 +61,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         static ServerExchange()
         {
-            IsReadyToReadEntryPredicate = DelegateHelpers.CreateOpenDelegate<Predicate<ServerExchange>>(server => server.IsReadyToReadEntry());
-            IsValidStateForResponsePredicate = DelegateHelpers.CreateOpenDelegate<Predicate<ServerExchange>>(server => server.IsValidStateForResponse());
-            IsValidForTransitionPredicate = DelegateHelpers.CreateOpenDelegate<Predicate<ServerExchange>>(server => server.IsValidForTransition());
-            SetStateAction = DelegateHelpers.CreateOpenDelegate<Action<ServerExchange, State>>((server, state) => server.SetState(state));
+            IsReadyToReadEntryPredicate = IsReadyToReadEntry;
+            IsValidStateForResponsePredicate = IsValidStateForResponse;
+            IsValidForTransitionPredicate = IsValidForTransition;
+            SetStateAction = SetState;
+
+            static bool IsReadyToReadEntry(ServerExchange server) => server.IsReadyToReadEntry();
+            static bool IsValidStateForResponse(ServerExchange server) => server.IsValidStateForResponse();
+            static bool IsValidForTransition(ServerExchange server) => server.IsValidForTransition();
+            static void SetState(ServerExchange server, State state) => server.SetState(state);
         }
 
         private readonly AsyncTrigger transmissionStateTrigger = new AsyncTrigger();

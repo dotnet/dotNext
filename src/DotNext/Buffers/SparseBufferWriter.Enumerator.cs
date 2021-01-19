@@ -37,7 +37,7 @@ namespace DotNext.Buffers
                 else
                     initialized = true;
 
-                return !(current is null);
+                return current is not null;
             }
 
             /// <inheritdoc />

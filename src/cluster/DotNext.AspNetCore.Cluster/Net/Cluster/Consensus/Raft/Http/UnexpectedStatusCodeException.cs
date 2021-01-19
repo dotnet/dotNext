@@ -8,7 +8,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     {
         private readonly Exception exception;
         internal readonly HttpStatusCode StatusCode;
-        internal readonly string Reason;
+        internal readonly string? Reason;
 
         internal UnexpectedStatusCodeException(HttpResponseMessage response, HttpRequestException e)
             : base(e.Message)

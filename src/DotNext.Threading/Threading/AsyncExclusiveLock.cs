@@ -23,10 +23,9 @@ namespace DotNext.Threading
                 return true;
             }
 
-            WaitNode ILockManager<WaitNode>.CreateNode(WaitNode? tail) => tail is null ? new WaitNode() : new WaitNode(tail);
+            readonly WaitNode ILockManager<WaitNode>.CreateNode(WaitNode? tail) => tail is null ? new WaitNode() : new WaitNode(tail);
         }
 
-        private static readonly Func<AsyncExclusiveLock, bool> IsLockHeldPredicate = DelegateHelpers.CreateOpenDelegate<Func<AsyncExclusiveLock, bool>>(l => l.IsLockHeld);
         private LockManager manager;
 
         /// <summary>
@@ -106,7 +105,7 @@ namespace DotNext.Threading
             }
             else
             {
-                head.Complete();
+                head.SetResult();
                 RemoveNode(head);
             }
         }
@@ -119,7 +118,11 @@ namespace DotNext.Threading
         /// Otherwise, it waits for calling of <see cref="Release"/> method.
         /// </remarks>
         /// <returns>The task representing graceful shutdown of this lock.</returns>
-        public ValueTask DisposeAsync()
-            => IsDisposed ? new ValueTask() : DisposeAsync(this, IsLockHeldPredicate);
+        public unsafe ValueTask DisposeAsync()
+        {
+            return IsDisposed ? new ValueTask() : DisposeAsync(this, &CheckLockState);
+
+            static bool CheckLockState(AsyncExclusiveLock obj) => obj.IsLockHeld;
+        }
     }
 }

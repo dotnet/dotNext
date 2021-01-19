@@ -242,10 +242,8 @@ namespace DotNext.Metaprogramming
         /// <inheritdoc/>
         void IDisposable.Dispose()
         {
-            if (!(lambda is null))
-            {
+            if (lambda is not null)
                 lambda.Target = null;
-            }
         }
     }
 }

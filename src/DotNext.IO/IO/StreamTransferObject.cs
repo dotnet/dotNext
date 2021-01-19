@@ -76,15 +76,15 @@ namespace DotNext.IO
         /// <summary>
         /// Parses the encapsulated stream.
         /// </summary>
-        /// <param name="parser">The parser instance.</param>
+        /// <param name="transformation">The parser instance.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <typeparam name="TResult">The type of result.</typeparam>
-        /// <typeparam name="TDecoder">The type of parser.</typeparam>
+        /// <typeparam name="TTransformation">The type of parser.</typeparam>
         /// <returns>The converted DTO content.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public ValueTask<TResult> GetObjectDataAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token = default)
-            where TDecoder : IDataTransferObject.IDecoder<TResult>
-            => IDataTransferObject.DecodeAsync<TResult, TDecoder>(content, parser, IsReusable, token);
+        public ValueTask<TResult> TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token = default)
+            where TTransformation : IDataTransferObject.ITransformation<TResult>
+            => IDataTransferObject.TransformAsync<TResult, TTransformation>(content, transformation, IsReusable, token);
 
         /// <summary>
         /// Releases resources associated with this object.
@@ -97,14 +97,14 @@ namespace DotNext.IO
             base.Dispose(disposing);
         }
 
+        /// <inheritdoc />
+        protected override ValueTask DisposeAsyncCore()
+            => leaveOpen ? new ValueTask() : content.DisposeAsync();
+
         /// <summary>
         /// Asynchronously releases the resources associated with this object.
         /// </summary>
         /// <returns>A task that represents the asynchronous dispose operation.</returns>
-        public virtual ValueTask DisposeAsync()
-        {
-            base.Dispose(false);
-            return content.DisposeAsync();
-        }
+        public ValueTask DisposeAsync() => DisposeAsync(false);
     }
 }

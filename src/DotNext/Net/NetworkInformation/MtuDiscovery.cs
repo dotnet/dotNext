@@ -49,12 +49,7 @@ namespace DotNext.Net.NetworkInformation
                         bestMtu = currentMtu + IcmpEchoHeaderSize;
                         mtuLowerBound = currentMtu + 1;
                         continue;
-                    case IPStatus.TimedOut:
-                        // TODO: This is required due to https://github.com/dotnet/runtime/issues/34855
-                        if (Environment.OSVersion.Platform == PlatformID.Unix)
-                            goto case IPStatus.PacketTooBig;
-                        else
-                            goto case default;
+                    case IPStatus.TimedOut when Environment.OSVersion.Platform == PlatformID.Unix: // TODO: This is required due to https://github.com/dotnet/runtime/issues/34855
                     case IPStatus.PacketTooBig:
                         mtuUpperBound = currentMtu - 1;
                         continue;
@@ -97,8 +92,8 @@ namespace DotNext.Net.NetworkInformation
                         bestMtu = currentMtu + IcmpEchoHeaderSize;
                         mtuLowerBound = currentMtu + 1;
                         continue;
+                    case IPStatus.TimedOut when Environment.OSVersion.Platform == PlatformID.Unix: // TODO: This is required due to https://github.com/dotnet/runtime/issues/34855
                     case IPStatus.PacketTooBig:
-                    case IPStatus.TimedOut:
                         mtuUpperBound = currentMtu - 1;
                         continue;
                 }

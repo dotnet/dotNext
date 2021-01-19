@@ -12,21 +12,15 @@ namespace DotNext.Net
 
     internal static class Network
     {
-        internal static bool IsIn(this IPAddress address, IPNetwork network) => network.Contains(address);
+        internal static bool IsIn(this IPAddress? address, IPNetwork network)
+            => address is not null && network.Contains(address);
 
-        internal static IPEndPoint? ToEndPoint(this Uri memberUri)
+        internal static IPEndPoint? ToEndPoint(this Uri memberUri) => memberUri.HostNameType switch
         {
-            switch (memberUri.HostNameType)
-            {
-                case UriHostNameType.IPv4:
-                case UriHostNameType.IPv6:
-                    return new IPEndPoint(IPAddress.Parse(memberUri.Host), memberUri.Port);
-                case UriHostNameType.Dns:
-                    return memberUri.IsLoopback ? new IPEndPoint(IPAddress.Loopback, memberUri.Port) : new IPEndPoint(Dns.GetHostAddresses(memberUri.Host).First(), memberUri.Port);
-                default:
-                    return null;
-            }
-        }
+            UriHostNameType.IPv4 or UriHostNameType.IPv6 => new IPEndPoint(IPAddress.Parse(memberUri.Host), memberUri.Port),
+            UriHostNameType.Dns when memberUri.IsLoopback => new IPEndPoint(IPAddress.Loopback, memberUri.Port),
+            _ => null
+        };
 
         internal static ICollection<IPEndPoint> GetHostingAddresses(this IServer server)
         {
@@ -58,7 +52,7 @@ namespace DotNext.Net
                     }
 
                     // add host address hint if it is available
-                    if (!(hint is null))
+                    if (hint is not null)
                         result.Add(new IPEndPoint(hint, endpoint.Port));
                 }
             }

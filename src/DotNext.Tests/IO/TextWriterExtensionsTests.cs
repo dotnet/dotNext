@@ -6,7 +6,7 @@ using Xunit;
 
 namespace DotNext.IO
 {
-    using ChunkSequence = Buffers.ChunkSequence;
+    using static Buffers.BufferHelpers;
 
     [ExcludeFromCodeCoverage]
     public sealed class TextWriterExtensionsTests : Test
@@ -14,7 +14,7 @@ namespace DotNext.IO
         [Fact]
         public static async Task WriteSequence()
         {
-            var sequence = ChunkSequence.ToReadOnlySequence(new [] { "abc".AsMemory(), "def".AsMemory(), "g".AsMemory() });
+            var sequence = new [] { "abc".AsMemory(), "def".AsMemory(), "g".AsMemory() }.ToReadOnlySequence();
             await using var writer = new StringWriter();
             await writer.WriteAsync(sequence);
             Equal("abcdefg", writer.ToString());

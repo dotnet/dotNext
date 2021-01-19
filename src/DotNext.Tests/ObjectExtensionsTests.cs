@@ -27,18 +27,6 @@ namespace DotNext
         }
 
         [Fact]
-        public static void Decompose()
-        {
-            var str = "Hello, world";
-            (int index, char ch) = str.Decompose(s => s.IndexOf(','), s => s[1]);
-            Equal(5, index);
-            Equal('e', ch);
-            str.Decompose(s => s.IndexOf(','), s => s[1], out index, out ch);
-            Equal(5, index);
-            Equal('e', ch);
-        }
-
-        [Fact]
         public static void UserDataStorage()
         {
             var slot = UserDataSlot<long>.Allocate();

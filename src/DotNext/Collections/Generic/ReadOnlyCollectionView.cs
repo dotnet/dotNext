@@ -15,40 +15,54 @@ namespace DotNext.Collections.Generic
     [StructLayout(LayoutKind.Auto)]
     public readonly struct ReadOnlyCollectionView<TInput, TOutput> : IReadOnlyCollection<TOutput>, IEquatable<ReadOnlyCollectionView<TInput, TOutput>>
     {
-        private readonly IReadOnlyCollection<TInput> source;
-        private readonly ValueFunc<TInput, TOutput> mapper;
+        private readonly IReadOnlyCollection<TInput>? source;
+        private readonly Func<TInput, TOutput> mapper;
 
         /// <summary>
         /// Initializes a new lazily converted view.
         /// </summary>
         /// <param name="collection">Read-only collection to convert.</param>
         /// <param name="mapper">Collection items converter.</param>
-        public ReadOnlyCollectionView(IReadOnlyCollection<TInput> collection, in ValueFunc<TInput, TOutput> mapper)
+        public ReadOnlyCollectionView(IReadOnlyCollection<TInput> collection, Func<TInput, TOutput> mapper)
         {
             source = collection ?? throw new ArgumentNullException(nameof(collection));
-            this.mapper = mapper;
+            this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        }
+
+        /// <summary>
+        /// Initializes a new lazily converted view.
+        /// </summary>
+        /// <param name="collection">Read-only collection to convert.</param>
+        /// <param name="mapper">Collection items converter.</param>
+        public ReadOnlyCollectionView(IReadOnlyCollection<TInput> collection, Converter<TInput, TOutput> mapper)
+            : this(collection, Unsafe.As<Func<TInput, TOutput>>(mapper))
+        {
         }
 
         /// <summary>
         /// Count of items in the collection.
         /// </summary>
-        public int Count => source.Count;
+        public int Count => source?.Count ?? 0;
 
         /// <summary>
         /// Returns enumerator over converted items.
         /// </summary>
         /// <returns>The enumerator over converted items.</returns>
-        public IEnumerator<TOutput> GetEnumerator() => source.Select(mapper.ToDelegate()).GetEnumerator();
+        public IEnumerator<TOutput> GetEnumerator()
+            => (source is null || mapper is null ? Enumerable.Empty<TOutput>() : source.Select(mapper)).GetEnumerator();
 
         /// <inheritdoc/>
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        private bool Equals(in ReadOnlyCollectionView<TInput, TOutput> other)
+            => ReferenceEquals(source, other.source) && mapper == other.mapper;
 
         /// <summary>
         /// Determines whether two converted collections are same.
         /// </summary>
         /// <param name="other">Other collection to compare.</param>
         /// <returns><see langword="true"/> if this view wraps the same source collection and contains the same converter as other view; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(ReadOnlyCollectionView<TInput, TOutput> other) => ReferenceEquals(source, other.source) && mapper == other.mapper;
+        public bool Equals(ReadOnlyCollectionView<TInput, TOutput> other) => Equals(in other);
 
         /// <summary>
         /// Returns hash code for the this view.
@@ -62,7 +76,7 @@ namespace DotNext.Collections.Generic
         /// <param name="other">Other collection to compare.</param>
         /// <returns><see langword="true"/> if this view wraps the same source collection and contains the same converter as other view; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object? other)
-            => other is ReadOnlyCollectionView<TInput, TOutput> view ? Equals(view) : Equals(source, other);
+            => other is ReadOnlyCollectionView<TInput, TOutput> view ? Equals(in view) : Equals(source, other);
 
         /// <summary>
         /// Determines whether two collections are same.
@@ -70,8 +84,8 @@ namespace DotNext.Collections.Generic
         /// <param name="first">The first collection to compare.</param>
         /// <param name="second">The second collection to compare.</param>
         /// <returns><see langword="true"/> if the first view wraps the same source collection and contains the same converter as the second view; otherwise, <see langword="false"/>.</returns>
-        public static bool operator ==(ReadOnlyCollectionView<TInput, TOutput> first, ReadOnlyCollectionView<TInput, TOutput> second)
-            => first.Equals(second);
+        public static bool operator ==(in ReadOnlyCollectionView<TInput, TOutput> first, in ReadOnlyCollectionView<TInput, TOutput> second)
+            => first.Equals(in second);
 
         /// <summary>
         /// Determines whether two collections are not same.
@@ -79,7 +93,7 @@ namespace DotNext.Collections.Generic
         /// <param name="first">The first collection to compare.</param>
         /// <param name="second">The second collection to compare.</param>
         /// <returns><see langword="true"/> if the first view wraps the different source collection and contains the different converter as the second view; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(ReadOnlyCollectionView<TInput, TOutput> first, ReadOnlyCollectionView<TInput, TOutput> second)
-            => !first.Equals(second);
+        public static bool operator !=(in ReadOnlyCollectionView<TInput, TOutput> first, in ReadOnlyCollectionView<TInput, TOutput> second)
+            => !first.Equals(in second);
     }
 }

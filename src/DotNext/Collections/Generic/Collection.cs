@@ -16,24 +16,17 @@ namespace DotNext.Collections.Generic
         /// <param name="collection">Read-only collection to convert.</param>
         /// <param name="converter">A collection item conversion function.</param>
         /// <returns>Lazily converted read-only collection.</returns>
-        public static ReadOnlyCollectionView<TInput, TOutput> Convert<TInput, TOutput>(this IReadOnlyCollection<TInput> collection, in ValueFunc<TInput, TOutput> converter)
-            => new ReadOnlyCollectionView<TInput, TOutput>(collection, converter);
-
-        /// <summary>
-        /// Returns lazily converted read-only collection.
-        /// </summary>
-        /// <typeparam name="TInput">Type of items in the source collection.</typeparam>
-        /// <typeparam name="TOutput">Type of items in the target collection.</typeparam>
-        /// <param name="collection">Read-only collection to convert.</param>
-        /// <param name="converter">A collection item conversion function.</param>
-        /// <returns>Lazily converted read-only collection.</returns>
         public static ReadOnlyCollectionView<TInput, TOutput> Convert<TInput, TOutput>(this IReadOnlyCollection<TInput> collection, Converter<TInput, TOutput> converter)
-            => Convert(collection, converter.AsValueFunc(true));
+            => new ReadOnlyCollectionView<TInput, TOutput>(collection, converter);
 
         private static T[] ToArray<TCollection, T>(TCollection collection, int count)
             where TCollection : class, IEnumerable<T>
         {
+#if NETSTANDARD2_1
             var result = new T[count];
+#else
+            var result = GC.AllocateUninitializedArray<T>(count);
+#endif
             var index = 0L;
             foreach (var item in collection)
                 result[index++] = item;

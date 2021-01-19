@@ -37,20 +37,12 @@ namespace DotNext.Linq.Expressions
         /// <exception cref="ArgumentException">Type of <paramref name="value"/> should be <see cref="int"/>, <see cref="short"/>, <see cref="byte"/> or <see cref="sbyte"/>.</exception>
         public ItemIndexExpression(Expression value, bool fromEnd = false)
         {
-            switch (Type.GetTypeCode(value.Type))
+            conversionRequired = Type.GetTypeCode(value.Type) switch
             {
-                case TypeCode.Byte:
-                case TypeCode.SByte:
-                case TypeCode.Int16:
-                case TypeCode.UInt16:
-                    conversionRequired = true;
-                    break;
-                case TypeCode.Int32:
-                    conversionRequired = false;
-                    break;
-                default:
-                    throw new ArgumentException(ExceptionMessages.TypeExpected<int>(), nameof(value));
-            }
+                TypeCode.Byte or TypeCode.SByte or TypeCode.Int16 or TypeCode.UInt16 => true,
+                TypeCode.Int32 => false,
+                _ => throw new ArgumentException(ExceptionMessages.TypeExpected<int>(), nameof(value))
+            };
 
             IsFromEnd = fromEnd;
             Value = value;
@@ -84,7 +76,7 @@ namespace DotNext.Linq.Expressions
         public override Expression Reduce()
         {
             ConstructorInfo? ctor = typeof(Index).GetConstructor(new[] { typeof(int), typeof(bool) });
-            Debug.Assert(!(ctor is null));
+            Debug.Assert(ctor is not null);
             return New(ctor, conversionRequired ? Convert(Value, typeof(int)) : Value, Constant(IsFromEnd));
         }
 

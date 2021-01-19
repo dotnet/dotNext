@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using static System.Linq.Expressions.Expression;
 
@@ -24,11 +23,10 @@ namespace DotNext
 
         private static readonly DisposeMethod DisposeMethodImpl;
 
-        [SuppressMessage("Design", "CA1065", Justification = "It's a concept type")]
         static Disposable()
         {
             var disposeMethod = typeof(T).GetDisposeMethod();
-            if (!(disposeMethod?.DeclaringType is null) && disposeMethod.ReturnType == typeof(void))
+            if (disposeMethod?.DeclaringType is not null && disposeMethod.ReturnType == typeof(void))
             {
                 if (disposeMethod.DeclaringType.IsValueType)
                 {

@@ -91,27 +91,11 @@ namespace DotNext.Runtime
         }
 
         [Fact]
-        [Obsolete("This is test for backward compatibility")]
-        public unsafe static void NullCheck()
-        {
-            static void NullRefCheck()
-            {
-                ref readonly var ch = ref Unsafe.AsRef<char>(null);
-                Intrinsics.ThrowIfNull(in ch);
-            }
-            var i = 0L;
-            False(Intrinsics.IsNull(in i));
-            ref readonly var ch = ref Unsafe.AsRef<char>(null);
-            True(Intrinsics.IsNull(in ch));
-            Throws<NullReferenceException>(NullRefCheck);
-        }
-
-        [Fact]
         public static void CopyBlock()
         {
             char[] chars1 = new[] { 'a', 'b', 'c' };
             var chars2 = new char[2];
-            Intrinsics.Copy(in chars1[1], ref chars2[0], 2);
+            Intrinsics.Copy(in chars1[1], out chars2[0], 2);
             Equal('b', chars2[0]);
             Equal('c', chars2[1]);
         }
@@ -131,15 +115,6 @@ namespace DotNext.Runtime
             var g = Guid.NewGuid();
             Intrinsics.ClearBits(&g, sizeof(Guid));
             Equal(Guid.Empty, g);
-        }
-
-        [Fact]
-        [Obsolete("This test is for checking obsolete member")]
-        public static void ReadonlyRef()
-        {
-            var array = new[] { "a", "b", "c" };
-            ref readonly var element = ref Intrinsics.GetReadonlyRef(array, 2);
-            Equal("c", element);
         }
 
         [Fact]
@@ -328,13 +303,14 @@ namespace DotNext.Runtime
         public static void ArrayLength()
         {
             int[] array = { 42 };
-            Equal(new UIntPtr(1), Intrinsics.GetLength(array));
+            Equal(new IntPtr(1), (IntPtr)Intrinsics.GetLength(array));
             array = Array.Empty<int>();
             Equal(default, Intrinsics.GetLength(array));
-            Equal(new UIntPtr(4), Intrinsics.GetLength(new int[2, 2]));
+            Equal(new IntPtr(4), (IntPtr)Intrinsics.GetLength(new int[2, 2]));
         }
 
         [Fact]
+        [Obsolete("This test is for checking obsolete member")]
         public static void ArrayElement()
         {
             string[] array = { "42" };

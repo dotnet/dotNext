@@ -7,7 +7,7 @@ using IServer = Microsoft.AspNetCore.Hosting.Server.IServer;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
 {
-    [SuppressMessage("Usage", "CA1812", Justification = "This class is instantiated by DI container")]
+    [SuppressMessage("Performance", "CA1812", Justification = "This class is instantiated by DI container")]
     internal sealed class RaftEmbeddedCluster : RaftHttpCluster
     {
         internal readonly PathString ProtocolPath;
@@ -26,7 +26,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
 
         private protected override RaftClusterMember CreateMember(Uri address)
         {
-            var member = new RaftClusterMember(this, address, new Uri(ProtocolPath.Value, UriKind.Relative));
+            var member = new RaftClusterMember(this, address, new Uri(ProtocolPath.Value.IfNullOrEmpty(RaftEmbeddedClusterMemberConfiguration.DefaultResourcePath), UriKind.Relative));
             ConfigureMember(member);
             return member;
         }

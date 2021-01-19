@@ -1,21 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
 namespace DotNext
 {
+    using Intrinsics = Runtime.Intrinsics;
+
     /// <summary>
     /// Provides strongly typed way to reflect enum type.
     /// </summary>
     /// <typeparam name="TEnum">Enum type to reflect.</typeparam>
     /// <seealso href="https://github.com/dotnet/corefx/issues/34077">EnumMember API</seealso>
-    [SuppressMessage("Design", "CA1036")]
     [Serializable]
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct Enum<TEnum> : IEquatable<TEnum>, IComparable<TEnum>, IFormattable, IEquatable<Enum<TEnum>>, ISerializable, IConvertible<TEnum>, ICustomAttributeProvider
+    public readonly struct Enum<TEnum> : IEquatable<TEnum>, IComparable<TEnum>, IFormattable, IEquatable<Enum<TEnum>>, ISerializable, ISupplier<TEnum>, ICustomAttributeProvider
         where TEnum : struct, Enum
     {
         private sealed class Mapping : Dictionary<TEnum, string>
@@ -25,11 +25,11 @@ namespace DotNext
                 min = max = default;
                 var enumType = typeof(TEnum);
                 values = Enum.GetValues(enumType);
-                for (var i = 0L; i < values.LongLength; i++)
+                for (nint i = 0; i < Intrinsics.GetLength(values); i++)
                 {
-                    var boxedValue = values.GetValue(i);
+                    var boxedValue = values.GetValue(i)!;
                     var value = (TEnum)boxedValue;
-                    this[value] = Enum.GetName(enumType, boxedValue);
+                    this[value] = Enum.GetName(enumType, boxedValue)!;
 
                     // detect min and max
                     min = value.CompareTo(min) < 0 ? value : min;
@@ -76,7 +76,7 @@ namespace DotNext
         /// </summary>
         /// <param name="name">The name of a constant in <typeparamref name="TEnum"/>.</param>
         /// <returns><see langword="true"/> if a constant in <typeparamref name="TEnum"/> has a name equal to <paramref name="name"/>; otherwise, <see langword="false"/>.</returns>
-        public static bool IsDefined(string name) => !(GetField(name) is null);
+        public static bool IsDefined(string name) => GetField(name) is not null;
 
         /// <summary>
         /// Gets enum member by its value.
@@ -150,7 +150,7 @@ namespace DotNext
         private Enum(TEnum value) => Value = value;
 
         private Enum(SerializationInfo info, StreamingContext context)
-            => Value = (TEnum)info.GetValue(ValueSerData, typeof(TEnum));
+            => Value = (TEnum)info.GetValue(ValueSerData, typeof(TEnum))!;
 
         private FieldInfo? Field
             => EnumMapping.TryGetValue(Value, out var name) ? GetField(name) : null;
@@ -210,12 +210,12 @@ namespace DotNext
         public TEnum Value { get; }
 
         /// <inheritdoc/>
-        TEnum IConvertible<TEnum>.Convert() => Value;
+        TEnum ISupplier<TEnum>.Invoke() => Value;
 
         /// <summary>
         /// Represents name of the enum member.
         /// </summary>
-        public string Name => EnumMapping.TryGetValue(Value, out var name) ? name : ValueTypeExtensions.ToString(Value);
+        public string Name => EnumMapping.TryGetValue(Value, out var name) ? name : Value.ToString();
 
         /// <summary>
         /// Converts typed enum wrapper into actual enum value.
@@ -269,7 +269,7 @@ namespace DotNext
         public override string ToString() => Name;
 
         /// <inheritdoc/>
-        string IFormattable.ToString(string format, IFormatProvider provider) => ValueTypeExtensions.ToString(Value, format, provider);
+        string IFormattable.ToString(string? format, IFormatProvider? provider) => Value.ToString(format);
 
         /// <summary>
         /// Determines whether two enum members are equal.

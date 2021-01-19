@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
@@ -13,7 +14,7 @@ namespace DotNext.Threading
         private const string NotAvailable = "<NotAvailable>";
         private readonly bool resettable;
         private volatile Task<T>? task;
-        private ValueFunc<Task<T>> factory;
+        private Func<Task<T>>? factory;
 
         /// <summary>
         /// Initializes a new instance of lazy value which is already computed.
@@ -31,22 +32,12 @@ namespace DotNext.Threading
         /// <param name="valueFactory">The function used to compute actual value.</param>
         /// <param name="resettable"><see langword="true"/> if previously computed value can be removed and computation executed again when it will be requested; <see langword="false"/> if value can be computed exactly once.</param>
         /// <exception cref="ArgumentException"><paramref name="valueFactory"/> doesn't refer to any method.</exception>
-        public AsyncLazy(ValueFunc<Task<T>> valueFactory, bool resettable = false)
+        public AsyncLazy(Func<Task<T>> valueFactory, bool resettable = false)
         {
-            if (valueFactory.IsEmpty)
+            if (valueFactory is null)
                 throw new ArgumentException(ExceptionMessages.EmptyValueDelegate, nameof(valueFactory));
             this.resettable = resettable;
             factory = valueFactory;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of lazy value.
-        /// </summary>
-        /// <param name="valueFactory">The function used to compute actual value.</param>
-        /// <param name="resettable"><see langword="true"/> if previously computed value can be removed and computation executed again when it will be requested; <see langword="false"/> if value can be computed exactly once.</param>
-        public AsyncLazy(Func<Task<T>> valueFactory, bool resettable = false)
-            : this(new ValueFunc<Task<T>>(valueFactory), resettable)
-        {
         }
 
         /// <summary>
@@ -62,12 +53,16 @@ namespace DotNext.Threading
             get
             {
                 var t = task;
-                return t?.Status switch
+                switch (t?.Status)
                 {
-                    TaskStatus.RanToCompletion => new Result<T>(t.Result),
-                    TaskStatus.Faulted => new Result<T>(t.Exception),
-                    _ => new Result<T>?()
-                };
+                    case TaskStatus.RanToCompletion:
+                        return new Result<T>(t.Result);
+                    case TaskStatus.Faulted:
+                        Debug.Assert(t.Exception is not null);
+                        return new Result<T>(t.Exception);
+                    default:
+                        return new Result<T>?();
+                }
             }
         }
 
@@ -87,6 +82,7 @@ namespace DotNext.Threading
             {
                 if (task is null)
                 {
+                    Debug.Assert(factory is not null);
                     var t = factory.Invoke();
                     if (!resettable)
                         t = t.ContinueWith(RemoveFactory, default, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);

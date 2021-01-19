@@ -90,11 +90,14 @@ namespace DotNext.Buffers
         /// <returns>The array allocator.</returns>
         public static MemoryAllocator<T> CreateArrayAllocator<T>()
         {
-            // TODO: Should be replaced with GC.AllocateUninitializedArray
             return AllocateArray;
 
             static MemoryOwner<T> AllocateArray(int length)
+#if NETSTANDARD2_1
                 => new MemoryOwner<T>(OneDimensionalArray.New<T>(length));
+#else
+                => new MemoryOwner<T>(GC.AllocateUninitializedArray<T>(length, false));
+#endif
         }
     }
 }

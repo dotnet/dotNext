@@ -27,10 +27,8 @@ namespace DotNext.Metaprogramming
         /// <inheritdoc/>
         void IDisposable.Dispose()
         {
-            if (!(loop is null))
-            {
+            if (loop is not null)
                 loop.Target = null;
-            }
         }
     }
 }

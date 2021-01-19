@@ -26,16 +26,6 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="exprTree">Expression tree.</param>
         /// <typeparam name="TMember">Type of member to reflect.</typeparam>
-        /// <returns>Reflected member; or <see langword="null"/>, if lambda expression doesn't reference a member.</returns>
-        [Obsolete("Use overloaded generic method that allows to specify delegate type explicitly")]
-        public static TMember? MemberOf<TMember>(Expression<Action> exprTree)
-            where TMember : MemberInfo => MemberOf<TMember, Action>(exprTree);
-
-        /// <summary>
-        /// Extracts member metadata from expression tree.
-        /// </summary>
-        /// <param name="exprTree">Expression tree.</param>
-        /// <typeparam name="TMember">Type of member to reflect.</typeparam>
         /// <typeparam name="TDelegate">The type of lambda expression.</typeparam>
         /// <returns>Reflected member; or <see langword="null"/>, if lambda expression doesn't reference a member.</returns>
         public static TMember? MemberOf<TMember, TDelegate>(Expression<TDelegate> exprTree)
@@ -89,27 +79,11 @@ namespace DotNext.Reflection
         /// </remarks>
         /// <param name="field">The field to unreflect.</param>
         /// <param name="flags">Describes the access to the field using invoker.</param>
-        /// <returns>The delegate that can be used to access field value.</returns>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="flags"/> is invalid.</exception>
-        /// <exception cref="NotSupportedException">The type of <paramref name="field"/> is ref-like value type.</exception>
-        public static DynamicInvoker Unreflect(this FieldInfo field, BindingFlags flags = BindingFlags.GetField | BindingFlags.SetField)
-            => Unreflect(field, false, flags);  // TODO: Must be merged into single method with optional volatileAccess parameter
-
-        /// <summary>
-        /// Creates dynamic invoker for the field.
-        /// </summary>
-        /// <remarks>
-        /// This method doesn't cache the result so the caller is responsible for storing delegate to the field or cache.
-        /// <paramref name="flags"/> supports the following combination of values: <see cref="BindingFlags.GetField"/>, <see cref="BindingFlags.SetField"/> or
-        /// both.
-        /// </remarks>
-        /// <param name="field">The field to unreflect.</param>
         /// <param name="volatileAccess"><see langword="true"/> to generate volatile access to the field.</param>
-        /// <param name="flags">Describes the access to the field using invoker.</param>
         /// <returns>The delegate that can be used to access field value.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="flags"/> is invalid.</exception>
         /// <exception cref="NotSupportedException">The type of <paramref name="field"/> is ref-like value type.</exception>
-        public static DynamicInvoker Unreflect(this FieldInfo field, bool volatileAccess, BindingFlags flags = BindingFlags.GetField | BindingFlags.SetField)
+        public static DynamicInvoker Unreflect(this FieldInfo field, BindingFlags flags = BindingFlags.GetField | BindingFlags.SetField, bool volatileAccess = false)
         {
             if (field.FieldType.IsByRefLike)
                 throw new NotSupportedException();
@@ -129,8 +103,8 @@ namespace DotNext.Reflection
         /// <param name="method">The method to unreflect.</param>
         /// <returns>The delegate that can be used to invoke the method.</returns>
         /// <exception cref="NotSupportedException">The type of parameter or return type is ref-like value type.</exception>
-        public static DynamicInvoker Unreflect(this MethodInfo method)
-            => Unreflect(method, Expression.Call);
+        public static unsafe DynamicInvoker Unreflect(this MethodInfo method)
+            => Unreflect(method, &Expression.Call);
 
         /// <summary>
         /// Creates dynamic invoker for the constructor.
@@ -138,9 +112,9 @@ namespace DotNext.Reflection
         /// <param name="ctor">The constructor to unreflect.</param>
         /// <returns>The delegate that can be used to create an object instance.</returns>
         /// <exception cref="NotSupportedException">The type of parameter is ref-like value type.</exception>
-        public static DynamicInvoker Unreflect(this ConstructorInfo ctor)
+        public static unsafe DynamicInvoker Unreflect(this ConstructorInfo ctor)
         {
-            return Unreflect(ctor, New);
+            return Unreflect(ctor, &New);
 
             static Expression New(Expression? thisArg, ConstructorInfo ctor, IEnumerable<Expression> args)
                 => Expression.New(ctor, args);

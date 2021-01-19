@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using static System.Buffers.Binary.BinaryPrimitives;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
@@ -23,22 +22,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             var reader = new SpanReader<byte>(payload);
 
-            remotePort = ReadUInt16LittleEndian(reader.Read(sizeof(ushort)));
-            term = ReadInt64LittleEndian(reader.Read(sizeof(long)));
-            prevLogIndex = ReadInt64LittleEndian(reader.Read(sizeof(long)));
-            prevLogTerm = ReadInt64LittleEndian(reader.Read(sizeof(long)));
-            commitIndex = ReadInt64LittleEndian(reader.Read(sizeof(long)));
+            remotePort = reader.ReadUInt16(true);
+            term = reader.ReadInt64(true);
+            prevLogIndex = reader.ReadInt64(true);
+            prevLogTerm = reader.ReadInt64(true);
+            commitIndex = reader.ReadInt64(true);
         }
 
         private int CreateOutboundMessage(Span<byte> payload)
         {
             var writer = new SpanWriter<byte>(payload);
 
-            WriteUInt16LittleEndian(writer.Slide(sizeof(ushort)), myPort);
-            WriteInt64LittleEndian(writer.Slide(sizeof(long)), currentTerm);
-            WriteInt64LittleEndian(writer.Slide(sizeof(long)), prevLogIndex);
-            WriteInt64LittleEndian(writer.Slide(sizeof(long)), prevLogTerm);
-            WriteInt64LittleEndian(writer.Slide(sizeof(long)), commitIndex);
+            writer.WriteUInt16(myPort, true);
+            writer.WriteInt64(currentTerm, true);
+            writer.WriteInt64(prevLogIndex, true);
+            writer.WriteInt64(prevLogTerm, true);
+            writer.WriteInt64(commitIndex, true);
 
             return writer.WrittenCount;
         }

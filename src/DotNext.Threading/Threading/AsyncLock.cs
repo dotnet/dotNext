@@ -96,7 +96,7 @@ namespace DotNext.Threading
             /// </summary>
             /// <param name="holder">The lock holder.</param>
             /// <returns><see langword="true"/>, if the object holds successfully acquired lock; otherwise, <see langword="false"/>.</returns>
-            public static implicit operator bool(in Holder holder) => !(holder.lockedObject is null);
+            public static implicit operator bool(in Holder holder) => holder.lockedObject is not null;
         }
 
         private readonly object lockedObject;
@@ -315,19 +315,22 @@ namespace DotNext.Threading
             return result;
         }
 
-        /// <summary>
-        /// Determines whether this lock object is the same as other lock.
-        /// </summary>
-        /// <param name="other">Other lock to compare.</param>
-        /// <returns><see langword="true"/> if this lock is the same as the specified lock; otherwise, <see langword="false"/>.</returns>
-        public readonly bool Equals(AsyncLock other) => type == other.type && ReferenceEquals(lockedObject, other.lockedObject) && owner == other.owner;
+        private readonly bool Equals(in AsyncLock other)
+            => type == other.type && ReferenceEquals(lockedObject, other.lockedObject) && owner == other.owner;
 
         /// <summary>
         /// Determines whether this lock object is the same as other lock.
         /// </summary>
         /// <param name="other">Other lock to compare.</param>
         /// <returns><see langword="true"/> if this lock is the same as the specified lock; otherwise, <see langword="false"/>.</returns>
-        public override readonly bool Equals(object? other) => other is AsyncLock @lock && Equals(@lock);
+        public readonly bool Equals(AsyncLock other) => Equals(in other);
+
+        /// <summary>
+        /// Determines whether this lock object is the same as other lock.
+        /// </summary>
+        /// <param name="other">Other lock to compare.</param>
+        /// <returns><see langword="true"/> if this lock is the same as the specified lock; otherwise, <see langword="false"/>.</returns>
+        public override readonly bool Equals(object? other) => other is AsyncLock @lock && Equals(in @lock);
 
         /// <summary>
         /// Computes hash code of this lock.
@@ -347,7 +350,8 @@ namespace DotNext.Threading
         /// <param name="first">The first lock to compare.</param>
         /// <param name="second">The second lock to compare.</param>
         /// <returns><see langword="true"/>, if both are the same; otherwise, <see langword="false"/>.</returns>
-        public static bool operator ==(in AsyncLock first, in AsyncLock second) => ReferenceEquals(first.lockedObject, second.lockedObject) && first.type == second.type && first.owner == second.owner;
+        public static bool operator ==(in AsyncLock first, in AsyncLock second)
+            => first.Equals(in second);
 
         /// <summary>
         /// Determines whether two locks are not the same.
@@ -355,6 +359,7 @@ namespace DotNext.Threading
         /// <param name="first">The first lock to compare.</param>
         /// <param name="second">The second lock to compare.</param>
         /// <returns><see langword="true"/>, if both are not the same; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(in AsyncLock first, in AsyncLock second) => !ReferenceEquals(first.lockedObject, second.lockedObject) || first.type != second.type || first.owner != second.owner;
+        public static bool operator !=(in AsyncLock first, in AsyncLock second)
+            => !first.Equals(in second);
     }
 }

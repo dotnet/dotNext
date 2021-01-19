@@ -17,7 +17,7 @@ namespace DotNext.Threading
     public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     {
         [StructLayout(LayoutKind.Auto)]
-        private struct LockManager : ILockManager<WaitNode>
+        private readonly struct LockManager : ILockManager<WaitNode>
         {
             bool ILockManager<WaitNode>.TryAcquire() => false;
 
@@ -25,7 +25,7 @@ namespace DotNext.Threading
                 => tail is null ? new WaitNode() : new WaitNode(tail);
         }
 
-        private abstract class ConditionalNode : WaitNode
+        private abstract class ConditionalNode : WaitNode, ISupplier<object, bool>
         {
             private protected ConditionalNode()
             {
@@ -36,7 +36,7 @@ namespace DotNext.Threading
             {
             }
 
-            internal abstract bool CheckCondition(object state);
+            public abstract bool Invoke(object state);
         }
 
         private sealed class WaitNode<TState> : ConditionalNode
@@ -49,7 +49,7 @@ namespace DotNext.Threading
             internal WaitNode(Predicate<TState> condition, WaitNode tail)
                 : base(tail) => predicate = condition;
 
-            internal override bool CheckCondition(object state)
+            public override bool Invoke(object state)
                 => state is TState typedState && predicate(typedState);
         }
 
@@ -79,12 +79,12 @@ namespace DotNext.Threading
         private void ResumePendingCallers()
         {
             // triggers only stateless nodes
-            for (WaitNode? current = head, next; !(current is null); current = next)
+            for (WaitNode? current = head, next; current is not null; current = next)
             {
                 next = current.Next;
                 if (IsExactTypeOf<WaitNode>(current))
                 {
-                    current.Complete();
+                    current.SetResult();
                     RemoveNode(current);
                 }
             }
@@ -94,12 +94,12 @@ namespace DotNext.Threading
         private void ResumePendingCallers<TState>(TState state)
             where TState : class
         {
-            for (WaitNode? current = head, next; !(current is null); current = next)
+            for (WaitNode? current = head, next; current is not null; current = next)
             {
                 next = current.Next;
-                if (!(current is ConditionalNode conditional) || conditional.CheckCondition(state))
+                if (current is not ConditionalNode conditional || conditional.Invoke(state))
                 {
-                    current.Complete();
+                    current.SetResult();
                     RemoveNode(current);
                 }
             }
@@ -172,7 +172,7 @@ namespace DotNext.Threading
         bool IAsyncEvent.Signal()
         {
             ThrowIfDisposed();
-            var queueNotEmpty = head != null;
+            var queueNotEmpty = head is not null;
             ResumePendingCallers();
             return queueNotEmpty;
         }

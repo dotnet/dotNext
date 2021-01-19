@@ -7,6 +7,7 @@ using static System.Threading.Timeout;
 
 namespace DotNext.Threading
 {
+    using Runtime;
     using Runtime.CompilerServices;
 
     /// <summary>
@@ -89,12 +90,12 @@ namespace DotNext.Threading
                 ReadLocks = 0L;
             }
 
-            internal long Version => version.VolatileRead();
+            internal readonly long Version => version.VolatileRead();
 
             internal void IncrementVersion() => version.IncrementAndGet();
 
             // write lock management
-            WriteLockNode ILockManager<WriteLockNode>.CreateNode(WaitNode? node) => node is null ? new WriteLockNode() : new WriteLockNode(node);
+            readonly WriteLockNode ILockManager<WriteLockNode>.CreateNode(WaitNode? node) => node is null ? new WriteLockNode() : new WriteLockNode(node);
 
             bool ILockManager<WriteLockNode>.TryAcquire()
             {
@@ -113,7 +114,7 @@ namespace DotNext.Threading
             }
 
             // read lock management
-            ReadLockNode ILockManager<ReadLockNode>.CreateNode(WaitNode? node) => node is null ? new ReadLockNode() : new ReadLockNode(node);
+            readonly ReadLockNode ILockManager<ReadLockNode>.CreateNode(WaitNode? node) => node is null ? new ReadLockNode() : new ReadLockNode(node);
 
             bool ILockManager<ReadLockNode>.TryAcquire()
             {
@@ -124,7 +125,7 @@ namespace DotNext.Threading
             }
 
             // upgradeable read lock management
-            UpgradeableReadLockNode ILockManager<UpgradeableReadLockNode>.CreateNode(WaitNode? node) => node is null ? new UpgradeableReadLockNode() : new UpgradeableReadLockNode(node);
+            readonly UpgradeableReadLockNode ILockManager<UpgradeableReadLockNode>.CreateNode(WaitNode? node) => node is null ? new UpgradeableReadLockNode() : new UpgradeableReadLockNode(node);
 
             bool ILockManager<UpgradeableReadLockNode>.TryAcquire()
             {
@@ -143,18 +144,18 @@ namespace DotNext.Threading
         public readonly struct LockStamp : IEquatable<LockStamp>
         {
             private readonly long version;
-            private readonly Box<State> state;
+            private readonly bool valid;
 
-            internal LockStamp(Box<State> state)
+            internal LockStamp(in State state)
             {
-                version = state.Value.Version;
-                this.state = state;
+                version = state.Version;
+                valid = true;
             }
 
-            /// <summary>
-            /// Determines whether the version of internal lock state is not outdated.
-            /// </summary>
-            public bool IsValid => !state.IsEmpty && state.Value.Version == version;
+            internal bool IsValid(in State state)
+                => valid && state.Version == version;
+
+            private bool Equals(in LockStamp other) => version == other.version && valid == other.valid;
 
             /// <summary>
             /// Determines whether this stamp represents the same version of the lock state
@@ -162,7 +163,7 @@ namespace DotNext.Threading
             /// </summary>
             /// <param name="other">The lock stamp to compare.</param>
             /// <returns><see langword="true"/> of this stamp is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-            public bool Equals(LockStamp other) => state == other.state && version == other.version;
+            public bool Equals(LockStamp other) => Equals(in other);
 
             /// <summary>
             /// Determines whether this stamp represents the same version of the lock state
@@ -170,13 +171,13 @@ namespace DotNext.Threading
             /// </summary>
             /// <param name="other">The lock stamp to compare.</param>
             /// <returns><see langword="true"/> of this stamp is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-            public override bool Equals(object? other) => other is LockStamp stamp && Equals(stamp);
+            public override bool Equals(object? other) => other is LockStamp stamp && Equals(in stamp);
 
             /// <summary>
             /// Computes hash code for this stamp.
             /// </summary>
             /// <returns>The hash code of this stamp.</returns>
-            public override int GetHashCode() => HashCode.Combine(state, version);
+            public override int GetHashCode() => HashCode.Combine(valid, version);
 
             /// <summary>
             /// Determines whether the first stamp represents the same version of the lock state
@@ -186,7 +187,7 @@ namespace DotNext.Threading
             /// <param name="second">The second lock stamp to compare.</param>
             /// <returns><see langword="true"/> of <paramref name="first"/> stamp is equal to <paramref name="second"/>; otherwise, <see langword="false"/>.</returns>
             public static bool operator ==(in LockStamp first, in LockStamp second)
-                => first.state == second.state && first.version == second.version;
+                => first.Equals(in second);
 
             /// <summary>
             /// Determines whether the first stamp represents the different version of the lock state
@@ -196,7 +197,7 @@ namespace DotNext.Threading
             /// <param name="second">The second lock stamp to compare.</param>
             /// <returns><see langword="true"/> of <paramref name="first"/> stamp is not equal to <paramref name="second"/>; otherwise, <see langword="false"/>.</returns>
             public static bool operator !=(in LockStamp first, in LockStamp second)
-                => first.state != second.state || first.version != second.version;
+                => !first.Equals(in second);
         }
 
         private readonly Box<State> state;
@@ -209,7 +210,7 @@ namespace DotNext.Threading
         /// <summary>
         /// Gets the total number of unique readers.
         /// </summary>
-        public long CurrentReadCount => AtomicInt64.VolatileRead(ref state.Value.ReadLocks);
+        public long CurrentReadCount => AtomicInt64.VolatileRead(in state.Value.ReadLocks);
 
         /// <summary>
         /// Gets a value that indicates whether the read lock taken.
@@ -242,8 +243,16 @@ namespace DotNext.Threading
         public LockStamp TryOptimisticRead()
         {
             ThrowIfDisposed();
-            return state.Value.WriteLock ? new LockStamp() : new LockStamp(state);
+            ref State state = ref this.state.Value;
+            return state.WriteLock ? new LockStamp() : new LockStamp(in state);
         }
+
+        /// <summary>
+        /// Returns <see langword="true"/> if the lock has not been exclusively acquired since issuance of the given stamp.
+        /// </summary>
+        /// <param name="stamp">A stamp to check.</param>
+        /// <returns><see langword="true"/> if the lock has not been exclusively acquired since issuance of the given stamp; else <see langword="false"/>.</returns>
+        public bool Validate(in LockStamp stamp) => stamp.IsValid(in state.Value);
 
         /// <summary>
         /// Attempts to acquire write lock without blocking.
@@ -255,7 +264,8 @@ namespace DotNext.Threading
         public bool TryEnterWriteLock(in LockStamp stamp)
         {
             ThrowIfDisposed();
-            return stamp.IsValid && TryAcquire<WriteLockNode, State>(ref state.Value);
+            ref State state = ref this.state.Value;
+            return stamp.IsValid(in state) && TryAcquire<WriteLockNode, State>(ref state);
         }
 
         /// <summary>
@@ -419,7 +429,7 @@ namespace DotNext.Threading
         {
             var readLock = head as ReadLockNode;
             ref var currentState = ref state.Value;
-            for (WaitNode? next; !(readLock is null); readLock = next as ReadLockNode)
+            for (WaitNode? next; readLock is not null; readLock = next as ReadLockNode)
             {
                 next = readLock.Next;
 
@@ -433,7 +443,7 @@ namespace DotNext.Threading
                 }
 
                 RemoveNode(readLock);
-                readLock.Complete();
+                readLock.SetResult();
                 currentState.ReadLocks += 1L;
 
                 if (IsTerminalNode(next))
@@ -466,8 +476,9 @@ namespace DotNext.Threading
             if (--currentState.ReadLocks == 0L && head is WriteLockNode writeLock)
             {
                 RemoveNode(writeLock);
-                writeLock.Complete();
+                writeLock.SetResult();
                 currentState.WriteLock = true;
+                currentState.IncrementVersion();
             }
             else
             {
@@ -497,7 +508,7 @@ namespace DotNext.Threading
             if (head is WriteLockNode writeLock)
             {
                 RemoveNode(writeLock);
-                writeLock.Complete();
+                writeLock.SetResult();
             }
             else
             {
@@ -526,8 +537,9 @@ namespace DotNext.Threading
             if (!ProcessDisposeQueue() && --currentState.ReadLocks == 0L && head is WriteLockNode writeLock)
             {
                 RemoveNode(writeLock);
-                writeLock.Complete();
+                writeLock.SetResult();
                 currentState.WriteLock = true;
+                currentState.IncrementVersion();
             }
         }
 
@@ -539,11 +551,11 @@ namespace DotNext.Threading
         /// Otherwise, it waits for calling of <see cref="ExitReadLock"/>,  method.
         /// </remarks>
         /// <returns>The task representing graceful shutdown of this lock.</returns>
-        public ValueTask DisposeAsync()
+        public unsafe ValueTask DisposeAsync()
         {
-            static bool IsLockHeld(AsyncReaderWriterLock rwLock) => rwLock.IsReadLockHeld || rwLock.IsWriteLockHeld;
+            return IsDisposed ? new ValueTask() : DisposeAsync(this, &IsLockHeld);
 
-            return IsDisposed ? new ValueTask() : DisposeAsync(this, IsLockHeld);
+            static bool IsLockHeld(AsyncReaderWriterLock rwLock) => rwLock.IsReadLockHeld || rwLock.IsWriteLockHeld;
         }
     }
 }

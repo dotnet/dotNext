@@ -12,7 +12,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
         }
 
-        internal MemberMetadata()
+        public MemberMetadata()
             : base(StringComparer.Ordinal)
         {
         }

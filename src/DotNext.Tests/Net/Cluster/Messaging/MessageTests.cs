@@ -34,22 +34,13 @@ namespace DotNext.Net.Cluster.Messaging
                 await message.WriteToAsync(pipe.Writer).ConfigureAwait(false);
                 pipe.Writer.Complete();
             });
-            var content = new MemoryStream();
-            while (true)
-            {
-                var read = await pipe.Reader.ReadAsync().ConfigureAwait(false);
-                foreach (var chunk in read.Buffer)
-                    await content.WriteAsync(chunk).ConfigureAwait(false);
-                pipe.Reader.AdvanceTo(read.Buffer.End);
-                if (read.IsCompleted)
-                    break;
-            }
+            using var content = new MemoryStream();
+            await pipe.Reader.CopyToAsync(content);
             content.Seek(0, SeekOrigin.Begin);
             using (var reader = new StreamReader(content, Encoding.UTF8, false, 1024, true))
             {
                 Equal("Hello, world!", reader.ReadToEnd());
             }
-            content.Dispose();
         }
 
         [Fact]
@@ -63,22 +54,46 @@ namespace DotNext.Net.Cluster.Messaging
                 await message.WriteToAsync(pipe.Writer).ConfigureAwait(false);
                 pipe.Writer.Complete();
             });
-            var content = new MemoryStream();
-            while (true)
-            {
-                var read = await pipe.Reader.ReadAsync().ConfigureAwait(false);
-                foreach (var chunk in read.Buffer)
-                    await content.WriteAsync(chunk).ConfigureAwait(false);
-                pipe.Reader.AdvanceTo(read.Buffer.End);
-                if (read.IsCompleted)
-                    break;
-            }
+            using var content = new MemoryStream();
+            await pipe.Reader.CopyToAsync(content);
             content.Seek(0, SeekOrigin.Begin);
             using (var reader = new StreamReader(content, Encoding.UTF8, false, 1024, true))
             {
                 Equal("abcde", reader.ReadToEnd());
             }
-            content.Dispose();
         }
+
+        public sealed class JsonObject
+        {
+            public string Message { get; set; }
+
+            public int Arg { get; set; }
+        }
+
+#if !NETCOREAPP3_1
+        [Fact]
+        public static async Task JsonMessageSerialization()
+        {
+            var pipe = new Pipe();
+            IMessage message = new JsonMessage<JsonObject>("JsonObj", new JsonObject { Message = "Hello, world!", Arg = 42 });
+            ThreadPool.QueueUserWorkItem(async state =>
+            {
+                await message.WriteToAsync(pipe.Writer).ConfigureAwait(false);
+                pipe.Writer.Complete();
+            });
+
+            JsonObject obj;
+            using (var content = new MemoryStream())
+            {
+                await pipe.Reader.CopyToAsync(content);
+                content.Seek(0, SeekOrigin.Begin);
+                MessageReader<JsonObject> reader = JsonMessage<JsonObject>.FromJsonAsync;
+                obj = await reader(new StreamMessage(content, true, "JsonObj"), CancellationToken.None);
+            }
+
+            Equal("Hello, world!", obj.Message);
+            Equal(42, obj.Arg);
+        }
+#endif
     }
 }

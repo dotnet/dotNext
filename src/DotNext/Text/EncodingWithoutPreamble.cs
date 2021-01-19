@@ -121,7 +121,7 @@ namespace DotNext.Text
         public override string GetString(byte[] bytes, int index, int count)
             => encoding.GetString(bytes, index, count);
 
-        public override string ToString() => encoding.ToString();
+        public override string? ToString() => encoding.ToString();
 
         public override bool Equals(object? other)
             => other is EncodingWithoutPreamble wrapper ? encoding.Equals(wrapper.encoding) : encoding.Equals(other);

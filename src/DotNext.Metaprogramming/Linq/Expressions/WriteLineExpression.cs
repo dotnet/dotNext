@@ -64,7 +64,7 @@ namespace DotNext.Linq.Expressions
 
             // WriteLine method will always be resolved here because Type.DefaultBinder
             // chooses TextWriter.WriteLine(object) if there is no exact match
-            System.Diagnostics.Debug.Assert(!(writeLineMethod is null));
+            System.Diagnostics.Debug.Assert(writeLineMethod is not null);
             var firstParam = writeLineMethod.GetParameters()[0].ParameterType;
             if (firstParam != value.Type && value.Type.IsValueType)
                 value = Expression.Convert(value, typeof(object));
@@ -75,18 +75,21 @@ namespace DotNext.Linq.Expressions
         private MethodCallExpression WriteLineToOut()
         {
             var outProperty = typeof(Console).GetProperty(nameof(Console.Out));
+            System.Diagnostics.Debug.Assert(outProperty is not null);
             return WriteLineTo(Property(null, outProperty), value);
         }
 
         private MethodCallExpression WriteLineToError()
         {
             var outProperty = typeof(Console).GetProperty(nameof(Console.Error));
+            System.Diagnostics.Debug.Assert(outProperty is not null);
             return WriteLineTo(Property(null, outProperty), value);
         }
 
         private MethodCallExpression WriteLineToDebug()
         {
             var writeLineMethod = typeof(System.Diagnostics.Debug).GetMethod(nameof(System.Diagnostics.Debug.WriteLine), new[] { typeof(object) });
+            System.Diagnostics.Debug.Assert(writeLineMethod is not null);
             return Call(writeLineMethod, value.Type.IsValueType ? Convert(value, typeof(object)) : value);
         }
 
@@ -95,19 +98,12 @@ namespace DotNext.Linq.Expressions
         /// using Lowering technique.
         /// </summary>
         /// <returns>Translated expression.</returns>
-        public override Expression Reduce()
+        public override Expression Reduce() => kind switch
         {
-            switch (kind)
-            {
-                case Kind.Out:
-                    return WriteLineToOut();
-                case Kind.Error:
-                    return WriteLineToError();
-                case Kind.Debug:
-                    return WriteLineToDebug();
-                default:
-                    return Empty();
-            }
-        }
+            Kind.Out => WriteLineToOut(),
+            Kind.Error => WriteLineToError(),
+            Kind.Debug => WriteLineToDebug(),
+            _ => Empty(),
+        };
     }
 }

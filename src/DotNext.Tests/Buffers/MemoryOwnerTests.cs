@@ -60,13 +60,6 @@ namespace DotNext.Buffers
         }
 
         [Fact]
-        public static void UsingArrayRental()
-        {
-            using MemoryOwner<byte> owner = new ArrayRental<byte>(20);
-            Equal(20, owner.Memory.Length);
-        }
-
-        [Fact]
         public static void WrapArray()
         {
             var array = new byte[42];

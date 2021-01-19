@@ -21,7 +21,7 @@ namespace DotNext.Reflection
         public static Type? GetItemType(this Type collectionType, out Type? enumerableInterface)
         {
             enumerableInterface = collectionType.FindGenericInstance(typeof(IEnumerable<>));
-            if (!(enumerableInterface is null))
+            if (enumerableInterface is not null)
                 return enumerableInterface.GetGenericArguments()[0];
 
             if (typeof(IEnumerable).IsAssignableFrom(collectionType))
@@ -32,7 +32,7 @@ namespace DotNext.Reflection
 
             // handle async enumerable type
             enumerableInterface = collectionType.FindGenericInstance(typeof(IAsyncEnumerable<>));
-            if (!(enumerableInterface is null))
+            if (enumerableInterface is not null)
                 return enumerableInterface.GetGenericArguments()[0];
 
             enumerableInterface = null;
@@ -62,7 +62,7 @@ namespace DotNext.Reflection
             foreach (var collectionType in (typeof(IReadOnlyCollection<>), typeof(ICollection<>)).AsReadOnlySpan())
             {
                 var instance = type.FindGenericInstance(collectionType);
-                if (!(instance is null))
+                if (instance is not null)
                     return instance;
             }
 

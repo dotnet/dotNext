@@ -26,7 +26,7 @@ namespace DotNext.Threading
             private const byte EndDelayState = 5;
             private readonly CancellationTokenSource cancellation;
             private readonly TimeSpan dueTime, period;
-            private readonly ValueFunc<CancellationToken, Task<bool>> callback;
+            private readonly Func<CancellationToken, Task<bool>> callback;
 
             // state management
             private readonly Action continuation;
@@ -34,7 +34,7 @@ namespace DotNext.Threading
             private ConfiguredTaskAwaitable.ConfiguredTaskAwaiter voidAwaiter;
             private ConfiguredTaskAwaitable<bool>.ConfiguredTaskAwaiter boolAwaiter;
 
-            internal TimerCompletionSource(TimeSpan dueTime, TimeSpan period, ValueFunc<CancellationToken, Task<bool>> callback, CancellationToken token)
+            internal TimerCompletionSource(TimeSpan dueTime, TimeSpan period, Func<CancellationToken, Task<bool>> callback, CancellationToken token)
             {
                 cancellation = CancellationTokenSource.CreateLinkedTokenSource(token);
                 this.dueTime = dueTime;
@@ -128,8 +128,9 @@ namespace DotNext.Threading
             ~TimerCompletionSource() => Dispose(false);
         }
 
-        private readonly ValueFunc<CancellationToken, Task<bool>> callback;
-        [SuppressMessage("Usage", "CA2213", Justification = "It is disposed in Dispose method")]
+        private readonly Func<CancellationToken, Task<bool>> callback;
+
+        [SuppressMessage("Usage", "CA2213", Justification = "Disposed correctly but cannot be recognized by .NET Analyzer")]
         private volatile TimerCompletionSource? timerTask;
         private bool disposeRequested;
 
@@ -139,21 +140,9 @@ namespace DotNext.Threading
         /// <param name="callback">The timer callback.</param>
         /// <exception cref="ArgumentNullException"><paramref name="callback"/> is <see langword="null"/>.</exception>
         /// <exception cref="ArgumentException"><paramref name="callback"/> doesn't refer to any method.</exception>
-        public AsyncTimer(ValueFunc<CancellationToken, Task<bool>> callback)
-        {
-            if (callback.IsEmpty)
-                throw new ArgumentException(ExceptionMessages.EmptyValueDelegate, nameof(callback));
-            this.callback = callback;
-        }
-
-        /// <summary>
-        /// Initializes a new timer.
-        /// </summary>
-        /// <param name="callback">The timer callback.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="callback"/> is <see langword="null"/>.</exception>
         public AsyncTimer(Func<CancellationToken, Task<bool>> callback)
-            : this(new ValueFunc<CancellationToken, Task<bool>>(callback))
         {
+            this.callback = callback ?? throw new ArgumentException(ExceptionMessages.EmptyValueDelegate, nameof(callback));
         }
 
         /// <summary>
@@ -164,7 +153,7 @@ namespace DotNext.Threading
             get
             {
                 var task = timerTask;
-                return task != null && !task.Task.IsCompleted;
+                return task is not null && !task.Task.IsCompleted;
             }
         }
 
@@ -230,7 +219,7 @@ namespace DotNext.Threading
             if (disposing)
             {
                 var timerTask = Interlocked.Exchange(ref this.timerTask, null);
-                if (timerTask != null)
+                if (timerTask is not null)
                 {
                     TrySetDisposedException(timerTask);
                     timerTask.Dispose();
@@ -240,7 +229,7 @@ namespace DotNext.Threading
             base.Dispose(disposing);
         }
 
-        private void Dispose(Task parent, object state)
+        private void Dispose(Task parent, object? state)
         {
             (state as IDisposable)?.Dispose();
             Dispose();

@@ -10,6 +10,7 @@ namespace DotNext
     public sealed class ValueTypeTests : Test
     {
         [Fact]
+        [Obsolete("This test is for checking obsolete member")]
         public static void IntPtrComparison()
         {
             var first = IntPtr.Zero;
@@ -23,6 +24,7 @@ namespace DotNext
         }
 
         [Require64BitProcess]
+        [Obsolete("This test is for checking obsolete member")]
         public static void IntPtrArithmetic()
         {
             var value = new IntPtr(40);
@@ -39,6 +41,7 @@ namespace DotNext
         }
 
         [Require64BitProcess]
+        [Obsolete("This test is for checking obsolete member")]
         public static void UIntPtrArithmetic()
         {
             var value = new UIntPtr(40U);
@@ -54,6 +57,7 @@ namespace DotNext
         }
 
         [Require64BitProcess]
+        [Obsolete("This test is for checking obsolete member")]
         public static void IntPtrArithmeticOverflow()
         {
             var value = new IntPtr(long.MaxValue);
@@ -65,6 +69,7 @@ namespace DotNext
         }
 
         [Require64BitProcess]
+        [Obsolete("This test is for checking obsolete member")]
         public static void UIntPtrArithmeticOverflow()
         {
             var value = new UIntPtr(ulong.MaxValue);
@@ -76,6 +81,7 @@ namespace DotNext
         }
 
         [Fact]
+        [Obsolete("This test is for checking obsolete member")]
         public static void IntPtrBitwiseOperations()
         {
             Equal(default, new IntPtr(1).And(default));
@@ -89,6 +95,7 @@ namespace DotNext
         }
 
         [Fact]
+        [Obsolete("This test is for checking obsolete member")]
         public static void UIntPtrBitwiseOperations()
         {
             Equal(default, new UIntPtr(1U).And(default));
@@ -102,6 +109,7 @@ namespace DotNext
         }
 
         [Fact]
+        [Obsolete("This test is for checking obsolete member")]
         public static void UIntPtrComparison()
         {
             True(new UIntPtr(10).GreaterThan(new UIntPtr(9)));
@@ -114,6 +122,7 @@ namespace DotNext
         }
 
         [Require64BitProcess]
+        [Obsolete("This test is for checking obsolete member")]
         public static void OnesComplement()
         {
             Equal(new UIntPtr(ulong.MaxValue), new UIntPtr().OnesComplement());
@@ -121,6 +130,7 @@ namespace DotNext
         }
 
         [Fact]
+        [Obsolete("This test is for checking obsolete member")]
         public static void IntPtrConversion()
         {
             Equal(new UIntPtr(42U), new IntPtr(42).ToUIntPtr());
@@ -244,36 +254,6 @@ namespace DotNext
             True(BitwiseComparer<int>.Compare(0, int.MinValue) < 0);
             IComparer<int> comparer = BitwiseComparer<int>.Instance;
             True(comparer.Compare(0, int.MinValue) < 0);
-        }
-
-        [Fact]
-        public static void NormalNumberCheckForSingle()
-        {
-            var value = default(float);
-            Equal(default, value.EnsureFinite());
-            value = 42F;
-            Equal(42F, value.EnsureFinite());
-            value = float.NaN;
-            ThrowsAny<ArithmeticException>(() => value.EnsureFinite());
-            value = float.PositiveInfinity;
-            ThrowsAny<ArithmeticException>(() => value.EnsureFinite());
-            value = float.NegativeInfinity;
-            ThrowsAny<ArithmeticException>(() => value.EnsureFinite());
-        }
-
-        [Fact]
-        public static void NormalNumberCheckForDouble()
-        {
-            var value = default(double);
-            Equal(default, value.EnsureFinite());
-            value = 42D;
-            Equal(42D, value.EnsureFinite());
-            value = double.NaN;
-            ThrowsAny<ArithmeticException>(() => value.EnsureFinite());
-            value = double.PositiveInfinity;
-            ThrowsAny<ArithmeticException>(() => value.EnsureFinite());
-            value = double.NegativeInfinity;
-            ThrowsAny<ArithmeticException>(() => value.EnsureFinite());
         }
 
         [Fact]

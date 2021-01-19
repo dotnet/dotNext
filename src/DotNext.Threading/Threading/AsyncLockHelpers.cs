@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
@@ -16,7 +15,6 @@ namespace DotNext.Threading
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [SuppressMessage("Reliability", "CA2008", Justification = "Timeout check cannot cause deadlock so Current task scheduler is OK")]
         internal static Task CheckOnTimeout(this Task<bool> continuation)
         {
             Task result;

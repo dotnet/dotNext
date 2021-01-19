@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -110,8 +109,7 @@ namespace DotNext.Reflection
         /// <param name="operand">An operand.</param>
         /// <returns>Result of unary operator.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [return: MaybeNull]
-        public TResult Invoke(in TOperand operand) => Invoker(in operand);
+        public TResult? Invoke(in TOperand operand) => Invoker(in operand);
 
         private static Expression<Operator<TOperand, TResult>>? MakeUnary(Operator.Kind @operator, Operator.Operand operand, out MethodInfo? overloaded)
         {
@@ -119,16 +117,11 @@ namespace DotNext.Reflection
             bool usePrimitiveCast;
 
             // perform automatic cast from byte/short/ushort/sbyte so unary operators become available for these types
-            switch ((ExpressionType)@operator)
+            usePrimitiveCast = (ExpressionType)@operator switch
             {
-                case ExpressionType.Convert:
-                case ExpressionType.ConvertChecked:
-                    usePrimitiveCast = false;
-                    break;
-                default:
-                    usePrimitiveCast = resultType.IsPrimitive && operand.NormalizePrimitive();
-                    break;
-            }
+                ExpressionType.Convert or ExpressionType.ConvertChecked => true,
+                _ => resultType.IsPrimitive && operand.NormalizePrimitive()
+            };
 
             tail_call: // C# doesn't support tail calls so replace it with label/goto
             overloaded = null;

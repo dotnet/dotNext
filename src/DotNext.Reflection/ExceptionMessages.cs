@@ -69,5 +69,7 @@ namespace DotNext
         internal static string StaticFieldExpected => (string)Resources.Get();
 
         internal static string InstanceFieldExpected => (string)Resources.Get();
+
+        internal static string AwaiterMustNotBeNull => (string)Resources.Get();
     }
 }

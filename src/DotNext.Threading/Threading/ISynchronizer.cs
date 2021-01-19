@@ -14,12 +14,12 @@ namespace DotNext.Threading
             {
             }
 
-            internal void Complete() => SetResult(true);
+            internal void SetResult() => SetResult(true);
         }
 
         /// <summary>
-        /// Indicates that one or more asynchronous callers are suspended.
+        /// Indicates that there is one or more suspended callers.
         /// </summary>
-        bool HasWaiters { get; }
+        bool HasAnticipants { get; }
     }
 }

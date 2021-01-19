@@ -13,6 +13,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly CancellationTokenSource trackerCancellation;
         private Task? tracker;
         internal IFollowerStateMetrics? Metrics;
+        private volatile bool timedOut;
 
         internal FollowerState(IRaftStateMachine stateMachine)
             : base(stateMachine)
@@ -21,7 +22,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             trackerCancellation = new CancellationTokenSource();
         }
 
-        private static async Task Track(TimeSpan timeout, IAsyncEvent refreshEvent, Action candidateState, params CancellationToken[] tokens)
+        private async Task Track(TimeSpan timeout, IAsyncEvent refreshEvent, params CancellationToken[] tokens)
         {
             using var tokenSource = CancellationTokenSource.CreateLinkedTokenSource(tokens);
 
@@ -30,8 +31,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
             }
 
+            timedOut = true;
+
             // timeout happened, move to candidate state
-            candidateState();
+            stateMachine.MoveToCandidateState();
         }
 
         internal FollowerState StartServing(TimeSpan timeout, CancellationToken token)
@@ -43,11 +46,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             else
             {
-                tracker = Track(timeout, refreshEvent, stateMachine.MoveToCandidateState, trackerCancellation.Token, token);
+                timedOut = false;
+                tracker = Track(timeout, refreshEvent, trackerCancellation.Token, token);
             }
 
             return this;
         }
+
+        internal bool IsExpired => timedOut;
 
         internal override Task StopAsync()
         {
@@ -69,6 +75,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 refreshEvent.Dispose();
                 trackerCancellation.Dispose();
                 tracker = null;
+                Metrics = null;
             }
 
             base.Dispose(disposing);

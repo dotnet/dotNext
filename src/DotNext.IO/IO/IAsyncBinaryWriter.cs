@@ -9,16 +9,15 @@ using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.IO
 {
-    using static Buffers.BufferReader;
+    using Buffers;
     using static Pipelines.ResultExtensions;
-    using ByteBuffer = Buffers.ArrayRental<byte>;
     using EncodingContext = Text.EncodingContext;
 
     /// <summary>
     /// Providers a uniform way to encode the data.
     /// </summary>
     /// <seealso cref="IAsyncBinaryReader"/>
-    public interface IAsyncBinaryWriter
+    public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
     {
         /// <summary>
         /// Encodes value of blittable type.
@@ -31,12 +30,12 @@ namespace DotNext.IO
         async ValueTask WriteAsync<T>(T value, CancellationToken token = default)
             where T : unmanaged
         {
-            using var buffer = new ByteBuffer(Unsafe.SizeOf<T>());
-            Span.AsReadOnlyBytes(value).CopyTo(buffer.Span);
-            await WriteAsync(buffer.Memory, token).ConfigureAwait(false);
+            using var buffer = BufferWriter.DefaultByteAllocator.Invoke(Unsafe.SizeOf<T>(), true);
+            Span.AsReadOnlyBytes(value).CopyTo(buffer.Memory.Span);
+            await WriteAsync(buffer.Memory, null, token).ConfigureAwait(false);
         }
 
-        private ValueTask WriteAsync<T>(T value, StringLengthEncoding lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+        private ValueTask WriteAsync<T>(T value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
             where T : struct, IFormattable
             => WriteAsync(value.ToString(format, provider).AsMemory(), context, lengthFormat, token);
 
@@ -65,7 +64,7 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        ValueTask WriteInt64Async(long value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        ValueTask WriteInt64Async(long value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync(value, lengthFormat, context, format, provider, token);
 
         /// <summary>
@@ -93,7 +92,7 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        ValueTask WriteInt32Async(int value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        ValueTask WriteInt32Async(int value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync(value, lengthFormat, context, format, provider, token);
 
         /// <summary>
@@ -121,7 +120,7 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        ValueTask WriteInt16Async(short value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        ValueTask WriteInt16Async(short value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync(value, lengthFormat, context, format, provider, token);
 
         /// <summary>
@@ -135,7 +134,7 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        ValueTask WriteByteAsync(byte value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        ValueTask WriteByteAsync(byte value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync(value, lengthFormat, context, format, provider, token);
 
         /// <summary>
@@ -149,7 +148,7 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        ValueTask WriteDecimalAsync(decimal value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        ValueTask WriteDecimalAsync(decimal value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync(value, lengthFormat, context, format, provider, token);
 
         /// <summary>
@@ -163,7 +162,7 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        ValueTask WriteSingleAsync(float value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        ValueTask WriteSingleAsync(float value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync(value, lengthFormat, context, format, provider, token);
 
         /// <summary>
@@ -177,7 +176,7 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        ValueTask WriteDoubleAsync(double value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        ValueTask WriteDoubleAsync(double value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync(value, lengthFormat, context, format, provider, token);
 
         /// <summary>
@@ -190,7 +189,7 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        ValueTask WriteGuidAsync(Guid value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, CancellationToken token = default)
+        ValueTask WriteGuidAsync(Guid value, LengthFormat lengthFormat, EncodingContext context, string? format = null, CancellationToken token = default)
             => WriteAsync(value.ToString(format, InvariantCulture).AsMemory(), context, lengthFormat, token);
 
         /// <summary>
@@ -204,7 +203,7 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        ValueTask WriteDateTimeAsync(DateTime value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        ValueTask WriteDateTimeAsync(DateTime value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync(value, lengthFormat, context, format, provider, token);
 
         /// <summary>
@@ -218,7 +217,7 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        ValueTask WriteDateTimeOffsetAsync(DateTimeOffset value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        ValueTask WriteDateTimeOffsetAsync(DateTimeOffset value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync(value, lengthFormat, context, format, provider, token);
 
         /// <summary>
@@ -232,17 +231,40 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        ValueTask WriteTimeSpanAsync(TimeSpan value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        ValueTask WriteTimeSpanAsync(TimeSpan value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync(value, lengthFormat, context, format, provider, token);
 
         /// <summary>
-        /// Encodes a block of memory.
+        /// Encodes a block of memory, optionally prefixed with the length encoded as a sequence of bytes
+        /// according with the specified format.
         /// </summary>
         /// <param name="input">A block of memory.</param>
+        /// <param name="lengthFormat">Indicates how the length of the BLOB must be encoded; or <see langword="null"/> to prevent length encoding.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        ValueTask WriteAsync(ReadOnlyMemory<byte> input, CancellationToken token = default);
+        ValueTask WriteAsync(ReadOnlyMemory<byte> input, LengthFormat? lengthFormat = null, CancellationToken token = default);
+
+        /// <inheritdoc />
+        ValueTask ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<byte> input, CancellationToken token)
+            => WriteAsync(input, null, token);
+
+        /// <summary>
+        /// Encodes a block of memory using synchronous encoder.
+        /// </summary>
+        /// <param name="writer">The writer of the in-memory buffer.</param>
+        /// <param name="arg">The argument to be passed to the writer.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <typeparam name="TArg">The type of the argument to be passed to the encoder.</typeparam>
+        /// <returns>The task representing state of asynchronous execution.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        async ValueTask WriteAsync<TArg>(Action<TArg, IBufferWriter<byte>> writer, TArg arg, CancellationToken token = default)
+        {
+            using var buffer = new PooledArrayBufferWriter<byte>();
+            writer(arg, buffer);
+            if (buffer.WrittenCount > 0)
+                await WriteAsync(buffer.WrittenMemory, null, token).ConfigureAwait(false);
+        }
 
         /// <summary>
         /// Encodes a block of characters using the specified encoding.
@@ -254,7 +276,7 @@ namespace DotNext.IO
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        ValueTask WriteAsync(ReadOnlyMemory<char> chars, EncodingContext context, StringLengthEncoding? lengthFormat, CancellationToken token = default);
+        ValueTask WriteAsync(ReadOnlyMemory<char> chars, EncodingContext context, LengthFormat? lengthFormat, CancellationToken token = default);
 
         /// <summary>
         /// Writes the content from the specified stream.
@@ -266,9 +288,9 @@ namespace DotNext.IO
         async Task CopyFromAsync(Stream input, CancellationToken token = default)
         {
             const int defaultBufferSize = 512;
-            using var buffer = new ByteBuffer(defaultBufferSize);
+            using var buffer = BufferWriter.DefaultByteAllocator.Invoke(defaultBufferSize, false);
             for (int count; (count = await input.ReadAsync(buffer.Memory, token).ConfigureAwait(false)) > 0; )
-                await WriteAsync(buffer.Memory.Slice(0, count), token).ConfigureAwait(false);
+                await WriteAsync(buffer.Memory.Slice(0, count), null, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -287,7 +309,7 @@ namespace DotNext.IO
                 result.ThrowIfCancellationRequested();
                 var buffer = result.Buffer;
                 for (SequencePosition position = buffer.Start; buffer.TryGet(ref position, out var block); input.AdvanceTo(position))
-                    await WriteAsync(block, token).ConfigureAwait(false);
+                    await WriteAsync(block, null, token).ConfigureAwait(false);
             }
             while (!result.IsCompleted);
         }
@@ -302,7 +324,7 @@ namespace DotNext.IO
         async Task WriteAsync(ReadOnlySequence<byte> input, CancellationToken token = default)
         {
             foreach (var segment in input)
-                await WriteAsync(segment, token).ConfigureAwait(false);
+                await WriteAsync(segment, null, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -320,7 +342,7 @@ namespace DotNext.IO
         async Task CopyFromAsync<TArg>(Func<TArg, CancellationToken, ValueTask<ReadOnlyMemory<byte>>> supplier, TArg arg, CancellationToken token = default)
         {
             for (ReadOnlyMemory<byte> source; !(source = await supplier(arg, token).ConfigureAwait(false)).IsEmpty; )
-                await WriteAsync(source, token).ConfigureAwait(false);
+                await WriteAsync(source, null, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -337,7 +359,7 @@ namespace DotNext.IO
         /// <exception cref="ArgumentNullException"><paramref name="output"/> is <see langword="null"/>.</exception>
         /// <exception cref="ArgumentException"><paramref name="buffer"/> is empty.</exception>
         public static IAsyncBinaryWriter Create(Stream output, Memory<byte> buffer)
-            => new AsyncStreamBinaryWriter(output, buffer);
+            => new AsyncStreamBinaryAccessor(output, buffer);
 
         /// <summary>
         /// Creates default implementation of binary writer for the pipe.

@@ -11,7 +11,7 @@ namespace DotNext.IO
     /// <remarks>
     /// The segmentation is supported only for seekable streams.
     /// </remarks>
-    public sealed class StreamSegment : Stream
+    public sealed class StreamSegment : Stream, IFlushable
     {
         private readonly bool leaveOpen;
         private long length, position;
@@ -201,7 +201,7 @@ namespace DotNext.IO
             => new ValueTask(Task.FromException(new NotSupportedException()));
 
         /// <inheritdoc/>
-        public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
+        public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
             => throw new NotSupportedException();
 
         /// <inheritdoc/>

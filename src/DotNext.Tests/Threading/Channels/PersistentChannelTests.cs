@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
@@ -10,27 +8,24 @@ using Xunit;
 
 namespace DotNext.Threading.Channels
 {
+    using static IO.StreamExtensions;
+
     [ExcludeFromCodeCoverage]
     public sealed class PersistentChannelTests : Test
     {
         private sealed class SerializationChannel<T> : PersistentChannel<T, T>
+            where T : unmanaged
         {
-            private readonly IFormatter formatter;
-
             internal SerializationChannel(PersistentChannelOptions options)
                 : base(options)
             {
-                formatter = new BinaryFormatter();
             }
 
             protected override ValueTask<T> DeserializeAsync(Stream input, CancellationToken token)
-                => new ValueTask<T>((T)formatter.Deserialize(input));
+                => input.ReadAsync<T>(token);
 
             protected override ValueTask SerializeAsync(T input, Stream output, CancellationToken token)
-            {
-                formatter.Serialize(output, input);
-                return new ValueTask();
-            }
+                => output.WriteAsync<T>(input, token);
         }
 
         [Theory]

@@ -18,10 +18,10 @@ namespace DotNext.Collections.Generic
         /// <param name="token">The token that can be used to cancel the enumeration.</param>
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The enumeration has been canceled.</exception>
-        public static async ValueTask ForEachAsync<T>(this IAsyncEnumerable<T> collection, ValueAction<T> action, CancellationToken token = default)
+        public static async ValueTask ForEachAsync<T>(this IAsyncEnumerable<T> collection, Action<T> action, CancellationToken token = default)
         {
             await foreach (var item in collection.WithCancellation(token))
-                action.Invoke(item);
+                action(item);
         }
 
         /// <summary>
@@ -33,35 +33,11 @@ namespace DotNext.Collections.Generic
         /// <param name="token">The token that can be used to cancel the enumeration.</param>
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The enumeration has been canceled.</exception>
-        public static ValueTask ForEachAsync<T>(this IAsyncEnumerable<T> collection, Action<T> action, CancellationToken token = default)
-            => ForEachAsync(collection, new ValueAction<T>(action, true), token);
-
-        /// <summary>
-        /// Applies specified action to each collection element asynchronously.
-        /// </summary>
-        /// <typeparam name="T">Type of elements in the collection.</typeparam>
-        /// <param name="collection">A collection to enumerate. Cannot be <see langword="null"/>.</param>
-        /// <param name="action">An action to applied for each element.</param>
-        /// <param name="token">The token that can be used to cancel the enumeration.</param>
-        /// <returns>The task representing asynchronous execution of this method.</returns>
-        /// <exception cref="OperationCanceledException">The enumeration has been canceled.</exception>
-        public static async ValueTask ForEachAsync<T>(this IAsyncEnumerable<T> collection, ValueFunc<T, CancellationToken, ValueTask> action, CancellationToken token = default)
+        public static async ValueTask ForEachAsync<T>(this IAsyncEnumerable<T> collection, Func<T, CancellationToken, ValueTask> action, CancellationToken token = default)
         {
             await foreach (var item in collection.WithCancellation(token))
-                await action.Invoke(item, token).ConfigureAwait(false);
+                await action(item, token).ConfigureAwait(false);
         }
-
-        /// <summary>
-        /// Applies specified action to each collection element asynchronously.
-        /// </summary>
-        /// <typeparam name="T">Type of elements in the collection.</typeparam>
-        /// <param name="collection">A collection to enumerate. Cannot be <see langword="null"/>.</param>
-        /// <param name="action">An action to applied for each element.</param>
-        /// <param name="token">The token that can be used to cancel the enumeration.</param>
-        /// <returns>The task representing asynchronous execution of this method.</returns>
-        /// <exception cref="OperationCanceledException">The enumeration has been canceled.</exception>
-        public static ValueTask ForEachAsync<T>(this IAsyncEnumerable<T> collection, Func<T, CancellationToken, ValueTask> action, CancellationToken token = default)
-            => ForEachAsync(collection, new ValueFunc<T, CancellationToken, ValueTask>(action, true), token);
 
         /// <summary>
         /// Obtains first value type in the sequence; or <see langword="null"/>
@@ -103,30 +79,17 @@ namespace DotNext.Collections.Generic
         /// <param name="token">The token that can be used to cancel enumeration.</param>
         /// <returns>The first element in the sequence that matches to the specified filter; or empty value.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static async ValueTask<Optional<T>> FirstOrEmptyAsync<T>(this IAsyncEnumerable<T> seq, ValueFunc<T, bool> filter, CancellationToken token = default)
+        public static async ValueTask<Optional<T>> FirstOrEmptyAsync<T>(this IAsyncEnumerable<T> seq, Predicate<T> filter, CancellationToken token = default)
             where T : notnull
         {
             await foreach (var item in seq.WithCancellation(token))
             {
-                if (filter.Invoke(item))
+                if (filter(item))
                     return item;
             }
 
             return Optional<T>.None;
         }
-
-        /// <summary>
-        /// Returns the first element in a sequence that satisfies a specified condition.
-        /// </summary>
-        /// <typeparam name="T">The type of the elements of source.</typeparam>
-        /// <param name="seq">A collection to return an element from.</param>
-        /// <param name="filter">A function to test each element for a condition.</param>
-        /// <param name="token">The token that can be used to cancel enumeration.</param>
-        /// <returns>The first element in the sequence that matches to the specified filter; or empty value.</returns>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<Optional<T>> FirstOrEmptyAsync<T>(this IAsyncEnumerable<T> seq, Predicate<T> filter, CancellationToken token = default)
-            where T : notnull
-            => FirstOrEmptyAsync(seq, filter.AsValueFunc(true), token);
 
         /// <summary>
         /// Bypasses a specified number of elements in a sequence.
@@ -140,10 +103,9 @@ namespace DotNext.Collections.Generic
         {
             while (count > 0)
             {
-                if (await enumerator.MoveNextAsync().ConfigureAwait(false))
-                    count--;
-                else
+                if (!await enumerator.MoveNextAsync().ConfigureAwait(false))
                     return false;
+                count--;
             }
 
             return true;
@@ -160,13 +122,11 @@ namespace DotNext.Collections.Generic
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static async ValueTask<Optional<T>> ElementAtAsync<T>(this IAsyncEnumerable<T> collection, int index, CancellationToken token = default)
         {
-            await using (var enumerator = collection.GetAsyncEnumerator(token))
-            {
-                await enumerator.SkipAsync(index).ConfigureAwait(false);
-                return await enumerator.MoveNextAsync().ConfigureAwait(false) ?
-                    enumerator.Current :
-                    Optional<T>.None;
-            }
+            await using var enumerator = collection.GetAsyncEnumerator(token);
+            await enumerator.SkipAsync(index).ConfigureAwait(false);
+            return await enumerator.MoveNextAsync().ConfigureAwait(false) ?
+                enumerator.Current :
+                Optional<T>.None;
         }
 
         /// <summary>

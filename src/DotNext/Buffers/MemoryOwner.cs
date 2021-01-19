@@ -1,5 +1,6 @@
 using System;
 using System.Buffers;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -11,10 +12,13 @@ namespace DotNext.Buffers
     /// </summary>
     /// <typeparam name="T">The type of the items in the memory pool.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct MemoryOwner<T> : IMemoryOwner<T>, IConvertible<Memory<T>>
+    public readonly struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>
     {
+        // Of type ArrayPool<T> or IMemoryOwner<T>.
+        // If support of another type is needed then reconsider implementation
+        // of Memory, this[int index] and Expand members
         private readonly object? owner;
-        private readonly T[]? array;  // not null only if owner is ArrayPool
+        private readonly T[]? array;  // not null only if owner is ArrayPool or null
         private readonly int length;
 
         internal MemoryOwner(ArrayPool<T>? pool, T[] array, int length)
@@ -113,10 +117,10 @@ namespace DotNext.Buffers
         {
             int length;
 
-            if (array != null)
+            if (array is not null)
                 length = array.Length;
-            else if (owner is IMemoryOwner<T> memory)
-                length = memory.Memory.Length;
+            else if (owner is not null)
+                length = Unsafe.As<IMemoryOwner<T>>(owner).Memory.Length;
             else
                 goto exit;
 
@@ -129,7 +133,7 @@ namespace DotNext.Buffers
         /// <summary>
         /// Determines whether this memory is empty.
         /// </summary>
-        public bool IsEmpty => Length == 0;
+        public bool IsEmpty => length == 0;
 
         /// <summary>
         /// Gets the memory belonging to this owner.
@@ -140,10 +144,10 @@ namespace DotNext.Buffers
             get
             {
                 Memory<T> result;
-                if (array != null)
+                if (array is not null)
                     result = new Memory<T>(array);
-                else if (owner is IMemoryOwner<T> memory)
-                    result = memory.Memory;
+                else if (owner is not null)
+                    result = Unsafe.As<IMemoryOwner<T>>(owner).Memory;
                 else
                     result = default;
 
@@ -151,8 +155,28 @@ namespace DotNext.Buffers
             }
         }
 
+        /// <summary>
+        /// Tries to get an array segment from the underlying memory buffer.
+        /// </summary>
+        /// <param name="segment">The array segment retrieved from the underlying memory buffer.</param>
+        /// <returns><see langword="true"/> if the method call succeeds; <see langword="false"/> otherwise.</returns>
+        public bool TryGetArray(out ArraySegment<T> segment)
+        {
+            if (array is not null)
+            {
+                segment = new ArraySegment<T>(array, 0, length);
+                return true;
+            }
+
+            if (owner is IMemoryOwner<T> memory)
+                return MemoryMarshal.TryGetArray(memory.Memory, out segment);
+
+            segment = default;
+            return false;
+        }
+
         /// <inheritdoc/>
-        Memory<T> IConvertible<Memory<T>>.Convert() => Memory;
+        Memory<T> ISupplier<Memory<T>>.Invoke() => Memory;
 
         /// <summary>
         /// Gets managed pointer to the item in the rented memory.
@@ -165,10 +189,14 @@ namespace DotNext.Buffers
             {
                 if (index < 0 || index >= length)
                     goto invalid_index;
-                if (array != null)
+                if (array is not null)
+#if NETSTANDARD2_1
                     return ref array[index];
-                if (owner is IMemoryOwner<T> memory)
-                    return ref Unsafe.Add(ref MemoryMarshal.GetReference(memory.Memory.Span), index);
+#else
+                    return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(array), index);
+#endif
+                if (owner is not null)
+                    return ref Unsafe.Add(ref MemoryMarshal.GetReference(Unsafe.As<IMemoryOwner<T>>(owner).Memory.Span), index);
                 invalid_index:
                 throw new ArgumentOutOfRangeException(nameof(index));
             }
@@ -185,6 +213,7 @@ namespace DotNext.Buffers
                     disposable.Dispose();
                     break;
                 case ArrayPool<T> pool:
+                    Debug.Assert(array is not null);
                     pool.Return(array, RuntimeHelpers.IsReferenceOrContainsReferences<T>());
                     break;
             }

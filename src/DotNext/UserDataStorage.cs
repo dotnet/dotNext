@@ -51,35 +51,67 @@ namespace DotNext
         }
 
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct Supplier<T, TResult> : ISupplier<TResult>
+        private readonly struct DelegatingValueFactory<T, TResult> : ISupplier<TResult>
         {
             private readonly T arg;
-            private readonly ValueFunc<T, TResult> factory;
+            private readonly Func<T, TResult> factory;
 
-            internal Supplier(T arg, in ValueFunc<T, TResult> factory)
+            internal DelegatingValueFactory(T arg, Func<T, TResult> factory)
             {
+                this.factory = factory ?? throw new ArgumentNullException(nameof(factory));
                 this.arg = arg;
-                this.factory = factory;
             }
 
-            TResult ISupplier<TResult>.Invoke() => factory.Invoke(arg);
+            TResult ISupplier<TResult>.Invoke() => factory(arg);
         }
 
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct Supplier<T1, T2, TResult> : ISupplier<TResult>
+        private readonly unsafe struct ValueFactory<T, TResult> : ISupplier<TResult>
+        {
+            private readonly T arg;
+            private readonly delegate*<T, TResult> factory;
+
+            internal ValueFactory(T arg, delegate*<T, TResult> factory)
+            {
+                this.factory = factory == null ? throw new ArgumentNullException(nameof(factory)) : factory;
+                this.arg = arg;
+            }
+
+            TResult ISupplier<TResult>.Invoke() => factory(arg);
+        }
+
+        [StructLayout(LayoutKind.Auto)]
+        private readonly unsafe struct ValueFactory<T1, T2, TResult> : ISupplier<TResult>
         {
             private readonly T1 arg1;
             private readonly T2 arg2;
-            private readonly ValueFunc<T1, T2, TResult> factory;
+            private readonly delegate*<T1, T2, TResult> factory;
 
-            internal Supplier(T1 arg1, T2 arg2, in ValueFunc<T1, T2, TResult> factory)
+            internal ValueFactory(T1 arg1, T2 arg2, delegate*<T1, T2, TResult> factory)
             {
+                this.factory = factory == null ? throw new ArgumentNullException(nameof(factory)) : factory;
                 this.arg1 = arg1;
                 this.arg2 = arg2;
-                this.factory = factory;
             }
 
-            TResult ISupplier<TResult>.Invoke() => factory.Invoke(arg1, arg2);
+            TResult ISupplier<TResult>.Invoke() => factory(arg1, arg2);
+        }
+
+        [StructLayout(LayoutKind.Auto)]
+        private readonly struct DelegatingValueFactory<T1, T2, TResult> : ISupplier<TResult>
+        {
+            private readonly T1 arg1;
+            private readonly T2 arg2;
+            private readonly Func<T1, T2, TResult> factory;
+
+            internal DelegatingValueFactory(T1 arg1, T2 arg2, Func<T1, T2, TResult> factory)
+            {
+                this.factory = factory ?? throw new ArgumentNullException(nameof(factory));
+                this.arg1 = arg1;
+                this.arg2 = arg2;
+            }
+
+            TResult ISupplier<TResult>.Invoke() => factory(arg1, arg2);
         }
 
         private sealed class BackingStorage : Dictionary<long, object?>
@@ -104,8 +136,16 @@ namespace DotNext
             {
                 BackingStorage copy;
                 lockState.EnterReadLock();
-                copy = new BackingStorage(this);
-                lockState.ExitReadLock();
+
+                try
+                {
+                    copy = new BackingStorage(this);
+                }
+                finally
+                {
+                    lockState.ExitReadLock();
+                }
+
                 return copy;
             }
 
@@ -113,24 +153,36 @@ namespace DotNext
             {
                 lockState.EnterReadLock();
                 dest.lockState.EnterWriteLock();
-                dest.Clear();
-                dest.AddAll(this);
-                dest.lockState.ExitWriteLock();
-                lockState.ExitReadLock();
+                try
+                {
+                    dest.Clear();
+                    dest.AddAll(this);
+                }
+                finally
+                {
+                    dest.lockState.ExitWriteLock();
+                    lockState.ExitReadLock();
+                }
             }
 
             [return: NotNullIfNotNull("defaultValue")]
-            [return: MaybeNull]
-            internal TValue Get<TValue>(UserDataSlot<TValue> slot, [AllowNull]TValue defaultValue)
+            internal TValue? Get<TValue>(UserDataSlot<TValue> slot, TValue? defaultValue)
             {
+                TValue? result;
                 lockState.EnterReadLock();
-                var result = slot.GetUserData(this, defaultValue);
-                lockState.ExitReadLock();
+                try
+                {
+                    result = slot.GetUserData(this, defaultValue);
+                }
+                finally
+                {
+                    lockState.ExitReadLock();
+                }
+
                 return result;
             }
 
-            [return: MaybeNull]
-            internal TValue GetOrSet<TValue, TSupplier>(UserDataSlot<TValue> slot, ref TSupplier valueFactory)
+            internal TValue? GetOrSet<TValue, TSupplier>(UserDataSlot<TValue> slot, TSupplier valueFactory)
                 where TSupplier : struct, ISupplier<TValue>
             {
                 // fast path - read lock is required
@@ -151,7 +203,7 @@ namespace DotNext
                     try
                     {
                         userData = valueFactory.Invoke();
-                        if (userData != null)
+                        if (userData is not null)
                             slot.SetUserData(this, userData);
                     }
                     finally
@@ -212,7 +264,7 @@ namespace DotNext
             }
         }
 
-        private static readonly ConditionalWeakTable<object, BackingStorage> UserData = new ConditionalWeakTable<object, BackingStorage>();
+        private static readonly ConditionalWeakTable<object, BackingStorage> UserData = new ();
 
         private readonly object source;
 
@@ -227,7 +279,7 @@ namespace DotNext
         {
             if (source is BackingStorage storage)
                 return storage;
-            return UserData.TryGetValue(source, out storage) ? storage : null;
+            return UserData.TryGetValue(source, out storage!) ? storage : null;
         }
 
         private BackingStorage GetOrCreateStorage()
@@ -241,8 +293,7 @@ namespace DotNext
         /// <param name="defaultValue">Default value to be returned if no user data contained in this collection.</param>
         /// <returns>User data.</returns>
         [return: NotNullIfNotNull("defaultValue")]
-        [return: MaybeNull]
-        public TValue Get<TValue>(UserDataSlot<TValue> slot, [AllowNull]TValue defaultValue)
+        public TValue? Get<TValue>(UserDataSlot<TValue> slot, TValue? defaultValue)
         {
             var storage = GetStorage();
             return storage is null ? defaultValue : storage.Get(slot!, defaultValue);
@@ -254,8 +305,7 @@ namespace DotNext
         /// <typeparam name="TValue">Type of data.</typeparam>
         /// <param name="slot">The slot identifying user data.</param>
         /// <returns>User data; or <c>default(V)</c> if there is no user data associated with <paramref name="slot"/>.</returns>
-        [return: MaybeNull]
-        public TValue Get<TValue>(UserDataSlot<TValue> slot)
+        public TValue? Get<TValue>(UserDataSlot<TValue> slot)
         {
             var storage = GetStorage();
             return storage is null ? default : storage.Get(slot!, default);
@@ -269,10 +319,7 @@ namespace DotNext
         /// <returns>The data associated with the slot.</returns>
         public TValue GetOrSet<TValue>(UserDataSlot<TValue> slot)
             where TValue : notnull, new()
-        {
-            var activator = ValueFunc<TValue>.Activator;
-            return GetOrCreateStorage().GetOrSet(slot, ref activator)!;
-        }
+            => GetOrSet(slot, new Activator<TValue>());
 
         /// <summary>
         /// Gets existing user data or creates a new data and return it.
@@ -283,10 +330,7 @@ namespace DotNext
         /// <returns>The data associated with the slot.</returns>
         public TBase GetOrSet<TBase, T>(UserDataSlot<TBase> slot)
             where T : class, TBase, new()
-        {
-            var activator = ValueFunc<T>.Activator;
-            return GetOrCreateStorage().GetOrSet(slot, ref activator)!;
-        }
+            => GetOrSet(slot, new Activator<T>());
 
         /// <summary>
         /// Gets existing user data or creates a new data and return it.
@@ -295,7 +339,19 @@ namespace DotNext
         /// <param name="slot">The slot identifying user data.</param>
         /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
         /// <returns>The data associated with the slot.</returns>
-        public TValue GetOrSet<TValue>(UserDataSlot<TValue> slot, Func<TValue> valueFactory) => GetOrSet(slot, new ValueFunc<TValue>(valueFactory, true));
+        public TValue GetOrSet<TValue>(UserDataSlot<TValue> slot, Func<TValue> valueFactory)
+            => GetOrSet(slot, new DelegatingSupplier<TValue>(valueFactory));
+
+        /// <summary>
+        /// Gets existing user data or creates a new data and return it.
+        /// </summary>
+        /// <typeparam name="TValue">The type of user data associated with arbitrary object.</typeparam>
+        /// <param name="slot">The slot identifying user data.</param>
+        /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
+        /// <returns>The data associated with the slot.</returns>
+        [CLSCompliant(false)]
+        public unsafe TValue GetOrSet<TValue>(UserDataSlot<TValue> slot, delegate*<TValue> valueFactory)
+            => GetOrSet(slot, new Supplier<TValue>(valueFactory));
 
         /// <summary>
         /// Gets existing user data or creates a new data and return it.
@@ -307,7 +363,20 @@ namespace DotNext
         /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
         /// <returns>The data associated with the slot.</returns>
         public TValue GetOrSet<T, TValue>(UserDataSlot<TValue> slot, T arg, Func<T, TValue> valueFactory)
-            => GetOrSet(slot, arg, new ValueFunc<T, TValue>(valueFactory, true));
+            => GetOrSet(slot, new DelegatingValueFactory<T, TValue>(arg, valueFactory));
+
+        /// <summary>
+        /// Gets existing user data or creates a new data and return it.
+        /// </summary>
+        /// <typeparam name="T">The type of the argument to be passed into factory.</typeparam>
+        /// <typeparam name="TValue">The type of user data associated with arbitrary object.</typeparam>
+        /// <param name="slot">The slot identifying user data.</param>
+        /// <param name="arg">The argument to be passed into factory.</param>
+        /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
+        /// <returns>The data associated with the slot.</returns>
+        [CLSCompliant(false)]
+        public unsafe TValue GetOrSet<T, TValue>(UserDataSlot<TValue> slot, T arg, delegate*<T, TValue> valueFactory)
+            => GetOrSet(slot, new ValueFactory<T, TValue>(arg, valueFactory));
 
         /// <summary>
         /// Gets existing user data or creates a new data and return it.
@@ -321,32 +390,7 @@ namespace DotNext
         /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
         /// <returns>The data associated with the slot.</returns>
         public TValue GetOrSet<T1, T2, TValue>(UserDataSlot<TValue> slot, T1 arg1, T2 arg2, Func<T1, T2, TValue> valueFactory)
-            => GetOrSet(slot, arg1, arg2, new ValueFunc<T1, T2, TValue>(valueFactory, true));
-
-        /// <summary>
-        /// Gets existing user data or creates a new data and return it.
-        /// </summary>
-        /// <typeparam name="TValue">The type of user data associated with arbitrary object.</typeparam>
-        /// <param name="slot">The slot identifying user data.</param>
-        /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
-        /// <returns>The data associated with the slot.</returns>
-        public TValue GetOrSet<TValue>(UserDataSlot<TValue> slot, in ValueFunc<TValue> valueFactory)
-            => GetOrCreateStorage().GetOrSet(slot, ref Unsafe.AsRef(valueFactory))!;
-
-        /// <summary>
-        /// Gets existing user data or creates a new data and return it.
-        /// </summary>
-        /// <typeparam name="T">The type of the argument to be passed into factory.</typeparam>
-        /// <typeparam name="TValue">The type of user data associated with arbitrary object.</typeparam>
-        /// <param name="slot">The slot identifying user data.</param>
-        /// <param name="arg">The argument to be passed into factory.</param>
-        /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
-        /// <returns>The data associated with the slot.</returns>
-        public TValue GetOrSet<T, TValue>(UserDataSlot<TValue> slot, T arg, in ValueFunc<T, TValue> valueFactory)
-        {
-            var supplier = new Supplier<T, TValue>(arg, valueFactory);
-            return GetOrCreateStorage().GetOrSet(slot, ref supplier)!;
-        }
+            => GetOrSet(slot, new DelegatingValueFactory<T1, T2, TValue>(arg1, arg2, valueFactory));
 
         /// <summary>
         /// Gets existing user data or creates a new data and return it.
@@ -359,11 +403,21 @@ namespace DotNext
         /// <param name="arg2">The second argument to be passed into factory.</param>
         /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
         /// <returns>The data associated with the slot.</returns>
-        public TValue GetOrSet<T1, T2, TValue>(UserDataSlot<TValue> slot, T1 arg1, T2 arg2, in ValueFunc<T1, T2, TValue> valueFactory)
-        {
-            var supplier = new Supplier<T1, T2, TValue>(arg1, arg2, valueFactory);
-            return GetOrCreateStorage().GetOrSet(slot, ref supplier)!;
-        }
+        [CLSCompliant(false)]
+        public unsafe TValue GetOrSet<T1, T2, TValue>(UserDataSlot<TValue> slot, T1 arg1, T2 arg2, delegate*<T1, T2, TValue> valueFactory)
+            => GetOrSet(slot, new ValueFactory<T1, T2, TValue>(arg1, arg2, valueFactory));
+
+        /// <summary>
+        /// Gets existing user data or creates a new data and return it.
+        /// </summary>
+        /// <typeparam name="TValue">The type of user data associated with arbitrary object.</typeparam>
+        /// <typeparam name="TFactory">The type of the factory.</typeparam>
+        /// <param name="slot">The slot identifying user data.</param>
+        /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
+        /// <returns>The data associated with the slot.</returns>
+        public TValue GetOrSet<TValue, TFactory>(UserDataSlot<TValue> slot, TFactory valueFactory)
+            where TFactory : struct, ISupplier<TValue>
+            => GetOrCreateStorage().GetOrSet(slot, valueFactory)!;
 
         /// <summary>
         /// Tries to get user data.
@@ -433,7 +487,7 @@ namespace DotNext
             if (obj is IContainer support)
                 obj = support.Source;
             var source = GetStorage();
-            if (source != null)
+            if (source is not null)
             {
                 if (obj is BackingStorage destination)
                     source.CopyTo(destination);
@@ -460,7 +514,7 @@ namespace DotNext
         /// Returns textual representation of this storage.
         /// </summary>
         /// <returns>The textual representation of this storage.</returns>
-        public override string ToString() => source.ToString();
+        public override string? ToString() => source?.ToString();
 
         /// <summary>
         /// Determines whether two stores are for the same object.

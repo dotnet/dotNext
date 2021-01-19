@@ -66,7 +66,7 @@ namespace DotNext.Reflection
         /// <returns>Read-only collection of base types and, optionally, all implemented interfaces.</returns>
         public static IEnumerable<Type> GetBaseTypes(this Type type, bool includeTopLevel = false, bool includeInterfaces = false)
         {
-            for (var lookup = includeTopLevel ? type : type.BaseType; !(lookup is null); lookup = lookup.BaseType)
+            for (var lookup = includeTopLevel ? type : type.BaseType; lookup is not null; lookup = lookup.BaseType)
                 yield return lookup;
             if (includeInterfaces)
             {
@@ -81,9 +81,12 @@ namespace DotNext.Reflection
         /// <param name="type">The type that contains overridden method.</param>
         /// <param name="abstractMethod">The abstract method definition.</param>
         /// <returns>The method that overrides <paramref name="abstractMethod"/>.</returns>
+#if !NETSTANDARD2_1
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods | DynamicallyAccessedMemberTypes.NonPublicMethods)]
+#endif
         public static MethodInfo? Devirtualize(this Type type, MethodInfo abstractMethod)
         {
-            if (abstractMethod.IsFinal || !abstractMethod.IsVirtual)
+            if (abstractMethod.IsFinal || !abstractMethod.IsVirtual || abstractMethod.DeclaringType is null)
                 return abstractMethod;
             if (type.IsInterface)
                 goto exit;
@@ -140,12 +143,10 @@ namespace DotNext.Reflection
             }
             else
             {
-                while (!(type is null))
+                for (Type? lookup = type; lookup is not null; lookup = lookup.BaseType)
                 {
-                    if (IsGenericInstanceOf(type))
-                        return type;
-                    else
-                        type = type.BaseType;
+                    if (IsGenericInstanceOf(lookup))
+                        return lookup;
                 }
             }
 
@@ -165,7 +166,7 @@ namespace DotNext.Reflection
         /// </code>
         /// </example>
         public static bool IsGenericInstanceOf(this Type type, Type genericDefinition)
-            => !(FindGenericInstance(type, genericDefinition) is null);
+            => FindGenericInstance(type, genericDefinition) is not null;
 
         /// <summary>
         /// Returns actual generic arguments passed into generic type definition implemented by the input type.

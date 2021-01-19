@@ -7,8 +7,6 @@ using System.Threading.Tasks;
 
 namespace DotNext.IO
 {
-    using static Buffers.BufferHelpers;
-
     /// <summary>
     /// Represents <see cref="TextReader"/> wrapper for <see cref="ReadOnlySequence{T}"/> type.
     /// </summary>
@@ -151,7 +149,7 @@ namespace DotNext.IO
         {
             var tail = sequence.Slice(position);
             position = sequence.End;
-            return tail.BuildString();
+            return tail.ToString();
         }
 
         /// <inheritdoc />
@@ -201,7 +199,7 @@ namespace DotNext.IO
             }
 
             exit:
-            return length == 0L ? null : sequence.Slice(start, length).BuildString();
+            return length == 0L ? null : sequence.Slice(start, length).ToString();
         }
 
         /// <inheritdoc />

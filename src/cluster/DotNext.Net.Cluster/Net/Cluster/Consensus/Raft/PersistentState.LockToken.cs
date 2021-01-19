@@ -48,7 +48,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <param name="token">The token of acquired lock to verify.</param>
         /// <returns><see langword="true"/> if <paramref name="token"/> is valid; otherwise, <see langword="false"/>.</returns>
-        public bool IsValidToken(in WriteLockToken token)
+        public bool Validate(in WriteLockToken token)
             => token.IsValid(this);
 
         /// <summary>

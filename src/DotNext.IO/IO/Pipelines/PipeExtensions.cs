@@ -3,7 +3,6 @@ using System.Buffers;
 using System.Globalization;
 using System.IO;
 using System.IO.Pipelines;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
@@ -15,7 +14,6 @@ using Missing = System.Reflection.Missing;
 namespace DotNext.IO.Pipelines
 {
     using Buffers;
-    using Security.Cryptography;
     using Text;
     using static Buffers.BufferReader;
 
@@ -61,58 +59,25 @@ namespace DotNext.IO.Pipelines
             }
         }
 
-        [StructLayout(LayoutKind.Auto)]
-        [Obsolete]
-        private struct HashReader : IBufferReader<HashBuilder>
-        {
-            private readonly HashBuilder builder;
-            private readonly bool limited;
-            private int remainingBytes;
-
-            internal HashReader(HashAlgorithm algorithm, int? count)
-            {
-                builder = new HashBuilder(algorithm);
-                if (count.HasValue)
-                {
-                    limited = true;
-                    remainingBytes = count.GetValueOrDefault();
-                }
-                else
-                {
-                    limited = false;
-                    remainingBytes = int.MaxValue;
-                }
-            }
-
-            readonly int IBufferReader<HashBuilder>.RemainingBytes => remainingBytes;
-
-            readonly HashBuilder IBufferReader<HashBuilder>.Complete() => builder;
-
-            void IBufferReader<HashBuilder>.EndOfStream()
-                => remainingBytes = limited ? throw new EndOfStreamException() : 0;
-
-            void IBufferReader<HashBuilder>.Append(ReadOnlySpan<byte> block, ref int consumedBytes)
-            {
-                builder.Add(block);
-                if (limited)
-                    remainingBytes -= block.Length;
-            }
-        }
-
         private static async ValueTask<TResult> ReadAsync<TResult, TParser>(this PipeReader reader, TParser parser, CancellationToken token)
             where TParser : struct, IBufferReader<TResult>
         {
-            for (SequencePosition consumed; parser.RemainingBytes > 0; reader.AdvanceTo(consumed))
+            var completed = false;
+            for (SequencePosition consumed; parser.RemainingBytes > 0 & !completed; reader.AdvanceTo(consumed))
             {
                 var readResult = await reader.ReadAsync(token).ConfigureAwait(false);
                 readResult.ThrowIfCancellationRequested(token);
                 parser.Append<TResult, TParser>(readResult.Buffer, out consumed);
+                completed = readResult.IsCompleted;
             }
+
+            if (parser.RemainingBytes > 0)
+                parser.EndOfStream();
 
             return parser.Complete();
         }
 
-        private static async ValueTask<TResult> ReadAsync<TResult, TDecoder>(this PipeReader reader, TDecoder decoder, StringLengthEncoding lengthFormat, DecodingContext context, CancellationToken token)
+        private static async ValueTask<TResult> ReadAsync<TResult, TDecoder>(this PipeReader reader, TDecoder decoder, LengthFormat lengthFormat, DecodingContext context, CancellationToken token)
             where TResult : struct
             where TDecoder : struct, ISpanDecoder<TResult>
         {
@@ -121,29 +86,28 @@ namespace DotNext.IO.Pipelines
                 throw new EndOfStreamException();
             using var buffer = new ArrayBuffer<char>(length);
             var parser = new StringReader<ArrayBuffer<char>>(in context, buffer);
+            var completed = false;
 
-            for (SequencePosition consumed; parser.RemainingBytes > 0; reader.AdvanceTo(consumed))
+            for (SequencePosition consumed; parser.RemainingBytes > 0 & !completed; reader.AdvanceTo(consumed))
             {
                 var readResult = await reader.ReadAsync(token).ConfigureAwait(false);
                 readResult.ThrowIfCancellationRequested(token);
                 parser.Append<string, StringReader<ArrayBuffer<char>>>(readResult.Buffer, out consumed);
+                completed = readResult.IsCompleted;
             }
 
             return parser.RemainingBytes == 0 ? decoder.Decode(parser.Complete()) : throw new EndOfStreamException();
-        }
-
-        [Obsolete]
-        internal static async ValueTask ComputeHashAsync(this PipeReader reader, HashAlgorithm algorithm, int? count, Memory<byte> output, CancellationToken token)
-        {
-            using var builder = await reader.ReadAsync<HashBuilder, HashReader>(new HashReader(algorithm, count), token).ConfigureAwait(false);
-            builder.Build(output.Span);
         }
 
         private static async ValueTask<int> ComputeHashAsync(PipeReader reader, HashAlgorithmName name, int? count, Memory<byte> output, CancellationToken token)
         {
             using var hash = IncrementalHash.CreateHash(name);
             await reader.ReadAsync<Missing, IncrementalHashBuilder>(new IncrementalHashBuilder(hash, count), token).ConfigureAwait(false);
+#if NETSTANDARD2_1
             if (!hash.TryGetHashAndReset(output.Span, out var bytesWritten))
+#else
+            if (!hash.TryGetCurrentHash(output.Span, out var bytesWritten))
+#endif
                 throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(output));
             return bytesWritten;
         }
@@ -180,8 +144,6 @@ namespace DotNext.IO.Pipelines
         public static ValueTask<int> ComputeHashAsync(this PipeReader reader, HashAlgorithmName name, Memory<byte> output, CancellationToken token = default)
             => ComputeHashAsync(reader, name, null, output, token);
 
-        // TODO: Add ComputeHashAsync overload with IncrementalHash type
-
         /// <summary>
         /// Decodes string asynchronously from pipe.
         /// </summary>
@@ -200,7 +162,7 @@ namespace DotNext.IO.Pipelines
             return await ReadAsync<string, StringReader<ArrayBuffer<char>>>(reader, new StringReader<ArrayBuffer<char>>(context, resultBuffer), token).ConfigureAwait(false);
         }
 
-        private static async ValueTask<int> ReadLengthAsync(this PipeReader reader, StringLengthEncoding lengthFormat, CancellationToken token)
+        private static async ValueTask<int> ReadLengthAsync(this PipeReader reader, LengthFormat lengthFormat, CancellationToken token)
         {
             ValueTask<int> result;
             var littleEndian = BitConverter.IsLittleEndian;
@@ -208,16 +170,16 @@ namespace DotNext.IO.Pipelines
             {
                 default:
                     throw new ArgumentOutOfRangeException(nameof(lengthFormat));
-                case StringLengthEncoding.Plain:
+                case LengthFormat.Plain:
                     result = reader.ReadAsync<int>(token);
                     break;
-                case StringLengthEncoding.PlainLittleEndian:
+                case LengthFormat.PlainLittleEndian:
                     littleEndian = true;
-                    goto case StringLengthEncoding.Plain;
-                case StringLengthEncoding.PlainBigEndian:
+                    goto case LengthFormat.Plain;
+                case LengthFormat.PlainBigEndian:
                     littleEndian = false;
-                    goto case StringLengthEncoding.Plain;
-                case StringLengthEncoding.Compressed:
+                    goto case LengthFormat.Plain;
+                case LengthFormat.Compressed:
                     result = reader.Read7BitEncodedIntAsync(token);
                     break;
             }
@@ -238,7 +200,7 @@ namespace DotNext.IO.Pipelines
         /// <exception cref="EndOfStreamException"><paramref name="reader"/> doesn't contain the necessary number of bytes to restore string.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static async ValueTask<string> ReadStringAsync(this PipeReader reader, StringLengthEncoding lengthFormat, DecodingContext context, CancellationToken token = default)
+        public static async ValueTask<string> ReadStringAsync(this PipeReader reader, LengthFormat lengthFormat, DecodingContext context, CancellationToken token = default)
             => await ReadStringAsync(reader, await reader.ReadLengthAsync(lengthFormat, token).ConfigureAwait(false), context, token).ConfigureAwait(false);
 
         /// <summary>
@@ -263,16 +225,39 @@ namespace DotNext.IO.Pipelines
         /// <param name="token">The token that can be used to cancel operation.</param>
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static async Task ReadAsync<TArg>(this PipeReader reader, ReadOnlySpanAction<byte, TArg> consumer, TArg arg, CancellationToken token = default)
+        public static Task CopyToAsync<TArg>(this PipeReader reader, ReadOnlySpanAction<byte, TArg> consumer, TArg arg, CancellationToken token = default)
+            => CopyToAsync(reader, new DelegatingReadOnlySpanConsumer<byte, TArg>(consumer, arg), token);
+
+        /// <summary>
+        /// Reads the entire content using the specified consumer.
+        /// </summary>
+        /// <typeparam name="TConsumer">The type of the consumer.</typeparam>
+        /// <param name="reader">The pipe to read from.</param>
+        /// <param name="consumer">The content reader.</param>
+        /// <param name="token">The token that can be used to cancel operation.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static async Task CopyToAsync<TConsumer>(this PipeReader reader, TConsumer consumer, CancellationToken token = default)
+            where TConsumer : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
         {
             ReadResult result;
             do
             {
                 result = await reader.ReadAsync(token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested();
+                result.ThrowIfCancellationRequested(token);
                 var buffer = result.Buffer;
-                for (var position = buffer.Start; buffer.TryGet(ref position, out var block); reader.AdvanceTo(position), token.ThrowIfCancellationRequested())
-                    consumer(block.Span, arg);
+                var consumed = buffer.Start;
+
+                try
+                {
+                    for (var position = consumed; buffer.TryGet(ref position, out var block); consumed = position)
+                        await consumer.Invoke(block, token).ConfigureAwait(false);
+                    consumed = buffer.End;
+                }
+                finally
+                {
+                    reader.AdvanceTo(consumed);
+                }
             }
             while (!result.IsCompleted);
         }
@@ -287,19 +272,8 @@ namespace DotNext.IO.Pipelines
         /// <param name="token">The token that can be used to cancel operation.</param>
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static async Task ReadAsync<TArg>(this PipeReader reader, Func<ReadOnlyMemory<byte>, TArg, CancellationToken, ValueTask> consumer, TArg arg, CancellationToken token = default)
-        {
-            ReadResult result;
-            do
-            {
-                result = await reader.ReadAsync(token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested();
-                var buffer = result.Buffer;
-                for (var position = buffer.Start; buffer.TryGet(ref position, out var block); reader.AdvanceTo(position))
-                    await consumer(block, arg, token);
-            }
-            while (!result.IsCompleted);
-        }
+        public static Task CopyToAsync<TArg>(this PipeReader reader, Func<TArg, ReadOnlyMemory<byte>, CancellationToken, ValueTask> consumer, TArg arg, CancellationToken token = default)
+            => CopyToAsync(reader, new DelegatingMemoryConsumer<byte, TArg>(consumer, arg), token);
 
         /// <summary>
         /// Decodes 64-bit signed integer using the specified endianness.
@@ -407,9 +381,103 @@ namespace DotNext.IO.Pipelines
         /// <param name="output">The block of memory to fill from the pipe.</param>
         /// <param name="token">The token that can be used to cancel operation.</param>
         /// <returns>The task representing asynchronous state of the operation.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">Reader doesn't have enough data.</exception>
         public static async ValueTask ReadBlockAsync(this PipeReader reader, Memory<byte> output, CancellationToken token = default)
             => await ReadAsync<Missing, MemoryReader>(reader, new MemoryReader(output), token).ConfigureAwait(false);
+
+        /// <summary>
+        /// Reads length-prefixed block of bytes.
+        /// </summary>
+        /// <param name="reader">The pipe reader.</param>
+        /// <param name="lengthFormat">The format of the block length encoded in the underlying pipe.</param>
+        /// <param name="allocator">The memory allocator used to place the decoded block of bytes.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The decoded block of bytes.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="EndOfStreamException">Reader doesn't have enough data.</exception>
+        public static async ValueTask<MemoryOwner<byte>> ReadBlockAsync(this PipeReader reader, LengthFormat lengthFormat, MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
+        {
+            var length = await reader.ReadLengthAsync(lengthFormat, token).ConfigureAwait(false);
+            MemoryOwner<byte> result;
+            if (length > 0)
+            {
+                result = allocator.Invoke(length, true);
+                await ReadAsync<Missing, MemoryReader>(reader, new MemoryReader(result.Memory), token).ConfigureAwait(false);
+            }
+            else
+            {
+                result = default;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Consumes the requested portion of data asynchronously.
+        /// </summary>
+        /// <param name="reader">The pipe reader.</param>
+        /// <param name="length">The length of the block to consume, in bytes.</param>
+        /// <param name="consumer">The consumer of the memory block.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <typeparam name="TConsumer">The type of the memory block consumer.</typeparam>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="EndOfStreamException">Reader doesn't have enough data.</exception>
+        public static async ValueTask ReadBlockAsync<TConsumer>(this PipeReader reader, long length, TConsumer consumer, CancellationToken token = default)
+            where TConsumer : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
+        {
+            if (length < 0L)
+                throw new ArgumentOutOfRangeException(nameof(length));
+
+            for (SequencePosition consumed; length > 0L; reader.AdvanceTo(consumed))
+            {
+                var readResult = await reader.ReadAsync(token).ConfigureAwait(false);
+                readResult.ThrowIfCancellationRequested(token);
+                var buffer = readResult.Buffer;
+                if (buffer.IsEmpty)
+                    break;
+                consumed = buffer.Start;
+                for (int bytesToConsume; length > 0L && buffer.TryGet(ref consumed, out var block, false) && !block.IsEmpty; consumed = buffer.GetPosition(bytesToConsume, consumed), length -= bytesToConsume)
+                {
+                    bytesToConsume = Math.Min(block.Length, length.Truncate());
+                    await consumer.Invoke(block.Slice(0, bytesToConsume), token).ConfigureAwait(false);
+                }
+            }
+
+            if (length > 0L)
+                throw new EndOfStreamException();
+        }
+
+        /// <summary>
+        /// Consumes the requested portion of data asynchronously.
+        /// </summary>
+        /// <param name="reader">The pipe reader.</param>
+        /// <param name="length">The length of the block to consume, in bytes.</param>
+        /// <param name="callback">The callback to be called for each consumed segment.</param>
+        /// <param name="arg">The argument to be passed to the callback.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <typeparam name="TArg">The type of the argument to be passed to the callback.</typeparam>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="EndOfStreamException">Reader doesn't have enough data.</exception>
+        public static ValueTask ReadBlockAsync<TArg>(this PipeReader reader, long length, Func<TArg, ReadOnlyMemory<byte>, CancellationToken, ValueTask> callback, TArg arg, CancellationToken token = default)
+            => ReadBlockAsync(reader, length, new DelegatingMemoryConsumer<byte, TArg>(callback, arg), token);
+
+        /// <summary>
+        /// Drops the specified number of bytes from the pipe.
+        /// </summary>
+        /// <param name="reader">The pipe reader.</param>
+        /// <param name="length">The number of bytes to skip.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="EndOfStreamException">Reader doesn't have enough data to skip.</exception>
+        public static ValueTask SkipAsync(this PipeReader reader, long length, CancellationToken token = default)
+            => ReadBlockAsync(reader, length, SkippingConsumer.Instance, token);
 
         /// <summary>
         /// Decodes 8-bit unsigned integer from its string representation.
@@ -424,7 +492,7 @@ namespace DotNext.IO.Pipelines
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<byte> ReadByteAsync(this PipeReader reader, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<byte> ReadByteAsync(this PipeReader reader, LengthFormat lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<byte, NumberDecoder>(reader, new NumberDecoder(style, provider), lengthFormat, context, token);
 
         /// <summary>
@@ -441,7 +509,7 @@ namespace DotNext.IO.Pipelines
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         [CLSCompliant(false)]
-        public static ValueTask<sbyte> ReadSByteAsync(this PipeReader reader, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<sbyte> ReadSByteAsync(this PipeReader reader, LengthFormat lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<sbyte, NumberDecoder>(reader, new NumberDecoder(style, provider), lengthFormat, context, token);
 
         /// <summary>
@@ -457,7 +525,7 @@ namespace DotNext.IO.Pipelines
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<short> ReadInt16Async(this PipeReader reader, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<short> ReadInt16Async(this PipeReader reader, LengthFormat lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<short, NumberDecoder>(reader, new NumberDecoder(style, provider), lengthFormat, context, token);
 
         /// <summary>
@@ -474,7 +542,7 @@ namespace DotNext.IO.Pipelines
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         [CLSCompliant(false)]
-        public static ValueTask<ushort> ReadUInt16Async(this PipeReader reader, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<ushort> ReadUInt16Async(this PipeReader reader, LengthFormat lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<ushort, NumberDecoder>(reader, new NumberDecoder(style, provider), lengthFormat, context, token);
 
         /// <summary>
@@ -490,7 +558,7 @@ namespace DotNext.IO.Pipelines
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<int> ReadInt32Async(this PipeReader reader, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<int> ReadInt32Async(this PipeReader reader, LengthFormat lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<int, NumberDecoder>(reader, new NumberDecoder(style, provider), lengthFormat, context, token);
 
         /// <summary>
@@ -507,7 +575,7 @@ namespace DotNext.IO.Pipelines
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         [CLSCompliant(false)]
-        public static ValueTask<uint> ReadUInt32Async(this PipeReader reader, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<uint> ReadUInt32Async(this PipeReader reader, LengthFormat lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<uint, NumberDecoder>(reader, new NumberDecoder(style, provider), lengthFormat, context, token);
 
         /// <summary>
@@ -523,7 +591,7 @@ namespace DotNext.IO.Pipelines
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<long> ReadInt64Async(this PipeReader reader, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<long> ReadInt64Async(this PipeReader reader, LengthFormat lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<long, NumberDecoder>(reader, new NumberDecoder(style, provider), lengthFormat, context, token);
 
         /// <summary>
@@ -540,7 +608,7 @@ namespace DotNext.IO.Pipelines
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         [CLSCompliant(false)]
-        public static ValueTask<ulong> ReadUInt64Async(this PipeReader reader, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<ulong> ReadUInt64Async(this PipeReader reader, LengthFormat lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<ulong, NumberDecoder>(reader, new NumberDecoder(style, provider), lengthFormat, context, token);
 
         /// <summary>
@@ -556,7 +624,7 @@ namespace DotNext.IO.Pipelines
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<float> ReadSingleAsync(this PipeReader reader, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.AllowThousands | NumberStyles.Float, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<float> ReadSingleAsync(this PipeReader reader, LengthFormat lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.AllowThousands | NumberStyles.Float, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<float, NumberDecoder>(reader, new NumberDecoder(style, provider), lengthFormat, context, token);
 
         /// <summary>
@@ -572,7 +640,7 @@ namespace DotNext.IO.Pipelines
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<double> ReadDoubleAsync(this PipeReader reader, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.AllowThousands | NumberStyles.Float, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<double> ReadDoubleAsync(this PipeReader reader, LengthFormat lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.AllowThousands | NumberStyles.Float, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<double, NumberDecoder>(reader, new NumberDecoder(style, provider), lengthFormat, context, token);
 
         /// <summary>
@@ -588,7 +656,7 @@ namespace DotNext.IO.Pipelines
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<decimal> ReadDecimalAsync(this PipeReader reader, StringLengthEncoding lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Number, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<decimal> ReadDecimalAsync(this PipeReader reader, LengthFormat lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Number, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<decimal, NumberDecoder>(reader, new NumberDecoder(style, provider), lengthFormat, context, token);
 
         /// <summary>
@@ -602,7 +670,7 @@ namespace DotNext.IO.Pipelines
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">GUID value is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<Guid> ReadGuidAsync(this PipeReader reader, StringLengthEncoding lengthFormat, DecodingContext context, CancellationToken token = default)
+        public static ValueTask<Guid> ReadGuidAsync(this PipeReader reader, LengthFormat lengthFormat, DecodingContext context, CancellationToken token = default)
             => ReadAsync<Guid, GuidDecoder>(reader, new GuidDecoder(), lengthFormat, context, token);
 
         /// <summary>
@@ -617,7 +685,7 @@ namespace DotNext.IO.Pipelines
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">GUID value is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<Guid> ReadGuidAsync(this PipeReader reader, StringLengthEncoding lengthFormat, DecodingContext context, string format, CancellationToken token = default)
+        public static ValueTask<Guid> ReadGuidAsync(this PipeReader reader, LengthFormat lengthFormat, DecodingContext context, string format, CancellationToken token = default)
             => ReadAsync<Guid, GuidDecoder>(reader, new GuidDecoder(format), lengthFormat, context, token);
 
         /// <summary>
@@ -633,7 +701,7 @@ namespace DotNext.IO.Pipelines
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The date/time string is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<DateTime> ReadDateTimeAsync(this PipeReader reader, StringLengthEncoding lengthFormat, DecodingContext context, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<DateTime> ReadDateTimeAsync(this PipeReader reader, LengthFormat lengthFormat, DecodingContext context, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<DateTime, DateTimeDecoder>(reader, new DateTimeDecoder(style, provider), lengthFormat, context, token);
 
         /// <summary>
@@ -650,7 +718,7 @@ namespace DotNext.IO.Pipelines
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The date/time string is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<DateTime> ReadDateTimeAsync(this PipeReader reader, StringLengthEncoding lengthFormat, DecodingContext context, string[] formats, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<DateTime> ReadDateTimeAsync(this PipeReader reader, LengthFormat lengthFormat, DecodingContext context, string[] formats, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<DateTime, DateTimeDecoder>(reader, new DateTimeDecoder(style, formats, provider), lengthFormat, context, token);
 
         /// <summary>
@@ -666,7 +734,7 @@ namespace DotNext.IO.Pipelines
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The date/time string is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<DateTimeOffset> ReadDateTimeOffsetAsync(this PipeReader reader, StringLengthEncoding lengthFormat, DecodingContext context, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<DateTimeOffset> ReadDateTimeOffsetAsync(this PipeReader reader, LengthFormat lengthFormat, DecodingContext context, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<DateTimeOffset, DateTimeDecoder>(reader, new DateTimeDecoder(style, provider), lengthFormat, context, token);
 
         /// <summary>
@@ -683,7 +751,7 @@ namespace DotNext.IO.Pipelines
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The date/time string is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<DateTimeOffset> ReadDateTimeOffsetAsync(this PipeReader reader, StringLengthEncoding lengthFormat, DecodingContext context, string[] formats, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<DateTimeOffset> ReadDateTimeOffsetAsync(this PipeReader reader, LengthFormat lengthFormat, DecodingContext context, string[] formats, DateTimeStyles style = DateTimeStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<DateTimeOffset, DateTimeDecoder>(reader, new DateTimeDecoder(style, formats, provider), lengthFormat, context, token);
 
         /// <summary>
@@ -698,7 +766,7 @@ namespace DotNext.IO.Pipelines
         /// <exception cref="FormatException">The time span is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-        public static ValueTask<TimeSpan> ReadTimeSpanAsync(this PipeReader reader, StringLengthEncoding lengthFormat, DecodingContext context, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<TimeSpan> ReadTimeSpanAsync(this PipeReader reader, LengthFormat lengthFormat, DecodingContext context, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<TimeSpan, TimeSpanDecoder>(reader, new TimeSpanDecoder(provider), lengthFormat, context, token);
 
         /// <summary>
@@ -715,20 +783,8 @@ namespace DotNext.IO.Pipelines
         /// <exception cref="FormatException">The time span is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-        public static ValueTask<TimeSpan> ReadTimeSpanAsync(this PipeReader reader, StringLengthEncoding lengthFormat, DecodingContext context, string[] formats, TimeSpanStyles style = TimeSpanStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<TimeSpan> ReadTimeSpanAsync(this PipeReader reader, LengthFormat lengthFormat, DecodingContext context, string[] formats, TimeSpanStyles style = TimeSpanStyles.None, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<TimeSpan, TimeSpanDecoder>(reader, new TimeSpanDecoder(style, formats, provider), lengthFormat, context, token);
-
-        /// <summary>
-        /// Reads the block of memory.
-        /// </summary>
-        /// <param name="reader">The pipe reader.</param>
-        /// <param name="output">The block of memory to fill from the pipe.</param>
-        /// <param name="token">The token that can be used to cancel operation.</param>
-        /// <returns>The task representing asynchronous state of the operation.</returns>
-        /// <exception cref="EndOfStreamException">Reader doesn't have enough data.</exception>
-        [Obsolete("Use ReadBlockAsync extension method instead")]
-        public static ValueTask ReadAsync(PipeReader reader, Memory<byte> output, CancellationToken token = default)
-            => ReadBlockAsync(reader, output, token);
 
         /// <summary>
         /// Reads the block of memory.
@@ -795,7 +851,7 @@ namespace DotNext.IO.Pipelines
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<FlushResult> WriteByteAsync(this PipeWriter writer, byte value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<FlushResult> WriteByteAsync(this PipeWriter writer, byte value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
         {
             writer.WriteByte(value, lengthFormat, in context, format, provider);
             return writer.FlushAsync(token);
@@ -814,7 +870,7 @@ namespace DotNext.IO.Pipelines
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         [CLSCompliant(false)]
-        public static ValueTask<FlushResult> WriteSByteAsync(this PipeWriter writer, sbyte value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<FlushResult> WriteSByteAsync(this PipeWriter writer, sbyte value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
         {
             writer.WriteSByte(value, lengthFormat, in context, format, provider);
             return writer.FlushAsync(token);
@@ -847,7 +903,7 @@ namespace DotNext.IO.Pipelines
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<FlushResult> WriteInt64Async(this PipeWriter writer, long value, StringLengthEncoding lengthFormat, EncodingContext context,  string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<FlushResult> WriteInt64Async(this PipeWriter writer, long value, LengthFormat lengthFormat, EncodingContext context,  string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
         {
             writer.WriteInt64(value, lengthFormat, in context, format, provider);
             return writer.FlushAsync(token);
@@ -882,7 +938,7 @@ namespace DotNext.IO.Pipelines
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         [CLSCompliant(false)]
-        public static ValueTask<FlushResult> WriteUInt64Async(this PipeWriter writer, ulong value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<FlushResult> WriteUInt64Async(this PipeWriter writer, ulong value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
         {
             writer.WriteUInt64(value, lengthFormat, in context, format, provider);
             return writer.FlushAsync(token);
@@ -915,7 +971,7 @@ namespace DotNext.IO.Pipelines
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<FlushResult> WriteInt32Async(this PipeWriter writer, int value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<FlushResult> WriteInt32Async(this PipeWriter writer, int value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
         {
             writer.WriteInt32(value, lengthFormat, in context, format, provider);
             return writer.FlushAsync(token);
@@ -950,7 +1006,7 @@ namespace DotNext.IO.Pipelines
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         [CLSCompliant(false)]
-        public static ValueTask<FlushResult> WriteUInt32Async(this PipeWriter writer, uint value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<FlushResult> WriteUInt32Async(this PipeWriter writer, uint value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
         {
             writer.WriteUInt32(value, lengthFormat, in context, format, provider);
             return writer.FlushAsync(token);
@@ -983,7 +1039,7 @@ namespace DotNext.IO.Pipelines
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<FlushResult> WriteInt16Async(this PipeWriter writer, short value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<FlushResult> WriteInt16Async(this PipeWriter writer, short value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
         {
             writer.WriteInt16(value, lengthFormat, in context, format, provider);
             return writer.FlushAsync(token);
@@ -1018,7 +1074,7 @@ namespace DotNext.IO.Pipelines
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         [CLSCompliant(false)]
-        public static ValueTask<FlushResult> WriteUInt16Async(this PipeWriter writer, ushort value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<FlushResult> WriteUInt16Async(this PipeWriter writer, ushort value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
         {
             writer.WriteUInt16(value, lengthFormat, in context, format, provider);
             return writer.FlushAsync(token);
@@ -1037,7 +1093,7 @@ namespace DotNext.IO.Pipelines
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         [CLSCompliant(false)]
-        public static ValueTask<FlushResult> WriteSingleAsync(this PipeWriter writer, float value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<FlushResult> WriteSingleAsync(this PipeWriter writer, float value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
         {
             writer.WriteSingle(value, lengthFormat, in context, format, provider);
             return writer.FlushAsync(token);
@@ -1056,7 +1112,7 @@ namespace DotNext.IO.Pipelines
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         [CLSCompliant(false)]
-        public static ValueTask<FlushResult> WriteDoubleAsync(this PipeWriter writer, double value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<FlushResult> WriteDoubleAsync(this PipeWriter writer, double value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
         {
             writer.WriteDouble(value, lengthFormat, in context, format, provider);
             return writer.FlushAsync(token);
@@ -1075,7 +1131,7 @@ namespace DotNext.IO.Pipelines
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         [CLSCompliant(false)]
-        public static ValueTask<FlushResult> WriteDecimalAsync(this PipeWriter writer, decimal value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<FlushResult> WriteDecimalAsync(this PipeWriter writer, decimal value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
         {
             writer.WriteDecimal(value, lengthFormat, in context, format, provider);
             return writer.FlushAsync(token);
@@ -1093,7 +1149,7 @@ namespace DotNext.IO.Pipelines
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         [CLSCompliant(false)]
-        public static ValueTask<FlushResult> WriteGuidAsync(this PipeWriter writer, Guid value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, CancellationToken token = default)
+        public static ValueTask<FlushResult> WriteGuidAsync(this PipeWriter writer, Guid value, LengthFormat lengthFormat, EncodingContext context, string? format = null, CancellationToken token = default)
         {
             writer.WriteGuid(value, lengthFormat, in context, format);
             return writer.FlushAsync(token);
@@ -1112,7 +1168,7 @@ namespace DotNext.IO.Pipelines
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         [CLSCompliant(false)]
-        public static ValueTask<FlushResult> WriteDateTimeAsync(this PipeWriter writer, DateTime value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<FlushResult> WriteDateTimeAsync(this PipeWriter writer, DateTime value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
         {
             writer.WriteDateTime(value, lengthFormat, in context, format, provider);
             return writer.FlushAsync(token);
@@ -1131,7 +1187,7 @@ namespace DotNext.IO.Pipelines
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         [CLSCompliant(false)]
-        public static ValueTask<FlushResult> WriteDateTimeOffsetAsync(this PipeWriter writer, DateTimeOffset value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<FlushResult> WriteDateTimeOffsetAsync(this PipeWriter writer, DateTimeOffset value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
         {
             writer.WriteDateTimeOffset(value, lengthFormat, in context, format, provider);
             return writer.FlushAsync(token);
@@ -1150,13 +1206,13 @@ namespace DotNext.IO.Pipelines
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         [CLSCompliant(false)]
-        public static ValueTask<FlushResult> WriteTimeSpanAsync(this PipeWriter writer, TimeSpan value, StringLengthEncoding lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<FlushResult> WriteTimeSpanAsync(this PipeWriter writer, TimeSpan value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
         {
             writer.WriteTimeSpan(value, lengthFormat, in context, format, provider);
             return writer.FlushAsync(token);
         }
 
-        private static ValueTask<FlushResult> WriteLengthAsync(this PipeWriter writer, ReadOnlyMemory<char> value, Encoding encoding, StringLengthEncoding? lengthFormat, CancellationToken token)
+        private static ValueTask<FlushResult> WriteLengthAsync(this PipeWriter writer, ReadOnlyMemory<char> value, Encoding encoding, LengthFormat? lengthFormat, CancellationToken token)
         {
             if (lengthFormat is null)
                 return new ValueTask<FlushResult>(new FlushResult(false, false));
@@ -1178,7 +1234,7 @@ namespace DotNext.IO.Pipelines
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
         /// <exception cref="EndOfStreamException">Pipe closed unexpectedly.</exception>
-        public static async ValueTask WriteStringAsync(this PipeWriter writer, ReadOnlyMemory<char> value, EncodingContext context, int bufferSize = 0, StringLengthEncoding? lengthFormat = null, CancellationToken token = default)
+        public static async ValueTask WriteStringAsync(this PipeWriter writer, ReadOnlyMemory<char> value, EncodingContext context, int bufferSize = 0, LengthFormat? lengthFormat = null, CancellationToken token = default)
         {
             var result = await writer.WriteLengthAsync(value, context.Encoding, lengthFormat, token).ConfigureAwait(false);
             result.ThrowIfCancellationRequested(token);
@@ -1221,26 +1277,32 @@ namespace DotNext.IO.Pipelines
         }
 
         /// <summary>
+        /// Encodes the octet string asynchronously.
+        /// </summary>
+        /// <param name="writer">The pipe to write into.</param>
+        /// <param name="input">The octet string to encode.</param>
+        /// <param name="lengthFormat">The format of the octet string length that must be inserted before the payload.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing state of asynchronous execution.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+        public static ValueTask<FlushResult> WriteBlockAsync(this PipeWriter writer, ReadOnlyMemory<byte> input, LengthFormat? lengthFormat, CancellationToken token = default)
+        {
+            if (lengthFormat.HasValue)
+                writer.WriteLength(input.Length, lengthFormat.GetValueOrDefault());
+
+            return writer.WriteAsync(input, token);
+        }
+
+        /// <summary>
         /// Copies the data from the pipe to the buffer.
         /// </summary>
         /// <param name="reader">The pipe to read from.</param>
         /// <param name="destination">The buffer writer used as destination.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The number of copied bytes.</returns>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static async Task<long> CopyToAsync(this PipeReader reader, IBufferWriter<byte> destination, CancellationToken token = default)
-        {
-            ReadResult result;
-            var count = 0L;
-            do
-            {
-                result = await reader.ReadAsync(token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested(token);
-                count += destination.Write(result.Buffer, token);
-            }
-            while (!result.IsCompleted);
-
-            return count;
-        }
+        public static Task CopyToAsync(this PipeReader reader, IBufferWriter<byte> destination, CancellationToken token = default)
+            => CopyToAsync(reader, new BufferConsumer<byte>(destination), token);
     }
 }

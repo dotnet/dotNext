@@ -43,7 +43,7 @@ namespace DotNext.Runtime.CompilerServices
         {
             for (var i = 0; i < items.Count; i++)
                 output[i] = Expression.Field(instance, "Item" + (i + 1));
-            if (!(rest is null))
+            if (rest is not null)
             {
                 instance = Expression.Field(instance, "Rest");
                 rest.Build(instance, output.Slice(7));

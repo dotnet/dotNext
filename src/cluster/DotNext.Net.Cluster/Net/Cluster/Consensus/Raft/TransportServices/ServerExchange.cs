@@ -12,6 +12,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             Ready = 0,
             VoteRequestReceived,
+            PreVoteRequestReceived,
             MetadataRequestReceived,
             SendingMetadata,
             ResignRequestReceived,
@@ -56,6 +57,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 case MessageType.Vote:
                     state = State.VoteRequestReceived;
                     BeginVote(payload, endpoint, token);
+                    break;
+                case MessageType.PreVote:
+                    state = State.PreVoteRequestReceived;
+                    BeginPreVote(payload, endpoint, token);
                     break;
                 case MessageType.Metadata:
                     if (headers.Control == FlowControl.None)
@@ -116,34 +121,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             return result;
         }
 
-        public override ValueTask<(PacketHeaders, int, bool)> CreateOutboundMessageAsync(Memory<byte> output, CancellationToken token)
+        public override ValueTask<(PacketHeaders, int, bool)> CreateOutboundMessageAsync(Memory<byte> output, CancellationToken token) => state switch
         {
-            switch (state)
-            {
-                default:
-                    return default;
-                case State.VoteRequestReceived:
-                    return EndVote(output);
-                case State.MetadataRequestReceived:
-                    return SendMetadataPortionAsync(true, output, token);
-                case State.SendingMetadata:
-                    return SendMetadataPortionAsync(false, output, token);
-                case State.ResignRequestReceived:
-                    return EndResign(output);
-                case State.HeartbeatRequestReceived:
-                    return EndProcessHearbeat(output);
-                case State.AppendEntriesReceived:
-                case State.ReadyToReceiveEntry:
-                case State.ReceivingEntry:
-                case State.ReceivingEntriesFinished:
-                case State.EntryReceived:
-                    return TransmissionControl(output, token);
-                case State.SnapshotReceived:
-                    return RequestSnapshotChunk();
-                case State.ReceivingSnapshotFinished:
-                    return EndReceiveSnapshot(output);
-            }
-        }
+            State.VoteRequestReceived => EndVote(output),
+            State.PreVoteRequestReceived => EndPreVote(output),
+            State.MetadataRequestReceived => SendMetadataPortionAsync(true, output, token),
+            State.SendingMetadata => SendMetadataPortionAsync(false, output, token),
+            State.ResignRequestReceived => EndResign(output),
+            State.HeartbeatRequestReceived => EndProcessHearbeat(output),
+            State.AppendEntriesReceived or State.ReadyToReceiveEntry or State.ReceivingEntry or State.ReceivingEntriesFinished or State.EntryReceived => TransmissionControl(output, token),
+            State.SnapshotReceived => RequestSnapshotChunk(),
+            State.ReceivingSnapshotFinished => EndReceiveSnapshot(output),
+            _ => default,
+        };
 
         public void Reset()
         {

@@ -3,7 +3,6 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -361,25 +360,6 @@ namespace DotNext.IO
         }
 
         [Fact]
-        [Obsolete("This test is for backward compatibility only")]
-        public static void BufferWriterToStream()
-        {
-            using var writer = new PooledArrayBufferWriter<byte>();
-            var span = writer.GetSpan(10);
-            new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }.AsSpan().CopyTo(span);
-            writer.Advance(10);
-            using var stream = StreamSource.GetWrittenBytesAsStream(writer);
-            True(stream.CanRead);
-            False(stream.CanWrite);
-            Equal(0, stream.Position);
-            Equal(10, stream.Length);
-            var buffer = new byte[10];
-            Equal(10, stream.Read(buffer, 0, 10));
-            for (var i = 0; i < buffer.Length; i++)
-                Equal(i, buffer[i]);
-        }
-
-        [Fact]
         public static void StressTest()
         {
             ReadOnlySequence<byte> sequence;
@@ -388,17 +368,16 @@ namespace DotNext.IO
                 {"Key1", "Value1"},
                 {"Key2", "Value2"}
             };
-            var formatter = new BinaryFormatter();
 
             using (var ms = new MemoryStream(1024))
             {
-                formatter.Serialize(ms, dict);
+                DictionarySerializer.Serialize(dict, ms);
                 ms.Position = 0L;
                 sequence = ToReadOnlySequence<byte>(ms.ToArray(), 10);
             }
 
             using var stream = sequence.AsStream();
-            Equal(dict, formatter.Deserialize(stream));
+            Equal(dict, DictionarySerializer.Deserialize(stream));
         }
 
         private sealed class FlushCounter
