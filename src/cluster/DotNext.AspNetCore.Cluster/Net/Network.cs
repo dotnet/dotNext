@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using IServer = Microsoft.AspNetCore.Hosting.Server.IServer;
@@ -21,7 +22,7 @@ namespace DotNext.Net
                 case UriHostNameType.IPv6:
                     return new IPEndPoint(IPAddress.Parse(memberUri.Host), memberUri.Port);
                 case UriHostNameType.Dns:
-                    return memberUri.IsLoopback ? new IPEndPoint(IPAddress.Loopback, memberUri.Port) : null;
+                    return memberUri.IsLoopback ? new IPEndPoint(IPAddress.Loopback, memberUri.Port) : new IPEndPoint(Dns.GetHostAddresses(memberUri.Host).First(), memberUri.Port);
                 default:
                     return null;
             }
