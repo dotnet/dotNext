@@ -216,7 +216,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         internal readonly long PrevLogTerm;
         internal readonly long CommitIndex;
 
-        private protected AppendEntriesMessage(ClusterMemberId sender, long term, long prevLogIndex, long prevLogTerm, long commitIndex)
+        private protected AppendEntriesMessage(in ClusterMemberId sender, long term, long prevLogIndex, long prevLogTerm, long commitIndex)
             : base(MessageType, sender, term)
         {
             PrevLogIndex = prevLogIndex;

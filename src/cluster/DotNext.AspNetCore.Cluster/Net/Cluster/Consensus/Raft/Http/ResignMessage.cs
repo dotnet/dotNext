@@ -11,7 +11,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     {
         internal new const string MessageType = "Resign";
 
-        internal ResignMessage(ClusterMemberId sender)
+        internal ResignMessage(in ClusterMemberId sender)
             : base(MessageType, sender)
         {
         }
