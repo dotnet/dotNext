@@ -9,7 +9,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using static System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
@@ -368,9 +367,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             using (await transitionSync.AcquireAsync(token).ConfigureAwait(false))
             {
                 var currentState = Interlocked.Exchange(ref state, null);
-                Assert(currentState is not null);
-                await currentState.StopAsync().ConfigureAwait(false);
-                currentState.Dispose();
+                if (currentState is not null)
+                {
+                    await currentState.StopAsync().ConfigureAwait(false);
+                    currentState.Dispose();
+                }
             }
         }
 
@@ -415,6 +416,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The cluster member; or <see langword="null"/> if there is not member matching to the specified criteria.</returns>
         protected TMember? FindMember(Predicate<TMember> criteria)
             => members.FirstOrDefault(criteria.AsFunc());
+
+        /// <summary>
+        /// Finds cluster member asynchronously using predicate.
+        /// </summary>
+        /// <param name="criteria">The predicate used to find appropriate member.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The cluster member; or <see langword="null"/> if there is not member matching to the specified criteria.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        protected async ValueTask<TMember?> FindMemberAsync(Func<TMember, CancellationToken, ValueTask<bool>> criteria, CancellationToken token)
+        {
+            foreach (var candidate in members)
+            {
+                if (await criteria(candidate, token).ConfigureAwait(false))
+                    return candidate;
+            }
+
+            return null;
+        }
 
         /// <summary>
         /// Finds cluster member using predicate.

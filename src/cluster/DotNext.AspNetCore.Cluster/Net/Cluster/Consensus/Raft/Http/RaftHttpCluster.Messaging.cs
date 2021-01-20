@@ -16,14 +16,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
     internal partial class RaftHttpCluster : IOutputChannel
     {
-        private static readonly Func<RaftClusterMember, IPEndPoint, bool> MatchByEndPoint = IsMatchedByEndPoint;
+        private static readonly Func<RaftClusterMember, ClusterMemberId, bool> MatchById = IsMatchedById;
         private readonly DuplicateRequestDetector duplicationDetector;
         private volatile IImmutableSet<IPNetwork> allowedNetworks;
         private volatile ImmutableList<IInputChannel> messageHandlers;
         private volatile MemberMetadata metadata;
 
-        private static bool IsMatchedByEndPoint(RaftClusterMember member, IPEndPoint endPoint)
-            => member.EndPoint.Equals(endPoint);
+        private static bool IsMatchedById(RaftClusterMember actual, ClusterMemberId expected)
+            => actual.Id == expected;
 
         [MethodImpl(MethodImplOptions.Synchronized)]
         void IMessageBus.AddListener(IInputChannel handler)
@@ -81,7 +81,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             Assert(localMember is not null);
 
             // keep the same message between retries for correct identification of duplicate messages
-            var signal = new CustomMessage(localMember, message, true) { RespectLeadership = true };
+            var signal = new CustomMessage(localMember.GetValueOrDefault(), message, true) { RespectLeadership = true };
             var tokenSource = token.LinkTo(Token);
             try
             {
@@ -172,7 +172,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         private Task ReceiveMessageAsync(CustomMessage message, HttpResponse response, CancellationToken token)
         {
-            var sender = FindMember(MatchByEndPoint, message.Sender);
+            var sender = FindMember(MatchById, message.Sender);
             var task = Task.CompletedTask;
             if (sender is null)
             {
@@ -207,7 +207,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         private async Task ReceiveVoteAsync(RequestVoteMessage request, HttpResponse response, CancellationToken token)
         {
-            var sender = FindMember(MatchByEndPoint, request.Sender);
+            var sender = FindMember(MatchById, request.Sender);
             if (sender is null)
             {
                 await request.SaveResponse(response, new Result<bool>(Term, false), token).ConfigureAwait(false);
@@ -221,7 +221,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         private async Task ReceivePreVoteAsync(PreVoteMessage request, HttpResponse response, CancellationToken token)
         {
-            var sender = FindMember(MatchByEndPoint, request.Sender);
+            var sender = FindMember(MatchById, request.Sender);
             if (sender is null)
             {
                 await request.SaveResponse(response, new Result<bool>(Term, false), token).ConfigureAwait(false);
@@ -235,14 +235,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         private async Task ResignAsync(ResignMessage request, HttpResponse response, CancellationToken token)
         {
-            var sender = FindMember(MatchByEndPoint, request.Sender);
+            var sender = FindMember(MatchById, request.Sender);
             await request.SaveResponse(response, await ReceiveResignAsync(token).ConfigureAwait(false), token).ConfigureAwait(false);
             sender?.Touch();
         }
 
         private Task GetMetadataAsync(MetadataMessage request, HttpResponse response, CancellationToken token)
         {
-            var sender = FindMember(MatchByEndPoint, request.Sender);
+            var sender = FindMember(MatchById, request.Sender);
             var result = request.SaveResponse(response, metadata, token);
             sender?.Touch();
             return result;
@@ -253,7 +253,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             var message = new AppendEntriesMessage(request, out var entries);
             await using (entries)
             {
-                var sender = FindMember(MatchByEndPoint, message.Sender);
+                var sender = FindMember(MatchById, message.Sender);
                 if (sender is null)
                     response.StatusCode = StatusCodes.Status404NotFound;
                 else
@@ -263,7 +263,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         private async Task InstallSnapshot(InstallSnapshotMessage message, HttpResponse response, CancellationToken token)
         {
-            var sender = FindMember(MatchByEndPoint, message.Sender);
+            var sender = FindMember(MatchById, message.Sender);
             if (sender is null)
                 response.StatusCode = StatusCodes.Status404NotFound;
             else

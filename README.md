@@ -111,6 +111,7 @@ Migration guide for 2.x users is [here](https://sakno.github.io/dotNext/migratio
 * Added `UsePersistenceEngine` extension method for correct registration of custom persistence engine derived from [PersistentState](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html) class
 * Added support of HTTP/3 (available for .NET 5 only)
 * Significantly optimized performance and traffic volume of **AppendEntries** Raft RPC call. Now replication performance is comparable to TCP/UDP transports
+* Added DNS support. Now cluster member address can be specified using its name instead of IP address
 
 `DotNext.Augmentation` IL weaver add-on for MSBuild is no longer supported.
 

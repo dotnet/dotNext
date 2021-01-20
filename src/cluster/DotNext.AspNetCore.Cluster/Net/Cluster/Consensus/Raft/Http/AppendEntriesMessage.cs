@@ -116,7 +116,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 else
                 {
                     consumed = true;
-                    result = reader.ReadBlockAsync(length, WriteToAsync<TWriter>, writer, token);
+                    result = reader.ReadBlockAsync(length, writer, token);
                 }
 
                 return result;
@@ -216,7 +216,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         internal readonly long PrevLogTerm;
         internal readonly long CommitIndex;
 
-        private protected AppendEntriesMessage(IPEndPoint sender, long term, long prevLogIndex, long prevLogTerm, long commitIndex)
+        private protected AppendEntriesMessage(in ClusterMemberId sender, long term, long prevLogIndex, long prevLogTerm, long commitIndex)
             : base(MessageType, sender, term)
         {
             PrevLogIndex = prevLogIndex;
@@ -445,7 +445,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private TList entries;  // not readonly to avoid hidden copies
         private bool optimizedTransfer;
 
-        internal AppendEntriesMessage(IPEndPoint sender, long term, long prevLogIndex, long prevLogTerm, long commitIndex, TList entries)
+        internal AppendEntriesMessage(ClusterMemberId sender, long term, long prevLogIndex, long prevLogTerm, long commitIndex, TList entries)
             : base(sender, term, prevLogIndex, prevLogTerm, commitIndex)
             => this.entries = entries;
 

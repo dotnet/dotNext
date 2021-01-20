@@ -1,4 +1,7 @@
+using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
@@ -25,5 +28,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </remarks>
         /// <param name="cluster">The instance to be configured.</param>
         void Shutdown(IRaftCluster cluster);
+
+        /// <summary>
+        /// Gets predicate that can be used to override default logic for searching of local cluster member.
+        /// </summary>
+        Func<IRaftClusterMember, CancellationToken, ValueTask<bool>>? LocalMemberSelector => null;
     }
 }

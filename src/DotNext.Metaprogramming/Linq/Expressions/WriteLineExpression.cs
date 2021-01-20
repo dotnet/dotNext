@@ -98,19 +98,12 @@ namespace DotNext.Linq.Expressions
         /// using Lowering technique.
         /// </summary>
         /// <returns>Translated expression.</returns>
-        public override Expression Reduce()
+        public override Expression Reduce() => kind switch
         {
-            switch (kind)
-            {
-                case Kind.Out:
-                    return WriteLineToOut();
-                case Kind.Error:
-                    return WriteLineToError();
-                case Kind.Debug:
-                    return WriteLineToDebug();
-                default:
-                    return Empty();
-            }
-        }
+            Kind.Out => WriteLineToOut(),
+            Kind.Error => WriteLineToError(),
+            Kind.Debug => WriteLineToDebug(),
+            _ => Empty(),
+        };
     }
 }

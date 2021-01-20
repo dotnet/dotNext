@@ -29,9 +29,7 @@ namespace DotNext.Threading
                     throw new ArgumentNullException(nameof(obj));
                 case ReaderWriterLockSlim rws:
                     return rws;
-                case SemaphoreSlim _:
-                case WaitHandle _:
-                case ReaderWriterLock _:
+                case SemaphoreSlim or WaitHandle or ReaderWriterLock _:
                 case string str when string.IsInterned(str) is not null:
                     throw new InvalidOperationException(ExceptionMessages.UnsupportedLockAcquisition);
                 default:

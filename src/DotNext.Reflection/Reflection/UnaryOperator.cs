@@ -117,16 +117,11 @@ namespace DotNext.Reflection
             bool usePrimitiveCast;
 
             // perform automatic cast from byte/short/ushort/sbyte so unary operators become available for these types
-            switch ((ExpressionType)@operator)
+            usePrimitiveCast = (ExpressionType)@operator switch
             {
-                case ExpressionType.Convert:
-                case ExpressionType.ConvertChecked:
-                    usePrimitiveCast = false;
-                    break;
-                default:
-                    usePrimitiveCast = resultType.IsPrimitive && operand.NormalizePrimitive();
-                    break;
-            }
+                ExpressionType.Convert or ExpressionType.ConvertChecked => true,
+                _ => resultType.IsPrimitive && operand.NormalizePrimitive()
+            };
 
             tail_call: // C# doesn't support tail calls so replace it with label/goto
             overloaded = null;

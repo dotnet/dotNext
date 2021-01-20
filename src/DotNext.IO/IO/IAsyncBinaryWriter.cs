@@ -17,7 +17,7 @@ namespace DotNext.IO
     /// Providers a uniform way to encode the data.
     /// </summary>
     /// <seealso cref="IAsyncBinaryReader"/>
-    public interface IAsyncBinaryWriter
+    public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
     {
         /// <summary>
         /// Encodes value of blittable type.
@@ -244,6 +244,10 @@ namespace DotNext.IO
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         ValueTask WriteAsync(ReadOnlyMemory<byte> input, LengthFormat? lengthFormat = null, CancellationToken token = default);
+
+        /// <inheritdoc />
+        ValueTask ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<byte> input, CancellationToken token)
+            => WriteAsync(input, null, token);
 
         /// <summary>
         /// Encodes a block of memory using synchronous encoder.

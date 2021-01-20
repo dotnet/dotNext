@@ -100,10 +100,7 @@ namespace DotNext.Reflection
         {
             switch (Type.GetTypeCode(operand.Argument.Type))
             {
-                case TypeCode.Byte:
-                case TypeCode.UInt16:
-                case TypeCode.SByte:
-                case TypeCode.Int16:
+                case TypeCode.Byte or TypeCode.UInt16 or TypeCode.SByte or TypeCode.Int16:
                     operand = new Operand(operand.Source, typeof(int));
                     return true;
                 default:

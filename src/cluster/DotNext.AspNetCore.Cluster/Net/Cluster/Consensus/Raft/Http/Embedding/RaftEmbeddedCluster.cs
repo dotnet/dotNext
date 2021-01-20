@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Net;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -31,6 +34,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             return member;
         }
 
-        private protected override Predicate<RaftClusterMember> LocalMemberFinder => server.GetHostingAddresses().Contains;
+        private protected override Task<ICollection<EndPoint>> GetHostingAddressesAsync()
+            => server.GetHostingAddressesAsync();
     }
 }

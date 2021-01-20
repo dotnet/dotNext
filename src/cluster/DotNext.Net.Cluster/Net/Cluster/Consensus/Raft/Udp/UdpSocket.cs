@@ -109,8 +109,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 default:
                     ReportError(args.SocketError);
                     break;
-                case SocketError.OperationAborted:
-                case SocketError.ConnectionAborted:
+                case SocketError.OperationAborted or SocketError.ConnectionAborted:
                     break;
                 case SocketError.Success:
                     EndReceive(args);

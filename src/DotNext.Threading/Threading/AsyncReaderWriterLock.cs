@@ -90,7 +90,7 @@ namespace DotNext.Threading
                 ReadLocks = 0L;
             }
 
-            internal long Version => version.VolatileRead();
+            internal readonly long Version => version.VolatileRead();
 
             internal void IncrementVersion() => version.IncrementAndGet();
 
@@ -144,21 +144,18 @@ namespace DotNext.Threading
         public readonly struct LockStamp : IEquatable<LockStamp>
         {
             private readonly long version;
-            private readonly Box<State> state;
+            private readonly bool valid;
 
-            internal LockStamp(Box<State> state)
+            internal LockStamp(in State state)
             {
-                version = state.Value.Version;
-                this.state = state;
+                version = state.Version;
+                valid = true;
             }
 
-            /// <summary>
-            /// Determines whether the version of internal lock state is not outdated.
-            /// </summary>
-            public bool IsValid => !state.IsEmpty && state.Value.Version == version;
+            internal bool IsValid(in State state)
+                => valid && state.Version == version;
 
-            private bool Equals(in LockStamp other)
-                => state == other.state && version == other.version;
+            private bool Equals(in LockStamp other) => version == other.version && valid == other.valid;
 
             /// <summary>
             /// Determines whether this stamp represents the same version of the lock state
@@ -180,7 +177,7 @@ namespace DotNext.Threading
             /// Computes hash code for this stamp.
             /// </summary>
             /// <returns>The hash code of this stamp.</returns>
-            public override int GetHashCode() => HashCode.Combine(state, version);
+            public override int GetHashCode() => HashCode.Combine(valid, version);
 
             /// <summary>
             /// Determines whether the first stamp represents the same version of the lock state
@@ -246,8 +243,16 @@ namespace DotNext.Threading
         public LockStamp TryOptimisticRead()
         {
             ThrowIfDisposed();
-            return state.Value.WriteLock ? new LockStamp() : new LockStamp(state);
+            ref State state = ref this.state.Value;
+            return state.WriteLock ? new LockStamp() : new LockStamp(in state);
         }
+
+        /// <summary>
+        /// Returns <see langword="true"/> if the lock has not been exclusively acquired since issuance of the given stamp.
+        /// </summary>
+        /// <param name="stamp">A stamp to check.</param>
+        /// <returns><see langword="true"/> if the lock has not been exclusively acquired since issuance of the given stamp; else <see langword="false"/>.</returns>
+        public bool Validate(in LockStamp stamp) => stamp.IsValid(in state.Value);
 
         /// <summary>
         /// Attempts to acquire write lock without blocking.
@@ -259,7 +264,8 @@ namespace DotNext.Threading
         public bool TryEnterWriteLock(in LockStamp stamp)
         {
             ThrowIfDisposed();
-            return stamp.IsValid && TryAcquire<WriteLockNode, State>(ref state.Value);
+            ref State state = ref this.state.Value;
+            return stamp.IsValid(in state) && TryAcquire<WriteLockNode, State>(ref state);
         }
 
         /// <summary>
@@ -472,6 +478,7 @@ namespace DotNext.Threading
                 RemoveNode(writeLock);
                 writeLock.SetResult();
                 currentState.WriteLock = true;
+                currentState.IncrementVersion();
             }
             else
             {
@@ -532,6 +539,7 @@ namespace DotNext.Threading
                 RemoveNode(writeLock);
                 writeLock.SetResult();
                 currentState.WriteLock = true;
+                currentState.IncrementVersion();
             }
         }
 

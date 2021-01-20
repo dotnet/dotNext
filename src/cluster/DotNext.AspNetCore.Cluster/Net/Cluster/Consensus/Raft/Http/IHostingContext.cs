@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Net.Http;
 using Microsoft.Extensions.Logging;
 
@@ -16,7 +15,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         ILogger Logger { get; }
 
-        IPEndPoint LocalEndpoint { get; }
+        ClusterMemberId LocalEndpoint { get; }
 
         IReadOnlyDictionary<string, string> Metadata { get; }
 

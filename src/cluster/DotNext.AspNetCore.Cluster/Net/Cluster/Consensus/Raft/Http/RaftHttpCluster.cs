@@ -25,7 +25,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private readonly bool openConnectionForEachRequest;
         private readonly string clientHandlerName;
         private readonly HttpVersion protocolVersion;
-        private IPEndPoint? localMember;
+        private ClusterMemberId? localMember;
 
         private RaftHttpCluster(HttpClusterMemberConfiguration config, IServiceProvider dependencies, out MemberCollectionBuilder members, Func<Action<HttpClusterMemberConfiguration, string>, IDisposable> configTracker)
             : base(config, out members)
@@ -123,7 +123,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         bool IHostingContext.IsLeader(IRaftClusterMember member) => ReferenceEquals(Leader, member);
 
-        IPEndPoint IHostingContext.LocalEndpoint => localMember ?? throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
+        ClusterMemberId IHostingContext.LocalEndpoint => localMember ?? throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
 
         HttpMessageHandler IHostingContext.CreateHttpHandler()
             => httpHandlerFactory?.CreateHandler(clientHandlerName) ?? new SocketsHttpHandler { ConnectTimeout = connectTimeout };
@@ -134,18 +134,35 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         public event ClusterChangedEventHandler? MemberRemoved;
 
-        private protected abstract Predicate<RaftClusterMember> LocalMemberFinder { get; }
+        private protected abstract Task<ICollection<EndPoint>> GetHostingAddressesAsync();
 
-        public override Task StartAsync(CancellationToken token)
+        private async Task<ClusterMemberId> DetectLocalMemberAsync(CancellationToken token)
+        {
+            var selector = configurator?.LocalMemberSelector;
+            RaftClusterMember? member;
+
+            if (selector is null)
+            {
+                var addresses = await GetHostingAddressesAsync().ConfigureAwait(false);
+                member = FindMember(addresses.Contains);
+            }
+            else
+            {
+                member = await FindMemberAsync(selector, token).ConfigureAwait(false);
+            }
+
+            return member?.Id ?? throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
+        }
+
+        public override async Task StartAsync(CancellationToken token)
         {
             if (raftRpcTimeout > requestTimeout)
-                return Task.FromException(new RaftProtocolException(ExceptionMessages.InvalidRpcTimeout));
+                throw new RaftProtocolException(ExceptionMessages.InvalidRpcTimeout);
 
             // detect local member
-            var localMember = FindMember(LocalMemberFinder) ?? throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
-            this.localMember = localMember.EndPoint;
+            localMember = await DetectLocalMemberAsync(token).ConfigureAwait(false);
             configurator?.Initialize(this, metadata);
-            return base.StartAsync(token);
+            await base.StartAsync(token).ConfigureAwait(false);
         }
 
         public override Task StopAsync(CancellationToken token)

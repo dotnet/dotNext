@@ -87,14 +87,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         internal readonly IMessage Message;
         internal bool RespectLeadership;
 
-        private protected CustomMessage(IPEndPoint sender, IMessage message, DeliveryMode mode)
+        private protected CustomMessage(in ClusterMemberId sender, IMessage message, DeliveryMode mode)
             : base(MessageType, sender)
         {
             Message = message;
             Mode = mode;
         }
 
-        internal CustomMessage(IPEndPoint sender, IMessage message, bool requiresConfirmation)
+        internal CustomMessage(in ClusterMemberId sender, IMessage message, bool requiresConfirmation)
             : this(sender, message, requiresConfirmation ? DeliveryMode.OneWay : DeliveryMode.OneWayNoAck)
         {
         }
@@ -154,7 +154,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     {
         private readonly MessageReader<T> reader;
 
-        internal CustomMessage(IPEndPoint sender, IMessage message, MessageReader<T> reader)
+        internal CustomMessage(ClusterMemberId sender, IMessage message, MessageReader<T> reader)
             : base(sender, message, DeliveryMode.RequestReply) => this.reader = reader;
 
         Task<T> IHttpMessageReader<T>.ParseResponse(HttpResponseMessage response, CancellationToken token)

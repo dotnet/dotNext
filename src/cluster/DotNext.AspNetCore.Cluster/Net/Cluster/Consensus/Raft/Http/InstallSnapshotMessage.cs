@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.IO.Pipelines;
 using System.Net;
 using System.Net.Http;
@@ -54,7 +53,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 else
                 {
                     touched = true;
-                    result = reader.CopyToAsync(WriteToAsync<TWriter>, writer, token);
+                    result = reader.CopyToAsync(writer, token);
                 }
 
                 return new ValueTask(result);
@@ -64,7 +63,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         internal readonly IRaftLogEntry Snapshot;
         internal readonly long Index;
 
-        internal InstallSnapshotMessage(IPEndPoint sender, long term, long index, IRaftLogEntry snapshot)
+        internal InstallSnapshotMessage(in ClusterMemberId sender, long term, long index, IRaftLogEntry snapshot)
             : base(MessageType, sender, term)
         {
             Index = index;

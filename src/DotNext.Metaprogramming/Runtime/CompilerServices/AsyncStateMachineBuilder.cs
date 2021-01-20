@@ -419,19 +419,11 @@ namespace DotNext.Runtime.CompilerServices
             return holder is null ? new RethrowExpression() : RethrowExpression.Dispatch(holder);
         }
 
-        protected override Expression VisitUnary(UnaryExpression node)
+        protected override Expression VisitUnary(UnaryExpression node) => node.NodeType switch
         {
-            switch (node.NodeType)
-            {
-                case ExpressionType.Throw:
-                    if (node.Operand is null)
-                        return context.Rewrite(node, Rethrow);
-                    else
-                        goto default;
-                default:
-                    return context.Rewrite(node, base.VisitUnary);
-            }
-        }
+            ExpressionType.Throw when node.Operand is null => context.Rewrite(node, Rethrow),
+            _ => context.Rewrite(node, base.VisitUnary)
+        };
 
         private SwitchExpression MakeSwitch()
         {
