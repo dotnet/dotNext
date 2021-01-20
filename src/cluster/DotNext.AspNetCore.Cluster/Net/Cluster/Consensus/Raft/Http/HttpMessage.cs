@@ -56,7 +56,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         internal readonly ClusterMemberId Sender;
         internal readonly string MessageType;
 
-        private protected HttpMessage(string messageType, ClusterMemberId sender)
+        private protected HttpMessage(string messageType, in ClusterMemberId sender)
         {
             Sender = sender;
             MessageType = messageType;

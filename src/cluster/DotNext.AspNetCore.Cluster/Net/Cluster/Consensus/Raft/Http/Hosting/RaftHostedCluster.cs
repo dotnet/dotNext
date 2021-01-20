@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
@@ -92,7 +94,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
             await base.StopAsync(token).ConfigureAwait(false);
         }
 
-        private protected override Predicate<RaftClusterMember> LocalMemberFinder => host.Services.GetRequiredService<IServer>().GetHostingAddresses().Contains;
+        private protected override Task<ICollection<EndPoint>> GetHostingAddressesAsync()
+            => host.Services.GetRequiredService<IServer>().GetHostingAddressesAsync();
 
         protected override void Dispose(bool disposing)
         {
