@@ -14,7 +14,6 @@ using Microsoft.Extensions.Options;
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Messaging;
-    using ClusterMemberSelector = Predicate<IRaftClusterMember>;
     using IClientMetricsCollector = Metrics.IClientMetricsCollector;
 
     internal abstract partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IExpandableCluster, IMessageBus
@@ -139,14 +138,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         private async Task<ClusterMemberId> DetectLocalMemberAsync(CancellationToken token)
         {
-            ClusterMemberSelector? selector = await (configurator?.GetLocalMemberSelectorAsync(token) ?? new ValueTask<ClusterMemberSelector?>(default(ClusterMemberSelector))).ConfigureAwait(false);
+            var selector = configurator?.LocalMemberSelector;
+            RaftClusterMember? member;
+
             if (selector is null)
             {
                 var addresses = await GetHostingAddressesAsync().ConfigureAwait(false);
-                selector = addresses.Contains;
+                member = FindMember(addresses.Contains);
+            }
+            else
+            {
+                member = await FindMemberAsync(selector, token).ConfigureAwait(false);
             }
 
-            return FindMember(selector)?.Id ?? throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
+            return member?.Id ?? throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
         }
 
         public override async Task StartAsync(CancellationToken token)

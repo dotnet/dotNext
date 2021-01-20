@@ -5,8 +5,6 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    using ClusterMemberSelector = Predicate<IRaftClusterMember>;
-
     /// <summary>
     /// Provides additional control over <see cref="IRaftCluster"/> lifecycle.
     /// </summary>
@@ -34,7 +32,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Gets predicate that can be used to override default logic for searching of local cluster member.
         /// </summary>
-        ValueTask<ClusterMemberSelector?> GetLocalMemberSelectorAsync(CancellationToken token)
-            => token.IsCancellationRequested ? new ValueTask<ClusterMemberSelector?>(Task.FromCanceled<ClusterMemberSelector?>(token)) : new ValueTask<ClusterMemberSelector?>(default(ClusterMemberSelector));
+        Func<IRaftClusterMember, CancellationToken, ValueTask<bool>>? LocalMemberSelector => null;
     }
 }
