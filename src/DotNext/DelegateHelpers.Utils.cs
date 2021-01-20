@@ -27,10 +27,13 @@ namespace DotNext
         {
             var list = d.GetInvocationList();
             if (list.LongLength == 1)
-                return ReferenceEquals(list[0], d) ? d.Method.CreateDelegate<TDelegate>(rewriter.Invoke(d)) : ChangeType<TDelegate, TRewriter>(list[0], rewriter);
+                return ReferenceEquals(list[0], d) ? ChangeTypeImpl(d, rewriter) : ChangeType<TDelegate, TRewriter>(list[0], rewriter);
             foreach (ref var sub in list.AsSpan())
-                sub = sub.Method.CreateDelegate<TDelegate>(rewriter.Invoke(sub));
+                sub = ChangeTypeImpl(sub, rewriter);
             return (TDelegate)Delegate.Combine(list)!;
+
+            static TDelegate ChangeTypeImpl(Delegate d, TRewriter rewriter)
+                => d.Method.CreateDelegate<TDelegate>(rewriter.Invoke(d));
         }
     }
 }
