@@ -412,7 +412,23 @@ namespace DotNext
         public static void ForEach<T>(this Span<T> span, RefAction<T, int> action)
         {
             for (var i = 0; i < span.Length; i++)
-                action.Invoke(ref span[i], i);
+                action(ref span[i], i);
+        }
+
+        /// <summary>
+        /// Iterates over elements of the span.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements.</typeparam>
+        /// <typeparam name="TArg">The type of the argument to be passed to the action.</typeparam>
+        /// <param name="span">The span to iterate.</param>
+        /// <param name="action">The action to be applied for each element of the span.</param>
+        /// <param name="arg">The argument to be passed to the action.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action"/> is zero.</exception>
+        [CLSCompliant(false)]
+        public static unsafe void ForEach<T, TArg>(this Span<T> span, delegate*<ref T, TArg, void> action, TArg arg)
+        {
+            foreach (ref var item in span)
+                action(ref item, arg);
         }
 
         /// <summary>
