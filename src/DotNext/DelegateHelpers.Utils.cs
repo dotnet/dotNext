@@ -26,14 +26,17 @@ namespace DotNext
             where TRewriter : struct, ISupplier<Delegate, object?>
         {
             var list = d.GetInvocationList();
-            if (list.LongLength == 1)
-                return ReferenceEquals(list[0], d) ? ChangeTypeImpl(d, rewriter) : ChangeType<TDelegate, TRewriter>(list[0], rewriter);
-            foreach (ref var sub in list.AsSpan())
-                sub = ChangeTypeImpl(sub, rewriter);
-            return (TDelegate)Delegate.Combine(list)!;
+            if (list.LongLength == 1L)
+                return ReferenceEquals(list[0], d) ? d.Method.CreateDelegate<TDelegate>(rewriter.Invoke(d)) : ChangeType<TDelegate, TRewriter>(list[0], rewriter);
 
-            static TDelegate ChangeTypeImpl(Delegate d, TRewriter rewriter)
-                => d.Method.CreateDelegate<TDelegate>(rewriter.Invoke(d));
+            // We use untyped CreateDelegate to avoid typecast inside of the loop.
+            // Also, it's reasonable to reuse already allocated invocation list to store
+            // newly created delegates because Delegate.Combine accepts array only
+            var delegateType = typeof(TDelegate);
+            foreach (ref var sub in list.AsSpan())
+                sub = sub.Method.CreateDelegate(delegateType, rewriter.Invoke(sub));
+
+            return (TDelegate)Delegate.Combine(list)!;
         }
     }
 }
