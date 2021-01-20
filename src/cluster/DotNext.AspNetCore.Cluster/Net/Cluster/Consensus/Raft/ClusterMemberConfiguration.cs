@@ -27,6 +27,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public IPAddress? HostAddressHint { get; set; }
 
         /// <summary>
+        /// Gets or sets DNS name of the local node visible to other nodes in the network.
+        /// </summary>
+        public string? HostNameHint { get; set; }
+
+        /// <summary>
         /// Gets lower possible value of leader election timeout, in milliseconds.
         /// </summary>
         public int LowerElectionTimeout
@@ -84,8 +89,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         internal void SetupHostAddressHint(IFeatureCollection features)
         {
             var address = HostAddressHint;
-            if (address is not null && !features.IsReadOnly)
-                features.Set(new HostAddressHintFeature(address));
+            var name = HostNameHint;
+            HostAddressHintFeature? feature = null;
+
+            if (!features.IsReadOnly)
+            {
+                if (address is not null)
+                    feature += address.ToEndPoint;
+
+                if (!string.IsNullOrWhiteSpace(name))
+                    feature += name.ToEndPoint;
+            }
+
+            if (feature is not null)
+                features.Set(feature);
         }
     }
 }

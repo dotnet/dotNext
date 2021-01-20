@@ -23,6 +23,18 @@ namespace DotNext.Net
             _ => null
         };
 
+        private static void Resolve(this HostAddressHintFeature feature, ICollection<EndPoint> endPoints, int port)
+        {
+            foreach (HostAddressHintFeature f in feature.GetInvocationList())
+                endPoints.Add(f(port));
+        }
+
+        internal static IPEndPoint ToEndPoint(this IPAddress address, int port)
+            => new IPEndPoint(address, port);
+
+        internal static DnsEndPoint ToEndPoint(this string name, int port)
+            => new DnsEndPoint(name, port);
+
         // TODO: Return type must be changed to IReadOnlySet<EndPoint> in .NET 6
         internal static async Task<ICollection<EndPoint>> GetHostingAddressesAsync(this IServer server)
         {
@@ -30,7 +42,7 @@ namespace DotNext.Net
             if (feature is null || feature.Addresses.Count == 0)
                 return ImmutableHashSet<EndPoint>.Empty;
             var result = new HashSet<EndPoint>();
-            var hint = server.Features.Get<HostAddressHintFeature>()?.Address;
+            var hint = server.Features.Get<HostAddressHintFeature>();
             foreach (var address in feature.Addresses)
             {
                 if (Uri.TryCreate(address, UriKind.Absolute, out var uri))
@@ -76,8 +88,7 @@ namespace DotNext.Net
                     }
 
                     // add host address hint if it is available
-                    if (hint is not null)
-                        result.Add(new IPEndPoint(hint, portHint));
+                    hint?.Resolve(result, portHint);
                 }
             }
 
