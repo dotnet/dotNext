@@ -88,6 +88,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return IDataTransferObject.TransformAsync<TResult, TTransformation>(content, transformation, false, buffer, token);
             }
 
+            /// <summary>
+            /// Gets reader that can be used to deserialize the content of this log entry.
+            /// </summary>
+            /// <returns>The binary reader providing access to the content of this log entry.</returns>
+            public IAsyncBinaryReader GetReader()
+            {
+                Reset();
+                return IAsyncBinaryReader.Create(content, buffer);
+            }
+
 #if !NETSTANDARD2_1
             /// <summary>
             /// Deserializes JSON content represented by this log entry.
