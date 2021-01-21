@@ -168,6 +168,7 @@ namespace DotNext
             where T : class
             => Some<T?>(null);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static ref readonly T GetReference<T, TException>(in Optional<T> optional, TException exceptionFactory)
             where T : struct
             where TException : struct, ISupplier<Exception>
