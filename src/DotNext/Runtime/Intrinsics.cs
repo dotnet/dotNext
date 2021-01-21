@@ -262,11 +262,7 @@ namespace DotNext.Runtime
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static T Read<T>(this ref byte address)
             where T : unmanaged
-        {
-            Push(ref address);
-            Ldobj<T>();
-            return Return<T>();
-        }
+            => Unsafe.As<byte, T>(ref address);
 
         /// <summary>
         /// Bitwise comparison of two memory blocks.
