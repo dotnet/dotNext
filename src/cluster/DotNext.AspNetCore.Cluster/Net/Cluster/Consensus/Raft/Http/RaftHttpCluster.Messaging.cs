@@ -7,7 +7,6 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using static System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
@@ -78,10 +77,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         async Task IOutputChannel.SendSignalAsync(IMessage message, CancellationToken token)
         {
-            Assert(localMember is not null);
-
             // keep the same message between retries for correct identification of duplicate messages
-            var signal = new CustomMessage(localMember.GetValueOrDefault(), message, true) { RespectLeadership = true };
+            var signal = new CustomMessage(in localMember.Value, message, true) { RespectLeadership = true };
             var tokenSource = token.LinkTo(Token);
             try
             {
@@ -273,7 +270,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         internal Task ProcessRequest(HttpContext context)
         {
             // this check allows to prevent situation when request comes earlier than initialization
-            if (localMember is null)
+            if (localMember.IsEmpty)
             {
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 return context.Response.WriteAsync(ExceptionMessages.UnresolvedLocalMember, context.RequestAborted);

@@ -15,7 +15,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         ILogger Logger { get; }
 
-        ClusterMemberId LocalEndpoint { get; }
+        ref readonly ClusterMemberId LocalEndpoint { get; }
 
         IReadOnlyDictionary<string, string> Metadata { get; }
 
