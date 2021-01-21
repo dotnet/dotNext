@@ -592,7 +592,7 @@ namespace DotNext.Runtime
         /// <returns>The computed hash.</returns>
         public static long GetHashCode64<T>(Func<T, int, long> getter, int count, T arg, bool salted = true)
         {
-            if (getter == null)
+            if (getter is null)
                 throw new ArgumentNullException(nameof(getter));
 
             var hash = FNV1a64.Offset;
@@ -613,7 +613,7 @@ namespace DotNext.Runtime
         /// <returns>The computed hash.</returns>
         public static int GetHashCode32<T>(Func<T, int, int> getter, int count, T arg, bool salted = true)
         {
-            if (getter == null)
+            if (getter is null)
                 throw new ArgumentNullException(nameof(getter));
 
             var hash = FNV1a32.Offset;
