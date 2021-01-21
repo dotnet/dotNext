@@ -106,7 +106,29 @@ namespace DotNext
 
         private static int GetHashCode<THashFunction>(in T value, int hash, THashFunction hashFunction, bool salted)
             where THashFunction : struct, ISupplier<int, int, int>
-            => GetHashCode32(ref InToRef<T, byte>(value), SizeOf<T>(), hash, hashFunction, salted);
+        {
+            switch (SizeOf<T>())
+            {
+                default:
+                    return GetHashCode32(ref InToRef<T, byte>(value), SizeOf<T>(), hash, hashFunction, salted);
+                case 0:
+                    break;
+                case sizeof(byte):
+                    hash = hashFunction.Invoke(hash, InToRef<T, byte>(in value));
+                    break;
+                case sizeof(ushort):
+                    hash = hashFunction.Invoke(hash, InToRef<T, ushort>(in value));
+                    break;
+                case sizeof(int):
+                    hash = hashFunction.Invoke(hash, InToRef<T, int>(in value));
+                    break;
+            }
+
+            if (salted)
+                hash = hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt);
+
+            return hash;
+        }
 
         /// <summary>
         /// Computes bitwise hash code for the specified value.
