@@ -40,26 +40,15 @@ namespace DotNext
         /// <returns><see langword="true"/>, if both values are equal; otherwise, <see langword="false"/>.</returns>
         public static bool Equals<TOther>(in T first, in TOther second)
             where TOther : struct
-        {
-            if (SizeOf<T>() != SizeOf<TOther>())
-                return false;
-
-            switch (SizeOf<T>())
+            => SizeOf<T>() == SizeOf<TOther>() && SizeOf<T>() switch
             {
-                default:
-                    return EqualsAligned(ref InToRef<T, byte>(first), ref InToRef<TOther, byte>(second), SizeOf<T>());
-                case 0:
-                    return true;
-                case sizeof(byte):
-                    return InToRef<T, byte>(first) == InToRef<TOther, byte>(second);
-                case sizeof(ushort):
-                    return InToRef<T, ushort>(first) == InToRef<TOther, ushort>(second);
-                case sizeof(uint):
-                    return InToRef<T, uint>(first) == InToRef<TOther, uint>(second);
-                case sizeof(ulong):
-                    return InToRef<T, ulong>(first) == InToRef<TOther, ulong>(second);
-            }
-        }
+                0 => true,
+                sizeof(byte) => InToRef<T, byte>(first) == InToRef<TOther, byte>(second),
+                sizeof(ushort) => InToRef<T, ushort>(first) == InToRef<TOther, ushort>(second),
+                sizeof(uint) => InToRef<T, uint>(first) == InToRef<TOther, uint>(second),
+                sizeof(ulong) => InToRef<T, ulong>(first) == InToRef<TOther, ulong>(second),
+                _ => EqualsAligned(ref InToRef<T, byte>(first), ref InToRef<TOther, byte>(second), SizeOf<T>()),
+            };
 
         /// <summary>
         /// Compares bits of two values of the different type.
