@@ -292,10 +292,10 @@ namespace DotNext.Runtime
                 }
             }
 
-            for (; length >= sizeof(UIntPtr); first = ref first.Advance<UIntPtr>(), second = ref second.Advance<UIntPtr>())
+            for (; length >= sizeof(nuint); first = ref first.Advance<nuint>(), second = ref second.Advance<nuint>())
             {
-                if (first.Read<UIntPtr>() == second.Read<UIntPtr>())
-                    length -= sizeof(UIntPtr);
+                if (first.Read<nuint>() == second.Read<nuint>())
+                    length -= sizeof(nuint);
                 else
                     goto exit;
             }
@@ -510,10 +510,10 @@ namespace DotNext.Runtime
                 }
             }
 
-            while (length >= sizeof(UIntPtr))
+            while (length >= sizeof(nuint))
             {
-                if (address.Read<UIntPtr>() == default)
-                    address = ref address.Advance<UIntPtr>(&length);
+                if (address.Read<nuint>() == 0)
+                    address = ref address.Advance<nuint>(&length);
                 else
                     goto exit;
             }
