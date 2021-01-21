@@ -570,13 +570,9 @@ namespace DotNext.Runtime
                 case sizeof(ushort):
                     hash = hashFunction.Invoke(hash, Unsafe.ReadUnaligned<ushort>(ref source));
                     break;
-                case 3:
-                    goto default;
                 case sizeof(uint):
                     hash = hashFunction.Invoke(hash, Unsafe.ReadUnaligned<uint>(ref source));
                     break;
-                case 5 or 6 or 7:
-                    goto default;
             }
 
             return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
