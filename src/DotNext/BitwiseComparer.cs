@@ -101,6 +101,7 @@ namespace DotNext
 
             if (salted)
                 hash ^= RandomExtensions.BitwiseHashSalt;
+
             return hash;
         }
 
