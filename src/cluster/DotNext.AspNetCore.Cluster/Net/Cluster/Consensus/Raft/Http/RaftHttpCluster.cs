@@ -14,11 +14,11 @@ using Microsoft.Extensions.Options;
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Messaging;
-    using Runtime;
     using IClientMetricsCollector = Metrics.IClientMetricsCollector;
 
     internal abstract partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IExpandableCluster, IMessageBus
     {
+        private static readonly Func<RaftProtocolException> UnresolvedLocalMemberExceptionFactory = CreateUnresolvedLocalMemberException;
         private readonly IClusterMemberLifetime? configurator;
         private readonly IDisposable configurationTracker;
         private readonly IHttpMessageHandlerFactory? httpHandlerFactory;
@@ -26,7 +26,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private readonly bool openConnectionForEachRequest;
         private readonly string clientHandlerName;
         private readonly HttpVersion protocolVersion;
-        private Box<ClusterMemberId> localMember;
+        private Optional<ClusterMemberId> localMember;
 
         private RaftHttpCluster(HttpClusterMemberConfiguration config, IServiceProvider dependencies, out MemberCollectionBuilder members, Func<Action<HttpClusterMemberConfiguration, string>, IDisposable> configTracker)
             : base(config, out members)
@@ -62,6 +62,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             : this(dependencies.GetRequiredService<IOptionsMonitor<HttpClusterMemberConfiguration>>(), dependencies, out members)
         {
         }
+
+        private static RaftProtocolException CreateUnresolvedLocalMemberException()
+            => new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
 
         private protected void ConfigureMember(RaftClusterMember member)
         {
@@ -125,14 +128,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         bool IHostingContext.IsLeader(IRaftClusterMember member) => ReferenceEquals(Leader, member);
 
         ref readonly ClusterMemberId IHostingContext.LocalEndpoint
-        {
-            get
-            {
-                if (localMember.IsEmpty)
-                    throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
-                return ref localMember.Value;
-            }
-        }
+            => ref localMember.GetReference(UnresolvedLocalMemberExceptionFactory);
 
         HttpMessageHandler IHostingContext.CreateHttpHandler()
             => httpHandlerFactory?.CreateHandler(clientHandlerName) ?? new SocketsHttpHandler { ConnectTimeout = connectTimeout };
@@ -169,7 +165,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 throw new RaftProtocolException(ExceptionMessages.InvalidRpcTimeout);
 
             // detect local member
-            localMember = new Box<ClusterMemberId>(await DetectLocalMemberAsync(token).ConfigureAwait(false));
+            localMember = await DetectLocalMemberAsync(token).ConfigureAwait(false);
             configurator?.Initialize(this, metadata);
             await base.StartAsync(token).ConfigureAwait(false);
         }

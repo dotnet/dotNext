@@ -78,7 +78,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         async Task IOutputChannel.SendSignalAsync(IMessage message, CancellationToken token)
         {
             // keep the same message between retries for correct identification of duplicate messages
-            var signal = new CustomMessage(in localMember.Value, message, true) { RespectLeadership = true };
+            var signal = new CustomMessage(in localMember.GetReference(UnresolvedLocalMemberExceptionFactory), message, true) { RespectLeadership = true };
             var tokenSource = token.LinkTo(Token);
             try
             {
@@ -270,7 +270,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         internal Task ProcessRequest(HttpContext context)
         {
             // this check allows to prevent situation when request comes earlier than initialization
-            if (localMember.IsEmpty)
+            if (!localMember.HasValue)
             {
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 return context.Response.WriteAsync(ExceptionMessages.UnresolvedLocalMember, context.RequestAborted);
