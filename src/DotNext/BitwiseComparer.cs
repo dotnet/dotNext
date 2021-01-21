@@ -59,26 +59,15 @@ namespace DotNext
         /// <returns>A value that indicates the relative order of the objects being compared.</returns>
         public static int Compare<TOther>(in T first, in TOther second)
             where TOther : struct
-        {
-            if (SizeOf<T>() != SizeOf<TOther>())
-                return SizeOf<T>() - SizeOf<TOther>();
-
-            switch (SizeOf<TOther>())
+            => SizeOf<T>() != SizeOf<TOther>() ? SizeOf<T>() - SizeOf<TOther>() : SizeOf<T>() switch
             {
-                default:
-                    return Runtime.Intrinsics.Compare(ref InToRef<T, byte>(first), ref InToRef<TOther, byte>(second), SizeOf<T>());
-                case 0:
-                    return 0;
-                case sizeof(byte):
-                    return InToRef<T, byte>(first).CompareTo(InToRef<TOther, byte>(second));
-                case sizeof(ushort):
-                    return InToRef<T, ushort>(first).CompareTo(InToRef<TOther, ushort>(second));
-                case sizeof(uint):
-                    return InToRef<T, uint>(first).CompareTo(InToRef<TOther, uint>(second));
-                case sizeof(ulong):
-                    return InToRef<T, ulong>(first).CompareTo(InToRef<TOther, ulong>(second));
-            }
-        }
+                0 => 0,
+                sizeof(byte) => InToRef<T, byte>(first).CompareTo(InToRef<TOther, byte>(second)),
+                sizeof(ushort) => InToRef<T, ushort>(first).CompareTo(InToRef<TOther, ushort>(second)),
+                sizeof(uint) => InToRef<T, uint>(first).CompareTo(InToRef<TOther, uint>(second)),
+                sizeof(ulong) => InToRef<T, ulong>(first).CompareTo(InToRef<TOther, ulong>(second)),
+                _ => Runtime.Intrinsics.Compare(ref InToRef<T, byte>(first), ref InToRef<TOther, byte>(second), SizeOf<T>()),
+            };
 
         /// <summary>
         /// Computes hash code for the structure content.
