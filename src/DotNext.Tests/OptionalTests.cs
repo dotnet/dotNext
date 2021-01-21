@@ -240,5 +240,15 @@ namespace DotNext
             Equal(new Optional<int>(20), Optional.Some<int>(20));
             Equal(new Optional<string>(null), Optional.Null<string>());
         }
+
+        [Fact]
+        public static void GettingReference()
+        {
+            var optional = Optional<int>.None;
+            Throws<InvalidOperationException>(() => optional.GetReference<int, InvalidOperationException>());
+            optional = 23;
+            Equal(23, optional.GetReference<int, InvalidOperationException>());
+            Equal(23, optional.GetReference(static () => new InvalidOperationException()));
+        }
     }
 }
