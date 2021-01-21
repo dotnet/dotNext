@@ -575,9 +575,7 @@ namespace DotNext.Runtime
                 case sizeof(uint):
                     hash = hashFunction.Invoke(hash, Unsafe.ReadUnaligned<uint>(ref source));
                     break;
-                case 5:
-                case 6:
-                case 7:
+                case 5 or 6 or 7:
                     goto default;
             }
 
