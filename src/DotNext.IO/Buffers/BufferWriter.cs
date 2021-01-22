@@ -19,7 +19,7 @@ namespace DotNext.Buffers
         internal const MemoryAllocator<byte>? DefaultByteAllocator = null;
 
         [StructLayout(LayoutKind.Auto)]
-        internal struct LengthWriter : SevenBitEncodedInt.IWriter
+        internal struct LengthWriter : IConsumer<byte>
         {
             private readonly Memory<byte> writer;
             private int offset;
@@ -32,7 +32,7 @@ namespace DotNext.Buffers
 
             internal readonly int Count => offset;
 
-            void SevenBitEncodedInt.IWriter.WriteByte(byte value)
+            void IConsumer<byte>.Invoke(byte value)
             {
                 writer.Span[offset++] = value;
             }

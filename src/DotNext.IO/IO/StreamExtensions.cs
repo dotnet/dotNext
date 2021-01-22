@@ -50,17 +50,17 @@ namespace DotNext.IO
         }
 
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct StreamWriter : SevenBitEncodedInt.IWriter
+        private readonly struct StreamWriter : IConsumer<byte>
         {
             private readonly Stream stream;
 
             internal StreamWriter(Stream stream) => this.stream = stream;
 
-            void SevenBitEncodedInt.IWriter.WriteByte(byte value) => stream.WriteByte(value);
+            void IConsumer<byte>.Invoke(byte value) => stream.WriteByte(value);
         }
 
         [StructLayout(LayoutKind.Auto)]
-        private struct BufferedMemoryWriter : SevenBitEncodedInt.IWriter
+        private struct BufferedMemoryWriter : IConsumer<byte>
         {
             private readonly Memory<byte> buffer;
             private int offset;
@@ -73,7 +73,7 @@ namespace DotNext.IO
 
             internal readonly Memory<byte> Result => buffer.Slice(0, offset);
 
-            void SevenBitEncodedInt.IWriter.WriteByte(byte value) => buffer.Span[offset++] = value;
+            void IConsumer<byte>.Invoke(byte value) => buffer.Span[offset++] = value;
         }
 
         private static void Write7BitEncodedInt(this Stream stream, int value)
