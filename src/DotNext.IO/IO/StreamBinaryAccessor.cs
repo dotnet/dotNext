@@ -204,6 +204,9 @@ namespace DotNext.IO
         ValueTask IAsyncBinaryWriter.WriteBigIntegerAsync(BigInteger value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
             => stream.WriteBigIntegerAsync(value, lengthFormat, context, buffer, format, provider, token);
 
+        ValueTask IAsyncBinaryWriter.WriteBigIntegerAsync(BigInteger value, bool littleEndian, LengthFormat? lengthFormat, CancellationToken token)
+            => stream.WriteBigIntegerAsync(value, littleEndian, buffer, lengthFormat, token);
+
         Task IAsyncBinaryWriter.CopyFromAsync(Stream input, CancellationToken token)
             => input.CopyToAsync(stream, token);
 

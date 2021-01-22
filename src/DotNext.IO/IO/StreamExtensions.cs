@@ -211,6 +211,30 @@ namespace DotNext.IO
         }
 
         /// <summary>
+        /// Encodes an arbitrary large integer as raw bytes.
+        /// </summary>
+        /// <param name="stream">The stream to write into.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="littleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
+        /// <param name="lengthFormat">Indicates how the length of the BLOB must be encoded; or <see langword="null"/> to prevent length encoding.</param>
+#if !NETSTANDARD2_1
+        [SkipLocalsInit]
+#endif
+        public static void WriteBigInteger(this Stream stream, in BigInteger value, bool littleEndian, LengthFormat? lengthFormat = null)
+        {
+            var bytesCount = value.GetByteCount();
+            stream.WriteLength(bytesCount, lengthFormat);
+            if (bytesCount == 0)
+                return;
+
+            using MemoryRental<byte> buffer = bytesCount <= MemoryRental<byte>.StackallocThreshold ? stackalloc byte[bytesCount] : new MemoryRental<byte>(bytesCount);
+            if (!value.TryWriteBytes(buffer.Span, out bytesCount, isBigEndian: !littleEndian))
+                throw new InternalBufferOverflowException();
+
+            stream.Write(buffer.Span.Slice(0, bytesCount));
+        }
+
+        /// <summary>
         /// Writes a length-prefixed or raw string to the stream.
         /// </summary>
         /// <remarks>
@@ -478,6 +502,64 @@ namespace DotNext.IO
 
         private static ValueTask WriteLengthAsync(this Stream stream, ReadOnlySpan<char> value, Encoding encoding, LengthFormat? lengthFormat, Memory<byte> buffer, CancellationToken token)
             => lengthFormat.HasValue ? WriteLengthAsync(stream, encoding.GetByteCount(value), lengthFormat.GetValueOrDefault(), buffer, token) : new ValueTask();
+
+        /// <summary>
+        /// Encodes an arbitrary large integer as raw bytes.
+        /// </summary>
+        /// <param name="stream">The stream to write into.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="littleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
+        /// <param name="lengthFormat">Indicates how the length of the BLOB must be encoded; or <see langword="null"/> to prevent length encoding.</param>
+        /// <param name="buffer">The buffer for internal I/O operations.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing asynchronous state of the operation.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> is too small for encoding minimal portion of <paramref name="value"/>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+        public static async ValueTask WriteBigIntegerAsync(this Stream stream, BigInteger value, bool littleEndian, Memory<byte> buffer, LengthFormat? lengthFormat = null, CancellationToken token = default)
+        {
+            var bytesCount = value.GetByteCount();
+
+            if (lengthFormat.HasValue)
+                await stream.WriteLengthAsync(bytesCount, lengthFormat.GetValueOrDefault(), buffer, token).ConfigureAwait(false);
+
+            if (bytesCount == 0)
+                return;
+
+            if (!value.TryWriteBytes(buffer.Span, out bytesCount, isBigEndian: !littleEndian))
+                throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
+
+            stream.Write(buffer.Span.Slice(0, bytesCount));
+        }
+
+        /// <summary>
+        /// Encodes an arbitrary large integer as raw bytes.
+        /// </summary>
+        /// <param name="stream">The stream to write into.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="littleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
+        /// <param name="allocator">The allocator of the temporary buffer used to place the bytes of an arbitrary large integer.</param>
+        /// <param name="lengthFormat">Indicates how the length of the BLOB must be encoded; or <see langword="null"/> to prevent length encoding.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing asynchronous state of the operation.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+        public static async ValueTask WriteBigIntegerAsync(this Stream stream, BigInteger value, bool littleEndian, MemoryAllocator<byte>? allocator = null, LengthFormat? lengthFormat = null, CancellationToken token = default)
+        {
+            var bytesCount = value.GetByteCount();
+            using var buffer = allocator.Invoke(Math.Max(1, bytesCount), false);
+
+            if (lengthFormat.HasValue)
+                await stream.WriteLengthAsync(bytesCount, lengthFormat.GetValueOrDefault(), buffer.Memory, token).ConfigureAwait(false);
+
+            if (bytesCount == 0)
+                return;
+
+            if (!value.TryWriteBytes(buffer.Memory.Span, out bytesCount, isBigEndian: !littleEndian))
+                throw new InternalBufferOverflowException();
+
+            await stream.WriteAsync(buffer.Memory.Slice(0, bytesCount), token).ConfigureAwait(false);
+        }
 
         /// <summary>
         /// Encodes the octet string asynchronously.
