@@ -12,6 +12,7 @@ namespace DotNext.IO
 {
     using Buffers;
     using static Pipelines.ResultExtensions;
+    using static Text.EncodingExtensions;
     using EncodingContext = Text.EncodingContext;
 
     /// <summary>
@@ -303,7 +304,11 @@ namespace DotNext.IO
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        ValueTask WriteAsync(ReadOnlyMemory<char> chars, EncodingContext context, LengthFormat? lengthFormat, CancellationToken token = default);
+        async ValueTask WriteAsync(ReadOnlyMemory<char> chars, EncodingContext context, LengthFormat? lengthFormat, CancellationToken token = default)
+        {
+            using var bytes = context.Encoding.GetBytes(chars.Span);
+            await WriteAsync(bytes.Memory, lengthFormat, token).ConfigureAwait(false);
+        }
 
         /// <summary>
         /// Writes the content from the specified stream.
