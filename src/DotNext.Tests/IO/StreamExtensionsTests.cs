@@ -2,6 +2,7 @@ using System;
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
@@ -403,6 +404,7 @@ namespace DotNext.IO
             var dto = DateTimeOffset.Now;
             var t = TimeSpan.FromMilliseconds(1096);
             var blob = RandomBytes(128);
+            var bi = new BigInteger(RandomBytes(64));
 
             stream.WriteInt64(42L, LengthFormat.Plain, encoding, provider: InvariantCulture);
             stream.WriteUInt64(12UL, LengthFormat.PlainLittleEndian, encoding, provider: InvariantCulture);
@@ -427,6 +429,7 @@ namespace DotNext.IO
             stream.WriteTimeSpan(t, LengthFormat.Plain, encoding, provider: InvariantCulture);
             stream.WriteTimeSpan(t, LengthFormat.Plain, encoding, "G", provider: InvariantCulture);
             stream.WriteBlock(blob, LengthFormat.Plain);
+            stream.WriteBigInteger(bi, LengthFormat.Plain, encoding, provider: InvariantCulture);
 
             stream.Position = 0;
             DecodingContext decodingContext = encoding;
@@ -455,6 +458,7 @@ namespace DotNext.IO
             Equal(t, stream.ReadTimeSpan(LengthFormat.Plain, in decodingContext, buffer, formats: new[] { "G" }, provider: InvariantCulture));
             using var decodedBlob = stream.ReadBlock(LengthFormat.Plain);
             Equal(blob, decodedBlob.Memory.ToArray());
+            Equal(bi, stream.ReadBigInteger(LengthFormat.Plain, in decodingContext, buffer, provider: InvariantCulture));
         }
 
         [Theory]
@@ -468,6 +472,8 @@ namespace DotNext.IO
             var dt = DateTime.Now;
             var dto = DateTimeOffset.Now;
             var t = TimeSpan.FromMilliseconds(1096);
+            var bi = new BigInteger(RandomBytes(64));
+
             await stream.WriteInt64Async(42L, LengthFormat.Plain, encoding, provider: InvariantCulture);
             await stream.WriteUInt64Async(12UL, LengthFormat.PlainLittleEndian, encoding, provider: InvariantCulture);
             await stream.WriteInt32Async(34, LengthFormat.PlainBigEndian, encoding, provider: InvariantCulture);
@@ -490,6 +496,7 @@ namespace DotNext.IO
             await stream.WriteDoubleAsync(56.6D, LengthFormat.Plain, encoding, provider: InvariantCulture);
             await stream.WriteTimeSpanAsync(t, LengthFormat.Plain, encoding, provider: InvariantCulture);
             await stream.WriteTimeSpanAsync(t, LengthFormat.Plain, encoding, "G", provider: InvariantCulture);
+            await stream.WriteBigIntegerAsync(bi, LengthFormat.Plain, encoding, provider: InvariantCulture);
 
             stream.Position = 0;
             DecodingContext decodingContext = encoding;
@@ -515,6 +522,7 @@ namespace DotNext.IO
             Equal(56.6D, await stream.ReadDoubleAsync(LengthFormat.Plain, decodingContext, provider: InvariantCulture));
             Equal(t, await stream.ReadTimeSpanAsync(LengthFormat.Plain, decodingContext, provider: InvariantCulture));
             Equal(t, await stream.ReadTimeSpanAsync(LengthFormat.Plain, decodingContext, formats: new[] { "G" }, provider: InvariantCulture));
+            Equal(bi, await stream.ReadBigIntegerAsync(LengthFormat.Plain, decodingContext, provider: InvariantCulture));
         }
     }
 }
