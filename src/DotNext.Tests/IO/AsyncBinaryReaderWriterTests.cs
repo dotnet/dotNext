@@ -37,20 +37,11 @@ namespace DotNext.IO
                 internal DefaultAsyncBinaryReader(Stream stream, Memory<byte> buffer)
                     => reader = IAsyncBinaryReader.Create(stream, buffer);
 
-                ValueTask<T> IAsyncBinaryReader.ReadAsync<T>(CancellationToken token)
-                    => reader.ReadAsync<T>(token);
-                
                 ValueTask IAsyncBinaryReader.ReadAsync(Memory<byte> output, CancellationToken token)
                     => reader.ReadAsync(output, token);
 
                 ValueTask<MemoryOwner<byte>> IAsyncBinaryReader.ReadAsync(LengthFormat lengthFormat, MemoryAllocator<byte> allocator, CancellationToken token)
                     => reader.ReadAsync(lengthFormat, allocator, token);
-
-                ValueTask<string> IAsyncBinaryReader.ReadStringAsync(int length, DecodingContext context, CancellationToken token)
-                    => reader.ReadStringAsync(length, context, token);
-
-                ValueTask<string> IAsyncBinaryReader.ReadStringAsync(LengthFormat lengthFormat, DecodingContext context, CancellationToken token)
-                    => reader.ReadStringAsync(lengthFormat, context, token);
 
                 Task IAsyncBinaryReader.CopyToAsync(Stream output, CancellationToken token)
                     => reader.CopyToAsync(output, token);
@@ -74,9 +65,6 @@ namespace DotNext.IO
 
                 ValueTask IAsyncBinaryWriter.WriteAsync(ReadOnlyMemory<byte> input, LengthFormat? lengthFormat, CancellationToken token)
                     => writer.WriteAsync(input, lengthFormat, token);
-
-                ValueTask IAsyncBinaryWriter.WriteAsync(ReadOnlyMemory<char> chars, EncodingContext context, LengthFormat? lengthFormat, CancellationToken token)
-                    => writer.WriteAsync(chars, context, lengthFormat, token);
             }
 
             private readonly MemoryStream stream = new MemoryStream();
