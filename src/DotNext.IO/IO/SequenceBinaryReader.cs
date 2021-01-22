@@ -458,7 +458,7 @@ namespace DotNext.IO
         /// <returns>The parsed value.</returns>
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-        public BigInteger ReadBigInteger(LengthFormat lengthFormat, in DecodingContext context, NumberStyles style = NumberStyles.Number, IFormatProvider? provider = null)
+        public BigInteger ReadBigInteger(LengthFormat lengthFormat, in DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
             => Read<BigInteger, NumberDecoder>(new NumberDecoder(style, provider), lengthFormat, in context);
 
         /// <summary>

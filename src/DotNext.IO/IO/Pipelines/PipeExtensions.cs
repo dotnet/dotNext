@@ -673,7 +673,7 @@ namespace DotNext.IO.Pipelines
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<BigInteger> ReadBigIntegerAsync(this PipeReader reader, LengthFormat lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Number, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<BigInteger> ReadBigIntegerAsync(this PipeReader reader, LengthFormat lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<BigInteger, NumberDecoder>(reader, new NumberDecoder(style, provider), lengthFormat, context, token);
 
         /// <summary>

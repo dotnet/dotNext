@@ -1416,7 +1416,7 @@ namespace DotNext.IO
         /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
-        public static BigInteger ReadBigInteger(this Stream stream, LengthFormat lengthFormat, in DecodingContext context, Span<byte> buffer, NumberStyles style = NumberStyles.Number, IFormatProvider? provider = null)
+        public static BigInteger ReadBigInteger(this Stream stream, LengthFormat lengthFormat, in DecodingContext context, Span<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
             => Read<BigInteger, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, in context, buffer);
 
         /// <summary>
@@ -2017,7 +2017,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<BigInteger> ReadBigIntegerAsync(this Stream stream, LengthFormat lengthFormat, DecodingContext context, Memory<byte> buffer, NumberStyles style = NumberStyles.Number, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<BigInteger> ReadBigIntegerAsync(this Stream stream, LengthFormat lengthFormat, DecodingContext context, Memory<byte> buffer, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<BigInteger, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, buffer, token);
 
         /// <summary>
@@ -2356,7 +2356,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<BigInteger> ReadBigIntegerAsync(this Stream stream, LengthFormat lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Number, IFormatProvider? provider = null, CancellationToken token = default)
+        public static ValueTask<BigInteger> ReadBigIntegerAsync(this Stream stream, LengthFormat lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<BigInteger, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, token);
 
         /// <summary>

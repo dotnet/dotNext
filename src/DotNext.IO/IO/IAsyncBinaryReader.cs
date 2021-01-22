@@ -317,7 +317,7 @@ namespace DotNext.IO
         /// <exception cref="FormatException">The number is in incorrect format.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-        async ValueTask<BigInteger> ReadBigIntegerAsync(LengthFormat lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Number, IFormatProvider? provider = null, CancellationToken token = default)
+        async ValueTask<BigInteger> ReadBigIntegerAsync(LengthFormat lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
             => BigInteger.Parse(await ReadStringAsync(lengthFormat, context, token).ConfigureAwait(false), style, provider);
 
         /// <summary>
