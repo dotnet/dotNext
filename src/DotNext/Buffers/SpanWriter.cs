@@ -183,27 +183,6 @@ namespace DotNext.Buffers
         }
 
         /// <summary>
-        /// Writes a portion of data.
-        /// </summary>
-        /// <param name="action">The action responsible for writing elements.</param>
-        /// <param name="arg">The state to be passed to the action.</param>
-        /// <typeparam name="TArg">The type of the argument to be passed to the callback.</typeparam>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is zero.</exception>
-        /// <exception cref="EndOfStreamException">Remaining space in the underlying span is not enough to place <paramref name="count"/> elements.</exception>
-        [CLSCompliant(false)]
-        public unsafe void Write<TArg>(delegate*<TArg, Span<T>, out int, bool> action, TArg arg)
-        {
-            if (action == null)
-                throw new ArgumentNullException(nameof(action));
-
-            var output = span.Slice(position);
-            if (!action(arg, output, out var writtenCount))
-                throw new EndOfStreamException(ExceptionMessages.NotEnoughMemory);
-
-            position += writtenCount;
-        }
-
-        /// <summary>
         /// Attempts to write a portion of data
         /// </summary>
         /// <param name="action">The action responsible for writing elements.</param>
