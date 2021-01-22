@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Numerics;
 using Xunit;
 
 namespace DotNext.Buffers
@@ -225,6 +226,19 @@ namespace DotNext.Buffers
             Equal(double.MaxValue, reader.ReadDouble(true));
             Equal(double.MinValue, reader.ReadDouble(false));
 #endif
+        }
+
+        [Fact]
+        public static unsafe void TryWrite()
+        {
+            Span<byte> bytes = stackalloc byte[128];
+            var writer = new SpanWriter<byte>(bytes);
+            BigInteger value = 10L;
+            True(writer.TryWrite(&WriteBigInt, value));
+            Equal(value, new BigInteger(bytes.Slice(0, writer.WrittenCount)));
+
+            static bool WriteBigInt(BigInteger value, Span<byte> destination, out int count)
+                => value.TryWriteBytes(destination, out count);
         }
     }
 }

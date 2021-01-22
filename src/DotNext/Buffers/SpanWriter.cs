@@ -183,7 +183,7 @@ namespace DotNext.Buffers
         }
 
         /// <summary>
-        /// Attempts to write a portion of data
+        /// Attempts to write a portion of data.
         /// </summary>
         /// <param name="action">The action responsible for writing elements.</param>
         /// <param name="arg">The state to be passed to the action.</param>
