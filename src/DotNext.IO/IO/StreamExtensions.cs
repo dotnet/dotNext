@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.Globalization;
 using System.IO;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -38,7 +39,7 @@ namespace DotNext.IO
             private readonly T value;
             private readonly delegate*<in T, Span<char>, out int, ReadOnlySpan<char>, IFormatProvider?, bool> formatter;
 
-            internal SpanFormattable(T value, delegate*<in T, Span<char>, out int, ReadOnlySpan<char>, IFormatProvider?, bool> formatter)
+            internal SpanFormattable(in T value, delegate*<in T, Span<char>, out int, ReadOnlySpan<char>, IFormatProvider?, bool> formatter)
             {
                 this.value = value;
                 this.formatter = formatter;
@@ -442,6 +443,18 @@ namespace DotNext.IO
         /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         public static unsafe void WriteTimeSpan(this Stream stream, TimeSpan value, LengthFormat lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+            => Write(stream, in value, &TryFormat, lengthFormat, encoding, format, provider);
+
+        /// <summary>
+        /// Encodes <see cref="BigInteger"/> as a string.
+        /// </summary>
+        /// <param name="stream">The stream to write into.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="encoding">The string encoding.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        public static unsafe void WriteBigInteger(this Stream stream, in BigInteger value, LengthFormat lengthFormat, Encoding encoding, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
             => Write(stream, in value, &TryFormat, lengthFormat, encoding, format, provider);
 
         private static ValueTask WriteLengthAsync(this Stream stream, int length, LengthFormat lengthFormat, Memory<byte> buffer, CancellationToken token)
@@ -1089,6 +1102,39 @@ namespace DotNext.IO
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
         public static unsafe ValueTask WriteTimeSpanAsync(this Stream stream, TimeSpan value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync(stream, new SpanFormattable<TimeSpan>(value, &TryFormat), lengthFormat, context, format, provider, token);
+
+        /// <summary>
+        /// Encodes <see cref="BigInteger"/> as a string.
+        /// </summary>
+        /// <param name="stream">The stream to write into.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="context">The encoding context.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="format">The format to use.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing asynchronous state of the operation.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+        public static unsafe ValueTask WriteBigIntegerAsync(this Stream stream, BigInteger value, LengthFormat lengthFormat, EncodingContext context, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(stream, new SpanFormattable<BigInteger>(value, &TryFormat), lengthFormat, context, buffer, format, provider, token);
+
+        /// <summary>
+        /// Encodes <see cref="BigInteger"/> as a string.
+        /// </summary>
+        /// <param name="stream">The stream to write into.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="context">The encoding context.</param>
+        /// <param name="format">The format to use.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing asynchronous state of the operation.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+        public static unsafe ValueTask WriteBigIntegerAsync(this Stream stream, BigInteger value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(stream, new SpanFormattable<BigInteger>(value, &TryFormat), lengthFormat, context, format, provider, token);
 
         /// <summary>
         /// Writes sequence of bytes to the underlying stream synchronously.

@@ -1,9 +1,9 @@
 using System;
 using System.Buffers;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;
 
 namespace DotNext.Buffers
 {
@@ -416,6 +416,19 @@ namespace DotNext.Buffers
         /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
         /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
         public static unsafe void WriteTimeSpan(this IBufferWriter<byte> writer, TimeSpan value, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0)
+            => Write(writer, in value, &TryFormat, lengthFormat, in context, format, provider, bufferSize);
+
+        /// <summary>
+        /// Encodes <see cref="BigInteger"/> as a string.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="context">The encoding context.</param>
+        /// <param name="format">A span containing the characters that represent a standard or custom format string.</param>
+        /// <param name="provider">An optional object that supplies culture-specific formatting information.</param>
+        /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
+        public static unsafe void WriteBigInteger(this IBufferWriter<byte> writer, in BigInteger value, LengthFormat lengthFormat, in EncodingContext context, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, int bufferSize = 0)
             => Write(writer, in value, &TryFormat, lengthFormat, in context, format, provider, bufferSize);
 
         /// <summary>

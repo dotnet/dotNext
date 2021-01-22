@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Numerics;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers
@@ -18,7 +19,8 @@ namespace DotNext.Buffers
             ISpanDecoder<int>, ISpanDecoder<uint>,
             ISpanDecoder<long>, ISpanDecoder<ulong>,
             ISpanDecoder<decimal>,
-            ISpanDecoder<float>, ISpanDecoder<double>
+            ISpanDecoder<float>, ISpanDecoder<double>,
+            ISpanDecoder<BigInteger>
         {
             private readonly NumberStyles style;
             private readonly IFormatProvider? provider;
@@ -50,6 +52,8 @@ namespace DotNext.Buffers
             double ISpanDecoder<double>.Decode(ReadOnlySpan<char> value) => double.Parse(value, style, provider);
 
             decimal ISpanDecoder<decimal>.Decode(ReadOnlySpan<char> value) => decimal.Parse(value, style, provider);
+
+            BigInteger ISpanDecoder<BigInteger>.Decode(ReadOnlySpan<char> value) => BigInteger.Parse(value, style, provider);
         }
 
         [StructLayout(LayoutKind.Auto)]

@@ -1,4 +1,5 @@
 using System;
+using System.Numerics;
 
 namespace DotNext.Buffers
 {
@@ -47,6 +48,9 @@ namespace DotNext.Buffers
             => value.TryFormat(destination, out charsWritten, format, provider);
 
         internal static bool TryFormat(in TimeSpan value, Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
+            => value.TryFormat(destination, out charsWritten, format, provider);
+
+        internal static bool TryFormat(in BigInteger value, Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
             => value.TryFormat(destination, out charsWritten, format, provider);
     }
 }
