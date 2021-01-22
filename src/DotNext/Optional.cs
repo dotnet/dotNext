@@ -167,6 +167,53 @@ namespace DotNext
         public static Optional<T?> Null<T>()
             where T : class
             => Some<T?>(null);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static ref readonly T GetReference<T, TException>(in Optional<T> optional, TException exceptionFactory)
+            where T : struct
+            where TException : struct, ISupplier<Exception>
+        {
+            ref readonly T result = ref Optional<T>.GetReference(in optional);
+            if (Unsafe.IsNullRef(ref Unsafe.AsRef(in result)))
+                throw exceptionFactory.Invoke();
+
+            return ref result;
+        }
+
+        /// <summary>
+        /// Obtains immutable reference to the value in the container.
+        /// </summary>
+        /// <typeparam name="T">The type of the value.</typeparam>
+        /// <typeparam name="TException">The type of the exception to throw if the optional container has no value.</typeparam>
+        /// <param name="optional">The optional container.</param>
+        /// <returns>The immutable reference to the value in the container.</returns>
+        public static ref readonly T GetReference<T, TException>(this in Optional<T> optional)
+            where T : struct
+            where TException : Exception, new()
+            => ref GetReference(in optional, new Activator<TException>());
+
+        /// <summary>
+        /// Obtains immutable reference to the value in the container.
+        /// </summary>
+        /// <typeparam name="T">The type of the value.</typeparam>
+        /// <param name="optional">The optional container.</param>
+        /// <param name="exceptionFactory">The factory used to produce exception if the container has no value.</param>
+        /// <returns>The immutable reference to the value in the container.</returns>
+        public static ref readonly T GetReference<T>(this in Optional<T> optional, Func<Exception> exceptionFactory)
+            where T : struct
+            => ref GetReference<T, DelegatingSupplier<Exception>>(in optional, exceptionFactory);
+
+        /// <summary>
+        /// Obtains immutable reference to the value in the container.
+        /// </summary>
+        /// <typeparam name="T">The type of the value.</typeparam>
+        /// <param name="optional">The optional container.</param>
+        /// <param name="exceptionFactory">The factory used to produce exception if the container has no value.</param>
+        /// <returns>The immutable reference to the value in the container.</returns>
+        [CLSCompliant(false)]
+        public static unsafe ref readonly T GetReference<T>(this in Optional<T> optional, delegate*<Exception> exceptionFactory)
+            where T : struct
+            => ref GetReference<T, Supplier<Exception>>(in optional, exceptionFactory);
     }
 
     /// <summary>
@@ -226,6 +273,17 @@ namespace DotNext
         {
             value = (T?)info.GetValue(ValueSerData, typeof(T));
             kind = info.GetByte(KindSerData);
+        }
+
+        // this method is dangerous and should be used with care
+        // because returned reference may be null
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static ref readonly T GetReference(in Optional<T> optional)
+        {
+            if (optional.HasValue)
+                return ref optional.value!;
+
+            return ref Unsafe.NullRef<T>();
         }
 
         /// <summary>
@@ -317,37 +375,32 @@ namespace DotNext
         [return: NotNull]
         public T OrThrow<TException>()
             where TException : Exception, new()
-            => HasValue ? value! : throw new TException();
+            => OrThrow<Activator<TException>>(new Activator<TException>());
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [return: NotNull]
-        private T OrThrow<TException, TFactory>(TFactory exceptionFactory)
-            where TException : Exception
-            where TFactory : struct, ISupplier<TException>
+        private T OrThrow<TFactory>(TFactory exceptionFactory)
+            where TFactory : struct, ISupplier<Exception>
             => HasValue ? value! : throw exceptionFactory.Invoke();
 
         /// <summary>
         /// If a value is present, returns the value, otherwise throw exception.
         /// </summary>
-        /// <typeparam name="TException">Type of exception to throw.</typeparam>
         /// <param name="exceptionFactory">Exception factory.</param>
         /// <returns>The value, if present.</returns>
         [return: NotNull]
-        public T OrThrow<TException>(Func<TException> exceptionFactory)
-            where TException : Exception
-            => OrThrow<TException, DelegatingSupplier<TException>>(exceptionFactory);
+        public T OrThrow(Func<Exception> exceptionFactory)
+            => OrThrow<DelegatingSupplier<Exception>>(exceptionFactory);
 
         /// <summary>
         /// If a value is present, returns the value, otherwise throw exception.
         /// </summary>
-        /// <typeparam name="TException">Type of exception to throw.</typeparam>
         /// <param name="exceptionFactory">Exception factory.</param>
         /// <returns>The value, if present.</returns>
         [return: NotNull]
         [CLSCompliant(false)]
-        public unsafe T OrThrow<TException>(delegate*<TException> exceptionFactory)
-            where TException : Exception
-            => OrThrow<TException, Supplier<TException>>(exceptionFactory);
+        public unsafe T OrThrow(delegate*<Exception> exceptionFactory)
+            => OrThrow<Supplier<Exception>>(exceptionFactory);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private T OrInvoke<TSupplier>(TSupplier defaultFunc)

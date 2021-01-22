@@ -60,8 +60,32 @@ namespace DotNext
         /// <param name="action">An action to be applied for each element.</param>
         public static void ForEach<T>(this T[] array, RefAction<T, long> action)
         {
+            // TODO: Change long to nint in RefAction signature in .NET 6
+            for (var i = 0L; i < array.LongLength; i++)
+                action(ref array[i], i);
+        }
+
+        /// <summary>
+        /// Applies specific action to each array element.
+        /// </summary>
+        /// <remarks>
+        /// This method support modification of array elements
+        /// because each array element is passed by reference into action.
+        /// </remarks>
+        /// <typeparam name="T">Type of array elements.</typeparam>
+        /// <typeparam name="TArg">The type of the argument to be passed to the action.</typeparam>
+        /// <param name="array">An array to iterate.</param>
+        /// <param name="action">An action to be applied for each element.</param>
+        /// <param name="arg">The argument to be passed to the action.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action"/> is zero.</exception>
+        [CLSCompliant(false)]
+        public static unsafe void ForEach<T, TArg>(this T[] array, delegate*<ref T, TArg, void> action, TArg arg)
+        {
+            if (action == null)
+                throw new ArgumentNullException(nameof(action));
+
             for (nint i = 0; i < Intrinsics.GetLength(array); i++)
-                action.Invoke(ref array[i], i);
+                action(ref array[i], arg);
         }
 
         /// <summary>

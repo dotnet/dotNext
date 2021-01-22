@@ -131,5 +131,14 @@ namespace DotNext
             Equal(Array.Empty<long>(), array.RemoveFirst(3));
             Equal(Array.Empty<long>(), array.RemoveLast(3));
         }
+
+        [Fact]
+        public static unsafe void ForEachUsingPointer()
+        {
+            int[] array = { 1, 2, 3 };
+            array.ForEach(&Exists, array);
+
+            static void Exists(ref int item, int[] array) => Contains(item, array);
+        }
     }
 }

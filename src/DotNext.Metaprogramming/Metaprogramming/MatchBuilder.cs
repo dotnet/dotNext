@@ -16,16 +16,11 @@ namespace DotNext.Metaprogramming
     {
         private delegate ConditionalExpression PatternMatch(LabelTarget endOfMatch);
 
-        private interface ICaseStatementBuilder
-        {
-            Expression Build(ParameterExpression value);
-        }
-
         internal abstract class MatchStatement<TDelegate> : Statement, ILexicalScope<MatchBuilder, TDelegate>
             where TDelegate : MulticastDelegate
         {
             [StructLayout(LayoutKind.Auto)]
-            private protected readonly struct CaseStatementBuilder : ICaseStatementBuilder
+            private protected readonly struct CaseStatementBuilder : ISupplier<ParameterExpression, Expression>
             {
                 private readonly Action<ParameterExpression> scope;
                 private readonly MatchStatement<TDelegate> statement;
@@ -36,7 +31,7 @@ namespace DotNext.Metaprogramming
                     this.statement = statement;
                 }
 
-                Expression ICaseStatementBuilder.Build(ParameterExpression value)
+                Expression ISupplier<ParameterExpression, Expression>.Invoke(ParameterExpression value)
                 {
                     scope(value);
                     return statement.Build();
@@ -69,7 +64,7 @@ namespace DotNext.Metaprogramming
         private sealed class MatchByMemberStatement : MatchStatement<Action<MemberExpression>>
         {
             [StructLayout(LayoutKind.Auto)]
-            private new readonly struct CaseStatementBuilder : ICaseStatementBuilder
+            private new readonly struct CaseStatementBuilder : ISupplier<ParameterExpression, Expression>
             {
                 private readonly string memberName;
                 private readonly Action<MemberExpression> memberHandler;
@@ -82,7 +77,7 @@ namespace DotNext.Metaprogramming
                     this.statement = statement;
                 }
 
-                Expression ICaseStatementBuilder.Build(ParameterExpression value)
+                Expression ISupplier<ParameterExpression, Expression>.Invoke(ParameterExpression value)
                 {
                     memberHandler(Expression.PropertyOrField(value, memberName));
                     return statement.Build();
@@ -109,7 +104,7 @@ namespace DotNext.Metaprogramming
         private sealed class MatchByTwoMembersStatement : MatchStatement<Action<MemberExpression, MemberExpression>>
         {
             [StructLayout(LayoutKind.Auto)]
-            private new readonly struct CaseStatementBuilder : ICaseStatementBuilder
+            private new readonly struct CaseStatementBuilder : ISupplier<ParameterExpression, Expression>
             {
                 private readonly string memberName1, memberName2;
                 private readonly Action<MemberExpression, MemberExpression> memberHandler;
@@ -123,7 +118,7 @@ namespace DotNext.Metaprogramming
                     this.statement = statement;
                 }
 
-                Expression ICaseStatementBuilder.Build(ParameterExpression value)
+                Expression ISupplier<ParameterExpression, Expression>.Invoke(ParameterExpression value)
                 {
                     memberHandler(Expression.PropertyOrField(value, memberName1), Expression.PropertyOrField(value, memberName2));
                     return statement.Build();
@@ -152,7 +147,7 @@ namespace DotNext.Metaprogramming
         private sealed class MatchByThreeMembersStatement : MatchStatement<Action<MemberExpression, MemberExpression, MemberExpression>>
         {
             [StructLayout(LayoutKind.Auto)]
-            private new readonly struct CaseStatementBuilder : ICaseStatementBuilder
+            private new readonly struct CaseStatementBuilder : ISupplier<ParameterExpression, Expression>
             {
                 private readonly string memberName1, memberName2, memberName3;
                 private readonly Action<MemberExpression, MemberExpression, MemberExpression> memberHandler;
@@ -167,7 +162,7 @@ namespace DotNext.Metaprogramming
                     this.statement = statement;
                 }
 
-                Expression ICaseStatementBuilder.Build(ParameterExpression value)
+                Expression ISupplier<ParameterExpression, Expression>.Invoke(ParameterExpression value)
                 {
                     memberHandler(Expression.PropertyOrField(value, memberName1), Expression.PropertyOrField(value, memberName2), Expression.PropertyOrField(value, memberName3));
                     return statement.Build();
@@ -244,13 +239,13 @@ namespace DotNext.Metaprogramming
         public delegate Expression CaseStatement(ParameterExpression value);
 
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct CaseStatementBuilder : ICaseStatementBuilder
+        private readonly struct CaseStatementBuilder : ISupplier<ParameterExpression, Expression>
         {
             private readonly CaseStatement statement;
 
             private CaseStatementBuilder(CaseStatement statement) => this.statement = statement;
 
-            Expression ICaseStatementBuilder.Build(ParameterExpression value) => statement(value);
+            Expression ISupplier<ParameterExpression, Expression>.Invoke(ParameterExpression value) => statement(value);
 
             public static implicit operator CaseStatementBuilder(CaseStatement statement) => new CaseStatementBuilder(statement);
         }
@@ -276,49 +271,49 @@ namespace DotNext.Metaprogramming
         }
 
         private static PatternMatch MatchByCondition<TBuilder>(ParameterExpression value, Pattern condition, TBuilder builder)
-            where TBuilder : struct, ICaseStatementBuilder
+            where TBuilder : struct, ISupplier<ParameterExpression, Expression>
         {
             var test = condition(value);
-            var body = builder.Build(value);
+            var body = builder.Invoke(value);
             return endOfMatch => Expression.IfThen(test, endOfMatch.Goto(body));
         }
 
         private MatchBuilder MatchByCondition<TBuilder>(Pattern condition, TBuilder builder)
-            where TBuilder : struct, ICaseStatementBuilder
+            where TBuilder : struct, ISupplier<ParameterExpression, Expression>
         {
             patterns.Add(MatchByCondition(value, condition, builder));
             return this;
         }
 
         private static PatternMatch MatchByType<TBuilder>(ParameterExpression value, Type expectedType, TBuilder builder)
-            where TBuilder : struct, ICaseStatementBuilder
+            where TBuilder : struct, ISupplier<ParameterExpression, Expression>
         {
             var test = value.InstanceOf(expectedType);
             var typedValue = Expression.Variable(expectedType);
-            var body = builder.Build(typedValue);
+            var body = builder.Invoke(typedValue);
             return endOfMatch => Expression.IfThen(test, Expression.Block(Seq.Singleton(typedValue), typedValue.Assign(value.Convert(expectedType)), endOfMatch.Goto(body)));
         }
 
         private MatchBuilder MatchByType<TBuilder>(Type expectedType, TBuilder builder)
-            where TBuilder : struct, ICaseStatementBuilder
+            where TBuilder : struct, ISupplier<ParameterExpression, Expression>
         {
             patterns.Add(MatchByType(value, expectedType, builder));
             return this;
         }
 
         private static PatternMatch MatchByType<TBuilder>(ParameterExpression value, Type expectedType, Pattern condition, TBuilder builder)
-            where TBuilder : struct, ICaseStatementBuilder
+            where TBuilder : struct, ISupplier<ParameterExpression, Expression>
         {
             var test = value.InstanceOf(expectedType);
             var typedVar = Expression.Variable(expectedType);
             var typedVarInit = typedVar.Assign(value.Convert(expectedType));
-            var body = builder.Build(typedVar);
+            var body = builder.Invoke(typedVar);
             var test2 = condition(typedVar);
             return endOfMatch => Expression.IfThen(test, Expression.Block(Seq.Singleton(typedVar), typedVarInit, Expression.IfThen(test2, endOfMatch.Goto(body))));
         }
 
         private MatchBuilder MatchByType<TBuilder>(Type expectedType, Pattern condition, TBuilder builder)
-            where TBuilder : struct, ICaseStatementBuilder
+            where TBuilder : struct, ISupplier<ParameterExpression, Expression>
         {
             patterns.Add(MatchByType(value, expectedType, condition, builder));
             return this;

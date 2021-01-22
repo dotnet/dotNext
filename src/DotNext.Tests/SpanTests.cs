@@ -472,5 +472,14 @@ namespace DotNext
             Equal(47, span[5]);
             Equal(48, span[6]);
         }
+
+        [Fact]
+        public static unsafe void ForEachUsingPointer()
+        {
+            int[] array = { 1, 2, 3 };
+            array.AsSpan().ForEach(&Exists, array);
+
+            static void Exists(ref int item, int[] array) => Contains(item, array);
+        }
     }
 }

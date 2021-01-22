@@ -262,11 +262,7 @@ namespace DotNext.Runtime
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static T Read<T>(this ref byte address)
             where T : unmanaged
-        {
-            Push(ref address);
-            Ldobj<T>();
-            return Return<T>();
-        }
+            => Unsafe.As<byte, T>(ref address);
 
         /// <summary>
         /// Bitwise comparison of two memory blocks.
@@ -296,10 +292,10 @@ namespace DotNext.Runtime
                 }
             }
 
-            for (; length >= sizeof(UIntPtr); first = ref first.Advance<UIntPtr>(), second = ref second.Advance<UIntPtr>())
+            for (; length >= sizeof(nuint); first = ref first.Advance<nuint>(), second = ref second.Advance<nuint>())
             {
-                if (first.Read<UIntPtr>() == second.Read<UIntPtr>())
-                    length -= sizeof(UIntPtr);
+                if (first.Read<nuint>() == second.Read<nuint>())
+                    length -= sizeof(nuint);
                 else
                     goto exit;
             }
@@ -514,10 +510,10 @@ namespace DotNext.Runtime
                 }
             }
 
-            while (length >= sizeof(UIntPtr))
+            while (length >= sizeof(nuint))
             {
-                if (address.Read<UIntPtr>() == default)
-                    address = ref address.Advance<UIntPtr>(&length);
+                if (address.Read<nuint>() == 0)
+                    address = ref address.Advance<nuint>(&length);
                 else
                     goto exit;
             }
@@ -574,15 +570,9 @@ namespace DotNext.Runtime
                 case sizeof(ushort):
                     hash = hashFunction.Invoke(hash, Unsafe.ReadUnaligned<ushort>(ref source));
                     break;
-                case 3:
-                    goto default;
                 case sizeof(uint):
                     hash = hashFunction.Invoke(hash, Unsafe.ReadUnaligned<uint>(ref source));
                     break;
-                case 5:
-                case 6:
-                case 7:
-                    goto default;
             }
 
             return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
@@ -602,7 +592,7 @@ namespace DotNext.Runtime
         /// <returns>The computed hash.</returns>
         public static long GetHashCode64<T>(Func<T, int, long> getter, int count, T arg, bool salted = true)
         {
-            if (getter == null)
+            if (getter is null)
                 throw new ArgumentNullException(nameof(getter));
 
             var hash = FNV1a64.Offset;
@@ -623,7 +613,7 @@ namespace DotNext.Runtime
         /// <returns>The computed hash.</returns>
         public static int GetHashCode32<T>(Func<T, int, int> getter, int count, T arg, bool salted = true)
         {
-            if (getter == null)
+            if (getter is null)
                 throw new ArgumentNullException(nameof(getter));
 
             var hash = FNV1a32.Offset;
