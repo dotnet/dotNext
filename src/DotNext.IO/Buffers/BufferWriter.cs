@@ -61,8 +61,8 @@ namespace DotNext.Buffers
             if (lengthFormat.HasValue)
                 WriteLength(writer, length, lengthFormat.GetValueOrDefault());
 
-            if (!value.TryWriteBytes(writer.GetSpan(length), out length))
-                throw new OverflowException();
+            if (!value.TryWriteBytes(writer.GetSpan(length), out length, isBigEndian: !littleEndian))
+                throw new System.IO.InternalBufferOverflowException();
 
             writer.Advance(length);
         }
