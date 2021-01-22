@@ -38,6 +38,10 @@ namespace DotNext.IO
         ValueTask ISupplier<ReadOnlyMemory<char>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<char> input, CancellationToken token)
             => new ValueTask(output.WriteAsync(input, token));
 
+         /// <inheritdoc />
+        void IConsumer<ReadOnlyMemory<char>>.Invoke(ReadOnlyMemory<char> input)
+            => output.Write(input.Span);
+
         /// <summary>
         /// Determines whether this object contains the same text writer as the specified object.
         /// </summary>

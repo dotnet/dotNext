@@ -22,7 +22,7 @@ namespace DotNext.Buffers
     /// </remarks>
     /// <typeparam name="T">The type of the elements in the span.</typeparam>
     [FunctionalInterface]
-    public interface IReadOnlySpanConsumer<T> : ISupplier<ReadOnlyMemory<T>, CancellationToken, ValueTask>
+    public interface IReadOnlySpanConsumer<T> : ISupplier<ReadOnlyMemory<T>, CancellationToken, ValueTask>, IConsumer<ReadOnlyMemory<T>>
     {
         /// <summary>
         /// Invokes the consumer.
@@ -53,6 +53,10 @@ namespace DotNext.Buffers
 
             return new ValueTask(result);
         }
+
+        /// <inheritdoc />
+        void IConsumer<ReadOnlyMemory<T>>.Invoke(ReadOnlyMemory<T> input)
+            => Invoke(input.Span);
     }
 
     /// <summary>
@@ -89,6 +93,10 @@ namespace DotNext.Buffers
 
         /// <inheritdoc />
         void IReadOnlySpanConsumer<T>.Invoke(ReadOnlySpan<T> span) => ptr(span, arg);
+
+        /// <inheritdoc />
+        void IConsumer<ReadOnlyMemory<T>>.Invoke(ReadOnlyMemory<T> input)
+            => ptr(input.Span, arg);
     }
 
     /// <summary>
@@ -146,6 +154,10 @@ namespace DotNext.Buffers
 
             return new ValueTask(result);
         }
+
+        /// <inheritdoc />
+        void IConsumer<ReadOnlyMemory<T>>.Invoke(ReadOnlyMemory<T> input)
+            => action(input.Span, arg);
     }
 
     /// <summary>
@@ -196,6 +208,10 @@ namespace DotNext.Buffers
 
             return new ValueTask(result);
         }
+
+        /// <inheritdoc />
+        void IConsumer<ReadOnlyMemory<T>>.Invoke(ReadOnlyMemory<T> input)
+            => output.Write(input.Span);
 
         /// <summary>
         /// Determines whether this object contains the same buffer instance as the specified object.

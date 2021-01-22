@@ -37,6 +37,10 @@ namespace DotNext.IO
         ValueTask ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<byte> input, CancellationToken token)
             => output.WriteAsync(input, token);
 
+        /// <inheritdoc />
+        void IConsumer<ReadOnlyMemory<byte>>.Invoke(ReadOnlyMemory<byte> input)
+            => output.Write(input.Span);
+
         /// <summary>
         /// Determines whether this object contains the same stream instance as the specified object.
         /// </summary>
