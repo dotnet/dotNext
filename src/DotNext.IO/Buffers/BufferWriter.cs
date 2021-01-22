@@ -49,6 +49,25 @@ namespace DotNext.Buffers
             => writer.Write(Span.AsReadOnlyBytes(in value));
 
         /// <summary>
+        /// Encodes an arbitrary large integer as raw bytes.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="littleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
+        /// <param name="lengthFormat">Indicates how the length of the BLOB must be encoded; or <see langword="null"/> to prevent length encoding.</param>
+        public static void WriteBigInteger(this IBufferWriter<byte> writer, in BigInteger value, bool littleEndian, LengthFormat? lengthFormat = null)
+        {
+            var length = value.GetByteCount();
+            if (lengthFormat.HasValue)
+                WriteLength(writer, length, lengthFormat.GetValueOrDefault());
+
+            if (!value.TryWriteBytes(writer.GetSpan(length), out length))
+                throw new OverflowException();
+
+            writer.Advance(length);
+        }
+
+        /// <summary>
         /// Encodes 64-bit signed integer.
         /// </summary>
         /// <param name="writer">The buffer writer.</param>

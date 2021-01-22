@@ -108,7 +108,7 @@ namespace DotNext.IO
             return new ValueTask(result);
         }
 
-        ValueTask IAsyncBinaryWriter.WriteAsync(BigInteger value, LengthFormat? lengthFormat, CancellationToken token)
+        ValueTask IAsyncBinaryWriter.WriteBigIntegerAsync(BigInteger value, bool littleEndian, LengthFormat? lengthFormat, CancellationToken token)
         {
             Task result;
             if (token.IsCancellationRequested)
@@ -120,14 +120,7 @@ namespace DotNext.IO
                 result = Task.CompletedTask;
                 try
                 {
-                    var length = value.GetByteCount();
-                    if (lengthFormat.HasValue)
-                        writer.WriteLength(length, lengthFormat.GetValueOrDefault());
-
-                    if (!value.TryWriteBytes(writer.GetSpan(length), out length))
-                        throw new OverflowException();
-
-                    writer.Advance(length);
+                    writer.WriteBigInteger(in value, littleEndian, lengthFormat);
                 }
                 catch (Exception e)
                 {

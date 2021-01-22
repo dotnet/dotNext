@@ -125,6 +125,18 @@ namespace DotNext.IO
             => WriteAsync(value, lengthFormat, context, format, provider, token);
 
         /// <summary>
+        /// Encodes an arbitrary large integer as raw bytes.
+        /// </summary>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="littleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
+        /// <param name="lengthFormat">Indicates how the length of the BLOB must be encoded; or <see langword="null"/> to prevent length encoding.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing state of asynchronous execution.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        ValueTask WriteBigIntegerAsync(BigInteger value, bool littleEndian, LengthFormat? lengthFormat = null, CancellationToken token = default)
+            => WriteAsync(value.ToByteArray(isBigEndian: !littleEndian), lengthFormat, token);
+
+        /// <summary>
         /// Encodes 8-bit unsigned integer as a string.
         /// </summary>
         /// <param name="value">The value to encode.</param>
@@ -259,17 +271,6 @@ namespace DotNext.IO
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         ValueTask WriteAsync(ReadOnlyMemory<byte> input, LengthFormat? lengthFormat = null, CancellationToken token = default);
-
-        /// <summary>
-        /// Encodes an arbitrary large integer as raw bytes.
-        /// </summary>
-        /// <param name="value">The value to encode.</param>
-        /// <param name="lengthFormat">Indicates how the length of the BLOB must be encoded; or <see langword="null"/> to prevent length encoding.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing state of asynchronous execution.</returns>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        ValueTask WriteAsync(BigInteger value, LengthFormat? lengthFormat = null, CancellationToken token = default)
-            => WriteAsync(value.ToByteArray(), lengthFormat, token);
 
         /// <inheritdoc />
         ValueTask ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<byte> input, CancellationToken token)

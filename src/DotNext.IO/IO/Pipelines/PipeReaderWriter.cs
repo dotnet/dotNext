@@ -319,6 +319,9 @@ namespace DotNext.IO.Pipelines
         unsafe ValueTask IAsyncBinaryWriter.WriteInt64Async(long value, bool littleEndian, CancellationToken token)
             => WriteAsync(output, new Writer<long, bool>(value, littleEndian, &PipeExtensions.WriteInt64Async), token);
 
+        unsafe ValueTask IAsyncBinaryWriter.WriteBigIntegerAsync(BigInteger value, bool littleEndian, LengthFormat? lengthFormat, CancellationToken token)
+            => WriteAsync(output, new Writer<BigInteger, bool, LengthFormat?>(value, littleEndian, lengthFormat, &PipeExtensions.WriteBigIntegerAsync), token);
+
         Task IAsyncBinaryWriter.CopyFromAsync(Stream input, CancellationToken token)
             => input.CopyToAsync(output, token);
 
