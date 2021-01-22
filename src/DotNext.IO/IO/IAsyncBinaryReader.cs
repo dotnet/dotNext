@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Globalization;
 using System.IO;
 using System.IO.Pipelines;
+using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -303,6 +304,21 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
         async ValueTask<Guid> ReadGuidAsync(LengthFormat lengthFormat, DecodingContext context, string format, CancellationToken token = default)
             => Guid.ParseExact(await ReadStringAsync(lengthFormat, context, token).ConfigureAwait(false), format);
+
+        /// <summary>
+        /// Parses <see cref="BigInteger"/> from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        async ValueTask<BigInteger> ReadBigIntegerAsync(LengthFormat lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Number, IFormatProvider? provider = null, CancellationToken token = default)
+            => BigInteger.Parse(await ReadStringAsync(lengthFormat, context, token).ConfigureAwait(false), style, provider);
 
         /// <summary>
         /// Reads the block of bytes.

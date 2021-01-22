@@ -57,6 +57,9 @@ namespace DotNext.IO.Pipelines
         ValueTask<decimal> IAsyncBinaryReader.ReadDecimalAsync(LengthFormat lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
             => input.ReadDecimalAsync(lengthFormat, context, style, provider, token);
 
+        ValueTask<BigInteger> IAsyncBinaryReader.ReadBigIntegerAsync(LengthFormat lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
+            => input.ReadBigIntegerAsync(lengthFormat, context, style, provider, token);
+
         ValueTask<Guid> IAsyncBinaryReader.ReadGuidAsync(LengthFormat lengthFormat, DecodingContext context, CancellationToken token)
             => input.ReadGuidAsync(lengthFormat, context, token);
 

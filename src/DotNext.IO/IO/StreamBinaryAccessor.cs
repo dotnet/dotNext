@@ -117,6 +117,9 @@ namespace DotNext.IO
         ValueTask<TimeSpan> IAsyncBinaryReader.ReadTimeSpanAsync(LengthFormat lengthFormat, DecodingContext context, string[] formats, TimeSpanStyles style, IFormatProvider? provider, CancellationToken token)
             => StreamExtensions.ReadTimeSpanAsync(stream, lengthFormat, context, buffer, formats, style, provider, token);
 
+        ValueTask<BigInteger> IAsyncBinaryReader.ReadBigIntegerAsync(LengthFormat lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
+            => StreamExtensions.ReadBigIntegerAsync(stream, lengthFormat, context, buffer, style, provider, token);
+
         Task IAsyncBinaryReader.CopyToAsync(Stream output, CancellationToken token)
             => stream.CopyToAsync(output, token);
 

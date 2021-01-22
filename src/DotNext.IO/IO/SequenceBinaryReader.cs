@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Globalization;
 using System.IO;
 using System.IO.Pipelines;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -448,6 +449,19 @@ namespace DotNext.IO
             => Read<TimeSpan, TimeSpanDecoder>(new TimeSpanDecoder(style, formats, provider), lengthFormat, in context);
 
         /// <summary>
+        /// Parses <see cref="BigInteger"/> from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        public BigInteger ReadBigInteger(LengthFormat lengthFormat, in DecodingContext context, NumberStyles style = NumberStyles.Number, IFormatProvider? provider = null)
+            => Read<BigInteger, NumberDecoder>(new NumberDecoder(style, provider), lengthFormat, in context);
+
+        /// <summary>
         /// Decodes the string.
         /// </summary>
         /// <param name="length">The length of the encoded string, in bytes.</param>
@@ -808,6 +822,29 @@ namespace DotNext.IO
             }
 
             return new ValueTask<decimal>(result);
+        }
+
+        /// <inheritdoc/>
+        ValueTask<BigInteger> IAsyncBinaryReader.ReadBigIntegerAsync(LengthFormat lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
+        {
+            Task<BigInteger> result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled<BigInteger>(token);
+            }
+            else
+            {
+                try
+                {
+                    return new ValueTask<BigInteger>(ReadBigInteger(lengthFormat, in context, style, provider));
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException<BigInteger>(e);
+                }
+            }
+
+            return new ValueTask<BigInteger>(result);
         }
 
         /// <inheritdoc/>

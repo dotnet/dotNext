@@ -1404,6 +1404,22 @@ namespace DotNext.IO
             => Read<decimal, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, in context, buffer);
 
         /// <summary>
+        /// Decodes <see cref="BigInteger"/> from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        public static BigInteger ReadBigInteger(this Stream stream, LengthFormat lengthFormat, in DecodingContext context, Span<byte> buffer, NumberStyles style = NumberStyles.Number, IFormatProvider? provider = null)
+            => Read<BigInteger, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, in context, buffer);
+
+        /// <summary>
         /// Decodes <see cref="Guid"/> from its string representation.
         /// </summary>
         /// <param name="stream">The stream to read from.</param>
@@ -1987,6 +2003,24 @@ namespace DotNext.IO
             => ReadAsync<decimal, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, buffer, token);
 
         /// <summary>
+        /// Decodes <see cref="BigInteger"/> from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding characters.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<BigInteger> ReadBigIntegerAsync(this Stream stream, LengthFormat lengthFormat, DecodingContext context, Memory<byte> buffer, NumberStyles style = NumberStyles.Number, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<BigInteger, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, buffer, token);
+
+        /// <summary>
         /// Decodes <see cref="Guid"/> from its string representation.
         /// </summary>
         /// <param name="stream">The stream to read from.</param>
@@ -2308,6 +2342,22 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static ValueTask<decimal> ReadDecimalAsync(this Stream stream, LengthFormat lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Number, IFormatProvider? provider = null, CancellationToken token = default)
             => ReadAsync<decimal, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, token);
+
+        /// <summary>
+        /// Decodes <see cref="BigInteger"/> from its string representation.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<BigInteger> ReadBigIntegerAsync(this Stream stream, LengthFormat lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Number, IFormatProvider? provider = null, CancellationToken token = default)
+            => ReadAsync<BigInteger, NumberDecoder>(stream, new NumberDecoder(style, provider), lengthFormat, context, token);
 
         /// <summary>
         /// Decodes <see cref="Guid"/> from its string representation.
