@@ -108,6 +108,36 @@ namespace DotNext.IO
             return new ValueTask(result);
         }
 
+        ValueTask IAsyncBinaryWriter.WriteAsync(BigInteger value, LengthFormat? lengthFormat, CancellationToken token)
+        {
+            Task result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled(token);
+            }
+            else
+            {
+                result = Task.CompletedTask;
+                try
+                {
+                    var length = value.GetByteCount();
+                    if (lengthFormat.HasValue)
+                        writer.WriteLength(length, lengthFormat.GetValueOrDefault());
+
+                    if (!value.TryWriteBytes(writer.GetSpan(length), out length))
+                        throw new OverflowException();
+
+                    writer.Advance(length);
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException(e);
+                }
+            }
+
+            return new ValueTask(result);
+        }
+
         ValueTask ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<byte> input, CancellationToken token)
         {
             Task result;
