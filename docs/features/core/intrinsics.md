@@ -25,7 +25,7 @@ Intrinsics.IsDefault(1);    //false
 ```
 
 # Low-Level Memory Manipulations
-Intrinsic methods for low-level manipulations extend capabilities of [Unsafe](https://docs.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.unsafe) class from .NET Standard library.
+Intrinsic methods for low-level manipulations extend capabilities of [Unsafe](https://docs.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.unsafe) class from .NET standard library.
 
 > [!IMPORTANT]
 > Most of the provided methods are not verifiable in terms of CLR Validation and Verification and can destabilize runtime. Correctness of their usage must be guaranteed by developer. For more information, read [II.3 Validation and Verification](https://www.ecma-international.org/publications/files/ECMA-ST/ECMA-335.pdf) section of ECMA-335 standard.

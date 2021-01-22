@@ -110,7 +110,7 @@ string str = reader.ReadString(StringLengthEncoding.Plain, Encoding.UTF8);
 * Dynamic buffer should be represented as [Memory&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.memory-1)
 
 In other words, this class has many similarities with [FileBufferingWriteStream](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.webutilities.filebufferingwritestream). However, `FileBufferingWriter` has a few advantages:
-* It depends on .NET Standard rather than ASP.NET Core or .NET Core
+* It doesn't depend on ASP.NET Core
 * Ability to use custom [MemoryAllocator&lt;T&gt;](../../api/DotNext.Buffers.MemoryAllocator-1.yml) for memory pooling
 * Selection between synchronous and asynchronous modes
 * Can drain content to [IBufferWriter&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1)

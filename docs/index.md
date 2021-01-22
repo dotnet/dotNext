@@ -15,7 +15,7 @@ Prerequisites:
 
 # DotNext
 <a href="https://www.nuget.org/packages/dotnext/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.svg?logo=NuGet"></a> ![Downloads](https://img.shields.io/nuget/dt/dotnext.svg)<br/>
-This library is the core of .NEXT which extends .NET Standard API with
+This library is the core of .NEXT which extends .NET standard library with
   * Enum API to work with arbitrary **enum** types
   * Thread-safe advanced atomic operations to work with **int**, **long**, **bool**, **double**, **float**, **IntPtr**, arbitrary reference and value types
   * Unified representation of various synchronization primitives in the form of the lock
