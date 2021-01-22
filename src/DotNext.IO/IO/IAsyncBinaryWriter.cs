@@ -134,8 +134,22 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        ValueTask WriteBigIntegerAsync(BigInteger value, bool littleEndian, LengthFormat? lengthFormat = null, CancellationToken token = default)
-            => WriteAsync(value.ToByteArray(isBigEndian: !littleEndian), lengthFormat, token);
+        async ValueTask WriteBigIntegerAsync(BigInteger value, bool littleEndian, LengthFormat? lengthFormat = null, CancellationToken token = default)
+        {
+            var bytesCount = value.GetByteCount();
+
+            if (bytesCount == 0)
+            {
+                await WriteAsync(ReadOnlyMemory<byte>.Empty, lengthFormat, token).ConfigureAwait(false);
+            }
+            else
+            {
+                using var buffer = BufferWriter.DefaultByteAllocator.Invoke(bytesCount, true);
+                if (!value.TryWriteBytes(buffer.Memory.Span, out bytesCount, isBigEndian: !littleEndian))
+                    throw new InternalBufferOverflowException();
+                await WriteAsync(buffer.Memory, lengthFormat, token).ConfigureAwait(false);
+            }
+        }
 
         /// <summary>
         /// Encodes 8-bit unsigned integer as a string.
