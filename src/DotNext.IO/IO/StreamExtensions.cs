@@ -1257,7 +1257,7 @@ namespace DotNext.IO
             var length = ReadLength(stream, lengthFormat);
             if (length == 0)
                 throw new EndOfStreamException();
-            using var result = length <= MemoryRental<byte>.StackallocThreshold ? stackalloc char[length] : new MemoryRental<char>(length);
+            using var result = length <= MemoryRental<char>.StackallocThreshold ? stackalloc char[length] : new MemoryRental<char>(length);
             length = ReadString(stream, result.Span, in context, buffer);
             return decoder.Decode(result.Span.Slice(0, length));
         }
@@ -1301,9 +1301,78 @@ namespace DotNext.IO
         {
             if (length == 0)
                 return string.Empty;
-            using var result = length <= MemoryRental<byte>.StackallocThreshold ? stackalloc char[length] : new MemoryRental<char>(length);
+            using var result = length <= MemoryRental<char>.StackallocThreshold ? stackalloc char[length] : new MemoryRental<char>(length);
             return new string(result.Span.Slice(0, ReadString(stream, result.Span, in context, buffer)));
         }
+
+        /// <summary>
+        /// Decodes an arbitrary large big integer.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="length">The length of the value, in bytes.</param>
+        /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding the value.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        public static BigInteger ReadBigInteger(this Stream stream, int length, bool littleEndian, Span<byte> buffer)
+        {
+            if (length == 0)
+                return BigInteger.Zero;
+            if (buffer.Length < length)
+                throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
+
+            buffer = buffer.Slice(0, length);
+            stream.ReadBlock(buffer);
+            return new BigInteger(buffer, isBigEndian: !littleEndian);
+        }
+
+        /// <summary>
+        /// Decodes an arbitrary large big integer.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="length">The length of the value, in bytes.</param>
+        /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+#if !NETSTANDARD2_1
+        [SkipLocalsInit]
+#endif
+        public static BigInteger ReadBigInteger(this Stream stream, int length, bool littleEndian)
+        {
+            if (length == 0)
+                return BigInteger.Zero;
+
+            using MemoryRental<byte> buffer = length <= MemoryRental<byte>.StackallocThreshold ? stackalloc byte[length] : new MemoryRental<byte>(length);
+            stream.ReadBlock(buffer.Span);
+            return new BigInteger(buffer.Span, isBigEndian: !littleEndian);
+        }
+
+        /// <summary>
+        /// Decodes an arbitrary large big integer.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the value length encoded in the underlying stream.</param>
+        /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding the value.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+        public static BigInteger ReadBigInteger(this Stream stream, LengthFormat lengthFormat, bool littleEndian, Span<byte> buffer)
+            => ReadBigInteger(stream, stream.ReadLength(lengthFormat), littleEndian, buffer);
+
+        /// <summary>
+        /// Decodes an arbitrary large big integer.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the value length encoded in the underlying stream.</param>
+        /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+        public static BigInteger ReadBigInteger(this Stream stream, LengthFormat lengthFormat, bool littleEndian)
+            => ReadBigInteger(stream, stream.ReadLength(lengthFormat), littleEndian);
 
         /// <summary>
         /// Decodes 8-bit unsigned integer from its string representation.
@@ -1787,6 +1856,83 @@ namespace DotNext.IO
             }
 
             return resultOffset;
+        }
+
+        /// <summary>
+        /// Decodes an arbitrary integer value asynchronously.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="length">The length of the value, in bytes.</param>
+        /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding the value.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static async ValueTask<BigInteger> ReadBigIntegerAsync(this Stream stream, int length, bool littleEndian, Memory<byte> buffer, CancellationToken token = default)
+        {
+            if (length == 0)
+                return BigInteger.Zero;
+            if (buffer.Length < length)
+                throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
+
+            buffer = buffer.Slice(0, length);
+            await stream.ReadBlockAsync(buffer, token).ConfigureAwait(false);
+            return new BigInteger(buffer.Span, isBigEndian: !littleEndian);
+        }
+
+        /// <summary>
+        /// Decodes an arbitrary integer value asynchronously.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="length">The length of the value, in bytes.</param>
+        /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static async ValueTask<BigInteger> ReadBigIntegerAsync(this Stream stream, int length, bool littleEndian, CancellationToken token = default)
+        {
+            if (length == 0)
+                return BigInteger.Zero;
+
+            using var buffer = DefaultByteAllocator.Invoke(length, true);
+            await stream.ReadBlockAsync(buffer.Memory, token).ConfigureAwait(false);
+            return new BigInteger(buffer.Memory.Span, isBigEndian: !littleEndian);
+        }
+
+        /// <summary>
+        /// Decodes an arbitrary integer value asynchronously.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the value length encoded in the underlying stream.</param>
+        /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding the value.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+        public static async ValueTask<BigInteger> ReadBigIntegerAsync(this Stream stream, LengthFormat lengthFormat, bool littleEndian, Memory<byte> buffer, CancellationToken token = default)
+            => await ReadBigIntegerAsync(stream, await stream.ReadLengthAsync(lengthFormat, buffer, token).ConfigureAwait(false), littleEndian, buffer, token).ConfigureAwait(false);
+
+        /// <summary>
+        /// Decodes an arbitrary integer value asynchronously.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the value length encoded in the underlying stream.</param>
+        /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+        public static async ValueTask<BigInteger> ReadBigIntegerAsync(this Stream stream, LengthFormat lengthFormat, bool littleEndian, CancellationToken token = default)
+        {
+            using var lengthDecodingBuffer = DefaultByteAllocator.Invoke(BufferSizeForLength, false);
+            return await ReadBigIntegerAsync(stream, await stream.ReadLengthAsync(lengthFormat, lengthDecodingBuffer.Memory, token).ConfigureAwait(false), littleEndian, token).ConfigureAwait(false);
         }
 
         /// <summary>

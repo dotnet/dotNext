@@ -191,6 +191,38 @@ namespace DotNext.IO.Pipelines
         }
 
         /// <summary>
+        /// Decodes an arbitrary large integer.
+        /// </summary>
+        /// <param name="reader">The pipe reader.</param>
+        /// <param name="length">The length of the value, in bytes.</param>
+        /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException"><paramref name="reader"/> doesn't contain the necessary number of bytes to restore string.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static async ValueTask<BigInteger> ReadBigIntegerAsync(this PipeReader reader, int length, bool littleEndian, CancellationToken token = default)
+        {
+            if (length == 0)
+                return BigInteger.Zero;
+            using var resultBuffer = new ArrayBuffer<byte>(length);
+            return await ReadAsync<BigInteger, BigIntegerReader<ArrayBuffer<byte>>>(reader, new BigIntegerReader<ArrayBuffer<byte>>(resultBuffer, littleEndian), token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Decodes an arbitrary large integer.
+        /// </summary>
+        /// <param name="reader">The pipe reader.</param>
+        /// <param name="lengthFormat">The format of the value length encoded in the underlying stream.</param>
+        /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException"><paramref name="reader"/> doesn't contain the necessary number of bytes to restore string.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+        public static async ValueTask<BigInteger> ReadBigIntegerAsync(this PipeReader reader, LengthFormat lengthFormat, bool littleEndian, CancellationToken token = default)
+            => await ReadBigIntegerAsync(reader, await reader.ReadLengthAsync(lengthFormat, token).ConfigureAwait(false), littleEndian, token).ConfigureAwait(false);
+
+        /// <summary>
         /// Decodes string asynchronously from pipe.
         /// </summary>
         /// <param name="reader">The pipe reader.</param>

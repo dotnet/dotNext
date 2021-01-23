@@ -120,6 +120,12 @@ namespace DotNext.IO
         ValueTask<BigInteger> IAsyncBinaryReader.ReadBigIntegerAsync(LengthFormat lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
             => StreamExtensions.ReadBigIntegerAsync(stream, lengthFormat, context, buffer, style, provider, token);
 
+        ValueTask<BigInteger> IAsyncBinaryReader.ReadBigIntegerAsync(int length, bool littleEndian, CancellationToken token)
+            => StreamExtensions.ReadBigIntegerAsync(stream, length, littleEndian, token);
+
+        ValueTask<BigInteger> IAsyncBinaryReader.ReadBigIntegerAsync(LengthFormat lengthFormat, bool littleEndian, CancellationToken token)
+            => StreamExtensions.ReadBigIntegerAsync(stream, lengthFormat, littleEndian, token);
+
         Task IAsyncBinaryReader.CopyToAsync(Stream output, CancellationToken token)
             => stream.CopyToAsync(output, token);
 

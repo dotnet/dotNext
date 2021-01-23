@@ -93,6 +93,12 @@ namespace DotNext.IO.Pipelines
         ValueTask<long> IAsyncBinaryReader.ReadInt64Async(bool littleEndian, CancellationToken token)
             => input.ReadInt64Async(littleEndian, token);
 
+        ValueTask<BigInteger> IAsyncBinaryReader.ReadBigIntegerAsync(int length, bool littleEndian, CancellationToken token)
+            => input.ReadBigIntegerAsync(length, littleEndian, token);
+
+        ValueTask<BigInteger> IAsyncBinaryReader.ReadBigIntegerAsync(LengthFormat lengthFormat, bool littleEndian, CancellationToken token)
+            => input.ReadBigIntegerAsync(lengthFormat, littleEndian, token);
+
         Task IAsyncBinaryReader.CopyToAsync(Stream output, CancellationToken token)
             => input.CopyToAsync(output, token);
 
