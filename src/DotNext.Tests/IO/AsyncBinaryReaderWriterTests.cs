@@ -231,6 +231,7 @@ namespace DotNext.IO
                 await writer.WriteTimeSpanAsync(valueT, LengthFormat.Plain, encodingContext, "G", InvariantCulture);
                 await writer.WriteAsync(blob, LengthFormat.Compressed);
                 await writer.WriteBigIntegerAsync(bi, LengthFormat.Compressed, encodingContext, provider: InvariantCulture);
+                await writer.WriteBigIntegerAsync(bi, littleEndian, LengthFormat.Compressed);
 
                 var reader = source.CreateReader();
                 Equal(value16, await reader.ReadInt16Async(littleEndian));
@@ -256,6 +257,7 @@ namespace DotNext.IO
                 using var decodedBlob = await reader.ReadAsync(LengthFormat.Compressed);
                 Equal(blob, decodedBlob.Memory.ToArray());
                 Equal(bi, await reader.ReadBigIntegerAsync(LengthFormat.Compressed, decodingContext, provider: InvariantCulture));
+                Equal(bi, await reader.ReadBigIntegerAsync(LengthFormat.Compressed, littleEndian));
             }
         }
 
