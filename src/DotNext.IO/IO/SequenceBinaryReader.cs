@@ -494,7 +494,7 @@ namespace DotNext.IO
         }
 
         /// <summary>
-        /// Decodes an arbitrary large integer. 
+        /// Decodes an arbitrary large integer.
         /// </summary>
         /// <param name="lengthFormat">The format of the value length encoded in the underlying stream.</param>
         /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
@@ -519,7 +519,7 @@ namespace DotNext.IO
 
             if (length == 0)
             {
-                result = string.Empty; 
+                result = string.Empty;
             }
             else if (length > MemoryRental<char>.StackallocThreshold)
             {

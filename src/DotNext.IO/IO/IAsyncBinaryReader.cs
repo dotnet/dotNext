@@ -359,7 +359,7 @@ namespace DotNext.IO
         async ValueTask<BigInteger> ReadBigIntegerAsync(LengthFormat lengthFormat, bool littleEndian, CancellationToken token = default)
         {
             using var buffer = await ReadAsync(lengthFormat, null, token).ConfigureAwait(false);
-            return buffer.IsEmpty ? BigInteger.Zero : new BigInteger(buffer.Memory.Span);
+            return buffer.IsEmpty ? BigInteger.Zero : new BigInteger(buffer.Memory.Span, isBigEndian: !littleEndian);
         }
 
         /// <summary>
