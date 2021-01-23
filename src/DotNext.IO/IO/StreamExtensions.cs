@@ -56,8 +56,6 @@ namespace DotNext.IO
             return (int)reader.Result;
         }
 
-        
-
 #if !NETSTANDARD2_1
         [SkipLocalsInit]
 #endif
