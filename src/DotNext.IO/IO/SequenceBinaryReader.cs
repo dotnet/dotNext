@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Globalization;
 using System.IO;
 using System.IO.Pipelines;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -448,6 +449,61 @@ namespace DotNext.IO
             => Read<TimeSpan, TimeSpanDecoder>(new TimeSpanDecoder(style, formats, provider), lengthFormat, in context);
 
         /// <summary>
+        /// Parses <see cref="BigInteger"/> from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        public BigInteger ReadBigInteger(LengthFormat lengthFormat, in DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null)
+            => Read<BigInteger, NumberDecoder>(new NumberDecoder(style, provider), lengthFormat, in context);
+
+        /// <summary>
+        /// Decodes an arbitrary large integer.
+        /// </summary>
+        /// <param name="length">The length of the value, in bytes.</param>
+        /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+#if !NETSTANDARD2_1
+        [SkipLocalsInit]
+#endif
+        public unsafe BigInteger ReadBigInteger(int length, bool littleEndian)
+        {
+            BigInteger result;
+
+            if (length == 0)
+            {
+                result = BigInteger.Zero;
+            }
+            else if (length > MemoryRental<byte>.StackallocThreshold)
+            {
+                using var buffer = new ArrayBuffer<byte>(length);
+                result = Read<BigInteger, BigIntegerReader<ArrayBuffer<byte>>>(new BigIntegerReader<ArrayBuffer<byte>>(buffer, littleEndian));
+            }
+            else
+            {
+                var buffer = stackalloc byte[length];
+                result = Read<BigInteger, BigIntegerReader<UnsafeBuffer<byte>>>(new BigIntegerReader<UnsafeBuffer<byte>>(new UnsafeBuffer<byte>(buffer, length), littleEndian));
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Decodes an arbitrary large integer.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the value length encoded in the underlying stream.</param>
+        /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        public BigInteger ReadBigInteger(LengthFormat lengthFormat, bool littleEndian)
+            => ReadBigInteger(ReadLength(lengthFormat), littleEndian);
+
+        /// <summary>
         /// Decodes the string.
         /// </summary>
         /// <param name="length">The length of the encoded string, in bytes.</param>
@@ -459,16 +515,24 @@ namespace DotNext.IO
 #endif
         public unsafe string ReadString(int length, in DecodingContext context)
         {
-            if (length > MemoryRental<char>.StackallocThreshold)
+            string result;
+
+            if (length == 0)
+            {
+                result = string.Empty;
+            }
+            else if (length > MemoryRental<char>.StackallocThreshold)
             {
                 using var buffer = new ArrayBuffer<char>(length);
-                return Read<string, StringReader<ArrayBuffer<char>>>(new StringReader<ArrayBuffer<char>>(in context, buffer));
+                result = Read<string, StringReader<ArrayBuffer<char>>>(new StringReader<ArrayBuffer<char>>(in context, buffer));
             }
             else
             {
                 var buffer = stackalloc char[length];
-                return Read<string, StringReader<UnsafeBuffer<char>>>(new StringReader<UnsafeBuffer<char>>(in context, new UnsafeBuffer<char>(buffer, length)));
+                result = Read<string, StringReader<UnsafeBuffer<char>>>(new StringReader<UnsafeBuffer<char>>(in context, new UnsafeBuffer<char>(buffer, length)));
             }
+
+            return result;
         }
 
         private int ReadLength(LengthFormat lengthFormat)
@@ -811,6 +875,29 @@ namespace DotNext.IO
         }
 
         /// <inheritdoc/>
+        ValueTask<BigInteger> IAsyncBinaryReader.ReadBigIntegerAsync(LengthFormat lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
+        {
+            Task<BigInteger> result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled<BigInteger>(token);
+            }
+            else
+            {
+                try
+                {
+                    return new ValueTask<BigInteger>(ReadBigInteger(lengthFormat, in context, style, provider));
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException<BigInteger>(e);
+                }
+            }
+
+            return new ValueTask<BigInteger>(result);
+        }
+
+        /// <inheritdoc/>
         ValueTask<DateTime> IAsyncBinaryReader.ReadDateTimeAsync(LengthFormat lengthFormat, DecodingContext context, DateTimeStyles style, IFormatProvider? provider, CancellationToken token)
         {
             Task<DateTime> result;
@@ -1038,6 +1125,52 @@ namespace DotNext.IO
             }
 
             return new ValueTask<string>(result);
+        }
+
+        /// <inheritdoc/>
+        ValueTask<BigInteger> IAsyncBinaryReader.ReadBigIntegerAsync(int length, bool littleEndian, CancellationToken token)
+        {
+            Task<BigInteger> result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled<BigInteger>(token);
+            }
+            else
+            {
+                try
+                {
+                    return new ValueTask<BigInteger>(ReadBigInteger(length, littleEndian));
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException<BigInteger>(e);
+                }
+            }
+
+            return new ValueTask<BigInteger>(result);
+        }
+
+        /// <inheritdoc/>
+        ValueTask<BigInteger> IAsyncBinaryReader.ReadBigIntegerAsync(LengthFormat lengthFormat, bool littleEndian, CancellationToken token)
+        {
+            Task<BigInteger> result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled<BigInteger>(token);
+            }
+            else
+            {
+                try
+                {
+                    return new ValueTask<BigInteger>(ReadBigInteger(lengthFormat, littleEndian));
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException<BigInteger>(e);
+                }
+            }
+
+            return new ValueTask<BigInteger>(result);
         }
 
         /// <inheritdoc/>

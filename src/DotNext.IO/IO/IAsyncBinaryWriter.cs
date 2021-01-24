@@ -2,6 +2,7 @@ using System;
 using System.Buffers;
 using System.IO;
 using System.IO.Pipelines;
+using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Globalization.CultureInfo;
@@ -11,6 +12,7 @@ namespace DotNext.IO
 {
     using Buffers;
     using static Pipelines.ResultExtensions;
+    using static Text.EncodingExtensions;
     using EncodingContext = Text.EncodingContext;
 
     /// <summary>
@@ -35,7 +37,7 @@ namespace DotNext.IO
             await WriteAsync(buffer.Memory, null, token).ConfigureAwait(false);
         }
 
-        private ValueTask WriteAsync<T>(T value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+        private ValueTask WriteAsync<T>(in T value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
             where T : struct, IFormattable
             => WriteAsync(value.ToString(format, provider).AsMemory(), context, lengthFormat, token);
 
@@ -122,6 +124,32 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         ValueTask WriteInt16Async(short value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
             => WriteAsync(value, lengthFormat, context, format, provider, token);
+
+        /// <summary>
+        /// Encodes an arbitrary large integer as raw bytes.
+        /// </summary>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="littleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
+        /// <param name="lengthFormat">Indicates how the length of the BLOB must be encoded; or <see langword="null"/> to prevent length encoding.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing state of asynchronous execution.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        async ValueTask WriteBigIntegerAsync(BigInteger value, bool littleEndian, LengthFormat? lengthFormat = null, CancellationToken token = default)
+        {
+            var bytesCount = value.GetByteCount();
+
+            if (bytesCount == 0)
+            {
+                await WriteAsync(ReadOnlyMemory<byte>.Empty, lengthFormat, token).ConfigureAwait(false);
+            }
+            else
+            {
+                using var buffer = BufferWriter.DefaultByteAllocator.Invoke(bytesCount, true);
+                if (!value.TryWriteBytes(buffer.Memory.Span, out bytesCount, isBigEndian: !littleEndian))
+                    throw new InternalBufferOverflowException();
+                await WriteAsync(buffer.Memory, lengthFormat, token).ConfigureAwait(false);
+            }
+        }
 
         /// <summary>
         /// Encodes 8-bit unsigned integer as a string.
@@ -235,6 +263,20 @@ namespace DotNext.IO
             => WriteAsync(value, lengthFormat, context, format, provider, token);
 
         /// <summary>
+        /// Encodes <see cref="BigInteger"/> as a string.
+        /// </summary>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="lengthFormat">String length encoding format.</param>
+        /// <param name="context">The context describing encoding of characters.</param>
+        /// <param name="format">A standard or custom date/time format string.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing state of asynchronous execution.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        ValueTask WriteBigIntegerAsync(BigInteger value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+            => WriteAsync(value, lengthFormat, context, format, provider, token);
+
+        /// <summary>
         /// Encodes a block of memory, optionally prefixed with the length encoded as a sequence of bytes
         /// according with the specified format.
         /// </summary>
@@ -276,7 +318,11 @@ namespace DotNext.IO
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        ValueTask WriteAsync(ReadOnlyMemory<char> chars, EncodingContext context, LengthFormat? lengthFormat, CancellationToken token = default);
+        async ValueTask WriteAsync(ReadOnlyMemory<char> chars, EncodingContext context, LengthFormat? lengthFormat, CancellationToken token = default)
+        {
+            using var bytes = context.Encoding.GetBytes(chars.Span);
+            await WriteAsync(bytes.Memory, lengthFormat, token).ConfigureAwait(false);
+        }
 
         /// <summary>
         /// Writes the content from the specified stream.
@@ -402,12 +448,10 @@ namespace DotNext.IO
         /// <summary>
         /// Creates default implementation of binary writer for the buffer writer.
         /// </summary>
-        /// <typeparam name="TWriter">The type of the buffer writer.</typeparam>
         /// <param name="writer">The buffer writer.</param>
         /// <returns>The binary writer.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="writer"/> is <see langword="null"/>.</exception>
-        public static IAsyncBinaryWriter Create<TWriter>(TWriter writer)
-            where TWriter : class, IBufferWriter<byte>, IFlushable
+        public static IAsyncBinaryWriter Create(IBufferWriter<byte> writer)
             => new AsyncBufferWriter(writer);
     }
 }

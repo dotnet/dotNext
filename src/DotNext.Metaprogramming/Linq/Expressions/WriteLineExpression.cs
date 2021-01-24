@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -58,6 +59,9 @@ namespace DotNext.Linq.Expressions
         /// <returns>A new instance of <see cref="WriteLineExpression"/>.</returns>
         public static WriteLineExpression Debug(Expression value) => new WriteLineExpression(value, Kind.Debug);
 
+#if !NETSTANDARD2_1
+        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicMethods, typeof(TextWriter))]
+#endif
         private static MethodCallExpression WriteLineTo(MemberExpression stream, Expression value)
         {
             MethodInfo? writeLineMethod = typeof(TextWriter).GetMethod(nameof(TextWriter.WriteLine), new[] { value.Type });
@@ -72,6 +76,9 @@ namespace DotNext.Linq.Expressions
             return Call(stream, writeLineMethod, value);
         }
 
+#if !NETSTANDARD2_1
+        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicProperties, typeof(Console))]
+#endif
         private MethodCallExpression WriteLineToOut()
         {
             var outProperty = typeof(Console).GetProperty(nameof(Console.Out));
@@ -79,6 +86,9 @@ namespace DotNext.Linq.Expressions
             return WriteLineTo(Property(null, outProperty), value);
         }
 
+#if !NETSTANDARD2_1
+        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicProperties, typeof(Console))]
+#endif
         private MethodCallExpression WriteLineToError()
         {
             var outProperty = typeof(Console).GetProperty(nameof(Console.Error));
@@ -86,6 +96,9 @@ namespace DotNext.Linq.Expressions
             return WriteLineTo(Property(null, outProperty), value);
         }
 
+#if !NETSTANDARD2_1
+        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicMethods, typeof(System.Diagnostics.Debug))]
+#endif
         private MethodCallExpression WriteLineToDebug()
         {
             var writeLineMethod = typeof(System.Diagnostics.Debug).GetMethod(nameof(System.Diagnostics.Debug.WriteLine), new[] { typeof(object) });

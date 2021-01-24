@@ -494,6 +494,10 @@ namespace DotNext.Runtime.CompilerServices
 
             internal StateMachineBuilder(Type returnType) => this.returnType = returnType;
 
+#if !NETSTANDARD2_1
+            [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(AsyncStateMachine<>))]
+            [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(AsyncStateMachine<,>))]
+#endif
             internal MemberExpression Build(Type stateType)
             {
                 var stateMachineType = returnType == typeof(void) ?

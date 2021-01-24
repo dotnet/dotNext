@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.IO;
 using System.IO.Pipelines;
+using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -97,6 +98,29 @@ namespace DotNext.IO
                         writer.WriteLength(input.Length, lengthFormat.GetValueOrDefault());
 
                     writer.Write(input.Span);
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException(e);
+                }
+            }
+
+            return new ValueTask(result);
+        }
+
+        ValueTask IAsyncBinaryWriter.WriteBigIntegerAsync(BigInteger value, bool littleEndian, LengthFormat? lengthFormat, CancellationToken token)
+        {
+            Task result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled(token);
+            }
+            else
+            {
+                result = Task.CompletedTask;
+                try
+                {
+                    writer.WriteBigInteger(in value, littleEndian, lengthFormat);
                 }
                 catch (Exception e)
                 {
@@ -396,6 +420,29 @@ namespace DotNext.IO
                 try
                 {
                     writer.WriteTimeSpan(value, lengthFormat, in context, format, provider);
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException(e);
+                }
+            }
+
+            return new ValueTask(result);
+        }
+
+        ValueTask IAsyncBinaryWriter.WriteBigIntegerAsync(BigInteger value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+        {
+            Task result;
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled(token);
+            }
+            else
+            {
+                result = Task.CompletedTask;
+                try
+                {
+                    writer.WriteBigInteger(value, lengthFormat, in context, format, provider);
                 }
                 catch (Exception e)
                 {

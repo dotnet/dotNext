@@ -12,7 +12,9 @@ namespace DotNext.Buffers
     {
         private readonly Decoder decoder;
         private readonly Encoding encoding;
-        private readonly TBuffer result;
+
+        // not readonly to avoid defensive copying
+        private TBuffer result;
         private int length, resultOffset;
 
         internal StringReader(in DecodingContext context, TBuffer result)

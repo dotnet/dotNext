@@ -11,7 +11,7 @@ namespace DotNext.IO
     using Buffers;
 
     [ExcludeFromCodeCoverage]
-    public sealed class TextWriterSourceTests : Test
+    public sealed class TextStreamTests : Test
     {
         [Fact]
         public static void WriteText()
@@ -88,6 +88,18 @@ namespace DotNext.IO
             await actual.FlushAsync();
             Equal(expected.ToString(), writer.BuildString());
             Equal(expected.ToString(), actual.ToString());
+        }
+
+        [Fact]
+        public static void BufferWriterOverText()
+        {
+            using var builder = new StringWriter();
+            using var writer = builder.AsBufferWriter();
+            writer.Write("Hello, ");
+            writer.Write("world!");
+            True(builder.GetStringBuilder().Length == 0);
+            writer.Flush(false);
+            Equal("Hello, world!", builder.ToString());
         }
     }
 }

@@ -3,8 +3,10 @@ using System.Buffers;
 using System.Globalization;
 using System.IO;
 using System.IO.Pipelines;
+using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
+using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.IO
 {
@@ -32,8 +34,15 @@ namespace DotNext.IO
         /// <returns>The decoded value.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-        ValueTask<T> ReadAsync<T>(CancellationToken token = default)
-            where T : unmanaged;
+        async ValueTask<T> ReadAsync<T>(CancellationToken token = default)
+            where T : unmanaged
+        {
+            using var buffer = BufferWriter.DefaultByteAllocator.Invoke(Unsafe.SizeOf<T>(), true);
+            await ReadAsync(buffer.Memory, token).ConfigureAwait(false);
+            Unsafe.SkipInit(out T result);
+            buffer.Memory.Span.CopyTo(Span.AsBytes(ref result));
+            return result;
+        }
 
         /// <summary>
         /// Decodes 64-bit signed integer using the specified endianness.
@@ -305,6 +314,55 @@ namespace DotNext.IO
             => Guid.ParseExact(await ReadStringAsync(lengthFormat, context, token).ConfigureAwait(false), format);
 
         /// <summary>
+        /// Parses <see cref="BigInteger"/> from its string representation encoded in the underlying stream.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="style">A bitwise combination of the enumeration values that indicates the style elements.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The parsed value.</returns>
+        /// <exception cref="FormatException">The number is in incorrect format.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        async ValueTask<BigInteger> ReadBigIntegerAsync(LengthFormat lengthFormat, DecodingContext context, NumberStyles style = NumberStyles.Integer, IFormatProvider? provider = null, CancellationToken token = default)
+            => BigInteger.Parse(await ReadStringAsync(lengthFormat, context, token).ConfigureAwait(false), style, provider);
+
+        /// <summary>
+        /// Decodes an arbitrary integer value.
+        /// </summary>
+        /// <param name="length">The length of the value, in bytes.</param>
+        /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        async ValueTask<BigInteger> ReadBigIntegerAsync(int length, bool littleEndian, CancellationToken token = default)
+        {
+            if (length == 0)
+                return BigInteger.Zero;
+
+            using var buffer = Buffers.BufferWriter.DefaultByteAllocator.Invoke(length, true);
+            await ReadAsync(buffer.Memory, token).ConfigureAwait(false);
+            return new BigInteger(buffer.Memory.Span, isBigEndian: !littleEndian);
+        }
+
+        /// <summary>
+        /// Decodes an arbitrary integer value.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the value length encoded in the underlying stream.</param>
+        /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        async ValueTask<BigInteger> ReadBigIntegerAsync(LengthFormat lengthFormat, bool littleEndian, CancellationToken token = default)
+        {
+            using var buffer = await ReadAsync(lengthFormat, null, token).ConfigureAwait(false);
+            return buffer.IsEmpty ? BigInteger.Zero : new BigInteger(buffer.Memory.Span, isBigEndian: !littleEndian);
+        }
+
+        /// <summary>
         /// Reads the block of bytes.
         /// </summary>
         /// <param name="output">The block of memory to fill.</param>
@@ -336,6 +394,9 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
         async ValueTask<string> ReadStringAsync(int length, DecodingContext context, CancellationToken token = default)
         {
+            if (length == 0)
+                return string.Empty;
+
             using var buffer = Buffers.BufferWriter.DefaultByteAllocator.Invoke(length, true);
             await ReadAsync(buffer.Memory, token).ConfigureAwait(false);
             return context.Encoding.GetString(buffer.Memory.Span);
@@ -351,7 +412,11 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        ValueTask<string> ReadStringAsync(LengthFormat lengthFormat, DecodingContext context, CancellationToken token = default);
+        async ValueTask<string> ReadStringAsync(LengthFormat lengthFormat, DecodingContext context, CancellationToken token = default)
+        {
+            using var buffer = await ReadAsync(lengthFormat, null, token).ConfigureAwait(false);
+            return context.Encoding.GetString(buffer.Memory.Span);
+        }
 
         /// <summary>
         /// Copies the content to the specified stream.

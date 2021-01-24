@@ -3,8 +3,8 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using TaskAwaiter = System.Runtime.CompilerServices.TaskAwaiter;
 
 namespace DotNext.Linq.Expressions
 {
@@ -24,6 +24,16 @@ namespace DotNext.Linq.Expressions
         /// <param name="expression">An expression providing asynchronous result in the form or <see cref="Task"/> or any other TAP pattern.</param>
         /// <param name="configureAwait"><see langword="true"/> to call <see cref="Task.ConfigureAwait(bool)"/> with <see langword="false"/> argument.</param>
         /// <exception cref="ArgumentException">Passed expression doesn't implement TAP pattern.</exception>
+#if !NETSTANDARD2_1
+        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicMethods, typeof(Task))]
+        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicMethods, typeof(Task<>))]
+        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicMethods, typeof(ValueTask))]
+        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicMethods, typeof(ValueTask<>))]
+        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicMethods, typeof(TaskAwaiter))]
+        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicMethods, typeof(TaskAwaiter<>))]
+        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicMethods, typeof(ValueTaskAwaiter))]
+        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicMethods, typeof(ValueTaskAwaiter<>))]
+#endif
         public AwaitExpression(Expression expression, bool configureAwait = false)
         {
             const BindingFlags PublicInstanceMethod = BindingFlags.Public | BindingFlags.Instance;

@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Globalization;
 using System.IO;
 using System.IO.Pipelines;
+using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -56,6 +57,9 @@ namespace DotNext.IO.Pipelines
         ValueTask<decimal> IAsyncBinaryReader.ReadDecimalAsync(LengthFormat lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
             => input.ReadDecimalAsync(lengthFormat, context, style, provider, token);
 
+        ValueTask<BigInteger> IAsyncBinaryReader.ReadBigIntegerAsync(LengthFormat lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
+            => input.ReadBigIntegerAsync(lengthFormat, context, style, provider, token);
+
         ValueTask<Guid> IAsyncBinaryReader.ReadGuidAsync(LengthFormat lengthFormat, DecodingContext context, CancellationToken token)
             => input.ReadGuidAsync(lengthFormat, context, token);
 
@@ -88,6 +92,12 @@ namespace DotNext.IO.Pipelines
 
         ValueTask<long> IAsyncBinaryReader.ReadInt64Async(bool littleEndian, CancellationToken token)
             => input.ReadInt64Async(littleEndian, token);
+
+        ValueTask<BigInteger> IAsyncBinaryReader.ReadBigIntegerAsync(int length, bool littleEndian, CancellationToken token)
+            => input.ReadBigIntegerAsync(length, littleEndian, token);
+
+        ValueTask<BigInteger> IAsyncBinaryReader.ReadBigIntegerAsync(LengthFormat lengthFormat, bool littleEndian, CancellationToken token)
+            => input.ReadBigIntegerAsync(lengthFormat, littleEndian, token);
 
         Task IAsyncBinaryReader.CopyToAsync(Stream output, CancellationToken token)
             => input.CopyToAsync(output, token);
@@ -303,6 +313,9 @@ namespace DotNext.IO.Pipelines
         unsafe ValueTask IAsyncBinaryWriter.WriteTimeSpanAsync(TimeSpan value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
             => WriteAsync(output, new Writer<TimeSpan, LengthFormat, EncodingContext, string?, IFormatProvider?>(value, lengthFormat, context, format, provider, &PipeExtensions.WriteTimeSpanAsync), token);
 
+        unsafe ValueTask IAsyncBinaryWriter.WriteBigIntegerAsync(BigInteger value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+            => WriteAsync(output, new Writer<BigInteger, LengthFormat, EncodingContext, string?, IFormatProvider?>(value, lengthFormat, context, format, provider, &PipeExtensions.WriteBigIntegerAsync), token);
+
         unsafe ValueTask IAsyncBinaryWriter.WriteInt16Async(short value, bool littleEndian, CancellationToken token)
             => WriteAsync(output, new Writer<short, bool>(value, littleEndian, &PipeExtensions.WriteInt16Async), token);
 
@@ -311,6 +324,9 @@ namespace DotNext.IO.Pipelines
 
         unsafe ValueTask IAsyncBinaryWriter.WriteInt64Async(long value, bool littleEndian, CancellationToken token)
             => WriteAsync(output, new Writer<long, bool>(value, littleEndian, &PipeExtensions.WriteInt64Async), token);
+
+        unsafe ValueTask IAsyncBinaryWriter.WriteBigIntegerAsync(BigInteger value, bool littleEndian, LengthFormat? lengthFormat, CancellationToken token)
+            => WriteAsync(output, new Writer<BigInteger, bool, LengthFormat?>(value, littleEndian, lengthFormat, &PipeExtensions.WriteBigIntegerAsync), token);
 
         Task IAsyncBinaryWriter.CopyFromAsync(Stream input, CancellationToken token)
             => input.CopyToAsync(output, token);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using FormattableStringFactory = System.Runtime.CompilerServices.FormattableStringFactory;
 
@@ -86,6 +87,9 @@ namespace DotNext.Linq.Expressions
             };
         }
 
+#if !NETSTANDARD2_1
+        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicMethods, typeof(string))]
+#endif
         private Expression MakePlainString()
         {
             // string.Format(format, arguments)

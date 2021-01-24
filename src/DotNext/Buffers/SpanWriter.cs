@@ -163,7 +163,7 @@ namespace DotNext.Buffers
             => TrySlide(count, out var result) ? result : throw new EndOfStreamException(ExceptionMessages.NotEnoughMemory);
 
         /// <summary>
-        /// Writes the portion of data.
+        /// Writes a portion of data.
         /// </summary>
         /// <param name="action">The action responsible for writing elements.</param>
         /// <param name="arg">The state to be passed to the action.</param>
@@ -183,23 +183,24 @@ namespace DotNext.Buffers
         }
 
         /// <summary>
-        /// Attempts to write the portion of data.
+        /// Attempts to write a portion of data.
         /// </summary>
         /// <param name="action">The action responsible for writing elements.</param>
         /// <param name="arg">The state to be passed to the action.</param>
-        /// <param name="count">The number of the elements to be written.</param>
         /// <typeparam name="TArg">The type of the argument to be passed to the callback.</typeparam>
         /// <returns><see langword="true"/> if all elements are written successfully; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="action"/> is zero.</exception>
         [CLSCompliant(false)]
-        public unsafe bool TryWrite<TArg>(delegate*<Span<T>, TArg, void> action, TArg arg, int count)
+        public unsafe bool TryWrite<TArg>(delegate*<TArg, Span<T>, out int, bool> action, TArg arg)
         {
             if (action == null)
                 throw new ArgumentNullException(nameof(action));
 
+            var output = span.Slice(position);
             bool result;
-            if (result = TrySlide(count, out var buffer))
-                action(buffer, arg);
+
+            if (result = action(arg, output, out var writtenCount))
+                position += writtenCount;
 
             return result;
         }

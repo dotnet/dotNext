@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Globalization;
 using System.IO;
 using System.IO.Pipelines;
+using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -116,6 +117,15 @@ namespace DotNext.IO
         ValueTask<TimeSpan> IAsyncBinaryReader.ReadTimeSpanAsync(LengthFormat lengthFormat, DecodingContext context, string[] formats, TimeSpanStyles style, IFormatProvider? provider, CancellationToken token)
             => StreamExtensions.ReadTimeSpanAsync(stream, lengthFormat, context, buffer, formats, style, provider, token);
 
+        ValueTask<BigInteger> IAsyncBinaryReader.ReadBigIntegerAsync(LengthFormat lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
+            => StreamExtensions.ReadBigIntegerAsync(stream, lengthFormat, context, buffer, style, provider, token);
+
+        ValueTask<BigInteger> IAsyncBinaryReader.ReadBigIntegerAsync(int length, bool littleEndian, CancellationToken token)
+            => StreamExtensions.ReadBigIntegerAsync(stream, length, littleEndian, token);
+
+        ValueTask<BigInteger> IAsyncBinaryReader.ReadBigIntegerAsync(LengthFormat lengthFormat, bool littleEndian, CancellationToken token)
+            => StreamExtensions.ReadBigIntegerAsync(stream, lengthFormat, littleEndian, token);
+
         Task IAsyncBinaryReader.CopyToAsync(Stream output, CancellationToken token)
             => stream.CopyToAsync(output, token);
 
@@ -196,6 +206,12 @@ namespace DotNext.IO
 
         ValueTask IAsyncBinaryWriter.WriteTimeSpanAsync(TimeSpan value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
             => stream.WriteTimeSpanAsync(value, lengthFormat, context, buffer, format, provider, token);
+
+        ValueTask IAsyncBinaryWriter.WriteBigIntegerAsync(BigInteger value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
+            => stream.WriteBigIntegerAsync(value, lengthFormat, context, buffer, format, provider, token);
+
+        ValueTask IAsyncBinaryWriter.WriteBigIntegerAsync(BigInteger value, bool littleEndian, LengthFormat? lengthFormat, CancellationToken token)
+            => stream.WriteBigIntegerAsync(value, littleEndian, buffer, lengthFormat, token);
 
         Task IAsyncBinaryWriter.CopyFromAsync(Stream input, CancellationToken token)
             => input.CopyToAsync(stream, token);

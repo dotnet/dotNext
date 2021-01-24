@@ -14,7 +14,7 @@ namespace DotNext.IO
     /// in the form of the writer to <see cref="TextWriter"/>.
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct TextConsumer : IReadOnlySpanConsumer
+    public readonly struct TextConsumer : IReadOnlySpanConsumer, IFlushable
     {
         private readonly TextWriter output;
 
@@ -38,9 +38,16 @@ namespace DotNext.IO
         ValueTask ISupplier<ReadOnlyMemory<char>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<char> input, CancellationToken token)
             => new ValueTask(output.WriteAsync(input, token));
 
-         /// <inheritdoc />
+        /// <inheritdoc />
         void IConsumer<ReadOnlyMemory<char>>.Invoke(ReadOnlyMemory<char> input)
             => output.Write(input.Span);
+
+        /// <inheritdoc />
+        void IFlushable.Flush() => output.Flush();
+
+        /// <inheritdoc />
+        Task IFlushable.FlushAsync(CancellationToken token)
+            => token.IsCancellationRequested ? Task.FromCanceled(token) : output.FlushAsync();
 
         /// <summary>
         /// Determines whether this object contains the same text writer as the specified object.

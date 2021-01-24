@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using static System.Linq.Expressions.Expression;
 
@@ -17,7 +18,11 @@ namespace DotNext
     /// <typeparam name="T">A type which implements dispose pattern.</typeparam>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-dispose">Implementing Dispose method</seealso>
     [Concept]
+#if NETSTANDARD2_1
     public static class Disposable<T>
+#else
+    public static class Disposable<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] T>
+#endif
     {
         private delegate void DisposeMethod(in T instance);
 

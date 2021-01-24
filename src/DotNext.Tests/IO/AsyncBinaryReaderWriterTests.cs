@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Pipelines;
+using System.Numerics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -36,20 +37,11 @@ namespace DotNext.IO
                 internal DefaultAsyncBinaryReader(Stream stream, Memory<byte> buffer)
                     => reader = IAsyncBinaryReader.Create(stream, buffer);
 
-                ValueTask<T> IAsyncBinaryReader.ReadAsync<T>(CancellationToken token)
-                    => reader.ReadAsync<T>(token);
-                
                 ValueTask IAsyncBinaryReader.ReadAsync(Memory<byte> output, CancellationToken token)
                     => reader.ReadAsync(output, token);
 
                 ValueTask<MemoryOwner<byte>> IAsyncBinaryReader.ReadAsync(LengthFormat lengthFormat, MemoryAllocator<byte> allocator, CancellationToken token)
                     => reader.ReadAsync(lengthFormat, allocator, token);
-
-                ValueTask<string> IAsyncBinaryReader.ReadStringAsync(int length, DecodingContext context, CancellationToken token)
-                    => reader.ReadStringAsync(length, context, token);
-
-                ValueTask<string> IAsyncBinaryReader.ReadStringAsync(LengthFormat lengthFormat, DecodingContext context, CancellationToken token)
-                    => reader.ReadStringAsync(lengthFormat, context, token);
 
                 Task IAsyncBinaryReader.CopyToAsync(Stream output, CancellationToken token)
                     => reader.CopyToAsync(output, token);
@@ -73,9 +65,6 @@ namespace DotNext.IO
 
                 ValueTask IAsyncBinaryWriter.WriteAsync(ReadOnlyMemory<byte> input, LengthFormat? lengthFormat, CancellationToken token)
                     => writer.WriteAsync(input, lengthFormat, token);
-
-                ValueTask IAsyncBinaryWriter.WriteAsync(ReadOnlyMemory<char> chars, EncodingContext context, LengthFormat? lengthFormat, CancellationToken token)
-                    => writer.WriteAsync(chars, context, lengthFormat, token);
             }
 
             private readonly MemoryStream stream = new MemoryStream();
@@ -94,13 +83,17 @@ namespace DotNext.IO
 
         private sealed class BufferSource : IAsyncBinaryReaderWriterSource
         {
-            private readonly MemoryStream stream = new MemoryStream();
+            private readonly PooledBufferWriter<byte> buffer = new ();
 
-            public IAsyncBinaryWriter CreateWriter() => IAsyncBinaryWriter.Create(stream.AsBufferWriter(ArrayPool<byte>.Shared.ToAllocator()));
+            public IAsyncBinaryWriter CreateWriter() => IAsyncBinaryWriter.Create(buffer);
 
-            public IAsyncBinaryReader CreateReader() => IAsyncBinaryReader.Create(stream.ToArray());
-            
-            ValueTask IAsyncDisposable.DisposeAsync() => stream.DisposeAsync();
+            public IAsyncBinaryReader CreateReader() => IAsyncBinaryReader.Create(buffer.WrittenMemory);
+
+            ValueTask IAsyncDisposable.DisposeAsync()
+            {
+                buffer.Dispose();
+                return new ValueTask();
+            }
         }
 
         private sealed class StreamSource : IAsyncBinaryReaderWriterSource
@@ -217,6 +210,7 @@ namespace DotNext.IO
                 var valueDTO = DateTimeOffset.Now;
                 var valueT = TimeSpan.FromMilliseconds(1024);
                 var blob = RandomBytes(128);
+                var bi = new BigInteger(RandomBytes(64));
 
                 var writer = source.CreateWriter();
                 await writer.WriteInt16Async(value16, littleEndian);
@@ -240,6 +234,8 @@ namespace DotNext.IO
                 await writer.WriteTimeSpanAsync(valueT, LengthFormat.Plain, encodingContext);
                 await writer.WriteTimeSpanAsync(valueT, LengthFormat.Plain, encodingContext, "G", InvariantCulture);
                 await writer.WriteAsync(blob, LengthFormat.Compressed);
+                await writer.WriteBigIntegerAsync(bi, LengthFormat.Compressed, encodingContext, provider: InvariantCulture);
+                await writer.WriteBigIntegerAsync(bi, littleEndian, LengthFormat.Compressed);
 
                 var reader = source.CreateReader();
                 Equal(value16, await reader.ReadInt16Async(littleEndian));
@@ -264,6 +260,8 @@ namespace DotNext.IO
                 Equal(valueT, await reader.ReadTimeSpanAsync(LengthFormat.Plain, decodingContext, new[] { "G" }, TimeSpanStyles.None, InvariantCulture));
                 using var decodedBlob = await reader.ReadAsync(LengthFormat.Compressed);
                 Equal(blob, decodedBlob.Memory.ToArray());
+                Equal(bi, await reader.ReadBigIntegerAsync(LengthFormat.Compressed, decodingContext, provider: InvariantCulture));
+                Equal(bi, await reader.ReadBigIntegerAsync(LengthFormat.Compressed, littleEndian));
             }
         }
 

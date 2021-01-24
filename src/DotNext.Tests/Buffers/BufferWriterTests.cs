@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
@@ -22,16 +23,20 @@ namespace DotNext.Buffers
         [InlineData(false)]
         public static async Task ReadBlittableTypes(bool littleEndian)
         {
+            var bi = new BigInteger(RandomBytes(32));
             var writer = new ArrayBufferWriter<byte>();
             writer.Write(10M);
             writer.WriteInt64(42L, littleEndian);
             writer.WriteInt32(44, littleEndian);
             writer.WriteInt16(46, littleEndian);
+            writer.WriteBigInteger(in bi, littleEndian, LengthFormat.Compressed);
+
             IAsyncBinaryReader reader = IAsyncBinaryReader.Create(writer.WrittenMemory);
             Equal(10M, await reader.ReadAsync<decimal>());
             Equal(42L, await reader.ReadInt64Async(littleEndian));
             Equal(44, await reader.ReadInt32Async(littleEndian));
             Equal(46, await reader.ReadInt16Async(littleEndian));
+            Equal(bi, await reader.ReadBigIntegerAsync(LengthFormat.Compressed, littleEndian));
         }
 
         private static async Task ReadWriteStringUsingEncodingAsync(string value, Encoding encoding, int bufferSize, LengthFormat? lengthEnc)
@@ -178,6 +183,7 @@ namespace DotNext.Buffers
             using (writer)
             {
                 var g = Guid.NewGuid();
+                var bi = new BigInteger(RandomBytes(64));
                 var dt = DateTime.Now;
                 var dto = DateTimeOffset.Now;
                 writer.WriteInt64(42L, LengthFormat.Plain, in encodingContext, provider: InvariantCulture);
@@ -200,6 +206,7 @@ namespace DotNext.Buffers
                 writer.WriteDecimal(42.5M, LengthFormat.Plain, in encodingContext, provider: InvariantCulture);
                 writer.WriteSingle(32.2F, LengthFormat.Plain, in encodingContext, provider: InvariantCulture);
                 writer.WriteDouble(56.6D, LengthFormat.Plain, in encodingContext, provider: InvariantCulture);
+                writer.WriteBigInteger(bi, LengthFormat.Plain, in encodingContext, provider: InvariantCulture);
 
                 var decodingContext = new DecodingContext(encoding, true);
                 var reader = IAsyncBinaryReader.Create(writer.WrittenMemory);
@@ -223,6 +230,7 @@ namespace DotNext.Buffers
                 Equal(42.5M, reader.ReadDecimal(LengthFormat.Plain, in decodingContext, provider: InvariantCulture));
                 Equal(32.2F, reader.ReadSingle(LengthFormat.Plain, in decodingContext, provider: InvariantCulture));
                 Equal(56.6D, reader.ReadDouble(LengthFormat.Plain, in decodingContext, provider: InvariantCulture));
+                Equal(bi, reader.ReadBigInteger(LengthFormat.Plain, in decodingContext, provider: InvariantCulture));
             }
         }
     }
