@@ -162,7 +162,7 @@ using (Stream reader = writer.GetWrittenContentAsStream())
 }
 ```
 
-# Encoding/decoding Contiguous Memory
+# Encoding/decoding of Memory Block
 [Span&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.span-1) and [ReadOnlySpan&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.readonlyspan-1) are powerful data types for working with contiguous memory blocks. Random access to memory elements is perfectly supported by their public methods. However, there a lot of cases when sequential access to memory elements required. For instance, the frame of network protocol passed over the wire can be represented as span. Parsing or writing the frame is sequential operation. To cover such use cases, .NEXT exposes simple but powerful types aimed to simplify sequential access to span contents:
 * [SpanReader&lt;T&gt;](../../api/DotNext.Buffers.SpanReader-1.yml) provides sequential reading of elements from the memory
 * [SpanWriter&lt;T&gt;](../../api/DotNext.Buffers.SpanWriter-1.yml) provides sequential writing of elements to the memory
