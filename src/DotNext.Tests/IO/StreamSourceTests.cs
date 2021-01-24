@@ -504,9 +504,10 @@ namespace DotNext.IO
         public static void WriteToFlushableWriter()
         {
             using var ms = new MemoryStream();
-            using var writer = ms.AsBufferWriter(MemoryAllocator.CreateArrayAllocator<byte>()).AsStream();
-            writer.Write(new byte[] { 1, 2, 3 });
-            writer.Flush();
+            using var writer = ms.AsBufferWriter(MemoryAllocator.CreateArrayAllocator<byte>());
+            using var stream = writer.AsStream();
+            stream.Write(new byte[] { 1, 2, 3 });
+            stream.Flush();
             Equal(new byte[] { 1, 2, 3 }, ms.ToArray());
         }
 
@@ -514,9 +515,10 @@ namespace DotNext.IO
         public static async Task WriteToFlushableWriterAsync()
         {
             await using var ms = new MemoryStream();
-            await using var writer = ms.AsBufferWriter(MemoryAllocator.CreateArrayAllocator<byte>()).AsStream();
-            await writer.WriteAsync(new byte[] { 1, 2, 3 });
-            await writer.FlushAsync();
+            using var writer = ms.AsBufferWriter(MemoryAllocator.CreateArrayAllocator<byte>());
+            await using var stream = writer.AsStream();
+            await stream.WriteAsync(new byte[] { 1, 2, 3 });
+            await stream.FlushAsync();
             Equal(new byte[] { 1, 2, 3 }, ms.ToArray());
         }
 

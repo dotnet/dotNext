@@ -83,13 +83,17 @@ namespace DotNext.IO
 
         private sealed class BufferSource : IAsyncBinaryReaderWriterSource
         {
-            private readonly MemoryStream stream = new MemoryStream();
+            private readonly PooledBufferWriter<byte> buffer = new ();
 
-            public IAsyncBinaryWriter CreateWriter() => IAsyncBinaryWriter.Create(stream.AsBufferWriter(ArrayPool<byte>.Shared.ToAllocator()));
+            public IAsyncBinaryWriter CreateWriter() => IAsyncBinaryWriter.Create(buffer);
 
-            public IAsyncBinaryReader CreateReader() => IAsyncBinaryReader.Create(stream.ToArray());
-            
-            ValueTask IAsyncDisposable.DisposeAsync() => stream.DisposeAsync();
+            public IAsyncBinaryReader CreateReader() => IAsyncBinaryReader.Create(buffer.WrittenMemory);
+
+            ValueTask IAsyncDisposable.DisposeAsync()
+            {
+                buffer.Dispose();
+                return new ValueTask();
+            }
         }
 
         private sealed class StreamSource : IAsyncBinaryReaderWriterSource

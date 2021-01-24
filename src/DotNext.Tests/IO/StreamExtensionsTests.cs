@@ -332,23 +332,19 @@ namespace DotNext.IO
         public static void BufferWriterOverStream()
         {
             using var ms = new MemoryStream(256);
-            var writer = ms.AsBufferWriter(ArrayPool<byte>.Shared.ToAllocator());
-            var span = writer.GetSpan(4);
+            using var writer = ms.AsBufferWriter(ArrayPool<byte>.Shared.ToAllocator());
+            var span = writer.GetSpan(2);
             span[0] = 1;
             span[1] = 2;
-            span[2] = 3;
-            span[3] = 4;
             writer.Advance(2);
-            writer.Flush();
+            writer.Flush(false);
             Equal(new byte[] { 1, 2 }, ms.ToArray());
+            span = writer.GetSpan(2);
+            span[0] = 3;
+            span[1] = 4;
             writer.Advance(2);
-            writer.FlushAsync().GetAwaiter().GetResult();
+            writer.FlushAsync(false).GetAwaiter().GetResult();
             Equal(new byte[] { 1, 2, 3, 4 }, ms.ToArray());
-            writer.Advance(span.Length - 4);
-            Equal(span.Length, ms.Length);
-            span = writer.GetSpan(4);
-            writer.Advance(4);
-            Equal(span.Length + 4, ms.Length);
         }
 
         [Fact]
