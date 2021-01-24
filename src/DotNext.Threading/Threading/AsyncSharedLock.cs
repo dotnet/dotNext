@@ -100,6 +100,11 @@ namespace DotNext.Threading
         public bool IsLockHeld => state.Value.RemainingLocks < ConcurrencyLevel;
 
         /// <summary>
+        /// Indicates that the lock is acquired in exclusive mode.
+        /// </summary>
+        public bool IsStrongLockHeld => state.Value.RemainingLocks == ExclusiveMode;
+
+        /// <summary>
         /// Attempts to obtain lock synchronously without blocking caller thread.
         /// </summary>
         /// <param name="strongLock"><see langword="true"/> to acquire strong(exclusive) lock; <see langword="false"/> to acquire weak lock.</param>
