@@ -448,12 +448,10 @@ namespace DotNext.IO
         /// <summary>
         /// Creates default implementation of binary writer for the buffer writer.
         /// </summary>
-        /// <typeparam name="TWriter">The type of the buffer writer.</typeparam>
         /// <param name="writer">The buffer writer.</param>
         /// <returns>The binary writer.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="writer"/> is <see langword="null"/>.</exception>
-        public static IAsyncBinaryWriter Create<TWriter>(TWriter writer)
-            where TWriter : class, IBufferWriter<byte>, IFlushable
+        public static IAsyncBinaryWriter Create(IBufferWriter<byte> writer)
             => new AsyncBufferWriter(writer);
     }
 }
