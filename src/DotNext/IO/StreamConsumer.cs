@@ -14,7 +14,7 @@ namespace DotNext.IO
     /// in the form of the writer to <see cref="Stream"/>.
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct StreamConsumer : IReadOnlySpanConsumer, IEquatable<StreamConsumer>
+    public readonly struct StreamConsumer : IReadOnlySpanConsumer, IEquatable<StreamConsumer>, IFlushable
     {
         private readonly Stream output;
 
@@ -40,6 +40,12 @@ namespace DotNext.IO
         /// <inheritdoc />
         void IConsumer<ReadOnlyMemory<byte>>.Invoke(ReadOnlyMemory<byte> input)
             => output.Write(input.Span);
+
+        /// <inheritdoc />
+        void IFlushable.Flush() => output.Flush();
+
+        /// <inheritdoc />
+        Task IFlushable.FlushAsync(CancellationToken token) => output.FlushAsync(token);
 
         /// <summary>
         /// Determines whether this object contains the same stream instance as the specified object.
