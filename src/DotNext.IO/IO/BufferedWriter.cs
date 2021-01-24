@@ -116,10 +116,10 @@ namespace DotNext.IO
             this.writer = writer;
         }
 
-        public sealed override void Flush(bool flushStream)
+        public override void Flush(bool flushStream)
             => Flush(ref writer, flushStream);
 
-        public sealed override Task FlushAsync(bool flushStream, CancellationToken token)
+        public override Task FlushAsync(bool flushStream, CancellationToken token)
             => FlushAsync(writer, flushStream, token);
 
         /// <inheritdoc />
