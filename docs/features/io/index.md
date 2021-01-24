@@ -189,4 +189,12 @@ var g = reader.Read<Guid>();
 ```
 
 # Text Reader for ReadOnlySequence
-[ReadOnlySequence&lt;char&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) can be wrapped as an instance of [TextReader](https://docs.microsoft.com/en-us/dotnet/api/system.io.textreader) class to read strings and characters in more convenient way. To do that, you need to instantiate [](../../api/DotNext.IO.TextBufferReader.yml) class and pass the sequence to its constructor.
+[ReadOnlySequence&lt;char&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) can be wrapped as an instance of [TextReader](https://docs.microsoft.com/en-us/dotnet/api/system.io.textreader) class to read strings and characters in more convenient way. To do that, you need to call `AsTextReader` extension method:
+```csharp
+using DotNext.IO;
+using System.Buffers;
+using System.IO;
+
+ReadOnlySequence<char> sequence = ...;
+using TextReader reader = sequence.AsTextReader();
+```
