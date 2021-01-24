@@ -198,3 +198,23 @@ using System.IO;
 ReadOnlySequence<char> sequence = ...;
 using TextReader reader = sequence.AsTextReader();
 ```
+
+# Buffered Writes
+[BufferedStream](https://docs.microsoft.com/en-us/dotnet/api/system.io.bufferedstream) adds a buffering layer to the stream which allows to increase I/O performance in some cases. [BufferedWriter&lt;T&gt;](../../api/DotNext.IO.BufferedWriter-1.yml) is a modern alternative with the following features:
+* It implements [IBufferWriter&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) interface so you can use `GetMemory`, `GetSpan` and `Advance` methods to write buffered content
+* It supports custom memory allocator supporting memory pooling with [ArrayPool&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.arraypool-1) and friends
+* It's not limited by [Stream](https://docs.microsoft.com/en-us/dotnet/api/system.io.stream) data type. For instance, it supports buffered writes to [TextWriter](https://docs.microsoft.com/en-us/dotnet/api/system.io.textwriter)
+
+The following code demonstrates how to write some data to the memory and then flush the buffered data to the underlying stream:
+
+```csharp
+using DotNext.IO;
+using System.IO;
+
+using var Stream stream = ...;
+using var writer = stream.AsBufferWriter();
+var mem = writer.GetSpan(1024);
+mem[0] = 10;
+writer.Advance(1024);
+stream.Flush(false);    // writes 1024 bytes to the underlying stream
+```
