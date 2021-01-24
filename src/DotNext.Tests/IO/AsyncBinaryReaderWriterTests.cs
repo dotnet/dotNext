@@ -447,9 +447,24 @@ namespace DotNext.IO
             await ThrowsAsync<EndOfStreamException>(reader.ReadDoubleAsync(LengthFormat.Plain, context).AsTask);
             await ThrowsAsync<EndOfStreamException>(reader.ReadDecimalAsync(LengthFormat.Plain, context).AsTask);
             await ThrowsAsync<EndOfStreamException>(reader.ReadStringAsync(LengthFormat.Plain, context).AsTask);
+            await ThrowsAsync<EndOfStreamException>(reader.ReadBigIntegerAsync(LengthFormat.Plain, context).AsTask);
+            await ThrowsAsync<EndOfStreamException>(reader.ReadBigIntegerAsync(10, true).AsTask);
             await ThrowsAsync<EndOfStreamException>(reader.ReadStringAsync(10, context).AsTask);
             await ThrowsAsync<EndOfStreamException>(reader.ReadAsync<decimal>().AsTask);
             await ThrowsAsync<EndOfStreamException>(reader.ReadAsync(new byte[1]).AsTask);
+        }
+
+        [Theory]
+        [InlineData(32)]
+        [InlineData(64)]
+        [InlineData(128)]
+        public static async Task WriteViaBufferWriter(int length)
+        {
+            var bytes = RandomBytes(length);
+            using var stream = new MemoryStream();
+            var writer = IAsyncBinaryWriter.Create(stream, new byte[64]);
+            await writer.WriteAsync((array, output) => output.Write(array), bytes);
+            Equal(bytes, stream.ToArray());
         }
     }
 }
