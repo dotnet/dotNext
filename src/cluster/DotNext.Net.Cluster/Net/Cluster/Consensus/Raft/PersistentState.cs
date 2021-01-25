@@ -130,10 +130,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// However, synchronization is not needed inside of <see cref="ApplyAsync(LogEntry)"/>
         /// method.
         /// </remarks>
-        protected Memory<byte> Buffer => sessionManager.WriteSession.Buffer;
+        /// <exception cref="InvalidOperationException">Attempt to obtain buffer without synchronization.</exception>
+        protected Memory<byte> Buffer
+            => syncRoot.IsStrongLockHeld ? sessionManager.WriteSession.Buffer : throw new InvalidOperationException();
 
         private Partition CreatePartition(long partitionNumber)
-            => new Partition(location, Buffer.Length, recordsPerPartition, partitionNumber, metadataPool, sessionManager.Capacity);
+            => new Partition(location, bufferSize, recordsPerPartition, partitionNumber, metadataPool, sessionManager.Capacity);
 
         private long SquashedIndex
         {
@@ -297,7 +299,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             // 1. Save the snapshot into temporary file to avoid corruption caused by network connection
             string tempSnapshotFile, snapshotFile = this.snapshot.FileName;
-            using (var tempSnapshot = new Snapshot(location, Buffer.Length, 0, true))
+            using (var tempSnapshot = new Snapshot(location, bufferSize, 0, true))
             {
                 tempSnapshotFile = tempSnapshot.FileName;
                 await tempSnapshot.WriteAsync(sessionManager.WriteSession, snapshot, snapshotIndex, CancellationToken.None).ConfigureAwait(false);
@@ -320,7 +322,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Environment.FailFast(LogMessages.SnapshotInstallationFailed, e);
             }
 
-            this.snapshot = new Snapshot(location, Buffer.Length, sessionManager.Capacity);
+            this.snapshot = new Snapshot(location, bufferSize, sessionManager.Capacity);
             this.snapshot.PopulateCache(sessionManager.WriteSession);
 
             // 3. Identify all partitions to be replaced by snapshot

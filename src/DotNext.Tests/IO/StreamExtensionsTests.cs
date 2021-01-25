@@ -11,7 +11,6 @@ using DateTimeStyles = System.Globalization.DateTimeStyles;
 
 namespace DotNext.IO
 {
-    using Buffers;
     using Text;
 
     [ExcludeFromCodeCoverage]
@@ -326,33 +325,6 @@ namespace DotNext.IO
             }
             ms.Position = 0;
             Equal("ABC", await ms.ReadStringAsync(LengthFormat.Compressed, Encoding.UTF8));
-        }
-
-        [Fact]
-        public static void BufferWriterOverStream()
-        {
-            using var ms = new MemoryStream(256);
-            using var writer = ms.AsBufferWriter(ArrayPool<byte>.Shared.ToAllocator());
-            var span = writer.GetSpan(2);
-            span[0] = 1;
-            span[1] = 2;
-            writer.Advance(2);
-            writer.Flush(false);
-            Equal(new byte[] { 1, 2 }, ms.ToArray());
-            span = writer.GetSpan(2);
-            span[0] = 3;
-            span[1] = 4;
-            writer.Advance(2);
-            writer.FlushAsync(false).GetAwaiter().GetResult();
-            Equal(new byte[] { 1, 2, 3, 4 }, ms.ToArray());
-        }
-
-        [Fact]
-        public static void BufferWriterOverStreamExceptions()
-        {
-            Throws<ArgumentNullException>(() => StreamExtensions.AsBufferWriter(null, ArrayPool<byte>.Shared.ToAllocator()));
-            using var ms = new MemoryStream(new byte[12], false);
-            Throws<ArgumentException>(() => ms.AsBufferWriter(ArrayPool<byte>.Shared.ToAllocator()));
         }
 
         [Fact]

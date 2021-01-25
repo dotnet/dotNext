@@ -30,17 +30,6 @@ namespace DotNext.IO
         }
 
         /// <summary>
-        /// Adds a buffering layer to write operations on another writer and make it compatible with
-        /// <see cref="System.Buffers.IBufferWriter{T}"/> interface.
-        /// </summary>
-        /// <param name="output">The writer to convert.</param>
-        /// <param name="allocator">The allocator of the buffer.</param>
-        /// <returns>The buffered text writer.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="output"/> is <see langword="null"/>.</exception>
-        public static BufferedWriter<char> AsBufferWriter(this TextWriter output, MemoryAllocator<char>? allocator = null)
-            => new BufferedWriter<char, TextConsumer>(output, allocator);
-
-        /// <summary>
         /// Creates <see cref="TextReader"/> over the sequence of characters.
         /// </summary>
         /// <param name="sequence">The sequence of characters.</param>

@@ -17,7 +17,7 @@ namespace DotNext.IO
     /// Represents binary reader for the stream.
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
-    internal readonly struct AsyncStreamBinaryAccessor : IAsyncBinaryReader, IAsyncBinaryWriter, IFlushable
+    internal readonly partial struct AsyncStreamBinaryAccessor : IAsyncBinaryReader, IAsyncBinaryWriter, IFlushable
     {
         private readonly Memory<byte> buffer;
         private readonly Stream stream;
@@ -158,6 +158,13 @@ namespace DotNext.IO
 
         public ValueTask WriteAsync(ReadOnlyMemory<char> chars, EncodingContext context, LengthFormat? lengthFormat, CancellationToken token)
             => stream.WriteStringAsync(chars, context, buffer, lengthFormat, token);
+
+        async ValueTask IAsyncBinaryWriter.WriteAsync<TArg>(Action<TArg, IBufferWriter<byte>> writer, TArg arg, CancellationToken token)
+        {
+            using var bufferWriter = new BufferedStreamWriter(buffer);
+            writer(arg, bufferWriter);
+            await stream.WriteAsync(bufferWriter.WrittenMemory, token).ConfigureAwait(false);
+        }
 
         ValueTask IAsyncBinaryWriter.WriteByteAsync(byte value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
             => stream.WriteByteAsync(value, lengthFormat, context, buffer, format, provider, token);
