@@ -26,7 +26,7 @@ namespace DotNext.IO
     /// returned <see cref="Memory{T}"/> instance references bytes in memory. Otherwise,
     /// it references memory-mapped file.
     /// </remarks>
-    public sealed partial class FileBufferingWriter : Stream, IFlushableBufferWriter<byte>, IGrowableBuffer<byte>
+    public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, IGrowableBuffer<byte>, IFlushable
     {
         internal const int DefaultMemoryThreshold = 32768;
         private const int FileBufferSize = 1024;

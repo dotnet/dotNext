@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,7 +17,7 @@ namespace DotNext.IO
     /// type as a representation of input data.
     /// </remarks>
     /// <typeparam name="T">The type of the elements in the buffer.</typeparam>
-    public abstract class BufferedWriter<T> : Disposable, IFlushableBufferWriter<T>
+    public abstract class BufferedWriter<T> : Disposable, IBufferWriter<T>, IFlushable
         where T : struct
     {
         private readonly PooledBufferWriter<T> buffer;
