@@ -91,15 +91,12 @@ namespace DotNext.IO
         }
 
         [Fact]
-        public static void BufferWriterOverText()
+        public static async Task WriteSequence()
         {
-            using var builder = new StringWriter();
-            using var writer = builder.AsBufferWriter();
-            writer.Write("Hello, ");
-            writer.Write("world!");
-            True(builder.GetStringBuilder().Length == 0);
-            writer.Flush(false);
-            Equal("Hello, world!", builder.ToString());
+            var sequence = new [] { "abc".AsMemory(), "def".AsMemory(), "g".AsMemory() }.ToReadOnlySequence();
+            await using var writer = new StringWriter();
+            await writer.WriteAsync(sequence);
+            Equal("abcdefg", writer.ToString());
         }
     }
 }

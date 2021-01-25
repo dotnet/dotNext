@@ -1721,25 +1721,6 @@ namespace DotNext.IO
             => CopyTo<StreamConsumer>(source, destination, buffer, token);
 
         /// <summary>
-        /// Adds a buffering layer to write operations on another stream and make it compatible with
-        /// <see cref="System.Buffers.IBufferWriter{T}"/> interface.
-        /// </summary>
-        /// <param name="output">The stream to convert.</param>
-        /// <param name="allocator">The allocator of the buffer.</param>
-        /// <returns>The buffered stream writer.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="output"/> is <see langword="null"/>.</exception>
-        /// <exception cref="ArgumentException"><paramref name="output"/> is not writable stream.</exception>
-        public static BufferedWriter<byte> AsBufferWriter(this Stream output, MemoryAllocator<byte>? allocator = null)
-        {
-            if (output is null)
-                throw new ArgumentNullException(nameof(output));
-            if (!output.CanWrite)
-                throw new ArgumentException(ExceptionMessages.StreamNotWritable, nameof(output));
-
-            return new BufferedWriter<byte, StreamConsumer>(output, allocator);
-        }
-
-        /// <summary>
         /// Reads the entire content using the specified delegate.
         /// </summary>
         /// <typeparam name="TArg">The type of the argument to be passed to the content reader.</typeparam>
