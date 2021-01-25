@@ -192,7 +192,7 @@ namespace DotNext.Reflection
         public bool IsReadOnly => (field.Attributes & FieldAttributes.InitOnly) != 0;
 
         /// <inheritdoc/>
-        FieldInfo IMember<FieldInfo>.RuntimeMember => field;
+        FieldInfo IMember<FieldInfo>.Metadata => field;
 
         /// <summary>
         /// Determines whether this field is equal to the given field.

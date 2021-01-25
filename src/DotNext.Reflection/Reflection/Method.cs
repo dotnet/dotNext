@@ -294,7 +294,7 @@ namespace DotNext.Reflection
         public static implicit operator TSignature?(Method<TSignature>? method) => method?.Invoker;
 
         /// <inheritdoc/>
-        MethodInfo IMember<MethodInfo>.RuntimeMember => method;
+        MethodInfo IMember<MethodInfo>.Metadata => method;
 
         /// <inheritdoc/>
         TSignature IMember<MethodInfo, TSignature>.Invoker => Invoker;

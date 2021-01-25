@@ -56,7 +56,7 @@ namespace DotNext.Reflection
             => AddOrRemoveHandler(@event, target, handler, @event.RemoveEventHandler);
 
         /// <inheritdoc/>
-        EventInfo IMember<EventInfo>.RuntimeMember => @event;
+        EventInfo IMember<EventInfo>.Metadata => @event;
 
         /// <summary>
         /// Gets the class that declares this constructor.

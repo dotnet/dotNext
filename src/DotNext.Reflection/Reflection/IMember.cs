@@ -20,7 +20,7 @@ namespace DotNext.Reflection
         /// <summary>
         /// Member metadata.
         /// </summary>
-        TMember RuntimeMember { get; }
+        TMember Metadata { get; }
     }
 
     /// <summary>
