@@ -54,7 +54,7 @@ namespace DotNext.IO
                 {
                     extraBuffer.Advance(count);
                 }
-                else if(count + position > buffer.Length)
+                else if (count + position > buffer.Length)
                 {
                     throw new InvalidOperationException();
                 }
