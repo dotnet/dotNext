@@ -114,29 +114,32 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
                 throw new UnexpectedStatusCodeException(response, e);
             }
-#if NETCOREAPP3_1
-            catch (OperationCanceledException e) when (!token.IsCancellationRequested)
-            {
-                // see blog post https://devblogs.microsoft.com/dotnet/net-5-new-networking-improvements/ for
-                // more info about handling timeouts in .NET 5
-                context.Logger.MemberUnavailable(endPoint, e);
-                ChangeStatus(ClusterMemberStatus.Unavailable);
-                throw new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, e);
-            }
-#else
             catch (OperationCanceledException e) when (e.InnerException is TimeoutException timeoutEx)
             {
-                context.Logger.MemberUnavailable(endPoint, timeoutEx);
-                ChangeStatus(ClusterMemberStatus.Unavailable);
-                throw new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, timeoutEx);
+                // This handler catches timeout in .NET 5 or later.
+                // See blog post https://devblogs.microsoft.com/dotnet/net-5-new-networking-improvements/ for
+                // more info about handling timeouts in .NET 5
+                throw MemberUnavailable(timeoutEx);
             }
-#endif
+            catch (OperationCanceledException e) when (!token.IsCancellationRequested)
+            {
+                // This handler catches inability to connect to the remote host on Windows platform.
+                // On Linux, this situation is handled by handler for HttpRequestException
+                throw MemberUnavailable(e);
+            }
             finally
             {
                 timeoutControl?.Dispose();
                 Disposable.Dispose(response, response?.Content, request);
                 Metrics?.ReportResponseTime(timeStamp.Elapsed);
             }
+        }
+
+        private MemberUnavailableException MemberUnavailable(Exception e)
+        {
+            context.Logger.MemberUnavailable(endPoint, e);
+            ChangeStatus(ClusterMemberStatus.Unavailable);
+            return new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, e);
         }
 
         ValueTask IRaftClusterMember.CancelPendingRequestsAsync()
