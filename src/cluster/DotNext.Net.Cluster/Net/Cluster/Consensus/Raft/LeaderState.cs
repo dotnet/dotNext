@@ -221,7 +221,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private void DrainReplicationQueue()
         {
             while (replicationQueue.TryDequeue(out var node))
-                node.SetResult(true);
+                node.TrySetResult(true);
         }
 
         private Task WaitForReplicationAsync(TimeSpan period, CancellationToken token)
@@ -269,9 +269,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 timerCancellation.Dispose();
                 heartbeatTask = null;
 
-                // cancel queue
+                // cancel replication queue
                 while (replicationQueue.TryDequeue(out var node))
-                    node.SetCanceled();
+                    node.TrySetCanceled();
 
                 Metrics = null;
             }
