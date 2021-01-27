@@ -131,7 +131,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly bool allowPartitioning;
         private readonly CancellationTokenSource timerCancellation;
         private readonly ConcurrentQueue<WaitNode> replicationQueue;
-        private AtomicBoolean replicationState; // true means that replication is forced and heartbeat timeout should be skipped
+        private volatile WaitNode replicationEvent;
         private Task? heartbeatTask;
         internal ILeaderStateMetrics? Metrics;
 
@@ -142,6 +142,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             this.allowPartitioning = allowPartitioning;
             timerCancellation = new CancellationTokenSource();
             replicationQueue = new ConcurrentQueue<WaitNode>();
+            replicationEvent = new WaitNode();
         }
 
         private async Task<bool> DoHeartbeats(IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)
@@ -225,7 +226,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         private Task WaitForReplicationAsync(TimeSpan period, CancellationToken token)
-            => replicationState.TrueToFalse() ? Task.CompletedTask : Task.Delay(period, token);
+            => Interlocked.Exchange(ref replicationEvent, new WaitNode()).Task.WaitAsync(period, token);
 
         private async Task DoHeartbeats(TimeSpan period, IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)
         {
@@ -238,7 +239,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             var waiter = new WaitNode();
             replicationQueue.Enqueue(waiter);
-            replicationState.Value = true;
+            replicationEvent.TrySetResult(true);
             return waiter.Task.WaitAsync(timeout, token);
         }
 
