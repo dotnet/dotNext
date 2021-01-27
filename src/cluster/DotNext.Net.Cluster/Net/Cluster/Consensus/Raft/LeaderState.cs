@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -131,8 +131,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly bool allowPartitioning;
         private readonly CancellationTokenSource timerCancellation;
         private readonly AsyncManualResetEvent forcedReplication;
+        private readonly ConcurrentQueue<WaitNode> replicationQueue;
         private Task? heartbeatTask;
-        private ImmutableQueue<WaitNode> replicationQueue;  // volatile
         internal ILeaderStateMetrics? Metrics;
 
         internal LeaderState(IRaftStateMachine stateMachine, bool allowPartitioning, long term)
@@ -142,7 +142,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             this.allowPartitioning = allowPartitioning;
             timerCancellation = new CancellationTokenSource();
             forcedReplication = new AsyncManualResetEvent(false);
-            replicationQueue = ImmutableQueue<WaitNode>.Empty;
+            replicationQueue = new ConcurrentQueue<WaitNode>();
         }
 
         private async Task<bool> DoHeartbeats(IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)
@@ -221,8 +221,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private void DrainReplicationQueue()
         {
-            foreach (var waiter in Interlocked.Exchange(ref replicationQueue, ImmutableQueue<WaitNode>.Empty))
-                waiter.SetResult(true);
+            while (replicationQueue.TryDequeue(out var node))
+                node.SetResult(true);
         }
 
         private async Task DoHeartbeats(TimeSpan period, IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)
@@ -235,7 +235,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         internal Task<bool> ForceReplicationAsync(TimeSpan timeout, CancellationToken token)
         {
             var waiter = new WaitNode();
-            ImmutableInterlocked.Enqueue(ref replicationQueue, waiter);
+            replicationQueue.Enqueue(waiter);
             forcedReplication.Set(true);
             return waiter.Task.WaitAsync(timeout, token);
         }
@@ -269,8 +269,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 heartbeatTask = null;
 
                 // cancel queue
-                foreach (var waiter in Interlocked.Exchange(ref replicationQueue, ImmutableQueue<WaitNode>.Empty))
-                    waiter.SetCanceled();
+                while (replicationQueue.TryDequeue(out var node))
+                    node.SetCanceled();
 
                 Metrics = null;
             }
