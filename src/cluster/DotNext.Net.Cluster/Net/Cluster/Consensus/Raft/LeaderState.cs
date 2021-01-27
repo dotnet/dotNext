@@ -121,7 +121,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private sealed class WaitNode : TaskCompletionSource<bool>
         {
-            internal WaitNode()
+            public WaitNode()
                 : base(TaskCreationOptions.RunContinuationsAsynchronously)
             {
             }
@@ -130,8 +130,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly long currentTerm;
         private readonly bool allowPartitioning;
         private readonly CancellationTokenSource timerCancellation;
-        private readonly AsyncManualResetEvent forcedReplication;
         private readonly ConcurrentQueue<WaitNode> replicationQueue;
+        private AtomicBoolean replicationState; // true means that replication is forced and heartbeat timeout should be skipped
         private Task? heartbeatTask;
         internal ILeaderStateMetrics? Metrics;
 
@@ -141,7 +141,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             currentTerm = term;
             this.allowPartitioning = allowPartitioning;
             timerCancellation = new CancellationTokenSource();
-            forcedReplication = new AsyncManualResetEvent(false);
             replicationQueue = new ConcurrentQueue<WaitNode>();
         }
 
@@ -225,10 +224,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 node.SetResult(true);
         }
 
+        private Task WaitForReplicationAsync(TimeSpan period, CancellationToken token)
+            => replicationState.TrueToFalse() ? Task.CompletedTask : Task.Delay(period, token);
+
         private async Task DoHeartbeats(TimeSpan period, IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)
         {
             using var cancellationSource = CancellationTokenSource.CreateLinkedTokenSource(token, timerCancellation.Token);
-            for (token = cancellationSource.Token; await DoHeartbeats(auditTrail, token).ConfigureAwait(false); await forcedReplication.WaitAsync(period, token).ConfigureAwait(false))
+            for (token = cancellationSource.Token; await DoHeartbeats(auditTrail, token).ConfigureAwait(false); await WaitForReplicationAsync(period, token).ConfigureAwait(false))
                 DrainReplicationQueue();
         }
 
@@ -236,7 +238,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             var waiter = new WaitNode();
             replicationQueue.Enqueue(waiter);
-            forcedReplication.Set(true);
+            replicationState.Value = true;
             return waiter.Task.WaitAsync(timeout, token);
         }
 
@@ -265,7 +267,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (disposing)
             {
                 timerCancellation.Dispose();
-                forcedReplication.Dispose();
                 heartbeatTask = null;
 
                 // cancel queue
