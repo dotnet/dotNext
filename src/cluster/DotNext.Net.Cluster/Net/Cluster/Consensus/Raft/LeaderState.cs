@@ -83,22 +83,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
             }
 
-            private static bool ContainsTerm<TEntry, TList>(TList list, long term)
-                where TEntry : IRaftLogEntry
-                where TList : IReadOnlyList<TEntry>
-            {
-                for (var i = 0; i < list.Count; i++)
-                {
-                    if (list[i].Term == term)
-                        return true;
-                }
-
-                return false;
-            }
-
             public ValueTask<Result<bool>> ReadAsync<TEntry, TList>(TList entries, long? snapshotIndex, CancellationToken token)
-                where TEntry : IRaftLogEntry
-                where TList : IReadOnlyList<TEntry>
+                where TEntry : notnull, IRaftLogEntry
+                where TList : notnull, IReadOnlyList<TEntry>
             {
                 if (snapshotIndex.HasValue)
                 {
@@ -111,12 +98,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     replicationAwaiter = member.AppendEntriesAsync<TEntry, TList>(term, entries, precedingIndex, precedingTerm, commitIndex, token).ConfigureAwait(false).GetAwaiter();
                 }
 
-                replicatedWithCurrentTerm = ContainsTerm<TEntry, TList>(entries, term);
+                replicatedWithCurrentTerm = ContainsTerm(entries, term);
                 if (replicationAwaiter.IsCompleted)
                     Complete();
                 else
                     replicationAwaiter.OnCompleted(Complete);
+
                 return new ValueTask<Result<bool>>(Task);
+
+                static bool ContainsTerm(TList list, long term)
+                {
+                    for (var i = 0; i < list.Count; i++)
+                    {
+                        if (list[i].Term == term)
+                            return true;
+                    }
+
+                    return false;
+                }
             }
         }
 
