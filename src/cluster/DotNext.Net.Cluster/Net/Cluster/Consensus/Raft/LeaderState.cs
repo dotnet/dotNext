@@ -226,7 +226,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         private Task WaitForReplicationAsync(TimeSpan period, CancellationToken token)
-            => Interlocked.Exchange(ref replicationEvent, new WaitNode()).Task.WaitAsync(period, token);
+        {
+            // This implementation optimized to avoid allocations of a new wait node.
+            // The new node should be created when the current node is in signaled state.
+            // Otherwise, we can keep the existing node
+            var current = replicationEvent.Task;
+            if (current.IsCompleted)
+            {
+                replicationEvent = new WaitNode();
+            }
+            else
+            {
+                current = current.WaitAsync(period, token);
+            }
+
+            return current;
+        }
 
         private async Task DoHeartbeats(TimeSpan period, IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)
         {
