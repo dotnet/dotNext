@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -130,8 +129,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly long currentTerm;
         private readonly bool allowPartitioning;
         private readonly CancellationTokenSource timerCancellation;
-        private readonly ConcurrentQueue<WaitNode> replicationQueue;
-        private volatile WaitNode replicationEvent;
+        private volatile WaitNode replicationEvent, replicationQueue;
         private Task? heartbeatTask;
         internal ILeaderStateMetrics? Metrics;
 
@@ -141,8 +139,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             currentTerm = term;
             this.allowPartitioning = allowPartitioning;
             timerCancellation = new CancellationTokenSource();
-            replicationQueue = new ConcurrentQueue<WaitNode>();
             replicationEvent = new WaitNode();
+            replicationQueue = new WaitNode();
         }
 
         private async Task<bool> DoHeartbeats(IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)
@@ -220,10 +218,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         private void DrainReplicationQueue()
-        {
-            while (replicationQueue.TryDequeue(out var node))
-                node.TrySetResult(true);
-        }
+            => Interlocked.Exchange(ref replicationQueue, new WaitNode()).SetResult(true);
 
         private Task WaitForReplicationAsync(TimeSpan period, CancellationToken token)
         {
@@ -252,10 +247,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         internal Task<bool> ForceReplicationAsync(TimeSpan timeout, CancellationToken token)
         {
-            var waiter = new WaitNode();
-            replicationQueue.Enqueue(waiter);
             replicationEvent.TrySetResult(true);
-            return waiter.Task.WaitAsync(timeout, token);
+            return replicationQueue.Task.WaitAsync(timeout, token);
         }
 
         /// <summary>
@@ -286,8 +279,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 heartbeatTask = null;
 
                 // cancel replication queue
-                while (replicationQueue.TryDequeue(out var node))
-                    node.TrySetCanceled();
+                replicationQueue.TrySetException(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader));
 
                 Metrics = null;
             }
