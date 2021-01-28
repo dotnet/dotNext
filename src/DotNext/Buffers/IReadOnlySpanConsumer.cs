@@ -234,6 +234,12 @@ namespace DotNext.Buffers
         public override int GetHashCode() => RuntimeHelpers.GetHashCode(output);
 
         /// <summary>
+        /// Returns a string that represents the underlying buffer.
+        /// </summary>
+        /// <returns>A string that represents the underlying buffer.</returns>
+        public override string? ToString() => output?.ToString();
+
+        /// <summary>
         /// Determines whether the two objects contain references to the same buffer writer.
         /// </summary>
         /// <param name="x">The first object to compare.</param>
