@@ -69,7 +69,13 @@ namespace DotNext.IO
         /// <returns>The hash code representing identity of the stored text writer.</returns>
         public override int GetHashCode() => RuntimeHelpers.GetHashCode(output);
 
-         /// <summary>
+        /// <summary>
+        /// Returns a string that represents the underlying writer.
+        /// </summary>
+        /// <returns>A string that represents the underlying writer.</returns>
+        public override string? ToString() => output?.ToString();
+
+        /// <summary>
         /// Wraps the text writer.
         /// </summary>
         /// <param name="output">The text writer.</param>

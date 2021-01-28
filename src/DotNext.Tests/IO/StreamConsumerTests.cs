@@ -13,6 +13,7 @@ namespace DotNext.IO
         {
             Throws<ArgumentNullException>(() => new StreamConsumer(null));
             var consumer = new StreamConsumer();
+            Null(consumer.ToString());
             True(consumer.IsEmpty);
             Equal(new StreamConsumer(), consumer);
             True(new StreamConsumer() == consumer);
@@ -20,6 +21,7 @@ namespace DotNext.IO
             Equal(0, consumer.GetHashCode());
 
             consumer = new StreamConsumer(Stream.Null);
+            NotNull(consumer.ToString());
             False(consumer.IsEmpty);
             NotEqual(0, consumer.GetHashCode());
             NotEqual(new StreamConsumer(), consumer);

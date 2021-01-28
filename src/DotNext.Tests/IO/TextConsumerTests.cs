@@ -13,6 +13,7 @@ namespace DotNext.IO
         {
             Throws<ArgumentNullException>(() => new TextConsumer(null));
             var consumer = new TextConsumer();
+            Null(consumer.ToString());
             True(consumer.IsEmpty);
             Equal(new TextConsumer(), consumer);
             True(new TextConsumer() == consumer);
@@ -20,6 +21,7 @@ namespace DotNext.IO
             Equal(0, consumer.GetHashCode());
 
             consumer = new TextConsumer(TextWriter.Null);
+            NotNull(consumer.ToString());
             False(consumer.IsEmpty);
             NotEqual(0, consumer.GetHashCode());
             NotEqual(new TextConsumer(), consumer);
