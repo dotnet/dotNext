@@ -247,8 +247,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         internal Task<bool> ForceReplicationAsync(TimeSpan timeout, CancellationToken token)
         {
+            // enqueue a new task representing completion callback
+            var result = replicationQueue.Task.WaitAsync(timeout, token);
+
+            // resume heartbeat loop to force replication
             replicationEvent.TrySetResult(true);
-            return replicationQueue.Task.WaitAsync(timeout, token);
+            return result;
         }
 
         /// <summary>
