@@ -143,7 +143,7 @@ namespace DotNext.Reflection
         private protected abstract Type DeclaringType { get; }
 
         /// <inheritdoc/>
-        MemberInfo IMember<MemberInfo>.RuntimeMember => Method ?? (MemberInfo)new BuiltinOperatorInfo(DeclaringType, Type);
+        MemberInfo IMember<MemberInfo>.Metadata => Method ?? (MemberInfo)new BuiltinOperatorInfo(DeclaringType, Type);
 
         /// <inheritdoc/>
         TSignature IMember<MemberInfo, TSignature>.Invoker => Invoker;

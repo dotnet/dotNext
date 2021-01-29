@@ -62,7 +62,7 @@ namespace DotNext.Reflection
         public override string Name => ConstructorName;
 
         /// <inheritdoc/>
-        ConstructorInfo IMember<ConstructorInfo>.RuntimeMember => ctorInfo as ConstructorInfo ?? this;
+        ConstructorInfo IMember<ConstructorInfo>.Metadata => ctorInfo as ConstructorInfo ?? this;
 
         /// <inheritdoc/>
         TSignature IMember<ConstructorInfo, TSignature>.Invoker => invoker;

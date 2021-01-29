@@ -68,6 +68,12 @@ namespace DotNext.IO
         public override int GetHashCode() => RuntimeHelpers.GetHashCode(output);
 
         /// <summary>
+        /// Returns a string that represents the underlying stream.
+        /// </summary>
+        /// <returns>A string that represents the underlying stream.</returns>
+        public override string? ToString() => output?.ToString();
+
+        /// <summary>
         /// Wraps the stream.
         /// </summary>
         /// <param name="output">The writable stream.</param>

@@ -221,7 +221,7 @@ namespace DotNext.Reflection
         public sealed override IEnumerable<CustomAttributeData> CustomAttributes => property.CustomAttributes;
 
         /// <inheritdoc/>
-        PropertyInfo IMember<PropertyInfo>.RuntimeMember => property;
+        PropertyInfo IMember<PropertyInfo>.Metadata => property;
 
         /// <summary>
         /// Determines whether this property is equal to the given property.

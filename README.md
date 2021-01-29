@@ -123,7 +123,7 @@ The libraries are versioned according with [Semantic Versioning 2.0](https://sem
 | ---- | ---- | ---- |
 | 0.x | .NET Standard 2.0 | Not Supported |
 | 1.x | .NET Standard 2.0 | Not Supported |
-| 2.x | .NET Standard 2.1 | Maintenance |
+| 2.x | .NET Standard 2.1 | Maintenance (EOL 02/28/2021) |
 | 3.x | .NET Standard 2.1, .NET 5 | Active Development |
 
 _Maintenance_ support level means that new releases will contain bug fixes only.

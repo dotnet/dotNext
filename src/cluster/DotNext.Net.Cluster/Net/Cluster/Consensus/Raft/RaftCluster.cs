@@ -233,7 +233,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Gets token that can be used for all internal asynchronous operations.
         /// </summary>
-        protected CancellationToken Token => transitionCancellation.Token;
+        protected CancellationToken Token
+            => transitionCancellation.IsCancellationRequested ? new CancellationToken(true) : transitionCancellation.Token;
 
         private void ChangeMembers(MemberCollectionMutator mutator)
         {
