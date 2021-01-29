@@ -220,7 +220,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private void DrainReplicationQueue()
             => Interlocked.Exchange(ref replicationQueue, new WaitNode()).SetResult(true);
 
-        private Task WaitForReplicationAsync(TimeSpan period, CancellationToken token)
+        private Task<bool> WaitForReplicationAsync(TimeSpan period, CancellationToken token)
         {
             // This implementation optimized to avoid allocations of a new wait node.
             // The new node should be created when the current node is in signaled state.
@@ -241,8 +241,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private async Task DoHeartbeats(TimeSpan period, IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)
         {
             using var cancellationSource = CancellationTokenSource.CreateLinkedTokenSource(token, timerCancellation.Token);
-            for (token = cancellationSource.Token; await DoHeartbeats(auditTrail, token).ConfigureAwait(false); await WaitForReplicationAsync(period, token).ConfigureAwait(false))
-                DrainReplicationQueue();
+            token = cancellationSource.Token;
+            for (var forced = false; await DoHeartbeats(auditTrail, token).ConfigureAwait(false); forced = await WaitForReplicationAsync(period, token).ConfigureAwait(false))
+            {
+                if (forced)
+                    DrainReplicationQueue();
+            }
         }
 
         internal Task<bool> ForceReplicationAsync(TimeSpan timeout, CancellationToken token)
