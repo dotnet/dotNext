@@ -138,9 +138,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             currentTerm = term;
             this.allowPartitioning = allowPartitioning;
-            timerCancellation = new CancellationTokenSource();
-            replicationEvent = new WaitNode();
-            replicationQueue = new WaitNode();
+            timerCancellation = new ();
+            replicationEvent = new ();
+            replicationQueue = new ();
         }
 
         private async Task<bool> DoHeartbeats(IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)
@@ -218,7 +218,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         private void DrainReplicationQueue()
-            => Interlocked.Exchange(ref replicationQueue, new WaitNode()).SetResult(true);
+            => Interlocked.Exchange(ref replicationQueue, new ()).SetResult(true);
 
         private Task<bool> WaitForReplicationAsync(TimeSpan period, CancellationToken token)
         {
@@ -228,7 +228,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var current = replicationEvent.Task;
             if (current.IsCompleted)
             {
-                replicationEvent = new WaitNode();
+                replicationEvent = new ();
             }
             else
             {
@@ -251,12 +251,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         internal Task<bool> ForceReplicationAsync(TimeSpan timeout, CancellationToken token)
         {
-            // enqueue a new task representing completion callback
-            var result = replicationQueue.Task.WaitAsync(timeout, token);
+            var result = replicationQueue.Task;
 
             // resume heartbeat loop to force replication
             replicationEvent.TrySetResult(true);
-            return result;
+
+            // enqueue a new task representing completion callback
+            return result.WaitAsync(timeout, token);
         }
 
         /// <summary>
