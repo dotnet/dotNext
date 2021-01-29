@@ -167,11 +167,31 @@ This section contains recommendations about implementation of your own database 
     1. This class aggregates reference to `IDataEngine`
     1. This class encapsulates logic for messaging with leader node
     1. This class acting as controller for API exposed to external clients
-    1. Utilize `PersistentState.EnsureConsistencyAsync` method for read-only operations
-    1. Utilize `RaftCluster.ForceReplicationAsync` and `PersistentState.WaitForCommitAsync` methods for write operations
+    1. Use `PersistentState.EnsureConsistencyAsync` to ensure that the node is fully synchronized with the leader node
+    1. Use `PersistentState.WaitForCommitAsync` and, optionally, `RaftCluster.ForceReplicationAsync` methods for write operations
 1. Expose data manipulation methods from class described above to clients using selected network transport
 1. Implement duplicates elimination logic for write requests from clients
 1. Call `ReplayAsync` method which is inherited from `PersistentState` class at application startup. This step is not need if you're using Raft implementation for ASP.NET Core.
+
+`ForceReplicationAsync` method doesn't provide strong guarantees that the log entry at the specified index will be replicated and committed on return. A typical code for processing a new log entry from the client might be look like this:
+```csharp
+IRaftCluster cluster = ...;
+var term = cluster.Term;
+var index = await cluster.AuditTrail.AppendAsync(new MyLogEntry(term), token);
+do
+{
+    await cluster.ForceReplicationAsync(TimeSpan.FromSeconds(30), token);
+}
+while (!await cluster.AuditTrail.WaitForCommitAsync(index, TimeSpan.FromSeconds(30), token));
+
+// ensure that term wasn't changed
+if (term != cluster.Term)
+{
+    // The term has changed, it means that the original log entry probably dropped or overwritten by newly elected
+    // leader. As a result, original client request cannot be processed. You can ask the client to retry the request
+    // or redirect the request to the leader node transparently
+}
+```
 
 Designing binary format for custom log entries and interpreter for them may be hard. Examine [this](./wal.md) article to learn how to use Interpreter Framework shipped with the library.
 
@@ -208,11 +228,15 @@ sealed class ClusterMember : Disposable, IRaftClusterMember
 }
 ```
 
-`VoteAsync`, `AppendEntriesAsync`, `InstallSnapshotAsync` are methods for sending Raft-specific messages over the wire. They are called automatically by core logic encapsulated by `RaftCluster` class. Implementation of these methods should throw [MemberUnavailableException](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.MemberUnavailableException.html) if any network-related problem occurred.
+`VoteAsync`, `PreVoteAsync`, `AppendEntriesAsync`, `InstallSnapshotAsync` are methods for sending Raft-specific messages over the wire. They are called automatically by core logic located in `RaftCluster` class. Implementation of these methods should throw [MemberUnavailableException](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.MemberUnavailableException.html) if any network-related problem occurred.
 
-The last two methods responsible for serializing log entries to the underlying network connection. [IRaftLogEntry](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry.html) is inherited from [IDataTransferObject](https://sakno.github.io/dotNext/api/DotNext.IO.IDataTransferObject.html) which represents abstraction for Data Transfer Object. DTO is an object that can be serialized to or deserialized from binary form. However, serialization/deserialization process and binary layout are fully controlled by DTO itself in contrast to classic .NET serialization. You need to wrap underlying network stream to [IAsyncBinaryWriter](https://sakno.github.io/dotNext/api/DotNext.IO.IAsyncBinaryWriter.html) and pass it to `IDataTransferObject.WriteAsync` method for each log entry. `IAsyncBinaryWriter` interface has built-in static factory methods for wrapping [streams](https://docs.microsoft.com/en-us/dotnet/api/system.io.stream) and [pipes](https://docs.microsoft.com/en-us/dotnet/api/system.io.pipelines.pipewriter). Note that `IDataTransferObject.Length` may return **null** and you will not be able to identify log record size (in bytes) during serialization. This behavior depends on underlying implementation of Write-Ahead Log. Therefore, you need to provide special logic which allows to write binary data of undefined size to the underlying connection. For instance, default implementation for ASP.NET Core uses multipart content type where log records are separated by special boundary from each other so the knowledge about the size of each record is not needed.
+The last two methods responsible for serializing log entries to the underlying network connection. [IRaftLogEntry](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry.html) is inherited from [IDataTransferObject](https://sakno.github.io/dotNext/api/DotNext.IO.IDataTransferObject.html) which represents abstraction for Data Transfer Object. DTO is an object that can be serialized to or deserialized from binary form. However, serialization/deserialization process and binary layout are fully controlled by DTO itself in contrast to classic .NET serialization. You need to wrap underlying network stream to [IAsyncBinaryWriter](https://sakno.github.io/dotNext/api/DotNext.IO.IAsyncBinaryWriter.html) and pass it to `IDataTransferObject.WriteAsync` method for each log entry. `IAsyncBinaryWriter` interface has built-in static factory methods for wrapping [streams](https://docs.microsoft.com/en-us/dotnet/api/system.io.stream) and [pipes](https://docs.microsoft.com/en-us/dotnet/api/system.io.pipelines.pipewriter). Note that `IDataTransferObject.Length` may return **null** and you will not be able to identify log record size (in bytes) during serialization. This behavior depends on underlying implementation of Write-Ahead Log. You can examine value of `IAuditTrail.IsLogEntryLengthAlwaysPresented` property to apply necessary optimizations to the transmission process:
+* If it's **true** then all log entries retrieved from such log has known size in bytes and `IDataTransferObject.Length` is not **null**. 
+* If it's **false** then some or all log entries retrieved from such log has unknown size in bytes and `IDataTransferObject.Length` may be **null**. Thus, you need to provide special logic which allows to write binary data of undefined size to the underlying connection.
 
-`ResignAsync` method sends the message to the leader node and receiver should downgrade itself to the regular node. This is service message type not related to Raft but can be useful to force leader election.
+The default implementation for ASP.NET Core covers both cases. It uses multipart content type where log records separated by the special boundary from each other if `IAuditTrail.IsLogEntryLengthAlwaysPresented` returns **false**. Otherwise, more optimized transfer over the wire is applied. In this case, the overhead is comparable to the raw TCP connection.
+
+`ResignAsync` method sends the message to the leader node and receiver should downgrade itself to the follower state. This is service message type not related to Raft but can be useful to force leader election.
 
 You can use [this](https://github.com/sakno/dotNext/blob/master/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterMember.cs) code as an example of HTTP-specific implementation.
 
@@ -222,6 +246,7 @@ You can use [this](https://github.com/sakno/dotNext/blob/master/src/cluster/DotN
 * `ReceiveResignAsync` method allows to handle leadership revocation procedure
 * `ReceiveSnapshotAsync` method allows to handle _InstallSnapshot_ Raft message type that was sent by another node
 * `ReceiveVoteAsync` method allows to handle _Vote_ Raft message type that was sent by another node
+* `ReceivePreVoteAsync` method allows to handle _PreVote_ message introduced as extension to original Raft model to avoid inflation of _Term_ value
 
 The underlying code responsible for listening network requests must restore Raft messages from transport-specific representation and call the necessary handler for particular message type. 
 
