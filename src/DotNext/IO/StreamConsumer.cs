@@ -38,10 +38,6 @@ namespace DotNext.IO
             => output.WriteAsync(input, token);
 
         /// <inheritdoc />
-        void IConsumer<ReadOnlyMemory<byte>>.Invoke(ReadOnlyMemory<byte> input)
-            => output.Write(input.Span);
-
-        /// <inheritdoc />
         void IFlushable.Flush() => output.Flush();
 
         /// <inheritdoc />
