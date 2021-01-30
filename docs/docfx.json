@@ -35,7 +35,8 @@
           "src": "../src/cluster/DotNext.AspNetCore.Cluster/"
         }
       ],
-      "dest": "api"
+      "dest": "api",
+      "filter": "filter.yml"
     }
   ],
   "build": {
