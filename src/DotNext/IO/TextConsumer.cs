@@ -39,10 +39,6 @@ namespace DotNext.IO
             => new ValueTask(output.WriteAsync(input, token));
 
         /// <inheritdoc />
-        void IConsumer<ReadOnlyMemory<char>>.Invoke(ReadOnlyMemory<char> input)
-            => output.Write(input.Span);
-
-        /// <inheritdoc />
         void IFlushable.Flush() => output.Flush();
 
         /// <inheritdoc />
