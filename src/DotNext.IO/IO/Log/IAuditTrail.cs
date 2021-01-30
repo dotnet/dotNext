@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,6 +13,12 @@ namespace DotNext.IO.Log
     /// </summary>
     public interface IAuditTrail
     {
+        /// <summary>
+        /// Gets a value indicating that the <see cref="IDataTransferObject.Length">length</see> of the log entries
+        /// obtained from this audit trail is always not <see langword="null"/>.
+        /// </summary>
+        bool IsLogEntryLengthAlwaysPresented => false;
+
         /// <summary>
         /// Gets index of the committed or last log entry.
         /// </summary>
@@ -111,7 +117,6 @@ namespace DotNext.IO.Log
         /// In this case the first entry in the collection is a snapshot entry. Additionally, the caller must call <see cref="IDisposable.Dispose"/> to release resources associated
         /// with the audit trail segment with entries.
         /// </remarks>
-        /// <typeparam name="TReader">The type of the reader.</typeparam>
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="reader">The reader of the log entries.</param>
         /// <param name="startIndex">The index of the first requested log entry, inclusively.</param>
@@ -121,13 +126,11 @@ namespace DotNext.IO.Log
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> or <paramref name="endIndex"/> is negative.</exception>
         /// <exception cref="IndexOutOfRangeException"><paramref name="endIndex"/> is greater than the index of the last added entry.</exception>
         /// <seealso cref="ILogEntry.IsSnapshot"/>
-        ValueTask<TResult> ReadAsync<TReader, TResult>(TReader reader, long startIndex, long endIndex, CancellationToken token = default)
-            where TReader : notnull, ILogEntryConsumer<ILogEntry, TResult>;
+        ValueTask<TResult> ReadAsync<TResult>(Func<IReadOnlyList<ILogEntry>, long?, CancellationToken, ValueTask<TResult>> reader, long startIndex, long endIndex, CancellationToken token = default);
 
         /// <summary>
         /// Gets log entries starting from the specified index to the last log entry.
         /// </summary>
-        /// <typeparam name="TReader">The type of the reader.</typeparam>
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="reader">The reader of the log entries.</param>
         /// <param name="startIndex">The index of the first requested log entry, inclusively.</param>
@@ -135,8 +138,16 @@ namespace DotNext.IO.Log
         /// <returns>The collection of log entries.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is negative.</exception>
         /// <seealso cref="ILogEntry.IsSnapshot"/>
-        ValueTask<TResult> ReadAsync<TReader, TResult>(TReader reader, long startIndex, CancellationToken token = default)
-            where TReader : notnull, ILogEntryConsumer<ILogEntry, TResult>;
+        ValueTask<TResult> ReadAsync<TResult>(Func<IReadOnlyList<ILogEntry>, long?, CancellationToken, ValueTask<TResult>> reader, long startIndex, CancellationToken token = default);
+
+        /// <summary>
+        /// Dropes the uncommitted entries starting from the specified position to the end of the log.
+        /// </summary>
+        /// <param name="startIndex">The index of the first log entry to be dropped.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The actual number of dropped entries.</returns>
+        /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> represents index of the committed entry.</exception>
+        ValueTask<long> DropAsync(long startIndex, CancellationToken token = default);
     }
 
     /// <summary>
@@ -154,7 +165,6 @@ namespace DotNext.IO.Log
         /// In this case the first entry in the collection is a snapshot entry. Additionally, the caller must call <see cref="IDisposable.Dispose"/> to release resources associated
         /// with the audit trail segment with entries.
         /// </remarks>
-        /// <typeparam name="TReader">The type of the reader.</typeparam>
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="reader">The reader of the log entries.</param>
         /// <param name="startIndex">The index of the first requested log entry, inclusively.</param>
@@ -164,17 +174,29 @@ namespace DotNext.IO.Log
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> or <paramref name="endIndex"/> is negative.</exception>
         /// <exception cref="IndexOutOfRangeException"><paramref name="endIndex"/> is greater than the index of the last added entry.</exception>
         /// <seealso cref="ILogEntry.IsSnapshot"/>
-        new ValueTask<TResult> ReadAsync<TReader, TResult>(TReader reader, long startIndex, long endIndex, CancellationToken token = default)
-            where TReader : notnull, ILogEntryConsumer<TEntry, TResult>;
+        ValueTask<TResult> ReadAsync<TResult>(ILogEntryConsumer<TEntry, TResult> reader, long startIndex, long endIndex, CancellationToken token = default);
+
+        /// <summary>
+        /// Gets log entries in the specified range.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="reader">The reader of the log entries.</param>
+        /// <param name="startIndex">The index of the first requested log entry, inclusively.</param>
+        /// <param name="endIndex">The index of the last requested log entry, inclusively.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The collection of log entries.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> or <paramref name="endIndex"/> is negative.</exception>
+        /// <exception cref="IndexOutOfRangeException"><paramref name="endIndex"/> is greater than the index of the last added entry.</exception>
+        ValueTask<TResult> ReadAsync<TResult>(Func<IReadOnlyList<TEntry>, long?, CancellationToken, ValueTask<TResult>> reader, long startIndex, long endIndex, CancellationToken token = default)
+            => ReadAsync(new LogEntryConsumer<TEntry, TResult>(reader), startIndex, endIndex, token);
 
         /// <inheritdoc/>
-        ValueTask<TResult> IAuditTrail.ReadAsync<TReader, TResult>(TReader reader, long startIndex, long endIndex, CancellationToken token)
-            => ReadAsync<TReader, TResult>(reader, startIndex, endIndex, token);
+        ValueTask<TResult> IAuditTrail.ReadAsync<TResult>(Func<IReadOnlyList<ILogEntry>, long?, CancellationToken, ValueTask<TResult>> reader, long startIndex, long endIndex, CancellationToken token)
+            => ReadAsync<TResult>(new LogEntryConsumer<TEntry, TResult>(reader), startIndex, endIndex, token);
 
         /// <summary>
         /// Gets log entries starting from the specified index to the last log entry.
         /// </summary>
-        /// <typeparam name="TReader">The type of the reader.</typeparam>
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <param name="reader">The reader of the log entries.</param>
         /// <param name="startIndex">The index of the first requested log entry, inclusively.</param>
@@ -182,12 +204,23 @@ namespace DotNext.IO.Log
         /// <returns>The collection of log entries.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is negative.</exception>
         /// <seealso cref="ILogEntry.IsSnapshot"/>
-        new ValueTask<TResult> ReadAsync<TReader, TResult>(TReader reader, long startIndex, CancellationToken token = default)
-            where TReader : notnull, ILogEntryConsumer<TEntry, TResult>;
+        ValueTask<TResult> ReadAsync<TResult>(ILogEntryConsumer<TEntry, TResult> reader, long startIndex, CancellationToken token = default);
+
+        /// <summary>
+        /// Gets log entries starting from the specified index to the last log entry.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="reader">The reader of the log entries.</param>
+        /// <param name="startIndex">The index of the first requested log entry, inclusively.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The collection of log entries.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is negative.</exception>
+        ValueTask<TResult> ReadAsync<TResult>(Func<IReadOnlyList<TEntry>, long?, CancellationToken, ValueTask<TResult>> reader, long startIndex, CancellationToken token = default)
+            => ReadAsync(new LogEntryConsumer<TEntry, TResult>(reader), startIndex, token);
 
         /// <inheritdoc/>
-        ValueTask<TResult> IAuditTrail.ReadAsync<TReader, TResult>(TReader reader, long startIndex, CancellationToken token)
-            => ReadAsync<TReader, TResult>(reader, startIndex, token);
+        ValueTask<TResult> IAuditTrail.ReadAsync<TResult>(Func<IReadOnlyList<ILogEntry>, long?, CancellationToken, ValueTask<TResult>> reader, long startIndex, CancellationToken token)
+            => ReadAsync<TResult>(new LogEntryConsumer<TEntry, TResult>(reader), startIndex, token);
 
         /// <summary>
         /// Adds uncommitted log entries into this log.
@@ -248,27 +281,8 @@ namespace DotNext.IO.Log
         /// <typeparam name="TEntryImpl">The actual type of the supplied log entry.</typeparam>
         /// <returns>The index of the added entry.</returns>
         /// <exception cref="InvalidOperationException"><paramref name="entry"/> is the snapshot entry.</exception>
-        [SuppressMessage("Reliability", "CA2000", Justification = "SingleEntryProducer.Dispose is trivial and can be omitted")]
         ValueTask<long> AppendAsync<TEntryImpl>(TEntryImpl entry, CancellationToken token = default)
             where TEntryImpl : notnull, TEntry
             => AppendAsync(new SingleEntryProducer<TEntryImpl>(entry), token);
-
-        /// <summary>
-        /// Dropes the uncommitted entries starting from the specified position to the end of the log.
-        /// </summary>
-        /// <param name="startIndex">The index of the first log entry to be dropped.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The actual number of dropped entries.</returns>
-        /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> represents index of the committed entry.</exception>
-        ValueTask<long> DropAsync(long startIndex, CancellationToken token = default);
-
-        /// <summary>
-        /// Gets the first ephemeral log entry that is present in the empty log.
-        /// </summary>
-        /// <remarks>
-        /// The first log entry always represents NOP database command and is already committed.
-        /// Index of such entry is always 0.
-        /// </remarks>
-        ref readonly TEntry First { get; }
     }
 }

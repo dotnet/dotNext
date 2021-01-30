@@ -26,7 +26,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
         /// <param name="memberConfig">The configuration of local cluster node.</param>
         /// <returns>The modified collection of services.</returns>
         public static IServiceCollection ConfigureLocalNode(this IServiceCollection services, IConfiguration memberConfig)
-            => services.AddClusterAsSingleton<RaftHostedCluster, RaftHostedClusterMemberConfiguration>(memberConfig);
+            => RaftHttpCluster.AddClusterAsSingleton<RaftHostedCluster, RaftHostedClusterMemberConfiguration>(services, memberConfig);
 
         private static void ConfigureClusterMember(HostBuilderContext context, IServiceCollection services)
             => ConfigureLocalNode(services, context.Configuration);

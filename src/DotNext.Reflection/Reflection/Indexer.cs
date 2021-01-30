@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq.Expressions;
@@ -27,7 +28,7 @@ namespace DotNext.Reflection
         /// <param name="obj">The object whose property value will be returned.</param>
         /// <param name="index">Index values for indexed properties.</param>
         /// <returns>The property value of the specified object.</returns>
-        public override object GetValue(object? obj, object?[] index) => property.GetValue(obj, index);
+        public override object? GetValue(object? obj, object?[]? index) => property.GetValue(obj, index);
 
         /// <summary>
         /// Sets the property value of a specified object with optional index values for index properties.
@@ -35,7 +36,7 @@ namespace DotNext.Reflection
         /// <param name="obj">The object whose property value will be set.</param>
         /// <param name="value">The new property value.</param>
         /// <param name="index">The property value of the specified object.</param>
-        public override void SetValue(object? obj, object? value, object?[] index) => property.SetValue(obj, value, index);
+        public override void SetValue(object? obj, object? value, object?[]? index) => property.SetValue(obj, value, index);
 
         /// <summary>
         /// Gets name of the property.
@@ -55,7 +56,7 @@ namespace DotNext.Reflection
         /// <summary>
         /// Gets the get accessor for this property.
         /// </summary>
-        public sealed override MethodInfo GetMethod => property.GetMethod;
+        public sealed override MethodInfo? GetMethod => property.GetMethod;
 
         /// <summary>
         /// Gets the attributes for this property.
@@ -109,7 +110,7 @@ namespace DotNext.Reflection
         /// Returns a literal value associated with the property by a compiler.
         /// </summary>
         /// <returns>An object that contains the literal value associated with the property.</returns>
-        public sealed override object GetRawConstantValue() => property.GetRawConstantValue();
+        public sealed override object? GetRawConstantValue() => property.GetRawConstantValue();
 
         /// <summary>
         /// Returns an array of types representing the required custom modifiers of the property.
@@ -133,7 +134,7 @@ namespace DotNext.Reflection
         /// <param name="index">Index values for indexed properties.</param>
         /// <param name="culture">Used to govern the coercion of types.</param>
         /// <returns>The property value of the specified object.</returns>
-        public override object GetValue(object? obj, BindingFlags invokeAttr, Binder? binder, object?[] index, CultureInfo culture)
+        public override object? GetValue(object? obj, BindingFlags invokeAttr, Binder? binder, object?[]? index, CultureInfo? culture)
             => property.GetValue(obj, invokeAttr, binder, index, culture);
 
         /// <summary>
@@ -145,13 +146,13 @@ namespace DotNext.Reflection
         /// <param name="binder">Defines a set of properties and enables the binding, coercion of argument types, and invocation of members using reflection.</param>
         /// <param name="index">Index values for indexed properties.</param>
         /// <param name="culture">Used to govern the coercion of types.</param>
-        public override void SetValue(object? obj, object? value, BindingFlags invokeAttr, Binder? binder, object?[] index, CultureInfo culture)
+        public override void SetValue(object? obj, object? value, BindingFlags invokeAttr, Binder? binder, object?[]? index, CultureInfo? culture)
             => property.SetValue(obj, value, invokeAttr, binder, index, culture);
 
         /// <summary>
         /// Gets the class that declares this property.
         /// </summary>
-        public sealed override Type DeclaringType => property.DeclaringType;
+        public sealed override Type? DeclaringType => property.DeclaringType;
 
         /// <summary>
         /// Always returns <see cref="MemberTypes.Property"/>.
@@ -161,7 +162,7 @@ namespace DotNext.Reflection
         /// <summary>
         /// Gets the class object that was used to obtain this instance.
         /// </summary>
-        public sealed override Type ReflectedType => property.ReflectedType;
+        public sealed override Type? ReflectedType => property.ReflectedType;
 
         /// <summary>
         /// Returns an array of all custom attributes applied to this property.
@@ -208,7 +209,7 @@ namespace DotNext.Reflection
         public sealed override IEnumerable<CustomAttributeData> CustomAttributes => property.CustomAttributes;
 
         /// <inheritdoc/>
-        PropertyInfo IMember<PropertyInfo>.RuntimeMember => property;
+        PropertyInfo IMember<PropertyInfo>.Metadata => property;
 
         /// <summary>
         /// Determines whether this property is equal to the given property.
@@ -239,7 +240,7 @@ namespace DotNext.Reflection
         /// Returns textual representation of this property.
         /// </summary>
         /// <returns>The textual representation of this property.</returns>
-        public override string ToString() => property.ToString();
+        public override string? ToString() => property.ToString();
     }
 
     /// <summary>
@@ -263,8 +264,7 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="index">Index values for indexed properties.</param>
         /// <returns>The property value.</returns>
-        [return: MaybeNull]
-        public delegate TValue Getter(in TIndicies index);
+        public delegate TValue? Getter(in TIndicies index);
 
         /// <summary>
         /// Represents property setter.
@@ -333,6 +333,7 @@ namespace DotNext.Reflection
             Method<Getter>? getter;
             if (property.CanRead)
             {
+                Debug.Assert(property.GetMethod is not null);
                 if (property.GetMethod.SignatureEquals(actualParams))
                     getter = new Method<Getter>(property.GetMethod, arglist, new[] { input });
                 else
@@ -348,6 +349,7 @@ namespace DotNext.Reflection
             actualParams = actualParams.Insert(property.PropertyType, actualParams.LongLength);
             if (property.CanWrite)
             {
+                Debug.Assert(property.SetMethod is not null);
                 if (property.SetMethod.SignatureEquals(actualParams))
                 {
                     var valueParam = Expression.Parameter(property.PropertyType, "value");
@@ -385,7 +387,7 @@ namespace DotNext.Reflection
             private protected override Indexer<T, TIndicies, TValue>? Create(string propertyName, bool nonPublic) => Reflect(propertyName, nonPublic);
         }
 
-        private const BindingFlags PublicFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
+        private const BindingFlags PublicFlags = BindingFlags.Instance | BindingFlags.Public;
         private const BindingFlags NonPublicFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
         /// <summary>
@@ -394,8 +396,7 @@ namespace DotNext.Reflection
         /// <param name="this">The object whose property value will be returned.</param>
         /// <param name="index">Index values for indexed properties.</param>
         /// <returns>The property value.</returns>
-        [return: MaybeNull]
-        public delegate TValue Getter([DisallowNull]in T @this, in TIndicies index);
+        public delegate TValue? Getter([DisallowNull]in T @this, in TIndicies index);
 
         /// <summary>
         /// Represents property setter.
@@ -444,14 +445,21 @@ namespace DotNext.Reflection
         public TValue this[[DisallowNull]in T @this, in TIndicies index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => GetMethod is null ? throw new InvalidOperationException(ExceptionMessages.PropertyWithoutGetter(Name)) : GetMethod.Invoker(@this, index);
+            get
+            {
+                if (GetMethod is null)
+                    throw new InvalidOperationException(ExceptionMessages.PropertyWithoutGetter(Name));
+                Debug.Assert(@this is not null);
+                return GetMethod.Invoker(@this, index);
+            }
+
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             set
             {
                 if (SetMethod is null)
                     throw new InvalidOperationException(ExceptionMessages.PropertyWithoutSetter(Name));
-                else
-                    SetMethod.Invoker(@this, index, value);
+                Debug.Assert(@this is not null);
+                SetMethod.Invoker(@this, index, value);
             }
         }
 
@@ -467,6 +475,7 @@ namespace DotNext.Reflection
             Method<Getter>? getter;
             if (property.CanRead)
             {
+                Debug.Assert(property.GetMethod is not null);
                 if (property.GetMethod.SignatureEquals(actualParams))
                     getter = new Method<Getter>(property.GetMethod, thisParam, arglist, new[] { input });
                 else
@@ -482,6 +491,7 @@ namespace DotNext.Reflection
             actualParams = actualParams.Insert(property.PropertyType, actualParams.LongLength);
             if (property.CanWrite)
             {
+                Debug.Assert(property.SetMethod is not null);
                 if (property.SetMethod.SignatureEquals(actualParams))
                 {
                     var valueParam = Expression.Parameter(property.PropertyType, "value");

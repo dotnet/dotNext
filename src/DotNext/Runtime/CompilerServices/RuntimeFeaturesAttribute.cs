@@ -1,7 +1,6 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.Runtime.CompilerServices
 {
@@ -13,7 +12,6 @@ namespace DotNext.Runtime.CompilerServices
     /// This attribute informs the developer about potential portability and performance
     /// issues associated with the marked program element.
     /// </remarks>
-    [SuppressMessage("Style", "CA1051", Justification = "This type for internal purposes only")]
     [Conditional("DEBUG")]
     [CLSCompliant(false)]
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -23,22 +21,17 @@ namespace DotNext.Runtime.CompilerServices
         /// <summary>
         /// Indicates that code relies on dynamic IL code generation or compilation of Expression Trees.
         /// </summary>
-        public bool DynamicCodeCompilation;
+        public bool DynamicCodeCompilation { get; set; }
 
         /// <summary>
         /// Indicates that code relies on <see cref="System.Reflection.MethodInfo.MakeGenericMethod(Type[])"/>
         /// or <see cref="Type.MakeGenericType(Type[])"/> calls.
         /// </summary>
-        public bool RuntimeGenericInstantiation;
+        public bool RuntimeGenericInstantiation { get; set; }
 
         /// <summary>
         /// Indicates that code relies on reflection of private or internal members.
         /// </summary>
-        public bool PrivateReflection;
-
-        /// <summary>
-        /// Indicates that code is augmented using .NEXT Weaver.
-        /// </summary>
-        public bool Augmentation;
+        public bool PrivateReflection { get; set; }
     }
 }

@@ -27,7 +27,7 @@ namespace DotNext.Reflection
 
         private const BindingFlags StaticPublicFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly;
         private const BindingFlags StaticNonPublicFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
-        private const BindingFlags InstancePublicFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
+        private const BindingFlags InstancePublicFlags = BindingFlags.Instance | BindingFlags.Public;
         private const BindingFlags InstanceNonPublicFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
         private static readonly UserDataSlot<Method<TSignature>?> CacheSlot = UserDataSlot<Method<TSignature>?>.Allocate();
 
@@ -84,7 +84,7 @@ namespace DotNext.Reflection
         /// <param name="delegateType">The type of the delegate to create.</param>
         /// <param name="target">The object targeted by the delegate.</param>
         /// <returns>The delegate for this method.</returns>
-        public override Delegate CreateDelegate(Type delegateType, object target) => method.CreateDelegate(delegateType, target);
+        public override Delegate CreateDelegate(Type delegateType, object? target) => method.CreateDelegate(delegateType, target);
 
         /// <summary>
         /// Gets a collection that contains this member's custom attributes.
@@ -100,7 +100,7 @@ namespace DotNext.Reflection
         /// Returns the method on the direct or indirect base class in which the method represented by this instance was first declared.
         /// </summary>
         /// <returns>The first implementation of this method.</returns>
-        public override MethodInfo? GetBaseDefinition() => method.GetBaseDefinition();
+        public override MethodInfo GetBaseDefinition() => method.GetBaseDefinition();
 
         /// <summary>
         /// Returns an array of all custom attributes applied to this method.
@@ -133,7 +133,7 @@ namespace DotNext.Reflection
         /// Returns generic method definition from which the current method can be constructed.
         /// </summary>
         /// <returns>Generic method definition from which the current method can be constructed.</returns>
-        public override MethodInfo? GetGenericMethodDefinition() => method.GetGenericMethodDefinition();
+        public override MethodInfo GetGenericMethodDefinition() => method.GetGenericMethodDefinition();
 
         /// <summary>
         /// Provides access to the MSIL stream, local variables, and exceptions for the current method.
@@ -162,7 +162,7 @@ namespace DotNext.Reflection
         /// <param name="parameters">A list of method arguments.</param>
         /// <param name="culture">Used to govern the coercion of types.</param>
         /// <returns>The return value of the invoked method.</returns>
-        public override object Invoke(object? obj, BindingFlags invokeAttr, Binder? binder, object?[] parameters, CultureInfo culture)
+        public override object? Invoke(object? obj, BindingFlags invokeAttr, Binder? binder, object?[]? parameters, CultureInfo? culture)
             => method.Invoke(obj, invokeAttr, binder, parameters, culture);
 
         /// <summary>
@@ -243,7 +243,7 @@ namespace DotNext.Reflection
         /// <summary>
         /// Gets the class object that was used to obtain this instance.
         /// </summary>
-        public override Type ReflectedType => method.ReflectedType;
+        public override Type? ReflectedType => method.ReflectedType;
 
         /// <summary>
         /// Gets information about the return type of the method, such as whether the return type has custom modifiers.
@@ -294,7 +294,7 @@ namespace DotNext.Reflection
         public static implicit operator TSignature?(Method<TSignature>? method) => method?.Invoker;
 
         /// <inheritdoc/>
-        MethodInfo IMember<MethodInfo>.RuntimeMember => method;
+        MethodInfo IMember<MethodInfo>.Metadata => method;
 
         /// <inheritdoc/>
         TSignature IMember<MethodInfo, TSignature>.Invoker => Invoker;
@@ -303,7 +303,7 @@ namespace DotNext.Reflection
         /// Returns textual representation of this method.
         /// </summary>
         /// <returns>The textual representation of this method.</returns>
-        public override string ToString() => method.ToString();
+        public override string? ToString() => method.ToString();
 
         private static Method<TSignature>? ReflectStatic(Type declaringType, Type[] parameters, Type returnType, string methodName, bool nonPublic)
         {
@@ -439,9 +439,10 @@ namespace DotNext.Reflection
             }
             else
             {
-                DelegateType.GetInvokeMethod<TSignature>().Decompose(MethodExtensions.GetParameterTypes, method => method.ReturnType, out var parameters, out returnType);
+                var invokeMethod = DelegateType.GetInvokeMethod<TSignature>();
+                var parameters = invokeMethod.GetParameterTypes();
                 thisParam = parameters?.FirstOrDefault() ?? throw new ArgumentException(ExceptionMessages.ThisParamExpected);
-                return ReflectInstance(thisParam, parameters.RemoveFirst(1), returnType!, methodName, nonPublic);
+                return ReflectInstance(thisParam, parameters.RemoveFirst(1), invokeMethod.ReturnType, methodName, nonPublic);
             }
         }
 
@@ -469,8 +470,8 @@ namespace DotNext.Reflection
             }
             else
             {
-                DelegateType.GetInvokeMethod<TSignature>().Decompose(MethodExtensions.GetParameterTypes, method => method.ReturnType, out var parameters, out returnType);
-                return ReflectStatic(declaringType, parameters!, returnType!, methodName, nonPublic);
+                var invokeMethod = DelegateType.GetInvokeMethod<TSignature>();
+                return ReflectStatic(declaringType, invokeMethod.GetParameterTypes(), invokeMethod.ReturnType, methodName, nonPublic);
             }
         }
 
@@ -527,7 +528,7 @@ namespace DotNext.Reflection
                 epilogue.AddLast(returnArg);
             }
 
-            body = prologue.Count == 0 && epilogue.Count == 1 ? epilogue.First.Value : Expression.Block(locals, prologue.Concat(epilogue));
+            body = prologue.Count == 0 && epilogue.Count == 1 ? epilogue.First!.Value : Expression.Block(locals, prologue.Concat(epilogue));
             return new Method<TSignature>(method, thisParam is null ? Expression.Lambda<TSignature>(body, input) : Expression.Lambda<TSignature>(body, thisParam, input));
         }
 
@@ -557,10 +558,11 @@ namespace DotNext.Reflection
             }
             else
             {
-                DelegateType.GetInvokeMethod<TSignature>().Decompose(MethodExtensions.GetParameterTypes, m => m.ReturnType, out var parameters, out returnType);
+                var invokeMethod = DelegateType.GetInvokeMethod<TSignature>();
+                var parameters = invokeMethod.GetParameterTypes();
                 thisParam = parameters?.FirstOrDefault() ?? throw new ArgumentException(ExceptionMessages.ThisParamExpected);
                 parameters = parameters.RemoveFirst(1);
-                if (method.SignatureEquals(parameters) && method.ReturnType == returnType)
+                if (method.SignatureEquals(parameters) && method.ReturnType == invokeMethod.ReturnType)
                 {
                     if (thisParam.IsByRef ^ method.DeclaringType?.IsValueType ?? false)
                     {
@@ -592,8 +594,8 @@ namespace DotNext.Reflection
                 return UnreflectInstance(method);
         }
 
-        internal static Method<TSignature>? GetOrCreate(MethodInfo method)
-            => method.GetUserData().GetOrSet(CacheSlot, method, new ValueFunc<MethodInfo, Method<TSignature>?>(Unreflect));
+        internal static unsafe Method<TSignature>? GetOrCreate(MethodInfo method)
+            => method.GetUserData().GetOrSet(CacheSlot, method, &Unreflect);
 
         internal static Method<TSignature>? GetOrCreate<T>(string methodName, bool nonPublic, MethodLookup lookup)
         {

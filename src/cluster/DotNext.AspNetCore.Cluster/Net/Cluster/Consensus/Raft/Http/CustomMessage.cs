@@ -16,9 +16,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using IO;
     using Messaging;
-    using NullMessage = Threading.Tasks.CompletedTask<Messaging.IMessage, Generic.DefaultConst<Messaging.IMessage>>;
+    using NullMessage = Threading.Tasks.CompletedTask<Messaging.IMessage?, Generic.DefaultConst<Messaging.IMessage>>;
 
-    internal class CustomMessage : HttpMessage, IHttpMessageWriter<IMessage>, IHttpMessageReader<IMessage>
+    internal class CustomMessage : HttpMessage, IHttpMessageWriter<IMessage>, IHttpMessageReader<IMessage?>
     {
         // request - represents custom message name
         private const string MessageNameHeader = "X-Raft-Message-Name";
@@ -75,8 +75,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
                 => new ValueTask(writer.CopyFromAsync(requestStream, token));
 
-            ValueTask<TResult> IDataTransferObject.GetObjectDataAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token)
-                => IDataTransferObject.DecodeAsync<TResult, TDecoder>(requestStream, parser, false, token);
+            ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
+                => IDataTransferObject.TransformAsync<TResult, TTransformation>(requestStream, transformation, false, token);
         }
 
         internal new const string MessageType = "CustomMessage";
@@ -88,14 +88,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         internal readonly IMessage Message;
         internal bool RespectLeadership;
 
-        private protected CustomMessage(IPEndPoint sender, IMessage message, DeliveryMode mode)
+        private protected CustomMessage(in ClusterMemberId sender, IMessage message, DeliveryMode mode)
             : base(MessageType, sender)
         {
             Message = message;
             Mode = mode;
         }
 
-        internal CustomMessage(IPEndPoint sender, IMessage message, bool requiresConfirmation)
+        internal CustomMessage(in ClusterMemberId sender, IMessage message, bool requiresConfirmation)
             : this(sender, message, requiresConfirmation ? DeliveryMode.OneWay : DeliveryMode.OneWayNoAck)
         {
         }
@@ -136,14 +136,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             => SaveResponse(response, message, token);
 
         // do not parse response because this is one-way message
-        Task<IMessage> IHttpMessageReader<IMessage>.ParseResponse(HttpResponseMessage response, CancellationToken token) => NullMessage.Task;
+        Task<IMessage?> IHttpMessageReader<IMessage?>.ParseResponse(HttpResponseMessage response, CancellationToken token) => NullMessage.Task;
 
         private protected static async Task<T> ParseResponse<T>(HttpResponseMessage response, MessageReader<T> reader, CancellationToken token)
         {
-            var contentType = new ContentType(response.Content.Headers.ContentType.ToString());
+            var contentType = response.Content.Headers.ContentType?.ToString();
             var name = ParseHeader<IEnumerable<string>>(MessageNameHeader, response.Headers.TryGetValues);
+#if NETCOREAPP3_1
             await using var content = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
-            return await reader(new InboundMessageContent(content, name, contentType, response.Content.Headers.ContentLength), token).ConfigureAwait(false);
+#else
+            await using var content = await response.Content.ReadAsStreamAsync(token).ConfigureAwait(false);
+#endif
+            return await reader(new InboundMessageContent(content, name, string.IsNullOrEmpty(contentType) ? new ContentType() : new ContentType(contentType), response.Content.Headers.ContentLength), token).ConfigureAwait(false);
         }
     }
 
@@ -151,7 +155,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     {
         private readonly MessageReader<T> reader;
 
-        internal CustomMessage(IPEndPoint sender, IMessage message, MessageReader<T> reader)
+        internal CustomMessage(ClusterMemberId sender, IMessage message, MessageReader<T> reader)
             : base(sender, message, DeliveryMode.RequestReply) => this.reader = reader;
 
         Task<T> IHttpMessageReader<T>.ParseResponse(HttpResponseMessage response, CancellationToken token)

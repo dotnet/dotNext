@@ -193,8 +193,8 @@ namespace DotNext.Linq.Expressions
         {
             Expression loopBody = Condition(moveNextCall, Body, Goto(BreakLabel), Type);
             loopBody = Loop(loopBody, BreakLabel, ContinueLabel);
-            var @finally = disposeCall is null ?
-                    (Expression)Assign(enumeratorVar, Default(enumeratorVar.Type)) :
+            Expression @finally = disposeCall is null ?
+                    Assign(enumeratorVar, Default(enumeratorVar.Type)) :
                     Block(disposeCall, Assign(enumeratorVar, Default(enumeratorVar.Type)));
             loopBody = TryFinally(loopBody, @finally);
             return Block(Type, Seq.Singleton(enumeratorVar), enumeratorAssignment, loopBody);
@@ -215,7 +215,7 @@ namespace DotNext.Linq.Expressions
             {
                 moveNextCall = moveNextCall.Await(configureAwait);
                 disposeMethod = enumeratorVar.Type.GetDisposeAsyncMethod();
-                Debug.Assert(!(disposeMethod is null));
+                Debug.Assert(disposeMethod is not null);
                 disposeCall = Call(enumeratorVar, disposeMethod).Await(configureAwait);
             }
             else

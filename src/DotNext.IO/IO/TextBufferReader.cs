@@ -7,12 +7,10 @@ using System.Threading.Tasks;
 
 namespace DotNext.IO
 {
-    using static Buffers.BufferHelpers;
-
     /// <summary>
     /// Represents <see cref="TextReader"/> wrapper for <see cref="ReadOnlySequence{T}"/> type.
     /// </summary>
-    public sealed class TextBufferReader : TextReader
+    internal sealed class TextBufferReader : TextReader
     {
         private const int InvalidChar = -1;
         private readonly ReadOnlySequence<char> sequence;
@@ -22,25 +20,11 @@ namespace DotNext.IO
         /// Initializes a new reader for the buffer containing characters.
         /// </summary>
         /// <param name="sequence">The buffer containing characters.</param>
-        public TextBufferReader(ReadOnlySequence<char> sequence)
+        internal TextBufferReader(ReadOnlySequence<char> sequence)
         {
             this.sequence = sequence;
             position = sequence.Start;
         }
-
-        /// <summary>
-        /// Initializes a new reader for the buffer containing characters.
-        /// </summary>
-        /// <param name="chars">The buffer containing characters.</param>
-        public TextBufferReader(ReadOnlyMemory<char> chars)
-            : this(new ReadOnlySequence<char>(chars))
-        {
-        }
-
-        /// <summary>
-        /// Resets the reader so it can be used again.
-        /// </summary>
-        public void Reset() => position = sequence.Start;
 
         /// <inheritdoc />
         public override int Peek()
@@ -151,7 +135,7 @@ namespace DotNext.IO
         {
             var tail = sequence.Slice(position);
             position = sequence.End;
-            return tail.BuildString();
+            return tail.ToString();
         }
 
         /// <inheritdoc />
@@ -201,7 +185,7 @@ namespace DotNext.IO
             }
 
             exit:
-            return length == 0L ? null : sequence.Slice(start, length).BuildString();
+            return length == 0L ? null : sequence.Slice(start, length).ToString();
         }
 
         /// <inheritdoc />

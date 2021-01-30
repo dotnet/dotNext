@@ -13,7 +13,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private const JsonSerializerOptions? JsonOptions = null;
         internal new const string MessageType = "Metadata";
 
-        internal MetadataMessage(IPEndPoint sender)
+        internal MetadataMessage(in ClusterMemberId sender)
             : base(MessageType, sender)
         {
         }
@@ -30,8 +30,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         async Task<MemberMetadata> IHttpMessageReader<MemberMetadata>.ParseResponse(HttpResponseMessage response, CancellationToken token)
         {
+#if NETCOREAPP3_1
             await using var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
-            return await JsonSerializer.DeserializeAsync<MemberMetadata>(stream, JsonOptions, token).ConfigureAwait(false);
+#else
+            await using var stream = await response.Content.ReadAsStreamAsync(token).ConfigureAwait(false);
+#endif
+            return await JsonSerializer.DeserializeAsync<MemberMetadata>(stream, JsonOptions, token).ConfigureAwait(false) ?? new MemberMetadata();
         }
 
         public Task SaveResponse(HttpResponse response, MemberMetadata metadata, CancellationToken token)

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -18,16 +18,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
     internal abstract partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IExpandableCluster, IMessageBus
     {
+        private static readonly Func<RaftProtocolException> UnresolvedLocalMemberExceptionFactory = CreateUnresolvedLocalMemberException;
         private readonly IClusterMemberLifetime? configurator;
         private readonly IDisposable configurationTracker;
         private readonly IHttpMessageHandlerFactory? httpHandlerFactory;
-        private readonly TimeSpan requestTimeout, raftRpcTimeout;
+        private readonly TimeSpan requestTimeout, raftRpcTimeout, connectTimeout;
         private readonly bool openConnectionForEachRequest;
         private readonly string clientHandlerName;
         private readonly HttpVersion protocolVersion;
-        private IPEndPoint? localMember;
+        private Optional<ClusterMemberId> localMember;
 
-        private RaftHttpCluster(RaftClusterMemberConfiguration config, IServiceProvider dependencies, out MemberCollectionBuilder members, Func<Action<RaftClusterMemberConfiguration, string>, IDisposable> configTracker)
+        private RaftHttpCluster(HttpClusterMemberConfiguration config, IServiceProvider dependencies, out MemberCollectionBuilder members, Func<Action<HttpClusterMemberConfiguration, string>, IDisposable> configTracker)
             : base(config, out members)
         {
             openConnectionForEachRequest = config.OpenConnectionForEachRequest;
@@ -35,6 +36,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             metadata = new MemberMetadata(config.Metadata);
             requestTimeout = config.RequestTimeout;
             raftRpcTimeout = config.RpcTimeout;
+            connectTimeout = TimeSpan.FromMilliseconds(config.LowerElectionTimeout);
             duplicationDetector = new DuplicateRequestDetector(config.RequestJournal);
             clientHandlerName = config.ClientHandlerName;
             protocolVersion = config.ProtocolVersion;
@@ -51,15 +53,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             configurationTracker = configTracker(ConfigurationChanged);
         }
 
-        private RaftHttpCluster(IOptionsMonitor<RaftClusterMemberConfiguration> config, IServiceProvider dependencies, out MemberCollectionBuilder members)
+        private RaftHttpCluster(IOptionsMonitor<HttpClusterMemberConfiguration> config, IServiceProvider dependencies, out MemberCollectionBuilder members)
             : this(config.CurrentValue, dependencies, out members, config.OnChange)
         {
         }
 
         private protected RaftHttpCluster(IServiceProvider dependencies, out MemberCollectionBuilder members)
-            : this(dependencies.GetRequiredService<IOptionsMonitor<RaftClusterMemberConfiguration>>(), dependencies, out members)
+            : this(dependencies.GetRequiredService<IOptionsMonitor<HttpClusterMemberConfiguration>>(), dependencies, out members)
         {
         }
+
+        private static RaftProtocolException CreateUnresolvedLocalMemberException()
+            => new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
 
         private protected void ConfigureMember(RaftClusterMember member)
         {
@@ -79,17 +84,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         ISubscriber? IMessageBus.Leader => Leader;
 
-        private async void ConfigurationChanged(RaftClusterMemberConfiguration configuration, string name)
+        private async void ConfigurationChanged(HttpClusterMemberConfiguration configuration, string name)
         {
             metadata = new MemberMetadata(configuration.Metadata);
             allowedNetworks = configuration.AllowedNetworks.ToImmutableHashSet();
-            await ChangeMembersAsync(members =>
+            await ChangeMembersAsync((in MemberCollectionBuilder members) =>
             {
                 var existingMembers = new HashSet<Uri>();
 
                 // remove members
                 foreach (var holder in members)
                 {
+                    Debug.Assert(holder.Member.BaseAddress is not null);
                     if (configuration.Members.Contains(holder.Member.BaseAddress))
                     {
                         existingMembers.Add(holder.Member.BaseAddress);
@@ -121,27 +127,47 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         bool IHostingContext.IsLeader(IRaftClusterMember member) => ReferenceEquals(Leader, member);
 
-        IPEndPoint IHostingContext.LocalEndpoint => localMember ?? throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
+        ref readonly ClusterMemberId IHostingContext.LocalEndpoint
+            => ref localMember.GetReference(UnresolvedLocalMemberExceptionFactory);
 
         HttpMessageHandler IHostingContext.CreateHttpHandler()
-            => httpHandlerFactory?.CreateHandler(clientHandlerName) ?? new HttpClientHandler();
+            => httpHandlerFactory?.CreateHandler(clientHandlerName) ?? new SocketsHttpHandler { ConnectTimeout = connectTimeout };
+
+        bool IHostingContext.UseEfficientTransferOfLogEntries => AuditTrail.IsLogEntryLengthAlwaysPresented;
 
         public event ClusterChangedEventHandler? MemberAdded;
 
         public event ClusterChangedEventHandler? MemberRemoved;
 
-        private protected abstract Predicate<RaftClusterMember> LocalMemberFinder { get; }
+        private protected abstract Task<ICollection<EndPoint>> GetHostingAddressesAsync();
 
-        public override Task StartAsync(CancellationToken token)
+        private async Task<ClusterMemberId> DetectLocalMemberAsync(CancellationToken token)
+        {
+            var selector = configurator?.LocalMemberSelector;
+            RaftClusterMember? member;
+
+            if (selector is null)
+            {
+                var addresses = await GetHostingAddressesAsync().ConfigureAwait(false);
+                member = FindMember(addresses.Contains);
+            }
+            else
+            {
+                member = await FindMemberAsync(selector, token).ConfigureAwait(false);
+            }
+
+            return member?.Id ?? throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
+        }
+
+        public override async Task StartAsync(CancellationToken token)
         {
             if (raftRpcTimeout > requestTimeout)
-                return Task.FromException(new RaftProtocolException(ExceptionMessages.InvalidRpcTimeout));
+                throw new RaftProtocolException(ExceptionMessages.InvalidRpcTimeout);
 
             // detect local member
-            var localMember = FindMember(LocalMemberFinder) ?? throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
-            this.localMember = localMember.Endpoint;
+            localMember = await DetectLocalMemberAsync(token).ConfigureAwait(false);
             configurator?.Initialize(this, metadata);
-            return base.StartAsync(token);
+            await base.StartAsync(token).ConfigureAwait(false);
         }
 
         public override Task StopAsync(CancellationToken token)
@@ -155,7 +181,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             if (disposing)
             {
-                localMember = null;
+                localMember = default;
                 configurationTracker.Dispose();
                 duplicationDetector.Dispose();
                 messageHandlers = ImmutableList<IInputChannel>.Empty;

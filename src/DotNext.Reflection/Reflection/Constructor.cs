@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
@@ -61,7 +62,7 @@ namespace DotNext.Reflection
         public override string Name => ConstructorName;
 
         /// <inheritdoc/>
-        ConstructorInfo IMember<ConstructorInfo>.RuntimeMember => ctorInfo as ConstructorInfo ?? this;
+        ConstructorInfo IMember<ConstructorInfo>.Metadata => ctorInfo as ConstructorInfo ?? this;
 
         /// <inheritdoc/>
         TSignature IMember<ConstructorInfo, TSignature>.Invoker => invoker;
@@ -79,17 +80,28 @@ namespace DotNext.Reflection
         /// <summary>
         /// Gets the class that declares this constructor.
         /// </summary>
-        public override Type DeclaringType => ctorInfo switch
+        public override Type DeclaringType
         {
-            ConstructorInfo ctor => ctor.DeclaringType,
-            Type vt => vt,
-            _ => GetType()
-        };
+            get
+            {
+                switch (ctorInfo)
+                {
+                    case ConstructorInfo ctor:
+                        Debug.Assert(ctor.DeclaringType is not null);
+                        return ctor.DeclaringType;
+                    case Type vt:
+                        Debug.Assert(vt.IsValueType);
+                        return vt;
+                    default:
+                        return GetType();
+                }
+            }
+        }
 
         /// <summary>
         /// Gets the class object that was used to obtain this instance.
         /// </summary>
-        public override Type ReflectedType => (ctorInfo as MethodBase ?? invoker.Method).ReflectedType;
+        public override Type? ReflectedType => (ctorInfo as MethodBase ?? invoker.Method).ReflectedType;
 
         /// <summary>
         /// Gets a value indicating the calling conventions for this constructor.
@@ -195,7 +207,7 @@ namespace DotNext.Reflection
         /// <param name="parameters">A list of constructor arguments.</param>
         /// <param name="culture">Used to govern the coercion of types.</param>
         /// <returns>Instantiated object.</returns>
-        public override object Invoke(BindingFlags invokeAttr, Binder? binder, object?[] parameters, CultureInfo culture)
+        public override object Invoke(BindingFlags invokeAttr, Binder? binder, object?[]? parameters, CultureInfo? culture)
             => Invoke(null, invokeAttr, binder, parameters, culture);
 
         /// <summary>
@@ -219,8 +231,8 @@ namespace DotNext.Reflection
         /// <param name="parameters">A list of constructor arguments.</param>
         /// <param name="culture">Used to govern the coercion of types.</param>
         /// <returns>Instantiated object.</returns>
-        public override object Invoke(object? obj, BindingFlags invokeAttr, Binder? binder, object?[] parameters, CultureInfo culture)
-            => (ctorInfo as MethodBase ?? invoker.Method).Invoke(obj, invokeAttr, binder, parameters, culture);
+        public override object Invoke(object? obj, BindingFlags invokeAttr, Binder? binder, object?[]? parameters, CultureInfo? culture)
+            => (ctorInfo as MethodBase ?? invoker.Method).Invoke(obj, invokeAttr, binder, parameters, culture)!;
 
         /// <summary>
         /// Returns an array of all custom attributes applied to this constructor.
@@ -272,7 +284,7 @@ namespace DotNext.Reflection
         /// Returns textual representation of this constructor.
         /// </summary>
         /// <returns>The textual representation of this constructor.</returns>
-        public override string ToString() => (ctorInfo as MethodBase ?? invoker.Method).ToString();
+        public override string? ToString() => (ctorInfo as MethodBase ?? invoker.Method).ToString();
 
         /// <summary>
         /// Computes hash code uniquely identifies the reflected constructor.
@@ -311,13 +323,14 @@ namespace DotNext.Reflection
             }
             else
             {
-                var (parameters, returnType) = DelegateType.GetInvokeMethod<TSignature>().Decompose(MethodExtensions.GetParameterTypes, method => method.ReturnType);
-                return Reflect(returnType, parameters!, nonPublic);
+                var invokeMethod = DelegateType.GetInvokeMethod<TSignature>();
+                return Reflect(invokeMethod.ReturnType, invokeMethod.GetParameterTypes(), nonPublic);
             }
         }
 
         private static Constructor<TSignature>? Unreflect(ConstructorInfo ctor, Type argumentsType, Type returnType)
         {
+            Debug.Assert(ctor.DeclaringType is not null);
             var (_, arglist, input) = Signature.Reflect(argumentsType);
             var prologue = new LinkedList<Expression>();
             var epilogue = new LinkedList<Expression>();
@@ -348,7 +361,7 @@ namespace DotNext.Reflection
                 epilogue.AddLast(returnArg);
             }
 
-            body = prologue.Count == 0 && epilogue.Count == 1 ? epilogue.First.Value : Expression.Block(locals, prologue.Concat(epilogue));
+            body = prologue.Count == 0 && epilogue.Count == 1 ? epilogue.First!.Value : Expression.Block(locals, prologue.Concat(epilogue));
             return new Constructor<TSignature>(ctor, Expression.Lambda<TSignature>(body, input));
         }
 
@@ -380,13 +393,13 @@ namespace DotNext.Reflection
             }
         }
 
-        internal static Constructor<TSignature>? GetOrCreate(ConstructorInfo ctor)
-            => ctor.GetUserData().GetOrSet(CacheSlot, ctor, new ValueFunc<ConstructorInfo, Constructor<TSignature>?>(Unreflect));
+        internal static unsafe Constructor<TSignature>? GetOrCreate(ConstructorInfo ctor)
+            => ctor.GetUserData().GetOrSet(CacheSlot, ctor, &Unreflect);
 
-        internal static Constructor<TSignature>? GetOrCreate<T>(bool nonPublic)
+        internal static unsafe Constructor<TSignature>? GetOrCreate<T>(bool nonPublic)
         {
             var type = typeof(T);
-            var ctor = type.GetUserData().GetOrSet(CacheSlot, nonPublic, new ValueFunc<bool, Constructor<TSignature>?>(Reflect));
+            var ctor = type.GetUserData().GetOrSet(CacheSlot, nonPublic, &Reflect);
             return ctor?.DeclaringType == type ? ctor : null;
         }
     }

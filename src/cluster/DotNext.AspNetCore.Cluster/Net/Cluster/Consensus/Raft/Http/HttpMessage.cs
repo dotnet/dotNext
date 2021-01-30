@@ -18,11 +18,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private const string RequestIdAllowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*-+=~";
         private const int RequestIdLength = 32;
 
-        // request - represents IP of sender node
-        private const string NodeIpHeader = "X-Raft-Node-IP";
-
-        // request - represents hosting port of sender node
-        private const string NodePortHeader = "X-Raft-Node-Port";
+        // request - represents ID of sender node
+        private const string NodeIdHeader = "X-Raft-Node-ID";
 
         // request - represents request message type
         private const string MessageTypeHeader = "X-Raft-Message-Type";
@@ -30,15 +27,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         // request - represents unique request identifier
         private const string RequestIdHeader = "X-Request-ID";
 
-        private static readonly ValueParser<string> StringParser = (string str, out string value) =>
-        {
-            value = str;
-            return true;
-        };
-
         private protected static readonly ValueParser<long> Int64Parser = long.TryParse;
-        private static readonly ValueParser<int> Int32Parser = int.TryParse;
-        private static readonly ValueParser<IPAddress> IpAddressParser = IPAddress.TryParse;
+        private static readonly ValueParser<ClusterMemberId> IpAddressParser = ClusterMemberId.TryParse;
         private protected static readonly ValueParser<bool> BooleanParser = bool.TryParse;
         private static readonly Random RequestIdGenerator = new Random();
 
@@ -48,17 +38,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             internal OutboundTransferObject(IDataTransferObject dto) => this.dto = dto;
 
-            protected sealed override Task SerializeToStreamAsync(Stream stream, TransportContext context) => dto.WriteToAsync(stream).AsTask();
+            protected sealed override Task SerializeToStreamAsync(Stream stream, TransportContext? context)
+                => SerializeToStreamAsync(stream, context, CancellationToken.None);
+
+#if NETCOREAPP3_1
+            private
+#else
+            protected sealed override
+#endif
+            Task SerializeToStreamAsync(Stream stream, TransportContext? context, CancellationToken token) => dto.WriteToAsync(stream, token: token).AsTask();
 
             protected sealed override bool TryComputeLength(out long length)
                 => dto.Length.TryGetValue(out length);
         }
 
         internal readonly string Id;
-        internal readonly IPEndPoint Sender;
+        internal readonly ClusterMemberId Sender;
         internal readonly string MessageType;
 
-        private protected HttpMessage(string messageType, IPEndPoint sender)
+        private protected HttpMessage(string messageType, in ClusterMemberId sender)
         {
             Sender = sender;
             MessageType = messageType;
@@ -67,9 +65,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         private protected HttpMessage(HeadersReader<StringValues> headers)
         {
-            var address = ParseHeader(NodeIpHeader, headers, IpAddressParser);
-            var port = ParseHeader(NodePortHeader, headers, Int32Parser);
-            Sender = new IPEndPoint(address, port);
+            Sender = ParseHeader(NodeIdHeader, headers, IpAddressParser);
             MessageType = GetMessageType(headers);
             Id = ParseHeader(RequestIdHeader, headers);
         }
@@ -81,15 +77,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         internal virtual void PrepareRequest(HttpRequestMessage request)
         {
-            request.Headers.Add(NodeIpHeader, Sender.Address.ToString());
-            request.Headers.Add(NodePortHeader, Sender.Port.ToString(InvariantCulture));
+            request.Headers.Add(NodeIdHeader, Sender.ToString());
             request.Headers.Add(MessageTypeHeader, MessageType);
             request.Headers.Add(RequestIdHeader, Id);
             request.Method = HttpMethod.Post;
         }
 
-        private protected static async Task<bool> ParseBoolResponse(HttpResponseMessage response)
+        private protected static async Task<bool> ParseBoolResponse(HttpResponseMessage response, CancellationToken token)
+#if NETCOREAPP3_1
             => bool.TryParse(await response.Content.ReadAsStringAsync().ConfigureAwait(false), out var result)
+#else
+            => bool.TryParse(await response.Content.ReadAsStringAsync(token).ConfigureAwait(false), out var result)
+#endif
                 ? result
                 : throw new RaftProtocolException(ExceptionMessages.IncorrectResponse);
 
@@ -116,6 +115,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         private protected static string ParseHeader<THeaders>(string headerName, HeadersReader<THeaders> reader)
             where THeaders : IEnumerable<string>
-            => ParseHeader(headerName, reader, StringParser);
+            => ParseHeader(headerName, reader, static (string str, out string value) =>
+        {
+            value = str;
+            return true;
+        });
     }
 }

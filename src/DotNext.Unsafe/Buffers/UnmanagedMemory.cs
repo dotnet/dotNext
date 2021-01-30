@@ -13,7 +13,7 @@ namespace DotNext.Buffers
         private readonly bool owner;
         private IntPtr address;
 
-        internal UnmanagedMemory(IntPtr address, int length)
+        internal UnmanagedMemory(nint address, int length)
         {
             this.address = address;
             Length = length;

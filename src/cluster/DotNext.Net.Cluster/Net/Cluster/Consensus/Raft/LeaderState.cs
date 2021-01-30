@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,8 +17,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     {
         private sealed class Replicator : TaskCompletionSource<Result<bool>>, ILogEntryConsumer<IRaftLogEntry, Result<bool>>
         {
-            private static readonly ValueFunc<long, long> IndexDecrement = new ValueFunc<long, long>(DecrementIndex);
-
             private readonly IRaftClusterMember member;
             private readonly long commitIndex, precedingIndex, precedingTerm, term;
             private readonly ILogger logger;
@@ -51,13 +47,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 this.token = token;
             }
 
-            private static long DecrementIndex(long index) => index > 0L ? index - 1L : index;
-
             internal ValueTask<Result<bool>> Start(IAuditTrail<IRaftLogEntry> auditTrail)
             {
-                logger.ReplicationStarted(member.Endpoint, currentIndex);
+                logger.ReplicationStarted(member.EndPoint, currentIndex);
                 return currentIndex >= member.NextIndex ?
-                    auditTrail.ReadAsync<Replicator, Result<bool>>(this, member.NextIndex, token) :
+                    auditTrail.ReadAsync(this, member.NextIndex, token) :
                     ReadAsync<IRaftLogEntry, IRaftLogEntry[]>(Array.Empty<IRaftLogEntry>(), null, token);
             }
 
@@ -71,13 +65,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     // analyze result and decrease node index when it is out-of-sync with the current node
                     if (result.Value)
                     {
-                        logger.ReplicationSuccessful(member.Endpoint, member.NextIndex);
+                        logger.ReplicationSuccessful(member.EndPoint, member.NextIndex);
                         member.NextIndex.VolatileWrite(currentIndex + 1);
                         result = result.SetValue(replicatedWithCurrentTerm);
                     }
                     else
                     {
-                        logger.ReplicationFailed(member.Endpoint, member.NextIndex.UpdateAndGet(in IndexDecrement));
+                        logger.ReplicationFailed(member.EndPoint, member.NextIndex.UpdateAndGet(static index => index > 0L ? index - 1L : index));
                     }
 
                     SetResult(result);
@@ -88,22 +82,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
             }
 
-            private static bool ContainsTerm<TEntry, TList>(TList list, long term)
-                where TEntry : IRaftLogEntry
-                where TList : IReadOnlyList<TEntry>
-            {
-                for (var i = 0; i < list.Count; i++)
-                {
-                    if (list[i].Term == term)
-                        return true;
-                }
-
-                return false;
-            }
-
             public ValueTask<Result<bool>> ReadAsync<TEntry, TList>(TList entries, long? snapshotIndex, CancellationToken token)
-                where TEntry : IRaftLogEntry
-                where TList : IReadOnlyList<TEntry>
+                where TEntry : notnull, IRaftLogEntry
+                where TList : notnull, IReadOnlyList<TEntry>
             {
                 if (snapshotIndex.HasValue)
                 {
@@ -112,22 +93,34 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
                 else
                 {
-                    logger.ReplicaSize(member.Endpoint, entries.Count, precedingIndex, precedingTerm);
+                    logger.ReplicaSize(member.EndPoint, entries.Count, precedingIndex, precedingTerm);
                     replicationAwaiter = member.AppendEntriesAsync<TEntry, TList>(term, entries, precedingIndex, precedingTerm, commitIndex, token).ConfigureAwait(false).GetAwaiter();
                 }
 
-                replicatedWithCurrentTerm = ContainsTerm<TEntry, TList>(entries, term);
+                replicatedWithCurrentTerm = ContainsTerm(entries, term);
                 if (replicationAwaiter.IsCompleted)
                     Complete();
                 else
                     replicationAwaiter.OnCompleted(Complete);
+
                 return new ValueTask<Result<bool>>(Task);
+
+                static bool ContainsTerm(TList list, long term)
+                {
+                    for (var i = 0; i < list.Count; i++)
+                    {
+                        if (list[i].Term == term)
+                            return true;
+                    }
+
+                    return false;
+                }
             }
         }
 
         private sealed class WaitNode : TaskCompletionSource<bool>
         {
-            internal WaitNode()
+            public WaitNode()
                 : base(TaskCreationOptions.RunContinuationsAsynchronously)
             {
             }
@@ -136,9 +129,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly long currentTerm;
         private readonly bool allowPartitioning;
         private readonly CancellationTokenSource timerCancellation;
-        private readonly AsyncManualResetEvent forcedReplication;
+        private volatile WaitNode replicationEvent, replicationQueue;
         private Task? heartbeatTask;
-        private ImmutableQueue<WaitNode> replicationQueue;  // volatile
         internal ILeaderStateMetrics? Metrics;
 
         internal LeaderState(IRaftStateMachine stateMachine, bool allowPartitioning, long term)
@@ -146,20 +138,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             currentTerm = term;
             this.allowPartitioning = allowPartitioning;
-            timerCancellation = new CancellationTokenSource();
-            forcedReplication = new AsyncManualResetEvent(false);
-            replicationQueue = ImmutableQueue<WaitNode>.Empty;
+            timerCancellation = new ();
+            replicationEvent = new ();
+            replicationQueue = new ();
         }
 
-        private bool CheckTerm(long term)
-        {
-            if (term <= currentTerm)
-                return true;
-            stateMachine.MoveToFollowerState(false, term);
-            return false;
-        }
-
-        [SuppressMessage("Reliability", "CA2012", Justification = "Replicator task should be added to collection to ensure parallelism")]
         private async Task<bool> DoHeartbeats(IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)
         {
             var timeStamp = Timestamp.Current;
@@ -180,7 +163,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             var quorum = 1;  // because we know that the entry is replicated in this node
             var commitQuorum = 1;
-            for (var task = tasks.First; task != null; task.Value = default, task = task.Next)
+            for (var task = tasks.First; task is not null; task.Value = default, task = task.Next)
             {
                 try
                 {
@@ -210,44 +193,71 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             tasks.Clear();
             Metrics?.ReportBroadcastTime(timeStamp.Elapsed);
 
-            // majority of nodes accept entries with a least one entry from current term
+            // majority of nodes accept entries with a least one entry from the current term
             if (commitQuorum > 0)
             {
                 var count = await auditTrail.CommitAsync(currentIndex, token).ConfigureAwait(false); // commit all entries started from first uncommitted index to the end
                 stateMachine.Logger.CommitSuccessful(commitIndex + 1, count);
-                return CheckTerm(term);
+                goto check_term;
             }
 
             stateMachine.Logger.CommitFailed(quorum, commitIndex);
 
             // majority of nodes replicated, continue leading if current term is not changed
-            if (quorum > 0 || allowPartitioning)
-                return CheckTerm(term);
+            if (quorum <= 0 & !allowPartitioning)
+                goto stop_leading;
+
+            check_term:
+            if (term <= currentTerm)
+                return true;
 
             // it is partitioned network with absolute majority, not possible to have more than one leader
+            stop_leading:
             stateMachine.MoveToFollowerState(false, term);
             return false;
         }
 
         private void DrainReplicationQueue()
+            => Interlocked.Exchange(ref replicationQueue, new ()).SetResult(true);
+
+        private Task<bool> WaitForReplicationAsync(TimeSpan period, CancellationToken token)
         {
-            foreach (var waiter in Interlocked.Exchange(ref replicationQueue, ImmutableQueue<WaitNode>.Empty))
-                waiter.SetResult(true);
+            // This implementation optimized to avoid allocations of a new wait node.
+            // The new node should be created when the current node is in signaled state.
+            // Otherwise, we can keep the existing node
+            var current = replicationEvent.Task;
+            if (current.IsCompleted)
+            {
+                replicationEvent = new ();
+            }
+            else
+            {
+                current = current.WaitAsync(period, token);
+            }
+
+            return current;
         }
 
         private async Task DoHeartbeats(TimeSpan period, IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)
         {
             using var cancellationSource = CancellationTokenSource.CreateLinkedTokenSource(token, timerCancellation.Token);
-            for (token = cancellationSource.Token; await DoHeartbeats(auditTrail, token).ConfigureAwait(false); await forcedReplication.WaitAsync(period, token).ConfigureAwait(false))
-                DrainReplicationQueue();
+            token = cancellationSource.Token;
+            for (var forced = false; await DoHeartbeats(auditTrail, token).ConfigureAwait(false); forced = await WaitForReplicationAsync(period, token).ConfigureAwait(false))
+            {
+                if (forced)
+                    DrainReplicationQueue();
+            }
         }
 
         internal Task<bool> ForceReplicationAsync(TimeSpan timeout, CancellationToken token)
         {
-            var waiter = new WaitNode();
-            ImmutableInterlocked.Enqueue(ref replicationQueue, waiter);
-            forcedReplication.Set(true);
-            return waiter.Task.WaitAsync(timeout, token);
+            var result = replicationQueue.Task;
+
+            // resume heartbeat loop to force replication
+            replicationEvent.TrySetResult(true);
+
+            // enqueue a new task representing completion callback
+            return result.WaitAsync(timeout, token);
         }
 
         /// <summary>
@@ -275,12 +285,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (disposing)
             {
                 timerCancellation.Dispose();
-                forcedReplication.Dispose();
                 heartbeatTask = null;
 
-                // cancel queue
-                foreach (var waiter in Interlocked.Exchange(ref replicationQueue, ImmutableQueue<WaitNode>.Empty))
-                    waiter.SetCanceled();
+                // cancel replication queue
+                replicationQueue.TrySetException(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader));
+
+                Metrics = null;
             }
 
             base.Dispose(disposing);

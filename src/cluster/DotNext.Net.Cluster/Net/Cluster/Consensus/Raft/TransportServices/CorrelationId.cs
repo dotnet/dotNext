@@ -1,5 +1,4 @@
 using System;
-using System.Buffers.Binary;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
@@ -34,8 +33,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             var reader = new SpanReader<byte>(bytes);
 
-            ApplicationId = BinaryPrimitives.ReadInt64LittleEndian(reader.Read(sizeof(long)));
-            StreamId = BinaryPrimitives.ReadInt64LittleEndian(reader.Read(sizeof(long)));
+            ApplicationId = reader.ReadInt64(true);
+            StreamId = reader.ReadInt64(true);
 
             consumedBytes = reader.ConsumedCount;
         }
@@ -44,23 +43,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             var writer = new SpanWriter<byte>(output);
 
-            BinaryPrimitives.WriteInt64LittleEndian(writer.Slide(sizeof(long)), ApplicationId);
-            BinaryPrimitives.WriteInt64LittleEndian(writer.Slide(sizeof(long)), StreamId);
+            writer.WriteInt64(ApplicationId, true);
+            writer.WriteInt64(StreamId, true);
         }
 
-        public bool Equals(CorrelationId other)
+        private bool Equals(in CorrelationId other)
             => ApplicationId == other.ApplicationId && StreamId == other.StreamId;
 
-        public override bool Equals(object other) => other is CorrelationId id && Equals(id);
+        public bool Equals(CorrelationId other) => Equals(in other);
+
+        public override bool Equals(object? other) => other is CorrelationId id && Equals(in id);
 
         public override int GetHashCode() => HashCode.Combine(ApplicationId, StreamId);
 
         public override string ToString() => $"App Id={ApplicationId:X}, Stream Id={StreamId:X}";
 
         public static bool operator ==(in CorrelationId x, in CorrelationId y)
-            => x.ApplicationId == y.ApplicationId && x.StreamId == y.StreamId;
+            => x.Equals(in y);
 
         public static bool operator !=(in CorrelationId x, in CorrelationId y)
-            => x.ApplicationId != y.ApplicationId || x.StreamId != y.StreamId;
+            => !x.Equals(in y);
     }
 }

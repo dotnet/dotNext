@@ -27,7 +27,6 @@ namespace DotNext.Text
 
         [Theory]
         [InlineData("UTF-8")]
-        [InlineData("UTF-7")]
         [InlineData("UTF-32LE")]
         [InlineData("UTF-32BE")]
         [InlineData("UTF-16LE")]

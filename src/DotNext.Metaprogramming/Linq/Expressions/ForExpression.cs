@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 
 namespace DotNext.Linq.Expressions
@@ -99,19 +98,19 @@ namespace DotNext.Linq.Expressions
                 return this;
             }
 
-            [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's a member of internal interface")]
+            /// <inheritdoc />
             LabelTarget ILoopLabels.BreakLabel => breakLabel;
 
-            [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's a member of internal interface")]
+            /// <inheritdoc />
             LabelTarget ILoopLabels.ContinueLabel => continueLabel;
 
-            [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's a member of internal interface")]
+            /// <inheritdoc />
             Expression IBuilder.MakeCondition(ParameterExpression loopVar) => condition is null ? Constant(true) : condition(loopVar);
 
-            [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's a member of internal interface")]
+            /// <inheritdoc />
             Expression IBuilder.MakeIteration(ParameterExpression loopVar) => iteration is null ? Empty() : iteration(loopVar);
 
-            [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's a member of internal interface")]
+            /// <inheritdoc />
             Expression IBuilder.MakeBody(ParameterExpression loopVar) => body is null ? Empty() : body(loopVar, continueLabel, breakLabel);
 
             /// <summary>

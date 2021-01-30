@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using static System.Runtime.CompilerServices.Unsafe;
+using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext
 {
@@ -30,9 +31,9 @@ namespace DotNext
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is less than 0 or greater than length of <paramref name="left"/> array.</exception>
         public static T[] Concat<T>(this T[] left, T[] right, long startIndex)
         {
-            if (startIndex < 0 || startIndex > left.Length)
+            if (startIndex < 0 || startIndex > Intrinsics.GetLength(left))
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
-            var result = new T[startIndex + right.Length];
+            var result = new T[startIndex + right.LongLength];
             Array.Copy(left, result, startIndex);
             Array.Copy(right, 0L, result, startIndex, right.Length);
             return result;
@@ -45,23 +46,7 @@ namespace DotNext
         /// <param name="array">The array to check.</param>
         /// <returns><see langword="true"/>, if array is <see langword="null"/> or empty.</returns>
         public static bool IsNullOrEmpty<T>([NotNullWhen(false)]this T[]? array)
-            => array is null || Intrinsics.GetLength(array) == default;
-
-        /// <summary>
-        /// Applies specific action to each array element.
-        /// </summary>
-        /// <remarks>
-        /// This method support modification of array elements
-        /// because each array element is passed by reference into action.
-        /// </remarks>
-        /// <typeparam name="T">Type of array elements.</typeparam>
-        /// <param name="array">An array to iterate.</param>
-        /// <param name="action">An action to be applied for each element.</param>
-        public static void ForEach<T>(this T[] array, in ValueRefAction<T, long> action)
-        {
-            for (var i = 0L; i < array.LongLength; i++)
-                action.Invoke(ref array[i], i);
-        }
+            => array is null || Intrinsics.GetLength(array) == 0;
 
         /// <summary>
         /// Applies specific action to each array element.
@@ -74,7 +59,34 @@ namespace DotNext
         /// <param name="array">An array to iterate.</param>
         /// <param name="action">An action to be applied for each element.</param>
         public static void ForEach<T>(this T[] array, RefAction<T, long> action)
-            => ForEach(array, new ValueRefAction<T, long>(action, true));
+        {
+            // TODO: Change long to nint in RefAction signature in .NET 6
+            for (var i = 0L; i < array.LongLength; i++)
+                action(ref array[i], i);
+        }
+
+        /// <summary>
+        /// Applies specific action to each array element.
+        /// </summary>
+        /// <remarks>
+        /// This method support modification of array elements
+        /// because each array element is passed by reference into action.
+        /// </remarks>
+        /// <typeparam name="T">Type of array elements.</typeparam>
+        /// <typeparam name="TArg">The type of the argument to be passed to the action.</typeparam>
+        /// <param name="array">An array to iterate.</param>
+        /// <param name="action">An action to be applied for each element.</param>
+        /// <param name="arg">The argument to be passed to the action.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action"/> is zero.</exception>
+        [CLSCompliant(false)]
+        public static unsafe void ForEach<T, TArg>(this T[] array, delegate*<ref T, TArg, void> action, TArg arg)
+        {
+            if (action == null)
+                throw new ArgumentNullException(nameof(action));
+
+            for (nint i = 0; i < Intrinsics.GetLength(array); i++)
+                action(ref array[i], arg);
+        }
 
         /// <summary>
         /// Insert a new element into array and return modified array.
@@ -89,13 +101,19 @@ namespace DotNext
             if (index < 0 || index > array.LongLength)
                 throw new ArgumentOutOfRangeException(nameof(index));
 
-            if (Intrinsics.GetLength(array) == default)
-                return new[] { element };
+            T[] result;
+            if (Intrinsics.GetLength(array) == 0)
+            {
+                result = new[] { element };
+            }
+            else
+            {
+                result = new T[array.LongLength + 1];
+                Array.Copy(array, 0, result, 0, Math.Min(index + 1, array.LongLength));
+                Array.Copy(array, index, result, index + 1, array.LongLength - index);
+                result[index] = element;
+            }
 
-            var result = new T[array.LongLength + 1];
-            Array.Copy(array, 0, result, 0, Math.Min(index + 1, array.LongLength));
-            Array.Copy(array, index, result, index + 1, array.LongLength - index);
-            result[index] = element;
             return result;
         }
 
@@ -109,37 +127,40 @@ namespace DotNext
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is incorrect.</exception>
         public static T[] RemoveAt<T>(this T[] array, long index)
         {
-            if (index < 0L || index >= array.LongLength)
+            var length = Intrinsics.GetLength(array);
+            if (index < 0L || index >= length)
                 throw new ArgumentOutOfRangeException(nameof(index));
 
-            // TODO: Replace with const nuint one = 1; in C# 9
-            if (Intrinsics.GetLength(array) == new UIntPtr(1))
+            if (length == 1)
                 return Array.Empty<T>();
 
-            var newStore = new T[array.LongLength - 1L];
+            var newStore = new T[length - 1];
             Array.Copy(array, 0L, newStore, 0L, index);
-            Array.Copy(array, index + 1L, newStore, index, array.LongLength - index - 1L);
+            Array.Copy(array, index + 1L, newStore, index, length - index - 1L);
             return newStore;
         }
 
-        private static T[] RemoveAll<T, TConsumer>(T[] array, in ValueFunc<T, bool> match, ref TConsumer callback)
+        private static T[] RemoveAll<T, TPredicate, TConsumer>(T[] array, TPredicate condition, ref TConsumer callback)
+            where TPredicate : struct, ISupplier<T, bool>
             where TConsumer : struct, IConsumer<T>
         {
-            if (array.LongLength == 0L)
+            var length = Intrinsics.GetLength(array);
+            if (length == 0)
                 return array;
-            var newLength = 0L;
-            var tempArray = new T[array.LongLength];
+            nint newLength = 0;
+            var tempArray = new T[length];
             foreach (var item in array)
             {
-                if (match.Invoke(item))
+                if (condition.Invoke(item))
                     callback.Invoke(item);
                 else
                     tempArray[newLength++] = item;
             }
 
-            if (array.LongLength - newLength == 0L)
+            if (length - newLength == 0)
                 return array;
-            if (newLength == 0L)
+
+            if (newLength == 0)
                 return Array.Empty<T>();
 
             array = new T[newLength];
@@ -147,18 +168,11 @@ namespace DotNext
             return array;
         }
 
-        /// <summary>
-        /// Removes all the elements that match the conditions defined by the specified predicate.
-        /// </summary>
-        /// <typeparam name="T">The type of the elements in array.</typeparam>
-        /// <param name="array">Source array. Cannot be <see langword="null"/>.</param>
-        /// <param name="match">The predicate that defines the conditions of the elements to remove.</param>
-        /// <param name="count">The number of elements removed from this list.</param>
-        /// <returns>A modified array with removed elements.</returns>
-        public static T[] RemoveAll<T>(this T[] array, in ValueFunc<T, bool> match, out long count)
+        private static T[] RemoveAll<T, TPredicate>(T[] array, TPredicate condition, out long count)
+            where TPredicate : struct, ISupplier<T, bool>
         {
             var counter = new RemovalCounter<T>();
-            var result = RemoveAll(array, match, ref counter);
+            var result = RemoveAll(array, condition, ref counter);
             count = counter.Count;
             return result;
         }
@@ -172,7 +186,7 @@ namespace DotNext
         /// <param name="count">The number of elements removed from this list.</param>
         /// <returns>A modified array with removed elements.</returns>
         public static T[] RemoveAll<T>(this T[] array, Predicate<T> match, out long count)
-            => RemoveAll(array, match.AsValueFunc(true), out count);
+            => RemoveAll<T, DelegatingPredicate<T>>(array, match, out count);
 
         /// <summary>
         /// Removes all the elements that match the conditions defined by the specified predicate.
@@ -180,10 +194,11 @@ namespace DotNext
         /// <typeparam name="T">The type of the elements in array.</typeparam>
         /// <param name="array">Source array. Cannot be <see langword="null"/>.</param>
         /// <param name="match">The predicate that defines the conditions of the elements to remove.</param>
-        /// <param name="callback">The delegate that is used to accept removed items.</param>
+        /// <param name="count">The number of elements removed from this list.</param>
         /// <returns>A modified array with removed elements.</returns>
-        public static T[] RemoveAll<T>(this T[] array, in ValueFunc<T, bool> match, in ValueAction<T> callback)
-            => RemoveAll(array, match, ref AsRef(callback));
+        [CLSCompliant(false)]
+        public static unsafe T[] RemoveAll<T>(this T[] array, delegate*<T, bool> match, out long count)
+            => RemoveAll<T, Supplier<T, bool>>(array, match, out count);
 
         /// <summary>
         /// Removes all the elements that match the conditions defined by the specified predicate.
@@ -194,7 +209,25 @@ namespace DotNext
         /// <param name="callback">The delegate that is used to accept removed items.</param>
         /// <returns>A modified array with removed elements.</returns>
         public static T[] RemoveAll<T>(this T[] array, Predicate<T> match, Action<T> callback)
-            => RemoveAll(array, match.AsValueFunc(true), new ValueAction<T>(callback, true));
+        {
+            var action = new DelegatingConsumer<T>(callback);
+            return RemoveAll(array, new DelegatingPredicate<T>(match), ref action);
+        }
+
+        /// <summary>
+        /// Removes all the elements that match the conditions defined by the specified predicate.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements in array.</typeparam>
+        /// <param name="array">Source array. Cannot be <see langword="null"/>.</param>
+        /// <param name="match">The predicate that defines the conditions of the elements to remove.</param>
+        /// <param name="callback">The delegate that is used to accept removed items.</param>
+        /// <returns>A modified array with removed elements.</returns>
+        [CLSCompliant(false)]
+        public static unsafe T[] RemoveAll<T>(this T[] array, delegate*<T, bool> match, Action<T> callback)
+        {
+            var action = new DelegatingConsumer<T>(callback);
+            return RemoveAll(array, new Supplier<T, bool>(match), ref action);
+        }
 
         internal static T[] New<T>(long length) => length == 0L ? Array.Empty<T>() : new T[length];
 
@@ -209,9 +242,12 @@ namespace DotNext
         {
             if (count == 0L)
                 return input;
-            if (count >= input.LongLength)
+
+            var length = Intrinsics.GetLength(input);
+            if (count >= length)
                 return Array.Empty<T>();
-            var result = new T[input.LongLength - count];
+
+            var result = new T[length - count];
             Array.Copy(input, count, result, 0, result.LongLength);
             return result;
         }
@@ -226,10 +262,12 @@ namespace DotNext
         /// <returns>A new sliced array.</returns>
         public static T[] Slice<T>(this T[] input, long startIndex, long length)
         {
-            if (startIndex >= input.LongLength || length == 0)
+            if (startIndex >= Intrinsics.GetLength(input) || length == 0L)
                 return Array.Empty<T>();
+
             if (startIndex == 0 && length == input.Length)
                 return input;
+
             length = Math.Min(input.LongLength - startIndex, length);
             var result = new T[length];
             Array.Copy(input, startIndex, result, 0, length);
@@ -260,10 +298,12 @@ namespace DotNext
         {
             if (count == 0L)
                 return input;
-            if (count >= input.LongLength)
+
+            var length = Intrinsics.GetLength(input);
+            if (count >= length)
                 return Array.Empty<T>();
 
-            var result = new T[input.LongLength - count];
+            var result = new T[length - count];
             Array.Copy(input, result, result.LongLength);
             return result;
         }
@@ -285,9 +325,13 @@ namespace DotNext
                 return ReferenceEquals(first, second);
             if (Intrinsics.GetLength(first) != Intrinsics.GetLength(second))
                 return false;
-            if (Intrinsics.GetLength(first) == default)
+            if (Intrinsics.GetLength(first) == 0)
                 return true;
+#if NETSTANDARD2_1
             return Intrinsics.EqualsAligned(ref As<T, byte>(ref first[0]), ref As<T, byte>(ref second[0]), first.LongLength * sizeof(T));
+#else
+            return Intrinsics.EqualsAligned(ref As<T, byte>(ref GetArrayDataReference(first)), ref As<T, byte>(ref GetArrayDataReference(second)), first.LongLength * sizeof(T));
+#endif
         }
 
         /// <summary>
@@ -299,20 +343,20 @@ namespace DotNext
         /// <returns>32-bit hash code of the array content.</returns>
         public static unsafe int BitwiseHashCode<T>(this T[] array, bool salted = true)
             where T : unmanaged
-            => array.LongLength > 0L ? Intrinsics.GetHashCode32(ref As<T, byte>(ref array[0]), array.LongLength * sizeof(T), salted) : 0;
+#if NETSTANDARD2_1
+            => Intrinsics.GetLength(array) > 0 ? Intrinsics.GetHashCode32(ref As<T, byte>(ref array[0]), array.LongLength * sizeof(T), salted) : 0;
+#else
+            => Intrinsics.GetLength(array) > 0 ? Intrinsics.GetHashCode32(ref As<T, byte>(ref GetArrayDataReference(array)), array.LongLength * sizeof(T), salted) : 0;
+#endif
 
-        /// <summary>
-        /// Computes bitwise hash code for the array content using custom hash function.
-        /// </summary>
-        /// <typeparam name="T">The type of array elements.</typeparam>
-        /// <param name="array">The array to be hashed.</param>
-        /// <param name="hash">Initial value of the hash.</param>
-        /// <param name="hashFunction">Custom hashing algorithm.</param>
-        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
-        /// <returns>32-bit hash code of the array content.</returns>
-        public static unsafe int BitwiseHashCode<T>(this T[] array, int hash, in ValueFunc<int, int, int> hashFunction, bool salted = true)
+        private static unsafe int BitwiseHashCode<T, THashFunction>(T[] array, int hash, THashFunction hashFunction, bool salted)
             where T : unmanaged
-            => array.LongLength > 0L ? Intrinsics.GetHashCode32(ref As<T, byte>(ref array[0]), array.LongLength * sizeof(T), hash, hashFunction, salted) : hash;
+            where THashFunction : struct, ISupplier<int, int, int>
+#if NETSTANDARD2_1
+            => Intrinsics.GetLength(array) > 0 ? Intrinsics.GetHashCode32(ref As<T, byte>(ref array[0]), array.LongLength * sizeof(T), hash, hashFunction, salted) : hash;
+#else
+            => Intrinsics.GetLength(array) > 0 ? Intrinsics.GetHashCode32(ref As<T, byte>(ref GetArrayDataReference(array)), array.LongLength * sizeof(T), hash, hashFunction, salted) : hash;
+#endif
 
         /// <summary>
         /// Computes bitwise hash code for the array content using custom hash function.
@@ -325,7 +369,7 @@ namespace DotNext
         /// <returns>32-bit hash code of the array content.</returns>
         public static int BitwiseHashCode<T>(this T[] array, int hash, Func<int, int, int> hashFunction, bool salted = true)
             where T : unmanaged
-            => BitwiseHashCode(array, hash, new ValueFunc<int, int, int>(hashFunction, true), salted);
+            => BitwiseHashCode<T, DelegatingSupplier<int, int, int>>(array, hash, hashFunction, salted);
 
         /// <summary>
         /// Computes bitwise hash code for the array content using custom hash function.
@@ -335,10 +379,20 @@ namespace DotNext
         /// <param name="hash">Initial value of the hash.</param>
         /// <param name="hashFunction">Custom hashing algorithm.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
-        /// <returns>64-bit hash code of the array content.</returns>
-        public static unsafe long BitwiseHashCode64<T>(this T[] array, long hash, in ValueFunc<long, long, long> hashFunction, bool salted = true)
+        /// <returns>32-bit hash code of the array content.</returns>
+        [CLSCompliant(false)]
+        public static unsafe int BitwiseHashCode<T>(this T[] array, int hash, delegate*<int, int, int> hashFunction, bool salted = true)
             where T : unmanaged
-            => array.LongLength > 0L ? Intrinsics.GetHashCode64(ref As<T, byte>(ref array[0]), array.LongLength * sizeof(T), hash, hashFunction, salted) : hash;
+            => BitwiseHashCode<T, Supplier<int, int, int>>(array, hash, hashFunction, salted);
+
+        private static unsafe long BitwiseHashCode64<T, THashFunction>(T[] array, long hash, THashFunction hashFunction, bool salted)
+            where T : unmanaged
+            where THashFunction : struct, ISupplier<long, long, long>
+#if NETSTANDARD2_1
+            => Intrinsics.GetLength(array) > 0 ? Intrinsics.GetHashCode64(ref As<T, byte>(ref array[0]), array.LongLength * sizeof(T), hash, hashFunction, salted) : hash;
+#else
+            => Intrinsics.GetLength(array) > 0 ? Intrinsics.GetHashCode64(ref As<T, byte>(ref GetArrayDataReference(array)), array.LongLength * sizeof(T), hash, hashFunction, salted) : hash;
+#endif
 
         /// <summary>
         /// Computes bitwise hash code for the array content using custom hash function.
@@ -351,7 +405,21 @@ namespace DotNext
         /// <returns>64-bit hash code of the array content.</returns>
         public static long BitwiseHashCode64<T>(this T[] array, long hash, Func<long, long, long> hashFunction, bool salted = true)
             where T : unmanaged
-            => BitwiseHashCode64(array, hash, new ValueFunc<long, long, long>(hashFunction, true), salted);
+            => BitwiseHashCode64<T, DelegatingSupplier<long, long, long>>(array, hash, hashFunction, salted);
+
+        /// <summary>
+        /// Computes bitwise hash code for the array content using custom hash function.
+        /// </summary>
+        /// <typeparam name="T">The type of array elements.</typeparam>
+        /// <param name="array">The array to be hashed.</param>
+        /// <param name="hash">Initial value of the hash.</param>
+        /// <param name="hashFunction">Custom hashing algorithm.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <returns>64-bit hash code of the array content.</returns>
+        [CLSCompliant(false)]
+        public static unsafe long BitwiseHashCode64<T>(this T[] array, long hash, delegate*<long, long, long> hashFunction, bool salted = true)
+            where T : unmanaged
+            => BitwiseHashCode64<T, Supplier<long, long, long>>(array, hash, hashFunction, salted);
 
         /// <summary>
         /// Computes bitwise hash code for the array content.
@@ -362,7 +430,11 @@ namespace DotNext
         /// <returns>64-bit hash code of the array content.</returns>
         public static unsafe long BitwiseHashCode64<T>(this T[] array, bool salted = true)
             where T : unmanaged
-            => array.LongLength > 0L ? Intrinsics.GetHashCode64(ref As<T, byte>(ref array[0]), array.LongLength * sizeof(T), salted) : 0L;
+#if NETSTANDARD2_1
+            => Intrinsics.GetLength(array) > 0 ? Intrinsics.GetHashCode64(ref As<T, byte>(ref array[0]), array.LongLength * sizeof(T), salted) : 0L;
+#else
+            => Intrinsics.GetLength(array) > 0 ? Intrinsics.GetHashCode64(ref As<T, byte>(ref GetArrayDataReference(array)), array.LongLength * sizeof(T), salted) : 0L;
+#endif
 
         private sealed class ArrayEqualityComparer
         {
@@ -395,7 +467,7 @@ namespace DotNext
         {
             static bool EqualsSequential(object?[] first, object?[] second)
             {
-                for (var i = 0L; i < first.LongLength; i++)
+                for (nint i = 0; i < Intrinsics.GetLength(first); i++)
                 {
                     if (!Equals(first[i], second[i]))
                         return false;
@@ -427,14 +499,18 @@ namespace DotNext
         public static unsafe int BitwiseCompare<T>(this T[]? first, T[]? second)
             where T : unmanaged
         {
-            if (first is null)
-                return second is null ? 0 : -1;
-            if (second is null)
+            if (first.IsNullOrEmpty())
+                return second.IsNullOrEmpty() ? 0 : -1;
+            if (second.IsNullOrEmpty())
                 return 1;
-            if (first.LongLength != second.LongLength)
-                return first.LongLength.CompareTo(second.LongLength);
-
-            return Intrinsics.Compare(ref As<T, byte>(ref first[0]), ref As<T, byte>(ref second[0]), first.LongLength * sizeof(T));
+            var cmp = first.LongLength.CompareTo(second.LongLength);
+            if (cmp == 0)
+#if NETSTANDARD2_1
+            cmp = Intrinsics.Compare(ref As<T, byte>(ref first[0]), ref As<T, byte>(ref second[0]), first.LongLength * sizeof(T));
+#else
+            cmp = Intrinsics.Compare(ref As<T, byte>(ref GetArrayDataReference(first)), ref As<T, byte>(ref GetArrayDataReference(second)), first.LongLength * sizeof(T));
+#endif
+            return cmp;
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
@@ -55,6 +56,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                     var (headers, request) = await ReadPacket(buffer, token).ConfigureAwait(false);
                     timeoutTracker = CancellationTokenSource.CreateLinkedTokenSource(token);
                     timeoutTracker.CancelAfter(receiveTimeout);
+                    Debug.Assert(RemoteEndPoint is not null);
                     while (await exchange.ProcessInboundMessageAsync(headers, request, RemoteEndPoint, timeoutTracker.Token).ConfigureAwait(false))
                     {
                         bool waitForInput;
@@ -129,13 +131,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         private async void HandleConnection(Socket remoteClient, CancellationToken token)
         {
             var sslOptions = SslOptions;
-            var stream = new ServerNetworkStream(remoteClient, sslOptions != null);
+            var stream = new ServerNetworkStream(remoteClient, sslOptions is not null);
             var buffer = AllocTransmissionBlock();
             var exchange = exchangeFactory();
             Interlocked.Increment(ref connections);
             try
             {
-                if (sslOptions != null)
+                if (sslOptions is not null)
                     await stream.Authenticate(sslOptions, token).ConfigureAwait(false);
 
                 while (stream.Connected && !IsDisposed)
@@ -182,6 +184,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                         await args.Task.ConfigureAwait(false);
                     else if (args.SocketError != SocketError.Success)
                         throw new SocketException((int)args.SocketError);
+
+                    Debug.Assert(args.AcceptSocket is not null);
                     ConfigureSocket(args.AcceptSocket, LingerOption, Ttl);
                     ThreadPool.QueueUserWorkItem(HandleConnection, (args.AcceptSocket, token), false);
                     args.Reset();
@@ -229,12 +233,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             {
                 try
                 {
-                    transmissionState.Cancel(false);
+                    if (!transmissionState.IsCancellationRequested)
+                        transmissionState.Cancel(false);
                 }
                 finally
                 {
                     transmissionState.Dispose();
-                    socket.Close(GracefulShutdownTimeout);
                     socket.Dispose();
                 }
 

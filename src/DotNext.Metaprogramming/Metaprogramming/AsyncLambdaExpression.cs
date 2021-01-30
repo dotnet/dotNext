@@ -16,7 +16,7 @@ namespace DotNext.Metaprogramming
         private ParameterExpression? recursion;
         private ParameterExpression? lambdaResult;
 
-        internal AsyncLambdaExpression()
+        public AsyncLambdaExpression()
             : base(false)
         {
             if (typeof(TDelegate).IsAbstract)
@@ -57,7 +57,7 @@ namespace DotNext.Metaprogramming
         private new Expression<TDelegate> Build()
         {
             var body = base.Build();
-            if (lambdaResult != null)
+            if (lambdaResult is not null)
                 body = body.AddEpilogue(taskType.HasResult, new AsyncResultExpression(lambdaResult, taskType));
             else if (body.Type != taskType)
                 body = body.AddEpilogue(taskType.HasResult, new AsyncResultExpression(taskType));
@@ -68,7 +68,7 @@ namespace DotNext.Metaprogramming
             }
 
             // build lambda expression
-            if (!(recursion is null))
+            if (recursion is not null)
             {
                 lambda = Expression.Lambda<TDelegate>(
                     Expression.Block(

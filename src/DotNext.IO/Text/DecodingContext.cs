@@ -24,7 +24,7 @@ namespace DotNext.Text
         /// <param name="encoding">The encoding to be used for converting bytes into string.</param>
         /// <param name="reuseDecoder"><see langword="true"/> to reuse the decoder between decoding operations; <see langword="false"/> to create separated encoder for each encoding operation.</param>
         /// <exception cref="ArgumentNullException"><paramref name="encoding"/> is <see langword="null"/>.</exception>
-        public DecodingContext(Encoding encoding, bool reuseDecoder = false)
+        public DecodingContext(Encoding encoding, bool reuseDecoder)
         {
             this.encoding = encoding ?? throw new ArgumentNullException(nameof(encoding));
             decoder = reuseDecoder ? encoding.GetDecoder() : null;
@@ -35,7 +35,7 @@ namespace DotNext.Text
         /// in separated async flow or thread.
         /// </summary>
         /// <returns>The independent copy of this context.</returns>
-        public DecodingContext Copy() => new DecodingContext(encoding, decoder != null);
+        public DecodingContext Copy() => new DecodingContext(encoding, decoder is not null);
 
         /// <inheritdoc/>
         object ICloneable.Clone() => Copy();
@@ -56,6 +56,6 @@ namespace DotNext.Text
         /// Creates decoding context.
         /// </summary>
         /// <param name="encoding">The text encoding.</param>
-        public static implicit operator DecodingContext(Encoding encoding) => new DecodingContext(encoding);
+        public static implicit operator DecodingContext(Encoding encoding) => new DecodingContext(encoding, false);
     }
 }

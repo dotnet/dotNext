@@ -94,7 +94,7 @@ namespace DotNext.Linq.Expressions
                 if (defaultMember is null)
                     continue;
                 PropertyInfo? property = lookup.GetProperty(defaultMember.MemberName, PublicInstance);
-                if (!(property is null))
+                if (property is not null)
                     yield return property;
             }
         }
@@ -119,7 +119,7 @@ namespace DotNext.Linq.Expressions
             get
             {
                 var result = indexer?.PropertyType ?? Collection.Type.GetItemType();
-                Debug.Assert(!(result is null));
+                Debug.Assert(result is not null);
                 return result;
             }
         }

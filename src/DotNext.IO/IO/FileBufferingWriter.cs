@@ -26,8 +26,9 @@ namespace DotNext.IO
     /// returned <see cref="Memory{T}"/> instance references bytes in memory. Otherwise,
     /// it references memory-mapped file.
     /// </remarks>
-    public sealed partial class FileBufferingWriter : Stream, IFlushableBufferWriter<byte>, IGrowableBuffer<byte>
+    public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, IGrowableBuffer<byte>, IFlushable
     {
+        internal const int DefaultMemoryThreshold = 32768;
         private const int FileBufferSize = 1024;
 
         [StructLayout(LayoutKind.Auto)]
@@ -40,7 +41,7 @@ namespace DotNext.IO
 
             public void Dispose()
             {
-                if (!(refHolder is null))
+                if (refHolder is not null)
                     refHolder.Target = null;
             }
         }
@@ -55,7 +56,7 @@ namespace DotNext.IO
             internal MemoryMappedFileManager(FileBufferingWriter writer, long offset, long length)
             {
                 Debug.Assert(length <= int.MaxValue);
-                Debug.Assert(writer.fileBackend != null);
+                Debug.Assert(writer.fileBackend is not null);
                 mappedFile = CreateMemoryMappedFile(writer.fileBackend);
                 accessor = mappedFile.CreateViewAccessor(offset, length, MemoryMappedFileAccess.ReadWrite);
                 accessor.SafeMemoryMappedViewHandle.AcquirePointer(ref ptr);
@@ -186,7 +187,7 @@ namespace DotNext.IO
         /// <param name="asyncIO"><see langword="true"/> if you will use asynchronous methods of the instance; otherwise, <see langword="false"/>.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="memoryThreshold"/> is less than or equal to zero; or <paramref name="initialCapacity"/> is less than zero or greater than <paramref name="memoryThreshold"/>.</exception>
         /// <exception cref="DirectoryNotFoundException"><paramref name="tempDir"/> doesn't exist.</exception>
-        public FileBufferingWriter(MemoryAllocator<byte>? allocator = null, int memoryThreshold = 32768, int initialCapacity = 0, string? tempDir = null, bool asyncIO = true)
+        public FileBufferingWriter(MemoryAllocator<byte>? allocator = null, int memoryThreshold = DefaultMemoryThreshold, int initialCapacity = 0, string? tempDir = null, bool asyncIO = true)
         {
             if (memoryThreshold <= 0)
                 throw new ArgumentOutOfRangeException(nameof(memoryThreshold));
@@ -250,10 +251,10 @@ namespace DotNext.IO
         long IGrowableBuffer<byte>.WrittenCount => Length;
 
         /// <inheritdoc />
-        void IGrowableBuffer<byte>.CopyTo<TArg>(ReadOnlySpanAction<byte, TArg> callback, TArg arg)
-            => CopyTo(callback, arg);
+        void IGrowableBuffer<byte>.CopyTo<TConsumer>(TConsumer consumer)
+            => CopyTo(consumer, 1024, CancellationToken.None);
 
-        private bool IsReading => reader?.Target != null;
+        private bool IsReading => reader?.Target is not null;
 
         private ReadSession EnterReadMode(object obj)
         {
@@ -334,7 +335,8 @@ namespace DotNext.IO
                 output = default;
                 return size <= memoryThreshold ? MemoryEvaluationResult.PersistExistingBuffer : MemoryEvaluationResult.PersistAll;
             }
-            else if (buffer.Length - position < size)
+
+            if (buffer.Length - position < size)
             {
                 var newBuffer = allocator.Invoke(newSize, false);
                 buffer.Memory.CopyTo(newBuffer.Memory);
@@ -352,7 +354,7 @@ namespace DotNext.IO
             if (buffer.Length > 0 && position > 0)
             {
                 EnsureBackingStore();
-                Debug.Assert(fileBackend != null);
+                Debug.Assert(fileBackend is not null);
                 await fileBackend.WriteAsync(buffer.Memory.Slice(0, position), token).ConfigureAwait(false);
                 buffer.Dispose();
                 buffer = default;
@@ -365,7 +367,7 @@ namespace DotNext.IO
             if (buffer.Length > 0 && position > 0)
             {
                 EnsureBackingStore();
-                Debug.Assert(fileBackend != null);
+                Debug.Assert(fileBackend is not null);
                 fileBackend.Write(buffer.Memory.Span.Slice(0, position));
                 buffer.Dispose();
                 buffer = default;
@@ -396,7 +398,7 @@ namespace DotNext.IO
                 case MemoryEvaluationResult.PersistAll:
                     await PersistBufferAsync(token).ConfigureAwait(false);
                     EnsureBackingStore();
-                    Debug.Assert(fileBackend != null);
+                    Debug.Assert(fileBackend is not null);
                     await fileBackend.WriteAsync(buffer, token).ConfigureAwait(false);
                     break;
             }
@@ -424,7 +426,7 @@ namespace DotNext.IO
                 case MemoryEvaluationResult.PersistAll:
                     PersistBuffer();
                     EnsureBackingStore();
-                    Debug.Assert(fileBackend != null);
+                    Debug.Assert(fileBackend is not null);
                     fileBackend.Write(buffer);
                     break;
             }
@@ -455,10 +457,10 @@ namespace DotNext.IO
                 task = WriteAsync(buffer, offset, count, CancellationToken.None);
 
                 // attach state only if it's necessary
-                if (state != null)
+                if (state is not null)
                     task = task.ContinueWith(Continuation, state, CancellationToken.None, TaskContinuationOptions.None, TaskScheduler.Default);
 
-                if (callback != null)
+                if (callback is not null)
                 {
                     if (task.IsCompleted)
                         callback(task);
@@ -530,6 +532,54 @@ namespace DotNext.IO
             => throw new NotSupportedException();
 
         /// <summary>
+        /// Drains the written content to the consumer asynchronously.
+        /// </summary>
+        /// <typeparam name="TConsumer">The type of the consumer.</typeparam>
+        /// <param name="consumer">The consumer of the written content.</param>
+        /// <param name="bufferSize">The size, in bytes, of the buffer used to copy bytes.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public async Task CopyToAsync<TConsumer>(TConsumer consumer, int bufferSize, CancellationToken token)
+            where TConsumer : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
+        {
+            if (bufferSize <= 0)
+                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+
+            if (fileBackend is not null)
+            {
+                using var buffer = allocator.Invoke(bufferSize, false);
+                fileBackend.Position = 0L;
+                await fileBackend.CopyToAsync(consumer, buffer.Memory, token).ConfigureAwait(false);
+            }
+
+            if (buffer.Length > 0 && position > 0)
+                await consumer.Invoke(buffer.Memory.Slice(0, position), token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Drains the written content to the consumer synchronously.
+        /// </summary>
+        /// <typeparam name="TConsumer">The type of the consumer.</typeparam>
+        /// <param name="consumer">The consumer of the written content.</param>
+        /// <param name="bufferSize">The size, in bytes, of the buffer used to copy bytes.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public void CopyTo<TConsumer>(TConsumer consumer, int bufferSize, CancellationToken token)
+            where TConsumer : notnull, IReadOnlySpanConsumer<byte>
+        {
+            if (fileBackend is not null)
+            {
+                using var buffer = allocator.Invoke(bufferSize, false);
+                fileBackend.Position = 0L;
+                fileBackend.CopyTo(consumer, buffer.Memory.Span, token);
+            }
+
+            if (buffer.Length > 0 && position > 0)
+                consumer.Invoke(buffer.Memory.Span.Slice(0, position));
+        }
+
+        /// <summary>
         /// Drains buffered content to the stream asynchronously.
         /// </summary>
         /// <param name="destination">The stream to drain buffered contents to.</param>
@@ -537,19 +587,8 @@ namespace DotNext.IO
         /// <param name="token">The token to monitor for cancellation requests.</param>
         /// <returns>A task that represents the asynchronous copy operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public override async Task CopyToAsync(Stream destination, int bufferSize, CancellationToken token)
-        {
-            if (fileBackend != null)
-            {
-                fileBackend.Position = 0L;
-                await fileBackend.CopyToAsync(destination, bufferSize, token).ConfigureAwait(false);
-            }
-
-            if (buffer.Length > 0 && position > 0)
-            {
-                await destination.WriteAsync(buffer.Memory.Slice(0, position), token).ConfigureAwait(false);
-            }
-        }
+        public override Task CopyToAsync(Stream destination, int bufferSize, CancellationToken token)
+            => CopyToAsync<StreamConsumer>(destination, bufferSize, token);
 
         /// <summary>
         /// Drains buffered content to the stream synchronously.
@@ -557,18 +596,7 @@ namespace DotNext.IO
         /// <param name="destination">The stream to drain buffered contents to.</param>
         /// <param name="bufferSize">The size, in bytes, of the buffer used to copy bytes.</param>
         public override void CopyTo(Stream destination, int bufferSize)
-        {
-            if (fileBackend != null)
-            {
-                fileBackend.Position = 0L;
-                fileBackend.CopyTo(destination, bufferSize);
-            }
-
-            if (buffer.Length > 0 && position > 0)
-            {
-                destination.Write(buffer.Memory.Span.Slice(0, position));
-            }
-        }
+            => CopyTo<StreamConsumer>(destination, bufferSize, CancellationToken.None);
 
         /// <summary>
         /// Drains buffered content to the buffer asynchronously.
@@ -576,25 +604,10 @@ namespace DotNext.IO
         /// <param name="destination">The buffer to drain buffered contents to.</param>
         /// <param name="bufferSize">The size, in bytes, of the buffer used to copy bytes.</param>
         /// <param name="token">The token to monitor for cancellation requests.</param>
-        /// <returns>The number of copied elements..</returns>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public async Task<long> CopyToAsync(IBufferWriter<byte> destination, int bufferSize = 1024, CancellationToken token = default)
-        {
-            var totalBytes = 0L;
-            if (fileBackend != null)
-            {
-                fileBackend.Position = 0L;
-                totalBytes += await fileBackend.CopyToAsync(destination, bufferSize, token).ConfigureAwait(false);
-            }
-
-            if (buffer.Length > 0 && position > 0)
-            {
-                destination.Write(buffer.Memory.Span.Slice(0, position));
-                totalBytes += position;
-            }
-
-            return totalBytes;
-        }
+        public Task CopyToAsync(IBufferWriter<byte> destination, int bufferSize = 1024, CancellationToken token = default)
+            => CopyToAsync(new BufferConsumer<byte>(destination), bufferSize, token);
 
         /// <summary>
         /// Drains buffered content to the buffer synchronously.
@@ -602,25 +615,9 @@ namespace DotNext.IO
         /// <param name="destination">The buffer to drain buffered contents to.</param>
         /// <param name="bufferSize">The size, in bytes, of the buffer used to copy bytes.</param>
         /// <param name="token">The token to monitor for cancellation requests.</param>
-        /// <returns>The number of copied elements..</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public long CopyTo(IBufferWriter<byte> destination, int bufferSize = 1024, CancellationToken token = default)
-        {
-            var totalBytes = 0L;
-            if (fileBackend != null)
-            {
-                fileBackend.Position = 0L;
-                totalBytes += fileBackend.CopyTo(destination, bufferSize, token);
-            }
-
-            if (buffer.Length > 0 && position > 0)
-            {
-                destination.Write(buffer.Memory.Span.Slice(0, position));
-                totalBytes += position;
-            }
-
-            return totalBytes;
-        }
+        public void CopyTo(IBufferWriter<byte> destination, int bufferSize = 1024, CancellationToken token = default)
+            => CopyTo(new BufferConsumer<byte>(destination), bufferSize, token);
 
         /// <summary>
         /// Drains buffered content synchronously.
@@ -632,18 +629,7 @@ namespace DotNext.IO
         /// <typeparam name="TArg">The type of the argument to be passed to the callback.</typeparam>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public void CopyTo<TArg>(ReadOnlySpanAction<byte, TArg> reader, TArg arg, int bufferSize = 1024, CancellationToken token = default)
-        {
-            if (fileBackend != null)
-            {
-                fileBackend.Position = 0L;
-                fileBackend.Read(reader, arg, bufferSize, token);
-            }
-
-            if (buffer.Length > 0 && position > 0)
-            {
-                reader(buffer.Memory.Span.Slice(0, position), arg);
-            }
-        }
+            => CopyTo(new DelegatingReadOnlySpanConsumer<byte, TArg>(reader, arg), bufferSize, token);
 
         /// <summary>
         /// Drains buffered content asynchronously.
@@ -655,19 +641,8 @@ namespace DotNext.IO
         /// <typeparam name="TArg">The type of the argument to be passed to the callback.</typeparam>
         /// <returns>The task representing asynchronous execution of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public async Task CopyToAsync<TArg>(ReadOnlySpanAction<byte, TArg> reader, TArg arg, int bufferSize = 1024, CancellationToken token = default)
-        {
-            if (fileBackend != null)
-            {
-                fileBackend.Position = 0L;
-                await fileBackend.ReadAsync(reader, arg, bufferSize, token).ConfigureAwait(false);
-            }
-
-            if (buffer.Length > 0 && position > 0)
-            {
-                reader(buffer.Memory.Span.Slice(0, position), arg);
-            }
-        }
+        public Task CopyToAsync<TArg>(ReadOnlySpanAction<byte, TArg> reader, TArg arg, int bufferSize = 1024, CancellationToken token = default)
+            => CopyToAsync(new DelegatingReadOnlySpanConsumer<byte, TArg>(reader, arg), bufferSize, token);
 
         /// <summary>
         /// Drains buffered content to the memory block synchronously.
@@ -677,7 +652,7 @@ namespace DotNext.IO
         public int CopyTo(Span<byte> output)
         {
             var totalBytes = 0;
-            if (fileBackend != null)
+            if (fileBackend is not null)
             {
                 var currentPos = fileBackend.Position;
                 fileBackend.Position = 0L;
@@ -704,7 +679,7 @@ namespace DotNext.IO
         public async Task<int> CopyToAsync(Memory<byte> output, CancellationToken token = default)
         {
             var totalBytes = 0;
-            if (fileBackend != null)
+            if (fileBackend is not null)
             {
                 var currentPos = fileBackend.Position;
                 fileBackend.Position = 0L;
@@ -862,7 +837,7 @@ namespace DotNext.IO
         /// <inheritdoc/>
         public override async ValueTask DisposeAsync()
         {
-            if (fileBackend != null)
+            if (fileBackend is not null)
             {
                 await fileBackend.DisposeAsync().ConfigureAwait(false);
                 fileBackend = null;

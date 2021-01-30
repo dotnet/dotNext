@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -48,18 +47,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal static int Size => Unsafe.SizeOf<SnapshotMetadata>();
         }
 
-        private abstract class ConcurrentStorageAccess : FileStream
+        private abstract class ConcurrentStorageAccess : Stream, IFlushable
         {
+            // do not derive from FileStream because some virtual methods
+            // assumes that they are overridden and do async calls inefficiently
+            private readonly FileStream fs;
             private readonly StreamSegment[] readers;   // a pool of read-only streams that can be shared between multiple readers in parallel
 
-            [SuppressMessage("Reliability", "CA2000", Justification = "All streams are disposed in Dispose method")]
             private protected ConcurrentStorageAccess(string fileName, int bufferSize, int readersCount, FileOptions options)
-                : base(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, bufferSize, options)
             {
+                fs = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, bufferSize, options);
                 readers = new StreamSegment[readersCount];
                 if (readersCount == 1)
                 {
-                    readers[0] = new StreamSegment(this, true);
+                    readers[0] = new StreamSegment(fs, true);
                 }
                 else
                 {
@@ -67,6 +68,92 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         reader = new StreamSegment(new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, bufferSize, FileOptions.Asynchronous | FileOptions.RandomAccess), false);
                 }
             }
+
+            public sealed override bool CanRead => fs.CanRead;
+
+            public sealed override bool CanWrite => fs.CanWrite;
+
+            public sealed override bool CanSeek => fs.CanSeek;
+
+            public sealed override bool CanTimeout => fs.CanTimeout;
+
+            public sealed override long Length => fs.Length;
+
+            public sealed override long Position
+            {
+                get => fs.Position;
+                set => fs.Position = value;
+            }
+
+            public sealed override int ReadTimeout
+            {
+                get => fs.ReadTimeout;
+                set => fs.ReadTimeout = value;
+            }
+
+            public sealed override int WriteTimeout
+            {
+                get => fs.WriteTimeout;
+                set => fs.WriteTimeout = value;
+            }
+
+            public sealed override void SetLength(long length) => fs.SetLength(length);
+
+            public sealed override long Seek(long offset, SeekOrigin origin)
+                => fs.Seek(offset, origin);
+
+            public sealed override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
+                => fs.BeginRead(buffer, offset, count, callback, state);
+
+            public sealed override int EndRead(IAsyncResult asyncResult)
+                => fs.EndRead(asyncResult);
+
+            public sealed override int Read(Span<byte> buffer)
+                => fs.Read(buffer);
+
+            public sealed override int Read(byte[] buffer, int offset, int count)
+                => fs.Read(buffer, offset, count);
+
+            public sealed override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken token)
+                => fs.ReadAsync(buffer, offset, count, token);
+
+            public sealed override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken token)
+                => fs.ReadAsync(buffer, token);
+
+            public sealed override int ReadByte() => fs.ReadByte();
+
+            public sealed override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
+                => fs.BeginWrite(buffer, offset, count, callback, state);
+
+            public sealed override void EndWrite(IAsyncResult asyncResult)
+                => fs.EndWrite(asyncResult);
+
+            public sealed override void Write(ReadOnlySpan<byte> buffer)
+                => fs.Write(buffer);
+
+            public sealed override void Write(byte[] buffer, int offset, int count)
+                => fs.Write(buffer, offset, count);
+
+            public sealed override void WriteByte(byte value)
+                => fs.WriteByte(value);
+
+            public sealed override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+                => fs.WriteAsync(buffer, offset, count, cancellationToken);
+
+            public sealed override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)
+                => fs.WriteAsync(buffer, cancellationToken);
+
+            public sealed override Task CopyToAsync(Stream destination, int bufferSize, CancellationToken cancellationToken)
+                => fs.CopyToAsync(destination, bufferSize, cancellationToken);
+
+            public sealed override void CopyTo(Stream destination, int bufferSize)
+                => fs.CopyTo(destination, bufferSize);
+
+            public sealed override Task FlushAsync(CancellationToken token = default) => fs.FlushAsync(token);
+
+            public sealed override void Flush() => fs.Flush(true);
+
+            internal string FileName => fs.Name;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private protected StreamSegment GetReadSessionStream(in DataAccessSession session) => readers[session.SessionId];
@@ -85,6 +172,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         reader?.Dispose();
                         reader = null;
                     }
+
+                    fs.Dispose();
                 }
 
                 base.Dispose(disposing);
@@ -94,12 +183,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 foreach (Stream? reader in readers)
                 {
-                    if (reader != null)
+                    if (reader is not null)
                         await reader.DisposeAsync().ConfigureAwait(false);
                 }
 
                 Array.Clear(readers, 0, readers.Length);
-                await base.DisposeAsync().ConfigureAwait(false);
+                await fs.DisposeAsync().ConfigureAwait(false);
                 base.Dispose(true);
             }
         }

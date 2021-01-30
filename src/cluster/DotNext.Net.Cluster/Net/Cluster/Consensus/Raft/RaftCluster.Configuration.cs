@@ -35,7 +35,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             private protected NodeConfiguration(IPEndPoint hostAddress)
             {
-                electionTimeout = ElectionTimeout.Recommended;
+                electionTimeout = Raft.ElectionTimeout.Recommended;
                 heartbeatThreshold = 0.5D;
                 Metadata = new Dictionary<string, string>();
                 Members = new HashSet<IPEndPoint>();
@@ -54,7 +54,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             /// <summary>
-            /// Gets the address used for hosting of local member.
+            /// Gets the address used for hosting local member.
             /// </summary>
             public IPEndPoint HostEndPoint { get; }
 
@@ -192,6 +192,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// </summary>
             /// <value>The collection of cluster members.</value>
             public ICollection<IPEndPoint> Members { get; }
+
+            /// <summary>
+            /// Gets or sets a value indicating that the cluster member
+            /// represents standby node which is never become a leader.
+            /// </summary>
+            public bool Standby { get; set; }
 
             private protected Func<int, ExchangePool> ExchangePoolFactory(ILocalMember localMember)
             {

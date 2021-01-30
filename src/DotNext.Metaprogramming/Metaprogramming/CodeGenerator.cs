@@ -9,7 +9,9 @@ using System.Threading.Tasks;
 namespace DotNext.Metaprogramming
 {
     using Linq.Expressions;
+    using LambdaExpressionTree = System.Linq.Expressions.LambdaExpression;
     using Seq = Collections.Generic.Sequence;
+    using TaskType = Runtime.CompilerServices.TaskType;
 
     /// <summary>
     /// Represents code generator.
@@ -745,7 +747,8 @@ namespace DotNext.Metaprogramming
         /// <typeparam name="TException">The exception to be thrown.</typeparam>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void Throw<TException>()
-            where TException : Exception, new() => Throw(Expression.New(typeof(TException).GetConstructor(Array.Empty<Type>())));
+            where TException : Exception, new()
+            => Throw(Expression.New(typeof(TException)));
 
         /// <summary>
         /// Adds re-throw statement.
@@ -1321,5 +1324,44 @@ namespace DotNext.Metaprogramming
             using var statement = new AsyncLambdaExpression<TDelegate>();
             return statement.Build(body);
         }
+
+        private static LambdaExpressionTree AsyncLambda<TScope>(Type[] parameters, Type returnType, bool isValueTask, TScope scope)
+            where TScope : MulticastDelegate
+        {
+            var args = parameters.Concat(new Type[] { new TaskType(returnType, isValueTask) }, parameters.LongLength);
+            var type = LambdaExpressionTree.GetDelegateType(args);
+            type = typeof(AsyncLambdaExpression<>).MakeGenericType(type);
+            using var expression = (LambdaExpression?)Activator.CreateInstance(type);
+            Debug.Assert(expression is ILexicalScope<LambdaExpressionTree, TScope>);
+            return ((ILexicalScope<LambdaExpressionTree, TScope>)expression).Build(scope);
+        }
+
+        /// <summary>
+        /// Constructs multi-line async lambda function capturing the current lexical scope.
+        /// </summary>
+        /// <param name="parameters">The parameters.</param>
+        /// <param name="returnType">The return type. Pass <c>typeof(void)</c> for void return type.</param>
+        /// <param name="isValueTask"><see langword="true"/> to use <see cref="ValueTask"/> as an actual return type; <see langword="false"/> to use <see cref="Task"/>.</param>
+        /// <param name="body">Lambda function builder.</param>
+        /// <returns>Constructed lambda expression.</returns>
+        /// <seealso cref="AwaitExpression"/>
+        /// <seealso cref="AsyncResultExpression"/>
+        /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/async/#BKMK_HowtoWriteanAsyncMethod">Async methods</seealso>
+        public static LambdaExpressionTree AsyncLambda(Type[] parameters, Type returnType, bool isValueTask, Action<LambdaContext> body)
+            => AsyncLambda<Action<LambdaContext>>(parameters, returnType, isValueTask, body);
+
+        /// <summary>
+        /// Constructs multi-line async lambda function capturing the current lexical scope.
+        /// </summary>
+        /// <param name="parameters">The parameters.</param>
+        /// <param name="returnType">The return type. Pass <c>typeof(void)</c> for void return type.</param>
+        /// <param name="isValueTask"><see langword="true"/> to use <see cref="ValueTask"/> as an actual return type; <see langword="false"/> to use <see cref="Task"/>.</param>
+        /// <param name="body">Lambda function builder.</param>
+        /// <returns>Constructed lambda expression.</returns>
+        /// <seealso cref="AwaitExpression"/>
+        /// <seealso cref="AsyncResultExpression"/>
+        /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/async/#BKMK_HowtoWriteanAsyncMethod">Async methods</seealso>
+        public static LambdaExpressionTree AsyncLambda(Type[] parameters, Type returnType, bool isValueTask, Action<LambdaContext, ParameterExpression> body)
+            => AsyncLambda<Action<LambdaContext, ParameterExpression>>(parameters, returnType, isValueTask, body);
     }
 }

@@ -1,12 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using static InlineIL.IL;
-using static InlineIL.IL.Emit;
-using static InlineIL.MethodRef;
-using static InlineIL.TypeRef;
 
 namespace DotNext.IO
 {
@@ -15,6 +12,9 @@ namespace DotNext.IO
     /// </summary>
     public interface IFlushable
     {
+        private static readonly Action<object> FlushableFlush = UnsafeFlush;
+        private static readonly Func<object, CancellationToken, Task> FlushableFlushAsync = UnsafeFlushAsync;
+
         /// <summary>
         /// Flushes this stream by writing any buffered output to the underlying stream.
         /// </summary>
@@ -28,48 +28,38 @@ namespace DotNext.IO
         /// <returns>The task representing state of asynchronous execution.</returns>
         Task FlushAsync(CancellationToken token = default) => Task.Factory.StartNew(Flush, token, TaskCreationOptions.None, TaskScheduler.Current);
 
-        private static Action<object> ReflectFlushMethod(object obj)
+        private static void UnsafeFlush(object writer)
         {
-            Debug.Assert(obj is IFlushable);
-            Ldnull();
-            Push(obj);
-            Ldvirtftn(Method(Type<IFlushable>(), nameof(IFlushable.Flush)));
-            Newobj(Constructor(Type<Action<object>>(), Type<object>(), Type<IntPtr>()));
-            return Return<Action<object>>();
+            Debug.Assert(writer is IFlushable);
+            Unsafe.As<IFlushable>(writer).Flush();
         }
 
-        private static Func<object, CancellationToken, Task> ReflectAsyncFlushMethod(object obj)
+        private static Task UnsafeFlushAsync(object writer, CancellationToken token)
         {
-            Debug.Assert(obj is IFlushable);
-            Ldnull();
-            Push(obj);
-            Ldvirtftn(Method(Type<IFlushable>(), nameof(IFlushable.FlushAsync)));
-            Newobj(Constructor(Type<Func<object, CancellationToken, Task>>(), Type<object>(), Type<IntPtr>()));
-            return Return<Func<object, CancellationToken, Task>>();
+            Debug.Assert(writer is IFlushable);
+            return Unsafe.As<IFlushable>(writer).FlushAsync(token);
         }
 
         /// <summary>
-        /// Creates open delegate for <see cref="Flush"/> method if the specified
-        /// object implements <see cref="IFlushable"/> interface.
+        /// Checks if the specified object implements <see cref="IFlushable"/> interface
+        /// and modifies the callbacks.
         /// </summary>
-        /// <param name="obj">The instance of the type that potentially implements <see cref="IFlushable"/> interface.</param>
-        /// <typeparam name="T">The type that potentially implements <see cref="IFlushable"/> interface.</typeparam>
-        /// <returns>Open delegate representing <see cref="Flush"/> method.</returns>
+        /// <remarks>
+        /// This method is not intended to be used directly in application code.
+        /// </remarks>
+        /// <param name="obj">The object possibly implementing <see cref="IFlushable"/> interface.</param>
+        /// <param name="flush">The delegate representing synchronous flush operation.</param>
+        /// <param name="flushAsync">The delegate representing asynchronous flush operation.</param>
+        /// <typeparam name="T">The type of the object.</typeparam>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public static Action<T>? TryReflectFlushMethod<T>(T obj)
+        public static void DiscoverFlushMethods<T>(T? obj, ref Action<T>? flush, ref Func<T, CancellationToken, Task>? flushAsync)
             where T : class
-            => obj is IFlushable ? ReflectFlushMethod(obj) : null;
-
-        /// <summary>
-        /// Creates open delegate for <see cref="FlushAsync(CancellationToken)"/> method if the specified
-        /// object implements <see cref="IFlushable"/> interface.
-        /// </summary>
-        /// <param name="obj">The instance of the type that potentially implements <see cref="IFlushable"/> interface.</param>
-        /// <typeparam name="T">The type that potentially implements <see cref="IFlushable"/> interface.</typeparam>
-        /// <returns>Open delegate representing <see cref="FlushAsync(CancellationToken)"/> method.</returns>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static Func<T, CancellationToken, Task>? TryReflectAsyncFlushMethod<T>(T obj)
-            where T : class
-            => obj is IFlushable ? ReflectAsyncFlushMethod(obj) : null;
+        {
+            if (obj is IFlushable)
+            {
+                flush ??= FlushableFlush;
+                flushAsync ??= FlushableFlushAsync;
+            }
+        }
     }
 }

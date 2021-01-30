@@ -1,9 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	  <TargetFramework>netcoreapp3.1</TargetFramework>
+	  <TargetFrameworks>net5.0;netcoreapp3.1</TargetFrameworks>
     <RootNamespace>DotNext</RootNamespace>
-    <Version>2.12.0</Version>
+    <LangVersion>latest</LangVersion>
+    <EnableNETAnalyzers>false</EnableNETAnalyzers>
+    <Version>3.0.0</Version>
     <IsPackable>false</IsPackable>
     <Authors>Roman Sakno</Authors>
     <Product>.NEXT Family of Libraries</Product>
@@ -22,24 +24,68 @@
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.3" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Resources.Extensions" Version="4.7.1" />
+    <PackageReference Include="System.Resources.Extensions" Version="5.0.0" />
+    <ProjectReference Include="..\VisualBasicElements\VisualBasicElements.vbproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\aug\DotNext.Augmentation.Test\DotNext.Augmentation.Test.csproj" />
-    <ProjectReference Include="..\cluster\DotNext.AspNetCore.Cluster\DotNext.AspNetCore.Cluster.csproj" />
-    <ProjectReference Include="..\DotNext.Reflection\DotNext.Reflection.csproj" />
-    <ProjectReference Include="..\DotNext.Metaprogramming\DotNext.Metaprogramming.csproj" />
-    <ProjectReference Include="..\DotNext.Threading\DotNext.Threading.csproj" />
-    <ProjectReference Include="..\DotNext.Unsafe\DotNext.Unsafe.csproj" />
-    <ProjectReference Include="..\DotNext\DotNext.csproj" />
-    <ProjectReference Include="..\VisualBasicElements\VisualBasicElements.vbproj" />
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
+    <ProjectReference Include="..\cluster\DotNext.AspNetCore.Cluster\DotNext.AspNetCore.Cluster.csproj">
+      <SetTargetFramework>TargetFramework=netcoreapp3.1</SetTargetFramework>
+    </ProjectReference>
+    <ProjectReference Include="..\cluster\DotNext.Net.Cluster\DotNext.Net.Cluster.csproj">
+      <SetTargetFramework>TargetFramework=netstandard2.1</SetTargetFramework>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNext.IO\DotNext.IO.csproj">
+      <SetTargetFramework>TargetFramework=netstandard2.1</SetTargetFramework>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNext.Reflection\DotNext.Reflection.csproj">
+      <SetTargetFramework>TargetFramework=netstandard2.1</SetTargetFramework>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNext.Metaprogramming\DotNext.Metaprogramming.csproj">
+      <SetTargetFramework>TargetFramework=netstandard2.1</SetTargetFramework>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNext.Threading\DotNext.Threading.csproj">
+      <SetTargetFramework>TargetFramework=netstandard2.1</SetTargetFramework>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNext.Unsafe\DotNext.Unsafe.csproj">
+      <SetTargetFramework>TargetFramework=netstandard2.1</SetTargetFramework>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNext\DotNext.csproj">
+      <SetTargetFramework>TargetFramework=netstandard2.1</SetTargetFramework>
+    </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' != 'netcoreapp3.1'">
+    <ProjectReference Include="..\cluster\DotNext.AspNetCore.Cluster\DotNext.AspNetCore.Cluster.csproj">
+      <SetTargetFramework>TargetFramework=net5.0</SetTargetFramework>
+    </ProjectReference>
+    <ProjectReference Include="..\cluster\DotNext.Net.Cluster\DotNext.Net.Cluster.csproj">
+      <SetTargetFramework>TargetFramework=net5.0</SetTargetFramework>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNext.IO\DotNext.IO.csproj">
+      <SetTargetFramework>TargetFramework=net5.0</SetTargetFramework>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNext.Reflection\DotNext.Reflection.csproj">
+      <SetTargetFramework>TargetFramework=net5.0</SetTargetFramework>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNext.Metaprogramming\DotNext.Metaprogramming.csproj">
+      <SetTargetFramework>TargetFramework=net5.0</SetTargetFramework>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNext.Threading\DotNext.Threading.csproj">
+      <SetTargetFramework>TargetFramework=net5.0</SetTargetFramework>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNext.Unsafe\DotNext.Unsafe.csproj">
+      <SetTargetFramework>TargetFramework=net5.0</SetTargetFramework>
+    </ProjectReference>
+    <ProjectReference Include="..\DotNext\DotNext.csproj">
+      <SetTargetFramework>TargetFramework=net5.0</SetTargetFramework>
+    </ProjectReference>
   </ItemGroup>
 
   <ItemGroup>

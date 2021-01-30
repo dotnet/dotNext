@@ -1,4 +1,6 @@
 using System;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Threading;
 
@@ -93,10 +95,15 @@ namespace DotNext.Linq.Expressions
         /// using Lowering technique.
         /// </summary>
         /// <returns>Translated expression.</returns>
+#if !NETSTANDARD2_1
+        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicMethods, typeof(Monitor))]
+#endif
         public override Expression Reduce()
         {
             var monitorEnter = typeof(Monitor).GetMethod(nameof(Monitor.Enter), new[] { typeof(object) });
+            Debug.Assert(monitorEnter is not null);
             var monitorExit = typeof(Monitor).GetMethod(nameof(Monitor.Exit), new[] { typeof(object) });
+            Debug.Assert(monitorExit is not null);
             var body = TryFinally(Body, Call(monitorExit, SyncRoot));
             return assignment is null ?
                     Block(Call(monitorEnter, SyncRoot), body) :

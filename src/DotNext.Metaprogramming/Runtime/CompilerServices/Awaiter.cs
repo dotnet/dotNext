@@ -1,10 +1,15 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using static System.Linq.Expressions.Expression;
 
 namespace DotNext.Runtime.CompilerServices
 {
+#if NETSTANDARD2_1
     internal static class Awaiter<TAwaiter>
+#else
+    internal static class Awaiter<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] TAwaiter>
+#endif
         where TAwaiter : INotifyCompletion
     {
         internal delegate bool IsCompletedGetter(ref TAwaiter awaiter);
@@ -23,7 +28,7 @@ namespace DotNext.Runtime.CompilerServices
             }
             else if (awaiterType.IsValueType)
             {
-                IsCompleted = isCompletedProperty.GetMethod.CreateDelegate<IsCompletedGetter>();
+                IsCompleted = isCompletedProperty.GetMethod?.CreateDelegate<IsCompletedGetter>() ?? NotCompleted;
             }
             else
             {

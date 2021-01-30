@@ -99,10 +99,14 @@ namespace DotNext.Threading
         {
             using var sharedLock = new AsyncSharedLock(3);
             True(sharedLock.TryAcquire(true));
+            True(sharedLock.IsLockHeld);
+            True(sharedLock.IsStrongLockHeld);
             Equal(0, sharedLock.RemainingCount);
             False(sharedLock.TryAcquire(false));
             sharedLock.Downgrade();
             Equal(2, sharedLock.RemainingCount);
+            False(sharedLock.IsStrongLockHeld);
+            True(sharedLock.IsLockHeld);
             sharedLock.Release();
             Equal(3, sharedLock.RemainingCount);
         }
@@ -115,6 +119,7 @@ namespace DotNext.Threading
             Equal(2, sharedLock.RemainingCount);
             sharedLock.Downgrade();
             False(sharedLock.IsLockHeld);
+            False(sharedLock.IsStrongLockHeld);
             Throws<SynchronizationLockException>(sharedLock.Downgrade);
         }
 

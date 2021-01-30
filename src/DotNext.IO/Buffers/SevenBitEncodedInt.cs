@@ -5,11 +5,6 @@ namespace DotNext.Buffers
 {
     internal static class SevenBitEncodedInt
     {
-        internal interface IWriter
-        {
-            void WriteByte(byte value);
-        }
-
         [StructLayout(LayoutKind.Auto)]
         internal struct Reader
         {
@@ -29,15 +24,15 @@ namespace DotNext.Buffers
         }
 
         internal static void Encode<TWriter>(ref TWriter writer, uint value)
-            where TWriter : struct, IWriter
+            where TWriter : struct, IConsumer<byte>
         {
             while (value >= 0x80U)
             {
-                writer.WriteByte((byte)(value | 0x80U));
+                writer.Invoke((byte)(value | 0x80U));
                 value >>= 7;
             }
 
-            writer.WriteByte((byte)value);
+            writer.Invoke((byte)value);
         }
     }
 }

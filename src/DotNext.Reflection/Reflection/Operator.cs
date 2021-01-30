@@ -100,10 +100,7 @@ namespace DotNext.Reflection
         {
             switch (Type.GetTypeCode(operand.Argument.Type))
             {
-                case TypeCode.Byte:
-                case TypeCode.UInt16:
-                case TypeCode.SByte:
-                case TypeCode.Int16:
+                case TypeCode.Byte or TypeCode.UInt16 or TypeCode.SByte or TypeCode.Int16:
                     operand = new Operand(operand.Source, typeof(int));
                     return true;
                 default:
@@ -146,7 +143,7 @@ namespace DotNext.Reflection
         private protected abstract Type DeclaringType { get; }
 
         /// <inheritdoc/>
-        MemberInfo IMember<MemberInfo>.RuntimeMember => Method ?? (MemberInfo)new BuiltinOperatorInfo(DeclaringType, Type);
+        MemberInfo IMember<MemberInfo>.Metadata => Method ?? (MemberInfo)new BuiltinOperatorInfo(DeclaringType, Type);
 
         /// <inheritdoc/>
         TSignature IMember<MemberInfo, TSignature>.Invoker => Invoker;
@@ -221,8 +218,7 @@ namespace DotNext.Reflection
     /// <typeparam name="TOperand">Type of operand.</typeparam>
     /// <typeparam name="TResult">Type of operator result.</typeparam>
     /// <returns>Result of unary operation.</returns>
-    [return: MaybeNull]
-    public delegate TResult Operator<TOperand, out TResult>(in TOperand operand);
+    public delegate TResult? Operator<TOperand, out TResult>(in TOperand operand);
 
     /// <summary>
     /// Represents binary operator.
@@ -233,6 +229,5 @@ namespace DotNext.Reflection
     /// <typeparam name="T2">Type of second operand.</typeparam>
     /// <typeparam name="TResult">Type of operator result.</typeparam>
     /// <returns>Result of binary operator.</returns>
-    [return: MaybeNull]
-    public delegate TResult Operator<T1, T2, out TResult>(in T1 first, in T2 second);
+    public delegate TResult? Operator<T1, T2, out TResult>(in T1 first, in T2 second);
 }

@@ -17,12 +17,12 @@ namespace DotNext.Reflection
         ExpressionType Type { get; }
 
         /// <inheritdoc/>
-        object[] ICustomAttributeProvider.GetCustomAttributes(bool inherit) => RuntimeMember.GetCustomAttributes(inherit);
+        object[] ICustomAttributeProvider.GetCustomAttributes(bool inherit) => Metadata.GetCustomAttributes(inherit);
 
         /// <inheritdoc/>
-        object[] ICustomAttributeProvider.GetCustomAttributes(Type attributeType, bool inherit) => RuntimeMember.GetCustomAttributes(attributeType, inherit);
+        object[] ICustomAttributeProvider.GetCustomAttributes(Type attributeType, bool inherit) => Metadata.GetCustomAttributes(attributeType, inherit);
 
         /// <inheritdoc/>
-        bool ICustomAttributeProvider.IsDefined(Type attributeType, bool inherit) => RuntimeMember.IsDefined(attributeType, inherit);
+        bool ICustomAttributeProvider.IsDefined(Type attributeType, bool inherit) => Metadata.IsDefined(attributeType, inherit);
     }
 }

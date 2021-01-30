@@ -45,7 +45,7 @@ namespace DotNext.Collections.Generic
                 {"a", 1 },
                 {"b", 2 }
             };
-            var view = dict.ConvertValues(i => i + 10);
+            var view = dict.ConvertValues(static i => i + 10);
             Equal(11, view["a"]);
             Equal(12, view["b"]);
         }
@@ -58,7 +58,7 @@ namespace DotNext.Collections.Generic
                 {"one", "1" },
                 {"two", "2" }
             };
-            var view = new ReadOnlyDictionaryView<string, string, int>(dict, new ValueFunc<string, int>(int.Parse));
+            var view = new ReadOnlyDictionaryView<string, string, int>(dict, new Converter<string, int>(int.Parse));
             Equal(1, view["one"]);
             Equal(2, view["two"]);
             True(view.TryGetValue("one", out var i));
@@ -103,8 +103,8 @@ namespace DotNext.Collections.Generic
             };
             Equal("One", dict.GetOrAdd(1, "Three"));
             Equal("Three", dict.GetOrAdd(3, "Three"));
-            Equal("Two", dict.GetOrAdd(2, key => "Three"));
-            Equal("Four", dict.GetOrAdd(4, key => "Four"));
+            Equal("Two", dict.GetOrAdd(2, static key => "Three"));
+            Equal("Four", dict.GetOrAdd(4, static key => "Four"));
             Equal("One", dict.GetOrInvoke(1, () => "Two"));
             Equal("Alt", dict.GetOrInvoke(10, () => "Alt"));
         }

@@ -1,5 +1,4 @@
 using System;
-using System.Buffers;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers
@@ -13,8 +12,13 @@ namespace DotNext.Buffers
     /// implementation of this interface in your code.
     /// </remarks>
     /// <typeparam name="T">The type of the elements in the buffer.</typeparam>
-    public interface IGrowableBuffer<T> : IDisposable // TODO: Must be replaced with shape in future versions of C#
+    public interface IGrowableBuffer<T> : IReadOnlySpanConsumer<T>, IDisposable
     {
+        /// <summary>
+        /// Represents default initial buffer size.
+        /// </summary>
+        private const int DefaultInitialBufferSize = 128;
+
         /// <summary>
         /// Gets the number of written elements.
         /// </summary>
@@ -35,6 +39,10 @@ namespace DotNext.Buffers
         /// <exception cref="ObjectDisposedException">The writer has been disposed.</exception>
         void Write(ReadOnlySpan<T> input);
 
+        /// <inheritdoc />
+        void IReadOnlySpanConsumer<T>.Invoke(ReadOnlySpan<T> input)
+            => Write(input);
+
         /// <summary>
         /// Writes single element to this buffer.
         /// </summary>
@@ -48,11 +56,11 @@ namespace DotNext.Buffers
         /// <remarks>
         /// The callback may be called multiple times.
         /// </remarks>
-        /// <param name="callback">The callback used to accept the memory representing the contents of this builder.</param>
-        /// <param name="arg">The argument to be passed to the callback.</param>
-        /// <typeparam name="TArg">The type of the object that represents the state.</typeparam>
+        /// <param name="consumer">The callback used to accept the memory representing the contents of this builder.</param>
+        /// <typeparam name="TConsumer">The type of the object that represents the consumer.</typeparam>
         /// <exception cref="ObjectDisposedException">The writer has been disposed.</exception>
-        void CopyTo<TArg>(ReadOnlySpanAction<T, TArg> callback, TArg arg);
+        void CopyTo<TConsumer>(TConsumer consumer)
+            where TConsumer : notnull, IReadOnlySpanConsumer<T>;
 
         /// <summary>
         /// Copies the contents of this writer to the specified memory block.
@@ -67,5 +75,32 @@ namespace DotNext.Buffers
         /// </summary>
         /// <exception cref="ObjectDisposedException">The writer has been disposed.</exception>
         void Clear();
+
+        internal static int? GetBufferSize(int sizeHint, int capacity, int writtenCount)
+        {
+            if (sizeHint < 0)
+                throw new ArgumentOutOfRangeException(nameof(sizeHint));
+
+            if (sizeHint == 0)
+                sizeHint = 1;
+
+            if (sizeHint > capacity - writtenCount)
+            {
+                var growBy = Math.Max(capacity, sizeHint);
+                if (capacity == 0)
+                    growBy = Math.Max(growBy, DefaultInitialBufferSize);
+                var newSize = capacity + growBy;
+                if ((uint)newSize > int.MaxValue)
+                {
+                    newSize = capacity + sizeHint;
+                    if ((uint)newSize > int.MaxValue)
+                        throw new InsufficientMemoryException();
+                }
+
+                return newSize;
+            }
+
+            return null;
+        }
     }
 }

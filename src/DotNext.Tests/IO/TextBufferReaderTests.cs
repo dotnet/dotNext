@@ -53,7 +53,7 @@ namespace DotNext.IO
         [MemberData(nameof(SmallDataSet))]
         public static void EndOfStream(ReadOnlySequence<char> smallData)
         {
-            using var tr = new TextBufferReader(smallData);
+            using var tr = smallData.AsTextReader();
             var result = tr.ReadToEnd();
             Equal("HELLO", result);
             True(tr.Peek() == -1, "End of TextReader was not true after ReadToEnd");
@@ -63,7 +63,7 @@ namespace DotNext.IO
         [MemberData(nameof(SmallDataSet))]
         public void NotEndOfStream(ReadOnlySequence<char> smallData)
         {
-            using var tr = new TextBufferReader(smallData);
+            using var tr = smallData.AsTextReader();
             char[] charBuff = new char[3];
             var result = tr.Read(charBuff, 0, 3);
             Equal(3, result);
@@ -75,7 +75,7 @@ namespace DotNext.IO
         [MemberData(nameof(LargeDataSet))]
         public static async Task ReadToEndAsync(ReadOnlySequence<char> largeData)
         {
-            using var tr = new TextBufferReader(largeData);
+            using var tr = largeData.AsTextReader();
             var result = await tr.ReadToEndAsync();
             Equal(5000, result.Length);
         }
@@ -84,7 +84,7 @@ namespace DotNext.IO
         [MemberData(nameof(CharDataSet))]
         public static void TestRead(ReadOnlySequence<char> charData)
         {
-            using var tr = new TextBufferReader(charData);
+            using var tr = charData.AsTextReader();
             var expectedData = charData.ToArray();
             for (var count = 0; count < expectedData.Length; ++count)
             {
@@ -96,14 +96,14 @@ namespace DotNext.IO
         [Fact]
         public static void ReadZeroCharacters()
         {
-            using var tr = new TextBufferReader(CharData);
+            using var tr = new ReadOnlySequence<char>(CharData).AsTextReader();
             Equal(0, tr.Read(new char[0], 0, 0));
         }
 
         [Fact]
         public static void EmptyInput()
         {
-            using var tr = new TextBufferReader(new char[0]);
+            using var tr = ReadOnlySequence<char>.Empty.AsTextReader();
             char[] buffer = new char[10];
             int read = tr.Read(buffer, 0, 1);
             Equal(0, read);
@@ -113,7 +113,7 @@ namespace DotNext.IO
         public static void ReadFromFragmentedBuffer()
         {
             var data = ToReadOnlySequence<char>(SmallData, 3);
-            using var tr = new TextBufferReader(data);
+            using var tr = data.AsTextReader();
             var array = new char[data.Length];
             Equal(3, tr.Read(array, 0, array.Length));
             Equal(new[] { 'H', 'E', 'L'}, array[0..3]);
@@ -127,7 +127,7 @@ namespace DotNext.IO
         public static void ReadBlockFromFragmentedBuffer()
         {
             var data = ToReadOnlySequence<char>(SmallData, 3);
-            using var tr = new TextBufferReader(data);
+            using var tr = data.AsTextReader();
             var array = new char[data.Length];
             Equal(data.Length, tr.ReadBlock(array, 0, array.Length));
             Equal(data.ToArray(), array);
@@ -137,7 +137,7 @@ namespace DotNext.IO
         public static async Task ReadFromFragmentedBufferAsync()
         {
             var data = ToReadOnlySequence<char>(SmallData, 3);
-            using var tr = new TextBufferReader(data);
+            using var tr = data.AsTextReader();
             var array = new char[data.Length];
             Equal(3, await tr.ReadAsync(array, 0, array.Length));
             Equal(new[] { 'H', 'E', 'L'}, array[0..3]);
@@ -151,7 +151,7 @@ namespace DotNext.IO
         public static async Task ReadBlockFromFragmentedBufferAsync()
         {
             var data = ToReadOnlySequence<char>(SmallData, 3);
-            using var tr = new TextBufferReader(data);
+            using var tr = data.AsTextReader();
             var array = new char[data.Length];
             Equal(data.Length, await tr.ReadBlockAsync(array, 0, array.Length));
             Equal(data.ToArray(), array);
@@ -161,7 +161,7 @@ namespace DotNext.IO
         [MemberData(nameof(CharDataSet))]
         public static void ReadLines(ReadOnlySequence<char> charData)
         {
-            using var tr = new TextBufferReader(charData);
+            using var tr = charData.AsTextReader();
             string valueString = new string(charData.ToArray());
             var data = tr.ReadLine();
             Equal("Char data \r\u3190 with", data);
@@ -179,7 +179,7 @@ namespace DotNext.IO
         [MemberData(nameof(CharDataSet))]
         public static async Task ReadLinesAsync(ReadOnlySequence<char> charData)
         {
-            using var tr = new TextBufferReader(charData);
+            using var tr = charData.AsTextReader();
             string valueString = new string(charData.ToArray());
             var data = await tr.ReadLineAsync();
             Equal("Char data \r\u3190 with", data);

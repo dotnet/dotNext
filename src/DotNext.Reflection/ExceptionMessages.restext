@@ -18,3 +18,4 @@ StaticCtorDetected=Unable to reflect static constructor of type or module
 ModuleMemberDetected=Unable to reflect module member {0}
 StaticFieldExpected=Static field expected
 InstanceFieldExpected=Instance field expected
+AwaiterMustNotBeNull=Awaiter object must not be null

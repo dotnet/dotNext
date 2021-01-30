@@ -5,7 +5,7 @@ using System.Diagnostics;
 namespace DotNext.Runtime.CompilerServices
 {
     /// <summary>
-    /// Indicates that the caller of the attributed method should be synchronized.
+    /// Indicates that the caller of the attributed method must be synchronized.
     /// </summary>
     /// <remarks>
     /// This attribute is for internal purposes only.

@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Net;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -7,7 +10,7 @@ using IServer = Microsoft.AspNetCore.Hosting.Server.IServer;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
 {
-    [SuppressMessage("Usage", "CA1812", Justification = "This class is instantiated by DI container")]
+    [SuppressMessage("Performance", "CA1812", Justification = "This class is instantiated by DI container")]
     internal sealed class RaftEmbeddedCluster : RaftHttpCluster
     {
         internal readonly PathString ProtocolPath;
@@ -26,11 +29,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
 
         private protected override RaftClusterMember CreateMember(Uri address)
         {
-            var member = new RaftClusterMember(this, address, new Uri(ProtocolPath.Value, UriKind.Relative));
+            var member = new RaftClusterMember(this, address, new Uri(ProtocolPath.Value.IfNullOrEmpty(RaftEmbeddedClusterMemberConfiguration.DefaultResourcePath), UriKind.Relative));
             ConfigureMember(member);
             return member;
         }
 
-        private protected override Predicate<RaftClusterMember> LocalMemberFinder => server.GetHostingAddresses().Contains;
+        private protected override Task<ICollection<EndPoint>> GetHostingAddressesAsync()
+            => server.GetHostingAddressesAsync();
     }
 }

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -17,16 +16,11 @@ namespace DotNext.Metaprogramming
     {
         private delegate ConditionalExpression PatternMatch(LabelTarget endOfMatch);
 
-        private interface ICaseStatementBuilder
-        {
-            Expression Build(ParameterExpression value);
-        }
-
         internal abstract class MatchStatement<TDelegate> : Statement, ILexicalScope<MatchBuilder, TDelegate>
             where TDelegate : MulticastDelegate
         {
             [StructLayout(LayoutKind.Auto)]
-            private protected readonly struct CaseStatementBuilder : ICaseStatementBuilder
+            private protected readonly struct CaseStatementBuilder : ISupplier<ParameterExpression, Expression>
             {
                 private readonly Action<ParameterExpression> scope;
                 private readonly MatchStatement<TDelegate> statement;
@@ -37,7 +31,7 @@ namespace DotNext.Metaprogramming
                     this.statement = statement;
                 }
 
-                Expression ICaseStatementBuilder.Build(ParameterExpression value)
+                Expression ISupplier<ParameterExpression, Expression>.Invoke(ParameterExpression value)
                 {
                     scope(value);
                     return statement.Build();
@@ -70,7 +64,7 @@ namespace DotNext.Metaprogramming
         private sealed class MatchByMemberStatement : MatchStatement<Action<MemberExpression>>
         {
             [StructLayout(LayoutKind.Auto)]
-            private new readonly struct CaseStatementBuilder : ICaseStatementBuilder
+            private new readonly struct CaseStatementBuilder : ISupplier<ParameterExpression, Expression>
             {
                 private readonly string memberName;
                 private readonly Action<MemberExpression> memberHandler;
@@ -83,7 +77,7 @@ namespace DotNext.Metaprogramming
                     this.statement = statement;
                 }
 
-                Expression ICaseStatementBuilder.Build(ParameterExpression value)
+                Expression ISupplier<ParameterExpression, Expression>.Invoke(ParameterExpression value)
                 {
                     memberHandler(Expression.PropertyOrField(value, memberName));
                     return statement.Build();
@@ -110,7 +104,7 @@ namespace DotNext.Metaprogramming
         private sealed class MatchByTwoMembersStatement : MatchStatement<Action<MemberExpression, MemberExpression>>
         {
             [StructLayout(LayoutKind.Auto)]
-            private new readonly struct CaseStatementBuilder : ICaseStatementBuilder
+            private new readonly struct CaseStatementBuilder : ISupplier<ParameterExpression, Expression>
             {
                 private readonly string memberName1, memberName2;
                 private readonly Action<MemberExpression, MemberExpression> memberHandler;
@@ -124,7 +118,7 @@ namespace DotNext.Metaprogramming
                     this.statement = statement;
                 }
 
-                Expression ICaseStatementBuilder.Build(ParameterExpression value)
+                Expression ISupplier<ParameterExpression, Expression>.Invoke(ParameterExpression value)
                 {
                     memberHandler(Expression.PropertyOrField(value, memberName1), Expression.PropertyOrField(value, memberName2));
                     return statement.Build();
@@ -153,7 +147,7 @@ namespace DotNext.Metaprogramming
         private sealed class MatchByThreeMembersStatement : MatchStatement<Action<MemberExpression, MemberExpression, MemberExpression>>
         {
             [StructLayout(LayoutKind.Auto)]
-            private new readonly struct CaseStatementBuilder : ICaseStatementBuilder
+            private new readonly struct CaseStatementBuilder : ISupplier<ParameterExpression, Expression>
             {
                 private readonly string memberName1, memberName2, memberName3;
                 private readonly Action<MemberExpression, MemberExpression, MemberExpression> memberHandler;
@@ -168,7 +162,7 @@ namespace DotNext.Metaprogramming
                     this.statement = statement;
                 }
 
-                Expression ICaseStatementBuilder.Build(ParameterExpression value)
+                Expression ISupplier<ParameterExpression, Expression>.Invoke(ParameterExpression value)
                 {
                     memberHandler(Expression.PropertyOrField(value, memberName1), Expression.PropertyOrField(value, memberName2), Expression.PropertyOrField(value, memberName3));
                     return statement.Build();
@@ -245,21 +239,17 @@ namespace DotNext.Metaprogramming
         public delegate Expression CaseStatement(ParameterExpression value);
 
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct CaseStatementBuilder : ICaseStatementBuilder
+        private readonly struct CaseStatementBuilder : ISupplier<ParameterExpression, Expression>
         {
             private readonly CaseStatement statement;
 
             private CaseStatementBuilder(CaseStatement statement) => this.statement = statement;
 
-            Expression ICaseStatementBuilder.Build(ParameterExpression value) => statement(value);
-
-            [SuppressMessage("Usage", "CA1801", Justification = "Required by delegate signature")]
-            internal static Expression Build(Expression result, ParameterExpression value) => result;
+            Expression ISupplier<ParameterExpression, Expression>.Invoke(ParameterExpression value) => statement(value);
 
             public static implicit operator CaseStatementBuilder(CaseStatement statement) => new CaseStatementBuilder(statement);
         }
 
-        private static readonly MethodInfo PlainCaseStatementBuilder = new Func<Expression, ParameterExpression, Expression>(CaseStatementBuilder.Build).Method;
         private readonly ParameterExpression value;
         private readonly BinaryExpression? assignment;
         private readonly ICollection<PatternMatch> patterns;
@@ -280,53 +270,50 @@ namespace DotNext.Metaprogramming
             }
         }
 
-        private static CaseStatement MakeCaseStatement(Expression value)
-            => PlainCaseStatementBuilder.CreateDelegate<CaseStatement>(value);
-
         private static PatternMatch MatchByCondition<TBuilder>(ParameterExpression value, Pattern condition, TBuilder builder)
-            where TBuilder : struct, ICaseStatementBuilder
+            where TBuilder : struct, ISupplier<ParameterExpression, Expression>
         {
             var test = condition(value);
-            var body = builder.Build(value);
+            var body = builder.Invoke(value);
             return endOfMatch => Expression.IfThen(test, endOfMatch.Goto(body));
         }
 
         private MatchBuilder MatchByCondition<TBuilder>(Pattern condition, TBuilder builder)
-            where TBuilder : struct, ICaseStatementBuilder
+            where TBuilder : struct, ISupplier<ParameterExpression, Expression>
         {
             patterns.Add(MatchByCondition(value, condition, builder));
             return this;
         }
 
         private static PatternMatch MatchByType<TBuilder>(ParameterExpression value, Type expectedType, TBuilder builder)
-            where TBuilder : struct, ICaseStatementBuilder
+            where TBuilder : struct, ISupplier<ParameterExpression, Expression>
         {
             var test = value.InstanceOf(expectedType);
             var typedValue = Expression.Variable(expectedType);
-            var body = builder.Build(typedValue);
+            var body = builder.Invoke(typedValue);
             return endOfMatch => Expression.IfThen(test, Expression.Block(Seq.Singleton(typedValue), typedValue.Assign(value.Convert(expectedType)), endOfMatch.Goto(body)));
         }
 
         private MatchBuilder MatchByType<TBuilder>(Type expectedType, TBuilder builder)
-            where TBuilder : struct, ICaseStatementBuilder
+            where TBuilder : struct, ISupplier<ParameterExpression, Expression>
         {
             patterns.Add(MatchByType(value, expectedType, builder));
             return this;
         }
 
         private static PatternMatch MatchByType<TBuilder>(ParameterExpression value, Type expectedType, Pattern condition, TBuilder builder)
-            where TBuilder : struct, ICaseStatementBuilder
+            where TBuilder : struct, ISupplier<ParameterExpression, Expression>
         {
             var test = value.InstanceOf(expectedType);
             var typedVar = Expression.Variable(expectedType);
             var typedVarInit = typedVar.Assign(value.Convert(expectedType));
-            var body = builder.Build(typedVar);
+            var body = builder.Invoke(typedVar);
             var test2 = condition(typedVar);
             return endOfMatch => Expression.IfThen(test, Expression.Block(Seq.Singleton(typedVar), typedVarInit, Expression.IfThen(test2, endOfMatch.Goto(body))));
         }
 
         private MatchBuilder MatchByType<TBuilder>(Type expectedType, Pattern condition, TBuilder builder)
-            where TBuilder : struct, ICaseStatementBuilder
+            where TBuilder : struct, ISupplier<ParameterExpression, Expression>
         {
             patterns.Add(MatchByType(value, expectedType, condition, builder));
             return this;
@@ -347,7 +334,7 @@ namespace DotNext.Metaprogramming
         /// <param name="pattern">The condition representing pattern.</param>
         /// <param name="value">The value to be supplied if the specified pattern matches to the passed object.</param>
         /// <returns><c>this</c> builder.</returns>
-        public MatchBuilder Case(Pattern pattern, Expression value) => Case(pattern, MakeCaseStatement(value));
+        public MatchBuilder Case(Pattern pattern, Expression value) => Case(pattern, new CaseStatement(value.TrivialCaseStatement));
 
         internal MatchStatement<Action<ParameterExpression>> Case(Pattern pattern) => new MatchByConditionStatement(this, pattern);
 
@@ -452,22 +439,26 @@ namespace DotNext.Metaprogramming
         public MatchBuilder Case(string memberName1, Expression memberValue1, string memberName2, Expression memberValue2, string memberName3, Expression memberValue3, Func<MemberExpression, MemberExpression, MemberExpression, Expression> body)
             => Case(StructuralPattern(new[] { (memberName1, memberValue1), (memberName2, memberValue2), (memberName3, memberValue3) }), value => body(Expression.PropertyOrField(value, memberName1), Expression.PropertyOrField(value, memberName2), Expression.PropertyOrField(value, memberName3)));
 
-        private static (string, Expression) GetMemberPattern(object @this, string memberName, Type memberType, Func<object, object> valueProvider)
+        private static (string, Expression) GetMemberPattern(object @this, string memberName, Type memberType, Func<object, object?> valueProvider)
         {
             var value = valueProvider(@this);
-            if (value is null)
-                return (memberName, Expression.Default(memberType));
-            else if (value is Expression expr)
-                return (memberName, expr);
-            else
-                return (memberName, Expression.Constant(value, memberType));
+            return value switch
+            {
+                null => (memberName, Expression.Default(memberType)),
+                Expression expr => (memberName, expr),
+                _ => (memberName, Expression.Constant(value, memberType))
+            };
         }
 
         private static IEnumerable<(string, Expression)> GetProperties(object structPattern)
         {
             const BindingFlags PublicInstance = BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Instance;
             foreach (var property in structPattern.GetType().GetProperties(PublicInstance))
-                yield return GetMemberPattern(structPattern, property.Name, property.PropertyType, property.GetValue);
+            {
+                if (property.CanRead)
+                    yield return GetMemberPattern(structPattern, property.Name, property.PropertyType, property.GetValue);
+            }
+
             foreach (var field in structPattern.GetType().GetFields(PublicInstance))
                 yield return GetMemberPattern(structPattern, field.Name, field.FieldType, field.GetValue);
         }
@@ -488,7 +479,7 @@ namespace DotNext.Metaprogramming
         /// <param name="value">The value to be supplied if the specified structural pattern matches to the passed object.</param>
         /// <returns><c>this</c> builder.</returns>
         public MatchBuilder Case(object structPattern, Expression value)
-            => Case(structPattern, MakeCaseStatement(value));
+            => Case(structPattern, new CaseStatement(value.TrivialCaseStatement));
 
         /// <summary>
         /// Defines default behavior in case when all defined patterns are false positive.
@@ -506,7 +497,7 @@ namespace DotNext.Metaprogramming
         /// </summary>
         /// <param name="value">The expression to be evaluated as default case.</param>
         /// <returns><c>this</c> builder.</returns>
-        public MatchBuilder Default(Expression value) => Default(MakeCaseStatement(value));
+        public MatchBuilder Default(Expression value) => Default(new CaseStatement(value.TrivialCaseStatement));
 
         internal MatchStatement<Action<ParameterExpression>> Default() => new DefaultStatement(this);
 
@@ -516,13 +507,13 @@ namespace DotNext.Metaprogramming
 
             // handle patterns
             ICollection<Expression> instructions = new LinkedList<Expression>();
-            if (!(assignment is null))
+            if (assignment is not null)
                 instructions.Add(assignment);
             foreach (var pattern in patterns)
                 instructions.Add(pattern(endOfMatch));
 
             // handle default
-            if (!(defaultCase is null))
+            if (defaultCase is not null)
                 instructions.Add(Expression.Goto(endOfMatch, defaultCase(value)));
 
             // setup label as last instruction

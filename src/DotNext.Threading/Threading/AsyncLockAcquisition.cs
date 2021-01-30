@@ -23,13 +23,8 @@ namespace DotNext.Threading
                     throw new ArgumentNullException(nameof(obj));
                 case AsyncReaderWriterLock rwl:
                     return rwl;
-                case AsyncSharedLock _:
-                case ReaderWriterLockSlim _:
-                case AsyncExclusiveLock _:
-                case SemaphoreSlim _:
-                case WaitHandle _:
-                case ReaderWriterLock _:
-                case string str when !(string.IsInterned(str) is null):
+                case AsyncSharedLock or ReaderWriterLockSlim or AsyncExclusiveLock or SemaphoreSlim or WaitHandle or ReaderWriterLock _:
+                case string str when string.IsInterned(str) is not null:
                     throw new InvalidOperationException(ExceptionMessages.UnsupportedLockAcquisition);
                 default:
                     return obj.GetUserData().GetOrSet(ReaderWriterLock);
@@ -57,10 +52,8 @@ namespace DotNext.Threading
                 case AsyncReaderWriterLock rwl:
                     @lock = AsyncLock.WriteLock(rwl);
                     break;
-                case ReaderWriterLockSlim _:
-                case WaitHandle _:
-                case ReaderWriterLock _:
-                case string str when !(string.IsInterned(str) is null):
+                case ReaderWriterLockSlim or WaitHandle or ReaderWriterLock _:
+                case string str when string.IsInterned(str) is not null:
                     throw new InvalidOperationException(ExceptionMessages.UnsupportedLockAcquisition);
                 default:
                     @lock = AsyncLock.Exclusive(obj.GetUserData().GetOrSet(ExclusiveLock));

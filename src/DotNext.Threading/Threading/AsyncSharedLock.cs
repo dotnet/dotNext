@@ -8,6 +8,7 @@ using static System.Threading.Timeout;
 
 namespace DotNext.Threading
 {
+    using Runtime;
     using Runtime.CompilerServices;
 
     /// <summary>
@@ -46,7 +47,7 @@ namespace DotNext.Threading
 
             internal long IncrementLocks() => RemainingLocks = RemainingLocks == ExclusiveMode ? ConcurrencyLevel : RemainingLocks + 1L;
 
-            internal bool IsEmpty => RemainingLocks == ConcurrencyLevel;
+            internal readonly bool IsEmpty => RemainingLocks == ConcurrencyLevel;
 
             bool ILockManager<StrongLockNode>.TryAcquire()
             {
@@ -56,7 +57,7 @@ namespace DotNext.Threading
                 return true;
             }
 
-            StrongLockNode ILockManager<StrongLockNode>.CreateNode(WaitNode? tail) => tail is null ? new StrongLockNode() : new StrongLockNode(tail);
+            readonly StrongLockNode ILockManager<StrongLockNode>.CreateNode(WaitNode? tail) => tail is null ? new StrongLockNode() : new StrongLockNode(tail);
 
             bool ILockManager<WaitNode>.TryAcquire()
             {
@@ -66,10 +67,9 @@ namespace DotNext.Threading
                 return true;
             }
 
-            WaitNode ILockManager<WaitNode>.CreateNode(WaitNode? tail) => tail is null ? new WaitNode() : new WaitNode(tail);
+            readonly WaitNode ILockManager<WaitNode>.CreateNode(WaitNode? tail) => tail is null ? new WaitNode() : new WaitNode(tail);
         }
 
-        private static readonly Func<AsyncSharedLock, bool> IsLockHeldPredicate = DelegateHelpers.CreateOpenDelegate<Func<AsyncSharedLock, bool>>(l => l.IsLockHeld);
         private readonly Box<State> state;
 
         /// <summary>
@@ -98,6 +98,11 @@ namespace DotNext.Threading
         /// Indicates that the lock is acquired in exclusive or shared mode.
         /// </summary>
         public bool IsLockHeld => state.Value.RemainingLocks < ConcurrencyLevel;
+
+        /// <summary>
+        /// Indicates that the lock is acquired in exclusive mode.
+        /// </summary>
+        public bool IsStrongLockHeld => state.Value.RemainingLocks == ExclusiveMode;
 
         /// <summary>
         /// Attempts to obtain lock synchronously without blocking caller thread.
@@ -159,11 +164,11 @@ namespace DotNext.Threading
         private void ResumePendingCallers()
         {
             ref var stateHolder = ref state.Value;
-            for (WaitNode? current = head, next; !(current is null || current is StrongLockNode || IsTerminalNode(current)) && stateHolder.RemainingLocks > 0L; stateHolder.RemainingLocks--, current = next)
+            for (WaitNode? current = head, next; current is not null && current is not StrongLockNode && !IsTerminalNode(current) && stateHolder.RemainingLocks > 0L; stateHolder.RemainingLocks--, current = next)
             {
                 next = current.Next;
                 RemoveNode(current);
-                current.Complete();
+                current.SetResult();
             }
         }
 
@@ -174,7 +179,7 @@ namespace DotNext.Threading
             if (stateHolder.IncrementLocks() == ConcurrencyLevel && head is StrongLockNode exclusiveNode)
             {
                 RemoveNode(exclusiveNode);
-                exclusiveNode.Complete();
+                exclusiveNode.SetResult();
                 stateHolder.RemainingLocks = ExclusiveMode;
             }
             else
@@ -233,7 +238,11 @@ namespace DotNext.Threading
         /// Otherwise, it waits for calling of <see cref="Release()"/> or <see cref="Downgrade"/> method.
         /// </remarks>
         /// <returns>The task representing graceful shutdown of this lock.</returns>
-        public ValueTask DisposeAsync()
-            => IsDisposed ? new ValueTask() : DisposeAsync(this, IsLockHeldPredicate);
+        public unsafe ValueTask DisposeAsync()
+        {
+            return IsDisposed ? new ValueTask() : DisposeAsync(this, &CheckLockState);
+
+            static bool CheckLockState(AsyncSharedLock obj) => obj.IsLockHeld;
+        }
     }
 }

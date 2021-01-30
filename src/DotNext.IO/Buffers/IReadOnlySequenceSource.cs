@@ -7,7 +7,7 @@ namespace DotNext.Buffers
     /// Represents disposable source of <see cref="ReadOnlySequence{T}"/>.
     /// </summary>
     /// <typeparam name="T">The type of the elements in the sequence.</typeparam>
-    public interface IReadOnlySequenceSource<T> : IDisposable, IConvertible<ReadOnlySequence<T>>
+    public interface IReadOnlySequenceSource<T> : IDisposable, ISupplier<ReadOnlySequence<T>>
     {
         /// <summary>
         /// Gets the sequence of elements associated with this source.
@@ -19,6 +19,6 @@ namespace DotNext.Buffers
         ReadOnlySequence<T> Sequence { get; }
 
         /// <inheritdoc />
-        ReadOnlySequence<T> IConvertible<ReadOnlySequence<T>>.Convert() => Sequence;
+        ReadOnlySequence<T> ISupplier<ReadOnlySequence<T>>.Invoke() => Sequence;
     }
 }

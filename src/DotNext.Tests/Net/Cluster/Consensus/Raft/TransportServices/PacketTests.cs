@@ -10,12 +10,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         [Fact]
         public static void Combination()
         {
-            foreach (var type in Enum<MessageType>.Members)
-                foreach (var control in Enum<FlowControl>.Members)
+            foreach (MessageType type in Enum.GetValues(typeof(MessageType)))
+                foreach (FlowControl control in Enum.GetValues(typeof(FlowControl)))
                 {
-                    var octet = new ControlOctet(type.Value, control.Value);
-                    Equal(type.Value, octet.Type);
-                    Equal(control.Value, octet.Control);
+                    var octet = new ControlOctet(type, control);
+                    Equal(type, octet.Type);
+                    Equal(control, octet.Control);
                 }
         }
 
@@ -23,15 +23,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         public static void HeadersSerializationDeserialization()
         {
             Memory<byte> buffer = new byte[PacketHeaders.NaturalSize];
-            foreach (var type in Enum<MessageType>.Members)
-                foreach (var control in Enum<FlowControl>.Members)
+            foreach (MessageType type in Enum.GetValues(typeof(MessageType)))
+                foreach (FlowControl control in Enum.GetValues(typeof(FlowControl)))
                 {
-                    var headers = new PacketHeaders(type.Value, control.Value);
+                    var headers = new PacketHeaders(type, control);
                     headers.WriteTo(buffer);
                     ReadOnlyMemory<byte> readOnlyView = buffer;
                     headers = new PacketHeaders(readOnlyView, out _);
-                    Equal(type.Value, headers.Type);
-                    Equal(control.Value, headers.Control);
+                    Equal(type, headers.Type);
+                    Equal(control, headers.Control);
                 }
         }
     }

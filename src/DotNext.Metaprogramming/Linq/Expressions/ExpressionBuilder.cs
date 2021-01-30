@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
@@ -256,16 +257,16 @@ namespace DotNext.Linq.Expressions
         {
             // handle nullable value type
             Type? underlyingType = Nullable.GetUnderlyingType(operand.Type);
-            if (!(underlyingType is null))
+            if (underlyingType is not null)
                 return operand.Property(nameof(Nullable<int>.HasValue)).Not();
 
             // handle optional type
             underlyingType = Optional.GetUnderlyingType(operand.Type);
-            if (!(underlyingType is null))
+            if (underlyingType is not null)
                 return operand.Property(nameof(Optional<int>.HasValue)).Not();
 
             // handle reference type or value type
-            return operand.Type.IsValueType || operand.Type.IsPointer ? (Expression)Const<bool>(false) : Expression.ReferenceEqual(operand, Expression.Constant(null, operand.Type));
+            return operand.Type.IsValueType || operand.Type.IsPointer ? Const<bool>(false) : Expression.ReferenceEqual(operand, Expression.Constant(null, operand.Type));
         }
 
         /// <summary>
@@ -280,16 +281,16 @@ namespace DotNext.Linq.Expressions
         {
             // handle nullable value type
             Type? underlyingType = Nullable.GetUnderlyingType(operand.Type);
-            if (!(underlyingType is null))
+            if (underlyingType is not null)
                 return operand.Property(nameof(Nullable<int>.HasValue));
 
             // handle optional type
             underlyingType = Optional.GetUnderlyingType(operand.Type);
-            if (!(underlyingType is null))
+            if (underlyingType is not null)
                 return operand.Property(nameof(Optional<int>.HasValue));
 
             // handle reference type or value type
-            return operand.Type.IsValueType || operand.Type.IsPointer ? (Expression)Const<bool>(true) : Expression.ReferenceNotEqual(operand, Expression.Constant(null, operand.Type));
+            return operand.Type.IsValueType || operand.Type.IsPointer ? Const<bool>(true) : Expression.ReferenceNotEqual(operand, Expression.Constant(null, operand.Type));
         }
 
         /// <summary>
@@ -755,7 +756,7 @@ namespace DotNext.Linq.Expressions
         /// <returns>An expression representing static method call.</returns>
         public static MethodCallExpression CallStatic(this Type type, string methodName, params Expression[] arguments)
         {
-            MethodInfo? method = type.GetMethod(methodName, BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly, null, Array.ConvertAll(arguments, GetType), Array.Empty<ParameterModifier>());
+            MethodInfo? method = type.GetMethod(methodName, BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly, null, Array.ConvertAll(arguments, GetType), null);
             return method is null ?
                 throw new MissingMethodException(type.FullName, methodName) :
                 Expression.Call(method, arguments);
@@ -772,7 +773,7 @@ namespace DotNext.Linq.Expressions
         /// <param name="indicies">Indexer indicies.</param>
         /// <returns>Property access expression.</returns>
         public static Expression Property(this Expression instance, PropertyInfo property, params Expression[] indicies)
-            => indicies.LongLength == 0 ? (Expression)Expression.Property(instance, property) : Expression.Property(instance, property, indicies);
+            => indicies.LongLength == 0 ? Expression.Property(instance, property) : Expression.Property(instance, property, indicies);
 
         /// <summary>
         /// Constructs instance property or indexer access expression declared in the given interface or base type.
@@ -787,7 +788,7 @@ namespace DotNext.Linq.Expressions
         /// <returns>Property access expression.</returns>
         public static Expression Property(this Expression instance, Type interfaceType, string propertyName, params Expression[] indicies)
         {
-            PropertyInfo? property = interfaceType.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+            PropertyInfo? property = interfaceType.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);
             return property is null ?
                 throw new MissingMemberException(interfaceType.FullName, propertyName) :
                 instance.Property(property, indicies);
@@ -1095,7 +1096,7 @@ namespace DotNext.Linq.Expressions
         {
             if (args.LongLength == 0L)
                 return Expression.New(type);
-            ConstructorInfo? ctor = type.GetConstructor(Array.ConvertAll(args, arg => arg.Type));
+            ConstructorInfo? ctor = type.GetConstructor(Array.ConvertAll(args, static arg => arg.Type));
             return ctor is null ?
                 throw new MissingMethodException(type.FullName, ConstructorInfo.ConstructorName) :
                 Expression.New(ctor, args);
@@ -1146,9 +1147,13 @@ namespace DotNext.Linq.Expressions
         /// <param name="type">The expression representing the type to be instantiated.</param>
         /// <param name="args">The list of arguments to be passed into constructor.</param>
         /// <returns>Instantiation expression.</returns>
+#if !NETSTANDARD2_1
+        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicMethods, typeof(Activator))]
+#endif
         public static MethodCallExpression New(this Expression type, params Expression[] args)
         {
             var activate = typeof(Activator).GetMethod(nameof(Activator.CreateInstance), new[] { typeof(Type), typeof(object[]) });
+            Debug.Assert(activate is not null);
             return Expression.Call(activate, type, Expression.NewArrayInit(typeof(object), args));
         }
 
@@ -1389,7 +1394,9 @@ namespace DotNext.Linq.Expressions
         {
             var exception = Expression.Parameter(typeof(Exception));
             var ctor = typeof(Result<>).MakeGenericType(expression.Type).GetConstructor(new[] { expression.Type });
+            Debug.Assert(ctor?.DeclaringType is not null);
             var fallbackCtor = ctor.DeclaringType.GetConstructor(new[] { typeof(Exception) });
+            Debug.Assert(fallbackCtor is not null);
             return Expression.TryCatch(
                 Expression.New(ctor, expression),
                 Expression.Catch(exception, Expression.New(fallbackCtor, exception)));

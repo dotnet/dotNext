@@ -18,17 +18,20 @@ namespace DotNext
     /// <typeparam name="T">A type which implements dispose pattern.</typeparam>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-dispose">Implementing Dispose method</seealso>
     [Concept]
+#if NETSTANDARD2_1
     public static class Disposable<T>
+#else
+    public static class Disposable<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] T>
+#endif
     {
         private delegate void DisposeMethod(in T instance);
 
         private static readonly DisposeMethod DisposeMethodImpl;
 
-        [SuppressMessage("Design", "CA1065", Justification = "It's a concept type")]
         static Disposable()
         {
             var disposeMethod = typeof(T).GetDisposeMethod();
-            if (!(disposeMethod?.DeclaringType is null) && disposeMethod.ReturnType == typeof(void))
+            if (disposeMethod?.DeclaringType is not null && disposeMethod.ReturnType == typeof(void))
             {
                 if (disposeMethod.DeclaringType.IsValueType)
                 {

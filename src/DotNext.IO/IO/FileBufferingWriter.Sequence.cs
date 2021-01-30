@@ -20,7 +20,6 @@ namespace DotNext.IO
 
             static TailSegment()
             {
-                // TODO: Should be replaced with function pointer in C# 9
                 Ldnull();
                 Ldftn(PropertySet(Type<ReadOnlySequenceSegment<byte>>(), nameof(Next)));
                 Newobj(Constructor(Type<Action<ReadOnlySequenceSegment<byte>, ReadOnlySequenceSegment<byte>>>(), Type<object>(), Type<IntPtr>()));
@@ -124,7 +123,7 @@ namespace DotNext.IO
             if (IsReading)
                 throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
 
-            if (fileBackend != null)
+            if (fileBackend is not null)
                 await fileBackend.FlushAsync(token).ConfigureAwait(false);
 
             return new ReadOnlySequenceSource(this, segmentSize);

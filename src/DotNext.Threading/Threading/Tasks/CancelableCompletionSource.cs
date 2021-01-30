@@ -9,7 +9,7 @@ namespace DotNext.Threading.Tasks
     internal class CancelableCompletionSource<T> : TaskCompletionSource<T>, IDisposable
     {
         // cached callback to avoid extra memory allocation
-        private static readonly Action<object> CancellationCallback;
+        private static readonly Action<object?> CancellationCallback;
 
         private readonly CancellationTokenRegistration registration;
         private readonly CancellationTokenSource? source;
@@ -18,8 +18,8 @@ namespace DotNext.Threading.Tasks
         {
             CancellationCallback = CancellationRequested;
 
-            static void CancellationRequested(object state)
-                => Unsafe.As<CancelableCompletionSource<T>>(state).CancellationRequested();
+            static void CancellationRequested(object? state)
+                => Unsafe.As<CancelableCompletionSource<T>>(state)!.CancellationRequested();
         }
 
         internal CancelableCompletionSource(TaskCreationOptions options, TimeSpan timeout, CancellationToken token)

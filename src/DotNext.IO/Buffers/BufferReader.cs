@@ -11,18 +11,11 @@ namespace DotNext.Buffers
             where TParser : struct, IBufferReader<TResult>
         {
             consumed = input.Start;
-            if (input.Length > 0)
+            for (int bytesToConsume; parser.RemainingBytes > 0 && input.TryGet(ref consumed, out var block, false) && !block.IsEmpty; consumed = input.GetPosition(bytesToConsume, consumed))
             {
-                for (int bytesToConsume; parser.RemainingBytes > 0 && input.TryGet(ref consumed, out var block, false) && block.Length > 0; consumed = input.GetPosition(bytesToConsume, consumed))
-                {
-                    bytesToConsume = Math.Min(block.Length, parser.RemainingBytes);
-                    block = block.Slice(0, bytesToConsume);
-                    parser.Append(block.Span, ref bytesToConsume);
-                }
-            }
-            else
-            {
-                parser.EndOfStream();
+                bytesToConsume = Math.Min(block.Length, parser.RemainingBytes);
+                block = block.Slice(0, bytesToConsume);
+                parser.Append(block.Span, ref bytesToConsume);
             }
         }
 

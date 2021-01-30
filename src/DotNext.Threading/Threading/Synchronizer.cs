@@ -20,7 +20,7 @@ namespace DotNext.Threading
     public abstract class Synchronizer : Disposable, ISynchronizer
     {
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct PredicateCondition<T> : IConvertible<bool>
+        private readonly struct PredicateCondition<T> : ISupplier<bool>
         {
             private readonly T arg;
             private readonly Predicate<T> condition;
@@ -31,11 +31,11 @@ namespace DotNext.Threading
                 this.arg = arg;
             }
 
-            bool IConvertible<bool>.Convert() => condition(arg);
+            bool ISupplier<bool>.Invoke() => condition(arg);
         }
 
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct FuncCondition<T1, T2> : IConvertible<bool>
+        private readonly struct FuncCondition<T1, T2> : ISupplier<bool>
         {
             private readonly T1 arg1;
             private readonly T2 arg2;
@@ -48,7 +48,7 @@ namespace DotNext.Threading
                 this.arg2 = arg2;
             }
 
-            bool IConvertible<bool>.Convert() => condition(arg1, arg2);
+            bool ISupplier<bool>.Invoke() => condition(arg1, arg2);
         }
 
         private protected volatile ISynchronizer.WaitNode? node; // null means signaled state
@@ -58,7 +58,7 @@ namespace DotNext.Threading
         }
 
         /// <inheritdoc/>
-        bool ISynchronizer.HasWaiters => !(node is null);
+        bool ISynchronizer.HasAnticipants => node is not null;
 
         /// <summary>
         /// Determines whether this event in signaled state.
@@ -88,12 +88,12 @@ namespace DotNext.Threading
 
         [MethodImpl(MethodImplOptions.Synchronized)]
         private Task<bool> WaitAsync<TCondition>(ref TCondition condition, TimeSpan timeout, CancellationToken token)
-            where TCondition : struct, IConvertible<bool>
+            where TCondition : struct, ISupplier<bool>
         {
             if (IsDisposed)
                 return GetDisposedTask<bool>();
 
-            if (node is null || condition.Convert())
+            if (node is null || condition.Invoke())
                 return CompletedTask<bool, BooleanConst.True>.Task;
 
             return node.Task.WaitAsync(timeout, token);

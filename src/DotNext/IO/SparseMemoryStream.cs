@@ -55,7 +55,7 @@ namespace DotNext.IO
 
         public override void CopyTo(Stream destination, int bufferSize)
         {
-            for (ReadOnlySpan<byte> currentBlock; !(current is null); offset = 0, current = current.Next, position += currentBlock.Length)
+            for (ReadOnlySpan<byte> currentBlock; current is not null; offset = 0, current = current.Next, position += currentBlock.Length)
             {
                 destination.Write(currentBlock = current.WrittenMemory.Span.Slice(offset));
             }
@@ -63,7 +63,7 @@ namespace DotNext.IO
 
         public override async Task CopyToAsync(Stream destination, int bufferSize, CancellationToken token)
         {
-            for (ReadOnlyMemory<byte> currentBlock; !(current is null); offset = 0, current = current.Next, position += currentBlock.Length)
+            for (ReadOnlyMemory<byte> currentBlock; current is not null; offset = 0, current = current.Next, position += currentBlock.Length)
             {
                 await destination.WriteAsync(currentBlock = current.WrittenMemory.Slice(offset), token).ConfigureAwait(false);
             }

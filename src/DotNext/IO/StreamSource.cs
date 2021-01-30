@@ -1,8 +1,6 @@
 using System;
 using System.Buffers;
-using System.Diagnostics;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.MemoryMarshal;
@@ -14,7 +12,7 @@ namespace DotNext.IO
     /// <summary>
     /// Represents <see cref="Stream"/> factory methods.
     /// </summary>
-    public static class StreamSource
+    public static partial class StreamSource
     {
         /// <summary>
         /// Converts segment of an array to the stream.
@@ -23,7 +21,12 @@ namespace DotNext.IO
         /// <param name="writable">Determines whether the stream supports writing.</param>
         /// <returns>The stream representing the array segment.</returns>
         public static Stream AsStream(this ArraySegment<byte> segment, bool writable = false)
-            => new MemoryStream(segment.Array, segment.Offset, segment.Count, writable, false);
+        {
+            if (segment.Array.IsNullOrEmpty())
+                return Stream.Null;
+
+            return new MemoryStream(segment.Array, segment.Offset, segment.Count, writable, false);
+        }
 
         /// <summary>
         /// Converts read-only sequence of bytes to a read-only stream.
@@ -50,13 +53,14 @@ namespace DotNext.IO
             => AsStream(new ReadOnlySequence<byte>(memory));
 
         /// <summary>
-        /// Gets written content as a read-only stream.
+        /// Returns writable synchronous stream.
         /// </summary>
-        /// <param name="writer">The buffer writer.</param>
-        /// <returns>The stream representing written bytes.</returns>
-        [Obsolete("Use DotNext.IO.StreamSource.AsStream in combination with WrittenArray or WrittenMemory property instead", true)]
-        public static Stream GetWrittenBytesAsStream(PooledArrayBufferWriter<byte> writer)
-            => AsStream(writer.WrittenArray);
+        /// <param name="output">The consumer of the stream content.</param>
+        /// <typeparam name="TOutput">The type of the consumer.</typeparam>
+        /// <returns>The stream wrapping <typeparamref name="TOutput"/>.</returns>
+        public static Stream AsSynchronousStream<TOutput>(TOutput output)
+            where TOutput : notnull, IFlushable, IReadOnlySpanConsumer<byte>
+            => new SyncWriterStream<TOutput>(output);
 
         /// <summary>
         /// Returns writable stream that wraps the provided delegate for writing data.
@@ -68,7 +72,7 @@ namespace DotNext.IO
         /// <typeparam name="TArg">The type of the object that represents the state.</typeparam>
         /// <returns>The writable stream wrapping the callback.</returns>
         public static Stream AsStream<TArg>(this ReadOnlySpanAction<byte, TArg> writer, TArg arg, Action<TArg>? flush = null, Func<TArg, CancellationToken, Task>? flushAsync = null)
-            => new SpanWriterStream<TArg>(writer, arg, flush, flushAsync);
+            => AsSynchronousStream<ReadOnlySpanWriter<TArg>>(new ReadOnlySpanWriter<TArg>(writer ?? throw new ArgumentNullException(nameof(writer)), arg, flush, flushAsync));
 
         /// <summary>
         /// Returns writable stream associated with the buffer writer.
@@ -81,19 +85,8 @@ namespace DotNext.IO
         public static Stream AsStream<TWriter>(this TWriter writer, Action<TWriter>? flush = null, Func<TWriter, CancellationToken, Task>? flushAsync = null)
             where TWriter : class, IBufferWriter<byte>
         {
-            flush ??= IFlushable.TryReflectFlushMethod(writer);
-            flushAsync ??= IFlushable.TryReflectAsyncFlushMethod(writer);
-
-            var callback = writer is IGrowableBuffer<byte> ?
-                new ReadOnlySpanAction<byte, TWriter>(WriteToGrowableBuffer) :
-                new ReadOnlySpanAction<byte, TWriter>(Span.CopyTo<byte>);
-            return AsStream(callback, writer, flush, flushAsync);
-
-            static void WriteToGrowableBuffer(ReadOnlySpan<byte> input, TWriter output)
-            {
-                Debug.Assert(output is IGrowableBuffer<byte>);
-                Unsafe.As<IGrowableBuffer<byte>>(output).Write(input);
-            }
+            IFlushable.DiscoverFlushMethods(writer, ref flush, ref flushAsync);
+            return writer is IReadOnlySpanConsumer<byte> ? AsSynchronousStream<DelegatingWriter<TWriter>>(new DelegatingWriter<TWriter>(writer, flush, flushAsync)) : AsSynchronousStream<BufferWriter<TWriter>>(new BufferWriter<TWriter>(writer, flush, flushAsync));
         }
 
         /// <summary>
@@ -105,7 +98,7 @@ namespace DotNext.IO
         public static Stream AsStream(this SparseBufferWriter<byte> writer, bool readable)
         {
             if (!readable)
-                return AsStream(WriteToBuffer, writer);
+                return AsStream(writer);
 
             var chunk = writer.FirstChunk;
             if (chunk is null)
@@ -115,10 +108,17 @@ namespace DotNext.IO
                 return AsStream(chunk.WrittenMemory);
 
             return new SparseMemoryStream(writer);
-
-            static void WriteToBuffer(ReadOnlySpan<byte> input, SparseBufferWriter<byte> output)
-                => output.Write(input);
         }
+
+        /// <summary>
+        /// Returns writable asynchronous stream.
+        /// </summary>
+        /// <param name="output">The consumer of the stream content.</param>
+        /// <typeparam name="TOutput">The type of the consumer.</typeparam>
+        /// <returns>The stream wrapping <typeparamref name="TOutput"/>.</returns>
+        public static Stream AsAsynchronousStream<TOutput>(TOutput output)
+            where TOutput : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>, IFlushable
+            => new AsyncWriterStream<TOutput>(output);
 
         /// <summary>
         /// Returns writable stream that wraps the provided delegate for writing data.
@@ -130,6 +130,6 @@ namespace DotNext.IO
         /// <typeparam name="TArg">The type of the object that represents the state.</typeparam>
         /// <returns>The writable stream wrapping the callback.</returns>
         public static Stream AsStream<TArg>(this Func<ReadOnlyMemory<byte>, TArg, CancellationToken, ValueTask> writer, TArg arg, Action<TArg>? flush = null, Func<TArg, CancellationToken, Task>? flushAsync = null)
-            => new MemoryWriterStream<TArg>(writer, arg, flush, flushAsync);
+            => AsAsynchronousStream<ReadOnlyMemoryWriter<TArg>>(new ReadOnlyMemoryWriter<TArg>(writer, arg, flush, flushAsync));
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Numerics;
 using Xunit;
 
 namespace DotNext.Buffers
@@ -180,6 +181,64 @@ namespace DotNext.Buffers
             reader.Reset();
             Equal(10, reader.Read());
             Equal(new[] { 20, 30}, reader.ReadToEnd().ToArray());
+        }
+
+        [Fact]
+        public static void ReadWritePrimitives()
+        {
+            var buffer = new byte[1024];
+            var writer = new SpanWriter<byte>(buffer);
+            writer.WriteInt16(short.MinValue, true);
+            writer.WriteInt16(short.MaxValue, false);
+            writer.WriteUInt16(42, true);
+            writer.WriteUInt16(ushort.MaxValue, false);
+            writer.WriteInt32(int.MaxValue, true);
+            writer.WriteInt32(int.MinValue, false);
+            writer.WriteUInt32(42, true);
+            writer.WriteUInt32(uint.MaxValue, false);
+            writer.WriteInt64(long.MaxValue, true);
+            writer.WriteInt64(long.MinValue, false);
+            writer.WriteUInt64(42, true);
+            writer.WriteUInt64(ulong.MaxValue, false);
+#if !NETCOREAPP3_1
+            writer.WriteSingle(float.MaxValue, true);
+            writer.WriteSingle(float.MinValue, false);
+            writer.WriteDouble(double.MaxValue, true);
+            writer.WriteDouble(double.MinValue, false);
+#endif
+
+            var reader = new SpanReader<byte>(buffer);
+            Equal(short.MinValue, reader.ReadInt16(true));
+            Equal(short.MaxValue, reader.ReadInt16(false));
+            Equal(42, reader.ReadUInt16(true));
+            Equal(ushort.MaxValue, reader.ReadUInt16(false));
+            Equal(int.MaxValue, reader.ReadInt32(true));
+            Equal(int.MinValue, reader.ReadInt32(false));
+            Equal(42U, reader.ReadUInt32(true));
+            Equal(uint.MaxValue, reader.ReadUInt32(false));
+            Equal(long.MaxValue, reader.ReadInt64(true));
+            Equal(long.MinValue, reader.ReadInt64(false));
+            Equal(42UL, reader.ReadUInt64(true));
+            Equal(ulong.MaxValue, reader.ReadUInt64(false));
+#if !NETCOREAPP3_1
+            Equal(float.MaxValue, reader.ReadSingle(true));
+            Equal(float.MinValue, reader.ReadSingle(false));
+            Equal(double.MaxValue, reader.ReadDouble(true));
+            Equal(double.MinValue, reader.ReadDouble(false));
+#endif
+        }
+
+        [Fact]
+        public static unsafe void TryWrite()
+        {
+            Span<byte> bytes = stackalloc byte[128];
+            var writer = new SpanWriter<byte>(bytes);
+            BigInteger value = 10L;
+            True(writer.TryWrite(&WriteBigInt, value));
+            Equal(value, new BigInteger(bytes.Slice(0, writer.WrittenCount)));
+
+            static bool WriteBigInt(BigInteger value, Span<byte> destination, out int count)
+                => value.TryWriteBytes(destination, out count);
         }
     }
 }

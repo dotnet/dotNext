@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
@@ -14,7 +16,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
 {
     using static DotNext.Hosting.HostBuilderExtensions;
 
-    [SuppressMessage("Usage", "CA1812", Justification = "This class is instantiated by DI container")]
+    [SuppressMessage("Performance", "CA1812", Justification = "This class is instantiated by DI container")]
     internal sealed class RaftHostedCluster : RaftHttpCluster
     {
         private sealed class WebHostConfigurer
@@ -33,7 +35,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
             }
 
             private void Configure(IApplicationBuilder app)
-                => app.UseExceptionHandler(new ExceptionHandlerOptions { ExceptionHandler = RaftHttpConfigurator.WriteExceptionContent }).Run(raftProcessor);
+                => app.UseExceptionHandler(new ExceptionHandlerOptions { ExceptionHandler = RaftHttpCluster.WriteExceptionContent }).Run(raftProcessor);
 
             private void Configure(IWebHostBuilder webHost)
             {
@@ -54,7 +56,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
             internal IHost BuildHost()
             {
                 var builder = new HostBuilder().ConfigureWebHost(Configure);
-                if (parentHostOptions != null)
+                if (parentHostOptions is not null)
                     builder = builder.UseHostOptions(parentHostOptions);
 
                 return builder.Build();
@@ -92,7 +94,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
             await base.StopAsync(token).ConfigureAwait(false);
         }
 
-        private protected override Predicate<RaftClusterMember> LocalMemberFinder => host.Services.GetRequiredService<IServer>().GetHostingAddresses().Contains;
+        private protected override Task<ICollection<EndPoint>> GetHostingAddressesAsync()
+            => host.Services.GetRequiredService<IServer>().GetHostingAddressesAsync();
 
         protected override void Dispose(bool disposing)
         {

@@ -11,7 +11,7 @@ namespace DotNext.Linq.Expressions
     {
         private static readonly MethodInfo AsExpressionBuilderMethod = new Func<object?, IExpressionBuilder<Expression>?>(Unsafe.As<IExpressionBuilder<Expression>>).Method;
         private static readonly MethodInfo AsExpressionMethod = new Func<object?, Expression?>(Unsafe.As<Expression>).Method;
-        private static readonly MethodInfo BuildMethod = typeof(IExpressionBuilder<Expression>).GetMethod(nameof(IExpressionBuilder<Expression>.Build), BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+        private static readonly MethodInfo BuildMethod = typeof(IExpressionBuilder<Expression>).GetMethod(nameof(IExpressionBuilder<Expression>.Build), BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)!;
         private static readonly MethodInfo MakeUnaryMethod = new Func<ExpressionType, Expression, Type, UnaryExpression>(Expression.MakeUnary).Method;
         private static readonly MethodInfo MakeBinaryMethod = new Func<ExpressionType, Expression, Expression, BinaryExpression>(Expression.MakeBinary).Method;
         private static readonly MethodInfo PropertyOrFieldMethod = new Func<Expression, string, MemberExpression>(Expression.PropertyOrField).Method;
@@ -115,10 +115,6 @@ namespace DotNext.Linq.Expressions
             if (binder.Type == typeof(Expression))
             {
                 return new DynamicMetaObject(binding, Restrictions);
-            }
-            else if (binder.Type == typeof(UniversalExpression))
-            {
-                return new DynamicMetaObject(typeof(UniversalExpression).New(binding), Restrictions);
             }
             else
             {

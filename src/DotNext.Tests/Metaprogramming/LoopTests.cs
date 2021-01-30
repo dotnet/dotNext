@@ -92,7 +92,7 @@ namespace DotNext.Metaprogramming
                     AwaitForEach(fun[1], WriteLine);
                 });
             }).Compile();
-            
+
             var e = await ThrowsAsync<Exception>(() => result(GetData('1'), GetData('2')));
             Equal("Custom exception", e.Message);
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -141,8 +140,7 @@ namespace DotNext.Reflection
         /// <param name="second">Second operand.</param>
         /// <returns>Result of binary operator.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [return: MaybeNull]
-        public TResult Invoke(in TOperand1 first, in TOperand2 second) => Invoker(in first, in second);
+        public TResult? Invoke(in TOperand1 first, in TOperand2 second) => Invoker(in first, in second);
 
         /// <summary>
         /// Type of operator.

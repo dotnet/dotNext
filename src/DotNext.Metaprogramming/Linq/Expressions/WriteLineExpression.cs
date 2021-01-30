@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -58,13 +59,16 @@ namespace DotNext.Linq.Expressions
         /// <returns>A new instance of <see cref="WriteLineExpression"/>.</returns>
         public static WriteLineExpression Debug(Expression value) => new WriteLineExpression(value, Kind.Debug);
 
+#if !NETSTANDARD2_1
+        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicMethods, typeof(TextWriter))]
+#endif
         private static MethodCallExpression WriteLineTo(MemberExpression stream, Expression value)
         {
             MethodInfo? writeLineMethod = typeof(TextWriter).GetMethod(nameof(TextWriter.WriteLine), new[] { value.Type });
 
             // WriteLine method will always be resolved here because Type.DefaultBinder
             // chooses TextWriter.WriteLine(object) if there is no exact match
-            System.Diagnostics.Debug.Assert(!(writeLineMethod is null));
+            System.Diagnostics.Debug.Assert(writeLineMethod is not null);
             var firstParam = writeLineMethod.GetParameters()[0].ParameterType;
             if (firstParam != value.Type && value.Type.IsValueType)
                 value = Expression.Convert(value, typeof(object));
@@ -72,21 +76,33 @@ namespace DotNext.Linq.Expressions
             return Call(stream, writeLineMethod, value);
         }
 
+#if !NETSTANDARD2_1
+        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicProperties, typeof(Console))]
+#endif
         private MethodCallExpression WriteLineToOut()
         {
             var outProperty = typeof(Console).GetProperty(nameof(Console.Out));
+            System.Diagnostics.Debug.Assert(outProperty is not null);
             return WriteLineTo(Property(null, outProperty), value);
         }
 
+#if !NETSTANDARD2_1
+        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicProperties, typeof(Console))]
+#endif
         private MethodCallExpression WriteLineToError()
         {
             var outProperty = typeof(Console).GetProperty(nameof(Console.Error));
+            System.Diagnostics.Debug.Assert(outProperty is not null);
             return WriteLineTo(Property(null, outProperty), value);
         }
 
+#if !NETSTANDARD2_1
+        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicMethods, typeof(System.Diagnostics.Debug))]
+#endif
         private MethodCallExpression WriteLineToDebug()
         {
             var writeLineMethod = typeof(System.Diagnostics.Debug).GetMethod(nameof(System.Diagnostics.Debug.WriteLine), new[] { typeof(object) });
+            System.Diagnostics.Debug.Assert(writeLineMethod is not null);
             return Call(writeLineMethod, value.Type.IsValueType ? Convert(value, typeof(object)) : value);
         }
 
@@ -95,19 +111,12 @@ namespace DotNext.Linq.Expressions
         /// using Lowering technique.
         /// </summary>
         /// <returns>Translated expression.</returns>
-        public override Expression Reduce()
+        public override Expression Reduce() => kind switch
         {
-            switch (kind)
-            {
-                case Kind.Out:
-                    return WriteLineToOut();
-                case Kind.Error:
-                    return WriteLineToError();
-                case Kind.Debug:
-                    return WriteLineToDebug();
-                default:
-                    return Empty();
-            }
-        }
+            Kind.Out => WriteLineToOut(),
+            Kind.Error => WriteLineToError(),
+            Kind.Debug => WriteLineToDebug(),
+            _ => Empty(),
+        };
     }
 }

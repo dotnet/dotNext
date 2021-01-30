@@ -40,25 +40,15 @@ namespace DotNext
         /// <returns><see langword="true"/>, if both values are equal; otherwise, <see langword="false"/>.</returns>
         public static bool Equals<TOther>(in T first, in TOther second)
             where TOther : struct
-        {
-            if (SizeOf<T>() != SizeOf<TOther>())
-                return false;
-            switch (SizeOf<T>())
+            => SizeOf<T>() == SizeOf<TOther>() && SizeOf<T>() switch
             {
-                default:
-                    return EqualsAligned(ref InToRef<T, byte>(first), ref InToRef<TOther, byte>(second), SizeOf<T>());
-                case 0:
-                    return true;
-                case sizeof(byte):
-                    return InToRef<T, byte>(first) == InToRef<TOther, byte>(second);
-                case sizeof(ushort):
-                    return InToRef<T, ushort>(first) == InToRef<TOther, ushort>(second);
-                case sizeof(uint):
-                    return InToRef<T, uint>(first) == InToRef<TOther, uint>(second);
-                case sizeof(ulong):
-                    return InToRef<T, ulong>(first) == InToRef<TOther, ulong>(second);
-            }
-        }
+                0 => true,
+                sizeof(byte) => InToRef<T, byte>(first) == InToRef<TOther, byte>(second),
+                sizeof(ushort) => InToRef<T, ushort>(first) == InToRef<TOther, ushort>(second),
+                sizeof(uint) => InToRef<T, uint>(first) == InToRef<TOther, uint>(second),
+                sizeof(ulong) => InToRef<T, ulong>(first) == InToRef<TOther, ulong>(second),
+                _ => EqualsAligned(ref InToRef<T, byte>(first), ref InToRef<TOther, byte>(second), SizeOf<T>()),
+            };
 
         /// <summary>
         /// Compares bits of two values of the different type.
@@ -69,25 +59,15 @@ namespace DotNext
         /// <returns>A value that indicates the relative order of the objects being compared.</returns>
         public static int Compare<TOther>(in T first, in TOther second)
             where TOther : struct
-        {
-            if (SizeOf<T>() != SizeOf<TOther>())
-                return SizeOf<T>() - SizeOf<TOther>();
-            switch (SizeOf<TOther>())
+            => SizeOf<T>() != SizeOf<TOther>() ? SizeOf<T>() - SizeOf<TOther>() : SizeOf<T>() switch
             {
-                default:
-                    return Runtime.Intrinsics.Compare(ref InToRef<T, byte>(first), ref InToRef<TOther, byte>(second), SizeOf<T>());
-                case 0:
-                    return 0;
-                case sizeof(byte):
-                    return InToRef<T, byte>(first).CompareTo(InToRef<TOther, byte>(second));
-                case sizeof(ushort):
-                    return InToRef<T, ushort>(first).CompareTo(InToRef<TOther, ushort>(second));
-                case sizeof(uint):
-                    return InToRef<T, uint>(first).CompareTo(InToRef<TOther, uint>(second));
-                case sizeof(ulong):
-                    return InToRef<T, ulong>(first).CompareTo(InToRef<TOther, ulong>(second));
-            }
-        }
+                0 => 0,
+                sizeof(byte) => InToRef<T, byte>(first).CompareTo(InToRef<TOther, byte>(second)),
+                sizeof(ushort) => InToRef<T, ushort>(first).CompareTo(InToRef<TOther, ushort>(second)),
+                sizeof(uint) => InToRef<T, uint>(first).CompareTo(InToRef<TOther, uint>(second)),
+                sizeof(ulong) => InToRef<T, ulong>(first).CompareTo(InToRef<TOther, ulong>(second)),
+                _ => Runtime.Intrinsics.Compare(ref InToRef<T, byte>(first), ref InToRef<TOther, byte>(second), SizeOf<T>()),
+            };
 
         /// <summary>
         /// Computes hash code for the structure content.
@@ -121,6 +101,33 @@ namespace DotNext
 
             if (salted)
                 hash ^= RandomExtensions.BitwiseHashSalt;
+
+            return hash;
+        }
+
+        private static int GetHashCode<THashFunction>(in T value, int hash, THashFunction hashFunction, bool salted)
+            where THashFunction : struct, ISupplier<int, int, int>
+        {
+            switch (SizeOf<T>())
+            {
+                default:
+                    return GetHashCode32(ref InToRef<T, byte>(value), SizeOf<T>(), hash, hashFunction, salted);
+                case 0:
+                    break;
+                case sizeof(byte):
+                    hash = hashFunction.Invoke(hash, InToRef<T, byte>(in value));
+                    break;
+                case sizeof(ushort):
+                    hash = hashFunction.Invoke(hash, InToRef<T, ushort>(in value));
+                    break;
+                case sizeof(int):
+                    hash = hashFunction.Invoke(hash, InToRef<T, int>(in value));
+                    break;
+            }
+
+            if (salted)
+                hash = hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt);
+
             return hash;
         }
 
@@ -136,8 +143,8 @@ namespace DotNext
         /// <param name="hashFunction">Hashing function.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Bitwise hash code.</returns>
-        public static int GetHashCode(in T value, int hash, in ValueFunc<int, int, int> hashFunction, bool salted)
-            => GetHashCode32(ref InToRef<T, byte>(value), SizeOf<T>(), hash, in hashFunction, salted);
+        public static int GetHashCode(in T value, int hash, Func<int, int, int> hashFunction, bool salted = true)
+            => GetHashCode<DelegatingSupplier<int, int, int>>(in value, hash, hashFunction, salted);
 
         /// <summary>
         /// Computes bitwise hash code for the specified value.
@@ -151,8 +158,9 @@ namespace DotNext
         /// <param name="hashFunction">Hashing function.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Bitwise hash code.</returns>
-        public static int GetHashCode(in T value, int hash, Func<int, int, int> hashFunction, bool salted = true)
-            => GetHashCode(in value, hash, new ValueFunc<int, int, int>(hashFunction, true), salted);
+        [CLSCompliant(false)]
+        public static unsafe int GetHashCode(in T value, int hash, delegate*<int, int, int> hashFunction, bool salted = true)
+            => GetHashCode<Supplier<int, int, int>>(in value, hash, hashFunction, salted);
 
         /// <inheritdoc/>
         bool IEqualityComparer<T>.Equals(T x, T y) => Equals(in x, in y);

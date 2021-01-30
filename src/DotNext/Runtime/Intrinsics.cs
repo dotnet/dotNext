@@ -9,7 +9,6 @@ using static InlineIL.IL;
 using static InlineIL.IL.Emit;
 using static InlineIL.MethodRef;
 using static InlineIL.TypeRef;
-using Var = InlineIL.LocalVar;
 
 namespace DotNext.Runtime
 {
@@ -18,18 +17,24 @@ namespace DotNext.Runtime
     /// </summary>
     public static class Intrinsics
     {
-        private static class FNV1a32
+        [StructLayout(LayoutKind.Auto)]
+        private readonly struct FNV1a32 : ISupplier<int, int, int>
         {
             internal const int Offset = unchecked((int)2166136261);
             private const int Prime = 16777619;
 
+            int ISupplier<int, int, int>.Invoke(int hash, int data) => GetHashCode(hash, data);
+
             internal static int GetHashCode(int hash, int data) => (hash ^ data) * Prime;
         }
 
-        private static class FNV1a64
+        [StructLayout(LayoutKind.Auto)]
+        private readonly struct FNV1a64 : ISupplier<long, long, long>
         {
             internal const long Offset = unchecked((long)14695981039346656037);
             private const long Prime = 1099511628211;
+
+            long ISupplier<long, long, long>.Invoke(long hash, long data) => GetHashCode(hash, data);
 
             internal static long GetHashCode(long hash, long data) => (hash ^ data) * Prime;
         }
@@ -46,13 +51,8 @@ namespace DotNext.Runtime
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsNullable<T>()
         {
-            const string DefaultVar = "default";
-            DeclareLocals(true, new Var(DefaultVar, typeof(T)));
-            Ldloc(DefaultVar);
-            Box<T>();
-            Ldnull();
-            Ceq();
-            return Return<bool>();
+            Unsafe.SkipInit(out T value);
+            return value is null;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -72,12 +72,10 @@ namespace DotNext.Runtime
         /// <typeparam name="T">The type for which default value should be obtained.</typeparam>
         /// <returns>The default value of type <typeparamref name="T"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [return: MaybeNull]
-        public static T DefaultOf<T>()
+        public static T? DefaultOf<T>()
         {
-            DeclareLocals(true, new Var(typeof(T)));
-            Ldloc_0();
-            return Return<T>();
+            Unsafe.SkipInit(out T result);
+            return result;
         }
 
         /// <summary>
@@ -115,13 +113,10 @@ namespace DotNext.Runtime
             Ret();
 
             MarkLabel(slowPath);
-            Dup();
-            Initobj<TResult>();
             PushInRef(in input);
             Ldobj<T>();
             Stobj<T>();
             Ret();
-            throw Unreachable();    // output must be defined within scope
         }
 
         /// <summary>
@@ -157,7 +152,7 @@ namespace DotNext.Runtime
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static RuntimeTypeHandle TypeOf<T>()
         {
-            Ldtoken(typeof(T));
+            Ldtoken(Type<T>());
             return Return<RuntimeTypeHandle>();
         }
 
@@ -188,15 +183,6 @@ namespace DotNext.Runtime
             }
         }
 
-        internal static TItem GetTupleItem<T, TItem>(ref T tuple, int index)
-            where T : struct, ITuple
-        {
-            if (index < 0 || index >= tuple.Length)
-                throw new ArgumentOutOfRangeException(nameof(index));
-
-            return Unsafe.Add(ref Unsafe.As<T, TItem>(ref tuple), index);
-        }
-
         /// <summary>
         /// Provides unified behavior of type cast for reference and value types.
         /// </summary>
@@ -209,29 +195,23 @@ namespace DotNext.Runtime
         /// <returns>The result of conversion.</returns>
         /// <exception cref="InvalidCastException"><paramref name="obj"/> is <see langword="null"/> or not of type <typeparamref name="T"/>.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [return: NotNull]
-        public static T Cast<T>(object? obj) => obj is null ? throw new InvalidCastException() : (T)obj;
+        public static T Cast<T>(object? obj)
+            where T : notnull
+            => obj is null ? throw new InvalidCastException() : (T)obj;
 
-        [return: MaybeNull]
-        internal static T NullAwareCast<T>(object? obj)
+        internal static T? NullAwareCast<T>(object? obj)
         {
-            const string notNull = "notNull";
-            Push(obj);
-            Push(IsNullable<T>());
-            Brtrue(notNull);
-            Isinst<T>();
-            Dup();
-            Brtrue(notNull);
-            Pop();
-            Newobj(Constructor(Type<InvalidCastException>()));
-            Emit.Throw();
-            MarkLabel(notNull);
-            Unbox_Any<T>();
-            return Return<T>();
+            if (IsNullable<T>())
+                goto success;
+            if (obj is not T)
+                throw new InvalidCastException();
+
+            success:
+            return (T?)obj;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static unsafe int PointerHashCode(void* pointer)
+        internal static unsafe int PointerHashCode([In] void* pointer)
         {
             Ldarga(nameof(pointer));
             Call(Method(Type<UIntPtr>(), nameof(UIntPtr.GetHashCode)));
@@ -245,7 +225,7 @@ namespace DotNext.Runtime
         /// <param name="value">The object whose address is obtained.</param>
         /// <returns>An address of the given object.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static IntPtr AddressOf<T>(in T value)
+        public static nint AddressOf<T>(in T value)
         {
             PushInRef(in value);
             Conv_I();
@@ -283,11 +263,7 @@ namespace DotNext.Runtime
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static T Read<T>(this ref byte address)
             where T : unmanaged
-        {
-            Push(ref address);
-            Ldobj<T>();
-            return Return<T>();
-        }
+            => Unsafe.As<byte, T>(ref address);
 
         /// <summary>
         /// Bitwise comparison of two memory blocks.
@@ -297,9 +273,12 @@ namespace DotNext.Runtime
         /// <param name="length">The length of the first and second memory blocks.</param>
         /// <returns>Comparison result which has the semantics as return type of <see cref="IComparable.CompareTo(object)"/>.</returns>
         [CLSCompliant(false)]
-        public static unsafe int Compare(void* first, void* second, long length)
+        public static unsafe int Compare([In] void* first, [In] void* second, long length)
             => Compare(ref Unsafe.AsRef<byte>(first), ref Unsafe.AsRef<byte>(second), length);
 
+#if !NETSTANDARD2_1
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+#endif
         internal static unsafe bool EqualsAligned(ref byte first, ref byte second, long length)
         {
             var result = false;
@@ -314,10 +293,10 @@ namespace DotNext.Runtime
                 }
             }
 
-            for (; length >= sizeof(UIntPtr); first = ref first.Advance<UIntPtr>(), second = ref second.Advance<UIntPtr>())
+            for (; length >= sizeof(nuint); first = ref first.Advance<nuint>(), second = ref second.Advance<nuint>())
             {
-                if (first.Read<UIntPtr>() == second.Read<UIntPtr>())
-                    length -= sizeof(UIntPtr);
+                if (first.Read<nuint>() == second.Read<nuint>())
+                    length -= sizeof(nuint);
                 else
                     goto exit;
             }
@@ -344,7 +323,7 @@ namespace DotNext.Runtime
         /// <param name="length">Length of first and second memory blocks, in bytes.</param>
         /// <returns><see langword="true"/>, if both memory blocks have the same data; otherwise, <see langword="false"/>.</returns>
         [CLSCompliant(false)]
-        public static unsafe bool Equals(void* first, void* second, long length)
+        public static unsafe bool Equals([In] void* first, [In] void* second, long length)
         {
             var result = true;
             for (int count; length > 0L && result; length -= count, first = Unsafe.Add<byte>(first, count), second = Unsafe.Add<byte>(first, count))
@@ -357,52 +336,22 @@ namespace DotNext.Runtime
         }
 
         /// <summary>
-        /// Gets a reference to the array element with restricted mutability.
-        /// </summary>
-        /// <typeparam name="T">The type of array elements.</typeparam>
-        /// <param name="array">The array object.</param>
-        /// <param name="index">The index of the array element.</param>
-        /// <returns>The reference to the array element with restricted mutability.</returns>
-        /// <seealso cref="GetReadonlyRef{I, O}(I[], long)"/>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [Obsolete("Use overloaded method that allows to specify return type explicitly")]
-        public static ref readonly T GetReadonlyRef<T>(T[] array, long index) => ref array[index];
-
-        /// <summary>
         /// Allows to reinterpret managed pointer to array element.
         /// </summary>
         /// <typeparam name="T">The type of array elements.</typeparam>
-        /// <typeparam name="TBase">The requested.</typeparam>
+        /// <typeparam name="TBase">The requested type.</typeparam>
         /// <param name="array">The array object.</param>
         /// <param name="index">The index of the array element.</param>
         /// <returns>The reference to the array element with restricted mutability.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ref readonly TBase GetReadonlyRef<T, TBase>(this T[] array, long index)
+        public static ref readonly TBase GetReadonlyRef<T, TBase>(this T[] array, nint index)
             where T : class, TBase
         {
             Push(array);
             Push(index);
-            Conv_Ovf_I();
             Readonly();
             Ldelema<TBase>();
             return ref ReturnRef<TBase>();
-        }
-
-        /// <summary>
-        /// Determines whether the specified managed pointer is <see langword="null"/>.
-        /// </summary>
-        /// <param name="value">The managed pointer to check.</param>
-        /// <typeparam name="T">The type of the managed pointer.</typeparam>
-        /// <returns><see langword="true"/>, if the specified managed pointer is <see langword="null"/>; otherwise, <see langword="false"/>.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [Obsolete("Use Unsafe.IsNullRef method instead", false)]
-        public static bool IsNull<T>(in T value)
-        {
-            PushInRef(in value);
-            Ldnull();
-            Conv_I();
-            Ceq();
-            return Return<bool>();
         }
 
         /// <summary>
@@ -434,7 +383,6 @@ namespace DotNext.Runtime
             PushInRef(in input);
             Cpobj<T>();
             Ret();
-            throw Unreachable();    // need here because output var should be assigned
         }
 
         /// <summary>
@@ -446,7 +394,7 @@ namespace DotNext.Runtime
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
         [SuppressMessage("StyleCop.CSharp.ReadabilityRules", "SA1107", Justification = "Unaligned is a prefix instruction")]
-        public static unsafe void CopyUnaligned<T>(T* input, T* output)
+        public static unsafe void CopyUnaligned<T>([In] T* input, [Out] T* output)
             where T : unmanaged
         {
             Push(output);
@@ -463,7 +411,7 @@ namespace DotNext.Runtime
         /// <param name="output">The reference to the destination location.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
-        public static unsafe void Copy<T>(T* input, T* output)
+        public static unsafe void Copy<T>([In] T* input, [Out] T* output)
             where T : unmanaged
             => Copy(in input[0], out output[0]);
 
@@ -472,11 +420,7 @@ namespace DotNext.Runtime
             for (int count; length > 0L; length -= count, source = ref Unsafe.Add(ref source, count), destination = ref Unsafe.Add(ref destination, count))
             {
                 count = length.Truncate();
-                Push(ref destination);
-                Push(ref source);
-                Push(count);
-                Conv_Ovf_U4();
-                Cpblk();
+                Unsafe.CopyBlock(ref destination, ref source, (uint)count);
             }
         }
 
@@ -489,9 +433,12 @@ namespace DotNext.Runtime
         /// <typeparam name="T">The type of the element.</typeparam>
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe void Copy<T>(in T source, ref T destination, long count) // TODO: destination should be out parameter
+        public static unsafe void Copy<T>(in T source, out T destination, long count)
             where T : unmanaged
-            => Copy(ref Unsafe.As<T, byte>(ref Unsafe.AsRef(source)), ref Unsafe.As<T, byte>(ref destination), checked(count * sizeof(T)));
+        {
+            Unsafe.SkipInit(out destination);
+            Copy(ref Unsafe.As<T, byte>(ref Unsafe.AsRef(in source)), ref Unsafe.As<T, byte>(ref destination), checked(count * sizeof(T)));
+        }
 
         /// <summary>
         /// Swaps two values.
@@ -535,30 +482,21 @@ namespace DotNext.Runtime
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static ref byte Advance<T>(this ref byte ptr)
+        private static unsafe ref byte Advance<T>(this ref byte ptr)
             where T : unmanaged
-        {
-            Push(ref ptr);
-            Sizeof<T>();
-            Conv_I();
-            Add();
-            return ref ReturnRef<byte>();
-        }
+            => ref Unsafe.Add(ref ptr, sizeof(T));
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static unsafe ref byte Advance<T>([In] this ref byte address, [In, Out]long* length)
             where T : unmanaged
         {
-            Push(length);
-            Dup();
-            Ldind_I8();
-            Sizeof<T>();
-            Conv_I8();
-            Sub();
-            Stind_I8();
-
+            *length -= sizeof(T);
             return ref address.Advance<T>();
         }
 
+#if !NETSTANDARD2_1
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+#endif
         private static unsafe bool IsZero([In] ref byte address, long length)
         {
             var result = false;
@@ -573,10 +511,10 @@ namespace DotNext.Runtime
                 }
             }
 
-            while (length >= sizeof(UIntPtr))
+            while (length >= sizeof(nuint))
             {
-                if (address.Read<UIntPtr>() == default)
-                    address = ref address.Advance<UIntPtr>(&length);
+                if (address.Read<nuint>() == 0)
+                    address = ref address.Advance<nuint>(&length);
                 else
                     goto exit;
             }
@@ -600,23 +538,22 @@ namespace DotNext.Runtime
         /// <param name="address">The pointer to the memory to be cleared.</param>
         /// <param name="length">The length of the memory to be cleared, in bytes.</param>
         [CLSCompliant(false)]
-        public static unsafe void ClearBits(void* address, long length)
+        public static unsafe void ClearBits([In, Out] void* address, long length)
         {
             for (int count; length > 0L; length -= count, address = Unsafe.Add<byte>(address, count))
             {
                 count = length.Truncate();
-                Push(address);
-                Ldc_I4_0();
-                Conv_U4();
-                Push(count);
-                Conv_U4();
-                Initblk();
+                Unsafe.InitBlock(address, 0, (uint)count);
             }
         }
 
         #region Bitwise Hash Code
 
-        internal static unsafe long GetHashCode64([In] ref byte source, long length, long hash, in ValueFunc<long, long, long> hashFunction, bool salted)
+#if !NETSTANDARD2_1
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+#endif
+        internal static unsafe long GetHashCode64<THashFunction>([In] ref byte source, long length, long hash, THashFunction hashFunction, bool salted)
+            where THashFunction : struct, ISupplier<long, long, long>
         {
             switch (length)
             {
@@ -634,51 +571,57 @@ namespace DotNext.Runtime
                 case sizeof(ushort):
                     hash = hashFunction.Invoke(hash, Unsafe.ReadUnaligned<ushort>(ref source));
                     break;
-                case 3:
-                    goto default;
                 case sizeof(uint):
                     hash = hashFunction.Invoke(hash, Unsafe.ReadUnaligned<uint>(ref source));
                     break;
-                case 5:
-                case 6:
-                case 7:
-                    goto default;
             }
 
             return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
         }
 
         internal static unsafe long GetHashCode64([In] ref byte source, long length, bool salted)
+            => GetHashCode64(ref source, length, FNV1a64.Offset, new FNV1a64(), salted);
+
+        /// <summary>
+        /// Computes 64-bit hash code for the vector.
+        /// </summary>
+        /// <param name="getter">The pointer to the function responsible for providing data from the vector.</param>
+        /// <param name="count">The number of elements in the vector.</param>
+        /// <param name="arg">The argument to be passed to the data getter.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <typeparam name="T">The type of the argument to be passed to the vector accessor.</typeparam>
+        /// <returns>The computed hash.</returns>
+        public static long GetHashCode64<T>(Func<T, int, long> getter, int count, T arg, bool salted = true)
         {
+            if (getter is null)
+                throw new ArgumentNullException(nameof(getter));
+
             var hash = FNV1a64.Offset;
-            switch (length)
-            {
-                default:
-                    for (; length >= sizeof(long); source = ref source.Advance<long>(&length))
-                        hash = FNV1a64.GetHashCode(hash, Unsafe.ReadUnaligned<long>(ref source));
-                    for (; length > 0L; source = ref source.Advance<byte>(&length))
-                        hash = FNV1a64.GetHashCode(hash, source);
-                    break;
-                case 0L:
-                    break;
-                case sizeof(byte):
-                    hash = FNV1a64.GetHashCode(hash, source);
-                    break;
-                case sizeof(ushort):
-                    hash = FNV1a64.GetHashCode(hash, Unsafe.ReadUnaligned<ushort>(ref source));
-                    break;
-                case 3:
-                    goto default;
-                case sizeof(uint):
-                    hash = FNV1a64.GetHashCode(hash, Unsafe.ReadUnaligned<uint>(ref source));
-                    break;
-                case 5:
-                case 6:
-                case 7:
-                    goto default;
-            }
+            for (var i = 0; i < count; i++)
+                hash = FNV1a64.GetHashCode(hash, getter(arg, i));
 
             return salted ? FNV1a64.GetHashCode(hash, RandomExtensions.BitwiseHashSalt) : hash;
+        }
+
+        /// <summary>
+        /// Computes 32-bit hash code for the vector.
+        /// </summary>
+        /// <param name="getter">The pointer to the function responsible for providing data from the vector.</param>
+        /// <param name="count">The number of elements in the vector.</param>
+        /// <param name="arg">The argument to be passed to the data getter.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <typeparam name="T">The type of the argument to be passed to the vector accessor.</typeparam>
+        /// <returns>The computed hash.</returns>
+        public static int GetHashCode32<T>(Func<T, int, int> getter, int count, T arg, bool salted = true)
+        {
+            if (getter is null)
+                throw new ArgumentNullException(nameof(getter));
+
+            var hash = FNV1a32.Offset;
+            for (var i = 0; i < count; i++)
+                hash = FNV1a32.GetHashCode(hash, getter(arg, i));
+
+            return salted ? FNV1a32.GetHashCode(hash, RandomExtensions.BitwiseHashSalt) : hash;
         }
 
         /// <summary>
@@ -696,7 +639,7 @@ namespace DotNext.Runtime
         /// <returns>Hash code of the memory block.</returns>
         [CLSCompliant(false)]
         public static unsafe long GetHashCode64([In] void* source, long length, long hash, Func<long, long, long> hashFunction, bool salted = true)
-            => GetHashCode64(source, length, hash, new ValueFunc<long, long, long>(hashFunction, true), salted);
+            => GetHashCode64<DelegatingSupplier<long, long, long>>(source, length, hash, hashFunction, salted);
 
         /// <summary>
         /// Computes 64-bit hash code for the block of memory, 64-bit version.
@@ -705,6 +648,7 @@ namespace DotNext.Runtime
         /// This method may give different value each time you run the program for
         /// the same data. To disable this behavior, pass false to <paramref name="salted"/>.
         /// </remarks>
+        /// <typeparam name="THashFunction">The type providing implementation of the hash function.</typeparam>
         /// <param name="source">A pointer to the block of memory.</param>
         /// <param name="length">Length of memory block to be hashed, in bytes.</param>
         /// <param name="hash">Initial value of the hash.</param>
@@ -712,8 +656,9 @@ namespace DotNext.Runtime
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Hash code of the memory block.</returns>
         [CLSCompliant(false)]
-        public static unsafe long GetHashCode64([In] void* source, long length, long hash, in ValueFunc<long, long, long> hashFunction, bool salted = true)
-            => GetHashCode64(ref ((byte*)source)[0], length, hash, in hashFunction, salted);
+        public static unsafe long GetHashCode64<THashFunction>([In] void* source, long length, long hash, THashFunction hashFunction, bool salted = true)
+            where THashFunction : struct, ISupplier<long, long, long>
+            => GetHashCode64(ref ((byte*)source)[0], length, hash, hashFunction, salted);
 
         /// <summary>
         /// Computes 64-bit hash code for the block of memory.
@@ -745,9 +690,13 @@ namespace DotNext.Runtime
         /// <returns>Hash code of the memory block.</returns>
         [CLSCompliant(false)]
         public static unsafe int GetHashCode32([In] void* source, long length, int hash, Func<int, int, int> hashFunction, bool salted = true)
-            => GetHashCode32(source, length, hash, new ValueFunc<int, int, int>(hashFunction, true), salted);
+            => GetHashCode32<DelegatingSupplier<int, int, int>>(source, length, hash, hashFunction, salted);
 
-        internal static unsafe int GetHashCode32([In] ref byte source, long length, int hash, in ValueFunc<int, int, int> hashFunction, bool salted)
+#if !NETSTANDARD2_1
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+#endif
+        internal static unsafe int GetHashCode32<THashFunction>([In] ref byte source, long length, int hash, THashFunction hashFunction, bool salted)
+            where THashFunction : struct, ISupplier<int, int, int>
         {
             switch (length)
             {
@@ -771,28 +720,7 @@ namespace DotNext.Runtime
         }
 
         internal static unsafe int GetHashCode32([In] ref byte source, long length, bool salted)
-        {
-            var hash = FNV1a32.Offset;
-            switch (length)
-            {
-                default:
-                    for (; length >= sizeof(int); source = ref source.Advance<int>(&length))
-                        hash = FNV1a32.GetHashCode(hash, Unsafe.ReadUnaligned<int>(ref source));
-                    for (; length > 0L; source = ref source.Advance<byte>(&length))
-                        hash = FNV1a32.GetHashCode(hash, source);
-                    break;
-                case 0L:
-                    break;
-                case sizeof(byte):
-                    hash = FNV1a32.GetHashCode(hash, source);
-                    break;
-                case sizeof(ushort):
-                    hash = FNV1a32.GetHashCode(hash, Unsafe.ReadUnaligned<ushort>(ref source));
-                    break;
-            }
-
-            return salted ? FNV1a32.GetHashCode(hash, RandomExtensions.BitwiseHashSalt) : hash;
-        }
+            => GetHashCode32(ref source, length, FNV1a32.Offset, new FNV1a32(), salted);
 
         /// <summary>
         /// Computes 32-bit hash code for the block of memory.
@@ -801,6 +729,7 @@ namespace DotNext.Runtime
         /// This method may give different value each time you run the program for
         /// the same data. To disable this behavior, pass false to <paramref name="salted"/>.
         /// </remarks>
+        /// <typeparam name="THashFunction">The type providing implementation of the hash function.</typeparam>
         /// <param name="source">A pointer to the block of memory.</param>
         /// <param name="length">Length of memory block to be hashed, in bytes.</param>
         /// <param name="hash">Initial value of the hash.</param>
@@ -808,8 +737,9 @@ namespace DotNext.Runtime
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Hash code of the memory block.</returns>
         [CLSCompliant(false)]
-        public static unsafe int GetHashCode32([In] void* source, long length, int hash, in ValueFunc<int, int, int> hashFunction, bool salted = true)
-            => GetHashCode32(ref ((byte*)source)[0], length, hash, in hashFunction, salted);
+        public static unsafe int GetHashCode32<THashFunction>([In] void* source, long length, int hash, THashFunction hashFunction, bool salted = true)
+            where THashFunction : struct, ISupplier<int, int, int>
+            => GetHashCode32(ref ((byte*)source)[0], length, hash, hashFunction, salted);
 
         /// <summary>
         /// Computes 32-bit hash code for the block of memory.
@@ -844,7 +774,7 @@ namespace DotNext.Runtime
         /// <returns><see langword="true"/> if <paramref name="obj"/> is not <see langword="null"/> and of type <typeparamref name="T"/>; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsExactTypeOf<T>(object? obj)
-            => obj != null && obj.GetType() == typeof(T);
+            => obj is not null && obj.GetType() == typeof(T);
 
         /// <summary>
         /// Throws arbitrary object as exception.
@@ -904,12 +834,12 @@ namespace DotNext.Runtime
         /// <param name="array">The array object.</param>
         /// <returns>The length of the array as native unsigned integer.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [CLSCompliant(false)]
-        public static UIntPtr GetLength(Array array)
+        public static nint GetLength(Array array)
         {
             Push(array);
             Ldlen();
-            return Return<UIntPtr>();
+            Conv_I();
+            return Return<nint>();
         }
 
         /// <summary>
@@ -920,13 +850,10 @@ namespace DotNext.Runtime
         /// <typeparam name="T">The type of the elements in the array.</typeparam>
         /// <returns>The array element.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T GetElement<T>(T[] array, IntPtr index)
-        {
-            Push(array);
-            Push(index);
-            Ldelem_Any<T>();
-            return Return<T>();
-        }
+#if !NETSTANDARD2_1
+        [Obsolete("Use C# to access array element using nint data type")]
+#endif
+        public static T GetElement<T>(T[] array, nint index) => array[index];
 
         /// <summary>
         /// Gets the address of the array element.
@@ -936,13 +863,10 @@ namespace DotNext.Runtime
         /// <typeparam name="T">The type of the elements in the array.</typeparam>
         /// <returns>The reference to the array element.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ref T GetElementReference<T>(T[] array, IntPtr index)
-        {
-            Push(array);
-            Push(index);
-            Ldelema<T>();
-            return ref ReturnRef<T>();
-        }
+#if !NETSTANDARD2_1
+        [Obsolete("Use C# to access array element using nint data type")]
+#endif
+        public static ref T GetElementReference<T>(T[] array, nint index) => ref array[index];
 
         /// <summary>
         /// Gets an element of the array by its index.
@@ -953,14 +877,10 @@ namespace DotNext.Runtime
         /// <returns>The array element.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
-        public static T GetElement<T>(T[] array, UIntPtr index)
-        {
-            Push(array);
-            Push(index);
-            Conv_Ovf_I_Un();
-            Ldelem_Any<T>();
-            return Return<T>();
-        }
+#if !NETSTANDARD2_1
+        [Obsolete("Use C# to access array element using nint data type")]
+#endif
+        public static T GetElement<T>(T[] array, nuint index) => GetElement(array, checked((nint)index));
 
         /// <summary>
         /// Gets the address of the array element.
@@ -971,14 +891,10 @@ namespace DotNext.Runtime
         /// <returns>The reference to the array element.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
-        public static ref T GetElementReference<T>(T[] array, UIntPtr index)
-        {
-            Push(array);
-            Push(index);
-            Conv_Ovf_I_Un();
-            Ldelema<T>();
-            return ref ReturnRef<T>();
-        }
+#if !NETSTANDARD2_1
+        [Obsolete("Use C# to access array element using nint data type")]
+#endif
+        public static ref T GetElementReference<T>(T[] array, nuint index) => ref GetElementReference<T>(array, checked((nint)index));
 
         /// <summary>
         /// Converts two bits to 32-bit signed integer.

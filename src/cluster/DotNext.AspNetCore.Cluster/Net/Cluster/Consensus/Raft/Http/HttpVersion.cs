@@ -22,5 +22,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         /// Use HTTP 2
         /// </summary>
         Http2,
+
+        /// <summary>
+        /// Use HTTP 3
+        /// </summary>
+        Http3,
     }
 }

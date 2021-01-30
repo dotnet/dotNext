@@ -44,26 +44,22 @@ namespace DotNext.VariantType
         /// <summary>
         /// Interprets stored value as <typeparamref name="T1"/>.
         /// </summary>
-        public Optional<T1?> First => value as T1;
+        public Optional<T1> First => value as T1;
 
         /// <summary>
         /// Interprets stored value as <typeparamref name="T2"/>.
         /// </summary>
-        public Optional<T2?> Second => value as T2;
+        public Optional<T2> Second => value as T2;
 
-        /// <summary>
-        /// Converts the stored value.
-        /// </summary>
-        /// <typeparam name="TResult">The type of conversion result.</typeparam>
-        /// <param name="mapper1">The converter for the first possible type.</param>
-        /// <param name="mapper2">The converter for the second possible type.</param>
-        /// <returns>Conversion result; or <see cref="Optional{T}.None"/> if stored value is <see langword="null"/>.</returns>
-        public Optional<TResult> Convert<TResult>(in ValueFunc<T1, TResult> mapper1, in ValueFunc<T2, TResult> mapper2) => value switch
-        {
-            T1 first => mapper1.Invoke(first),
-            T2 second => mapper2.Invoke(second),
-            _ => Optional<TResult>.None,
-        };
+        private Optional<TResult> Convert<TResult, TConverter1, TConverter2>(TConverter1 mapper1, TConverter2 mapper2)
+            where TConverter1 : struct, ISupplier<T1, TResult>
+            where TConverter2 : struct, ISupplier<T2, TResult>
+            => value switch
+            {
+                T1 first => mapper1.Invoke(first),
+                T2 second => mapper2.Invoke(second),
+                _ => Optional<TResult>.None,
+            };
 
         /// <summary>
         /// Converts the stored value.
@@ -73,19 +69,24 @@ namespace DotNext.VariantType
         /// <param name="mapper2">The converter for the second possible type.</param>
         /// <returns>Conversion result; or <see cref="Optional{T}.None"/> if stored value is <see langword="null"/>.</returns>
         public Optional<TResult> Convert<TResult>(Converter<T1, TResult> mapper1, Converter<T2, TResult> mapper2)
-            => Convert(mapper1.AsValueFunc(true), mapper2.AsValueFunc(true));
+            => Convert<TResult, DelegatingConverter<T1, TResult>, DelegatingConverter<T2, TResult>>(mapper1, mapper2);
 
         /// <summary>
-        /// Converts this variant value into another value.
+        /// Converts the stored value.
         /// </summary>
-        /// <typeparam name="TResult1">The first possible type of the conversion result.</typeparam>
-        /// <typeparam name="TResult2">The second possible type of the conversion result.</typeparam>
+        /// <typeparam name="TResult">The type of conversion result.</typeparam>
         /// <param name="mapper1">The converter for the first possible type.</param>
         /// <param name="mapper2">The converter for the second possible type.</param>
-        /// <returns>The variant value converted from this variant value.</returns>
-        public Variant<TResult1, TResult2> Convert<TResult1, TResult2>(in ValueFunc<T1, TResult1> mapper1, in ValueFunc<T2, TResult2> mapper2)
+        /// <returns>Conversion result; or <see cref="Optional{T}.None"/> if stored value is <see langword="null"/>.</returns>
+        [CLSCompliant(false)]
+        public unsafe Optional<TResult> Convert<TResult>(delegate*<T1, TResult> mapper1, delegate*<T2, TResult> mapper2)
+            => Convert<TResult, Supplier<T1, TResult>, Supplier<T2, TResult>>(mapper1, mapper2);
+
+        private Variant<TResult1, TResult2> Convert<TResult1, TResult2, TConverter1, TConverter2>(TConverter1 mapper1, TConverter2 mapper2)
             where TResult1 : class
             where TResult2 : class
+            where TConverter1 : struct, ISupplier<T1, TResult1>
+            where TConverter2 : struct, ISupplier<T2, TResult2>
             => value switch
             {
                 T1 first => new Variant<TResult1, TResult2>(mapper1.Invoke(first)),
@@ -104,7 +105,21 @@ namespace DotNext.VariantType
         public Variant<TResult1, TResult2> Convert<TResult1, TResult2>(Converter<T1, TResult1> mapper1, Converter<T2, TResult2> mapper2)
             where TResult1 : class
             where TResult2 : class
-            => Convert(mapper1.AsValueFunc(true), mapper2.AsValueFunc(true));
+            => Convert<TResult1, TResult2, DelegatingConverter<T1, TResult1>, DelegatingConverter<T2, TResult2>>(mapper1, mapper2);
+
+        /// <summary>
+        /// Converts this variant value into another value.
+        /// </summary>
+        /// <typeparam name="TResult1">The first possible type of the conversion result.</typeparam>
+        /// <typeparam name="TResult2">The second possible type of the conversion result.</typeparam>
+        /// <param name="mapper1">The converter for the first possible type.</param>
+        /// <param name="mapper2">The converter for the second possible type.</param>
+        /// <returns>The variant value converted from this variant value.</returns>
+        [CLSCompliant(false)]
+        public unsafe Variant<TResult1, TResult2> Convert<TResult1, TResult2>(delegate*<T1, TResult1> mapper1, delegate*<T2, TResult2> mapper2)
+            where TResult1 : class
+            where TResult2 : class
+            => Convert<TResult1, TResult2, Supplier<T1, TResult1>, Supplier<T2, TResult2>>(mapper1, mapper2);
 
         /// <summary>
         /// Change order of type parameters.
@@ -198,7 +213,7 @@ namespace DotNext.VariantType
         /// Indicates that variant value is non-<see langword="null"/> value.
         /// </summary>
         /// <param name="variant">The variant value to convert.</param>
-        public static bool operator true(Variant<T1, T2> variant) => !(variant.value is null);
+        public static bool operator true(Variant<T1, T2> variant) => variant.value is not null;
 
         /// <summary>
         /// Indicates that variant value is <see langword="null"/> value.
@@ -395,7 +410,7 @@ namespace DotNext.VariantType
         /// Indicates that variant value is non-<see langword="null"/> value.
         /// </summary>
         /// <param name="variant">The variant value to check.</param>
-        public static bool operator true(Variant<T1, T2, T3> variant) => !(variant.value is null);
+        public static bool operator true(Variant<T1, T2, T3> variant) => variant.value is not null;
 
         /// <summary>
         /// Indicates that variant value is <see langword="null"/> value.
@@ -622,7 +637,7 @@ namespace DotNext.VariantType
         /// Indicates that variant value is non-<see langword="null"/> value.
         /// </summary>
         /// <param name="variant">The variant value to check.</param>
-        public static bool operator true(Variant<T1, T2, T3, T4> variant) => !(variant.value is null);
+        public static bool operator true(Variant<T1, T2, T3, T4> variant) => variant.value is not null;
 
         /// <summary>
         /// Indicates that variant value is <see langword="null"/> value.

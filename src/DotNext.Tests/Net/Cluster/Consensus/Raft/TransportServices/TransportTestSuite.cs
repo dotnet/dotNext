@@ -83,7 +83,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                         while (await entries.MoveNextAsync())
                         {
                             True(entries.Current.Length.HasValue);
-                            buffer = await entries.Current.ToByteArrayAsync(token);
+                            buffer = await entries.Current.ToByteArrayAsync(null, token);
                             ReceivedEntries.Add(new BufferedEntry(entries.Current.Term, entries.Current.Timestamp, entries.Current.IsSnapshot, buffer));
                         }
                         break;
@@ -91,13 +91,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                         break;
                     case ReceiveEntriesBehavior.ReceiveFirst:
                         True(await entries.MoveNextAsync());
-                        buffer = await entries.Current.ToByteArrayAsync(token);
+                        buffer = await entries.Current.ToByteArrayAsync(null, token);
                         ReceivedEntries.Add(new BufferedEntry(entries.Current.Term, entries.Current.Timestamp, entries.Current.IsSnapshot, buffer));
                         break;
                     case ReceiveEntriesBehavior.DropFirst:
                         True(await entries.MoveNextAsync());
                         True(await entries.MoveNextAsync());
-                        buffer = await entries.Current.ToByteArrayAsync(token);
+                        buffer = await entries.Current.ToByteArrayAsync(null, token);
                         ReceivedEntries.Add(new BufferedEntry(entries.Current.Term, entries.Current.Timestamp, entries.Current.IsSnapshot, buffer));
                         break;
                 }
@@ -110,7 +110,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 Equal(42L, senderTerm);
                 Equal(10, snapshotIndex);
                 True(snapshot.IsSnapshot);
-                var buffer = await snapshot.ToByteArrayAsync(token);
+                var buffer = await snapshot.ToByteArrayAsync(null, token);
                 ReceivedEntries.Add(new BufferedEntry(snapshot.Term, snapshot.Timestamp, snapshot.IsSnapshot, buffer));
                 return new Result<bool>(43L, true);
             }
@@ -122,6 +122,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 Equal(1L, lastLogIndex);
                 Equal(56L, lastLogTerm);
                 return Task.FromResult(new Result<bool>(43L, true));
+            }
+
+            Task<Result<bool>> ILocalMember.ReceivePreVoteAsync(EndPoint sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
+            {
+                True(token.CanBeCanceled);
+                Equal(10L, term);
+                Equal(2L, lastLogIndex);
+                Equal(99L, lastLogTerm);
+                return Task.FromResult(new Result<bool>(44L, true));
             }
 
             public IReadOnlyDictionary<string, string> Metadata { get; }
@@ -166,6 +175,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 result = await exchange.Task;
                 True(result.Value);
                 Equal(43L, result.Term);
+            }
+            // PreVote reqyest
+            using (timeoutTokenSource = new CancellationTokenSource(timeout))
+            {
+                var exchange = new PreVoteExchange(10L, 2L, 99L);
+                client.Enqueue(exchange, timeoutTokenSource.Token);
+                result = await exchange.Task;
+                True(result.Value);
+                Equal(44L, result.Term);
             }
             //Resign request
             using (timeoutTokenSource = new CancellationTokenSource(timeout))

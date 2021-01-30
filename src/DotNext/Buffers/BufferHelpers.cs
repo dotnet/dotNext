@@ -1,23 +1,15 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Text;
 
 namespace DotNext.Buffers
 {
     /// <summary>
     /// Represents helper methods to work with various buffer representations.
     /// </summary>
-    public static class BufferHelpers
+    public static partial class BufferHelpers
     {
-        private static readonly SpanAction<char, IGrowableBuffer<char>> InitializeStringFromWriter = InitializeString;
-        private static readonly SpanAction<char, ReadOnlySequence<char>> InitializeStringFromSequence = InitializeString;
-
-        private static void InitializeString(Span<char> output, IGrowableBuffer<char> input)
-            => input.CopyTo(output);
-
-        private static void InitializeString(Span<char> output, ReadOnlySequence<char> input)
-            => input.CopyTo(output);
-
         /// <summary>
         /// Converts the sequence of memory blocks to <see cref="ReadOnlySequence{T}"/> data type.
         /// </summary>
@@ -75,37 +67,6 @@ namespace DotNext.Buffers
         }
 
         /// <summary>
-        /// Constructs the string from the buffer.
-        /// </summary>
-        /// <param name="writer">The buffer of characters.</param>
-        /// <returns>The string constructed from the buffer.</returns>
-        public static string BuildString(this IGrowableBuffer<char> writer)
-        {
-            var length = writer.WrittenCount;
-
-            if (length == 0L)
-                return string.Empty;
-
-            return string.Create(checked((int)length), writer, InitializeStringFromWriter);
-        }
-
-        /// <summary>
-        /// Constructs the string from non-contiguous buffer.
-        /// </summary>
-        /// <param name="sequence">The sequence of characters.</param>
-        /// <returns>The string constucted from the characters containing in the buffer.</returns>
-        public static string BuildString(this in ReadOnlySequence<char> sequence)
-        {
-            if (sequence.IsEmpty)
-                return string.Empty;
-
-            if (sequence.IsSingleSegment)
-                return new string(sequence.FirstSpan);
-
-            return string.Create(checked((int)sequence.Length), sequence, InitializeStringFromSequence);
-        }
-
-        /// <summary>
         /// Writes single element to the buffer.
         /// </summary>
         /// <param name="writer">The buffer writer.</param>
@@ -117,5 +78,30 @@ namespace DotNext.Buffers
             writer.GetSpan(count)[0] = value;
             writer.Advance(count);
         }
+
+        /// <summary>
+        /// Writes the sequence of elements to the buffer.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements in the sequence.</typeparam>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="value">The sequence of elements to be written.</param>
+        public static void Write<T>(this IBufferWriter<T> writer, ReadOnlySequence<T> value)
+        {
+            foreach (var segment in value)
+                writer.Write(segment.Span);
+        }
+
+#if !NETSTANDARD2_1
+        /// <summary>
+        /// Writes the contents of string builder to the buffer.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="input">The string builder.</param>
+        public static void Write(this IBufferWriter<char> writer, StringBuilder input)
+        {
+            foreach (var chunk in input.GetChunks())
+                writer.Write(chunk.Span);
+        }
+#endif
     }
 }

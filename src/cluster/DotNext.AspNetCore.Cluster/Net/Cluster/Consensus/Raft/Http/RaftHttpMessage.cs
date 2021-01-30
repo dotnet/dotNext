@@ -13,7 +13,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     internal abstract class RaftHttpMessage : HttpMessage
     {
-        private protected static readonly ValueParser<DateTimeOffset> DateTimeParser = (string str, out DateTimeOffset value) => HeaderUtils.TryParseDate(str, out value);
+        // cached to avoid memory allocation
+        private protected static readonly ValueParser<DateTimeOffset> Rfc1123Parser = TryParseRfc1123FormattedDateTime;
 
         // request - represents Term value according with Raft protocol
         // response - represents Term value of the reply node
@@ -21,7 +22,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         internal readonly long ConsensusTerm;
 
-        private protected RaftHttpMessage(string messageType, IPEndPoint sender, long term)
+        private protected RaftHttpMessage(string messageType, in ClusterMemberId sender, long term)
             : base(messageType, sender) => ConsensusTerm = term;
 
         private protected RaftHttpMessage(HeadersReader<StringValues> headers)
@@ -36,9 +37,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             base.PrepareRequest(request);
         }
 
-        private protected static new async Task<Result<bool>> ParseBoolResponse(HttpResponseMessage response)
+        private static bool TryParseRfc1123FormattedDateTime(string input, out DateTimeOffset result)
+            => HeaderUtils.TryParseDate(input, out result);
+
+        private protected static new async Task<Result<bool>> ParseBoolResponse(HttpResponseMessage response, CancellationToken token)
         {
-            var result = await HttpMessage.ParseBoolResponse(response).ConfigureAwait(false);
+            var result = await HttpMessage.ParseBoolResponse(response, token).ConfigureAwait(false);
             var term = ParseHeader<IEnumerable<string>, long>(TermHeader, response.Headers.TryGetValues, Int64Parser);
             return new Result<bool>(term, result);
         }

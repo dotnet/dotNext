@@ -26,7 +26,7 @@ namespace DotNext.Collections.Generic
                     for (T? current; enumerator.MoveNext();)
                     {
                         current = enumerator.Current;
-                        if (current != null)
+                        if (current is not null)
                         {
                             this.current = current;
                             return true;
