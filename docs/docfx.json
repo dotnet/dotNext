@@ -29,14 +29,26 @@
         {
           "files": [ "**.csproj" ],
           "src": "../src/cluster/DotNext.Net.Cluster"
-        },
+        }
+      ],
+      "properties": {
+        "TargetFramework": "netstandard2.1"
+      },
+      "force": true,
+      "dest": "api",
+    },
+    {
+      "src": [
         {
           "files": [ "**.csproj" ],
           "src": "../src/cluster/DotNext.AspNetCore.Cluster/"
         }
       ],
-      "dest": "api",
-      "filter": "filter.yml"
+      "properties": {
+        "TargetFramework": "netcoreapp3.1"
+      },
+      "force": true,
+      "dest": "api"
     }
   ],
   "build": {

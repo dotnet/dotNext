@@ -40,7 +40,6 @@ namespace DotNext
         /// Sets an array of excluded field names.
         /// </summary>
         /// <value>An array of excluded fields.</value>
-        [SuppressDocumentation]
         public string[] ExcludedFields
         {
 #if NETSTANDARD2_1

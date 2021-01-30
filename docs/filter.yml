@@ -1,4 +1,0 @@
-apiRules:
-- exclude:
-    hasAttribute:
-        uid: DotNext.Runtime.CompilerServices.SuppressDocumentationAttribute 
