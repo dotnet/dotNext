@@ -35,7 +35,7 @@
         "TargetFramework": "netstandard2.1"
       },
       "force": true,
-      "dest": "api",
+      "dest": "api"
     },
     {
       "src": [
