@@ -1,7 +1,7 @@
 - name: Features
   href: features/
 - name: API Reference
-  href: api/
+  href: api.md
 - name: Benchmarks
   href: benchmarks.md
 - name: NuGet
