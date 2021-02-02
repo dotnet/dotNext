@@ -164,7 +164,7 @@ decimal parsedValue = args.result;  //parsedValue == 42M
 
 # Reusable Concepts
 The library offers ready-to-use concept types:
-* [Number&lt;T&gt;](xref:DotNext.Number) represents any numeric type. This concept exposes operators, instance and static methods that are common to all numeric types in .NET Base Class Library.
+* [Number&lt;T&gt;](xref:DotNext.Number`1) represents any numeric type. This concept exposes operators, instance and static methods that are common to all numeric types in .NET Base Class Library.
 * [Disposable&lt;T&gt;](xref:DotNext.Disposable`1) represents any type implementing _Dispose pattern_ even if target type doesn't implement [IDisposable](https://docs.microsoft.com/en-us/dotnet/api/system.idisposable) interface directly.
 * [Awaitable&lt;T, TAwaitor&gt;](xref:DotNext.Runtime.CompilerServices.Awaitable`2) or [Awaitable&lt;T, TAwaitor, TResult&gt;](xref:DotNext.Runtime.CompilerServices.Awaitable`3) represents _awaitable pattern_ which describes any type compatible with **await** operator.
 

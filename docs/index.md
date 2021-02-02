@@ -47,18 +47,18 @@ This library provides a special types to work with unmanaged memory in safe mann
 
 # DotNext.Threading
 <a href="https://www.nuget.org/packages/dotnext.threading/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.threading.svg?logo=NuGet"></a>  ![Downloads](https://img.shields.io/nuget/dt/dotnext.threading.svg)<br/>
-The library allows you to reuse experience of blocking synchronization with help of [ReaderWriteLockSlim](https://docs.microsoft.com/en-us/dotnet/api/system.threading.readerwriterlockslim), [AsyncCountdownEvent](api/DotNext.Threading.AsyncCountdownEvent.yml) and friends in asynchronous code using their alternatives such as asynchronous locks.
+The library allows you to reuse experience of blocking synchronization with help of [ReaderWriteLockSlim](https://docs.microsoft.com/en-us/dotnet/api/system.threading.readerwriterlockslim), [CountdownEvent](https://docs.microsoft.com/en-us/dotnet/api/system.threading.countdownevent) and friends in asynchronous code using their alternatives such as asynchronous locks.
 
 The following code describes these alternative implementations of synchronization primitives for asynchronous code:
 
 | Synchronization Primitive | Asynchronous Version |
 | ---- | ---- |
-| [ReaderWriteLockSlim](https://docs.microsoft.com/en-us/dotnet/api/system.threading.readerwriterlockslim) | [AsyncReaderWriterLock](api/DotNext.Threading.AsyncReaderWriterLock.yml) |
-| [Monitor](https://docs.microsoft.com/en-us/dotnet/api/system.threading.monitor) | [AsyncExclusiveLock](api/DotNext.Threading.AsyncExclusiveLock.yml)
-| [ManualResetEvent](https://docs.microsoft.com/en-us/dotnet/api/system.threading.manualresetevent) | [AsyncManualResetEvent](api/DotNext.Threading.AsyncManualResetEvent.yml)
-| [AutoResetEvent](https://docs.microsoft.com/en-us/dotnet/api/system.threading.autoresetevent) | [AsyncAutoResetEvent](api/DotNext.Threading.AsyncAutoResetEvent.yml)
-| [Barrier](https://docs.microsoft.com/en-us/dotnet/api/system.threading.barrier) | [AsyncBarrier](api/DotNext.Threading.AsyncBarrier.yml)
-| [CountdownEvent](https://docs.microsoft.com/en-us/dotnet/api/system.threading.countdownevent) | [AsyncCountdownEvent](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncCountdownEvent)
+| [ReaderWriteLockSlim](https://docs.microsoft.com/en-us/dotnet/api/system.threading.readerwriterlockslim) | [AsyncReaderWriterLock](xref:DotNext.Threading.AsyncReaderWriterLock) |
+| [Monitor](https://docs.microsoft.com/en-us/dotnet/api/system.threading.monitor) | [AsyncExclusiveLock](xref:DotNext.Threading.AsyncExclusiveLock.yml)
+| [ManualResetEvent](https://docs.microsoft.com/en-us/dotnet/api/system.threading.manualresetevent) | [AsyncManualResetEvent](xref:DotNext.Threading.AsyncManualResetEvent)
+| [AutoResetEvent](https://docs.microsoft.com/en-us/dotnet/api/system.threading.autoresetevent) | [AsyncAutoResetEvent](xref:DotNext.Threading.AsyncAutoResetEvent)
+| [Barrier](https://docs.microsoft.com/en-us/dotnet/api/system.threading.barrier) | [AsyncBarrier](xref:DotNext.Threading.AsyncBarrier)
+| [CountdownEvent](https://docs.microsoft.com/en-us/dotnet/api/system.threading.countdownevent) | [AsyncCountdownEvent](xref:DotNext.Threading.AsyncCountdownEvent)
 
 But this is not all features of this library. Read more [here](./features/threading/index.md).
 
