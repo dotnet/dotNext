@@ -3,9 +3,9 @@ Async Lambda
 Metaprogramming library provides full support of dynamic generation of [async lambda functions](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/async). This functionality is not supported by LINQ Expressions out-of-the-box.
 
 There are three key elements required to generated async lambda:
-* [CodeGenerator.AsyncLambda](../../api/DotNext.Metaprogramming.CodeGenerator.yml) method used to build async lambda function instead of `CodeGenerator.Lambda` method suitable for synchronous lambda functions only.
-* [AsyncResultExpression](../../api/DotNext.Linq.Expressions.AsyncResultExpression.yml) used to return value from the asynchronous lambda function (known as async return). Usually, the developer don't need to use this type of expression directly.
-* [AwaitExpression](../../api/DotNext.Linq.Expressions.AwaitExpression.yml) is similar to [await](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/await) operator.
+* [CodeGenerator.AsyncLambda](xref:DotNext.Metaprogramming.CodeGenerator) method used to build async lambda function instead of `CodeGenerator.Lambda` method suitable for synchronous lambda functions only.
+* [AsyncResultExpression](xref:DotNext.Linq.Expressions.AsyncResultExpression) used to return value from the asynchronous lambda function (known as async return). Usually, the developer don't need to use this type of expression directly.
+* [AwaitExpression](xref:DotNext.Linq.Expressions.AwaitExpression) is similar to [await](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/await) operator.
 
 **await** operator can be used even in _try-catch-finally_ statement and means that async lambda function works in the same way as **async** methods in C#.
 
@@ -24,7 +24,7 @@ private static async Task<long> GetPageSizeAsync(string url)
 }  
 ```
 
-`Await()` extension method from [ExpressionBuilder](../../api/DotNext.Linq.Expressions.ExpressionBuilder.yml) applicable to any object of type [Expression](https://docs.microsoft.com/en-us/dotnet/api/system.linq.expressions.expression) is an equivalent of **await** operator and do all necessary magic. Note that `Await()` is applicable inside of async lambda function. If **await** operator is used inside of synchronous async lambda function then compiled code will block the thread during execution of the expression used as an argument for this operator.
+`Await()` extension method from [ExpressionBuilder](xref:DotNext.Linq.Expressions.ExpressionBuilder) applicable to any object of type [Expression](https://docs.microsoft.com/en-us/dotnet/api/system.linq.expressions.expression) is an equivalent of **await** operator and do all necessary magic. Note that `Await()` is applicable inside of async lambda function. If **await** operator is used inside of synchronous async lambda function then compiled code will block the thread during execution of the expression used as an argument for this operator.
 
 ```csharp
 using DotNext.Linq.Expressions;
@@ -49,7 +49,7 @@ AsyncLambda<Func<string, Task<long>>>((fun, result) =>
 * `AsyncLambda((fun, result) => { })` introduces special variable `result` that can be used to assign result of the function. This approach is similar to [Result](https://www.freepascal.org/docs-html/ref/refse90.html) variable in Pascal programming language.
 * `AsyncLambda(fun => { })` doesn't introduce special variable for the function result and control transfer to the caller is provided by `CodeGenerator.Return` method.
 
-`fun` parameter is of type [LambdaContext](../../api/DotNext.Metaprogramming.LambdaContext.yml) that provides access to the function parameters.
+`fun` parameter is of type [LambdaContext](xref:DotNext.Metaprogramming.LambdaContext) that provides access to the function parameters.
 
 # Limitations
 Async lambda function has the following limitations:

@@ -1,6 +1,6 @@
 Multi-line Lambdas
 ====
-Expression Trees in C# doesn't support multi-line lambda expressions. This limitation can be avoided using [CodeGenerator.Lambda](../../api/DotNext.Metaprogramming.CodeGenerator.yml) construction method. The method accepts lexical scope of the lambda expression in the form of the delegate and provides access to parameters.
+Expression Trees in C# doesn't support multi-line lambda expressions. This limitation can be avoided using [CodeGenerator.Lambda](xref:DotNext.Metaprogramming.CodeGenerator) construction method. The method accepts lexical scope of the lambda expression in the form of the delegate and provides access to parameters.
 
 The following example shows how to generate lambda function which performs factorial computation using recursion:
 
@@ -22,7 +22,7 @@ Func<long, long> fact = Lambda<Func<long, long>>(fun =>
 fact(3);    // == 6
 ```
 
-`fun` parameter is of type [LambdaContext](../../api/DotNext.Metaprogramming.LambdaContext.yml) and provide access to the function parameters. `arg` is the lambda function parameter. `If` starts construction of _if-then-else_ expression. `fun.Invoke` method allows to invoke lambda function recursively. `OfType` describes type of conditional expression that was started by `If` call. `End` method call represents end of conditional expression. `AsDynamic` extension method allows to convert expression node to it's dynamically-typed representation that allows to use dynamic features of C# for building expression trees.
+`fun` parameter is of type [LambdaContext](xref:DotNext.Metaprogramming.LambdaContext) and provide access to the function parameters. `arg` is the lambda function parameter. `If` starts construction of _if-then-else_ expression. `fun.Invoke` method allows to invoke lambda function recursively. `OfType` describes type of conditional expression that was started by `If` call. `End` method call represents end of conditional expression. `AsDynamic` extension method allows to convert expression node to it's dynamically-typed representation that allows to use dynamic features of C# for building expression trees.
 
 `LambdaContext` type supports decomposition so it is possible to use convenient syntax to obtain function parameters:
 ```csharp

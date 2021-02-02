@@ -2,7 +2,7 @@ Miscellaneous Statements
 ====
 
 # WriteLine Expression
-[WriteLineExpression](../../api/DotNext.Linq.Expressions.WriteLineExpression.yml) can be used to write line of the text in dynamically generated code. This expression supports several outputs for the text:
+[WriteLineExpression](xref:DotNext.Linq.Expressions.WriteLineExpression) can be used to write line of the text in dynamically generated code. This expression supports several outputs for the text:
 * [Standard Output Stream](https://docs.microsoft.com/en-us/dotnet/api/system.console.out)
 * [Standard Error Stream](https://docs.microsoft.com/en-us/dotnet/api/system.console.error)
 * [Debug Output](https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.debug.writeline#System_Diagnostics_Debug_WriteLine_System_Object_)

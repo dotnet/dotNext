@@ -2,7 +2,7 @@ Base Class Library Enhancements
 ====
 
 # Randomization
-Related class: [RandomExtensions](../../api/DotNext.RandomExtensions.yml)
+Related class: [RandomExtensions](xref:DotNext.RandomExtensions)
 
 Extension methods for random data generation extends both classes [Random](https://docs.microsoft.com/en-us/dotnet/api/system.random) and [RandomNumberGenerator](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.randomnumbergenerator).
 
@@ -32,7 +32,7 @@ var b = rand.NextBoolean(0.3D); //0.3 is a probability of TRUE value
 The same extension method is provided for class [RandomNumberGenerator](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.randomnumbergenerator).
 
 # String extensions
-Related class: [StringExtensions](../../api/DotNext.StringExtensions.yml).
+Related class: [StringExtensions](xref:DotNext.StringExtensions).
 
 ## Reverse string
 Extension method _Reverse_ allows to reverse string characters and returns a new string:
@@ -55,7 +55,7 @@ array = array.TrimLength(2);    //array is { 10, 20 }
 ```
 
 # Delegates
-Related classes: [DelegateHelpers](../../api/DotNext.StringExtensions.yml), [Func](../../api/DotNext.Func.yml), [Converter](../../api/DotNext.Converter.yml), [Predicate](../../api/DotNext.Predicate.yml).
+Related classes: [DelegateHelpers](xref:DotNext.DelegateHelpers), [Func](xref:DotNext.Func), [Converter](xref:DotNext.Converter), [Predicate](xref:DotNext.Predicate).
 
 ## Change type of delegate
 Different types of delegates can refer to the same method. For instance, `Func<string, string>` represents the same signature as `Converter<string, string>`. It means that the delegate instance can be converted into another delegate type if signature matches.
@@ -118,7 +118,7 @@ Func<int> closedDelegate = DelegateHelpers.CreateDelegate<string, int>(hashCode,
 ```
 
 # Comparable data types
-Related class: [Comparison](../../api/DotNext.Comparison.yml)
+Related class: [Comparison](xref:DotNext.Comparison)
 
 ## Range check
 Checks whether the given value is in specific range.
@@ -133,7 +133,7 @@ i = 5.Clamp(0, 4); //i == 4
 ```
 
 # Equality check
-Related classes: [ObjectExtensions](../../api/DotNext.ObjectExtensions.yml), [ValueTypeExtensions](../../api/DotNext.ValueTypeExtensions.yml).
+Related classes: [ObjectExtensions](xref:DotNext.ObjectExtensions), [ValueTypeExtensions](xref:DotNext.ValueTypeExtensions).
 
 Extension method _IsOneOf_ allows to check whether the value is equal to one of the given values.
 
@@ -146,7 +146,7 @@ b = "a".IsOneOf("b", "c", "d"); //b == false
 ```
 
 # Array extensions
-Related classes: [OneDimensionalArray](../../api/DotNext.OneDimensionalArray.yml).
+Related classes: [OneDimensionalArray](xref:DotNext.OneDimensionalArray).
 
 Extension methods for slicing, iteration, conversion, element insertion and fast equality check between elements of two arrays.
 
@@ -189,7 +189,7 @@ array = array.Slice(1, 2);      //array == new []{"b", "c"}
 The same behavior can be achieved using [Span](https://docs.microsoft.com/en-us/dotnet/api/system.span-1) data type. However, these methods support large arrays where index and length cannot be represented by **int** data type.
 
 # Timestamp
-[Timestamp](https://sakno.github.io/dotNext/api/DotNext.Diagnostics.Timestamp.html) value type can be used as allocation-free alternative to [Stopwatch](https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.stopwatch) when you need to measure time intervals.
+[Timestamp](xref:DotNext.Diagnostics.Timestamp) value type can be used as allocation-free alternative to [Stopwatch](https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.stopwatch) when you need to measure time intervals.
 
 ```csharp
 using DotNext.Diagnostics;
@@ -206,8 +206,8 @@ This type should not be used as unique identifier of some point in time. The cre
 
 # Dynamic Task Result
 In .NET it is not possible to obtain a result from [task](https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1) if its result type is not known at compile-time. It can be useful if you are writing proxy or SOAP Middleware using ASP.NET Core and task type is not known for your code. .NEXT provides two ways of doing that:
-1. Synchronous method `GetResult` which is located in [Synchronization](../../api/DotNext.Threading.Tasks.Synchronization.yml) class
-1. Asynchronous method `AsDynamic` which is located in [Conversion](../../api/DotNext.Threading.Tasks.Conversion.yml) class.
+1. Synchronous method `GetResult` which is located in [Synchronization](xref:DotNext.Threading.Tasks.Synchronization) class
+1. Asynchronous method `AsDynamic` which is located in [Conversion](xref:DotNext.Threading.Tasks.Conversion) class.
 
 All you need is to have instance of non-generic [Task](https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task) class because all types tasks derive from it.
 
@@ -231,7 +231,7 @@ dynamic result = await t.AsDynamic();
 # Hex Converter
 [BitConverter.ToString](https://docs.microsoft.com/en-us/dotnet/api/system.bitconverter.tostring) method from .NET standard library allow to convert array of bytes to its hexadecimal representation. However, it doesn't support `Span<byte>` data type and therefore cannot be used in situations when bytes come from different source such as stack-allocated memory or segment of another array. Moreover, the method cannot place its result to variable of `Span<char>` type and allocates new string every time. It may be unacceptable in low-latency scenario when number of memory allocations should be reduced.
 
-[Span](../../api/DotNext.Span.yml) static class exposes two static methods for fast hexadecimal conversion:
+[Span](xref:DotNext.Span) static class exposes two static methods for fast hexadecimal conversion:
 * `ToHex` allows to convert `ReadOnlySpan<byte>` to hexadecimal representation and places result to `Span<char>`
 * `FromHex` allows to convert hexadecimal string in the from of `ReadOnlySpan<char>` to bytes and places result to `Span<byte>`
 
@@ -244,7 +244,7 @@ Span.ToHex(bytes, hex); //now hex == 081018
 ```
 
 # Polling of Concurrent Collections
-[IProducerConsumerCollection&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.collections.concurrent.iproducerconsumercollection-1) is a common interface for concurrent collections in .NET library. Consumer of such collection uses `TryTake` or more specialized method provided by subclasses to obtain elements from the collection. For convenience, [Sequence](https://sakno.github.io/dotNext/api/DotNext.Collections.Generic.Sequence.html) static class offers `GetConsumer` extension method to obtain consuming enumerable collection over the elements in the concurrent collection so you can use classic **foreach** loop:
+[IProducerConsumerCollection&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.collections.concurrent.iproducerconsumercollection-1) is a common interface for concurrent collections in .NET library. Consumer of such collection uses `TryTake` or more specialized method provided by subclasses to obtain elements from the collection. For convenience, [Sequence](xref:DotNext.Collections.Generic.Sequence) static class offers `GetConsumer` extension method to obtain consuming enumerable collection over the elements in the concurrent collection so you can use classic **foreach** loop:
 ```csharp
 using DotNext.Collections.Concurrent;
 using System.Collections.Concurrent;

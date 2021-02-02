@@ -2,7 +2,7 @@ String Interpolation
 ====
 String Interpolation Expression allows to simplify code generation associated with string formatting. This feature is powered by string interpolation in [C#](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/tokens/interpolated) and [VB.NET](https://docs.microsoft.com/en-us/dotnet/visual-basic/programming-guide/language-features/strings/interpolated-strings).
 
-In Metaprogramming library, interpolated string expression is represented by [InterpolationExpression](../../api/DotNext.Linq.Expressions.InterpolationExpression.yml) class.
+In Metaprogramming library, interpolated string expression is represented by [InterpolationExpression](xref:DotNext.Linq.Expressions.InterpolationExpression) class.
 
 ```csharp
 using DotNext.Linq.Expressions;

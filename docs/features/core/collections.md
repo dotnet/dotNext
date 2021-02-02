@@ -6,9 +6,9 @@ Collection Helpers are set of extension methods and classes aimed to improve _Sy
 Transformation of collection types can be done in lazy mode when item is converting on-demand without touching entire collection. Lazy converted collection is called _mapped view_.
 
 There are several mapped views for different collection types:
-* [Read-only list view](../../api/DotNext.Collections.Generic.ReadOnlyListView-2.yml) for lists and arrays
-* [Read-only collection view](../../api/DotNext.Collections.Generic.ReadOnlyCollectionView-2.yml) for generic collections without indexer support
-* [Read-only dictionary view](../../api/DotNext.Collections.Generic.ReadOnlyDictionaryView-3.yml) for generic dictionaries
+* [Read-only list view](xref:DotNext.Collections.Generic.ReadOnlyListView`2) for lists and arrays
+* [Read-only collection view](xref:DotNext.Collections.Generic.ReadOnlyCollectionView`2) for generic collections without indexer support
+* [Read-only dictionary view](xref:DotNext.Collections.Generic.ReadOnlyDictionaryView`3) for generic dictionaries
 
 The following example demonstrates how to obtain read-only mapped view for the list:
 ```csharp
@@ -41,7 +41,7 @@ IReadOnlyList<string> list = List.Singleton("a");
 ```
 
 # Collection items concatenation
-Extension method _ToString_ from class [Sequence](../../api/DotNext.Collections.Generic.Sequence.yml) allows to convert collection items into single plain string. Each item is separated by the specified delimiter.
+Extension method _ToString_ from class [Sequence](xref:DotNext.Collections.Generic.Sequence) allows to convert collection items into single plain string. Each item is separated by the specified delimiter.
 
 ```csharp
 using DotNext.Collections.Generic;
@@ -62,7 +62,7 @@ list.ForEach(item => Console.WriteLine(item));
 ```
 
 # List segments
-Generic [list](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.ilist-1) from .NET standard library doesn't support [range](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/proposals/csharp-8.0/ranges) operator. Only one-dimensional arrays support ranges. To bridge this gap, .NEXT library contains [ListSegment](../../api/DotNext.Collections.Generic.ListSegment-1.yml) data type which has the same meaning as [ArraySegment](https://docs.microsoft.com/en-us/dotnet/api/system.arraysegment-1) but for lists. This type allows to delimit section of a list. The section can be produced using Range syntax in C#:
+Generic [list](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.ilist-1) from .NET standard library doesn't support [range](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/proposals/csharp-8.0/ranges) operator. Only one-dimensional arrays support ranges. To bridge this gap, .NEXT library contains [ListSegment](xref:DotNext.Collections.Generic.ListSegment`1) data type which has the same meaning as [ArraySegment](https://docs.microsoft.com/en-us/dotnet/api/system.arraysegment-1) but for lists. This type allows to delimit section of a list. The section can be produced using Range syntax in C#:
 
 ```csharp
 using DotNext.Collections.Generic;

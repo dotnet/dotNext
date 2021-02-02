@@ -1,6 +1,6 @@
 Exchanger
 ====
-[AsyncExchanger](../../api/DotNext.Threading.AsyncExchanger-1.yml) is a synchronization point at which two asynchronous flows can cooperate through swapping elements within pairs. Each flow provides some object when entering exchange, matches with a partner flow, and receives its partner's object on return. Exchanges may be applicable for building genetic algorithms and pipeline designs, where first flow acts as a producer and the second as a consumer. In contrast to [Pipe](https://docs.microsoft.com/en-us/dotnet/api/system.io.pipelines.pipe) from I/O Pipelines library, Exchanger supports arbitrary data type because it's a generic class.
+[AsyncExchanger](xref:DotNext.Threading.AsyncExchanger`1) is a synchronization point at which two asynchronous flows can cooperate through swapping elements within pairs. Each flow provides some object when entering exchange, matches with a partner flow, and receives its partner's object on return. Exchanges may be applicable for building genetic algorithms and pipeline designs, where first flow acts as a producer and the second as a consumer. In contrast to [Pipe](https://docs.microsoft.com/en-us/dotnet/api/system.io.pipelines.pipe) from I/O Pipelines library, Exchanger supports arbitrary data type because it's a generic class.
 
 The following example demonstrates how to use Exchanger to swap buffers between two long-running async tasks.
 ```csharp

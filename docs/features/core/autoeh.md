@@ -6,7 +6,7 @@ Visual Studio IDE can help to [generate](https://docs.microsoft.com/en-us/visual
 * A lot of fields declared in the targer class decrese readability of these methods
 * If one or more fields have custom struct type then you should implement equality/inequality operators for such struct as well as `GetHashCode` and `Equals` recursively
 
-[EqualityComparerBuilder](../../api/DotNext.EqualityComparerBuilder-1.yml) is a way to fix these inconveniences. All you need is to call appropriate builder method in this class and obtains the necessary implementation.
+[EqualityComparerBuilder&lt;T&gt;](xref:DotNext.EqualityComparerBuilder`1) is a way to fix these inconveniences. All you need is to call appropriate builder method in this class and obtains the necessary implementation.
 
 The following example demonstrates recommended usage of this class:
 
@@ -37,14 +37,14 @@ Constructed methods rely on the instance fields (public and private) declared in
 
 Automatically generated implementation of equality check follows certain rules:
 * If field is of reference type then equality comparison between two values of the field based on [Object.Equals](https://docs.microsoft.com/en-us/dotnet/api/system.object.equals) method
-* If field is of value type then equality comparison between two values of the field based on bitwise equality provided by [BitwiseComparer&lt;T&gt;](../../api/DotNext.BitwiseComparer-1.yml) class.
+* If field is of value type then equality comparison between two values of the field based on bitwise equality provided by [BitwiseComparer&lt;T&gt;](xref:DotNext.BitwiseComparer`1) class.
 * Simple equality check is performed for field of primitive or pointer type
-* [Bitwise equality](../../api/DotNext.OneDimensionalArray.yml) is performed for field of array type whose elements are of value type
+* [OneDimensionalArray](xref:DotNext.OneDimensionalArray) is performed for field of array type whose elements are of value type
 * [Enumerable.SequenceEqual](https://docs.microsoft.com/en-us/dotnet/api/system.linq.enumerable.sequenceequal) is used to compare elements in the array if field has array type whose elements are of reference type.
 
 Automatically generated implementation of hash code function follows the similar rules:
 * For field of primite type, conversion to `int` is performed
 * [Object.GetHashCode](https://docs.microsoft.com/en-us/dotnet/api/system.object.gethashcode) is used for field of reference type
-* Bitwise hash code located in [BitwiseComparer&lt;T&gt;](../../api/DotNext.BitwiseComparer-1.yml) class is performed for field of value type
-* Bitwise hash code located in [OneDimensionalArray](../../api/DotNext.OneDimensionalArray.yml) class is performed for field of array type whose elements are of value type
-* Sequence hash code located in [Sequence](../../api/DotNext.Collections.Generic.Sequence.yml) class is performed for field of array type whose elements are of reference type
+* Bitwise hash code located in [BitwiseComparer&lt;T&gt;](xref:DotNext.BitwiseComparer`1) class is performed for field of value type
+* Bitwise hash code located in [OneDimensionalArray](xref:DotNext.OneDimensionalArray) class is performed for field of array type whose elements are of value type
+* Sequence hash code located in [Sequence](xref:DotNext.Collections.Generic.Sequence) class is performed for field of array type whose elements are of reference type

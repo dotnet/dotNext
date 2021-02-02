@@ -14,19 +14,19 @@ Span<int> s = stackalloc int[4];
 
 The first feature is CLS compliant pointer data type with low-level memory manipulation methods. The second feature is a set of value types representing structured access to the off-heap memory:
 
-1. [UnmanagedMemoryPool&lt;T&gt;](../../api/DotNext.Buffers.UnmanagedMemoryPool-1.yml) provides allocation of unmanaged memory
-1. [IUnmanagedMemoryOwner&lt;T&gt;](../../api/DotNext.Buffers.IUnmanagedMemoryOwner-1.yml) provides structured access to the allocated unmanaged memory.
+1. [UnmanagedMemoryPool&lt;T&gt;](xref:DotNext.Buffers.UnmanagedMemoryPool`1) provides allocation of unmanaged memory
+1. [IUnmanagedMemoryOwner&lt;T&gt;](xref:DotNext.Buffers.IUnmanagedMemoryOwner`1) provides structured access to the allocated unmanaged memory.
 
-All unmanaged data types are not thread-safe. However, there are various extension methods in [AtomicPointer](../../api/DotNext.Threading.AtomicPointer.yml) class supporting thread-safe manipulations with unmanaged memory. Additionally, these types are implicitly convertible into [Span](https://docs.microsoft.com/en-us/dotnet/api/system.span-1) data type.
+All unmanaged data types are not thread-safe. However, there are various extension methods in [AtomicPointer](xref:DotNext.Threading.AtomicPointer) class supporting thread-safe manipulations with unmanaged memory. Additionally, these types are implicitly convertible into [Span](https://docs.microsoft.com/en-us/dotnet/api/system.span-1) data type.
 
-`IUnmanagedMemoryOwner<T>`implements [IUnmanagedMemory](../../api/DotNext.Runtime.InteropServices.IUnmanagedMemory.yml) and supports direct memory manipulations:
+`IUnmanagedMemoryOwner<T>`implements [IUnmanagedMemory](xref:DotNext.Runtime.InteropServices.IUnmanagedMemory) and supports direct memory manipulations:
 * `Pointer` property provides flexible manipulations using typed pointer to the memory. It is unsafe way because the pointer doesn't provide bound checks
 * `Bytes` property provides memory access using [Span](https://docs.microsoft.com/en-us/dotnet/api/system.span-1) data type. It is less flexible in comparison with pointer but safe because it implements bound checks
 
 # Pointer
 C# programming language supports typed and untyped pointer data types such as _int*_ or _void*_. These types are not CLS-compliant and may not be available in other .NET programming languages. For instance, F# or VB.NET do not support pointer type and interoperation with native libraries or COM objects are limited. 
 
-.NEXT offers [Pointer&lt;T&gt;](../../api/DotNext.Runtime.InteropServices.Pointer-1.yml) value type which is CLS-compliant typed pointer. This type supports pointer arithmetic as well as rich methods for memory manupulations such as copying, swapping, filling with zeroes, comparison and equality check. These methods are equivalent to C memory functions: `memset`, `memcmp` etc. Additionally, there are routines to copying bytes to/from the unmanaged memory from/to the arbitrary [streams](https://docs.microsoft.com/en-us/dotnet/api/system.io.stream) asynchronously. Check out API documentation for detailed information about available methods.
+.NEXT offers [Pointer&lt;T&gt;](xref:DotNext.Runtime.InteropServices.Pointer`1) value type which is CLS-compliant typed pointer. This type supports pointer arithmetic as well as rich methods for memory manupulations such as copying, swapping, filling with zeroes, comparison and equality check. These methods are equivalent to C memory functions: `memset`, `memcmp` etc. Additionally, there are routines to copying bytes to/from the unmanaged memory from/to the arbitrary [streams](https://docs.microsoft.com/en-us/dotnet/api/system.io.stream) asynchronously. Check out API documentation for detailed information about available methods.
 
 The pointer data type is convertible to/from [native int](https://docs.microsoft.com/en-us/dotnet/api/system.intptr) so it can be used to simplify interoperation with native code. The size of the pointer depends on underlying platform.
 
@@ -77,4 +77,4 @@ ptr.VolatileWrite(42L);
 var i = ptr.VolatileRead();
 i = ptr.IncrementAndGetValue(); //i == 43
 ```
-See [here](../../api/DotNext.Threading.AtomicPointer.yml) for complete list of volatile operations.
+See [here](xref:DotNext.Threading.AtomicPointer) for complete list of volatile operations.

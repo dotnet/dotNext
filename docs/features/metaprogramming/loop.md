@@ -1,8 +1,8 @@
 Loops
 ====
-Metaprogramming library provides construction of **for**, **foreach** and **while** loops. The lexical scope constructor may have optional parameter of type [LoopContext](../../api/DotNext.Metaprogramming.LoopContext.yml) that can be used to leave outer loop from inner loop. There is no equivalent instruction in C# except unconditional control transfer using **goto**.
+Metaprogramming library provides construction of **for**, **foreach** and **while** loops. The lexical scope constructor may have optional parameter of type [LoopContext](xref:DotNext.Metaprogramming.LoopContext) that can be used to leave outer loop from inner loop. There is no equivalent instruction in C# except unconditional control transfer using **goto**.
 
-`Continue()` or `Break()` methods from [CodeGenerator](../../api/DotNext.Metaprogramming.CodeGenerator.yml) are used to pass the control to the next iteration or out of scope respectively.
+`Continue()` or `Break()` methods from [CodeGenerator](xref:DotNext.Metaprogramming.CodeGenerator) are used to pass the control to the next iteration or out of scope respectively.
 
 # foreach Loop
 **foreach** statement may accept any expression of type implementing [IEnumerable](https://docs.microsoft.com/en-us/dotnet/api/system.collections.ienumerable) or [IEnumerable&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1) interface, or having public instance parameterless method `GetEnumerator()` which return type has the public instance property `Current` and public instance parameterless method `MoveNext()`.

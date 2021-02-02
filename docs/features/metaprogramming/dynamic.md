@@ -2,7 +2,7 @@ Building Expression Trees
 ====
 The expression tree can be constructed using [dynamic](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/types/using-type-dynamic) type provided by C# programming language or similar feature in other .NET languages. As a result, expression tree looks like a true language expression or statement without method calls such as `Property()` or `Field()` for member access.
 
-This feature converts any dynamic expression into expression tree. The starting point is [ExpressionBuilder.AsDynamic](../../api/DotNext.Linq.Expressions.ExpressionBuilder.yml) extension method. After all necessary manipulations with expression tree it is possible to convert dynamic type to [Expression](https://docs.microsoft.com/en-us/dotnet/api/system.linq.expressions.expression) type back again.
+This feature converts any dynamic expression into expression tree. The starting point is [ExpressionBuilder.AsDynamic](xref:DotNext.Linq.Expressions.ExpressionBuilder) extension method. After all necessary manipulations with expression tree it is possible to convert dynamic type to [Expression](https://docs.microsoft.com/en-us/dotnet/api/system.linq.expressions.expression) type back again.
 
 ```csharp
 using DotNext.Linq.Expressions;

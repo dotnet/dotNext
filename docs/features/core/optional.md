@@ -1,6 +1,6 @@
 Optional Type
 ====
-[Optional](../../api/DotNext.Optional-1.yml) is a container which may or may not contain a value. [Nullable&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.nullable-1) type can work with value types only. `Optional<T>` data type can work with reference and value type both.
+[Optional](xref:DotNext.Optional`1) is a container which may or may not contain a value. [Nullable&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.nullable-1) type can work with value types only. `Optional<T>` data type can work with reference and value type both.
 
 The following example demonstrates usage of this type:
 ```csharp
@@ -24,7 +24,7 @@ value = i.OrDefault(); //returns default(int) if i has no value
 value = i.OrInvoke(() => 10); //calls lambda if i has no value
 ```
 
-`Nullable<T>` and `Optional<T>` are mutually convertible types with help of [extension methods](../../api/DotNext.Optional.yml).
+`Nullable<T>` and `Optional<T>` are mutually convertible types with help of [extension methods](xref:DotNext.Optional).
 
 # Null vs Undefined
 Let's take a look at the following code:

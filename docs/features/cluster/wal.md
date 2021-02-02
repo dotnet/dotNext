@@ -1,6 +1,6 @@
 Persistent Write Ahead Log
 ====
-Starting with .NEXT 1.0.0 the library shipped with the general-purpose high-performance [persistent Write Ahead Log](../../api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.yml)(WAL) providing the following features:
+Starting with .NEXT 1.0.0 the library shipped with the general-purpose high-performance [persistent Write-Ahead Log](xref:DotNext.Net.Cluster.Consensus.Raft.PersistentState) providing the following features:
 * Log compaction based on snapshotting
 * File-based persistent storage for the log entries
 * Caching
@@ -97,11 +97,11 @@ The following methods allows to implement this scenario:
 `PersistentState` is designed with assumption that underlying state machine can be reconstructed through sequential interpretation of each committed log entry stored in the log. When persistent WAL used in combination with other Raft infrastructure such as extensions for ASP.NET Core provided by **DotNext.AspNetCore.Cluster** library then this action performed automatically in host initialization code. However, if WAL used separately then reconstruction process should be initiated manually. To do that you need to call `ReplayAsync` method which reads all committed log entry and pass each entry to `ApplyAsync` protected method. Usually, `ApplyAsync` method implementation implements data state machine logic so sequential processing of all committed entries can restore its state correctly.
 
 # Interpreter Framework
-`ApplyAsync` method and snapshot builder responsible for interpretation of custom log entries usually containing the commands and applying these commands to the underlying database engine. [LogEntry](../../api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.yml) is a generic representation of the log entry written to persistent WAL and it has no knowledge about semantics of the command. Therefore, you need to decode and interpret it manually.
+`ApplyAsync` method and snapshot builder responsible for interpretation of custom log entries usually containing the commands and applying these commands to the underlying database engine. [LogEntry](xref:DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry) is a generic representation of the log entry written to persistent WAL and it has no knowledge about semantics of the command. Therefore, you need to decode and interpret it manually.
 
 There are two ways to do that:
 1. JSON serialization
-1. Deriving from [CommandInterpreter](../../api/DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.yml) class
+1. Deriving from [CommandInterpreter](xref:DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter) class
 
 The first approach is very simple but may be not optimal for real application because each log entry must be represented as JSON in the form of UTF-8 encoded characters. Moreover, decoding procedure causes heap allocation of each decoded log entry.
 
@@ -148,7 +148,7 @@ sealed class SimpleAuditTrail : PersistentState
 `DeserializeFromJsonAsync` accepts type resolver as an optional argument. If default type resolution mechanism is used then persistent state stores type information in the form of fullt-qualified type name including assembly name.
 
 ## Command Interpreter
-Interpreting of the custom log entries can be implemented with help of [Command Pattern](https://en.wikipedia.org/wiki/Command_pattern). [CommandInterpreter](../../api/DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.yml) is a foundation for building custom interpreters in declarative way using such pattern. Each command has command handler described as separated method in the derived class.
+Interpreting of the custom log entries can be implemented with help of [Command Pattern](https://en.wikipedia.org/wiki/Command_pattern). [CommandInterpreter](xref:DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter) is a foundation for building custom interpreters in declarative way using such pattern. Each command has command handler described as separated method in the derived class.
 
 First of all, it's needed to decorate command type with necessary attribute and write serialization and deserialization logic:
 ```csharp

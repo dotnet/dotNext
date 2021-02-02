@@ -7,7 +7,7 @@ I/O Enhancements
 
 The situation is worse when you need to have parse and write into the stream in the same time. In this case you need both `BinaryReader` and `BinaryWriter` with their own allocated buffers. So you have fourfold price: instance of writer and its internal buffer in the form of the array and instance of reader with its internal buffer. It is more complicated if your stream contains strings of different encodings.
 
-[StreamExtension](https://sakno.github.io/dotNext/api/DotNext.IO.StreamExtensions.html) class contains extension methods for high-level parsing of stream content as well as typed writers with the following benefits:
+[StreamExtension](xref:DotNext.IO.StreamExtensions) class contains extension methods for high-level parsing of stream content as well as typed writers with the following benefits:
 * You can share the same buffer between reader and writer methods
 * You can manage how the buffer should be allocated: from [array pool](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.arraypool-1) or using **new** keyword
 * You can use different encodings to encode or decode strings in the same stream
@@ -25,10 +25,10 @@ using var fs = new FileStream("content.bin", FileMode.Open, FileAccess.Read, Fil
 var str = await fs.ReadStringAsync(StringLengthEncoding.Plain, Encoding.UTF8);
 ```
 
-String encoding and decoding methods support various length encoding styles using [StringLengthEncoding](../../api/DotNext.IO.StringLengthEncoding.yml) enum type. As a result, you can prefix string with its length automatically.
+String encoding and decoding methods support various length encoding styles using [StringLengthEncoding](xref:DotNext.IO.StringLengthEncoding) enum type. As a result, you can prefix string with its length automatically.
 
 # Segmenting Streams
-In some cases you may need to hide the entire stream from the callee for the reading operation. This can be necessary to protect underlying stream from accidental seeking. [StreamSegment](https://sakno.github.io/dotNext/api/DotNext.IO.StreamSegment.html) do the same for streams as [ArraySegment](https://docs.microsoft.com/en-us/dotnet/api/system.arraysegment-1) for arrays.
+In some cases you may need to hide the entire stream from the callee for the reading operation. This can be necessary to protect underlying stream from accidental seeking. [StreamSegment](xref:DotNext.IO.StreamSegment) do the same for streams as [ArraySegment](https://docs.microsoft.com/en-us/dotnet/api/system.arraysegment-1) for arrays.
 
 > [!NOTE]
 > Stream segment is read-only stream that cannot be used for writes
@@ -73,7 +73,7 @@ await pipe.Writer.WriteAsync(Guid.NewGuid());
 var result = await pipe.Reader.ReadAsync<Guid>();
 ```
 
-Starting with version _2.6.0_ there is [BufferWriter](../../api/DotNext.Buffers.BufferWriter.yml) class with extension methods for [IBufferWriter&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) interface allowing to encode strings and primitives synchronously. Now it's possible to control flushing more granular:
+Starting with version _2.6.0_ there is [BufferWriter](xref:DotNext.Buffers.BufferWriter) class with extension methods for [IBufferWriter&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) interface allowing to encode strings and primitives synchronously. Now it's possible to control flushing more granular:
 ```csharp
 using DotNext.IO;
 using DotNext.IO.Pipelines;
@@ -87,7 +87,7 @@ await pipe.Writer.FlushAsync();
 ```
 
 # Decoding Data from ReadOnlySequence
-[ReadOnlySequence&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) is a convenient way to read from non-contiguous blocks of memory. However, this API is too low-level and doesn't provide high-level methods for parsing strings and primitives. [SequenceBinaryReader](https://sakno.github.io/dotNext/api/DotNext.IO.SequenceBinaryReader.html) value type is a wrapper for the sequence of memory blocks that provides high-level decoding methods:
+[ReadOnlySequence&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) is a convenient way to read from non-contiguous blocks of memory. However, this API is too low-level and doesn't provide high-level methods for parsing strings and primitives. [SequenceBinaryReader](xref:DotNext.IO.SequenceBinaryReader) value type is a wrapper for the sequence of memory blocks that provides high-level decoding methods:
 ```csharp
 using DotNext.IO;
 using System;
@@ -101,7 +101,7 @@ string str = reader.ReadString(StringLengthEncoding.Plain, Encoding.UTF8);
 ```
 
 # File-Buffering Writer
-[FileBufferingWriter](../../api/DotNext.IO.FileBufferingWriter.yml) class can be used as a temporary buffer of bytes when length of the content is not known or dynamic. It's useful in the following situations:
+[FileBufferingWriter](xref:DotNext.IO.FileBufferingWriter) class can be used as a temporary buffer of bytes when length of the content is not known or dynamic. It's useful in the following situations:
 * Synchronous serialization to stream and copying result to another stream asynchronously
 * Asynchronous serialization to stream and copying result to another stream synchronously
 * Synchronous serialization to stream and copying result to [PipeWriter](https://docs.microsoft.com/en-us/dotnet/api/system.io.pipelines.pipewriter) asynchronously
@@ -111,7 +111,7 @@ string str = reader.ReadString(StringLengthEncoding.Plain, Encoding.UTF8);
 
 In other words, this class has many similarities with [FileBufferingWriteStream](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.webutilities.filebufferingwritestream). However, `FileBufferingWriter` has a few advantages:
 * It doesn't depend on ASP.NET Core
-* Ability to use custom [MemoryAllocator&lt;T&gt;](../../api/DotNext.Buffers.MemoryAllocator-1.yml) for memory pooling
+* Ability to use custom [MemoryAllocator&lt;T&gt;](xref:DotNext.Buffers.MemoryAllocator`1) for memory pooling
 * Selection between synchronous and asynchronous modes
 * Can drain content to [IBufferWriter&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1)
 * Ability to read written content as [Stream](https://docs.microsoft.com/en-us/dotnet/api/system.io.stream)
@@ -164,8 +164,8 @@ using (Stream reader = writer.GetWrittenContentAsStream())
 
 # Encoding/decoding of Memory Block
 [Span&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.span-1) and [ReadOnlySpan&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.readonlyspan-1) are powerful data types for working with contiguous memory blocks. Random access to memory elements is perfectly supported by their public methods. However, there a lot of cases when sequential access to memory elements required. For instance, the frame of network protocol passed over the wire can be represented as span. Parsing or writing the frame is sequential operation. To cover such use cases, .NEXT exposes simple but powerful types aimed to simplify sequential access to span contents:
-* [SpanReader&lt;T&gt;](../../api/DotNext.Buffers.SpanReader-1.yml) provides sequential reading of elements from the memory
-* [SpanWriter&lt;T&gt;](../../api/DotNext.Buffers.SpanWriter-1.yml) provides sequential writing of elements to the memory
+* [SpanReader&lt;T&gt;](xref:DotNext.Buffers.SpanReader`1) provides sequential reading of elements from the memory
+* [SpanWriter&lt;T&gt;](xref:DotNext.Buffers.SpanWriter`1) provides sequential writing of elements to the memory
 
 The following example demonstrates how to encode and decode values to/from the stack-allocated memory:
 ```csharp

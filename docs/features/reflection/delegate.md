@@ -2,7 +2,7 @@ Open and Closed Delegates
 ====
 Common Language Runtime supports [open and closed delegates](https://docs.microsoft.com/en-us/dotnet/api/system.delegate.createdelegate#System_Delegate_CreateDelegate_System_Type_System_Object_System_String_System_Boolean_) but there is no native support of them at syntax level in C#. Java supports [method references](https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html) to do that. C# syntactically supports closed delegate based created from instance method or open delegate created from static method. 
 
-Additionally, there is no way to create a delegate instance from property getter, index property or overloaded implicit/explicit type cast operator. [DelegateHelpers](../../api/DotNext.DelegateHelpers.yml) class offers two methods to provide necessary syntactic sugar:
+Additionally, there is no way to create a delegate instance from property getter, index property or overloaded implicit/explicit type cast operator. [DelegateHelpers](xref:DotNext.DelegateHelpers) class offers two methods to provide necessary syntactic sugar:
 * `CreateOpenDelegate` to create open delegate based on instance method, property, indexer, or overloaded operator
 * `CreateClosedDelegateFactory` to create closed delegate based on static method, indexer, or overloaded operator
 

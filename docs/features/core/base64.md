@@ -4,7 +4,7 @@ Converting base64-encoded binary content in streaming scenarios may be difficult
 * As UTF-8 encoded characters in the form of the sequence of bytes
 * As Unicode encoded characters in the form of the sequence of chars
 
-[Base64Decoder](../../api/DotNext.Text.Base64Decoder.yml) type is specially designed for decoding base64-encoded content in streaming scenarios because it maintains the state in the form of the buffer when input fragment cannot be fully decoded.
+[Base64Decoder](xref:DotNext.Text.Base64Decoder) type is specially designed for decoding base64-encoded content in streaming scenarios because it maintains the state in the form of the buffer when input fragment cannot be fully decoded.
 
 The following example demonstrates how to decode base64-encoded content represented by UTF-8 encoded characters from the stream:
 ```csharp

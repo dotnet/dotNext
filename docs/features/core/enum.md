@@ -1,6 +1,6 @@
 Enum Enhancements
 ====
-[EnumConverter](../../api/DotNext.EnumConverter.yml) allows to convert primitive types into arbitrary enum type and vice versa. It is helpful if enum type is defined as generic parameter and not known at compile time.
+[EnumConverter](xref:DotNext.EnumConverter) allows to convert primitive types into arbitrary enum type and vice versa. It is helpful if enum type is defined as generic parameter and not known at compile time.
 
 ```csharp
 using DotNext;
@@ -29,10 +29,10 @@ white == Color.White;   //true
 # Flag
 [System.Enum](https://docs.microsoft.com/en-us/dotnet/api/system.enum) class has public instance method `HasFlag` that allows to check whether the one or more bits are set in the enumeration. However, it causes boxing of the argument. There is no generic version of this method in standard library to avoid boxing.
 
-.NEXT library offers fast version of `HasFlag` method that prevents boxing. It's represented by static method located in [Intrinsics](https://sakno.github.io/dotNext/api/DotNext.Runtime.Intrinsics.html) class.
+.NEXT library offers fast version of `HasFlag` method that prevents boxing. It's represented by static method located in [Intrinsics](xref:DotNext.Runtime.Intrinsics) class.
 
 # Attributes
-[EnumType](https://sakno.github.io/dotNext/api/DotNext.Reflection.EnumType.html) static classes exposes access to custom attributes attached to the enum member.
+[EnumType](xref:DotNext.Reflection.EnumType) static classes exposes access to custom attributes attached to the enum member.
 
 ```csharp
 using DotNext.Reflection;

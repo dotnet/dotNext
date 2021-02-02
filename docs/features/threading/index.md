@@ -3,7 +3,7 @@ Asynchronous Locks
 Lock acquisition operation may blocks the caller thread. Reader/writer lock from .NET library doesn't have async versions of lock acquisition methods as well as [Monitor](https://docs.microsoft.com/en-us/dotnet/api/system.threading.monitor). To avoid this, DotNext Threading library provides asynchronous non-blocking alternatives of these locks.
 
 > [!CAUTION]
-> Non-blocking and blocking locks are two different worlds. It is not recommended to mix these API in the same part of application. The lock acquired with blocking API located in [Lock](../../api/DotNext.Threading.Lock.yml), [Monitor](https://docs.microsoft.com/en-us/dotnet/api/system.threading.monitor) or [ReaderWriteLockSlim](https://docs.microsoft.com/en-us/dotnet/api/system.threading.readerwriterlockslim) is not aware about the lock acquired asynchronously with [AsyncLock](../../api/DotNext.Threading.AsyncLock.yml), [AsyncExclusiveLock](../../api/DotNext.Threading.AsyncExclusiveLock.yml) or [AsyncReaderWriterLock](../../api/DotNext.Threading.AsyncReaderWriterLock.yml). The only exception is [SemaphoreSlim](https://docs.microsoft.com/en-us/dotnet/api/system.threading.semaphoreslim) because it contains acquisition methods in blocking and non-blocking manner at the same time.
+> Non-blocking and blocking locks are two different worlds. It is not recommended to mix these API in the same part of application. The lock acquired with blocking API located in [Lock](xref:DotNext.Threading.Lock), [Monitor](https://docs.microsoft.com/en-us/dotnet/api/system.threading.monitor) or [ReaderWriteLockSlim](https://docs.microsoft.com/en-us/dotnet/api/system.threading.readerwriterlockslim) is not aware about the lock acquired asynchronously with [AsyncLock](xref:DotNext.Threading.AsyncLock), [AsyncExclusiveLock](xref:DotNext.Threading.AsyncExclusiveLock) or [AsyncReaderWriterLock](xref:DotNext.Threading.AsyncReaderWriterLock). The only exception is [SemaphoreSlim](https://docs.microsoft.com/en-us/dotnet/api/system.threading.semaphoreslim) because it contains acquisition methods in blocking and non-blocking manner at the same time.
 
 All non-blocking synchronization mechanisms are optimized in terms of memory allocations. If lock acquisitions are not caused in the same time from different application tasks running concurrently then heap allocation associated with waiting queue will not happen.
 
@@ -11,9 +11,9 @@ Asynchronous locks don't rely on the caller thread. The caller thread never bloc
 
 It is hard to detect root cause of deadlocks occurred by asynchronous locks so use them carefully.
 
-[AsyncLock](../../api/DotNext.Threading.AsyncLock.yml) is a unified representation of the all supported asynchronous locks:
+[AsyncLock](xref:DotNext.Threading.AsyncLock) is a unified representation of the all supported asynchronous locks:
 * Exclusive lock
-* [Shared lock](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncSharedLock.html)
+* [Shared lock](xref:DotNext.Threading.AsyncSharedLock)
 * Reader lock
 * Writer lock
 * Upgradeable lock
@@ -44,7 +44,7 @@ using(await asyncLock.AcquireAsync(CancellationToken.None))
 `AsyncLock` implementing [IAsyncDisposable](https://docs.microsoft.com/en-us/dotnet/api/system.iasyncdisposable) interface for graceful shutdown if supported by underlying lock type. The following lock types have graceful shutdown:
 * [AsyncExclusiveLock](./exclusive.md)
 * [AsyncReaderWriterLock](./rwlock.md)
-* [AsyncSharedLock](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncExclusiveLock.html)
+* [AsyncSharedLock](xref:DotNext.Threading.AsyncExclusiveLock)
 * [AsyncExchanger](./exchanger.md)
 
 Details of graceful shutdown described in related articles.
@@ -78,4 +78,4 @@ using(builder.AcquireWriteLockAsync(CancellationToken.None))
 }
 ```
 
-For more information check extension methods inside of [AsyncLockAcquisition](../../api/DotNext.Threading.LockAcquisition.yml) class.
+For more information check extension methods inside of [AsyncLockAcquisition](xref:DotNext.Threading.LockAcquisition) class.

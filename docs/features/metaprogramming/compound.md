@@ -1,7 +1,7 @@
 Compound Expressions Construction
 ====
 
-[Expression class](https://docs.microsoft.com/en-us/dotnet/api/system.linq.expressions.expression) provides builder static methods for constructing expression trees. The construction code loss its readability because builder methods oriented for tree-like representation of the final expression. Metaprogramming library offers set of [extension methods](../../api/DotNext.Linq.Expressions.ExpressionBuilder.yml) aimed to simplification of expression tree construction.
+[Expression class](https://docs.microsoft.com/en-us/dotnet/api/system.linq.expressions.expression) provides builder static methods for constructing expression trees. The construction code loss its readability because builder methods oriented for tree-like representation of the final expression. Metaprogramming library offers set of [extension methods](xref:DotNext.Linq.Expressions.ExpressionBuilder) aimed to simplification of expression tree construction.
 
 ```csharp
 using DotNext.Metaprogramming;

@@ -2,7 +2,7 @@ Value Type Enhancements
 ====
 It's a challenge to implement _Equals_ and _GetHashCode_ methods for custom value type. Moreover, third-party library may provide value type without these methods and without overloaded equality/inequality operators. As a result, there is no way to identify whether the struct value is the default value.
 
-.NEXT library provides generic methods for equality check and hash code calculation for any value type. These methods are located in [BitwiseComparer](../../api/DotNext.BitwiseComparer-1.yml) and [Intrinsics](../../api/DotNext.Runtime.Intrinsics.yml) classes and not extension methods to avoid ambiguity with overridden methods.
+.NEXT library provides generic methods for equality check and hash code calculation for any value type. These methods are located in [BitwiseComparer](xref:DotNext.BitwiseComparer`1) and [Intrinsics](xref:DotNext.Runtime.Intrinsics) classes and not extension methods to avoid ambiguity with overridden methods.
 ```csharp
 using DotNext;
 using System;

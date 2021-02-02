@@ -1,6 +1,6 @@
 Async Exclusive Lock
 ====
-[AsyncExclusiveLock](../../api/DotNext.Threading.AsyncExclusiveLock.yml) provides asynchronous acquisition operation compatible with **await** operator. The only one caller can acquire the lock at a time. Behavior of this lock is similar to the monitor lock. Under contention, locks favor granting access to the longest-waiting task.
+[AsyncExclusiveLock](xref:DotNext.Threading.AsyncExclusiveLock) provides asynchronous acquisition operation compatible with **await** operator. The only one caller can acquire the lock at a time. Behavior of this lock is similar to the monitor lock. Under contention, locks favor granting access to the longest-waiting task.
 
 ```csharp
 using DotNext.Threading;

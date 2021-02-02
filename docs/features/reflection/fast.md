@@ -2,15 +2,15 @@ Fast Reflection
 ====
 Invocation of reflected members in .NET is slow. This happens because late-binding [invocation](https://docs.microsoft.com/en-us/dotnet/api/system.reflection.methodbase.invoke) should provide type check of arguments for each call. DotNext Reflection library provides a way to invoke reflected members in strongly typed manner. It means that invocation parameters are typed and type safety is guaranteed by compiler. Moreover, this feature allows to invoke members with the same performance as they called without reflection. The reflected member can be converted into appropriate delegate instance for caching and further invocation. The binding process still performed dynamically and based on .NET reflection.
 
-[Reflector](../../api/DotNext.Reflection.Reflector.yml) class provides methods for reflecting class members. The type of delegate instance which represents reflected member describes the signature of the method or constructor. But what the developer should do if one of constructor or method parameteters has a type that is not visible from the calling code (e.g. type has **internal** visibility modifier and located in third-party library)? This issue is covered by Reflection library with help of the following special delegate types:
-* [Function&lt;A, R&gt;](../../api/DotNext.Function-2.yml) for static methods with return type
-* [Function&lt;T, A, R&gt;](../../api/DotNext.Function-3.yml) for instance methods with return type
-* [Procedure&lt;A&gt;](../../api/DotNext.Procedure-1.yml) for static methods without return type
-* [Procedure&lt;T, A&gt;](../../api/DotNext.Procedure-2.yml) for instance methods without return type
+[Reflector](xref:DotNext.Reflection.Reflector) class provides methods for reflecting class members. The type of delegate instance which represents reflected member describes the signature of the method or constructor. But what the developer should do if one of constructor or method parameteters has a type that is not visible from the calling code (e.g. type has **internal** visibility modifier and located in third-party library)? This issue is covered by Reflection library with help of the following special delegate types:
+* [Function&lt;A, R&gt;](xref:DotNext.Function`2) for static methods with return type
+* [Function&lt;T, A, R&gt;](xref:DotNext.Function`3) for instance methods with return type
+* [Procedure&lt;A&gt;](xref:DotNext.Procedure`1) for static methods without return type
+* [Procedure&lt;T, A&gt;](xref:DotNext.Procedure`2) for instance methods without return type
 
 These delegates can describe signature of arbitrary methods or constructors with a little performance cost: all arguments will passed through stack. As a result, they can be used if developer don't want to introduce a new delegate type for some untypical signatures (with **ref** or **out** parameters).
 
-Combination of various delegate signatures and `Reflector` class provide configurable approach to fast reflection and allows to choose between convenience and performance. Moreover, it requires compile-time some knowledge about underlying types of parameters and declaring type. To reduce this complexity, .NEXT Reflection library offers lightweight fast reflection API represented by non-generic overloaded version of `Unreflect` extension method. Lightweight implementation is a dynamic compilation of member access code and exposes unified API surface for all supported member types in the form of single [DynamicInvoker](../../api/DotNext.Reflection.DynamicInvoker.yml) delegate type. Invocation API is very similar to reflection provided by .NET out-of-the-box, but much more faster. 
+Combination of various delegate signatures and `Reflector` class provide configurable approach to fast reflection and allows to choose between convenience and performance. Moreover, it requires compile-time some knowledge about underlying types of parameters and declaring type. To reduce this complexity, .NEXT Reflection library offers lightweight fast reflection API represented by non-generic overloaded version of `Unreflect` extension method. Lightweight implementation is a dynamic compilation of member access code and exposes unified API surface for all supported member types in the form of single [DynamicInvoker](xref:DotNext.Reflection.DynamicInvoker) delegate type. Invocation API is very similar to reflection provided by .NET out-of-the-box, but much more faster. 
 
 # Constructor
 Constructor can be reflected as delegate instance.
@@ -110,12 +110,12 @@ decimal v = (decimal)args[1];
 ```
 
 # Field
-Static or instance field can obtained from [FieldInfo](https://docs.microsoft.com/en-us/dotnet/api/system.reflection.fieldinfo) using `Unreflect` extension method declared in [Reflector](../../api/DotNext.Reflection.Reflector.yml) class. This feature gives the power to work with field values using Reflection without performance loss.
+Static or instance field can obtained from [FieldInfo](https://docs.microsoft.com/en-us/dotnet/api/system.reflection.fieldinfo) using `Unreflect` extension method declared in [Reflector](xref:DotNext.Reflection.Reflector) class. This feature gives the power to work with field values using Reflection without performance loss.
 
 > [!IMPORTANT]
 > Managed pointer to the field value is mutable even if field is **readonly**. As a result, you can modify value of such field. It is responsibility of the developer to control access to read-only fields.
 
-This is not the only way to obtain direct access to the field. [Field&lt;V&gt;](../../api/DotNext.Reflection.Field-1.yml) and [Field&lt;T,V&gt;](../../api/DotNext.Reflection.Field-2.yml) that can be returned by [Type&lt;T&gt;.Field&lt;T&gt;](../../api/DotNext.Reflection.Type-1.Field-1.yml) provide access to static and field value respectively.
+This is not the only way to obtain direct access to the field. [Field&lt;V&gt;](xref:DotNext.Reflection.Field`1) and [Field&lt;T,V&gt;](xref:DotNext.Reflection.Field`2) that can be returned by [Type&lt;T&gt;.Field&lt;T&gt;](DotNext.Reflection.Type`1.Field`1) provide access to static and field value respectively.
 
 The following example demonstrates how to obtain managed pointer to the static and instance fields:
 ```csharp
@@ -144,7 +144,7 @@ instanceField = "Hello, world";
 Lightweight field access can be achieved using overloaded non-generic `Unreflect` method which supports various optimization:
 * Obtain field getter only
 * Obtain field setter only
-* Obtain field setter and getter combined into single instance of [DynamicInvoker](../../api/DotNext.Reflection.DynamicInvoker.yml)
+* Obtain field setter and getter combined into single instance of [DynamicInvoker](xref:DotNext.Reflection.DynamicInvoker)
 
 Third option is slower in comparison with others. Therefore if you expect one-directional access to the field then use proper optimization.
 

@@ -1,6 +1,6 @@
 Async Reader/Writer Lock
 ====
-[AsyncReaderWriterLock](../../api/DotNext.Threading.AsyncReaderWriterLock.yml) is a non-blocking asynchronous alternative to [ReaderWriteLockSlim](https://docs.microsoft.com/en-us/dotnet/api/system.threading.readerwriterlockslim) with the same semantics.
+[AsyncReaderWriterLock](xref:DotNext.Threading.AsyncReaderWriterLock) is a non-blocking asynchronous alternative to [ReaderWriteLockSlim](https://docs.microsoft.com/en-us/dotnet/api/system.threading.readerwriterlockslim) with the same semantics.
 
 This class supports methods to determine whether locks are held or contended. These methods are designed for monitoring system state, not for synchronization control. 
 

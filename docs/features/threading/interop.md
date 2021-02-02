@@ -1,6 +1,6 @@
 Interop with Other Asynchronous Patterns and Types
 ====
-.NEXT Threading library simplifies interop between Task-based programming model and other asynchronous patterns. Bridge methods located in [AsyncBridge](../../api/DotNext.Threading.AsyncBridge.yml) class.
+.NEXT Threading library simplifies interop between Task-based programming model and other asynchronous patterns. Bridge methods located in [AsyncBridge](xref:DotNext.Threading.AsyncBridge) class.
 
 # Cancellation Token
 If you have only [CancellationToken](https://docs.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken) and you need to synchronize with its cancellation then use `WaitAsync` extension method to do that. It converts token into awaitable object.

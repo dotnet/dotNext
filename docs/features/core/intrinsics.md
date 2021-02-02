@@ -2,7 +2,7 @@ Intrinsics
 ====
 Intrinsic methods are special kind of methods whose implementation is handled specially by JIT compiler or written in pure IL code to achieve low (or zero, in some situations) overhead. .NET library has good example in the form of [Unsafe](https://docs.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.unsafe) class which is implemented in pure IL. The implementation in pure IL allows to be closer to the bare metal and utilize code patterns recognized by JIT compiler. 
 
-.NEXT library has numerous intrinsics which are exposed by [Intrinsics](../../api/DotNext.Runtime.Intrinsics.yml) class and grouped into the following categories:
+.NEXT library has numerous intrinsics which are exposed by [Intrinsics](xref:DotNext.Runtime.Intrinsics) class and grouped into the following categories:
 * Common intrinsics which have very low or zero runtime overhead
 * Low-level memory manipulations
 
@@ -30,7 +30,7 @@ Intrinsic methods for low-level manipulations extend capabilities of [Unsafe](ht
 > [!IMPORTANT]
 > Most of the provided methods are not verifiable in terms of CLR Validation and Verification and can destabilize runtime. Correctness of their usage must be guaranteed by developer. For more information, read [II.3 Validation and Verification](https://www.ecma-international.org/publications/files/ECMA-ST/ECMA-335.pdf) section of ECMA-335 standard.
 
-Memory manipulation methods of [Intrinsics](../../api/DotNext.Runtime.Intrinsics.yml) class is grouped into the following blocks:
+Memory manipulation methods of [Intrinsics](xref:DotNext.Runtime.Intrinsics) class is grouped into the following blocks:
 1. Hash computation
 1. Memory equality and comparison
 1. Utility methods to work with [typedref](https://docs.microsoft.com/en-us/dotnet/api/system.typedreference) special type

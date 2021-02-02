@@ -45,12 +45,12 @@ The necessary mode depends on your requirements and network environment.
 
 # Dependency Injection
 Web application component can request the following service from ASP.NET Core DI container:
-* [ICluster](../../api/DotNext.Net.Cluster.ICluster.yml)
-* [IRaftCluster](../../api/DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.yml) represents Raft-specific version of `ICluster` interface
-* [IMessageBus](../../api/DotNext.Net.Cluster.Messaging.IMessageBus.yml) for point-to-point messaging between nodes
-* [IExpandableCluster](../../api/DotNext.Net.Cluster.ICluster.yml) for tracking changes in cluster membership
-* [IReplicationCluster&lt;IRaftLogEntry&gt;](../../api/DotNext.Net.Cluster.Replication.IReplicationCluster-1.yml) to work with audit trail used for replication. [IRaftLogEntry](../../api/DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry.yml) is Raft-specific representation of the record in the audit trail
-* [IReplicationCluster](../../api/DotNext.Net.Cluster.Replication.IReplicationCluster.yml) to work with audit trail in simplified manner 
+* [ICluster](xref:DotNext.Net.Cluster.ICluster)
+* [IRaftCluster](xref:DotNext.Net.Cluster.Consensus.Raft.IRaftCluster) represents Raft-specific version of `ICluster` interface
+* [IMessageBus](xref:DotNext.Net.Cluster.Messaging.IMessageBus) for point-to-point messaging between nodes
+* [IExpandableCluster](xref:DotNext.Net.Cluster.IExpandableCluster) for tracking changes in cluster membership
+* [IReplicationCluster&lt;IRaftLogEntry&gt;](xref:DotNext.Net.Cluster.Replication.IReplicationCluster`1) to work with audit trail used for replication. [IRaftLogEntry](xref:DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry) is Raft-specific representation of the record in the audit trail
+* [IReplicationCluster](xref:DotNext.Net.Cluster.Replication.IReplicationCluster) to work with audit trail in simplified manner 
 
 # Configuration
 The application should be configured properly to work as a cluster node. The following JSON represents example of configuration:
@@ -113,7 +113,7 @@ The application should be configured properly to work as a cluster node. The fol
 Choose `lowerElectionTimeout` and `upperElectionTimeout` according with the quality of your network. If values are small then you get frequent elections and migration of leader node.
 
 ## Runtime Hook
-The service implementing `IRaftCluster` is registered as singleton service. The service starts receiving Raft-specific messages immediately. Therefore, you can loose some events raised by the service such as `LeaderChanged` at starting point. To avoid that, you can implement [IClusterMemberLifetime](../../api/DotNext.Net.Cluster.Consensus.Raft.IClusterMemberLifetime.yml) interface and register implementation as singleton.
+The service implementing `IRaftCluster` is registered as singleton service. The service starts receiving Raft-specific messages immediately. Therefore, you can loose some events raised by the service such as `LeaderChanged` at starting point. To avoid that, you can implement [IClusterMemberLifetime](xref:DotNext.Net.Cluster.Consensus.Raft.IClusterMemberLifetime) interface and register implementation as singleton.
 
 ```csharp
 using DotNext.Net.Cluster.Consensus.Raft;
@@ -204,9 +204,9 @@ IHost host = new HostBuilder()
     .Build();
 ```
 
-Note that `JoinCluster` method declared in [DotNext.Net.Cluster.Consensus.Raft.Http.Hosting](../../api/DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.yml) namespace and should be called after `ConfigureWebHost`. Otherwise, the behavior of this method is undefined.
+Note that `JoinCluster` method declared in `DotNext.Net.Cluster.Consensus.Raft.Http.Hosting` namespace and should be called after `ConfigureWebHost`. Otherwise, the behavior of this method is undefined.
 
-By default, .NEXT uses Kestrel web server to serve Raft requests. However, it is possible to configure dedicated host manually. To do that, you need to register singleton service implementing [IDedicatedHostBuilder](../../api/DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.IDedicatedHostBuilder.yml) interface. In this case, `port` configuration property will be ignored.
+By default, .NEXT uses Kestrel web server to serve Raft requests. However, it is possible to configure dedicated host manually. To do that, you need to register singleton service implementing [IDedicatedHostBuilder](xref:DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.IDedicatedHostBuilder) interface. In this case, `port` configuration property will be ignored.
 
 `JoinCluster` method has overloads that allow to specify custom configuration section containing configuration of local node.
 
@@ -245,7 +245,7 @@ IHost host = new HostBuilder()
     .Build();
 ```
 
-Note that `JoinCluster` declared in [DotNext.Net.Cluster.Consensus.Raft.Http.Embedding](../../api/DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.yml) namespace and should be called after `ConfigureWebHost`. Otherwise, the behavior of this method is undefined.
+Note that `JoinCluster` declared in `DotNext.Net.Cluster.Consensus.Raft.Http.Embedding` namespace and should be called after `ConfigureWebHost`. Otherwise, the behavior of this method is undefined.
 
 `JoinCluster` method has overloads that allow to specify custom configuration section containing configuration of local node.
 
@@ -254,7 +254,7 @@ Note that `JoinCluster` declared in [DotNext.Net.Cluster.Consensus.Raft.Http.Emb
 # Redirection to Leader
 Now cluster of ASP.NET Core applications can receive requests from outside. Some of these requests may be handled by leader node only. .NEXT cluster programming model provides a way to automatically redirect request to leader node if it was originally received by follower node. The redirection is organized with help of _307 Temporary Redirect_ status code. Every follower node knows the actual address of the leader node. If cluster or its partition doesn't have leader then node returns _503 Service Unavailable_. 
 
-Automatic redirection is provided by [LeaderRouter](../../api/DotNext.Net.Cluster.Consensus.Raft.Http.LeaderRouter.yml) class. You can specify endpoint that should be handled by leader node with `RedirectToLeader` method.
+Automatic redirection is provided by [LeaderRouter](xref:DotNext.Net.Cluster.Consensus.Raft.Http.LeaderRouter) class. You can specify endpoint that should be handled by leader node with `RedirectToLeader` method.
 
 ```csharp
 using DotNext.Net.Cluster.Consensus.Raft.Http;
@@ -318,22 +318,22 @@ public void Configure(IApplicationBuilder app)
 ```
 
 # Messaging
-.NEXT extension for ASP.NET Core supports messaging beween nodes through HTTP out-of-the-box. However, the infrastructure don't know how to handle custom messages. Therefore, if you want to utilize this functionality then you need to implement [IInputChannel](../../api/DotNext.Net.Cluster.Messaging.IInputChannel.yml) interface.
+.NEXT extension for ASP.NET Core supports messaging beween nodes through HTTP out-of-the-box. However, the infrastructure don't know how to handle custom messages. Therefore, if you want to utilize this functionality then you need to implement [IInputChannel](xref:DotNext.Net.Cluster.Messaging.IInputChannel) interface.
 
-Messaging inside of cluster supports redirection to the leader as well as for external client. But this mechanism implemented differently and exposed as `IInputChannel` interface via [IMessageBus.LeaderRouter](../../api/DotNext.Net.Cluster.Messaging.IMessageBus.yml) property.
+Messaging inside of cluster supports redirection to the leader as well as for external client. But this mechanism implemented differently and exposed as `IInputChannel` interface via `LeaderRouter` property of [IMessageBus](xref:DotNext.Net.Cluster.Messaging.IMessageBus) interface.
 
 # Replication
-Raft algorithm requires additional persistent state in order to basic audit trail. This state is represented by [IPersistentState](../../api/DotNext.Net.Cluster.Consensus.Raft.IPersistentState.yml) interface. By default, it is implemented as [in-memory storage](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.html) which is suitable only for applications that doesn't have replicated state. If your application has it then use [PersistentState](../../api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.yml) class or implement this interface manually and use reliable storage such as disk. The implementation can be injected explicitly via `AuditTrail` property of [IRaftCluster](../../api/DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.yml) interface or implicitly via Dependency Injection. The explicit should be done inside of the user-defined implementation of [IClusterMemberLifetime](../../api/DotNext.Net.Cluster.Consensus.Raft.IClusterMemberLifetime.yml) interface registered as a singleton service in ASP.NET Core application. The implicit injection requires registration of singleton service which implements [IPersistentState](../../api/DotNext.Net.Cluster.Consensus.Raft.IPersistentState.yml) interface.
+Raft algorithm requires additional persistent state in order to basic audit trail. This state is represented by [IPersistentState](xref:DotNext.Net.Cluster.Consensus.Raft.IPersistentState) interface. By default, it is implemented as [ConsensusOnlyState](xref:DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState) which is suitable only for applications that doesn't have replicated state. If your application has it then use [PersistentState](xref:DotNext.Net.Cluster.Consensus.Raft.PersistentState) class or implement this interface manually and use reliable storage such as disk. The implementation can be injected explicitly via `AuditTrail` property of [IRaftCluster](xref:DotNext.Net.Cluster.Consensus.Raft.IRaftCluster) interface or implicitly via Dependency Injection. The explicit should be done inside of the user-defined implementation of [IClusterMemberLifetime](xref:DotNext.Net.Cluster.Consensus.Raft.IClusterMemberLifetime) interface registered as a singleton service in ASP.NET Core application. The implicit injection requires registration of singleton service which implements [IPersistentState](xref:DotNext.Net.Cluster.Consensus.Raft.IPersistentState) interface.
 
 ## Reliable State
 Information about reliable persistent state which uses disk for storing write ahead log located in the separated [article](./wal.md). However, its usage turns your microservice into stateful service because its state persisted on disk. Consider this fact if you are using containerization technologies such as Docker or LXC.
 
 # Metrics
-It is possible to measure runtime metrics of Raft node internals using [HttpMetricsCollector](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.Http.HttpMetricsCollector.html) class. The reporting mechanism is agnostic  to the underlying metrics delivery library such as [AppMetrics](https://github.com/AppMetrics/AppMetrics).
+It is possible to measure runtime metrics of Raft node internals using [HttpMetricsCollector](xref:DotNext.Net.Cluster.Consensus.Raft.Http.HttpMetricsCollector) class. The reporting mechanism is agnostic to the underlying metrics delivery library such as [AppMetrics](https://github.com/AppMetrics/AppMetrics).
 
 The class contains methods that are called automatically. You can override them and implement necessary reporting logic. By default, these methods do nothing.
 
-The metrics collector should be registered as singleton service using Dependency Injection. However, the type of the service used for registration should of [MetricsCollector](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.html) type.
+The metrics collector should be registered as singleton service using Dependency Injection. However, the type of the service used for registration should of [MetricsCollector](xref:DotNext.Net.Cluster.Consensus.Raft.MetricsCollector) type.
 
 ```csharp
 using DotNext.Net.Cluster.Consensus.Raft;
@@ -377,7 +377,7 @@ sealed class Startup
 }
 ```
 
-It is possible to derive directly from [MetricsCollector](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.html) if you don't need to receive metrics related to HTTP-specific implementation of Raft algorithm.
+It is possible to derive directly from [MetricsCollector](xref:DotNext.Net.Cluster.Consensus.Raft.MetricsCollector) if you don't need to receive metrics related to HTTP-specific implementation of Raft algorithm.
 
 Implementation of reporting method should fast as possible or asynchronous. If reporting causes I/O operations synchronously then it affects the overall performance of Cluster library internals such as communication with other cluster members which is time-critical.
 

@@ -1,6 +1,6 @@
 Async Reset Event
 ====
-[AsyncManualResetEvent](../../api/DotNext.Threading.AsyncManualResetEvent.yml) and [AsyncAutoResetEvent](../../api/DotNext.Threading.AsyncAutoResetEvent.yml) are asynchronous alternatives to [ManualResetEvent](https://docs.microsoft.com/en-us/dotnet/api/system.threading.manualresetevent) and [AutoResetEvent](https://docs.microsoft.com/en-us/dotnet/api/system.threading.autoresetevent) with the same semantics. However, it doesn't support interoperation with .NET thread pool and native code because there is no wait handle associated with an instance of event.
+[AsyncManualResetEvent](xref:DotNext.Threading.AsyncManualResetEvent) and [AsyncAutoResetEvent](xref:DotNext.Threading.AsyncAutoResetEvent) are asynchronous alternatives to [ManualResetEvent](https://docs.microsoft.com/en-us/dotnet/api/system.threading.manualresetevent) and [AutoResetEvent](https://docs.microsoft.com/en-us/dotnet/api/system.threading.autoresetevent) with the same semantics. However, it doesn't support interoperation with .NET thread pool and native code because there is no wait handle associated with an instance of event.
 
 ```csharp
 using DotNext.Threading;

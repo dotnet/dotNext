@@ -8,16 +8,16 @@ Cluster Computing is a form of distributed computing where each node set to perf
 1. [Consensus](https://en.wikipedia.org/wiki/Consensus_(computer_science))
 
 The programming model at higher level of abstraction is represented by interfaces:
-* [IClusterMember](../../api/DotNext.Net.Cluster.IClusterMember.yml) represents individual node in the cluster
-* [ICluster](../../api/DotNext.Net.Cluster.ICluster.yml) represents entire cluster. This is an entry point to work with cluster using .NEXT library.
-* [IExpandableCluster](../../api/DotNext.Net.Cluster.IExpandableCluster.yml) optional interface that extends `ICluster` and represents dynamically configurable cluster where the nodes can be added or removed on-the-fly. If actual implementation doesn't support this interface then cluster can be configured only statically - it is required to shutdown entire cluster if you want to add or remove nodes
-* [IMessageBus](../../api/DotNext.Net.Cluster.Messaging.IMessageBus.yml) optional interface provides message-based communication between nodes in  point-to-point manner
-* [IReplicationCluster](../../api/DotNext.Net.Cluster.Replication.IReplicationCluster-1.yml) optional interface represents a cluster where its state can be replicated across nodes to ensure consistency between them. Replication functionality based on [audit trail](../../api/DotNext.IO.Log.IAuditTrail-1.yml). By default, design of replication infrastructure supports [Weak Consistency](https://en.wikipedia.org/wiki/Weak_consistency).
+* [IClusterMember](xref:DotNext.Net.Cluster.IClusterMember) represents individual node in the cluster
+* [ICluster](xref:DotNext.Net.Cluster.ICluster) represents entire cluster. This is an entry point to work with cluster using .NEXT library.
+* [IExpandableCluster](xref:DotNext.Net.Cluster.IExpandableCluster) optional interface that extends `ICluster` and represents dynamically configurable cluster where the nodes can be added or removed on-the-fly. If actual implementation doesn't support this interface then cluster can be configured only statically - it is required to shutdown entire cluster if you want to add or remove nodes
+* [IMessageBus](xref:DotNext.Net.Cluster.Messaging.IMessageBus) optional interface provides message-based communication between nodes in  point-to-point manner
+* [IReplicationCluster&lt;T&gt;](xref:DotNext.Net.Cluster.Replication.IReplicationCluster`1) optional interface represents a cluster where its state can be replicated across nodes to ensure consistency between them. Replication functionality based on [IAuditTrail](xref:DotNext.IO.Log.IAuditTrail). By default, design of replication infrastructure supports [Weak Consistency](https://en.wikipedia.org/wiki/Weak_consistency).
 
 Thereby, core model consists of two interfaces: `ICluster` and `IClusterMember`. Other interfaces are extensions of the core model. 
 
 # Messaging
-Messaging feature allows to organize point-to-point communication between nodes where individual node is able to send the message to any other node. The discrete unit of communication is represented by [IMessage](../../api/DotNext.Net.Cluster.Messaging.IMessage.yml) interface which is transport- and protocol-agnostic. The actual implementation should provide protocol-specific serialization and deserialization of such messages.
+Messaging feature allows to organize point-to-point communication between nodes where individual node is able to send the message to any other node. The discrete unit of communication is represented by [IMessage](xref:DotNext.Net.Cluster.Messaging.IMessage) interface which is transport- and protocol-agnostic. The actual implementation should provide protocol-specific serialization and deserialization of such messages.
 
 There are two types of messages:
 1. **Request-Reply** message is similar to RPC call when caller should wait for the response. The response payload is represented by `IMessage`
@@ -25,13 +25,13 @@ There are two types of messages:
 1.1. With confirmation, when sender waiting for acknowledge from receiver side. As a result, it is possible to ensure that message is processed by receiver.
 1.1. Without confirmation, when sender doesn't wait for acknowledge. Such kind of delivery is not reliable but very performant.
 
-The message can be transferred to the particular member using [ISubscriber](../../api/DotNext.Net.Cluster.Messaging.ISubscriber.yml) interface which is the extension of `IClusterMember` interface.
+The message can be transferred to the particular member using [ISubscriber](xref:DotNext.Net.Cluster.Messaging.ISubscriber) interface which is the extension of `IClusterMember` interface.
 
 Usually, you don't to implement `IMessage` interface directly due to existence of ready-to-use realizations:
-1. [BinaryMessage](../../api/DotNext.Net.Cluster.Messaging.BinaryMessage.yml) for raw binary content
-1. [StreamMessage](../../api/DotNext.Net.Cluster.Messaging.StreamMessage.yml) for message which payload is represented by [Stream](https://docs.microsoft.com/en-us/dotnet/api/system.io.stream). It it suitable for large payload when it is stored on the disk
-1. [TextMessage](../../api/DotNext.Net.Cluster.Messaging.TextMessage.yml) for textual content
-1. [JsonMessage&lt;T&gt;](../../api/DotNext.Net.Cluster.Messaging.JsonMessage-1.yml) for JSON-serializable types
+1. [BinaryMessage](xref:DotNext.Net.Cluster.Messaging.BinaryMessage) for raw binary content
+1. [StreamMessage](xref:DotNext.Net.Cluster.Messaging.StreamMessage) for message which payload is represented by [Stream](https://docs.microsoft.com/en-us/dotnet/api/system.io.stream). It it suitable for large payload when it is stored on the disk
+1. [TextMessage](xref:DotNext.Net.Cluster.Messaging.TextMessage) for textual content
+1. [JsonMessage&lt;T&gt;](xref:DotNext.Net.Cluster.Messaging.JsonMessage`1) for JSON-serializable types
 
 # Distributed Consensus
 Consensus Algorithm allows to achieve overall reliability in the presence of faulty nodes. The most commonly used consensus algorithms are:
@@ -41,16 +41,16 @@ Consensus Algorithm allows to achieve overall reliability in the presence of fau
 
 The consensus algorithm allows to choose exactly one leader node in the cluster.
 
-.NEXT library provides protocol-agnostic implementation of Raft algorithm that can be adopted for any real network protocol. You can reuse this implementation which is located in [DotNext.Net.Cluster.Consensus.Raft](../../api/DotNext.Net.Cluster.Consensus.Raft.yml) namespace. If you want to know more about Raft then use the following links:
+.NEXT library provides protocol-agnostic implementation of Raft algorithm that can be adopted for any real network protocol. You can reuse this implementation which is located in `DotNext.Net.Cluster.Consensus.Raft` namespace. If you want to know more about Raft then use the following links:
 * [The Raft Consensus Algorithm](https://raft.github.io/)
 * [The Secret Lives of Data](http://thesecretlivesofdata.com/)
 * [In Search of an Understandable Consensus Algorithm](https://raft.github.io/raft.pdf)
 * [Dissertation](https://github.com/ongardie/dissertation)
 
 # Replication
-Replication allows to share information between nodes to ensure consistency between them. Usually, consensus algorithm covers replication process. In .NEXT library, replication functionality relies on the fact that each cluster node has its own persistent audit trail (or transaction log). However, the only default implementation of it is in-memory log which is suitable in siutations when your distributed application requires distributed consensus only and don't have distributed state that should be synchronized across cluster. If you need reliable replication then provide your own implementation of [IAuditTrail](../../api/DotNext.IO.Log.IAuditTrail-1.yml) interface or use [PersistentState](../../api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.yml) class.
+Replication allows to share information between nodes to ensure consistency between them. Usually, consensus algorithm covers replication process. In .NEXT library, replication functionality relies on the fact that each cluster node has its own persistent audit trail (or transaction log). However, the only default implementation of it is in-memory log which is suitable in siutations when your distributed application requires distributed consensus only and don't have distributed state that should be synchronized across cluster. If you need reliable replication then provide your own implementation of [IAuditTrail&lt;T&gt;](xref:DotNext.IO.Log.IAuditTrail`1) interface or use [PersistentState](xref:DotNext.Net.Cluster.Consensus.Raft.PersistentState) class.
 
-[IReplicationCluster](../../api/DotNext.Net.Cluster.Replication.IReplicationCluster.yml) interface indicates that the specific cluster implementation supports state replication across cluster nodes. It exposed access to the audit trail used to track local changes and commits on other cluster nodes.
+[IReplicationCluster](xref:DotNext.Net.Cluster.Replication.IReplicationCluster) interface indicates that the specific cluster implementation supports state replication across cluster nodes. It exposed access to the audit trail used to track local changes and commits on other cluster nodes.
 
 # Implementations
 * [.NEXT Raft Suite](./raft.md) is a fully-featured implementation of Raft algorithm and related infrastructure.
