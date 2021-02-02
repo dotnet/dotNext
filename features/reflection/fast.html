@@ -166,7 +166,7 @@ decimal v = (decimal)args[1];
 <h5>Important</h5>
 <p>Managed pointer to the field value is mutable even if field is <strong>readonly</strong>. As a result, you can modify value of such field. It is responsibility of the developer to control access to read-only fields.</p>
 </div>
-<p>This is not the only way to obtain direct access to the field. <a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.0.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Field%601">Field&lt;V&gt;</a> and <a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.0.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Field%602">Field&lt;T,V&gt;</a> that can be returned by <a href="DotNext.Reflection.Type%601.Field%601">Type&lt;T&gt;.Field&lt;T&gt;</a> provide access to static and field value respectively.</p>
+<p>This is not the only way to obtain direct access to the field. <a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.0.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Field%601">Field&lt;V&gt;</a> and <a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.0.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Field%602">Field&lt;T,V&gt;</a> that can be returned by <a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.0.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Type%601.Field%601">Type&lt;T&gt;.Field&lt;T&gt;</a> provide access to static and field value respectively.</p>
 <p>The following example demonstrates how to obtain managed pointer to the static and instance fields:</p>
 <pre><code class="lang-csharp">using DotNext.Reflection;
 using System.Reflection;
