@@ -115,7 +115,7 @@ Static or instance field can obtained from [FieldInfo](https://docs.microsoft.co
 > [!IMPORTANT]
 > Managed pointer to the field value is mutable even if field is **readonly**. As a result, you can modify value of such field. It is responsibility of the developer to control access to read-only fields.
 
-This is not the only way to obtain direct access to the field. [Field&lt;V&gt;](xref:DotNext.Reflection.Field`1) and [Field&lt;T,V&gt;](xref:DotNext.Reflection.Field`2) that can be returned by [Type&lt;T&gt;.Field&lt;T&gt;](DotNext.Reflection.Type`1.Field`1) provide access to static and field value respectively.
+This is not the only way to obtain direct access to the field. [Field&lt;V&gt;](xref:DotNext.Reflection.Field`1) and [Field&lt;T,V&gt;](xref:DotNext.Reflection.Field`2) that can be returned by [Type&lt;T&gt;.Field&lt;T&gt;](xref:DotNext.Reflection.Type`1.Field`1) provide access to static and field value respectively.
 
 The following example demonstrates how to obtain managed pointer to the static and instance fields:
 ```csharp

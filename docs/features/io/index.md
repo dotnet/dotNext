@@ -22,10 +22,10 @@ using System.IO;
 
 //read
 using var fs = new FileStream("content.bin", FileMode.Open, FileAccess.Read, FileShare.Read);
-var str = await fs.ReadStringAsync(LengthEncoding.Plain, Encoding.UTF8);
+var str = await fs.ReadStringAsync(LengthFormat.Plain, Encoding.UTF8);
 ```
 
-String encoding and decoding methods support various length encoding styles using [LengthEncoding](xref:DotNext.IO.LengthEncoding) enum type. As a result, you can prefix string with its length automatically.
+String encoding and decoding methods support various length encoding styles using [LengthFormat](xref:DotNext.IO.LengthFormat) enum type. As a result, you can prefix string with its length automatically.
 
 # Segmenting Streams
 In some cases you may need to hide the entire stream from the callee for the reading operation. This can be necessary to protect underlying stream from accidental seeking. [StreamSegment](xref:DotNext.IO.StreamSegment) do the same for streams as [ArraySegment](https://docs.microsoft.com/en-us/dotnet/api/system.arraysegment-1) for arrays.
@@ -59,8 +59,8 @@ using System.IO.Pipelines;
 
 const string value = "Hello, world!";
 var pipe = new Pipe();
-await pipe.Writer.WriteStringAsync(value.AsMemory(), Encoding.UTF8, 0, LengthEncoding.Plain);
-var result = await pipe.Reader.ReadStringAsync(LengthEncoding.Plain, Encoding.UTF8);
+await pipe.Writer.WriteStringAsync(value.AsMemory(), Encoding.UTF8, 0, LengthFormat.Plain);
+var result = await pipe.Reader.ReadStringAsync(LengthFormat.Plain, Encoding.UTF8);
 ```
 
 In advance to strings, the library supports decoding and encoding values of arbitrary blittable value types.
@@ -82,7 +82,7 @@ using System.Text;
 
 var pipe = new Pipe();
 pipe.Writer.Write(Guid.NewGuid());
-pipe.Writer.WriteString("Hello, world!".AsSpan(), Encoding.UTF8, LengthEncoding.Plain);
+pipe.Writer.WriteString("Hello, world!".AsSpan(), Encoding.UTF8, LengthFormat.Plain);
 await pipe.Writer.FlushAsync();
 ```
 
@@ -97,7 +97,7 @@ using System.Text;
 ReadOnlySequence<byte> sequence = ...;
 SequenceBinaryReader reader = IAsyncBinaryReader.Create(sequence);
 int i = reader.ReadInt32(BitConverter.IsLittleEndian);
-string str = reader.ReadString(LengthEncoding.Plain, Encoding.UTF8);
+string str = reader.ReadString(LengthFormat.Plain, Encoding.UTF8);
 ```
 
 # File-Buffering Writer

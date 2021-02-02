@@ -54,7 +54,7 @@ The following code describes these alternative implementations of synchronizatio
 | Synchronization Primitive | Asynchronous Version |
 | ---- | ---- |
 | [ReaderWriteLockSlim](https://docs.microsoft.com/en-us/dotnet/api/system.threading.readerwriterlockslim) | [AsyncReaderWriterLock](xref:DotNext.Threading.AsyncReaderWriterLock) |
-| [Monitor](https://docs.microsoft.com/en-us/dotnet/api/system.threading.monitor) | [AsyncExclusiveLock](xref:DotNext.Threading.AsyncExclusiveLock.yml)
+| [Monitor](https://docs.microsoft.com/en-us/dotnet/api/system.threading.monitor) | [AsyncExclusiveLock](xref:DotNext.Threading.AsyncExclusiveLock)
 | [ManualResetEvent](https://docs.microsoft.com/en-us/dotnet/api/system.threading.manualresetevent) | [AsyncManualResetEvent](xref:DotNext.Threading.AsyncManualResetEvent)
 | [AutoResetEvent](https://docs.microsoft.com/en-us/dotnet/api/system.threading.autoresetevent) | [AsyncAutoResetEvent](xref:DotNext.Threading.AsyncAutoResetEvent)
 | [Barrier](https://docs.microsoft.com/en-us/dotnet/api/system.threading.barrier) | [AsyncBarrier](xref:DotNext.Threading.AsyncBarrier)
