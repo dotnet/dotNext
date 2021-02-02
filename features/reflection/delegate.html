@@ -8,13 +8,12 @@
     <title>Open and Closed Delegates | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Open and Closed Delegates | .NEXT ">
-    <meta name="generator" content="docfx 2.56.5.0">
+    <meta name="generator" content="docfx 2.56.6.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
     <link rel="stylesheet" href="../../styles/docfx.css">
     <link rel="stylesheet" href="../../styles/main.css">
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
     <meta property="docfx:navrel" content="../../toc.html">
     <meta property="docfx:tocrel" content="../toc.html">
     
@@ -70,7 +69,7 @@
 <h1 id="open-and-closed-delegates">Open and Closed Delegates</h1>
 
 <p>Common Language Runtime supports <a href="https://docs.microsoft.com/en-us/dotnet/api/system.delegate.createdelegate#System_Delegate_CreateDelegate_System_Type_System_Object_System_String_System_Boolean_">open and closed delegates</a> but there is no native support of them at syntax level in C#. Java supports <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html">method references</a> to do that. C# syntactically supports closed delegate based created from instance method or open delegate created from static method.</p>
-<p>Additionally, there is no way to create a delegate instance from property getter, index property or overloaded implicit/explicit type cast operator. <a href="../../api/DotNext.DelegateHelpers.html">DelegateHelpers</a> class offers two methods to provide necessary syntactic sugar:</p>
+<p>Additionally, there is no way to create a delegate instance from property getter, index property or overloaded implicit/explicit type cast operator. <a class="xref" href="https://fuget.org/packages/DotNext/3.0.0/lib/net5.0/DotNext.dll/DotNext/DelegateHelpers">DelegateHelpers</a> class offers two methods to provide necessary syntactic sugar:</p>
 <ul>
 <li><code>CreateOpenDelegate</code> to create open delegate based on instance method, property, indexer, or overloaded operator</li>
 <li><code>CreateClosedDelegateFactory</code> to create closed delegate based on static method, indexer, or overloaded operator</li>
@@ -133,9 +132,22 @@ Func&lt;bool&gt; isEmpty2 = factory(str2);
                   </li>
                 </ul>
               </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+                <script type="text/javascript" src="../../styles/toggle-theme.js"></script>
+              </div>
+          
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
-                <h5>In This Article</h5>
-                <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
               </nav>
             </div>
           </div>

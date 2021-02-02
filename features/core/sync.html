@@ -8,13 +8,12 @@
     <title>Synchronization Enhancements | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Synchronization Enhancements | .NEXT ">
-    <meta name="generator" content="docfx 2.56.5.0">
+    <meta name="generator" content="docfx 2.56.6.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
     <link rel="stylesheet" href="../../styles/docfx.css">
     <link rel="stylesheet" href="../../styles/main.css">
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
     <meta property="docfx:navrel" content="../../toc.html">
     <meta property="docfx:tocrel" content="../toc.html">
     
@@ -78,22 +77,22 @@
 <li>Writer lock</li>
 <li>Semaphore</li>
 </ul>
-<p>This unification is implemented in the form of the single type <a href="../../api/DotNext.Threading.Lock.html">Lock</a>. It exposes the same set of acquisition methods for each lock type described above. The acquired lock is represented by <a href="../../api/DotNext.Threading.Lock.Holder.html">lock holder</a>. The only purpose of this object is to hold the acquired lock. The lock can be released using <code>Dispose</code> method of the holder.</p>
+<p>This unification is implemented in the form of the single type <a class="xref" href="https://fuget.org/packages/DotNext/3.0.0/lib/net5.0/DotNext.dll/DotNext.Threading/Lock">Lock</a>. It exposes the same set of acquisition methods for each lock type described above. The acquired lock is represented by <a class="xref" href="https://fuget.org/packages/DotNext/3.0.0/lib/net5.0/DotNext.dll/DotNext.Threading/Lock.Holder">lock holder</a>. The only purpose of this object is to hold the acquired lock. The lock can be released using <code>Dispose</code> method of the holder.</p>
 <pre><code class="lang-csharp">using DotNext.Threading;
 using System.Threading;
 
 using var semaphore = new SemaphoreSlim();
 using var @lock = Lock.Semaphore(semaphore);
 //acquires the lock
-using(@lock.Acquire())
+using (@lock.Acquire())
 {
 }
 
 using var rwlock = new ReaderWriterLockSlim();
 using var @lock = Lock.WriteLock(rwLock);
 //acquires the writer lock
-if(@lock.TryAcquire(out Lock.Holder holder))
-    using(holder)
+if (@lock.TryAcquire(out Lock.Holder holder))
+    using (holder)
     {
 
     }
@@ -124,7 +123,7 @@ using(builder.AcquireWriteLock())
     builder.Append(&quot;Hello, world!&quot;);
 }
 </code></pre>
-<p>For more information check extension methods inside of <a href="../../api/DotNext.Threading.LockAcquisition.html">LockAcquisition</a> class.</p>
+<p>For more information check extension methods inside of <a class="xref" href="https://fuget.org/packages/DotNext/3.0.0/lib/net5.0/DotNext.dll/DotNext.Threading/LockAcquisition">LockAcquisition</a> class.</p>
 </article>
           </div>
           
@@ -137,9 +136,22 @@ using(builder.AcquireWriteLock())
                   </li>
                 </ul>
               </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+                <script type="text/javascript" src="../../styles/toggle-theme.js"></script>
+              </div>
+          
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
-                <h5>In This Article</h5>
-                <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
               </nav>
             </div>
           </div>

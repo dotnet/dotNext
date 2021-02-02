@@ -8,13 +8,12 @@
     <title>Interop with Other Asynchronous Patterns and Types | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Interop with Other Asynchronous Patterns and Types | .NEXT ">
-    <meta name="generator" content="docfx 2.56.5.0">
+    <meta name="generator" content="docfx 2.56.6.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
     <link rel="stylesheet" href="../../styles/docfx.css">
     <link rel="stylesheet" href="../../styles/main.css">
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
     <meta property="docfx:navrel" content="../../toc.html">
     <meta property="docfx:tocrel" content="../toc.html">
     
@@ -69,7 +68,7 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="interop-with-other-asynchronous-patterns-and-types">Interop with Other Asynchronous Patterns and Types</h1>
 
-<p>.NEXT Threading library simplifies interop between Task-based programming model and other asynchronous patterns. Bridge methods located in <a href="../../api/DotNext.Threading.AsyncBridge.html">AsyncBridge</a> class.</p>
+<p>.NEXT Threading library simplifies interop between Task-based programming model and other asynchronous patterns. Bridge methods located in <a class="xref" href="https://fuget.org/packages/DotNext.Threading/3.0.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncBridge">AsyncBridge</a> class.</p>
 <h1 id="cancellation-token">Cancellation Token</h1>
 <p>If you have only <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken">CancellationToken</a> and you need to synchronize with its cancellation then use <code>WaitAsync</code> extension method to do that. It converts token into awaitable object.</p>
 <pre><code class="lang-csharp">using DotNext.Threading;
@@ -78,13 +77,6 @@ using System.Threading;
 CancellationToken token = ...;
 await token.WaitAsync();
 </code></pre>
-<p>The awaitable object returned by <code>WaitAsync</code> is not <code>System.Threading.Tasks.Task</code> but it can be converted into it:</p>
-<pre><code class="lang-csharp">using DotNext.Threading;
-using System.Threading;
-
-CancellationToken token = ...;
-Task task = token.WaitAsync().AsTask();
-</code></pre>
 <h1 id="wait-handles">Wait Handles</h1>
 <p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.waithandle">WaitHandle</a> represents OS-specific object that wait for exclusive access to shared resources. It can be converted into awaitable object using <code>WaitAsync</code> static method.</p>
 <pre><code class="lang-csharp">using DotNext.Threading;
@@ -92,13 +84,6 @@ using System.Threading;
 
 var resetEvent = new ManualResetEvent(false);
 await resetEvent.WaitAsync();  
-</code></pre>
-<p>The awaitable object returned by <code>WaitAsync</code> is not <code>System.Threading.Tasks.Task</code> but it can be converted into it:</p>
-<pre><code class="lang-csharp">using DotNext.Threading;
-using System.Threading;
-
-WaitHandle handle = ...;
-Task&lt;bool&gt; task = handle.WaitAsync().AsTask();
 </code></pre>
 </article>
           </div>
@@ -112,9 +97,22 @@ Task&lt;bool&gt; task = handle.WaitAsync().AsTask();
                   </li>
                 </ul>
               </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+                <script type="text/javascript" src="../../styles/toggle-theme.js"></script>
+              </div>
+          
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
-                <h5>In This Article</h5>
-                <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
               </nav>
             </div>
           </div>

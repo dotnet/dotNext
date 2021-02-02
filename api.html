@@ -5,17 +5,17 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Building Expression Trees | .NEXT </title>
+    <title>API Reference | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Building Expression Trees | .NEXT ">
+    <meta name="title" content="API Reference | .NEXT ">
     <meta name="generator" content="docfx 2.56.6.0">
     
-    <link rel="shortcut icon" href="../../fav.ico">
-    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
-    <link rel="stylesheet" href="../../styles/docfx.css">
-    <link rel="stylesheet" href="../../styles/main.css">
-    <meta property="docfx:navrel" content="../../toc.html">
-    <meta property="docfx:tocrel" content="../toc.html">
+    <link rel="shortcut icon" href="fav.ico">
+    <link rel="stylesheet" href="styles/docfx.vendor.css">
+    <link rel="stylesheet" href="styles/docfx.css">
+    <link rel="stylesheet" href="styles/main.css">
+    <meta property="docfx:navrel" content="toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
     
     
     
@@ -33,8 +33,8 @@
                 <span class="icon-bar"></span>
               </button>
               
-              <a class="navbar-brand" href="../../index.html">
-                <img id="logo" class="svg" src="../../doc_logo.png" alt="">
+              <a class="navbar-brand" href="index.html">
+                <img id="logo" class="svg" src="doc_logo.png" alt="">
               </a>
             </div>
             <div class="collapse navbar-collapse" id="navbar">
@@ -56,30 +56,21 @@
         </div>
       </header>
       <div role="main" class="container body-content hide-when-search">
-        
-        <div class="sidenav hide-when-search">
-          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
-          <div class="sidetoggle collapse" id="sidetoggle">
-            <div id="sidetoc"></div>
-          </div>
-        </div>
-        <div class="article row grid-right">
+        <div class="article row grid">
           <div class="col-md-10">
             <article class="content wrap" id="_content" data-uid="">
-<h1 id="building-expression-trees">Building Expression Trees</h1>
+<h1 id="api-reference">API Reference</h1>
 
-<p>The expression tree can be constructed using <a href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/types/using-type-dynamic">dynamic</a> type provided by C# programming language or similar feature in other .NET languages. As a result, expression tree looks like a true language expression or statement without method calls such as <code>Property()</code> or <code>Field()</code> for member access.</p>
-<p>This feature converts any dynamic expression into expression tree. The starting point is <a class="xref" href="https://fuget.org/packages/DotNext.Metaprogramming/3.0.0/lib/net5.0/DotNext.Metaprogramming.dll/DotNext.Linq.Expressions/ExpressionBuilder">ExpressionBuilder.AsDynamic</a> extension method. After all necessary manipulations with expression tree it is possible to convert dynamic type to <a href="https://docs.microsoft.com/en-us/dotnet/api/system.linq.expressions.expression">Expression</a> type back again.</p>
-<pre><code class="lang-csharp">using DotNext.Linq.Expressions;
-using System.Linq.Expressions;
-
-dynamic expr = &quot;Hello, world&quot;.Const().AsDynamic();
-expr = expr.Length;
-Expression e = expr;    //equivalent is &quot;Hello, world&quot;.Length
-expr = 10L.Const().AsDynamic();
-expr = expr + 42L;      //equivalent is 10L + 42L
-</code></pre>
-<p>Unfortunately, due to limitations of C# programming language, construction of <strong>new</strong> expression or type cast is not available. Delegate invocation expression, method call expression, indexer properties and fields are fully supported.</p>
+<ul>
+<li><a href="https://www.fuget.org/packages/DotNext/3.0.0/lib/net5.0/">DotNext</a></li>
+<li><a href="https://www.fuget.org/packages/DotNext.IO/3.0.0/lib/net5.0/">DotNext.IO</a></li>
+<li><a href="https://www.fuget.org/packages/DotNext.Metaprogramming/3.0.0/lib/net5.0/">DotNext.Metaprogramming</a></li>
+<li><a href="https://www.fuget.org/packages/DotNext.Reflection/3.0.0/lib/net5.0/">DotNext.Reflection</a></li>
+<li><a href="https://www.fuget.org/packages/DotNext.Threading/3.0.0/lib/net5.0/">DotNext.Threading</a></li>
+<li><a href="https://www.fuget.org/packages/DotNext.Unsafe/3.0.0/lib/net5.0/">DotNext.Unsafe</a></li>
+<li><a href="https://www.fuget.org/packages/DotNext.Net.Cluster/3.0.0/lib/net5.0/">DotNext.Net.Cluster</a></li>
+<li><a href="https://www.fuget.org/packages/DotNext.AspNetCore.Cluster/3.0.0/lib/net5.0/">DotNext.AspNetCore.Cluster</a></li>
+</ul>
 </article>
           </div>
           
@@ -88,7 +79,7 @@ expr = expr + 42L;      //equivalent is 10L + 42L
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/docs/features/metaprogramming/dynamic.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/docs/api.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>
@@ -103,7 +94,7 @@ expr = expr + 42L;      //equivalent is 10L + 42L
                 <div class="icon">
                   <i aria-hidden="true">☾</i>
                 </div>
-                <script type="text/javascript" src="../../styles/toggle-theme.js"></script>
+                <script type="text/javascript" src="styles/toggle-theme.js"></script>
               </div>
           
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
@@ -128,8 +119,8 @@ expr = expr + 42L;      //equivalent is 10L + 42L
       </footer>
     </div>
     
-    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
-    <script type="text/javascript" src="../../styles/docfx.js"></script>
-    <script type="text/javascript" src="../../styles/main.js"></script>
+    <script type="text/javascript" src="styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="styles/docfx.js"></script>
+    <script type="text/javascript" src="styles/main.js"></script>
   </body>
 </html>

@@ -8,13 +8,12 @@
     <title>Structured Memory Access | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Structured Memory Access | .NEXT ">
-    <meta name="generator" content="docfx 2.56.5.0">
+    <meta name="generator" content="docfx 2.56.6.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
     <link rel="stylesheet" href="../../styles/docfx.css">
     <link rel="stylesheet" href="../../styles/main.css">
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
     <meta property="docfx:navrel" content="../../toc.html">
     <meta property="docfx:tocrel" content="../toc.html">
     
@@ -70,8 +69,8 @@
 <h1 id="structured-memory-access">Structured Memory Access</h1>
 
 <p>.NET standard library provides a concept of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.memorymanager-1">memory manager</a> which represents an owner of continuous block of memory. By default, it is implemented by <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.memorypool-1">MemoryPool</a>. The block of memory can be obtained from the manager in the form of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.memory-1">Memory&lt;T&gt;</a> value type which is compatible with async methods. Unfortunately, the unmanaged memory controlled by <code>UnmanagedMemory&lt;T&gt;</code> class from .NEXT library is not compatible with <code>Memory&lt;T&gt;</code> value type.</p>
-<p>This gap is closed by <a href="https://sakno.github.io/dotNext/api/DotNext.Buffers.UnmanagedMemoryPool-1.html">UnmanagedMemoryPool&lt;T&gt;</a> class which allows to allocate a block of unmanaged memory in full compliance with <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.imemoryowner-1">IMemoryOwner&lt;T&gt;</a> interface. Now it is possible to represent unmanaged memory as <code>Memory&lt;T&gt;</code> value type.</p>
-<p>The block of unmanaged memory can be allocated using static method <code>Allocate</code> that has <a href="https://sakno.github.io/dotNext/api/DotNext.Buffers.IUnmanagedMemoryOwner-1.html">IUnmanagedMemoryOwner&lt;T&gt;</a> return type. This interface is derived from <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.imemoryowner-1">IMemoryOwner&lt;T&gt;</a> so the memory block can be easily represented as <code>Memory&lt;T&gt;</code> value type.</p>
+<p>This gap is closed by <a class="xref" href="https://fuget.org/packages/DotNext.Unsafe/3.0.0/lib/net5.0/DotNext.Unsafe.dll/DotNext.Buffers/UnmanagedMemoryPool%601">UnmanagedMemoryPool&lt;T&gt;</a> class which allows to allocate a block of unmanaged memory in full compliance with <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.imemoryowner-1">IMemoryOwner&lt;T&gt;</a> interface. Now it is possible to represent unmanaged memory as <code>Memory&lt;T&gt;</code> value type.</p>
+<p>The block of unmanaged memory can be allocated using static method <code>Allocate</code> that has <a class="xref" href="https://fuget.org/packages/DotNext.Unsafe/3.0.0/lib/net5.0/DotNext.Unsafe.dll/DotNext.Buffers/IUnmanagedMemoryOwner%601">IUnmanagedMemoryOwner&lt;T&gt;</a> return type. This interface is derived from <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.imemoryowner-1">IMemoryOwner&lt;T&gt;</a> so the memory block can be easily represented as <code>Memory&lt;T&gt;</code> value type.</p>
 <p>If you need to work with unmanaged memory as with memory pool then it is possible to instantiate <code>UnmanagedMemoryPool&lt;T&gt;</code> class and use it in the same manner as <code>MemoryPool&lt;T&gt;</code> from .NET standard library.</p>
 <p>The following example demonstrates how to allocate a block of unmanaged memory and wrap it into <code>Memory&lt;T&gt;</code> value type:</p>
 <pre><code class="lang-csharp">using DotNext.Buffers;
@@ -166,9 +165,22 @@ Pointer&lt;byte&gt; ptr = memory.Pointer.As&lt;byte&gt;();
                   </li>
                 </ul>
               </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+                <script type="text/javascript" src="../../styles/toggle-theme.js"></script>
+              </div>
+          
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
-                <h5>In This Article</h5>
-                <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
               </nav>
             </div>
           </div>

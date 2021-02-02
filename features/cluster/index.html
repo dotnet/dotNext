@@ -8,13 +8,12 @@
     <title>Cluster and Distributed Consensus | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Cluster and Distributed Consensus | .NEXT ">
-    <meta name="generator" content="docfx 2.56.5.0">
+    <meta name="generator" content="docfx 2.56.6.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
     <link rel="stylesheet" href="../../styles/docfx.css">
     <link rel="stylesheet" href="../../styles/main.css">
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
     <meta property="docfx:navrel" content="../../toc.html">
     <meta property="docfx:tocrel" content="../toc.html">
     
@@ -78,15 +77,15 @@
 </ol>
 <p>The programming model at higher level of abstraction is represented by interfaces:</p>
 <ul>
-<li><a href="../../api/DotNext.Net.Cluster.IClusterMember.html">IClusterMember</a> represents individual node in the cluster</li>
-<li><a href="../../api/DotNext.Net.Cluster.ICluster.html">ICluster</a> represents entire cluster. This is an entry point to work with cluster using .NEXT library.</li>
-<li><a href="../../api/DotNext.Net.Cluster.IExpandableCluster.html">IExpandableCluster</a> optional interface that extends <code>ICluster</code> and represents dynamically configurable cluster where the nodes can be added or removed on-the-fly. If actual implementation doesn't support this interface then cluster can be configured only statically - it is required to shutdown entire cluster if you want to add or remove nodes</li>
-<li><a href="../../api/DotNext.Net.Cluster.Messaging.IMessageBus.html">IMessageBus</a> optional interface provides message-based communication between nodes in  point-to-point manner</li>
-<li><a href="../../api/DotNext.Net.Cluster.Replication.IReplicationCluster-1.html">IReplicationCluster</a> optional interface represents a cluster where its state can be replicated across nodes to ensure consistency between them. Replication functionality based on <a href="../../api/DotNext.IO.Log.IAuditTrail-1.html">audit trail</a>. By default, design of replication infrastructure supports <a href="https://en.wikipedia.org/wiki/Weak_consistency">Weak Consistency</a>.</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.0.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster/IClusterMember">IClusterMember</a> represents individual node in the cluster</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.0.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster/ICluster">ICluster</a> represents entire cluster. This is an entry point to work with cluster using .NEXT library.</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.0.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster/IExpandableCluster">IExpandableCluster</a> optional interface that extends <code>ICluster</code> and represents dynamically configurable cluster where the nodes can be added or removed on-the-fly. If actual implementation doesn't support this interface then cluster can be configured only statically - it is required to shutdown entire cluster if you want to add or remove nodes</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.0.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/IMessageBus">IMessageBus</a> optional interface provides message-based communication between nodes in  point-to-point manner</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.0.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Replication/IReplicationCluster%601">IReplicationCluster&lt;T&gt;</a> optional interface represents a cluster where its state can be replicated across nodes to ensure consistency between them. Replication functionality based on <a class="xref" href="https://fuget.org/packages/DotNext.IO/3.0.0/lib/net5.0/DotNext.IO.dll/DotNext.IO.Log/IAuditTrail">IAuditTrail</a>. By default, design of replication infrastructure supports <a href="https://en.wikipedia.org/wiki/Weak_consistency">Weak Consistency</a>.</li>
 </ul>
 <p>Thereby, core model consists of two interfaces: <code>ICluster</code> and <code>IClusterMember</code>. Other interfaces are extensions of the core model.</p>
 <h1 id="messaging">Messaging</h1>
-<p>Messaging feature allows to organize point-to-point communication between nodes where individual node is able to send the message to any other node. The discrete unit of communication is represented by <a href="../../api/DotNext.Net.Cluster.Messaging.IMessage.html">IMessage</a> interface which is transport- and protocol-agnostic. The actual implementation should provide protocol-specific serialization and deserialization of such messages.</p>
+<p>Messaging feature allows to organize point-to-point communication between nodes where individual node is able to send the message to any other node. The discrete unit of communication is represented by <a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.0.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/IMessage">IMessage</a> interface which is transport- and protocol-agnostic. The actual implementation should provide protocol-specific serialization and deserialization of such messages.</p>
 <p>There are two types of messages:</p>
 <ol>
 <li><strong>Request-Reply</strong> message is similar to RPC call when caller should wait for the response. The response payload is represented by <code>IMessage</code></li>
@@ -94,12 +93,13 @@
 1.1. With confirmation, when sender waiting for acknowledge from receiver side. As a result, it is possible to ensure that message is processed by receiver.
 1.1. Without confirmation, when sender doesn't wait for acknowledge. Such kind of delivery is not reliable but very performant.</li>
 </ol>
-<p>The message can be transferred to the particular member using <a href="../../api/DotNext.Net.Cluster.Messaging.ISubscriber.html">ISubscriber</a> interface which is the extension of <code>IClusterMember</code> interface.</p>
+<p>The message can be transferred to the particular member using <a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.0.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/ISubscriber">ISubscriber</a> interface which is the extension of <code>IClusterMember</code> interface.</p>
 <p>Usually, you don't to implement <code>IMessage</code> interface directly due to existence of ready-to-use realizations:</p>
 <ol>
-<li><a href="../../api/DotNext.Net.Cluster.Messaging.BinaryMessage.html">BinaryMessage</a> for raw binary content</li>
-<li><a href="../../api/DotNext.Net.Cluster.Messaging.StreamMessage.html">StreamMessage</a> for message which payload is represented by <a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.stream">Stream</a>. It it suitable for large payload when it is stored on the disk</li>
-<li><a href="../../api/DotNext.Net.Cluster.Messaging.TextMessage.html">TextMessage</a> for textual content</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.0.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/BinaryMessage">BinaryMessage</a> for raw binary content</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.0.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/StreamMessage">StreamMessage</a> for message which payload is represented by <a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.stream">Stream</a>. It it suitable for large payload when it is stored on the disk</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.0.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/TextMessage">TextMessage</a> for textual content</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.0.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Messaging/JsonMessage%601">JsonMessage&lt;T&gt;</a> for JSON-serializable types</li>
 </ol>
 <h1 id="distributed-consensus">Distributed Consensus</h1>
 <p>Consensus Algorithm allows to achieve overall reliability in the presence of faulty nodes. The most commonly used consensus algorithms are:</p>
@@ -109,7 +109,7 @@
 <li><a href="https://en.wikipedia.org/wiki/Raft_(computer_science)">Raft</a></li>
 </ul>
 <p>The consensus algorithm allows to choose exactly one leader node in the cluster.</p>
-<p>.NEXT library provides protocol-agnostic implementation of Raft algorithm that can be adopted for any real network protocol. You can reuse this implementation which is located in <a href="../../api/DotNext.Net.Cluster.Consensus.Raft.html">DotNext.Net.Cluster.Consensus.Raft</a> namespace. If you want to know more about Raft then use the following links:</p>
+<p>.NEXT library provides protocol-agnostic implementation of Raft algorithm that can be adopted for any real network protocol. You can reuse this implementation which is located in <code>DotNext.Net.Cluster.Consensus.Raft</code> namespace. If you want to know more about Raft then use the following links:</p>
 <ul>
 <li><a href="https://raft.github.io/">The Raft Consensus Algorithm</a></li>
 <li><a href="http://thesecretlivesofdata.com/">The Secret Lives of Data</a></li>
@@ -117,8 +117,8 @@
 <li><a href="https://github.com/ongardie/dissertation">Dissertation</a></li>
 </ul>
 <h1 id="replication">Replication</h1>
-<p>Replication allows to share information between nodes to ensure consistency between them. Usually, consensus algorithm covers replication process. In .NEXT library, replication functionality relies on the fact that each cluster node has its own persistent audit trail (or transaction log). However, the only default implementation of it is in-memory log which is suitable in siutations when your distributed application requires distributed consensus only and don't have distributed state that should be synchronized across cluster. If you need reliable replication then provide your own implementation of <a href="../../api/DotNext.IO.Log.IAuditTrail-1.html">IAuditTrail</a> interface or use <a href="../../api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html">PersistentState</a> class.</p>
-<p><a href="../../api/DotNext.Net.Cluster.Replication.IReplicationCluster.html">IReplicationCluster</a> interface indicates that the specific cluster implementation supports state replication across cluster nodes. It exposed access to the audit trail used to track local changes and commits on other cluster nodes.</p>
+<p>Replication allows to share information between nodes to ensure consistency between them. Usually, consensus algorithm covers replication process. In .NEXT library, replication functionality relies on the fact that each cluster node has its own persistent audit trail (or transaction log). However, the only default implementation of it is in-memory log which is suitable in siutations when your distributed application requires distributed consensus only and don't have distributed state that should be synchronized across cluster. If you need reliable replication then provide your own implementation of <a class="xref" href="https://fuget.org/packages/DotNext.IO/3.0.0/lib/net5.0/DotNext.IO.dll/DotNext.IO.Log/IAuditTrail%601">IAuditTrail&lt;T&gt;</a> interface or use <a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.0.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/PersistentState">PersistentState</a> class.</p>
+<p><a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.0.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Replication/IReplicationCluster">IReplicationCluster</a> interface indicates that the specific cluster implementation supports state replication across cluster nodes. It exposed access to the audit trail used to track local changes and commits on other cluster nodes.</p>
 <h1 id="implementations">Implementations</h1>
 <ul>
 <li><a href="raft.html">.NEXT Raft Suite</a> is a fully-featured implementation of Raft algorithm and related infrastructure.</li>
@@ -135,9 +135,22 @@
                   </li>
                 </ul>
               </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+                <script type="text/javascript" src="../../styles/toggle-theme.js"></script>
+              </div>
+          
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
-                <h5>In This Article</h5>
-                <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
               </nav>
             </div>
           </div>

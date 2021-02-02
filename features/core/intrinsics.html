@@ -8,13 +8,12 @@
     <title>Intrinsics | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Intrinsics | .NEXT ">
-    <meta name="generator" content="docfx 2.56.5.0">
+    <meta name="generator" content="docfx 2.56.6.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
     <link rel="stylesheet" href="../../styles/docfx.css">
     <link rel="stylesheet" href="../../styles/main.css">
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
     <meta property="docfx:navrel" content="../../toc.html">
     <meta property="docfx:tocrel" content="../toc.html">
     
@@ -70,7 +69,7 @@
 <h1 id="intrinsics">Intrinsics</h1>
 
 <p>Intrinsic methods are special kind of methods whose implementation is handled specially by JIT compiler or written in pure IL code to achieve low (or zero, in some situations) overhead. .NET library has good example in the form of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.unsafe">Unsafe</a> class which is implemented in pure IL. The implementation in pure IL allows to be closer to the bare metal and utilize code patterns recognized by JIT compiler.</p>
-<p>.NEXT library has numerous intrinsics which are exposed by <a href="../../api/DotNext.Runtime.Intrinsics.html">Intrinsics</a> class and grouped into the following categories:</p>
+<p>.NEXT library has numerous intrinsics which are exposed by <a class="xref" href="https://fuget.org/packages/DotNext/3.0.0/lib/net5.0/DotNext.dll/DotNext.Runtime/Intrinsics">Intrinsics</a> class and grouped into the following categories:</p>
 <ul>
 <li>Common intrinsics which have very low or zero runtime overhead</li>
 <li>Low-level memory manipulations</li>
@@ -88,12 +87,12 @@ Intrinsics.IsDefault(0);    //true
 Intrinsics.IsDefault(1);    //false
 </code></pre>
 <h1 id="low-level-memory-manipulations">Low-Level Memory Manipulations</h1>
-<p>Intrinsic methods for low-level manipulations extend capabilities of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.unsafe">Unsafe</a> class from .NET Standard library.</p>
+<p>Intrinsic methods for low-level manipulations extend capabilities of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.unsafe">Unsafe</a> class from .NET standard library.</p>
 <div class="IMPORTANT">
 <h5>Important</h5>
 <p>Most of the provided methods are not verifiable in terms of CLR Validation and Verification and can destabilize runtime. Correctness of their usage must be guaranteed by developer. For more information, read <a href="https://www.ecma-international.org/publications/files/ECMA-ST/ECMA-335.pdf">II.3 Validation and Verification</a> section of ECMA-335 standard.</p>
 </div>
-<p>Memory manipulation methods of <a href="../../api/DotNext.Runtime.Intrinsics.html">Intrinsics</a> class is grouped into the following blocks:</p>
+<p>Memory manipulation methods of <a class="xref" href="https://fuget.org/packages/DotNext/3.0.0/lib/net5.0/DotNext.dll/DotNext.Runtime/Intrinsics">Intrinsics</a> class is grouped into the following blocks:</p>
 <ol>
 <li>Hash computation</li>
 <li>Memory equality and comparison</li>
@@ -127,6 +126,16 @@ Intrinsics.IsNull(in nullref);
 Intrinsics.IsExactTypeOf&lt;object&gt;(&quot;a&quot;);  //false
 Intrinsics.IsExactTypeOf&lt;string&gt;(&quot;a&quot;);  //true
 </code></pre>
+<h1 id="array-length">Array Length</h1>
+<p>C# 9 introduces primitive type <code>nint</code> that can be used for accessing array elements without hidden conversion of the index. However, there is no way to obtain array length as native integer. <code>Intrinsics.GetLength</code> provides this ability so the loop over array elements can be rewritten as follows:</p>
+<pre><code class="lang-csharp">using DotNext.Runtime;
+
+var array = new int[] { ... };
+for (nint i = 0; i &lt; Intrinsics.GetLength(array); i++)
+{
+    
+}
+</code></pre>
 </article>
           </div>
           
@@ -139,9 +148,22 @@ Intrinsics.IsExactTypeOf&lt;string&gt;(&quot;a&quot;);  //true
                   </li>
                 </ul>
               </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+                <script type="text/javascript" src="../../styles/toggle-theme.js"></script>
+              </div>
+          
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
-                <h5>In This Article</h5>
-                <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
               </nav>
             </div>
           </div>

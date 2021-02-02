@@ -8,13 +8,12 @@
     <title>Persistent Write Ahead Log | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Persistent Write Ahead Log | .NEXT ">
-    <meta name="generator" content="docfx 2.56.5.0">
+    <meta name="generator" content="docfx 2.56.6.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
     <link rel="stylesheet" href="../../styles/docfx.css">
     <link rel="stylesheet" href="../../styles/main.css">
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
     <meta property="docfx:navrel" content="../../toc.html">
     <meta property="docfx:tocrel" content="../toc.html">
     
@@ -69,7 +68,7 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="persistent-write-ahead-log">Persistent Write Ahead Log</h1>
 
-<p>Starting with .NEXT 1.0.0 the library shipped with the general-purpose high-performance <a href="../../api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html">persistent Write Ahead Log</a>(WAL) providing the following features:</p>
+<p>Starting with .NEXT 1.0.0 the library shipped with the general-purpose high-performance <a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.0.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/PersistentState">persistent Write-Ahead Log</a> providing the following features:</p>
 <ul>
 <li>Log compaction based on snapshotting</li>
 <li>File-based persistent storage for the log entries</li>
@@ -95,7 +94,7 @@
 <li><code>BufferSize</code> is the numbers of bytes that is allocated by persistent WAL in the memory to perform I/O operations. Set it to the maximum expected log entry size to achieve the best performance.</li>
 <li><code>InitialPartitionSize</code> represents the initial pre-allocated size, in bytes, of the empty partition file. This parameter allows to avoid fragmentation of the partition file at file-system level.</li>
 <li><code>UseCaching</code> is <code>bool</code> flag that allows to enable or disable in-memory caching of log entries metadata. <code>true</code> value allows to improve the performance or read/write operations by the cost of additional heap memory. <code>false</code> reduces the memory footprint by the cost of the read/write performance</li>
-<li><code>CreateMemoryPool</code> generic method used for renting memory and can be overridden</li>
+<li><code>GetMemoryAllocator</code> generic method used for renting the memory and can be overridden</li>
 <li><code>MaxConcurrentReads</code> is a number of concurrent asynchronous operations which can perform reads in parallel. Write operations are always sequential. Ideally, the value should be equal to the number of nodes. However, the larger value consumes more system resources (e.g. file handles) and heap memory.</li>
 <li><code>ReplayOnInitialize</code> is a flag indicating that state of underlying database engine should be reconstructed when <code>InitializeAsync</code> is called by infrastructure. It can be done manually using <code>ReplayAsync</code> method.</li>
 </ul>
@@ -103,7 +102,6 @@
 <p>Let's write a simple custom audit trail based on the <code>PersistentState</code> to demonstrate basics of Write Ahead Log. Our state machine stores only the single <strong>long</strong> value as the only possible persistent state.</p>
 <p>The example below additionally requires <strong>DotNext.IO</strong> library to simplify I/O work.</p>
 <pre><code class="lang-csharp">using DotNext.IO;
-using DotNext.IO.Pipelines;
 using DotNext.Net.Cluster.Consensus.Raft;
 using System.Threading.Tasks;
 using static System.Buffers.Binary.BinaryPrimitives;
@@ -161,6 +159,169 @@ sealed class SimpleAuditTrail : PersistentState
 <p><code>ReadAsync</code> method can be used to obtain committed or uncommitted entries in stream-like manner.</p>
 <h1 id="state-reconstruction">State Reconstruction</h1>
 <p><code>PersistentState</code> is designed with assumption that underlying state machine can be reconstructed through sequential interpretation of each committed log entry stored in the log. When persistent WAL used in combination with other Raft infrastructure such as extensions for ASP.NET Core provided by <strong>DotNext.AspNetCore.Cluster</strong> library then this action performed automatically in host initialization code. However, if WAL used separately then reconstruction process should be initiated manually. To do that you need to call <code>ReplayAsync</code> method which reads all committed log entry and pass each entry to <code>ApplyAsync</code> protected method. Usually, <code>ApplyAsync</code> method implementation implements data state machine logic so sequential processing of all committed entries can restore its state correctly.</p>
+<h1 id="interpreter-framework">Interpreter Framework</h1>
+<p><code>ApplyAsync</code> method and snapshot builder responsible for interpretation of custom log entries usually containing the commands and applying these commands to the underlying database engine. <a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.0.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/PersistentState.LogEntry">LogEntry</a> is a generic representation of the log entry written to persistent WAL and it has no knowledge about semantics of the command. Therefore, you need to decode and interpret it manually.</p>
+<p>There are two ways to do that:</p>
+<ol>
+<li>JSON serialization</li>
+<li>Deriving from <a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.0.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft.Commands/CommandInterpreter">CommandInterpreter</a> class</li>
+</ol>
+<p>The first approach is very simple but may be not optimal for real application because each log entry must be represented as JSON in the form of UTF-8 encoded characters. Moreover, decoding procedure causes heap allocation of each decoded log entry.</p>
+<h2 id="json-log-entries">JSON log entries</h2>
+<p>At the time of appending of a new log entry, it can be created as follows:</p>
+<pre><code class="lang-csharp">using DotNext.Net.Cluster.Consensus.Raft;
+
+struct SubtractCommand
+{
+	public int X { get; set; }
+	public int Y { get; set; }
+}
+
+PersistentState state = ...;
+var entry = state.CreateJsonLogEntry(new SubtractCommand { X = 10, Y = 20 });
+await state.AppendAsync(entry);
+</code></pre>
+<p><code>SubtractCommand</code> must be JSON-serializable type. Its content will be serialialized to JSON and written as log entry. It's recommended to explicitly specify the optional parameters of <code>CreateJsonLogEntry</code> method to provide type identification independent from .NET type system.</p>
+<p>Now the written log entry can be deserialized and interpreted easily inside of <code>AppendAsync</code> method:</p>
+<pre><code class="lang-csharp">using DotNext.IO;
+using DotNext.Net.Cluster.Consensus.Raft;
+using System.Threading.Tasks;
+
+sealed class SimpleAuditTrail : PersistentState
+{
+	internal long Value;
+	
+    protected override async ValueTask ApplyAsync(LogEntry entry)
+	{
+		switch (await entry.DeserializeFromJsonAsync())
+		{
+			case SubtractCommand command:
+				Value = command.X - command.Y; // interpreting the command
+				break;
+		}
+	}
+}
+</code></pre>
+<p><code>DeserializeFromJsonAsync</code> accepts type resolver as an optional argument. If default type resolution mechanism is used then persistent state stores type information in the form of fullt-qualified type name including assembly name.</p>
+<h2 id="command-interpreter">Command Interpreter</h2>
+<p>Interpreting of the custom log entries can be implemented with help of <a href="https://en.wikipedia.org/wiki/Command_pattern">Command Pattern</a>. <a class="xref" href="https://fuget.org/packages/DotNext.Net.Cluster/3.0.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft.Commands/CommandInterpreter">CommandInterpreter</a> is a foundation for building custom interpreters in declarative way using such pattern. Each command has command handler described as separated method in the derived class.</p>
+<p>First of all, it's needed to decorate command type with necessary attribute and write serialization and deserialization logic:</p>
+<pre><code class="lang-csharp">using DotNext.Runtime.Serialization;
+using DotNext.Net.Cluster.Consensus.Raft.Commands;
+using System.Threading;
+using System.Threading.Tasks;
+
+sealed class CommandFormatter : IFormatter&lt;SubtractCommand&gt;, IFormatter&lt;NegateCommand&gt;
+{
+	public static readonly CommandFormatter Instance = new CommandFormatter();
+
+	private CommandFormatter()
+	{
+	}
+
+    async ValueTask IFormatter&lt;SubtractCommand&gt;.SerializeAsync&lt;TWriter&gt;(SubtractCommand command, TWriter writer, CancellationToken token)
+	{
+		await writer.WriteInt32Async(command.X, true, token);
+		await writer.WriteInt32Async(command.Y, true, token);
+	}
+
+	async ValueTask&lt;SubtractCommand&gt; IFormatter&lt;SubtractCommand&gt;.DeserializeAsync&lt;TReader&gt;(TReader reader, CancellationToken token)
+	{
+		return new SubtractCommand
+		{
+			X = await reader.ReadInt32Async(true, token),
+			Y = await reader.ReadInt32Async(true, token)
+		};
+	}
+
+	async ValueTask IFormatter&lt;NegateCommand&gt;.SerializeAsync&lt;TWriter&gt;(NegateCommand command, TWriter writer, CancellationToken token)
+	{
+		await writer.WriteInt32Async(command.X, true, token);
+	}
+
+	async ValueTask&lt;NegateCommand&gt; IFormatter&lt;NegateCommand&gt;.DeserializeAsync&lt;TReader&gt;(TReader reader, CancellationToken token)
+	{
+		return new NegateCommand
+		{
+			X = await reader.ReadInt32Async(true, token),
+		};
+	}
+}
+
+[CommandAttribute(0, Formatter = typeof(CommandFormatter), FormatterMember = nameof(CommandFormatter.Instance))]
+struct SubtractCommand
+{
+	public int X { get; set; }
+	public int Y { get; set; }
+}
+
+[CommandAttribute(1, Formatter = typeof(CommandFormatter), FormatterMember = nameof(CommandFormatter.Instance))]
+struct NegateCommand
+{
+	public int X { get; set; }
+}
+</code></pre>
+<p>Each command must have unique identifier which is encoded transparently as a part of the log entry in WAL. This identifier is required by interpreter to correctly identify which serializer/deserializer must be called. Encoding of this identifier as a part of the custom serialization logic is not needed.</p>
+<p>Now the commands are described with their serialization logic. However, the interpreter still doesn't know how to interpet them. Let's derive from <code>CommandInterpreter</code> and write command handler for each command described above:</p>
+<pre><code class="lang-csharp">using DotNext.Net.Cluster.Consensus.Raft.Commands;
+
+public class MyInterpreter : CommandInterpreter
+{
+	private long state;
+
+	[CommandHandler]
+	public async ValueTask SubtractAsync(SubtractCommand command, CancellationToken token)
+	{
+		state = command.X - command.Y;
+	}
+
+	[CommandHandler]
+	public async ValueTask NegateAsync(NegateCommand command, CancellationToken token)
+	{
+		state = -command.X;
+	}
+}
+</code></pre>
+<p>Each command handler must be decorated with <code>CommandHandlerAttribute</code> attribute and have the following signature:</p>
+<ul>
+<li>Return type is <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></li>
+<li>The first parameter is of command type</li>
+<li>The second parameter is <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></li>
+<li>Must be public instance method</li>
+</ul>
+<p><code>CommandInterpreter</code> automatically discovers all declared command handlers and associated command types. Now the log entry can be appended easily:</p>
+<pre><code class="lang-csharp">MyInterpreter interpreter = ...;
+PersistentState state = ...;
+var entry = interpreter.CreateLogEntry(new SubtractCommand { X = 10, Y = 20 }, state.Term);
+await state.AppendAsync(entry);
+</code></pre>
+<p>The last step is to combine the class derived from <code>PersistentState</code> and the custom interpreter.</p>
+<pre><code class="lang-csharp">using DotNext.IO;
+using DotNext.Net.Cluster.Consensus.Raft;
+using System.Threading.Tasks;
+
+sealed class SimpleAuditTrail : PersistentState
+{
+	private readonly MyInterpreter interpreter;
+	
+    protected override async ValueTask ApplyAsync(LogEntry entry)
+	{
+		await interpreter.InterpretAsync(entry);
+	}
+}
+</code></pre>
+<p><code>InterpretAsync</code> is a method declared in base class <code>CommandInterpreter</code>. It decods the command identifier and delegates interpretation to the appropriate command handler.</p>
+<p>Additionally, <code>CommandInterpreter</code> can be constructed without inheritance using Builder pattern:</p>
+<pre><code class="lang-csharp">ValueTask SubtractAsync(SubtractCommand command, CancellationToken token)
+{
+	// interpretation logic
+}
+
+var interpreter = new CommandInterpreter.Builder()
+	.Add&lt;SubtractCommand&gt;(SubtractAsync, CommandFormatter.Instance)
+	.Build();
+</code></pre>
+<p>Builder style can be used when you don't want to derive state machine engine from <code>CommandInterpreter</code> class for some reason.</p>
 </article>
           </div>
           
@@ -173,9 +334,22 @@ sealed class SimpleAuditTrail : PersistentState
                   </li>
                 </ul>
               </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+                <script type="text/javascript" src="../../styles/toggle-theme.js"></script>
+              </div>
+          
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
-                <h5>In This Article</h5>
-                <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
               </nav>
             </div>
           </div>

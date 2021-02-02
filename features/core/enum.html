@@ -8,13 +8,12 @@
     <title>Enum Enhancements | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Enum Enhancements | .NEXT ">
-    <meta name="generator" content="docfx 2.56.5.0">
+    <meta name="generator" content="docfx 2.56.6.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
     <link rel="stylesheet" href="../../styles/docfx.css">
     <link rel="stylesheet" href="../../styles/main.css">
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
     <meta property="docfx:navrel" content="../../toc.html">
     <meta property="docfx:tocrel" content="../toc.html">
     
@@ -69,7 +68,7 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="enum-enhancements">Enum Enhancements</h1>
 
-<p>Currently, to retrieve both the names and values of an enum's members requires two separate calls and requires you to use a for loop which is quite clumsy. Moreover, static methods from <a href="https://docs.microsoft.com/en-us/dotnet/api/system.enum">Enum</a> to work with arbitrary enum types cause boxing/unboxing. <a href="../../api/DotNext.Enum-1.html">Enum&lt;T&gt;</a> allows to obtain value and name of the enum member as well as to obtain the member by its value or name.</p>
+<p><a class="xref" href="https://fuget.org/packages/DotNext/3.0.0/lib/net5.0/DotNext.dll/DotNext/EnumConverter">EnumConverter</a> allows to convert primitive types into arbitrary enum type and vice versa. It is helpful if enum type is defined as generic parameter and not known at compile time.</p>
 <pre><code class="lang-csharp">using DotNext;
 using System;
 
@@ -81,24 +80,6 @@ enum Color: int
     Blue = 0x0000FF,
     White = 0xFFFFFF
 }
-
-Enum&lt;Color&gt;.Member member = Enum&lt;Color&gt;.GetMember(&quot;Red&quot;);
-member.Value == Color.Red;  //true
-member = Enum&lt;Color&gt;.GetMember(Color.Green);
-member.Name == &quot;Green&quot;; //true
-member = default;
-member.Name == &quot;Black&quot;; //true
-member.Value == Color.Black;    //true
-</code></pre>
-<p>It is possible to enumerate all members in the order they were declared. Moreover, it is possible to obtain the member by its index</p>
-<pre><code class="lang-csharp">foreach(var member in Enum&lt;Color&gt;.Members)
-    Console.WriteLine(member.Name);
-
-Enum&lt;Color&gt;.Member red = Enum&lt;Color&gt;.Members[1];
-</code></pre>
-<p><a href="../../api/DotNext.EnumConverter.html">EnumConverter</a> allows to convert primitive types into arbitrary enum type and vice versa. It is helpful if enum type is defined as generic parameter and not known at compile time.</p>
-<pre><code class="lang-csharp">using DotNext;
-using System;
 
 public static E Plus&lt;E&gt;(E first, E second, E third) 
     where E: unmanaged, Enum
@@ -112,14 +93,10 @@ white == Color.White;   //true
 </code></pre>
 <h1 id="flag">Flag</h1>
 <p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.enum">System.Enum</a> class has public instance method <code>HasFlag</code> that allows to check whether the one or more bits are set in the enumeration. However, it causes boxing of the argument. There is no generic version of this method in standard library to avoid boxing.</p>
-<p>.NEXT library offers generic and fast version of <code>HasFlag</code> method that prevents boxing:</p>
-<ul>
-<li>Instance method <code>IsFlag</code> of <a href="https://sakno.github.io/dotNext/api/DotNext.Enum-1.html">Enum&lt;T&gt;</a> value type</li>
-<li>Static method <code>HasFlag</code> of <a href="https://sakno.github.io/dotNext/api/DotNext.Runtime.Intrinsics.html">Intrinsics</a> class</li>
-</ul>
+<p>.NEXT library offers fast version of <code>HasFlag</code> method that prevents boxing. It's represented by static method located in <a class="xref" href="https://fuget.org/packages/DotNext/3.0.0/lib/net5.0/DotNext.dll/DotNext.Runtime/Intrinsics">Intrinsics</a> class.</p>
 <h1 id="attributes">Attributes</h1>
-<p><a href="https://sakno.github.io/dotNext/api/DotNext.Enum-1.html">Enum&lt;T&gt;</a> value type exposes access to custom attributes attached to the enum member. The attributes can be requested using methods of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.reflection.icustomattributeprovider">ICustomAttributeProvider</a> interface which is implemented by the value type. For convenience, there are extra methods available with the support of generic parameters:</p>
-<pre><code class="lang-csharp">using DotNext;
+<p><a class="xref" href="https://fuget.org/packages/DotNext/3.0.0/lib/net5.0/DotNext.dll/DotNext.Reflection/EnumType">EnumType</a> static classes exposes access to custom attributes attached to the enum member.</p>
+<pre><code class="lang-csharp">using DotNext.Reflection;
 
 sealed class EnumMemberAttribute : Attribute
 {
@@ -133,8 +110,7 @@ enum MyEnum
     WithAttribute = 1,
 }
 
-Enum&lt;MyEnum&gt; enumMember = Enum&lt;MyEnum&gt;.GetMember(MyEnum.WithAttribute);
-EnumMemberAttribute attr = enumMember.GetCustomAttribute&lt;EnumMemberAttribute&gt;();
+EnumMemberAttribute attr = MyEnum.WithAttribute.GetCustomAttribute&lt;MyEnum, EnumMemberAttribute&gt;();
 </code></pre>
 </article>
           </div>
@@ -148,9 +124,22 @@ EnumMemberAttribute attr = enumMember.GetCustomAttribute&lt;EnumMemberAttribute&
                   </li>
                 </ul>
               </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+                <script type="text/javascript" src="../../styles/toggle-theme.js"></script>
+              </div>
+          
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
-                <h5>In This Article</h5>
-                <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
               </nav>
             </div>
           </div>

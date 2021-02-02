@@ -8,13 +8,12 @@
     <title>Exchanger | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Exchanger | .NEXT ">
-    <meta name="generator" content="docfx 2.56.5.0">
+    <meta name="generator" content="docfx 2.56.6.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
     <link rel="stylesheet" href="../../styles/docfx.css">
     <link rel="stylesheet" href="../../styles/main.css">
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
     <meta property="docfx:navrel" content="../../toc.html">
     <meta property="docfx:tocrel" content="../toc.html">
     
@@ -69,7 +68,7 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="exchanger">Exchanger</h1>
 
-<p><a href="../../api/DotNext.Threading.AsyncExchanger-1.html">AsyncExchanger</a> is a synchronization point at which two asynchronous flows can cooperate through swapping elements within pairs. Each flow provides some object when entering exchange, matches with a partner flow, and receives its partner's object on return. Exchanges may be applicable for building genetic algorithms and pipeline designs, where first flow acts as a producer and the second as a consumer. In contrast to <a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.pipelines.pipe">Pipe</a> from I/O Pipelines library, Exchanger supports arbitrary data type because it's a generic class.</p>
+<p><a class="xref" href="https://fuget.org/packages/DotNext.Threading/3.0.0/lib/net5.0/DotNext.Threading.dll/DotNext.Threading/AsyncExchanger%601">AsyncExchanger</a> is a synchronization point at which two asynchronous flows can cooperate through swapping elements within pairs. Each flow provides some object when entering exchange, matches with a partner flow, and receives its partner's object on return. Exchanges may be applicable for building genetic algorithms and pipeline designs, where first flow acts as a producer and the second as a consumer. In contrast to <a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.pipelines.pipe">Pipe</a> from I/O Pipelines library, Exchanger supports arbitrary data type because it's a generic class.</p>
 <p>The following example demonstrates how to use Exchanger to swap buffers between two long-running async tasks.</p>
 <pre><code class="lang-csharp">using DotNext.Threading;
 using System.Threading;
@@ -109,9 +108,22 @@ static async Task ConsumeAsync(AsyncExchanger&lt;Memory&lt;char&gt;&gt; exchange
                   </li>
                 </ul>
               </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+                <script type="text/javascript" src="../../styles/toggle-theme.js"></script>
+              </div>
+          
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
-                <h5>In This Article</h5>
-                <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
               </nav>
             </div>
           </div>

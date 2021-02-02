@@ -8,13 +8,12 @@
     <title>Fast Reflection | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Fast Reflection | .NEXT ">
-    <meta name="generator" content="docfx 2.56.5.0">
+    <meta name="generator" content="docfx 2.56.6.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
     <link rel="stylesheet" href="../../styles/docfx.css">
     <link rel="stylesheet" href="../../styles/main.css">
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
     <meta property="docfx:navrel" content="../../toc.html">
     <meta property="docfx:tocrel" content="../toc.html">
     
@@ -70,15 +69,15 @@
 <h1 id="fast-reflection">Fast Reflection</h1>
 
 <p>Invocation of reflected members in .NET is slow. This happens because late-binding <a href="https://docs.microsoft.com/en-us/dotnet/api/system.reflection.methodbase.invoke">invocation</a> should provide type check of arguments for each call. DotNext Reflection library provides a way to invoke reflected members in strongly typed manner. It means that invocation parameters are typed and type safety is guaranteed by compiler. Moreover, this feature allows to invoke members with the same performance as they called without reflection. The reflected member can be converted into appropriate delegate instance for caching and further invocation. The binding process still performed dynamically and based on .NET reflection.</p>
-<p><a href="../../api/DotNext.Reflection.Reflector.html">Reflector</a> class provides methods for reflecting class members. The type of delegate instance which represents reflected member describes the signature of the method or constructor. But what the developer should do if one of constructor or method parameteters has a type that is not visible from the calling code (e.g. type has <strong>internal</strong> visibility modifier and located in third-party library)? This issue is covered by Reflection library with help of the following special delegate types:</p>
+<p><a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.0.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Reflector">Reflector</a> class provides methods for reflecting class members. The type of delegate instance which represents reflected member describes the signature of the method or constructor. But what the developer should do if one of constructor or method parameteters has a type that is not visible from the calling code (e.g. type has <strong>internal</strong> visibility modifier and located in third-party library)? This issue is covered by Reflection library with help of the following special delegate types:</p>
 <ul>
-<li><a href="../../api/DotNext.Function-2.html">Function&lt;A, R&gt;</a> for static methods with return type</li>
-<li><a href="../../api/DotNext.Function-3.html">Function&lt;T, A, R&gt;</a> for instance methods with return type</li>
-<li><a href="../../api/DotNext.Procedure-1.html">Procedure&lt;A&gt;</a> for static methods without return type</li>
-<li><a href="../../api/DotNext.Procedure-2.html">Procedure&lt;T, A&gt;</a> for instance methods without return type</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.0.0/lib/net5.0/DotNext.Reflection.dll/DotNext/Function%602">Function&lt;A, R&gt;</a> for static methods with return type</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.0.0/lib/net5.0/DotNext.Reflection.dll/DotNext/Function%603">Function&lt;T, A, R&gt;</a> for instance methods with return type</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.0.0/lib/net5.0/DotNext.Reflection.dll/DotNext/Procedure%601">Procedure&lt;A&gt;</a> for static methods without return type</li>
+<li><a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.0.0/lib/net5.0/DotNext.Reflection.dll/DotNext/Procedure%602">Procedure&lt;T, A&gt;</a> for instance methods without return type</li>
 </ul>
 <p>These delegates can describe signature of arbitrary methods or constructors with a little performance cost: all arguments will passed through stack. As a result, they can be used if developer don't want to introduce a new delegate type for some untypical signatures (with <strong>ref</strong> or <strong>out</strong> parameters).</p>
-<p>Combination of various delegate signatures and <code>Reflector</code> class provide configurable approach to fast reflection and allows to choose between convenience and performance. Moreover, it requires compile-time some knowledge about underlying types of parameters and declaring type. To reduce this complexity, .NEXT Reflection library offers lightweight fast reflection API represented by non-generic overloaded version of <code>Unreflect</code> extension method. Lightweight implementation is a dynamic compilation of member access code and exposes unified API surface for all supported member types in the form of single <a href="../../api/DotNext.Reflection.DynamicInvoker.html">DynamicInvoker</a> delegate type. Invocation API is very similar to reflection provided by .NET out-of-the-box, but much more faster.</p>
+<p>Combination of various delegate signatures and <code>Reflector</code> class provide configurable approach to fast reflection and allows to choose between convenience and performance. Moreover, it requires compile-time some knowledge about underlying types of parameters and declaring type. To reduce this complexity, .NEXT Reflection library offers lightweight fast reflection API represented by non-generic overloaded version of <code>Unreflect</code> extension method. Lightweight implementation is a dynamic compilation of member access code and exposes unified API surface for all supported member types in the form of single <a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.0.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/DynamicInvoker">DynamicInvoker</a> delegate type. Invocation API is very similar to reflection provided by .NET out-of-the-box, but much more faster.</p>
 <h1 id="constructor">Constructor</h1>
 <p>Constructor can be reflected as delegate instance.</p>
 <pre><code class="lang-csharp">using System.IO;
@@ -162,12 +161,12 @@ tryParse(null, args);
 decimal v = (decimal)args[1];
 </code></pre>
 <h1 id="field">Field</h1>
-<p>Static or instance field can obtained from <a href="https://docs.microsoft.com/en-us/dotnet/api/system.reflection.fieldinfo">FieldInfo</a> using <code>Unreflect</code> extension method declared in <a href="../../api/DotNext.Reflection.Reflector.html">Reflector</a> class. This feature gives the power to work with field values using Reflection without performance loss.</p>
+<p>Static or instance field can obtained from <a href="https://docs.microsoft.com/en-us/dotnet/api/system.reflection.fieldinfo">FieldInfo</a> using <code>Unreflect</code> extension method declared in <a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.0.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Reflector">Reflector</a> class. This feature gives the power to work with field values using Reflection without performance loss.</p>
 <div class="IMPORTANT">
 <h5>Important</h5>
 <p>Managed pointer to the field value is mutable even if field is <strong>readonly</strong>. As a result, you can modify value of such field. It is responsibility of the developer to control access to read-only fields.</p>
 </div>
-<p>This is not the only way to obtain direct access to the field. <a href="../../api/DotNext.Reflection.Field-1.html">Field&lt;V&gt;</a> and <a href="../../api/DotNext.Reflection.Field-2.html">Field&lt;T,V&gt;</a> that can be returned by <a href="../../api/DotNext.Reflection.Type-1.Field-1.html">Type&lt;T&gt;.Field&lt;T&gt;</a> provide access to static and field value respectively.</p>
+<p>This is not the only way to obtain direct access to the field. <a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.0.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Field%601">Field&lt;V&gt;</a> and <a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.0.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/Field%602">Field&lt;T,V&gt;</a> that can be returned by <a href="DotNext.Reflection.Type%601.Field%601">Type&lt;T&gt;.Field&lt;T&gt;</a> provide access to static and field value respectively.</p>
 <p>The following example demonstrates how to obtain managed pointer to the static and instance fields:</p>
 <pre><code class="lang-csharp">using DotNext.Reflection;
 using System.Reflection;
@@ -194,7 +193,7 @@ instanceField = &quot;Hello, world&quot;;
 <ul>
 <li>Obtain field getter only</li>
 <li>Obtain field setter only</li>
-<li>Obtain field setter and getter combined into single instance of <a href="../../api/DotNext.Reflection.DynamicInvoker.html">DynamicInvoker</a></li>
+<li>Obtain field setter and getter combined into single instance of <a class="xref" href="https://fuget.org/packages/DotNext.Reflection/3.0.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/DynamicInvoker">DynamicInvoker</a></li>
 </ul>
 <p>Third option is slower in comparison with others. Therefore if you expect one-directional access to the field then use proper optimization.</p>
 <p>The following example demonstrates all possible optimization modes when generating field accessor:</p>
@@ -241,7 +240,7 @@ Console.WriteLine(invoker(obj));	//prints Hello, world!
 </tr>
 <tr>
 <td>Dynamically compiled <em>DynamicInvoker</em></td>
-<td>x2/x3 slower than direct call and causes heap allocation</td>
+<td>x1.5/x2 slower than direct call and causes heap allocation of arguments of value type</td>
 </tr>
 <tr>
 <td>Classic .NET Reflection</td>
@@ -262,9 +261,22 @@ Console.WriteLine(invoker(obj));	//prints Hello, world!
                   </li>
                 </ul>
               </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+                <script type="text/javascript" src="../../styles/toggle-theme.js"></script>
+              </div>
+          
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
-                <h5>In This Article</h5>
-                <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
               </nav>
             </div>
           </div>

@@ -5,16 +5,15 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>.NEXT 2.x | .NEXT </title>
+    <title>.NEXT 3.x | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content=".NEXT 2.x | .NEXT ">
-    <meta name="generator" content="docfx 2.56.5.0">
+    <meta name="title" content=".NEXT 3.x | .NEXT ">
+    <meta name="generator" content="docfx 2.56.6.0">
     
     <link rel="shortcut icon" href="fav.ico">
     <link rel="stylesheet" href="styles/docfx.vendor.css">
     <link rel="stylesheet" href="styles/docfx.css">
     <link rel="stylesheet" href="styles/main.css">
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
     <meta property="docfx:navrel" content="toc.html">
     <meta property="docfx:tocrel" content="toc.html">
     
@@ -60,7 +59,7 @@
         <div class="article row grid">
           <div class="col-md-10">
             <article class="content wrap" id="_content" data-uid="">
-<h1 id="next-2x">.NEXT 2.x</h1>
+<h1 id="next-3x">.NEXT 3.x</h1>
 
 <p>.NEXT (dotNext) is the family of powerful libaries aimed to improve development productivity and extend .NET API with unique features which potentially will be implemented in the next versions of C# compiler or .NET Runtime.</p>
 <div class="NOTE">
@@ -70,15 +69,14 @@
 <p>This chapter gives quick overview of these libraries. Read <a href="features/core/index.html">articles</a> for closer look at all available features.</p>
 <p>Prerequisites:</p>
 <ul>
-<li>Runtime: any .NET implementation compatible with .NET Standard 2.1 (except <strong>DotNext.AspNetCore.Cluster</strong> library which depends on .NET Core of version 3.1 or higher)</li>
+<li>Runtime: .NET 5 or any runtime compatible with .NET Standard 2.1</li>
 <li>OS: Linux, Windows, MacOS</li>
 <li>Architecture: any if supported by underlying .NET Runtime</li>
 </ul>
 <h1 id="dotnext">DotNext</h1>
 <p><a href="https://www.nuget.org/packages/dotnext/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.svg?logo=NuGet"></a> <img src="https://img.shields.io/nuget/dt/dotnext.svg" alt="Downloads"><br>
-This library is the core of .NEXT which extends .NET Standard API with</p>
+This library is the core of .NEXT which extends .NET standard library with</p>
 <ul>
-<li>Value Delegates as allocation-free and lightweight alternative to regular .NET delegates</li>
 <li>Enum API to work with arbitrary <strong>enum</strong> types</li>
 <li>Thread-safe advanced atomic operations to work with <strong>int</strong>, <strong>long</strong>, <strong>bool</strong>, <strong>double</strong>, <strong>float</strong>, <strong>IntPtr</strong>, arbitrary reference and value types</li>
 <li>Unified representation of various synchronization primitives in the form of the lock</li>
@@ -87,6 +85,7 @@ This library is the core of .NEXT which extends .NET Standard API with</p>
 <li>Low-level methods to work with value types</li>
 <li>Fast comparison of arrays</li>
 <li>Ad-hoc user data associated with arbitrary object</li>
+<li>Rich set of advanced buffer types</li>
 </ul>
 <h1 id="dotnextreflection">DotNext.Reflection</h1>
 <p><a href="https://www.nuget.org/packages/dotnext.reflection/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.reflection.svg?logo=NuGet"></a>  <img src="https://img.shields.io/nuget/dt/dotnext.reflection.svg" alt="Downloads"><br>
@@ -104,11 +103,10 @@ This library provides a special types to work with unmanaged memory in safe mann
 <li>Interop with unmanaged memory via <a href="https://docs.microsoft.com/en-us/dotnet/api/system.memory-1">Memory</a> value type</li>
 <li>CLS-compliant generic pointer type for .NET languages without direct support of such type. Use this feature to work with pointers from VB.NET or F#.</li>
 <li>Atomic thread-safe operations applicable to data placed into unmanaged memory: increment, decrement, compare-and-set etc, volatile access</li>
-<li>Calling unmanaged functions by pointer</li>
 </ul>
 <h1 id="dotnextthreading">DotNext.Threading</h1>
 <p><a href="https://www.nuget.org/packages/dotnext.threading/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.threading.svg?logo=NuGet"></a>  <img src="https://img.shields.io/nuget/dt/dotnext.threading.svg" alt="Downloads"><br>
-The library allows you to reuse experience of blocking synchronization with help of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.readerwriterlockslim">ReaderWriteLockSlim</a>, <a href="api/DotNext.Threading.AsyncCountdownEvent.html">AsyncCountdownEvent</a> and friends in asynchronous code using their alternatives such as asynchronous locks.</p>
+The library allows you to reuse experience of blocking synchronization with help of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.readerwriterlockslim">ReaderWriteLockSlim</a>, <a href="api/DotNext.Threading.AsyncCountdownEvent.yml">AsyncCountdownEvent</a> and friends in asynchronous code using their alternatives such as asynchronous locks.</p>
 <p>The following code describes these alternative implementations of synchronization primitives for asynchronous code:</p>
 <table>
 <thead>
@@ -120,23 +118,23 @@ The library allows you to reuse experience of blocking synchronization with help
 <tbody>
 <tr>
 <td><a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.readerwriterlockslim">ReaderWriteLockSlim</a></td>
-<td><a href="api/DotNext.Threading.AsyncReaderWriterLock.html">AsyncReaderWriterLock</a></td>
+<td><a href="api/DotNext.Threading.AsyncReaderWriterLock.yml">AsyncReaderWriterLock</a></td>
 </tr>
 <tr>
 <td><a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.monitor">Monitor</a></td>
-<td><a href="api/DotNext.Threading.AsyncExclusiveLock.html">AsyncExclusiveLock</a></td>
+<td><a href="api/DotNext.Threading.AsyncExclusiveLock.yml">AsyncExclusiveLock</a></td>
 </tr>
 <tr>
 <td><a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.manualresetevent">ManualResetEvent</a></td>
-<td><a href="api/DotNext.Threading.AsyncManualResetEvent.html">AsyncManualResetEvent</a></td>
+<td><a href="api/DotNext.Threading.AsyncManualResetEvent.yml">AsyncManualResetEvent</a></td>
 </tr>
 <tr>
 <td><a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.autoresetevent">AutoResetEvent</a></td>
-<td><a href="api/DotNext.Threading.AsyncAutoResetEvent.html">AsyncAutoResetEvent</a></td>
+<td><a href="api/DotNext.Threading.AsyncAutoResetEvent.yml">AsyncAutoResetEvent</a></td>
 </tr>
 <tr>
 <td><a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.barrier">Barrier</a></td>
-<td><a href="api/DotNext.Threading.AsyncBarrier.html">AsyncBarrier</a></td>
+<td><a href="api/DotNext.Threading.AsyncBarrier.yml">AsyncBarrier</a></td>
 </tr>
 <tr>
 <td><a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.countdownevent">CountdownEvent</a></td>
@@ -154,9 +152,6 @@ Provides rich framework for building <a href="https://en.wikipedia.org/wiki/Comp
 <h1 id="dotnextaspnetcorecluster">DotNext.AspNetCore.Cluster</h1>
 <p><a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.aspnetcore.cluster.svg?logo=NuGet"></a>  <img src="https://img.shields.io/nuget/dt/dotnext.aspnetcore.cluster.svg" alt="Downloads"><br>
 Allows to build clustered microservices which rely on network consensus and distributed messaging with <a href="https://docs.microsoft.com/en-us/aspnet/core/">ASP.NET Core</a> framework. This library contains HTTP-based implementation of <a href="https://raft.github.io/">Raft</a> Consensus Algorithm, HTTP-based distributed messaging across cluster nodes, cluster leader detection, automatic redirection to leader node and many other things.</p>
-<h1 id="dotnextaugmentation">DotNext.Augmentation</h1>
-<p><a href="https://www.nuget.org/packages/dotnext.augmentation.fody/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.augmentation.fody.svg?logo=NuGet"></a>  <img src="https://img.shields.io/nuget/dt/dotnext.augmentation.fody.svg" alt="Downloads"><br>
-.NEXT Augmentations extends compilation pipeline with tricks and optimizations not available in Roslyin Compiler out-of-the-box. It is actually not a library, but IL code weaver implemented as <a href="https://github.com/Fody/Fody">Fody</a> add-in. Read more about compile-time features <a href="features/aug.html">here</a>.</p>
 </article>
           </div>
           
@@ -169,9 +164,22 @@ Allows to build clustered microservices which rely on network consensus and dist
                   </li>
                 </ul>
               </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+                <script type="text/javascript" src="styles/toggle-theme.js"></script>
+              </div>
+          
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
-                <h5>In This Article</h5>
-                <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
               </nav>
             </div>
           </div>
