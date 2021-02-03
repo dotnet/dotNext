@@ -7,13 +7,13 @@ The next major version is out! Its primary focus is .NET 5 support while keeping
 Migration guide for 2.x users is [here](https://sakno.github.io/dotNext/migration/2.html). Please consider that this version is not fully backward compatible with 2.x.
 
 <a href="https://www.nuget.org/packages/dotnext/3.0.0">DotNext 3.0.0</a>
-* Improved performance of [SparseBufferWriter&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.SparseBufferWriter-1.html), [BufferWriterSlim&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.BufferWriterSlim-1.html), [PooledArrayBufferWriter&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.PooledArrayBufferWriter-1.html), [PooledBufferWriter&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.PooledBufferWriter-1.html)
+* Improved performance of [SparseBufferWriter&lt;T&gt;](https://www.fuget.org/packages/DotNext/3.0.0/lib/net5.0/DotNext.dll/DotNext.Buffers/SparseBufferWriter%601), [BufferWriterSlim&lt;T&gt;](https://www.fuget.org/packages/DotNext/3.0.0/lib/net5.0/DotNext.dll/DotNext.Buffers/BufferWriterSlim%601), [PooledArrayBufferWriter&lt;T&gt;](https://www.fuget.org/packages/DotNext/3.0.0/lib/net5.0/DotNext.dll/DotNext.Buffers/PooledArrayBufferWriter%601), [PooledBufferWriter&lt;T&gt;](https://www.fuget.org/packages/DotNext/3.0.0/lib/net5.0/DotNext.dll/DotNext.Buffers/PooledBufferWriter%601)
 * Fixed nullability attributes
-* `ArrayRental<T>` type is replaced by [MemoryOwner&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.MemoryOwner-1.html) type
+* `ArrayRental<T>` type is replaced by [MemoryOwner&lt;T&gt;](https://www.fuget.org/packages/DotNext/3.0.0/lib/net5.0/DotNext.dll/DotNext.Buffers/MemoryOwner%601) type
 * Removed obsolete members and classes
 * Removed `UnreachableCodeExecutionException` exception
-* Completely rewritten implementation of extension methods provided by [AsyncDelegate](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncDelegate.html) class
-* Added [Base64Decoder](https://sakno.github.io/dotNext/api/DotNext.Text.Base64Decoder.html) type for efficient decoding of base64-encoded bytes in streaming scenarios
+* Completely rewritten implementation of extension methods provided by [AsyncDelegate](https://www.fuget.org/packages/DotNext/3.0.0/lib/net5.0/DotNext.dll/DotNext.Threading/AsyncDelegate) class
+* Added [Base64Decoder](https://www.fuget.org/packages/DotNext/3.0.0/lib/net5.0/DotNext.dll/DotNext.Text/Base64Decoder) type for efficient decoding of base64-encoded bytes in streaming scenarios
 * Removed `Future&lt;T&gt;` type
 * Added `ThreadPoolWorkItemFactory` static class with extension methods for constructing [IThreadPoolWorkItem](https://docs.microsoft.com/en-us/dotnet/api/system.threading.ithreadpoolworkitem) instances from method pointers. Available only for .NET 5 target
 * Introduced factory methods for constructing delegate instances from the pointers to the managed methods
@@ -23,12 +23,12 @@ Migration guide for 2.x users is [here](https://sakno.github.io/dotNext/migratio
 
 <a href="https://www.nuget.org/packages/dotnext.io/3.0.0">DotNext.IO 3.0.0</a>
 * Changed behavior of `FileBufferingWriter.GetWrittenContentAsStream` and `FileBufferingWriter.GetWrittenContentAsStreamAsync` in a way which allows you to use synchronous/asynchronous I/O for writing and reading separately
-* Introduced extension methods for [BufferWriterSlim&lt;char&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.BufferWriterSlim-1.html) type for encoding of primitive data types
+* Introduced extension methods for [BufferWriterSlim&lt;char&gt;](https://www.fuget.org/packages/DotNext/3.0.0/lib/net5.0/DotNext.dll/DotNext.Buffers/BufferWriterSlim%601) type for encoding of primitive data types
 * Fixed nullability attributes
-* Added advanced encoding/decoding methods to [IAsyncBinaryWriter](https://sakno.github.io/dotNext/api/DotNext.IO.IAsyncBinaryWriter.html) and [IAsyncBinaryReader](https://sakno.github.io/dotNext/api/DotNext.IO.IAsyncBinaryReader.html) interfaces
+* Added advanced encoding/decoding methods to [IAsyncBinaryWriter](https://www.fuget.org/packages/DotNext.IO/3.0.0/lib/net5.0/DotNext.IO.dll/DotNext.IO/IAsyncBinaryWriter) and [IAsyncBinaryReader](https://www.fuget.org/packages/DotNext.IO/3.0.0/lib/net5.0/DotNext.IO.dll/DotNext.IO/IAsyncBinaryReader) interfaces
 * Removed obsolete members and classes
-* Simplified signature of `AppendAsync` methods exposed by [IAuditTrail&lt;TEntry&gt;](https://sakno.github.io/dotNext/api/DotNext.IO.Log.IAuditTrail-1.html) interface
-* Improved performances of extension methods declared in [PipeExtensions](https://sakno.github.io/dotNext/api/DotNext.IO.Pipelines.PipeExtensions.html) class
+* Simplified signature of `AppendAsync` methods exposed by [IAuditTrail&lt;TEntry&gt;](https://www.fuget.org/packages/DotNext.IO/3.0.0/lib/net5.0/DotNext.IO.dll/DotNext.IO.Log/IAuditTrail%601) interface
+* Improved performances of extension methods declared in [PipeExtensions](https://www.fuget.org/packages/DotNext.IO/3.0.0/lib/net5.0/DotNext.IO.dll/DotNext.IO.Pipelines/PipeExtensions) class
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/3.0.0">DotNext.Metaprogramming 3.0.0</a>
@@ -39,7 +39,7 @@ Migration guide for 2.x users is [here](https://sakno.github.io/dotNext/migratio
 
 <a href="https://www.nuget.org/packages/dotnext.reflection/3.0.0">DotNext.Reflection 3.0.0</a>
 * Improved performance of reflective calls
-* [DynamicInvoker](https://sakno.github.io/dotNext/api/DotNext.Reflection.DynamicInvoker.html) delegate allows to pass arguments for dynamic invocation as [Span&lt;object&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.span-1) instead of `object[]`
+* [DynamicInvoker](https://www.fuget.org/packages/DotNext.Reflection/3.0.0/lib/net5.0/DotNext.Reflection.dll/DotNext.Reflection/DynamicInvoker) delegate allows to pass arguments for dynamic invocation as [Span&lt;object&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.span-1) instead of `object[]`
 * Fixed nullability attributes
 
 <a href="https://www.nuget.org/packages/dotnext.threading/3.0.0">DotNext.Threading 3.0.0</a>
@@ -54,15 +54,15 @@ Migration guide for 2.x users is [here](https://sakno.github.io/dotNext/migratio
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/3.0.0">DotNext.Net.Cluster 3.0.0</a>
-* Improved performance of [persistent WAL](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html)
+* Improved performance of [persistent WAL](https://www.fuget.org/packages/DotNext.Net.Cluster/3.0.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/PersistentState)
 * Added support of active-standby configuration of Raft cluster. Standby node cannot become a leader but can be used for reads
-* Introduced [framework](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.Commands.html) for writing interpreters of log entries stored in persistent write-ahead log
+* Introduced [framework](https://www.fuget.org/packages/DotNext.Net.Cluster/3.0.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft.Commands/CommandInterpreter) for writing interpreters of log entries stored in persistent write-ahead log
 * Added support of JSON-serializable log entries (available for .NET 5 only)
 * Fixed bug causing long shutdown of Raft node which is using TCP transport
 * Added support of **PreVote** extension for Raft preventing _term inflation_
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/3.0.0">DotNext.AspNetCore.Cluster 3.0.0</a>
-* Added `UsePersistenceEngine` extension method for correct registration of custom persistence engine derived from [PersistentState](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html) class
+* Added `UsePersistenceEngine` extension method for correct registration of custom persistence engine derived from [PersistentState](https://www.fuget.org/packages/DotNext.Net.Cluster/3.0.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft/PersistentState) class
 * Added support of HTTP/3 (available for .NET 5 only)
 * Significantly optimized performance and traffic volume of **AppendEntries** Raft RPC call. Now replication performance is comparable to TCP/UDP transports
 * Added DNS support. Now cluster member address can be specified using its name instead of IP address
