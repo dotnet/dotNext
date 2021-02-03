@@ -59,7 +59,7 @@ Migration guide for 2.x users is [here](https://sakno.github.io/dotNext/migratio
 * Removed `UnreachableCodeExecutionException` exception
 * Completely rewritten implementation of extension methods provided by [AsyncDelegate](https://www.fuget.org/packages/DotNext/3.0.0/lib/net5.0/DotNext.dll/DotNext.Threading/AsyncDelegate) class
 * Added [Base64Decoder](https://www.fuget.org/packages/DotNext/3.0.0/lib/net5.0/DotNext.dll/DotNext.Text/Base64Decoder) type for efficient decoding of base64-encoded bytes in streaming scenarios
-* Removed `Future&lt;T&gt;` type
+* Removed `Future<T>` type
 * Added `ThreadPoolWorkItemFactory` static class with extension methods for constructing [IThreadPoolWorkItem](https://docs.microsoft.com/en-us/dotnet/api/system.threading.ithreadpoolworkitem) instances from method pointers. Available only for .NET 5 target
 * Introduced factory methods for constructing delegate instances from the pointers to the managed methods
 * `DOTNEXT_STACK_ALLOC_THRESHOLD` environment variable can be used to override stack allocation threshold for all .NEXT routines
