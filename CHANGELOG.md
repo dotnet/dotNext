@@ -1,7 +1,7 @@
 Release Notes
 ====
 
-# 02-25-2021
+# 02-26-2021
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/3.0.1">DotNext.Net.Cluster 3.0.1</a>
 * Minor performance optimizations of Raft heartbeat processing
 
