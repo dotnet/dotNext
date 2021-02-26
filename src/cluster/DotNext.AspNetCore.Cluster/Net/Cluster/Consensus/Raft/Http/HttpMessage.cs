@@ -70,6 +70,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             Id = ParseHeader(RequestIdHeader, headers);
         }
 
+        /// <summary>
+        /// Interprets <see cref="HttpRequestException"/> produced by HTTP client.
+        /// </summary>
+        /// <returns><see langword="true"/> to handle the response as <see cref="MemberUnavailableException"/>.</returns>
+        internal virtual bool IsMemberUnavailable(HttpStatusCode? code)
+            => code is null || code.GetValueOrDefault() == HttpStatusCode.InternalServerError;
+
         private static string GetMessageType(HeadersReader<StringValues> headers) =>
             ParseHeader(MessageTypeHeader, headers);
 

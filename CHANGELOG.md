@@ -1,6 +1,13 @@
 Release Notes
 ====
 
+# 02-26-2021
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/3.0.1">DotNext.Net.Cluster 3.0.1</a>
+* Minor performance optimizations of Raft heartbeat processing
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/3.0.1">DotNext.AspNetCore.Cluster 3.0.1</a>
+* Unexpected HTTP response received from Raft RPC call cannot crash the node anymore (see [54](https://github.com/sakno/dotNext/issues/54))
+
 # 01-30-2021
 The next major version is out! Its primary focus is .NET 5 support while keeping compatibility with .NET Standard 2.1. As a result, .NEXT libraries built for multiple target frameworks. Additional changes include performance optimizations, polishing of existing API, dropping support of members that were deprecated in 2.x, expanding usage of nullable reference types.
 

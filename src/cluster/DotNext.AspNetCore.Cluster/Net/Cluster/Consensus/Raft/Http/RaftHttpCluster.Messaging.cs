@@ -279,7 +279,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             var networks = allowedNetworks;
 
             // checks whether the client's address is allowed
-            if (networks.Count > 0 && networks.FirstOrDefault(context.Connection.RemoteIpAddress.IsIn) is null)
+            if (networks.Count > 0 && networks.Any(context.Connection.RemoteIpAddress.IsIn))
             {
                 context.Response.StatusCode = StatusCodes.Status403Forbidden;
                 return Task.CompletedTask;

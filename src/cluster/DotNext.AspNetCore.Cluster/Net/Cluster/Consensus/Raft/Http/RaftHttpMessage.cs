@@ -31,6 +31,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             ConsensusTerm = ParseHeader(TermHeader, headers, Int64Parser);
         }
 
+        internal sealed override bool IsMemberUnavailable(HttpStatusCode? code) => true;
+
         internal override void PrepareRequest(HttpRequestMessage request)
         {
             request.Headers.Add(TermHeader, ConsensusTerm.ToString(InvariantCulture));
