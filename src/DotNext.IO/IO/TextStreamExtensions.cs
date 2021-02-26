@@ -6,8 +6,6 @@ using System.Threading.Tasks;
 
 namespace DotNext.IO
 {
-    using Buffers;
-
     /// <summary>
     /// Represents various extension methods for <see cref="TextWriter"/> and <see cref="TextReader"/> classes.
     /// </summary>
