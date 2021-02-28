@@ -45,13 +45,10 @@ Documentation for older versions:
 * [2.x](https://sakno.github.io/dotNext/versions/2.x/index.html)
 
 # What's new
-Release Date: 02-26-2021
+Release Date: 02-28-2021
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/3.0.1">DotNext.Net.Cluster 3.0.1</a>
-* Minor performance optimizations of Raft heartbeat processing
-
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/3.0.1">DotNext.AspNetCore.Cluster 3.0.1</a>
-* Unexpected HTTP response received from Raft RPC call cannot crash the node anymore (see [54](https://github.com/sakno/dotNext/issues/54))
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/3.0.2">DotNext.AspNetCore.Cluster 3.0.2</a>
+* Fixed IP address filter when white list of allowed networks is in use
 
 `DotNext.Augmentation` IL weaver add-on for MSBuild is no longer supported.
 
