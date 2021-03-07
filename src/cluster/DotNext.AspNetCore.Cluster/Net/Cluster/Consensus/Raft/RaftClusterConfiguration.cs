@@ -56,5 +56,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 .AddSingleton<IPersistentState>(engineCast)
                 .AddSingleton<IAuditTrail<IRaftLogEntry>>(engineCast);
         }
+
+        /// <summary>
+        /// Registers cluster members discovery service.
+        /// </summary>
+        /// <typeparam name="TService">The type implementing custom discovery service.</typeparam>
+        /// <param name="services">A collection of services provided by DI container.</param>
+        /// <returns>A modified collection of services.</returns>
+        public static IServiceCollection UseDiscoveryService<TService>(this IServiceCollection services)
+            where TService : class, IMemberDiscoveryService
+            => services.AddSingleton<IMemberDiscoveryService, TService>();
     }
 }
