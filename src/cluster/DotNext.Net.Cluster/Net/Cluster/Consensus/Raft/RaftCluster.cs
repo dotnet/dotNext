@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Missing = System.Reflection.Missing;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
@@ -157,10 +158,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         /// <summary>
-        /// Represents mutator of collection of members.
+        /// Represents mutator of a collection of cluster members.
         /// </summary>
         /// <param name="members">The collection of members maintained by instance of <see cref="RaftCluster{TMember}"/>.</param>
+        [Obsolete("Use generic version of this delegate")]
         protected delegate void MemberCollectionMutator(in MemberCollectionBuilder members);
+
+        /// <summary>
+        /// Represents mutator of a collection of cluster members.
+        /// </summary>
+        /// <param name="members">The collection of members maintained by instance of <see cref="RaftCluster{TMember}"/>.</param>
+        /// <param name="arg">The argument to be passed to the mutator.</param>
+        /// <typeparam name="T">The type of the argument.</typeparam>
+        protected delegate void MemberCollectionMutator<T>(in MemberCollectionBuilder members, T arg);
 
         private readonly bool allowPartitioning;
         private readonly bool standbyNode;
@@ -236,27 +246,29 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         protected CancellationToken Token
             => transitionCancellation.IsCancellationRequested ? new CancellationToken(true) : transitionCancellation.Token;
 
-        private void ChangeMembers(MemberCollectionMutator mutator)
+        private void ChangeMembers<T>(MemberCollectionMutator<T> mutator, T arg)
         {
             var members = new MemberCollectionBuilder(this.members);
-            mutator(in members);
+            mutator(in members, arg);
             this.members = members.Build();
         }
 
         /// <summary>
         /// Modifies collection of cluster members.
         /// </summary>
+        /// <typeparam name="T">The type of the argument to be passed to the mutator.</typeparam>
         /// <param name="mutator">The action that can be used to change set of cluster members.</param>
+        /// <param name="arg">The argument to be passed to the mutator.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous execution of this method.</returns>
-        protected async Task ChangeMembersAsync(MemberCollectionMutator mutator, CancellationToken token)
+        protected async Task ChangeMembersAsync<T>(MemberCollectionMutator<T> mutator, T arg, CancellationToken token)
         {
             var tokenSource = token.LinkTo(Token);
             var transitionLock = await transitionSync.TryAcquireAsync(token).ConfigureAwait(false);
             try
             {
                 if (transitionLock)
-                    ChangeMembers(mutator);
+                    ChangeMembers(mutator, arg);
             }
             finally
             {
@@ -269,7 +281,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Modifies collection of cluster members.
         /// </summary>
         /// <param name="mutator">The action that can be used to change set of cluster members.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous execution of this method.</returns>
+        [Obsolete("Use generic version of this method")]
+        protected Task ChangeMembersAsync(MemberCollectionMutator mutator, CancellationToken token)
+            => ChangeMembersAsync((in MemberCollectionBuilder builder, Missing arg) => mutator(in builder), Missing.Value, token);
+
+        /// <summary>
+        /// Modifies collection of cluster members.
+        /// </summary>
+        /// <param name="mutator">The action that can be used to change set of cluster members.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        [Obsolete("Use generic version of this method")]
         protected Task ChangeMembersAsync(MemberCollectionMutator mutator)
             => ChangeMembersAsync(mutator, CancellationToken.None);
 
