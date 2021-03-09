@@ -27,12 +27,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Creates a watcher with the specified callback used to report a new list of cluster members.
         /// </summary>
         /// <param name="callback">The callback used to report about membership changes.</param>
-        /// <param name="token">The token that can be used to cancel watching.</param>
-        /// <returns>The task representing long-running operation.</returns>
-        /// <remarks>
-        /// This method should never throw <see cref="OperationCanceledException"/> exception.
-        /// If watching is canceled then task turns into completed state.
-        /// </remarks>
-        Task WatchAsync(Func<IReadOnlyCollection<Uri>, CancellationToken, Task> callback, CancellationToken token);
+        /// <param name="token">The token that can be used to cancel initialization of watcher.</param>
+        /// <returns>The object that can be used to cancel watching.</returns>
+        ValueTask<IDisposable> WatchAsync(Func<IReadOnlyCollection<Uri>, CancellationToken, Task> callback, CancellationToken token);
     }
 }

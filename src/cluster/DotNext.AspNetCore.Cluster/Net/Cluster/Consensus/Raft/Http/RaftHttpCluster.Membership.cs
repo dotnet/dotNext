@@ -11,7 +11,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     internal partial class RaftHttpCluster
     {
         private readonly IMemberDiscoveryService? discoveryService;
-        private Task? membershipWatchTask;
+        private IDisposable? membershipWatch;
 
         private protected abstract Task<ICollection<EndPoint>> GetHostingAddressesAsync();
 
@@ -78,7 +78,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             await ChangeMembersAsync(mutator, members, token).ConfigureAwait(false);
 
             // start watching (Token should be used here as long-living cancellation token associated with this instance)
-            membershipWatchTask = discovery.WatchAsync(ApplyChanges, Token);
+            membershipWatch = await discovery.WatchAsync(ApplyChanges, token).ConfigureAwait(false);
 
             Task ApplyChanges(IReadOnlyCollection<Uri> members, CancellationToken token)
                 => ChangeMembersAsync(mutator, members.ToImmutableHashSet(), token);

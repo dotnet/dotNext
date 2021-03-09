@@ -11,30 +11,49 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     {
         private readonly AsyncAutoResetEvent trigger = new AsyncAutoResetEvent(false);
 
+        private sealed class Watcher : Disposable
+        {
+            private readonly WeakReference<TestDiscoveryService> service;
+            private readonly CancellationTokenSource cancellation;
+
+            internal Watcher(TestDiscoveryService service)
+            {
+                this.service = new WeakReference<TestDiscoveryService>(service);
+                cancellation = new CancellationTokenSource();
+            }
+
+            internal async void Start(Func<IReadOnlyCollection<Uri>, CancellationToken, Task> callback)
+            {
+                while (this.service.TryGetTarget(out var service) && !cancellation.IsCancellationRequested)
+                {
+                    await service.trigger.WaitAsync(cancellation.Token);
+                    await callback(service, cancellation.Token);
+                }
+            }
+
+            protected override void Dispose(bool disposing)
+            {
+                if (disposing)
+                {
+                    if (!cancellation.IsCancellationRequested)
+                        cancellation.Cancel();
+                    cancellation.Dispose();
+                }
+
+                base.Dispose(disposing);
+            }
+        }
+
         public ValueTask<IReadOnlyCollection<Uri>> DiscoverAsync(CancellationToken token)
             => new ValueTask<IReadOnlyCollection<Uri>>(this);
 
         internal void FinishEditing() => trigger.Set();
 
-        public async Task WatchAsync(Func<IReadOnlyCollection<Uri>, CancellationToken, Task> callback, CancellationToken token)
+        public ValueTask<IDisposable> WatchAsync(Func<IReadOnlyCollection<Uri>, CancellationToken, Task> callback, CancellationToken token)
         {
-            for (var canceled = false; ; )
-            {
-                try
-                {
-                    await trigger.WaitAsync(token);
-                }
-                catch (OperationCanceledException)
-                {
-                    // do not transfer control to the callback in this case
-                    canceled = true;
-                }
-
-                if (canceled)
-                    break;
-                else
-                    await callback(this, token);
-            }
+            var watcher = new Watcher(this);
+            watcher.Start(callback);
+            return new ValueTask<IDisposable>(watcher);
         }
 
         private void Dispose(bool disposing)

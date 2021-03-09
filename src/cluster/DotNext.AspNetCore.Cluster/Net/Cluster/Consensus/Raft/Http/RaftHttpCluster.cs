@@ -132,10 +132,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             configurator?.Shutdown(this);
             duplicationDetector.Trim(100);
             var result = base.StopAsync(token);
-            if (membershipWatchTask is not null)
+            if (membershipWatch is not null)
             {
-                result = Task.WhenAll(result, membershipWatchTask);
-                membershipWatchTask = null;
+                membershipWatch.Dispose();
+                membershipWatch = null;
             }
 
             return result;
@@ -145,6 +145,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             if (disposing)
             {
+                membershipWatch?.Dispose();
                 localMember = default;
                 configurationTracker.Dispose();
                 duplicationDetector.Dispose();
