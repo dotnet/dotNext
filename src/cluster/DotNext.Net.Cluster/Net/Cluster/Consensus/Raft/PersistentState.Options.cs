@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO.Compression;
+using System.Threading;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
@@ -7,6 +8,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
     public partial class PersistentState
     {
+        /// <summary>
+        /// Represents log compaction mode.
+        /// </summary>
+        public enum CompactionMode
+        {
+            /// <summary>
+            /// Log compaction forced automatically during commit process.
+            /// </summary>
+            Foreground = 0,
+
+            /// <summary>
+            /// Log compaction should be triggered manually with <see cref="ForceCompactionAsync(CancellationToken)"/>.
+            /// </summary>
+            Manual = 1
+        }
+
         /// <summary>
         /// Represents configuration options of the persistent audit trail.
         /// </summary>
@@ -81,6 +98,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// The default value is <see langword="true"/>.
             /// </remarks>
             public bool ReplayOnInitialize { get; set; } = true;
+
+            /// <summary>
+            /// Gets or sets log compaction mode.
+            /// </summary>
+            public CompactionMode CompactionMode { get; set; }
 
             /// <summary>
             /// Gets or sets compression level used

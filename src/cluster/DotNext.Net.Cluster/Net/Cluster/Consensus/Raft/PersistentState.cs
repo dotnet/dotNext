@@ -55,7 +55,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly MemoryAllocator<LogEntryMetadata>? metadataPool;
         private readonly StreamSegment nullSegment;
         private readonly int bufferSize;
-        private readonly bool replayOnInitialize;
+        private readonly bool replayOnInitialize, automaticCompaction;
         private Snapshot snapshot;
 
         /// <summary>
@@ -73,6 +73,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 throw new ArgumentOutOfRangeException(nameof(recordsPerPartition));
             if (!path.Exists)
                 path.Create();
+            automaticCompaction = configuration.CompactionMode == CompactionMode.Foreground;
             backupCompression = configuration.BackupCompression;
             replayOnInitialize = configuration.ReplayOnInitialize;
             bufferSize = configuration.BufferSize;
@@ -603,7 +604,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="timeout">The timeout used to wait for the commit.</param>
         /// <param name="token">The token that can be used to cancel waiting.</param>
         /// <returns><see langword="true"/> if log entry is committed; otherwise, <see langword="false"/>.</returns>
-        /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public Task<bool> WaitForCommitAsync(TimeSpan timeout, CancellationToken token)
             => commitEvent.WaitAsync(timeout, token);
 
@@ -614,11 +615,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="timeout">The timeout used to wait for the commit.</param>
         /// <param name="token">The token that can be used to cancel waiting.</param>
         /// <returns><see langword="true"/> if log entry is committed; otherwise, <see langword="false"/>.</returns>
-        /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public Task<bool> WaitForCommitAsync(long index, TimeSpan timeout, CancellationToken token)
             => commitEvent.WaitForCommitAsync(NodeState.IsCommittedPredicate, state, index, timeout, token);
 
-        private async ValueTask ForceCompaction(SnapshotBuilder builder, CancellationToken token)
+        private async ValueTask ForceCompactionAsync(SnapshotBuilder builder, CancellationToken token)
         {
             // 1. Find the partitions that can be compacted
             var compactionScope = new SortedDictionary<long, Partition>();
@@ -670,22 +671,41 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             compactionScope.Clear();
         }
 
-        private ValueTask ForceCompaction(CancellationToken token)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool IsCompactionAllowed(bool triggeredManually)
+            => triggeredManually || automaticCompaction;
+
+        private async ValueTask ForceCompactionAsync(bool triggeredManually, CancellationToken token)
         {
             SnapshotBuilder? builder;
-            if (state.CommitIndex - snapshot.Index > recordsPerPartition && (builder = CreateSnapshotBuilder()) is not null)
+            if (IsCompactionAllowed(triggeredManually) && state.CommitIndex - snapshot.Index > recordsPerPartition && (builder = CreateSnapshotBuilder()) is not null)
             {
-                try
+                using (builder)
                 {
-                    return ForceCompaction(builder, token);
-                }
-                finally
-                {
-                    builder.Dispose();
+                    await ForceCompactionAsync(builder, token).ConfigureAwait(false);
                 }
             }
+        }
 
-            return default;
+        /// <summary>
+        /// Forces log compaction.
+        /// </summary>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing asynchronous execution of this operation.</returns>
+        /// <exception cref="ObjectDisposedException">This log is disposed.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public async ValueTask ForceCompactionAsync(CancellationToken token)
+        {
+            ThrowIfDisposed();
+            await syncRoot.AcquireAsync(true, token).ConfigureAwait(false);
+            try
+            {
+                await ForceCompactionAsync(true, token).ConfigureAwait(false);
+            }
+            finally
+            {
+                syncRoot.Release();
+            }
         }
 
         private async ValueTask<long> CommitAsync(long? endIndex, CancellationToken token)
@@ -701,7 +721,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     state.CommitIndex = startIndex + count - 1;
                     await ApplyAsync(token).ConfigureAwait(false);
-                    await ForceCompaction(token).ConfigureAwait(false);
+                    await ForceCompactionAsync(false, token).ConfigureAwait(false);
                     commitEvent.Set(true);
                 }
             }
