@@ -722,7 +722,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     state.CommitIndex = startIndex + count - 1;
                     await ApplyAsync(token).ConfigureAwait(false);
                     await ForceCompactionAsync(false, token).ConfigureAwait(false);
-                    commitEvent.Set(true);
                 }
             }
             finally
@@ -730,7 +729,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 syncRoot.Release();
             }
 
-            return Math.Max(count, 0L);
+            count = Math.Max(count, 0L);
+            if (count > 0L)
+                commitEvent.Set(true);
+
+            return count;
         }
 
         /// <summary>
