@@ -21,7 +21,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <summary>
             /// Log compaction should be triggered manually with <see cref="ForceCompactionAsync(CancellationToken)"/>.
             /// </summary>
-            Manual = 1
+            Manual = 1,
         }
 
         /// <summary>

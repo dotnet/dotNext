@@ -46,7 +46,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 {
                     existingMembers.Add(holder.Member.BaseAddress);
                 }
-                else if(holder.Member.IsRemote)
+                else if (holder.Member.IsRemote)
                 {
                     using var member = holder.Remove();
                     MemberRemoved?.Invoke(this, member);
