@@ -215,7 +215,7 @@ namespace DotNext.IO
             where TTransformation : notnull, ITransformation<TResult>
         {
             if (Length.TryGetValue(out var length))
-                return length < FileBufferingWriter.DefaultMemoryThreshold ? GetSmallObjectDataAsync<TResult, TTransformation>(transformation, length, token) : GetLargeObjectDataAsync<TResult, TTransformation>(transformation, length, token);
+                return length < FileBufferingWriter.Options.DefaultMemoryThreshold ? GetSmallObjectDataAsync<TResult, TTransformation>(transformation, length, token) : GetLargeObjectDataAsync<TResult, TTransformation>(transformation, length, token);
 
             return GetUnknownObjectDataAsync<TResult, TTransformation>(transformation, token);
         }
