@@ -45,10 +45,19 @@ Documentation for older versions:
 * [2.x](https://sakno.github.io/dotNext/versions/2.x/index.html)
 
 # What's new
-Release Date: 02-28-2021
+Release Date: 03-XX-2021
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/3.0.2">DotNext.AspNetCore.Cluster 3.0.2</a>
-* Fixed IP address filter when white list of allowed networks is in use
+<a href="https://www.nuget.org/packages/dotnext.threading/3.1.0">DotNext.Threading 3.1.0</a>
+* `AsyncTigger` now supports fairness policy when resuming suspended callers
+
+<a href="https://www.nuget.org/packages/dotnext.io/3.1.0">DotNext.IO 3.1.0</a>
+* Added `SkipAsync` method to `IAsyncBinaryReader` interface
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/3.1.0">DotNext.Net.Cluster 3.1.0</a>
+* Added support of manual compaction of committed log entries to persistent Write-Ahead Log
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/3.1.0">DotNext.AspNetCore.Cluster 3.1.0</a>
+* Added ability to override cluster members discovery service. See `IMembersDiscoveryService` interface
 
 `DotNext.Augmentation` IL weaver add-on for MSBuild is no longer supported.
 
