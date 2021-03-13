@@ -52,6 +52,7 @@ Release Date: 03-XX-2021
 
 <a href="https://www.nuget.org/packages/dotnext.io/3.1.0">DotNext.IO 3.1.0</a>
 * Added `SkipAsync` method to `IAsyncBinaryReader` interface
+* Added more performance optimization options to `FileBufferingWriter` class
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/3.1.0">DotNext.Net.Cluster 3.1.0</a>
 * Added support of manual compaction of committed log entries to persistent Write-Ahead Log
