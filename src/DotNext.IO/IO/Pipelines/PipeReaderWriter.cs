@@ -27,6 +27,9 @@ namespace DotNext.IO.Pipelines
         public ValueTask ReadAsync(Memory<byte> output, CancellationToken token)
             => input.ReadBlockAsync(output, token);
 
+        ValueTask IAsyncBinaryReader.SkipAsync(int length, CancellationToken token)
+            => input.SkipAsync(length, token);
+
         ValueTask<MemoryOwner<byte>> IAsyncBinaryReader.ReadAsync(LengthFormat lengthFormat, MemoryAllocator<byte>? allocator, CancellationToken token)
             => input.ReadBlockAsync(lengthFormat, allocator, token);
 
