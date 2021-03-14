@@ -35,6 +35,23 @@ namespace DotNext.IO
             }
         }
 
+        [Fact]
+        public static void PermanentFile()
+        {
+            var expected = RandomBytes(500);
+            string fileName;
+            using (var writer = new FileBufferingWriter(new FileBufferingWriter.Options { MemoryThreshold = 100, AsyncIO = false, FileName = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName())}))
+            {
+                writer.Write(expected);
+                False(writer.TryGetWrittenContent(out _, out fileName));
+            }
+
+            using var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+            var actual = new byte[expected.Length];
+            fs.ReadBlock(actual);
+            Equal(expected, actual);
+        }
+
         [Theory]
         [InlineData(10)]
         [InlineData(100)]
@@ -51,9 +68,13 @@ namespace DotNext.IO
             Equal(bytes.Length, writer.Length);
             using var manager = writer.GetWrittenContent();
             Equal(bytes, manager.Memory.ToArray());
-            if (writer.TryGetWrittenContent(out var content))
+            if (writer.TryGetWrittenContent(out var content, out var fileName))
             {
                 Equal(bytes, content.ToArray());
+            }
+            else
+            {
+                NotEmpty(fileName);
             }
         }
 
