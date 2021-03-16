@@ -29,6 +29,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     using IO.Log;
     using static IO.Pipelines.PipeExtensions;
     using EncodingContext = Text.EncodingContext;
+    using LogEntryMetadata = TransportServices.LogEntryMetadata;
 
     internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessageWriter<Result<bool>>
     {
@@ -37,6 +38,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private const string PrecedingRecordIndexHeader = "X-Raft-Preceding-Record-Index";
         private const string PrecedingRecordTermHeader = "X-Raft-Preceding-Record-Term";
         private const string CommitIndexHeader = "X-Raft-Commit-Index";
+        private protected const string CommandIdHeader = "X-Raft-Command-Id";
         private protected const string CountHeader = "X-Raft-Entries-Count";
 
         private sealed class MultipartLogEntry : StreamTransferObject, IRaftLogEntry
@@ -47,6 +49,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 HeadersReader<StringValues> headers = GetHeaders(section).TryGetValue;
                 Term = ParseHeader(RequestVoteMessage.RecordTermHeader, headers, Int64Parser);
                 Timestamp = ParseHeader(HeaderNames.LastModified, headers, Rfc1123Parser);
+                CommandId = ParseHeaderAsNullable(CommandIdHeader, headers, Int32Parser);
 
                 static IReadOnlyDictionary<string, StringValues> GetHeaders(MultipartSection section)
                 {
@@ -54,6 +57,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                     return headers ?? ImmutableDictionary<string, StringValues>.Empty;
                 }
             }
+
+            public int? CommandId { get; }
 
             public long Term { get; }
 
@@ -65,13 +70,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private class OctetStreamLogEntry : IRaftLogEntry
         {
             private readonly PipeReader reader;
-            private long length, timestamp, term;
+            private readonly byte[] metadataBuffer;
+            private LogEntryMetadata metadata;
             private bool consumed;
 
             private protected OctetStreamLogEntry(PipeReader reader)
             {
                 this.reader = reader;
                 consumed = true;
+                metadataBuffer = new byte[LogEntryMetadata.Size];
             }
 
             private protected bool Consumed => consumed;
@@ -79,28 +86,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             private protected ValueTask SkipAsync()
             {
                 consumed = true;
-                return reader.SkipAsync(length);
+                return reader.SkipAsync(metadata.Length);
             }
 
             private protected async ValueTask ConsumeAsync()
             {
-                // read term
-                term = await reader.ReadInt64Async(true).ConfigureAwait(false);
-
-                // read timestamp
-                timestamp = await reader.ReadInt64Async(true).ConfigureAwait(false);
-
-                // read length
-                length = await reader.ReadInt64Async(true).ConfigureAwait(false);
-
+                await reader.ReadBlockAsync(metadataBuffer.AsMemory());
+                metadata = new LogEntryMetadata(metadataBuffer);
                 consumed = false;
             }
 
-            long? IDataTransferObject.Length => length;
+            long? IDataTransferObject.Length => metadata.Length;
 
-            DateTimeOffset ILogEntry.Timestamp => new DateTimeOffset(timestamp, TimeSpan.Zero);
+            DateTimeOffset ILogEntry.Timestamp => metadata.Timestamp;
 
-            long IRaftLogEntry.Term => term;
+            long IRaftLogEntry.Term => metadata.Term;
 
             bool IDataTransferObject.IsReusable => false;
 
@@ -116,7 +116,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 else
                 {
                     consumed = true;
-                    result = reader.ReadBlockAsync(length, writer, token);
+                    result = reader.ReadBlockAsync(metadata.Length, writer, token);
                 }
 
                 return result;
@@ -304,21 +304,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             async Task SerializeToStreamAsync(Stream stream, TransportContext? context, CancellationToken token)
             {
                 using var buffer = new MemoryOwner<byte>(ArrayPool<byte>.Shared, 512);
-                var writer = IAsyncBinaryWriter.Create(stream, buffer.Memory);
                 foreach (var entry in entries)
                 {
-                    // write term
-                    await writer.WriteInt64Async(entry.Term, true, token).ConfigureAwait(false);
-
-                    // write timestamp
-                    await writer.WriteInt64Async(entry.Timestamp.Ticks, true, token).ConfigureAwait(false);
-
-                    // write length
-                    await writer.WriteInt64Async(entry.Length.GetValueOrDefault(), true, token).ConfigureAwait(false);
+                    // write metadata
+                    await WriteMetadataAsync(stream, buffer.Memory, entry, token).ConfigureAwait(false);
 
                     // write log entry payload
-                    await entry.WriteToAsync(writer, token).ConfigureAwait(false);
+                    await entry.WriteToAsync(stream, buffer.Memory, token).ConfigureAwait(false);
                 }
+            }
+
+            private ValueTask WriteMetadataAsync(Stream output, Memory<byte> buffer, TEntry entry, CancellationToken token)
+            {
+                var metadata = LogEntryMetadata.Create(entry);
+                buffer = buffer.Slice(0, LogEntryMetadata.Size);
+                metadata.Serialize(buffer.Span);
+                return output.WriteAsync(buffer, token);
             }
 
             protected override bool TryComputeLength(out long length)
@@ -371,6 +372,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 builder.Write(CrLf);
             }
 
+            private static string GetCommandIdHeaderValue(int? id)
+                => id.HasValue ? id.GetValueOrDefault().ToString(InvariantCulture) : string.Empty;
+
             private static ValueTask EncodeHeadersToStreamAsync(Stream output, BufferWriter<char> builder, TEntry entry, bool writeDivider, string boundary, EncodingContext context, Memory<byte> buffer, CancellationToken token)
             {
                 if (writeDivider)
@@ -383,6 +387,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 // write headers
                 WriteHeader(builder, RequestVoteMessage.RecordTermHeader, entry.Term.ToString(InvariantCulture));
                 WriteHeader(builder, HeaderNames.LastModified, HeaderUtils.FormatDate(entry.Timestamp));
+                WriteHeader(builder, CommandIdHeader, GetCommandIdHeaderValue(entry.CommandId));
 
                 // Extra CRLF to end headers (even if there are no headers)
                 builder.Write(CrLf);
