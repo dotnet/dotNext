@@ -53,14 +53,17 @@ Release Date: 03-XX-2021
 <a href="https://www.nuget.org/packages/dotnext.io/3.1.0">DotNext.IO 3.1.0</a>
 * Added `SkipAsync` method to `IAsyncBinaryReader` interface
 * Added more performance optimization options to `FileBufferingWriter` class
+* Fixed bug in `StreamSegment.Position` property setter causes invalid position in the underlying stream
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/3.1.0">DotNext.Net.Cluster 3.1.0</a>
 * Added support of manual compaction of committed log entries to persistent Write-Ahead Log
+* Small performance improvements when passing log entries over the wire for TCP and UDP protocols
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/3.1.0">DotNext.AspNetCore.Cluster 3.1.0</a>
 * Added ability to override cluster members discovery service. See `IMembersDiscoveryService` interface
+* Small performance improvements when passing log entries over the wire for HTTP/1, HTTP/2 and HTTP/3 protocols
 
-`DotNext.Augmentation` IL weaver add-on for MSBuild is no longer supported.
+**Incompatible Changes**: Binary format of persistent WAL has changed. `PersistentState` class from 3.1.0 release is unable to parse the log that was created by earlier versions.
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
