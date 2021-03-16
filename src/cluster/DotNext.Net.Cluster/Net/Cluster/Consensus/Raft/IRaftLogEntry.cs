@@ -9,5 +9,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Gets Term value associated with this log entry.
         /// </summary>
         long Term { get; }
+
+        /// <summary>
+        /// Represents identifier of the command encapsulated
+        /// by this log entry.
+        /// </summary>
+        int? CommandId => null;
     }
 }

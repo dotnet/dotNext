@@ -10,21 +10,40 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
     public partial class PersistentState
     {
+        [Flags]
+        internal enum LogEntryFlags : uint
+        {
+            None = 0,
+
+            HasIdentifier = 0x01,
+        }
+
         internal readonly struct LogEntryMetadata
         {
+            private readonly LogEntryFlags flags;
+            private readonly int identifier;
             internal readonly long Term, Timestamp, Length, Offset;
 
-            private LogEntryMetadata(DateTimeOffset timeStamp, long term, long offset, long length)
+            private LogEntryMetadata(DateTimeOffset timeStamp, long term, long offset, long length, int? id)
             {
                 Term = term;
                 Timestamp = timeStamp.UtcTicks;
                 Length = length;
                 Offset = offset;
+                flags = LogEntryFlags.None;
+                if (id.HasValue)
+                    flags |= LogEntryFlags.HasIdentifier;
+                identifier = id.GetValueOrDefault();
             }
 
-            internal static LogEntryMetadata Create<TLogEntry>(TLogEntry entry, long offset, long length)
+            internal int? Id
+            {
+                get => (flags & LogEntryFlags.HasIdentifier) != 0 ? identifier : null;
+            }
+
+            internal static LogEntryMetadata Create<TLogEntry>(TLogEntry entry, long offset, long length, int? id)
                 where TLogEntry : IRaftLogEntry
-                => new LogEntryMetadata(entry.Timestamp, entry.Term, offset, length);
+                => new LogEntryMetadata(entry.Timestamp, entry.Term, offset, length, id);
 
             internal static int Size => Unsafe.SizeOf<LogEntryMetadata>();
         }
@@ -42,7 +61,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal static SnapshotMetadata Create<TLogEntry>(TLogEntry snapshot, long index, long length)
                 where TLogEntry : IRaftLogEntry
-                => new SnapshotMetadata(LogEntryMetadata.Create(snapshot, Size, length), index);
+                => new SnapshotMetadata(LogEntryMetadata.Create(snapshot, Size, length, null), index);
 
             internal static int Size => Unsafe.SizeOf<SnapshotMetadata>();
         }

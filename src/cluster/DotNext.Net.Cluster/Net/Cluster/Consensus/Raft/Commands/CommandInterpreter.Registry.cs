@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Enumerable = System.Linq.Enumerable;
@@ -11,8 +12,27 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
 
     public partial class CommandInterpreter
     {
-        private interface IHandlerRegistry : IReadOnlyDictionary<int, CommandHandler>, IDataTransferObject.ITransformation<int>
+        private interface IHandlerRegistry : IReadOnlyDictionary<int, CommandHandler>
         {
+        }
+
+        [StructLayout(LayoutKind.Auto)]
+        private readonly struct InterpretingTransformation : IDataTransferObject.ITransformation<int>
+        {
+            private readonly int id;
+            private readonly CommandHandler handler;
+
+            internal InterpretingTransformation(int id, IHandlerRegistry registry)
+            {
+                this.handler = registry.TryGetValue(id, out var handler) ? handler : throw new UnknownCommandException(id);
+                this.id = id;
+            }
+
+            async ValueTask<int> IDataTransferObject.ITransformation<int>.TransformAsync<TReader>(TReader reader, CancellationToken token)
+            {
+                await handler.InterpretAsync(reader, token).ConfigureAwait(false);
+                return id;
+            }
         }
 
         private sealed class SparseRegistry : Dictionary<int, CommandHandler>, IHandlerRegistry
@@ -20,15 +40,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
             internal SparseRegistry(IDictionary<int, CommandHandler> prototype)
                 : base(prototype)
             {
-            }
-
-            async ValueTask<int> IDataTransferObject.ITransformation<int>.TransformAsync<TReader>(TReader reader, CancellationToken token)
-            {
-                var id = await reader.ReadInt32Async(true, token).ConfigureAwait(false);
-                if (!TryGetValue(id, out var interpreter))
-                    throw new UnknownCommandException(id);
-                await interpreter.InterpretAsync(reader, token).ConfigureAwait(false);
-                return id;
             }
         }
 
@@ -67,16 +78,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
 
                 value = null;
                 return false;
-            }
-
-            async ValueTask<int> IDataTransferObject.ITransformation<int>.TransformAsync<TReader>(TReader reader, CancellationToken token)
-            {
-                var id = await reader.ReadInt32Async(true, token).ConfigureAwait(false);
-                if (id < 0 || id >= interpreters.Length)
-                    throw new UnknownCommandException(id);
-
-                await interpreters[id].InterpretAsync(reader, token).ConfigureAwait(false);
-                return id;
             }
 
             public IEnumerator<KeyValuePair<int, CommandHandler>> GetEnumerator()

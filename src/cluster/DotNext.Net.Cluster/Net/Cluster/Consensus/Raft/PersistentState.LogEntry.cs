@@ -43,6 +43,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             /// <summary>
+            /// Gets identifier of the command encapsulated by this log entry.
+            /// </summary>
+            public int? CommandId => metadata.Id;
+
+            /// <summary>
             /// Gets a value indicating that this entry is a snapshot entry.
             /// </summary>
             public bool IsSnapshot => SnapshotIndex.HasValue;

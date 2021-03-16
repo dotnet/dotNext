@@ -123,7 +123,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 // write content
                 Position = offset;
                 await entry.WriteToAsync(this, buffer).ConfigureAwait(false);
-                metadata = LogEntryMetadata.Create(entry, offset, Position - offset);
+                metadata = LogEntryMetadata.Create(entry, offset, Position - offset, entry.CommandId);
 
                 // record new log entry to the allocation table
                 Position = index * LogEntryMetadata.Size;

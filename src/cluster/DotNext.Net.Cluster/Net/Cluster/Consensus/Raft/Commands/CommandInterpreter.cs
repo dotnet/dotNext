@@ -148,6 +148,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public ValueTask<int> InterpretAsync<TEntry>(TEntry entry, CancellationToken token = default)
             where TEntry : struct, IRaftLogEntry
-            => entry.TransformAsync<int, IHandlerRegistry>(interpreters, token);
+        {
+            ValueTask<int> result;
+            if (entry.IsSnapshot)
+            {
+                result = new ValueTask<int>(Task.FromException<int>(new InvalidOperationException(ExceptionMessages.SnapshotDetected)));
+            }
+            else if (!entry.CommandId.TryGetValue(out var id))
+            {
+                result = new ValueTask<int>(Task.FromException<int>(new ArgumentException(ExceptionMessages.MissingCommandId, nameof(entry))));
+            }
+            else
+            {
+                result = entry.TransformAsync<int, InterpretingTransformation>(new InterpretingTransformation(id, interpreters), token);
+            }
+
+            return result;
+        }
     }
 }
