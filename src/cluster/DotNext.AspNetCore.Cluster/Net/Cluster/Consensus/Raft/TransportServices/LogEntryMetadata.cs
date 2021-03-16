@@ -24,7 +24,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         private LogEntryMetadata(long term, DateTimeOffset timestamp, long length, int? identifier)
         {
             Term = term;
-            this.timestamp = timestamp.Ticks;
+            this.timestamp = timestamp.UtcTicks;
             Length = length;
             flags = identifier.HasValue ? HasIdentifierFlag : NoFlags;
             this.identifier = identifier.GetValueOrDefault();

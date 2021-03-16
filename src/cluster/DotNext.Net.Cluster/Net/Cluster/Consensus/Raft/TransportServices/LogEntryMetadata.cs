@@ -20,7 +20,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         private LogEntryMetadata(long term, DateTimeOffset timestamp, bool isSnapshot, int? commandId, long? length)
         {
             Term = term;
-            this.timestamp = timestamp.Ticks;
+            this.timestamp = timestamp.UtcTicks;
             flags = NoFlags;
             if (isSnapshot)
                 flags |= IsSnapshotFlag;
