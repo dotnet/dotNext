@@ -91,7 +91,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             private protected async ValueTask ConsumeAsync()
             {
-                await reader.ReadBlockAsync(metadataBuffer.AsMemory());
+                await reader.ReadBlockAsync(metadataBuffer.AsMemory()).ConfigureAwait(false);
                 metadata = new LogEntryMetadata(metadataBuffer);
                 consumed = false;
             }
