@@ -18,32 +18,29 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
     internal readonly struct ReceivedLogEntry : IRaftLogEntry
     {
         private readonly PipeReader reader;
-        private readonly long term, length;
-        private readonly DateTimeOffset timestamp;
-        private readonly bool isSnapshot;
+        private readonly LogEntryMetadata metadata;
 
         internal ReceivedLogEntry(ref ReadOnlyMemory<byte> prologue, PipeReader reader)
         {
-            var count = EntriesExchange.ParseLogEntryPrologue(prologue.Span, out length, out term, out timestamp, out isSnapshot);
+            var count = EntriesExchange.ParseLogEntryPrologue(prologue.Span, out metadata);
             prologue = prologue.Slice(count);
             this.reader = reader;
         }
 
         internal ReceivedLogEntry(ref ReadOnlyMemory<byte> announcement, PipeReader reader, out ushort remotePort, out long term, out long snapshotIndex)
         {
-            var count = SnapshotExchange.ParseAnnouncement(announcement.Span, out remotePort, out term, out snapshotIndex, out length, out this.term, out timestamp);
+            var count = SnapshotExchange.ParseAnnouncement(announcement.Span, out remotePort, out term, out snapshotIndex, out metadata);
             announcement = announcement.Slice(count);
-            isSnapshot = true;
             this.reader = reader;
         }
 
-        long? IDataTransferObject.Length => length < 0 ? new long?() : length;
+        long? IDataTransferObject.Length => metadata.Length;
 
-        long IRaftLogEntry.Term => term;
+        long IRaftLogEntry.Term => metadata.Term;
 
-        DateTimeOffset ILogEntry.Timestamp => timestamp;
+        DateTimeOffset ILogEntry.Timestamp => metadata.Timestamp;
 
-        bool ILogEntry.IsSnapshot => isSnapshot;
+        bool ILogEntry.IsSnapshot => metadata.IsSnapshot;
 
         bool IDataTransferObject.IsReusable => false;
 
