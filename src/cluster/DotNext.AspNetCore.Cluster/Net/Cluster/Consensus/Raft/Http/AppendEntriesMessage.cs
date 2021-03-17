@@ -328,9 +328,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 foreach (var entry in entries)
                 {
                     Debug.Assert(entry.Length.HasValue);
-
-                    // sizeof(long) * 3 is a length of the log entry metadata
-                    length += entry.Length.GetValueOrDefault() + (sizeof(long) * 3);
+                    length += entry.Length.GetValueOrDefault() + LogEntryMetadata.Size;
                 }
 
                 return true;
