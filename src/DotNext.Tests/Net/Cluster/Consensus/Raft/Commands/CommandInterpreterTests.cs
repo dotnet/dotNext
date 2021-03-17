@@ -45,7 +45,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
             public int Value;
         }
 
-        private sealed class Formatter : IFormatter<BinaryOperationCommand>, IFormatter<UnaryOperationCommand>, IFormatter<AssignCommand>
+        [Command(4, Formatter = typeof(Formatter), FormatterMember = nameof(Formatter.Instance))]
+        private struct SnapshotCommand
+        {
+            public int Value;
+        }
+
+        private sealed class Formatter : IFormatter<BinaryOperationCommand>, IFormatter<UnaryOperationCommand>, IFormatter<AssignCommand>, IFormatter<SnapshotCommand>
         {
             public static readonly Formatter Instance = new Formatter();
 
@@ -95,6 +101,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
 
             unsafe long? IFormatter<AssignCommand>.GetLength(AssignCommand command)
                 => sizeof(AssignCommand);
+
+            ValueTask IFormatter<SnapshotCommand>.SerializeAsync<TWriter>(SnapshotCommand command, TWriter writer, CancellationToken token)
+                => writer.WriteAsync(command, token);
+
+            ValueTask<SnapshotCommand> IFormatter<SnapshotCommand>.DeserializeAsync<TReader>(TReader reader, CancellationToken token)
+                => reader.ReadAsync<SnapshotCommand>(token);
+
+            unsafe long? IFormatter<SnapshotCommand>.GetLength(SnapshotCommand command)
+                => sizeof(SnapshotCommand);
         }
 
         private sealed class CustomInterpreter : CommandInterpreter
@@ -132,6 +147,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
             [CommandHandler]
             public ValueTask DoUnaryOperation(UnaryOperationCommand command, CancellationToken token)
                 => DoUnaryOperation(ref Value, command, token);
+
+            [CommandHandler(IsSnapshotHandler = true)]
+            public ValueTask ApplySnapshot(SnapshotCommand command, CancellationToken token)
+            {
+                Value = command.Value;
+                return new ValueTask();
+            }
         }
 
         private sealed class TestPersistenceState : PersistentState
@@ -235,6 +257,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
             await wal.AppendAsync(entry2);
             await wal.CommitAsync(CancellationToken.None);
             Equal(~42, wal.Value);
+
+            var entry3 = wal.CreateLogEntry(new SnapshotCommand { Value = 56 });
+            await wal.AppendAsync(entry3);
+            await wal.CommitAsync(CancellationToken.None);
+            Equal(56, wal.Value);
         }
     }
 }
