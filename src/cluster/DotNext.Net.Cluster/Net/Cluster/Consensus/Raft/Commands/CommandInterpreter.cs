@@ -74,6 +74,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
 
         private readonly IHandlerRegistry interpreters;
         private readonly IReadOnlyDictionary<Type, FormatterInfo> formatters;
+        private readonly int? snapshotCommandId;
 
         /// <summary>
         /// Initializes a new interpreter and discovers methods marked
@@ -102,6 +103,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
                     var interpreter = Delegate.CreateDelegate(typeof(Func<,,>).MakeGenericType(commandType, typeof(CancellationToken), typeof(ValueTask)), method.IsStatic ? null : this, method);
                     interpreters.Add(commandAttr.Id, Cast<CommandHandler>(Activator.CreateInstance(typeof(CommandHandler<>).MakeGenericType(commandType), formatter, interpreter)));
                     formatters.Add(commandType, formatter);
+                    if (handlerAttr.IsSnapshotHandler)
+                        snapshotCommandId = commandAttr.Id;
                 }
             }
 
@@ -133,6 +136,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
                 new LogEntry<TCommand>(term, command, formatter.GetFormatter<TCommand>(), formatter.Id) :
                 throw new GenericArgumentException<TCommand>(ExceptionMessages.MissingCommandFormatter<TCommand>(), nameof(command));
 
+        private bool TryGetCommandId<TEntry>(ref TEntry entry, out int commandId)
+            where TEntry : struct, IRaftLogEntry
+            => (entry.IsSnapshot ? snapshotCommandId : entry.CommandId).TryGetValue(out commandId);
+
         /// <summary>
         /// Interprets log entry asynchronously.
         /// </summary>
@@ -148,22 +155,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public ValueTask<int> InterpretAsync<TEntry>(TEntry entry, CancellationToken token = default)
             where TEntry : struct, IRaftLogEntry
-        {
-            ValueTask<int> result;
-            if (entry.IsSnapshot)
-            {
-                result = new ValueTask<int>(Task.FromException<int>(new InvalidOperationException(ExceptionMessages.SnapshotDetected)));
-            }
-            else if (!entry.CommandId.TryGetValue(out var id))
-            {
-                result = new ValueTask<int>(Task.FromException<int>(new ArgumentException(ExceptionMessages.MissingCommandId, nameof(entry))));
-            }
-            else
-            {
-                result = entry.TransformAsync<int, InterpretingTransformation>(new InterpretingTransformation(id, interpreters), token);
-            }
-
-            return result;
-        }
+            => TryGetCommandId(ref entry, out var id) ?
+                entry.TransformAsync<int, InterpretingTransformation>(new InterpretingTransformation(id, interpreters), token) :
+                new ValueTask<int>(Task.FromException<int>(new ArgumentException(ExceptionMessages.MissingCommandId, nameof(entry))));
     }
 }
