@@ -11,7 +11,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     public partial class PersistentState
     {
         [Flags]
-        internal enum LogEntryFlags : uint
+        private enum LogEntryFlags : uint
         {
             None = 0,
 
