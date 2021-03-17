@@ -41,9 +41,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 get => (flags & LogEntryFlags.HasIdentifier) != 0 ? identifier : null;
             }
 
-            internal static LogEntryMetadata Create<TLogEntry>(TLogEntry entry, long offset, long length, int? id)
+            internal static LogEntryMetadata Create<TLogEntry>(TLogEntry entry, long offset, long length)
                 where TLogEntry : IRaftLogEntry
-                => new LogEntryMetadata(entry.Timestamp, entry.Term, offset, length, id);
+                => new LogEntryMetadata(entry.Timestamp, entry.Term, offset, length, entry.CommandId);
 
             internal static int Size => Unsafe.SizeOf<LogEntryMetadata>();
         }
@@ -61,7 +61,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal static SnapshotMetadata Create<TLogEntry>(TLogEntry snapshot, long index, long length)
                 where TLogEntry : IRaftLogEntry
-                => new SnapshotMetadata(LogEntryMetadata.Create(snapshot, Size, length, null), index);
+                => new SnapshotMetadata(LogEntryMetadata.Create(snapshot, Size, length), index);
 
             internal static int Size => Unsafe.SizeOf<SnapshotMetadata>();
         }
