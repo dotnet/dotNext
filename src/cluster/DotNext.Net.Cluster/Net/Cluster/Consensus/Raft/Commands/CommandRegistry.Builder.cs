@@ -18,6 +18,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
         {
             private readonly Dictionary<int, CommandHandler> interpreters;
             private readonly Dictionary<Type, FormatterInfo> formatters;
+            private int? snapshotCommandId;
 
             /// <summary>
             /// Initializes a new builder.
@@ -36,11 +37,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
             /// </remarks>
             /// <param name="handler">The command handler.</param>
             /// <param name="formatter">Serializer/deserializer of the command type.</param>
+            /// <param name="snapshotHandler">
+            /// <see langword="true"/> to register a handler for snapshot log entry;
+            /// <see langword="false"/> to register a handler for regular log entry.
+            /// </param>
             /// <typeparam name="TCommand">The type of the command supported by the handler.</typeparam>
             /// <returns>This builder.</returns>
             /// <exception cref="ArgumentNullException"><paramref name="handler"/> or <paramref name="formatter"/> is <see langword="null"/>.</exception>
             /// <exception cref="GenericArgumentException">Type <typaparamref name="TCommand"/> is not annotated with <see cref="CommandAttribute"/> attribute.</exception>
-            public Builder Add<TCommand>(Func<TCommand, CancellationToken, ValueTask> handler, IFormatter<TCommand> formatter)
+            public Builder Add<TCommand>(Func<TCommand, CancellationToken, ValueTask> handler, IFormatter<TCommand> formatter, bool snapshotHandler = false)
                 where TCommand : struct
             {
                 if (handler is null)
@@ -51,6 +56,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
                 var id = typeof(TCommand).GetCustomAttribute<CommandAttribute>()?.Id ?? throw new GenericArgumentException<TCommand>(ExceptionMessages.MissingCommandAttribute<TCommand>());
                 interpreters.Add(id, new CommandHandler<TCommand>(formatter, handler));
                 formatters.Add(typeof(TCommand), FormatterInfo.Create(formatter, id));
+                if (snapshotHandler)
+                    snapshotCommandId = id;
                 return this;
             }
 
@@ -61,11 +68,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
             /// <see cref="CommandAttribute.Formatter"/> must be defined.
             /// </remarks>
             /// <param name="handler">The command handler.</param>
+            /// <param name="snapshotHandler">
+            /// <see langword="true"/> to register a handler for snapshot log entry;
+            /// <see langword="false"/> to register a handler for regular log entry.
+            /// </param>
             /// <typeparam name="TCommand">The type of the command supported by the handler.</typeparam>
             /// <returns>This builder.</returns>
             /// <exception cref="ArgumentNullException"><paramref name="handler"/> is <see langword="null"/>.</exception>
             /// <exception cref="GenericArgumentException">Type <typaparamref name="TCommand"/> is not annotated with <see cref="CommandAttribute"/> attribute or <see cref="CommandAttribute.Formatter"/> refers to the invalid formatter.</exception>
-            public Builder Add<TCommand>(Func<TCommand, CancellationToken, ValueTask> handler)
+            public Builder Add<TCommand>(Func<TCommand, CancellationToken, ValueTask> handler, bool snapshotHandler = false)
                 where TCommand : struct
             {
                 if (handler is null)
@@ -81,6 +92,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
                 formatters.Add(typeof(TCommand), formatter);
                 var interp = Activator.CreateInstance(typeof(CommandHandler<>).MakeGenericType(typeof(TCommand)), formatter, handler);
                 interpreters.Add(attr.Id, Cast<CommandHandler>(interp));
+                if (snapshotHandler)
+                    snapshotCommandId = attr.Id;
                 return this;
             }
 
@@ -97,7 +110,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
             /// Constructs an instance of <see cref="CommandInterpreter"/>.
             /// </summary>
             /// <returns>A new instance of the interpreter.</returns>
-            public CommandInterpreter Build() => new CommandInterpreter(interpreters, formatters);
+            public CommandInterpreter Build() => new CommandInterpreter(interpreters, formatters, snapshotCommandId);
 
             /// <inheritdoc />
             CommandInterpreter ISupplier<CommandInterpreter>.Invoke() => Build();

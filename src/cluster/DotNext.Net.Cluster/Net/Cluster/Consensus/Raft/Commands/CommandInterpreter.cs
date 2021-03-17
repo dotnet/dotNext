@@ -115,10 +115,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
             this.formatters = formatters;
         }
 
-        private CommandInterpreter(IDictionary<int, CommandHandler> interpreters, IDictionary<Type, FormatterInfo> formatters)
+        private CommandInterpreter(IDictionary<int, CommandHandler> interpreters, IDictionary<Type, FormatterInfo> formatters, int? snapshotCommandId)
         {
             this.interpreters = CreateRegistry(interpreters);
             this.formatters = ImmutableDictionary.ToImmutableDictionary(formatters);
+            this.snapshotCommandId = snapshotCommandId;
         }
 
         /// <summary>
