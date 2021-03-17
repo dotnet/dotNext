@@ -36,10 +36,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 identifier = id.GetValueOrDefault();
             }
 
-            internal int? Id
-            {
-                get => (flags & LogEntryFlags.HasIdentifier) != 0 ? identifier : null;
-            }
+            internal int? Id => (flags & LogEntryFlags.HasIdentifier) != 0 ? identifier : null;
 
             internal static LogEntryMetadata Create<TLogEntry>(TLogEntry entry, long offset, long length)
                 where TLogEntry : IRaftLogEntry
