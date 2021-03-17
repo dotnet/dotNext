@@ -106,6 +106,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             bool ILogEntry.IsSnapshot => false;
 
+            int? IRaftLogEntry.CommandId => metadata.CommandId;
+
             ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
             {
                 ValueTask result;
