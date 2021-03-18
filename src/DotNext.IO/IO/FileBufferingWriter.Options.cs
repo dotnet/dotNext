@@ -59,7 +59,7 @@ namespace DotNext.IO
         public struct Options // TODO: Must be readonly with init-only properties in .NET 6
         {
             internal const int DefaultMemoryThreshold = 32768;
-            private const int DefaultFileBufferSize = 1024;
+            internal const int DefaultFileBufferSize = 1024;
             private int? fileBufferSize, memoryThreshold;
             private bool synchronousIO, writeThrough;
             private string? path;

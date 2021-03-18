@@ -252,7 +252,7 @@ namespace DotNext.IO
 
         /// <inheritdoc />
         void IGrowableBuffer<byte>.CopyTo<TConsumer>(TConsumer consumer)
-            => CopyTo(consumer, 1024, CancellationToken.None);
+            => CopyTo(consumer, Options.DefaultFileBufferSize, CancellationToken.None);
 
         private bool IsReading => reader?.Target is not null;
 
@@ -555,6 +555,10 @@ namespace DotNext.IO
             if (buffer.Length > 0 && position > 0)
                 await consumer.Invoke(buffer.Memory.Slice(0, position), token).ConfigureAwait(false);
         }
+
+        /// <inheritdoc />
+        ValueTask IGrowableBuffer<byte>.CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token)
+            => new ValueTask(CopyToAsync(consumer, Options.DefaultFileBufferSize, token));
 
         /// <summary>
         /// Drains the written content to the consumer synchronously.
