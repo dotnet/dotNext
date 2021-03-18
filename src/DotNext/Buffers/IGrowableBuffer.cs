@@ -1,4 +1,6 @@
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers
@@ -61,6 +63,19 @@ namespace DotNext.Buffers
         /// <exception cref="ObjectDisposedException">The writer has been disposed.</exception>
         void CopyTo<TConsumer>(TConsumer consumer)
             where TConsumer : notnull, IReadOnlySpanConsumer<T>;
+
+        /// <summary>
+        /// Passes the contents of this writer to the callback asynchronously.
+        /// </summary>
+        /// <remarks>
+        /// The callback may be called multiple times.
+        /// </remarks>
+        /// <param name="consumer">The callback used to accept the memory representing the contents of this builder.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <typeparam name="TConsumer">The type of the consumer.</typeparam>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        ValueTask CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token)
+            where TConsumer : notnull, ISupplier<ReadOnlyMemory<T>, CancellationToken, ValueTask>;
 
         /// <summary>
         /// Copies the contents of this writer to the specified memory block.
