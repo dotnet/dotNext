@@ -55,7 +55,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly MemoryAllocator<LogEntryMetadata>? metadataPool;
         private readonly StreamSegment nullSegment;
         private readonly int bufferSize;
-        private readonly bool replayOnInitialize, automaticCompaction;
+        private readonly bool replayOnInitialize, automaticCompaction, writeThrough;
         private Snapshot snapshot;
 
         /// <summary>
@@ -67,12 +67,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="recordsPerPartition"/> is less than 2.</exception>
         public PersistentState(DirectoryInfo path, int recordsPerPartition, Options? configuration = null)
         {
-            if (configuration is null)
-                configuration = new Options();
+            configuration ??= new Options();
             if (recordsPerPartition < 2L)
                 throw new ArgumentOutOfRangeException(nameof(recordsPerPartition));
             if (!path.Exists)
                 path.Create();
+            writeThrough = configuration.WriteThrough;
             automaticCompaction = configuration.CompactionMode == CompactionMode.Foreground;
             backupCompression = configuration.BackupCompression;
             replayOnInitialize = configuration.ReplayOnInitialize;
@@ -96,14 +96,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 if (long.TryParse(file.Name, out var partitionNumber))
                 {
-                    var partition = new Partition(file.Directory!, bufferSize, recordsPerPartition, partitionNumber, metadataPool, sessionManager.Capacity);
+                    var partition = new Partition(file.Directory!, bufferSize, recordsPerPartition, partitionNumber, metadataPool, sessionManager.Capacity, writeThrough);
                     partition.PopulateCache(sessionManager.WriteSession);
                     partitionTable[partitionNumber] = partition;
                 }
             }
 
             state = new NodeState(path, AsyncLock.Exclusive(syncRoot));
-            snapshot = new Snapshot(path, bufferSize, sessionManager.Capacity);
+            snapshot = new Snapshot(path, bufferSize, sessionManager.Capacity, writeThrough);
             snapshot.PopulateCache(sessionManager.WriteSession);
         }
 
@@ -136,7 +136,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             => syncRoot.IsStrongLockHeld ? sessionManager.WriteSession.Buffer : throw new InvalidOperationException();
 
         private Partition CreatePartition(long partitionNumber)
-            => new Partition(location, bufferSize, recordsPerPartition, partitionNumber, metadataPool, sessionManager.Capacity);
+            => new Partition(location, bufferSize, recordsPerPartition, partitionNumber, metadataPool, sessionManager.Capacity, writeThrough);
 
         private long SquashedIndex
         {
@@ -300,7 +300,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             // 1. Save the snapshot into temporary file to avoid corruption caused by network connection
             string tempSnapshotFile, snapshotFile = this.snapshot.FileName;
-            using (var tempSnapshot = new Snapshot(location, bufferSize, 0, true))
+            using (var tempSnapshot = new Snapshot(location, bufferSize, 0, writeThrough, true))
             {
                 tempSnapshotFile = tempSnapshot.FileName;
                 await tempSnapshot.WriteAsync(sessionManager.WriteSession, snapshot, snapshotIndex, CancellationToken.None).ConfigureAwait(false);
@@ -323,7 +323,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Environment.FailFast(LogMessages.SnapshotInstallationFailed, e);
             }
 
-            this.snapshot = new Snapshot(location, bufferSize, sessionManager.Capacity);
+            this.snapshot = new Snapshot(location, bufferSize, sessionManager.Capacity, writeThrough);
             this.snapshot.PopulateCache(sessionManager.WriteSession);
 
             // 3. Identify all partitions to be replaced by snapshot

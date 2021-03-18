@@ -31,12 +31,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal readonly int Capacity;    // max number of entries
             private readonly MemoryOwner<LogEntryMetadata> lookupCache;
 
-            internal Partition(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, MemoryAllocator<LogEntryMetadata>? cachePool, int readersCount)
-                : base(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), bufferSize, readersCount, FileOptions.RandomAccess | FileOptions.WriteThrough | FileOptions.Asynchronous)
+            internal Partition(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, MemoryAllocator<LogEntryMetadata>? cachePool, int readersCount, bool writeThrough)
+                : base(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), bufferSize, readersCount, GetOptions(writeThrough))
             {
                 Capacity = recordsPerPartition;
                 FirstIndex = partitionNumber * recordsPerPartition;
                 lookupCache = cachePool is null ? default : cachePool(recordsPerPartition);
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static FileOptions GetOptions(bool writeThrough)
+            {
+                const FileOptions skipBufferOptions = FileOptions.RandomAccess | FileOptions.WriteThrough | FileOptions.Asynchronous;
+                const FileOptions dontSkipBufferOptions = FileOptions.RandomAccess | FileOptions.Asynchronous;
+                return writeThrough ? skipBufferOptions : dontSkipBufferOptions;
             }
 
             private long PayloadOffset => Math.BigMul(LogEntryMetadata.Size, Capacity);
@@ -175,9 +183,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private new const string FileName = "snapshot";
             private const string TempFileName = "snapshot.new";
 
-            internal Snapshot(DirectoryInfo location, int bufferSize, int readersCount, bool tempSnapshot = false)
-                : base(Path.Combine(location.FullName, tempSnapshot ? TempFileName : FileName), bufferSize, readersCount, FileOptions.Asynchronous | FileOptions.SequentialScan | FileOptions.RandomAccess | FileOptions.WriteThrough)
+            internal Snapshot(DirectoryInfo location, int bufferSize, int readersCount, bool writeThrough, bool tempSnapshot = false)
+                : base(Path.Combine(location.FullName, tempSnapshot ? TempFileName : FileName), bufferSize, readersCount, GetOptions(writeThrough))
             {
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private static FileOptions GetOptions(bool writeThrough)
+            {
+                const FileOptions skipBufferOptions = FileOptions.Asynchronous | FileOptions.SequentialScan | FileOptions.RandomAccess | FileOptions.WriteThrough;
+                const FileOptions dontSkipBufferOptions = FileOptions.Asynchronous | FileOptions.SequentialScan | FileOptions.RandomAccess;
+                return writeThrough ? skipBufferOptions : dontSkipBufferOptions;
             }
 
             internal override void PopulateCache(in DataAccessSession session)

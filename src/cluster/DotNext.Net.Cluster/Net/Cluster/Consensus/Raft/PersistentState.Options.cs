@@ -35,6 +35,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private long partitionSize;
 
             /// <summary>
+            /// Gets or sets a value indicating usage of intermediate buffers during I/O.
+            /// </summary>
+            /// <value>
+            /// <see langword="true"/> to bypass intermediate buffers for disk writes.
+            /// </value>
+            public bool WriteThrough
+            {
+                get;
+                set;
+            }
+
+            /// <summary>
             /// Gets size of in-memory buffer for I/O operations.
             /// </summary>
             /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is too small.</exception>
