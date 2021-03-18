@@ -90,12 +90,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         private static async ValueTask<BufferedRaftLogEntry> CopyToMemoryOrFileAsync<TEntry>(TEntry entry, string destinationPath, int memoryThreshold, MemoryAllocator<byte>? allocator, CancellationToken token)
             where TEntry : notnull, IRaftLogEntry
         {
-            var writer = new FileBufferingWriter(new FileBufferingWriter.Options {
+            var writer = new FileBufferingWriter(new FileBufferingWriter.Options
+            {
                 MemoryAllocator = allocator,
                 MemoryThreshold = memoryThreshold,
                 AsyncIO = true,
-                FileName = GenerateFileName(destinationPath)
-                });
+                FileName = GenerateFileName(destinationPath),
+            });
 
             try
             {
@@ -164,6 +165,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             await writer.CopyFromAsync(input, token).ConfigureAwait(false);
         }
 
+        /// <inheritdoc />
         ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token) => content switch
         {
             FileInfo file => WriteFileAsync(file.FullName, writer, token),

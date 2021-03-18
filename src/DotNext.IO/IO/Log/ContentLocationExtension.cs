@@ -27,7 +27,7 @@ namespace DotNext.IO.Log
         public ContentLocationExtension(FileInfo file)
         {
             var fileName = string.Concat(Uri.UriSchemeFile, Uri.SchemeDelimiter, file.FullName);
-            this.location = new Uri(fileName);
+            location = new Uri(fileName);
         }
 
         /// <summary>

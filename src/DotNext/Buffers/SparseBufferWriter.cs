@@ -4,9 +4,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Runtime.CompilerServices;
 using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.Buffers
