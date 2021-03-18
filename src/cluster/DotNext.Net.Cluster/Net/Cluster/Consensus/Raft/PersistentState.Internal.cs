@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using Buffers;
     using IO;
 
     public partial class PersistentState
@@ -20,6 +21,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         internal readonly struct LogEntryMetadata
         {
+            internal const int Size = sizeof(LogEntryFlags) + sizeof(int) + sizeof(long) + sizeof(long) + sizeof(long) + sizeof(long);
             private readonly LogEntryFlags flags;
             private readonly int identifier;
             internal readonly long Term, Timestamp, Length, Offset;
@@ -36,17 +38,48 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 identifier = id.GetValueOrDefault();
             }
 
+            internal LogEntryMetadata(ref SpanReader<byte> reader)
+            {
+                Term = reader.ReadInt64(true);
+                Timestamp = reader.ReadInt64(true);
+                Length = reader.ReadInt64(true);
+                Offset = reader.ReadInt64(true);
+                flags = (LogEntryFlags)reader.ReadUInt32(true);
+                identifier = reader.ReadInt32(true);
+            }
+
             internal int? Id => (flags & LogEntryFlags.HasIdentifier) != 0 ? identifier : null;
 
             internal static LogEntryMetadata Create<TLogEntry>(TLogEntry entry, long offset, long length)
                 where TLogEntry : IRaftLogEntry
                 => new LogEntryMetadata(entry.Timestamp, entry.Term, offset, length, entry.CommandId);
 
-            internal static int Size => Unsafe.SizeOf<LogEntryMetadata>();
+            internal void Serialize(ref SpanWriter<byte> writer)
+            {
+                writer.WriteInt64(Term, true);
+                writer.WriteInt64(Timestamp, true);
+                writer.WriteInt64(Length, true);
+                writer.WriteInt64(Offset, true);
+                writer.WriteUInt32((uint)flags, true);
+                writer.WriteInt32(identifier, true);
+            }
+
+            internal void Serialize(Span<byte> output)
+            {
+                var writer = new SpanWriter<byte>(output);
+                Serialize(ref writer);
+            }
+
+            internal static LogEntryMetadata Deserialize(ReadOnlySpan<byte> input)
+            {
+                var reader = new SpanReader<byte>(input);
+                return new LogEntryMetadata(ref reader);
+            }
         }
 
         internal readonly struct SnapshotMetadata
         {
+            internal const int Size = sizeof(long) + LogEntryMetadata.Size;
             internal readonly long Index;
             internal readonly LogEntryMetadata RecordMetadata;
 
@@ -56,11 +89,33 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 RecordMetadata = metadata;
             }
 
+            private SnapshotMetadata(ref SpanReader<byte> reader)
+            {
+                Index = reader.ReadInt64(true);
+                RecordMetadata = new LogEntryMetadata(ref reader);
+            }
+
             internal static SnapshotMetadata Create<TLogEntry>(TLogEntry snapshot, long index, long length)
                 where TLogEntry : IRaftLogEntry
                 => new SnapshotMetadata(LogEntryMetadata.Create(snapshot, Size, length), index);
 
-            internal static int Size => Unsafe.SizeOf<SnapshotMetadata>();
+            internal void Serialize(ref SpanWriter<byte> writer)
+            {
+                writer.WriteInt64(Index, true);
+                RecordMetadata.Serialize(ref writer);
+            }
+
+            internal void Serialize(Span<byte> output)
+            {
+                var writer = new SpanWriter<byte>(output);
+                Serialize(ref writer);
+            }
+
+            internal static SnapshotMetadata Deserialize(ReadOnlySpan<byte> input)
+            {
+                var reader = new SpanReader<byte>(input);
+                return new SnapshotMetadata(ref reader);
+            }
         }
 
         private abstract class ConcurrentStorageAccess : Stream, IFlushable

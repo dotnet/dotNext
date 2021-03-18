@@ -39,7 +39,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 lookupCache = cachePool is null ? default : cachePool(recordsPerPartition);
             }
 
-            private long PayloadOffset => LogEntryMetadata.Size * (long)Capacity;
+            private long PayloadOffset => Math.BigMul(LogEntryMetadata.Size, Capacity);
 
             internal long LastIndex => FirstIndex + Capacity - 1;
 
@@ -65,6 +65,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     PopulateCache(session.Buffer.Span, lookupCache.Memory.Span.Slice(0, Capacity));
             }
 
+            private static async ValueTask<LogEntryMetadata> ReadMetadataAsync(Stream input, Memory<byte> buffer, CancellationToken token = default)
+            {
+                buffer = buffer.Slice(0, LogEntryMetadata.Size);
+                await input.ReadBlockAsync(buffer, token).ConfigureAwait(false);
+                return LogEntryMetadata.Deserialize(buffer.Span);
+            }
+
+            private static ValueTask WriteMetadataAsync(Stream output, in LogEntryMetadata metadata, Memory<byte> buffer, CancellationToken token = default)
+            {
+                buffer = buffer.Slice(0, LogEntryMetadata.Size);
+                metadata.Serialize(buffer.Span);
+                return output.WriteAsync(buffer, token);
+            }
+
             private async ValueTask<LogEntry> ReadAsync(StreamSegment reader, Memory<byte> buffer, int index, bool refreshStream, CancellationToken token)
             {
                 Debug.Assert(index >= 0 && index < Capacity, $"Invalid index value {index}, offset {FirstIndex}");
@@ -76,7 +90,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (lookupCache.IsEmpty)
                 {
                     reader.BaseStream.Position = index * LogEntryMetadata.Size;
-                    metadata = await reader.BaseStream.ReadAsync<LogEntryMetadata>(buffer, token).ConfigureAwait(false);
+                    metadata = await ReadMetadataAsync(reader.BaseStream, buffer, token).ConfigureAwait(false);
                 }
                 else
                 {
@@ -109,7 +123,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     // read content offset and the length of the previous entry
                     Position = (index - 1) * LogEntryMetadata.Size;
-                    metadata = await this.ReadAsync<LogEntryMetadata>(buffer).ConfigureAwait(false);
+                    metadata = await ReadMetadataAsync(this, buffer).ConfigureAwait(false);
                     Debug.Assert(metadata.Offset > 0, "Previous entry doesn't exist for unknown reason");
                     offset = metadata.Length + metadata.Offset;
                 }
@@ -127,7 +141,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
                 // record new log entry to the allocation table
                 Position = index * LogEntryMetadata.Size;
-                await this.WriteAsync(metadata, buffer).ConfigureAwait(false);
+                await WriteMetadataAsync(this, metadata, buffer).ConfigureAwait(false);
 
                 // update cache
                 if (!lookupCache.IsEmpty)
@@ -169,6 +183,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal override void PopulateCache(in DataAccessSession session)
                 => Index = Length > 0L ? this.Read<SnapshotMetadata>().Index : 0L;
 
+            private static async ValueTask<SnapshotMetadata> ReadMetadataAsync(Stream input, Memory<byte> buffer, CancellationToken token = default)
+            {
+                buffer = buffer.Slice(0, SnapshotMetadata.Size);
+                await input.ReadAsync(buffer, token).ConfigureAwait(false);
+                return SnapshotMetadata.Deserialize(buffer.Span);
+            }
+
+            private static ValueTask WriteMetadataAsync(Stream output, in SnapshotMetadata metadata, Memory<byte> buffer, CancellationToken token = default)
+            {
+                buffer = buffer.Slice(0, SnapshotMetadata.Size);
+                metadata.Serialize(buffer.Span);
+                return output.WriteAsync(buffer, token);
+            }
+
             private async ValueTask WriteAsync<TEntry>(TEntry entry, long index, Memory<byte> buffer, CancellationToken token)
                 where TEntry : notnull, IRaftLogEntry
             {
@@ -177,7 +205,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 await entry.WriteToAsync(this, buffer, token).ConfigureAwait(false);
                 var metadata = SnapshotMetadata.Create(entry, index, Length - SnapshotMetadata.Size);
                 Position = 0;
-                await this.WriteAsync(metadata, buffer, token).ConfigureAwait(false);
+                await WriteMetadataAsync(this, metadata, buffer, token).ConfigureAwait(false);
             }
 
             internal ValueTask WriteAsync<TEntry>(in DataAccessSession session, TEntry entry, long index, CancellationToken token)
@@ -190,7 +218,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
                 // snapshot reader stream may be out of sync with writer stream
                 await reader.FlushAsync(token).ConfigureAwait(false);
-                return new LogEntry(reader, buffer, await reader.BaseStream.ReadAsync<SnapshotMetadata>(buffer, token).ConfigureAwait(false));
+                return new LogEntry(reader, buffer, await ReadMetadataAsync(reader.BaseStream, buffer, token).ConfigureAwait(false));
             }
 
             internal ValueTask<LogEntry> ReadAsync(in DataAccessSession session, CancellationToken token)
