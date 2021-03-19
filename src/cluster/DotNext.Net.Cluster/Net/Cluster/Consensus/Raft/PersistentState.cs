@@ -54,7 +54,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly MemoryAllocator<LogEntry>? entryPool;
         private readonly MemoryAllocator<LogEntryMetadata>? metadataPool;
         private readonly StreamSegment nullSegment;
-        private readonly int bufferSize;
+        private readonly int bufferSize, snapshotBufferSize;
         private readonly bool replayOnInitialize, automaticCompaction, writeThrough;
         private Snapshot snapshot;
 
@@ -77,6 +77,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             backupCompression = configuration.BackupCompression;
             replayOnInitialize = configuration.ReplayOnInitialize;
             bufferSize = configuration.BufferSize;
+            snapshotBufferSize = configuration.SnapshotBufferSize;
             location = path;
             this.recordsPerPartition = recordsPerPartition;
             initialSize = configuration.InitialPartitionSize;
@@ -103,7 +104,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             state = new NodeState(path, AsyncLock.Exclusive(syncRoot));
-            snapshot = new Snapshot(path, bufferSize, sessionManager.Capacity, writeThrough);
+            snapshot = new Snapshot(path, snapshotBufferSize, sessionManager.Capacity, writeThrough);
             snapshot.PopulateCache(sessionManager.WriteSession);
         }
 
@@ -300,7 +301,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             // 1. Save the snapshot into temporary file to avoid corruption caused by network connection
             string tempSnapshotFile, snapshotFile = this.snapshot.FileName;
-            using (var tempSnapshot = new Snapshot(location, bufferSize, 0, writeThrough, true))
+            using (var tempSnapshot = new Snapshot(location, snapshotBufferSize, 0, writeThrough, true))
             {
                 tempSnapshotFile = tempSnapshot.FileName;
                 await tempSnapshot.WriteAsync(sessionManager.WriteSession, snapshot, snapshotIndex, CancellationToken.None).ConfigureAwait(false);
@@ -323,7 +324,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Environment.FailFast(LogMessages.SnapshotInstallationFailed, e);
             }
 
-            this.snapshot = new Snapshot(location, bufferSize, sessionManager.Capacity, writeThrough);
+            this.snapshot = new Snapshot(location, snapshotBufferSize, sessionManager.Capacity, writeThrough);
             this.snapshot.PopulateCache(sessionManager.WriteSession);
 
             // 3. Identify all partitions to be replaced by snapshot

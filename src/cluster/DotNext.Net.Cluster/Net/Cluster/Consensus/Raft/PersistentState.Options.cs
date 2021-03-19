@@ -31,6 +31,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             private const int MinBufferSize = 128;
             private int bufferSize = 2048;
+            private int? snapshotBufferSize;
             private int concurrencyLevel = 3;
             private long partitionSize;
 
@@ -47,7 +48,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             /// <summary>
-            /// Gets size of in-memory buffer for I/O operations.
+            /// Gets or sets size of in-memory buffer for I/O operations.
             /// </summary>
             /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is too small.</exception>
             public int BufferSize
@@ -58,6 +59,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     if (value < MinBufferSize)
                         throw new ArgumentOutOfRangeException(nameof(value));
                     bufferSize = value;
+                }
+            }
+
+            /// <summary>
+            /// Gets or sets size of in-memory buffer for I/O operations associated with
+            /// the construction of log snapshot.
+            /// </summary>
+            /// <remarks>
+            /// By default, the value of this buffer is equal to <see cref="BufferSize"/>.
+            /// </remarks>
+            /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is too small.</exception>
+            public int SnapshotBufferSize
+            {
+                get => snapshotBufferSize ?? bufferSize;
+                set
+                {
+                    if (value < MinBufferSize)
+                        throw new ArgumentOutOfRangeException(nameof(value));
+
+                    snapshotBufferSize = value;
                 }
             }
 
