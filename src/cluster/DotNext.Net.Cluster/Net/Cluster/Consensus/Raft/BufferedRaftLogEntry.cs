@@ -3,13 +3,11 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using Buffers;
     using IO;
-    using IO.Log;
 
     /// <summary>
     /// Represents buffered log entry.
@@ -17,21 +15,27 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     [StructLayout(LayoutKind.Auto)]
     public readonly struct BufferedRaftLogEntry : IRaftLogEntry, IDisposable
     {
-        private const int BufferSize = 4096;
-
         // possible values are:
         // null - empty content
-        // FileInfo - file name
+        // FileStream - file
         // IGrowableBuffer<byte> - in-memory copy of the log entry
-        private readonly object? content;
+        private readonly IDisposable? content;
         private readonly int? commandId;
 
-        private BufferedRaftLogEntry(string fileName, long term, DateTimeOffset timestamp, int? id)
+        private BufferedRaftLogEntry(string fileName, int bufferSize, long term, DateTimeOffset timestamp, int? id)
         {
             Term = term;
             Timestamp = timestamp;
             commandId = id;
-            content = new FileInfo(fileName);
+            content = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.None, bufferSize, FileOptions.SequentialScan | FileOptions.Asynchronous | FileOptions.DeleteOnClose);
+        }
+
+        private BufferedRaftLogEntry(FileStream file, long term, DateTimeOffset timestamp, int? id)
+        {
+            Term = term;
+            Timestamp = timestamp;
+            commandId = id;
+            content = file;
         }
 
         private BufferedRaftLogEntry(IGrowableBuffer<byte> buffer, long term, DateTimeOffset timestamp, int? id)
@@ -40,6 +44,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Timestamp = timestamp;
             commandId = id;
             content = buffer;
+        }
+
+        private BufferedRaftLogEntry(long term, DateTimeOffset timestamp, int? id)
+        {
+            Term = term;
+            Timestamp = timestamp;
+            commandId = id;
+            content = null;
         }
 
         /// <summary>
@@ -60,7 +72,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         public long Length => content switch
         {
-            FileInfo file => file.Length,
+            FileStream file => file.Length,
             IGrowableBuffer<byte> buffer => buffer.WrittenCount,
             _ => 0L
         };
@@ -71,32 +83,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <inheritdoc/>
         bool IDataTransferObject.IsReusable => true;
 
-        /// <inheritdoc/>
-        bool ILogEntry.TryGetExtension<TExtension>(out TExtension extension)
-        {
-            if (content is FileInfo file)
-            {
-                extension = Unsafe.As<ContentLocationExtension, TExtension>(ref Unsafe.AsRef(new ContentLocationExtension(file)));
-                return true;
-            }
-
-            extension = default;
-            return false;
-        }
-
-        private static string GenerateFileName(string destinationPath)
-            => Path.Combine(destinationPath, Guid.NewGuid().ToString());
-
-        private static async ValueTask<BufferedRaftLogEntry> CopyToMemoryOrFileAsync<TEntry>(TEntry entry, string destinationPath, int memoryThreshold, MemoryAllocator<byte>? allocator, CancellationToken token)
+        private static async ValueTask<BufferedRaftLogEntry> CopyToMemoryOrFileAsync<TEntry>(TEntry entry, RaftLogEntryBufferingOptions options, CancellationToken token)
             where TEntry : notnull, IRaftLogEntry
         {
-            var writer = new FileBufferingWriter(new FileBufferingWriter.Options
-            {
-                MemoryAllocator = allocator,
-                MemoryThreshold = memoryThreshold,
-                AsyncIO = true,
-                FileName = GenerateFileName(destinationPath),
-            });
+            var writer = options.CreateBufferingWriter();
 
             try
             {
@@ -113,7 +103,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return new BufferedRaftLogEntry(writer, entry.Term, entry.Timestamp, entry.CommandId);
 
             await writer.DisposeAsync().ConfigureAwait(false);
-            return new BufferedRaftLogEntry(fileName, entry.Term, entry.Timestamp, entry.CommandId);
+            return new BufferedRaftLogEntry(fileName, options.BufferSize, entry.Term, entry.Timestamp, entry.CommandId);
         }
 
         private static async ValueTask<BufferedRaftLogEntry> CopyToMemoryAsync<TEntry>(TEntry entry, int length, MemoryAllocator<byte>? allocator, CancellationToken token)
@@ -133,53 +123,75 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return new BufferedRaftLogEntry(writer, entry.Term, entry.Timestamp, entry.CommandId);
         }
 
-        private static async ValueTask<BufferedRaftLogEntry> CopyToFileAsync<TEntry>(TEntry entry, string destinationPath, long length, MemoryAllocator<byte>? allocator, CancellationToken token)
+        private static async ValueTask<BufferedRaftLogEntry> CopyToFileAsync<TEntry>(TEntry entry, RaftLogEntryBufferingOptions options, long length, CancellationToken token)
             where TEntry : notnull, IRaftLogEntry
         {
-            using var buffer = allocator.Invoke(BufferSize, false);
-            await using var output = new FileStream(GenerateFileName(destinationPath), FileMode.CreateNew, FileAccess.Write, FileShare.None, BufferSize, FileOptions.Asynchronous | FileOptions.WriteThrough);
+            using var buffer = options.RentBuffer();
+            var output = new FileStream(options.GetRandomFileName(), FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, options.BufferSize, FileOptions.Asynchronous | FileOptions.SequentialScan);
             output.SetLength(length);
-            await entry.WriteToAsync(output, buffer.Memory, token).ConfigureAwait(false);
-            await output.FlushAsync(token).ConfigureAwait(false);
-            return new BufferedRaftLogEntry(output.Name, entry.Term, entry.Timestamp, entry.CommandId);
+            try
+            {
+                await entry.WriteToAsync(output, buffer.Memory, token).ConfigureAwait(false);
+                await output.FlushAsync(token).ConfigureAwait(false);
+            }
+            catch
+            {
+                await output.DisposeAsync().ConfigureAwait(false);
+                throw;
+            }
+
+            return new BufferedRaftLogEntry(output, entry.Term, entry.Timestamp, entry.CommandId);
         }
 
-        internal static ValueTask<BufferedRaftLogEntry> CopyAsync<TEntry>(TEntry entry, string destinationPath, int memoryThreshold, MemoryAllocator<byte>? allocator, CancellationToken token)
+        /// <summary>
+        /// Constructs a copy of the specified log entry.
+        /// </summary>
+        /// <param name="entry">The log entry to be copied.</param>
+        /// <param name="options">Buffering options.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <typeparam name="TEntry">The type of the log entry to be copied.</typeparam>
+        /// <returns>Buffered copy of <paramref name="entry"/>.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<BufferedRaftLogEntry> CopyAsync<TEntry>(TEntry entry, RaftLogEntryBufferingOptions options, CancellationToken token)
             where TEntry : notnull, IRaftLogEntry
         {
             ValueTask<BufferedRaftLogEntry> result;
             if (!entry.Length.TryGetValue(out var length))
-                result = CopyToMemoryOrFileAsync(entry, destinationPath, memoryThreshold, allocator, token);
-            else if (length <= memoryThreshold)
-                result = CopyToMemoryAsync(entry, (int)length, allocator, token);
+                result = CopyToMemoryOrFileAsync(entry, options, token);
+            else if (length == 0L)
+                result = new ValueTask<BufferedRaftLogEntry>(new BufferedRaftLogEntry(entry.Term, entry.Timestamp, entry.CommandId));
+            else if (length <= options.MemoryThreshold)
+                result = CopyToMemoryAsync(entry, (int)length, options.MemoryAllocator, token);
             else
-                result = CopyToFileAsync(entry, destinationPath, length, allocator, token);
+                result = CopyToFileAsync(entry, options, length, token);
 
             return result;
         }
 
-        private static async ValueTask WriteFileAsync<TWriter>(string fileName, TWriter writer, CancellationToken token)
-            where TWriter : notnull, IAsyncBinaryWriter
-        {
-            await using var input = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read, BufferSize, FileOptions.SequentialScan | FileOptions.Asynchronous);
-            await writer.CopyFromAsync(input, token).ConfigureAwait(false);
-        }
-
         /// <inheritdoc />
-        ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token) => content switch
+        ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
         {
-            FileInfo file => WriteFileAsync(file.FullName, writer, token),
-            IGrowableBuffer<byte> buffer => buffer.CopyToAsync(writer, token),
-            _ => new ValueTask()
-        };
+            ValueTask result;
+            switch (content)
+            {
+                case FileStream fs:
+                    fs.Position = 0L;
+                    result = new ValueTask(writer.CopyFromAsync(fs, token));
+                    break;
+                case IGrowableBuffer<byte> buffer:
+                    result = buffer.CopyToAsync(writer, token);
+                    break;
+                default:
+                    result = new ValueTask();
+                    break;
+            }
+
+            return result;
+        }
 
         /// <summary>
         /// Releases all resources associated with the buffer.
         /// </summary>
-        public void Dispose()
-        {
-            if (content is IDisposable disposable)
-                disposable.Dispose();
-        }
+        public void Dispose() => content?.Dispose();
     }
 }

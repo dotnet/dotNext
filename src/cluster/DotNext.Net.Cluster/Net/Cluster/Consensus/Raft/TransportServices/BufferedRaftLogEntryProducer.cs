@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
-    using Buffers;
     using Generic;
     using IO.Log;
     using Threading.Tasks;
@@ -34,20 +33,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         /// Constructs bufferized copy of all log entries presented in the sequence.
         /// </summary>
         /// <param name="producer">The sequence of log entries to be copied.</param>
-        /// <param name="destinationPath">The path to the directory in file system used for storing large log entries.</param>
-        /// <param name="memoryThreshold">The maximum size of log entry that can be stored in-memory without saving the content to the disk.</param>
-        /// <param name="allocator">The allocator of memory for internal I/O operations.</param>
+        /// <param name="options">Buffering options.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <typeparam name="TEntry">The type of the entry in the source sequence.</typeparam>
         /// <returns>The copy of the log entries.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static async Task<BufferedRaftLogEntryProducer> CopyAsync<TEntry>(ILogEntryProducer<TEntry> producer, string destinationPath, int memoryThreshold = 4096, MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
+        public static async Task<BufferedRaftLogEntryProducer> CopyAsync<TEntry>(ILogEntryProducer<TEntry> producer, RaftLogEntryBufferingOptions options, CancellationToken token = default)
             where TEntry : notnull, IRaftLogEntry
         {
             var entries = new BufferedRaftLogEntry[producer.RemainingCount];
             for (nint index = 0; await producer.MoveNextAsync().ConfigureAwait(false); index++)
             {
-                entries[index] = await BufferedRaftLogEntry.CopyAsync(producer.Current, destinationPath, memoryThreshold, allocator, token).ConfigureAwait(false);
+                entries[index] = await BufferedRaftLogEntry.CopyAsync(producer.Current, options, token).ConfigureAwait(false);
             }
 
             return new BufferedRaftLogEntryProducer(entries);
