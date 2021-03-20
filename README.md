@@ -58,6 +58,7 @@ Release Date: 03-XX-2021
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/3.1.0">DotNext.Net.Cluster 3.1.0</a>
 * Added support of manual compaction of committed log entries to persistent Write-Ahead Log
 * Small performance improvements when passing log entries over the wire for TCP and UDP protocols
+* Added buffering API for log entries
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/3.1.0">DotNext.AspNetCore.Cluster 3.1.0</a>
 * Added ability to override cluster members discovery service. See `IMembersDiscoveryService` interface
