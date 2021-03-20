@@ -404,7 +404,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 #endif
             async Task SerializeToStreamAsync(Stream stream, TransportContext? context, CancellationToken token)
             {
-                const int maxChars = 128;   // it is empiric value measured using Console.WriteLine(builder.Length)
+                const int maxChars = 256;   // it is empiric value measured using Console.WriteLine(builder.Length)
                 EncodingContext encodingContext = DefaultHttpEncoding;
                 using (var encodingBuffer = new MemoryOwner<byte>(ArrayPool<byte>.Shared, DefaultHttpEncoding.GetMaxByteCount(maxChars)))
                 using (var builder = new PooledArrayBufferWriter<char>(maxChars))
