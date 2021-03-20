@@ -70,7 +70,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             var index = currentIndex + 1;
             bool result;
-            if (result = currentIndex < GetLength(entries))
+            if (result = index < GetLength(entries))
                 currentIndex = index;
             return result;
         }
