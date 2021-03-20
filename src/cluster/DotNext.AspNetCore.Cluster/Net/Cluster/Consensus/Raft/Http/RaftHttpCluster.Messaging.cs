@@ -11,8 +11,8 @@ using Microsoft.AspNetCore.Http;
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Messaging;
-    using BufferedRaftLogEntryProducer = TransportServices.BufferedRaftLogEntryProducer;
     using static Threading.LinkedTokenSourceFactory;
+    using BufferedRaftLogEntryProducer = TransportServices.BufferedRaftLogEntryProducer;
 
     internal partial class RaftHttpCluster : IOutputChannel
     {
