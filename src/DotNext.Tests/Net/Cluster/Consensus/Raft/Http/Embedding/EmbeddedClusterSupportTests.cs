@@ -66,6 +66,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                             services.AddSingleton(configurator);
                         if (discovery is not null)
                             services.AddSingleton(discovery);
+                        services.EnableBuffering(options =>
+                        {
+                            options.MemoryThreshold = 512;
+                        });
                     })
                     .UseStartup<TStartup>()
                 )
