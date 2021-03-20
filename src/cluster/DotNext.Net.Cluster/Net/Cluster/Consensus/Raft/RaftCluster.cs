@@ -488,7 +488,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns><see langword="true"/> if snapshot is installed successfully; <see langword="false"/> if snapshot is outdated.</returns>
         protected async Task<Result<bool>> ReceiveSnapshotAsync<TSnapshot>(TMember sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
-            where TSnapshot : IRaftLogEntry
+            where TSnapshot : notnull, IRaftLogEntry
         {
             var tokenSource = token.LinkTo(Token);
             var transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
@@ -525,7 +525,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns><see langword="true"/> if log entry is committed successfully; <see langword="false"/> if preceding is not present in local audit trail.</returns>
         protected async Task<Result<bool>> ReceiveEntriesAsync<TEntry>(TMember sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
-            where TEntry : IRaftLogEntry
+            where TEntry : notnull, IRaftLogEntry
         {
             var tokenSource = token.LinkTo(Token);
             var transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false);

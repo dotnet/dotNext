@@ -24,6 +24,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private readonly bool openConnectionForEachRequest;
         private readonly string clientHandlerName;
         private readonly HttpVersion protocolVersion;
+        private readonly RaftLogEntryBufferingOptions? bufferingOptions;
         private Optional<ClusterMemberId> localMember;
 
         private RaftHttpCluster(HttpClusterMemberConfiguration config, IServiceProvider dependencies, out MemberCollectionBuilder members, Func<Action<HttpClusterMemberConfiguration, string>, IDisposable> configTracker)
@@ -46,7 +47,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             httpHandlerFactory = dependencies.GetService<IHttpMessageHandlerFactory>();
             Logger = dependencies.GetRequiredService<ILoggerFactory>().CreateLogger(GetType());
             Metrics = dependencies.GetService<MetricsCollector>();
-
+            bufferingOptions = dependencies.GetBufferingOptions();
             discoveryService = dependencies.GetService<IMemberDiscoveryService>();
 
             // track changes in configuration, do not track membership if discovery service is enabled
