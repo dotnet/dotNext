@@ -87,16 +87,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             where TEntry : notnull, IRaftLogEntry
         {
             var writer = options.CreateBufferingWriter();
-
+            var buffer = options.RentBuffer();
             try
             {
-                await entry.WriteToAsync(writer, token).ConfigureAwait(false);
+                await entry.WriteToAsync(writer, buffer.Memory, token).ConfigureAwait(false);
                 await writer.FlushAsync(token).ConfigureAwait(false);
             }
             catch
             {
                 await writer.DisposeAsync().ConfigureAwait(false);
                 throw;
+            }
+            finally
+            {
+                buffer.Dispose();
+                buffer = default;
             }
 
             if (writer.TryGetWrittenContent(out _, out var fileName))
