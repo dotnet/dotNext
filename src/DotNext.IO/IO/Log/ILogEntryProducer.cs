@@ -93,7 +93,14 @@ namespace DotNext.IO.Log
         long ILogEntryProducer<TEntry>.RemainingCount => source.Count - currentIndex - 1;
 
         /// <inheritdoc/>
-        ValueTask<bool> IAsyncEnumerator<TEntry>.MoveNextAsync() => new ValueTask<bool>(++currentIndex < source.Count);
+        ValueTask<bool> IAsyncEnumerator<TEntry>.MoveNextAsync()
+        {
+            var index = currentIndex + 1;
+            bool result;
+            if (result = index < source.Count)
+                currentIndex = index;
+            return new ValueTask<bool>(result);
+        }
 
         /// <summary>
         /// Resets the position of the producer.

@@ -66,7 +66,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         /// Moves to the next bufferized log entry in the sequence.
         /// </summary>
         /// <returns><see langword="true"/> if cursor is adjusted to the next log entry; <see langword="false"/> if the end of the sequence reached.</returns>
-        public bool MoveNext() => ++currentIndex < GetLength(entries);
+        public bool MoveNext()
+        {
+            var index = currentIndex + 1;
+            bool result;
+            if (result = currentIndex < GetLength(entries))
+                currentIndex = index;
+            return result;
+        }
 
         /// <inheritdoc />
         ValueTask<bool> IAsyncEnumerator<BufferedRaftLogEntry>.MoveNextAsync()
