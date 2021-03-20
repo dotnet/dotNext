@@ -33,7 +33,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
     internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessageWriter<Result<bool>>
     {
-        private static readonly ILogEntryProducer<MultipartLogEntry> EmptyProducer = new LogEntryProducer<MultipartLogEntry>();
+        private static readonly ILogEntryProducer<IRaftLogEntry> EmptyProducer = new LogEntryProducer<IRaftLogEntry>();
         internal new const string MessageType = "AppendEntries";
         private const string PrecedingRecordIndexHeader = "X-Raft-Preceding-Record-Index";
         private const string PrecedingRecordTermHeader = "X-Raft-Preceding-Record-Term";
