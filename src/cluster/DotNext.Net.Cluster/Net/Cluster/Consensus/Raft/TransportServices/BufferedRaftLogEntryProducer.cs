@@ -6,9 +6,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
-    using Generic;
     using IO.Log;
-    using Threading.Tasks;
     using static Runtime.Intrinsics;
 
     /// <summary>
@@ -20,13 +18,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
     /// </remarks>
     public sealed class BufferedRaftLogEntryProducer : Disposable, ILogEntryProducer<BufferedRaftLogEntry>, IEnumerator<BufferedRaftLogEntry>
     {
+        private const int InitialPosition = -1;
         private readonly BufferedRaftLogEntry[] entries;
-        private nint offset;
+        private nint currentIndex;
 
         private BufferedRaftLogEntryProducer(BufferedRaftLogEntry[] entries)
         {
             this.entries = entries;
-            offset = -1;
+            currentIndex = InitialPosition;
         }
 
         /// <summary>
@@ -53,7 +52,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         /// <summary>
         /// Gets log entry at the current position in the sequence.
         /// </summary>
-        public BufferedRaftLogEntry Current => entries[offset];
+        public BufferedRaftLogEntry Current => entries[currentIndex];
 
         /// <inheritdoc />
         object IEnumerator.Current => Current;
@@ -61,42 +60,23 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         /// <summary>
         /// Gets remaining count of log entries in this sequence.
         /// </summary>
-        public long RemainingCount
-        {
-            get
-            {
-                ThrowIfDisposed();
-                var offset = this.offset;
-                if (offset < 0)
-                    offset = 0;
-
-                return GetLength(entries) - offset;
-            }
-        }
+        public long RemainingCount => GetLength(entries) - currentIndex - 1;
 
         /// <summary>
         /// Moves to the next bufferized log entry in the sequence.
         /// </summary>
         /// <returns><see langword="true"/> if cursor is adjusted to the next log entry; <see langword="false"/> if the end of the sequence reached.</returns>
-        public bool MoveNext()
-        {
-            if (offset < 0)
-                offset = 0;
-            else
-                offset += 1;
-
-            return offset < GetLength(entries);
-        }
+        public bool MoveNext() => ++currentIndex < GetLength(entries);
 
         /// <inheritdoc />
         ValueTask<bool> IAsyncEnumerator<BufferedRaftLogEntry>.MoveNextAsync()
-            => new ValueTask<bool>(MoveNext() ? CompletedTask<bool, BooleanConst.True>.Task : CompletedTask<bool, BooleanConst.False>.Task);
+            => new ValueTask<bool>(MoveNext());
 
         /// <summary>
         /// Resets this producer so the caller can reuse this
         /// object to iterate over log entries again.
         /// </summary>
-        public void Reset() => offset = -1;
+        public void Reset() => currentIndex = InitialPosition;
 
         /// <inheritdoc />
         protected override void Dispose(bool disposing)

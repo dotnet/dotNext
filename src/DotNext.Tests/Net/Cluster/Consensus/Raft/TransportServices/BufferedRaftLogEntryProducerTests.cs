@@ -48,8 +48,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             await using ILogEntryProducer<BufferedRaftLogEntry> buffered = await BufferedRaftLogEntryProducer.CopyAsync(entries, options);
             Equal(2L, buffered.RemainingCount);
             True(await buffered.MoveNextAsync());
+            Equal(1L, buffered.RemainingCount);
             Equal(content1, await buffered.Current.ToByteArrayAsync());
             True(await buffered.MoveNextAsync());
+            Equal(0L, buffered.RemainingCount);
             Equal(content2, await buffered.Current.ToByteArrayAsync());
             False(await buffered.MoveNextAsync());
         }
