@@ -53,7 +53,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly long initialSize;
         private readonly MemoryAllocator<LogEntry>? entryPool;
         private readonly MemoryAllocator<LogEntryMetadata>? metadataPool;
-        private readonly StreamSegment nullSegment;
         private readonly int bufferSize, snapshotBufferSize;
         private readonly bool replayOnInitialize, automaticCompaction, writeThrough;
         private Snapshot snapshot;
@@ -86,8 +85,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             syncRoot = new AsyncSharedLock(sessionManager.Capacity);
             entryPool = configuration.GetMemoryAllocator<LogEntry>();
             metadataPool = configuration.UseCaching ? configuration.GetMemoryAllocator<LogEntryMetadata>() : null;
-            nullSegment = new StreamSegment(Stream.Null);
-            initialEntry = new LogEntry(nullSegment, sessionManager.WriteSession.Buffer, new LogEntryMetadata());
+            initialEntry = new LogEntry(sessionManager.WriteSession.Buffer);
 
             // sorted dictionary to improve performance of log compaction and snapshot installation procedures
             partitionTable = new SortedDictionary<long, Partition>();
@@ -911,7 +909,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 commitEvent.Dispose();
                 syncRoot.Dispose();
                 snapshot.Dispose();
-                nullSegment.Dispose();
             }
 
             base.Dispose(disposing);
@@ -928,7 +925,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             commitEvent.Dispose();
             syncRoot.Dispose();
             await snapshot.DisposeAsync().ConfigureAwait(false);
-            await nullSegment.DisposeAsync().ConfigureAwait(false);
         }
 
         /// <summary>

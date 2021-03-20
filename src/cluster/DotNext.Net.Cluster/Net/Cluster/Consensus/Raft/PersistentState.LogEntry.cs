@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.InteropServices;
 #if !NETSTANDARD2_1
 using System.Text.Json;
@@ -21,11 +22,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         [StructLayout(LayoutKind.Auto)]
         protected readonly struct LogEntry : IRaftLogEntry
         {
-            private readonly StreamSegment content;
+            private readonly StreamSegment? content;
             private readonly LogEntryMetadata metadata;
             private readonly Memory<byte> buffer;
             internal readonly long? SnapshotIndex;
 
+            // for regular log entry
             internal LogEntry(StreamSegment cachedContent, Memory<byte> sharedBuffer, in LogEntryMetadata metadata)
             {
                 this.metadata = metadata;
@@ -34,12 +36,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 SnapshotIndex = null;
             }
 
+            // for snapshot
             internal LogEntry(StreamSegment cachedContent, Memory<byte> sharedBuffer, in SnapshotMetadata metadata)
             {
                 this.metadata = metadata.RecordMetadata;
                 content = cachedContent;
                 buffer = sharedBuffer;
                 SnapshotIndex = metadata.Index;
+            }
+
+            // for ephemeral entry
+            internal LogEntry(Memory<byte> sharedBuffer)
+            {
+                metadata = default;
+                content = null;
+                buffer = sharedBuffer;
+                SnapshotIndex = null;
             }
 
             /// <summary>
@@ -60,13 +72,23 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal bool IsEmpty => metadata.Length == 0L;
 
             internal void Reset()
-                => content.Adjust(metadata.Offset, Length);
+                => content?.Adjust(metadata.Offset, Length);
 
             /// <inheritdoc/>
             ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
             {
-                Reset();
-                return new ValueTask(writer.CopyFromAsync(content, token));
+                Task result;
+                if (content is null)
+                {
+                    result = Task.CompletedTask;
+                }
+                else
+                {
+                    Reset();
+                    result = writer.CopyFromAsync(content, token);
+                }
+
+                return new ValueTask(result);
             }
 
             /// <inheritdoc/>
@@ -89,8 +111,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public ValueTask<TResult> TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
                 where TTransformation : notnull, IDataTransferObject.ITransformation<TResult>
             {
-                Reset();
-                return IDataTransferObject.TransformAsync<TResult, TTransformation>(content, transformation, false, buffer, token);
+                Stream source;
+                if (content is null)
+                {
+                    source = Stream.Null;
+                }
+                else
+                {
+                    Reset();
+                    source = content;
+                }
+
+                return IDataTransferObject.TransformAsync<TResult, TTransformation>(source, transformation, false, buffer, token);
             }
 
             /// <summary>
@@ -99,6 +131,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <returns>The binary reader providing access to the content of this log entry.</returns>
             public IAsyncBinaryReader GetReader()
             {
+                if (content is null)
+                    return IAsyncBinaryReader.Empty;
+
                 Reset();
                 return IAsyncBinaryReader.Create(content, buffer);
             }
@@ -120,8 +155,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <seealso cref="CreateJsonLogEntry"/>
             public ValueTask<object?> DeserializeFromJsonAsync(Func<string, Type>? typeLoader = null, JsonSerializerOptions? options = null, CancellationToken token = default)
             {
-                Reset();
-                return JsonLogEntry.DeserializeAsync(content, typeLoader ?? JsonLogEntry.DefaultTypeLoader, options, token);
+                Stream source;
+                if (content is null)
+                {
+                    source = Stream.Null;
+                }
+                else
+                {
+                    Reset();
+                    source = content;
+                }
+
+                return JsonLogEntry.DeserializeAsync(source, typeLoader ?? JsonLogEntry.DefaultTypeLoader, options, token);
             }
 #endif
         }

@@ -48,6 +48,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 identifier = reader.ReadInt32(true);
             }
 
+            internal bool IsValid => Offset > 0;
+
             internal int? Id => (flags & LogEntryFlags.HasIdentifier) != 0U ? identifier : null;
 
             internal static LogEntryMetadata Create<TLogEntry>(TLogEntry entry, long offset, long length)

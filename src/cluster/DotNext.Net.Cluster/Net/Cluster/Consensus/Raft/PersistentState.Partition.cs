@@ -105,7 +105,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     metadata = lookupCache[index];
                 }
 
-                return metadata.Offset > 0 ? new LogEntry(reader, buffer, metadata) : throw new MissingLogEntryException(index, FirstIndex, LastIndex, FileName);
+                return metadata.IsValid ? new LogEntry(reader, buffer, metadata) : throw new MissingLogEntryException(index, FirstIndex, LastIndex, FileName);
             }
 
             internal ValueTask<LogEntry> ReadAsync(in DataAccessSession session, long index, bool absoluteIndex, bool refreshStream, CancellationToken token)
