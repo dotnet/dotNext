@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
+namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using Buffers;
     using IO;
