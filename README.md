@@ -59,10 +59,12 @@ Release Date: 03-XX-2021
 * Added support of manual compaction of committed log entries to persistent Write-Ahead Log
 * Small performance improvements when passing log entries over the wire for TCP and UDP protocols
 * Added buffering API for log entries
+* Added optional buffering of log entries and snapshot when transferring using TCP or UDP protocols
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/3.1.0">DotNext.AspNetCore.Cluster 3.1.0</a>
 * Added ability to override cluster members discovery service. See `IMembersDiscoveryService` interface
 * Small performance improvements when passing log entries over the wire for HTTP/1, HTTP/2 and HTTP/3 protocols
+* Added optional buffering of log entries and snapshot when transferring over the wire. Buffering allows to reduce lock contention of persistent WAL
 
 **Incompatible Changes**: Binary format of persistent WAL has changed. `PersistentState` class from 3.1.0 release is unable to parse the log that was created by earlier versions.
 
