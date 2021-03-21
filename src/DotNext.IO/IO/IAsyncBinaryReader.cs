@@ -515,7 +515,8 @@ namespace DotNext.IO
         /// <returns>The stream reader.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="input"/> is <see langword="null"/>.</exception>
         /// <exception cref="ArgumentException"><paramref name="buffer"/> is empty.</exception>
-        public static IAsyncBinaryReader Create(Stream input, Memory<byte> buffer) => new AsyncStreamBinaryAccessor(input, buffer);
+        public static IAsyncBinaryReader Create(Stream input, Memory<byte> buffer)
+            => ReferenceEquals(input, Stream.Null) ? Empty : new AsyncStreamBinaryAccessor(input, buffer);
 
         /// <summary>
         /// Creates default implementation of binary reader over sequence of bytes.
