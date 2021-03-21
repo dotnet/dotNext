@@ -47,6 +47,18 @@ Documentation for older versions:
 # What's new
 Release Date: 03-XX-2021
 
+<a href="https://www.nuget.org/packages/dotnext/3.1.0">DotNext 3.1.0</a>
+* Added async support to `IGrowableBuffer<T>` interface
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/3.1.0">DotNext.Metaprogramming 3.1.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.reflection/3.1.0">DotNext.Reflection 3.1.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/3.1.0">DotNext.Unsafe 3.1.0</a>
+* Updated dependencies
+
 <a href="https://www.nuget.org/packages/dotnext.threading/3.1.0">DotNext.Threading 3.1.0</a>
 * `AsyncTigger` now supports fairness policy when resuming suspended callers
 
