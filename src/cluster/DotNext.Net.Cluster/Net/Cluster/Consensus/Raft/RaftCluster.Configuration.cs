@@ -199,6 +199,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// </summary>
             public bool Standby { get; set; }
 
+            /// <summary>
+            /// Gets or sets buffering options.
+            /// </summary>
+            /// <value>If <see langword="null"/> then buffering is disabled.</value>
+            public RaftLogEntryBufferingOptions? BufferingOptions
+            {
+                get;
+                set;
+            }
+
             private protected Func<int, ExchangePool> ExchangePoolFactory(ILocalMember localMember)
             {
                 ExchangePool CreateExchangePool(int count)
