@@ -263,19 +263,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         ValueTask<TResult> IAuditTrail.ReadAsync<TResult>(Func<IReadOnlyList<ILogEntry>, long?, CancellationToken, ValueTask<TResult>> reader, long startIndex, long endIndex, CancellationToken token)
             => ReadAsync(new LogEntryConsumer<IRaftLogEntry, TResult>(reader), startIndex, endIndex, token);
 
-        /// <summary>
-        /// Gets log entries starting from the specified index to the last log entry.
-        /// </summary>
-        /// <typeparam name="TResult">The type of the result.</typeparam>
-        /// <param name="reader">The reader of the log entries.</param>
-        /// <param name="startIndex">The index of the first requested log entry, inclusively.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The collection of log entries.</returns>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is negative.</exception>
-        public async ValueTask<TResult> ReadAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, CancellationToken token)
+        private async ValueTask<TResult> ReadSlowAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, CancellationToken token)
         {
-            if (startIndex < 0L)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
             await syncRoot.AcquireAsync(false, token).ConfigureAwait(false);
             var session = sessionManager.OpenSession(bufferSize);
             try
@@ -287,6 +276,28 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 sessionManager.CloseSession(session);
                 syncRoot.Release();
             }
+        }
+
+        /// <summary>
+        /// Gets log entries starting from the specified index to the last log entry.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="reader">The reader of the log entries.</param>
+        /// <param name="startIndex">The index of the first requested log entry, inclusively.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The collection of log entries.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is negative.</exception>
+        public ValueTask<TResult> ReadAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, CancellationToken token)
+        {
+            ValueTask<TResult> result;
+            if (startIndex < 0L)
+                result = new ValueTask<TResult>(Task.FromException<TResult>(new ArgumentOutOfRangeException(nameof(startIndex))));
+            else if (startIndex <= state.LastIndex)
+                result = ReadSlowAsync(reader, startIndex, token);
+            else
+                result = reader.ReadAsync<IRaftLogEntry, IRaftLogEntry[]>(Array.Empty<IRaftLogEntry>(), null, token);
+
+            return result;
         }
 
         private async ValueTask InstallSnapshot<TSnapshot>(TSnapshot snapshot, long snapshotIndex)
