@@ -349,7 +349,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return flushTask;
         }
 
-        private void RemovePartitions(IDictionary<long, Partition> partitions)
+        private void RemovePartitions(IReadOnlyDictionary<long, Partition> partitions)
         {
             foreach (var (partitionNumber, partition) in partitions)
             {
