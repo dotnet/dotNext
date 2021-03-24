@@ -87,8 +87,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             metadataPool = configuration.UseCaching ? configuration.GetMemoryAllocator<LogEntryMetadata>() : null;
             initialEntry = new LogEntry(sessionManager.WriteSession.Buffer);
 
-            // sorted dictionary to improve performance of log compaction and snapshot installation procedures
-            partitionTable = new SortedDictionary<long, Partition>();
+            var partitionTable = new SortedSet<Partition>(Comparer<Partition>.Create(ComparePartitions));
 
             // load all partitions from file system
             foreach (var file in path.EnumerateFiles())
@@ -97,13 +96,36 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     var partition = new Partition(file.Directory!, bufferSize, recordsPerPartition, partitionNumber, metadataPool, sessionManager.Capacity, writeThrough);
                     partition.PopulateCache(sessionManager.WriteSession);
-                    partitionTable[partitionNumber] = partition;
+                    partitionTable.Add(partition);
                 }
             }
 
+            // constructed sorted list of partitions
+            foreach (var partition in partitionTable)
+            {
+                if (tail is null)
+                {
+                    Debug.Assert(head is null);
+                    head = partition;
+                }
+                else
+                {
+                    tail.Append(partition);
+                }
+
+                tail = partition;
+            }
+
+            partitionTable.Clear();
             state = new NodeState(path, AsyncLock.Exclusive(syncRoot));
             snapshot = new Snapshot(path, snapshotBufferSize, sessionManager.Capacity, writeThrough);
             snapshot.PopulateCache(sessionManager.WriteSession);
+
+            static int ComparePartitions(Partition x, Partition y)
+            {
+                var xn = x.PartitionNumber;
+                return xn.CompareTo(y.PartitionNumber);
+            }
         }
 
         /// <summary>
@@ -135,7 +157,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             => syncRoot.IsStrongLockHeld ? sessionManager.WriteSession.Buffer : throw new InvalidOperationException();
 
         private Partition CreatePartition(long partitionNumber)
-            => new Partition(location, bufferSize, recordsPerPartition, partitionNumber, metadataPool, sessionManager.Capacity, writeThrough);
+        {
+            var result = new Partition(location, bufferSize, recordsPerPartition, partitionNumber, metadataPool, sessionManager.Capacity, writeThrough);
+            result.Allocate(initialSize);
+            return result;
+        }
 
         private long SquashedIndex
         {
@@ -157,7 +183,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 throw new InternalBufferOverflowException(ExceptionMessages.RangeTooBig);
             LogEntry entry;
             ValueTask<TResult> result;
-            if (partitionTable.Count > 0)
+            if (HasPartitions)
             {
                 using var list = entryPool.Invoke((int)length, true);
                 var listIndex = 0;
@@ -310,14 +336,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             // 1. Save the snapshot into temporary file to avoid corruption caused by network connection
             string tempSnapshotFile, snapshotFile = this.snapshot.FileName;
-            using (var tempSnapshot = new Snapshot(location, snapshotBufferSize, 0, writeThrough, true))
+            await using (var tempSnapshot = new Snapshot(location, snapshotBufferSize, 0, writeThrough, true))
             {
                 tempSnapshotFile = tempSnapshot.FileName;
                 await tempSnapshot.WriteAsync(sessionManager.WriteSession, snapshot, snapshotIndex, CancellationToken.None).ConfigureAwait(false);
             }
 
             // 2. Delete existing snapshot file
-            this.snapshot.Dispose();
+            await this.snapshot.DisposeAsync().ConfigureAwait(false);
+
             /*
              * Swapping snapshot file is unsafe operation because of potential disk I/O failures.
              * However, event if swapping will fail then it can be recovered manually just by renaming 'snapshot.new' file
@@ -336,28 +363,39 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             this.snapshot = new Snapshot(location, snapshotBufferSize, sessionManager.Capacity, writeThrough);
             this.snapshot.PopulateCache(sessionManager.WriteSession);
 
-            // 3. Identify all partitions to be replaced by snapshot
-            var compactionScope = new Dictionary<long, Partition>();
-            foreach (var (partitionNumber, partition) in partitionTable)
-                if (partition.LastIndex <= snapshotIndex)
-                    compactionScope.Add(partitionNumber, partition);
-                else
-                    break;  // enumeration is sorted by partition number so we don't need to enumerate over all partitions
+            // execute deletion of replaced partitions and snapshot installation in parallel
+            await Task.WhenAll(ApplySnapshotAsync(snapshot), RemovePartitionsAsync(snapshotIndex)).ConfigureAwait(false);
+            commitEvent.Set(true);
 
-            // 4. Delete these partitions
-            RemovePartitions(compactionScope);
-            compactionScope.Clear();
+            async Task RemovePartitionsAsync(long snapshotIndex)
+            {
+                // 3. Identify all partitions to be replaced by snapshot and delete them
+                for (Partition? current = head, next; current is not null; current = next)
+                {
+                    next = current.Next;
+                    if (current.LastIndex <= snapshotIndex)
+                    {
+                        await RemovePartitionAsync(current).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
 
             // 5. Apply snapshot to the underlying state machine
-            state.CommitIndex = snapshotIndex;
-            state.LastIndex = Math.Max(snapshotIndex, state.LastIndex);
+            async Task ApplySnapshotAsync(TSnapshot snapshot)
+            {
+                state.CommitIndex = snapshotIndex;
+                state.LastIndex = Math.Max(snapshotIndex, state.LastIndex);
 
-            await ApplyAsync(await this.snapshot.ReadAsync(sessionManager.WriteSession, CancellationToken.None).ConfigureAwait(false)).ConfigureAwait(false);
-            lastTerm.VolatileWrite(snapshot.Term);
-            state.LastApplied = snapshotIndex;
-            state.Flush();
-            await FlushAsync().ConfigureAwait(false);
-            commitEvent.Set(true);
+                await ApplyAsync(await this.snapshot.ReadAsync(sessionManager.WriteSession, CancellationToken.None).ConfigureAwait(false)).ConfigureAwait(false);
+                lastTerm.VolatileWrite(snapshot.Term);
+                state.LastApplied = snapshotIndex;
+                state.Flush();
+                await FlushAsync().ConfigureAwait(false);
+            }
         }
 
         private async ValueTask UnsafeAppendAsync<TEntry>(ILogEntryProducer<TEntry> supplier, long startIndex, bool skipCommitted, CancellationToken token)
@@ -382,7 +420,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
             }
 
-            await FlushAsync(partition).ConfigureAwait(false);
+            if (partition is not null)
+                await partition.FlushAsync().ConfigureAwait(false);
 
             // flush updated state
             state.Flush();
@@ -422,7 +461,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             else
             {
-                GetOrCreatePartition(startIndex, out var partition);
+                Partition? partition = null;
+                GetOrCreatePartition(startIndex, ref partition);
                 await partition.WriteAsync(sessionManager.WriteSession, entry, startIndex).ConfigureAwait(false);
                 await partition.FlushAsync().ConfigureAwait(false);
                 state.LastIndex = startIndex;
@@ -476,7 +516,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             where TEntry : notnull, IRaftLogEntry
         {
             var startIndex = state.LastIndex + 1L;
-            GetOrCreatePartition(startIndex, out var partition);
+            Partition? partition = null;
+            GetOrCreatePartition(startIndex, ref partition);
             await partition.WriteAsync(sessionManager.WriteSession, entry, startIndex).ConfigureAwait(false);
             await partition.FlushAsync(token).ConfigureAwait(false);
             state.LastIndex = startIndex;
@@ -575,14 +616,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> represents index of the committed entry.</exception>
         public async ValueTask<long> DropAsync(long startIndex, CancellationToken token)
         {
-            long count;
+            long count = 0L;
+            if (startIndex > state.LastIndex)
+                goto exit;
+
             await syncRoot.AcquireAsync(true, token).ConfigureAwait(false);
             try
             {
                 if (startIndex <= state.CommitIndex)
                     throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
-                if (startIndex > state.LastIndex)
-                    return 0L;
                 count = state.LastIndex - startIndex + 1L;
                 state.LastIndex = startIndex - 1L;
                 state.Flush();
@@ -592,12 +634,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
                 // take the next partition if startIndex is not a beginning of the calculated partition
                 partitionNumber += (remainder > 0L).ToInt32();
-                for (Partition? partition; partitionTable.TryGetValue(partitionNumber, out partition); partitionNumber++)
+                for (Partition? partition = TryGetPartition(partitionNumber), next; partition is not null; partition = next)
                 {
-                    var fileName = partition.FileName;
-                    partitionTable.Remove(partitionNumber);
-                    partition.Dispose();
-                    File.Delete(fileName);
+                    next = partition.Next;
+                    await RemovePartitionAsync(partition).ConfigureAwait(false);
                 }
             }
             finally
@@ -605,6 +645,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 syncRoot.Release();
             }
 
+            exit:
             return count;
         }
 
@@ -631,18 +672,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private async ValueTask ForceCompactionAsync(SnapshotBuilder builder, CancellationToken token)
         {
+            Debug.Assert(head is not null);
+
             // 1. Find the partitions that can be compacted
-            var compactionScope = new SortedDictionary<long, Partition>();
-            foreach (var (partNumber, partition) in partitionTable)
+            Partition? current, next;
+            var lastPartition = -1L;
+            for (current = head; current is not null; current = current.Next, token.ThrowIfCancellationRequested())
             {
-                token.ThrowIfCancellationRequested();
-                if (partition.LastIndex <= state.CommitIndex)
-                    compactionScope.Add(partNumber, partition);
+                if (current.LastIndex <= state.CommitIndex)
+                    lastPartition = current.PartitionNumber;
                 else
-                    break;  // enumeration is sorted by partition number so we don't need to enumerate over all partitions
+                    break; // linked list is sorted by partition number so we don't need to enumerate over all partitions
             }
 
-            Debug.Assert(compactionScope.Count > 0);
             LogEntry entry;
 
             // 2. Initialize builder with snapshot record
@@ -655,21 +697,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             // 3. Do compaction
             var snapshotIndex = 0L;
-            foreach (var partition in compactionScope.Values)
+            for (current = head; current is not null && current.PartitionNumber <= lastPartition; current = current.Next)
             {
-                await partition.FlushAsync(sessionManager.WriteSession, token).ConfigureAwait(false);
-                for (var i = 0; i < partition.Capacity; i++)
+                await current.FlushAsync(sessionManager.WriteSession, token).ConfigureAwait(false);
+                for (var i = 0; i < current.Capacity; i++)
                 {
                     // ignore the ephemeral entry
-                    if (partition.FirstIndex > 0L || i > 0L)
+                    if (current.FirstIndex > 0L || i > 0L)
                     {
-                        entry = await partition.ReadAsync(sessionManager.WriteSession, i, false, false, token).ConfigureAwait(false);
+                        entry = await current.ReadAsync(sessionManager.WriteSession, i, false, false, token).ConfigureAwait(false);
                         entry.Reset();
                         await builder.ApplyCoreAsync(entry).ConfigureAwait(false);
                     }
                 }
 
-                snapshotIndex = partition.LastIndex;
+                snapshotIndex = current.LastIndex;
             }
 
             // 4. Persist snapshot
@@ -677,8 +719,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             await snapshot.FlushAsync(token).ConfigureAwait(false);
 
             // 5. Remove snapshotted partitions
-            RemovePartitions(compactionScope);
-            compactionScope.Clear();
+            for (current = head; current is not null && current.PartitionNumber <= lastPartition; current = next)
+            {
+                next = current.Next;
+                await RemovePartitionAsync(current).ConfigureAwait(false);
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -912,10 +957,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             if (disposing)
             {
-                foreach (var partition in partitionTable.Values)
-                    partition.Dispose();
+                for (Partition? current = head, next; current is not null; current = next)
+                {
+                    next = current.Next;
+                    current.Dispose();
+                }
+
+                head = tail = null;
                 sessionManager.Dispose();
-                partitionTable.Clear();
                 state.Dispose();
                 commitEvent.Dispose();
                 syncRoot.Dispose();
@@ -928,10 +977,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <inheritdoc />
         protected override async ValueTask DisposeAsyncCore()
         {
-            foreach (var partition in partitionTable.Values)
-                await partition.DisposeAsync().ConfigureAwait(false);
+            for (Partition? current = head, next; current is not null; current = next)
+            {
+                next = current.Next;
+                await current.DisposeAsync().ConfigureAwait(false);
+            }
+
+            head = tail = null;
             sessionManager.Dispose();
-            partitionTable.Clear();
             state.Dispose();
             commitEvent.Dispose();
             syncRoot.Dispose();

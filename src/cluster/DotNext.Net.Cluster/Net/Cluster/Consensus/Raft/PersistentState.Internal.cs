@@ -260,9 +260,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         await reader.DisposeAsync().ConfigureAwait(false);
                 }
 
-                Array.Clear(readers, 0, readers.Length);
                 await fs.DisposeAsync().ConfigureAwait(false);
-                base.Dispose(true);
+                await base.DisposeAsync().ConfigureAwait(false);
             }
         }
     }
