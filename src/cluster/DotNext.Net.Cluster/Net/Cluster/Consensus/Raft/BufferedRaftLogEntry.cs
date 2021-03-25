@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -19,6 +20,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         // null - empty content
         // FileStream - file
         // IGrowableBuffer<byte> - in-memory copy of the log entry
+        [SuppressMessage("Usage", "CA2213", Justification = "Disposed correctly by Dispose() method")]
         private readonly IDisposable? content;
         private readonly int? commandId;
 
