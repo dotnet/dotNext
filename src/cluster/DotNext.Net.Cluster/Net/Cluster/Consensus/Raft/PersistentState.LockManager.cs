@@ -143,13 +143,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal static bool TryAcquireExclusiveLock(LockState state)
                 => state.TryAcquireExclusiveLock();
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private void ReleaseExclusiveLock()
             {
                 Debug.Assert(readerCount == WriteAndCompactionLock);
                 readerCount = 0L;
             }
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             internal static void ReleaseExclusiveLock(LockState state)
                 => state.ReleaseExclusiveLock();
         }
