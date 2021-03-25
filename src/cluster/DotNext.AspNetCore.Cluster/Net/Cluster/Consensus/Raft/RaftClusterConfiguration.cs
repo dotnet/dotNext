@@ -42,6 +42,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             return services.AddSingleton<TPersistentState>()
                 .AddSingleton<IPersistentState>(engineCast)
+                .AddSingleton<PersistentState>(engineCast)
                 .AddSingleton<IAuditTrail<IRaftLogEntry>>(engineCast);
         }
 
@@ -61,6 +62,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return services.AddSingleton<TImplementation>()
                 .AddSingleton<TEngine>(engineCast)
                 .AddSingleton<IPersistentState>(engineCast)
+                .AddSingleton<PersistentState>(engineCast)
                 .AddSingleton<IAuditTrail<IRaftLogEntry>>(engineCast);
         }
 
