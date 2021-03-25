@@ -829,7 +829,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 result = new ValueTask(Task.FromException(new ArgumentOutOfRangeException(nameof(count))));
             }
-            else if (count == 0L)
+            else if (count == 0L || automaticCompaction)
             {
                 result = new ValueTask();
             }
