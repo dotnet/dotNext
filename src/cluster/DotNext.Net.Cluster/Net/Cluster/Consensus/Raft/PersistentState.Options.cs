@@ -11,7 +11,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Represents log compaction mode.
         /// </summary>
-        public enum CompactionMode
+        public enum CompactionMode : byte
         {
             /// <summary>
             /// Log compaction forced automatically during commit process.
@@ -19,9 +19,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Foreground = 0,
 
             /// <summary>
-            /// Log compaction should be triggered manually with <see cref="ForceCompactionAsync(CancellationToken)"/>.
+            /// Log compaction should be triggered manually with <see cref="ForceCompactionAsync(long, CancellationToken)"/>
+            /// in the background.
             /// </summary>
-            Manual = 1,
+            Background = 1,
         }
 
         /// <summary>
@@ -110,13 +111,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <summary>
             /// Gets or sets the number of possible parallel reads.
             /// </summary>
-            /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is less than 1.</exception>
+            /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is less than 2.</exception>
             public int MaxConcurrentReads
             {
                 get => concurrencyLevel;
                 set
                 {
-                    if (concurrencyLevel < 1)
+                    if (concurrencyLevel < 2)
                         throw new ArgumentOutOfRangeException(nameof(value));
                     concurrencyLevel = value;
                 }

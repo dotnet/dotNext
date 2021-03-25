@@ -40,6 +40,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal readonly int Capacity;
             private readonly MemoryAllocator<byte>? bufferPool;
             internal readonly DataAccessSession WriteSession;
+            internal readonly DataAccessSession CompactionSession;
 
             internal DataAccessSessionManager(int readersCount, MemoryAllocator<byte>? sharedPool, int writeBufferSize)
             {
@@ -47,6 +48,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 bufferPool = sharedPool;
                 tokens = readersCount == 1 ? null : new ConcurrentBag<int>(Enumerable.Range(0, readersCount));
                 WriteSession = new DataAccessSession(0, bufferPool, writeBufferSize);
+                CompactionSession = new DataAccessSession(1, bufferPool, writeBufferSize);
             }
 
             internal DataAccessSession OpenSession(int bufferSize)

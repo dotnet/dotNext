@@ -28,7 +28,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private bool TryAcquireReadLock()
             {
-                if (readerCount.Between(0L, maxReadCount))
+                if (readerCount.Between(0L, maxReadCount, BoundType.LeftClosed))
                 {
                     readerCount += 1L;
                     return true;

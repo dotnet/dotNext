@@ -37,13 +37,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             private readonly MemoryMappedFile mappedFile;
             private readonly MemoryMappedViewAccessor stateView;
-            private AsyncLock syncRoot;
+            private readonly IWriteLock syncRoot;
 
             // boxed ClusterMemberId or null if there is not last vote stored
             private volatile object? votedFor;
             private long term, commitIndex, lastIndex, lastApplied;  // volatile
 
-            internal NodeState(DirectoryInfo location, AsyncLock writeLock)
+            internal NodeState(DirectoryInfo location, IWriteLock writeLock)
             {
                 mappedFile = MemoryMappedFile.CreateFromFile(Path.Combine(location.FullName, FileName), FileMode.OpenOrCreate, null, Capacity, MemoryMappedFileAccess.ReadWrite);
                 syncRoot = writeLock;
@@ -98,22 +98,32 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal async ValueTask UpdateTermAsync(long value)
             {
-                using (await syncRoot.AcquireAsync(CancellationToken.None).ConfigureAwait(false))
+                await syncRoot.AcquireAsync(CancellationToken.None).ConfigureAwait(false);
+                try
                 {
                     stateView.Write(TermOffset, value);
                     stateView.Flush();
                     term.VolatileWrite(value);
                 }
+                finally
+                {
+                    syncRoot.Release();
+                }
             }
 
             internal async ValueTask<long> IncrementTermAsync()
             {
-                using (await syncRoot.AcquireAsync(CancellationToken.None).ConfigureAwait(false))
+                await syncRoot.AcquireAsync(CancellationToken.None).ConfigureAwait(false);
+                try
                 {
                     var result = term.IncrementAndGet();
                     stateView.Write(TermOffset, result);
                     stateView.Flush();
                     return result;
+                }
+                finally
+                {
+                    syncRoot.Release();
                 }
             }
 
@@ -127,22 +137,32 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             private async ValueTask UpdateVotedForAsync(ClusterMemberId member)
             {
-                using (await syncRoot.AcquireAsync(CancellationToken.None).ConfigureAwait(false))
+                await syncRoot.AcquireAsync(CancellationToken.None).ConfigureAwait(false);
+                try
                 {
                     stateView.Write(LastVotePresenceOffset, True);
                     stateView.Write(LastVoteOffset, ref member);
                     votedFor = member;
                     stateView.Flush();
                 }
+                finally
+                {
+                    syncRoot.Release();
+                }
             }
 
             private async ValueTask UpdateVotedForAsync()
             {
-                using (await syncRoot.AcquireAsync(CancellationToken.None).ConfigureAwait(false))
+                await syncRoot.AcquireAsync(CancellationToken.None).ConfigureAwait(false);
+                try
                 {
                     stateView.Write(LastVotePresenceOffset, False);
                     votedFor = null;
                     stateView.Flush();
+                }
+                finally
+                {
+                    syncRoot.Release();
                 }
             }
 
@@ -155,7 +175,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     stateView.Dispose();
                     mappedFile.Dispose();
-                    syncRoot = default;
                     votedFor = null;
                 }
 
