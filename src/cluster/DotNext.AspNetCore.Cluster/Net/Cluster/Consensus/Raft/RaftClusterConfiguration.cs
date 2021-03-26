@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
@@ -32,6 +33,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Registers custom persistence engine for the Write-Ahead Log based on <see cref="PersistentState"/> class.
         /// </summary>
+        /// <remarks>
+        /// If background compaction is configured for WAL then you can implement
+        /// <see cref="IO.Log.ILogCompactionSupport"/> interface to provide custom logic for log compaction.
+        /// </remarks>
         /// <typeparam name="TPersistentState">The type representing custom persistence engine.</typeparam>
         /// <param name="services">A collection of services provided by DI container.</param>
         /// <returns>A modified collection of services.</returns>
@@ -43,12 +48,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return services.AddSingleton<TPersistentState>()
                 .AddSingleton<IPersistentState>(engineCast)
                 .AddSingleton<PersistentState>(engineCast)
-                .AddSingleton<IAuditTrail<IRaftLogEntry>>(engineCast);
+                .AddSingleton<IAuditTrail<IRaftLogEntry>>(engineCast)
+                .AddSingleton<IHostedService, BackgroundCompactionService>();
         }
 
         /// <summary>
         /// Registers custom persistence engine for the Write-Ahead Log based on <see cref="PersistentState"/> class.
         /// </summary>
+        /// <remarks>
+        /// If background compaction is configured for WAL then you can implement
+        /// <see cref="IO.Log.ILogCompactionSupport"/> interface to provide custom logic for log compaction.
+        /// </remarks>
         /// <typeparam name="TEngine">An interface used for interaction with the persistence engine.</typeparam>
         /// <typeparam name="TImplementation">The type representing custom persistence engine.</typeparam>
         /// <param name="services">A collection of services provided by DI container.</param>
@@ -63,7 +73,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 .AddSingleton<TEngine>(engineCast)
                 .AddSingleton<IPersistentState>(engineCast)
                 .AddSingleton<PersistentState>(engineCast)
-                .AddSingleton<IAuditTrail<IRaftLogEntry>>(engineCast);
+                .AddSingleton<IAuditTrail<IRaftLogEntry>>(engineCast)
+                .AddSingleton<IHostedService, BackgroundCompactionService>();
         }
 
         /// <summary>
