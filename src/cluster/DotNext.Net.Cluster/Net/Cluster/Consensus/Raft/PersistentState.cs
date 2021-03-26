@@ -163,7 +163,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return result;
         }
 
-        private async ValueTask<TResult> ReadAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, DataAccessSession session, long startIndex, long endIndex, CancellationToken token)
+        private async ValueTask<TResult> UnsafeReadAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, DataAccessSession session, long startIndex, long endIndex, CancellationToken token)
         {
             if (startIndex > state.LastIndex)
                 throw new IndexOutOfRangeException(ExceptionMessages.InvalidEntryIndex(endIndex));
@@ -250,7 +250,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var session = sessionManager.OpenSession(bufferSize);
             try
             {
-                return await ReadAsync(reader, session, startIndex, endIndex, token).ConfigureAwait(false);
+                return await UnsafeReadAsync(reader, session, startIndex, endIndex, token).ConfigureAwait(false);
             }
             finally
             {
@@ -289,7 +289,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var session = sessionManager.OpenSession(bufferSize);
             try
             {
-                return await ReadAsync(reader, session, startIndex, state.LastIndex, token).ConfigureAwait(false);
+                return await UnsafeReadAsync(reader, session, startIndex, state.LastIndex, token).ConfigureAwait(false);
             }
             finally
             {
@@ -843,36 +843,66 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return result;
         }
 
-        private async ValueTask<long> CommitAsync(long? endIndex, CancellationToken token)
+        private ValueTask<long> CommitAsync(long? endIndex, CancellationToken token)
         {
-            long count;
-            await syncRoot.AcquireWriteLockAsync(token).ConfigureAwait(false);
-            var startIndex = state.CommitIndex + 1L;
-            try
+            // exclusive lock is required for foreground compaction;
+            // otherwise - write lock which doesn't block background compaction
+            return automaticCompaction ? CommitAndCompactInForegroundAsync(endIndex, token) : CommitAndCompactInBackgroundAsync(endIndex, token);
+
+            async ValueTask<long> CommitAndCompactInForegroundAsync(long? endIndex, CancellationToken token)
             {
-                count = endIndex.HasValue ? Math.Min(state.LastIndex, endIndex.GetValueOrDefault()) : state.LastIndex;
-                count = count - startIndex + 1L;
-                if (count > 0)
+                long count;
+                await syncRoot.AcquireExclusiveLockAsync(token).ConfigureAwait(false);
+                var startIndex = state.CommitIndex + 1L;
+                try
                 {
-                    state.CommitIndex = startIndex = startIndex + count - 1;
-                    await ApplyAsync(token).ConfigureAwait(false);
+                    count = endIndex.HasValue ? Math.Min(state.LastIndex, endIndex.GetValueOrDefault()) : state.LastIndex;
+                    count = count - startIndex + 1L;
+                    if (count > 0)
+                    {
+                        state.CommitIndex = startIndex = startIndex + count - 1;
+                        await ApplyAsync(token).ConfigureAwait(false);
+                        await ForceCompactionAsync(startIndex, false, token).ConfigureAwait(false);
+                    }
                 }
+                finally
+                {
+                    syncRoot.ReleaseExclusiveLock();
+                }
+
+                count = Math.Max(count, 0L);
+                if (count > 0L)
+                    commitEvent.Set(true);
+
+                return count;
             }
-            finally
+
+            async ValueTask<long> CommitAndCompactInBackgroundAsync(long? endIndex, CancellationToken token)
             {
-                syncRoot.ReleaseWriteLock();
+                long count;
+                await syncRoot.AcquireWriteLockAsync(token).ConfigureAwait(false);
+                var startIndex = state.CommitIndex + 1L;
+                try
+                {
+                    count = endIndex.HasValue ? Math.Min(state.LastIndex, endIndex.GetValueOrDefault()) : state.LastIndex;
+                    count = count - startIndex + 1L;
+                    if (count > 0)
+                    {
+                        state.CommitIndex = startIndex = startIndex + count - 1;
+                        await ApplyAsync(token).ConfigureAwait(false);
+                    }
+                }
+                finally
+                {
+                    syncRoot.ReleaseWriteLock();
+                }
+
+                count = Math.Max(count, 0L);
+                if (count > 0L)
+                    commitEvent.Set(true);
+
+                return count;
             }
-
-            count = Math.Max(count, 0L);
-            if (count > 0L)
-            {
-                commitEvent.Set(true);
-
-                // log compaction must be started outside of write lock scope
-                await ForceCompactionAsync(startIndex, false, token).ConfigureAwait(false);
-            }
-
-            return count;
         }
 
         /// <summary>
