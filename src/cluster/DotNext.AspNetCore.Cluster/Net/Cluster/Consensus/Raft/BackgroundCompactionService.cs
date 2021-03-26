@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
@@ -7,6 +8,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using ILogCompactionSupport = IO.Log.ILogCompactionSupport;
 
+    [SuppressMessage("Performance", "CA1812", Justification = "This class is instantiated by DI container")]
     internal sealed class BackgroundCompactionService : BackgroundService
     {
         private readonly PersistentState state;

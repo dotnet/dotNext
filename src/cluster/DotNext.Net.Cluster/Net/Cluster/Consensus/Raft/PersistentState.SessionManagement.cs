@@ -47,7 +47,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal const int MaxReadersCount = 31;
 
 #if NETSTANDARD2_1
-            private static readonly byte[] TrailingZeroCountDeBruijn =
+            // https://github.com/dotnet/roslyn/pull/24621
+            private static ReadOnlySpan<byte> TrailingZeroCountDeBruijn => new byte[]
             {
                 00, 01, 28, 02, 29, 14, 24, 03,
                 30, 22, 20, 15, 25, 17, 04, 08,
@@ -65,7 +66,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private static int TrailingZeroCount(int value)
             {
 #if NETSTANDARD2_1
-                ref var first = ref TrailingZeroCountDeBruijn[0];
+                ref var first = ref MemoryMarshal.GetReference(TrailingZeroCountDeBruijn);
                 return Unsafe.AddByteOffset(ref first, (IntPtr)(int)(((value & (uint)-(int)value) * 0x077CB531U) >> 27));
 #else
                 return BitOperations.TrailingZeroCount(value);
