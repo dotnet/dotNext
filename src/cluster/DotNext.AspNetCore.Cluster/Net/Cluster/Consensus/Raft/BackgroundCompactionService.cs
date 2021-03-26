@@ -17,7 +17,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             this.state = state;
             compaction = state is ILogCompactionSupport support ?
                 support.ForceCompactionAsync :
-                state.RemoveFirstCommittedPartition;
+                state.ForceIncrementalCompactionAsync;
         }
 
         protected override async Task ExecuteAsync(CancellationToken token)

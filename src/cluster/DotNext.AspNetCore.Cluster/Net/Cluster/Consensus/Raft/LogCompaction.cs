@@ -8,7 +8,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// </summary>
     internal static class LogCompaction
     {
-        internal static ValueTask RemoveFirstCommittedPartition(this PersistentState state, CancellationToken token)
+        internal static ValueTask ForceIncrementalCompactionAsync(this PersistentState state, CancellationToken token)
         {
             ValueTask result;
             if (token.IsCancellationRequested)
