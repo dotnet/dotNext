@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
+using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using Buffers;
+    using AtomicBoolean = Threading.AtomicBoolean;
 
     public partial class PersistentState
     {
@@ -28,6 +28,108 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public void Dispose() => owner.Dispose();
         }
 
+        private abstract class SessionIdPool
+        {
+            internal abstract int Take();
+
+            internal abstract void Return(int sessionId);
+        }
+
+        // fast session pool supports no more than 31 readers
+        // and represents concurrent power set
+        private sealed class FastSessionIdPool : SessionIdPool
+        {
+            internal const int MaxReadersCount = 31;
+
+#if NETSTANDARD2_1
+            private static readonly byte[] TrailingZeroCountDeBruijn =
+            {
+                00, 01, 28, 02, 29, 14, 24, 03,
+                30, 22, 20, 15, 25, 17, 04, 08,
+                31, 27, 13, 23, 21, 19, 16, 07,
+                26, 12, 18, 06, 11, 05, 10, 09
+            };
+#endif
+
+            // all bits are set to 1
+            // if bit at position N is 1 then N is available session identifier;
+            // otherwise, session identifier N is acquired by another thread
+            private volatile int control = -1;
+
+            private static int TrailingZeroCount(int value)
+            {
+#if NETSTANDARD2_1
+                ref byte first = ref TrailingZeroCountDeBruijn[0];
+                return Unsafe.AddByteOffset(ref first, (IntPtr)(int)(((value & (uint)-(int)value) * 0x077CB531u) >> 27));
+#else
+                return System.Numerics.BitOperations.TrailingZeroCount(value);
+#endif
+            }
+
+            internal override int Take()
+            {
+                int current, newValue, sessionId;
+                do
+                {
+                    current = control;
+                    sessionId = TrailingZeroCount(current);
+                    newValue = current ^ (1 << sessionId);
+                }
+                while (Interlocked.CompareExchange(ref control, newValue, current) != current);
+
+                return sessionId;
+            }
+
+            internal override void Return(int sessionId)
+            {
+                int current, newValue;
+                do
+                {
+                    current = control;
+                    newValue = current | (1 << sessionId);
+                }
+                while (Interlocked.CompareExchange(ref control, newValue, current) != current);
+            }
+        }
+
+        private sealed class SlowSessionIdPool : SessionIdPool
+        {
+            // index in the array represents session identifier
+            // if true then session identifier is available;
+            // otherwise, false.
+            private readonly AtomicBoolean[] tokens;
+
+            internal SlowSessionIdPool(int poolSize)
+            {
+                tokens = new AtomicBoolean[poolSize];
+                Array.Fill(tokens, new AtomicBoolean(true));
+            }
+
+            internal override int Take()
+            {
+                // fast path attempt to obtain session ID in o(1)
+                var sessionId = (Thread.CurrentThread.ManagedThreadId & int.MaxValue) % tokens.Length;
+                if (tokens[sessionId].TrueToFalse())
+                    goto exit;
+
+                // slow path - enumerate over all slots in search of available ID
+                repeat_search:
+                for (sessionId = 0; sessionId < tokens.Length; sessionId++)
+                {
+                    if (tokens[sessionId].TrueToFalse())
+                        goto exit;
+                }
+
+                goto repeat_search;
+
+                exit:
+                return sessionId;
+            }
+
+            internal override void Return(int sessionId)
+                => tokens[sessionId].Value = true;
+        }
+
         /*
          * This class helps to organize thread-safe concurrent access to the multiple streams
          * used for reading log entries. Such approach allows to use one-writer multiple-reader scenario
@@ -36,7 +138,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         [StructLayout(LayoutKind.Auto)]
         private readonly struct DataAccessSessionManager : IDisposable
         {
-            private readonly ConcurrentBag<int>? tokens;
+            private readonly SessionIdPool sessions;
             internal readonly int Capacity;
             private readonly MemoryAllocator<byte>? bufferPool;
             internal readonly DataAccessSession WriteSession;
@@ -46,31 +148,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 Capacity = readersCount;
                 bufferPool = sharedPool;
-                tokens = readersCount == 1 ? null : new ConcurrentBag<int>(Enumerable.Range(0, readersCount));
+                sessions = readersCount <= FastSessionIdPool.MaxReadersCount ? new FastSessionIdPool() : new SlowSessionIdPool(readersCount);
                 WriteSession = new DataAccessSession(0, bufferPool, writeBufferSize);
                 CompactionSession = new DataAccessSession(1, bufferPool, writeBufferSize);
             }
 
             internal DataAccessSession OpenSession(int bufferSize)
-            {
-                if (tokens is null)
-                    return WriteSession;
-                if (tokens.TryTake(out var sessionId))
-                    return new DataAccessSession(sessionId, bufferPool, bufferSize);
-
-                // never happens
-                throw new InternalBufferOverflowException(ExceptionMessages.NoAvailableReadSessions);
-            }
+                => new DataAccessSession(sessions.Take(), bufferPool, bufferSize);
 
             internal void CloseSession(in DataAccessSession readSession)
             {
-                if (tokens is null)
-                    return;
-                tokens.Add(readSession.SessionId);
+                sessions.Return(readSession.SessionId);
                 readSession.Dispose();
             }
 
-            public void Dispose() => WriteSession.Dispose();
+            public void Dispose()
+            {
+                WriteSession.Dispose();
+                CompactionSession.Dispose();
+            }
         }
 
         // concurrent read sessions management
