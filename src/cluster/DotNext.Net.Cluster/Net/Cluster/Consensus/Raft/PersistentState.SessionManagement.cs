@@ -145,8 +145,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly struct DataAccessSessionManager : IDisposable
         {
             private readonly SessionIdPool sessions;
-            internal readonly int Capacity;
             private readonly MemoryAllocator<byte>? bufferPool;
+            internal readonly int Capacity;
             internal readonly DataAccessSession WriteSession, CompactionSession;
 
             internal DataAccessSessionManager(int readersCount, MemoryAllocator<byte>? sharedPool, int writeBufferSize)
