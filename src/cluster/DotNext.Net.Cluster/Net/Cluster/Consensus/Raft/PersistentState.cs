@@ -143,6 +143,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
         }
 
+        /// <summary>
+        /// Gets compaction mode.
+        /// </summary>
+        public CompactionMode Compaction => automaticCompaction ? CompactionMode.Foreground : CompactionMode.Background;
+
         /// <inheritdoc/>
         bool IAuditTrail.IsLogEntryLengthAlwaysPresented => true;
 
