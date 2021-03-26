@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
-using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
@@ -28,6 +29,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public void Dispose() => owner.Dispose();
         }
 
+        /// <summary>
+        /// Represents session pool that is responsible
+        /// for returning a unique value in range [0..N) for each requester.
+        /// </summary>
         private abstract class SessionIdPool
         {
             internal abstract int Take();
@@ -56,13 +61,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             // otherwise, session identifier N is acquired by another thread
             private volatile int control = -1;
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private static int TrailingZeroCount(int value)
             {
 #if NETSTANDARD2_1
                 ref byte first = ref TrailingZeroCountDeBruijn[0];
                 return Unsafe.AddByteOffset(ref first, (IntPtr)(int)(((value & (uint)-(int)value) * 0x077CB531u) >> 27));
 #else
-                return System.Numerics.BitOperations.TrailingZeroCount(value);
+                return BitOperations.TrailingZeroCount(value);
 #endif
             }
 
