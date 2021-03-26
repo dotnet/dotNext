@@ -147,8 +147,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private readonly SessionIdPool sessions;
             internal readonly int Capacity;
             private readonly MemoryAllocator<byte>? bufferPool;
-            internal readonly DataAccessSession WriteSession;
-            internal readonly DataAccessSession CompactionSession;
+            internal readonly DataAccessSession WriteSession, CompactionSession;
 
             internal DataAccessSessionManager(int readersCount, MemoryAllocator<byte>? sharedPool, int writeBufferSize)
             {
@@ -164,8 +163,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal void CloseSession(in DataAccessSession readSession)
             {
-                sessions.Return(readSession.SessionId);
                 readSession.Dispose();
+                sessions.Return(readSession.SessionId);
             }
 
             public void Dispose()
