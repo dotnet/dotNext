@@ -66,7 +66,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
 #if NETSTANDARD2_1
                 ref byte first = ref TrailingZeroCountDeBruijn[0];
-                return Unsafe.AddByteOffset(ref first, (IntPtr)(int)(((value & (uint)-(int)value) * 0x077CB531u) >> 27));
+                return Unsafe.AddByteOffset(ref first, (IntPtr)(int)(((value & (uint)-(int)value) * 0x077CB531U) >> 27));
 #else
                 return BitOperations.TrailingZeroCount(value);
 #endif
