@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -763,17 +762,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool IsCompactionAllowed(bool triggeredManually)
-            => triggeredManually || automaticCompaction;
-
         private bool IsCompactionRequired(long upperBoundIndex)
             => upperBoundIndex - snapshot.Index >= recordsPerPartition;
 
-        private async ValueTask ForceCompactionAsync(long upperBoundIndex, bool triggeredManually, CancellationToken token)
+        private async ValueTask ForceBackgroundCompactionAsync(long upperBoundIndex, CancellationToken token)
         {
             SnapshotBuilder? builder;
-            if (IsCompactionAllowed(triggeredManually) && IsCompactionRequired(upperBoundIndex) && (builder = CreateSnapshotBuilder()) is not null)
+            if (IsCompactionRequired(upperBoundIndex) && (builder = CreateSnapshotBuilder()) is not null)
             {
                 await syncRoot.AcquireCompactionLockAsync(token).ConfigureAwait(false);
                 try
@@ -786,6 +781,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     syncRoot.ReleaseCompactionLock();
                     builder.Dispose();
+                }
+            }
+        }
+
+        private async ValueTask ForceForegroundCompactionAsync(long upperBoundIndex, CancellationToken token)
+        {
+            SnapshotBuilder? builder;
+            if (IsCompactionRequired(upperBoundIndex) && (builder = CreateSnapshotBuilder()) is not null)
+            {
+                using (builder)
+                {
+                    await ForceCompactionAsync(upperBoundIndex, builder, token).ConfigureAwait(false);
                 }
             }
         }
@@ -842,7 +849,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 // convert count to the record index
                 count = checked(recordsPerPartition * Math.Min(count, BackgroundCompactionCount));
-                result = ForceCompactionAsync(count, true, token);
+                result = ForceBackgroundCompactionAsync(count, token);
             }
 
             return result;
@@ -867,7 +874,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     {
                         state.CommitIndex = startIndex = startIndex + count - 1;
                         await ApplyAsync(token).ConfigureAwait(false);
-                        await ForceCompactionAsync(startIndex, false, token).ConfigureAwait(false);
+                        await ForceForegroundCompactionAsync(startIndex, token).ConfigureAwait(false);
                     }
                 }
                 finally
