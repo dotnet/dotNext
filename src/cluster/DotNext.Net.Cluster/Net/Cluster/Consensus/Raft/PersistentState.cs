@@ -863,15 +863,32 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             // otherwise - write lock which doesn't block background compaction
             return automaticCompaction ? CommitAndCompactInForegroundAsync(endIndex, token) : CommitAndCompactInBackgroundAsync(endIndex, token);
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            long GetCommitIndexAndCount(in long? endIndex, out long count)
+            {
+                var startIndex = state.CommitIndex + 1L;
+                count = endIndex.HasValue ? Math.Min(state.LastIndex, endIndex.GetValueOrDefault()) : state.LastIndex;
+                count = count - startIndex + 1L;
+                return startIndex;
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            long FinalizeCommit(long count)
+            {
+                count = Math.Max(count, 0L);
+                if (count > 0L)
+                    commitEvent.Set(true);
+
+                return count;
+            }
+
             async ValueTask<long> CommitAndCompactInForegroundAsync(long? endIndex, CancellationToken token)
             {
                 long count;
                 await syncRoot.AcquireExclusiveLockAsync(token).ConfigureAwait(false);
-                var startIndex = state.CommitIndex + 1L;
                 try
                 {
-                    count = endIndex.HasValue ? Math.Min(state.LastIndex, endIndex.GetValueOrDefault()) : state.LastIndex;
-                    count = count - startIndex + 1L;
+                    var startIndex = GetCommitIndexAndCount(in endIndex, out count);
                     if (count > 0)
                     {
                         state.CommitIndex = startIndex = startIndex + count - 1;
@@ -884,11 +901,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     syncRoot.ReleaseExclusiveLock();
                 }
 
-                count = Math.Max(count, 0L);
-                if (count > 0L)
-                    commitEvent.Set(true);
-
-                return count;
+                return FinalizeCommit(count);
             }
 
             async ValueTask ForceForegroundCompactionAsync(long upperBoundIndex, CancellationToken token)
@@ -907,14 +920,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 long count;
                 await syncRoot.AcquireWriteLockAsync(token).ConfigureAwait(false);
-                var startIndex = state.CommitIndex + 1L;
                 try
                 {
-                    count = endIndex.HasValue ? Math.Min(state.LastIndex, endIndex.GetValueOrDefault()) : state.LastIndex;
-                    count = count - startIndex + 1L;
+                    var startIndex = GetCommitIndexAndCount(in endIndex, out count);
                     if (count > 0)
                     {
-                        state.CommitIndex = startIndex = startIndex + count - 1;
+                        state.CommitIndex = startIndex + count - 1;
                         await ApplyAsync(token).ConfigureAwait(false);
                     }
                 }
@@ -923,11 +934,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     syncRoot.ReleaseWriteLock();
                 }
 
-                count = Math.Max(count, 0L);
-                if (count > 0L)
-                    commitEvent.Set(true);
-
-                return count;
+                return FinalizeCommit(count);
             }
         }
 
