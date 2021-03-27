@@ -41,7 +41,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         // fast session pool supports no more than 31 readers
-        // and represents concurrent power set
+        // and represents concurrent power set.
+        // TODO: Expand to 64 readers in .NET 6 (.NET Standard doesnt CMPXCHG for ulong data type)
         private sealed class FastSessionIdPool : SessionIdPool
         {
             internal const int MaxReadersCount = 31;
