@@ -765,38 +765,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private bool IsCompactionRequired(long upperBoundIndex)
             => upperBoundIndex - snapshot.Index >= recordsPerPartition;
 
-        private async ValueTask ForceBackgroundCompactionAsync(long upperBoundIndex, CancellationToken token)
-        {
-            SnapshotBuilder? builder;
-            if (IsCompactionRequired(upperBoundIndex) && (builder = CreateSnapshotBuilder()) is not null)
-            {
-                await syncRoot.AcquireCompactionLockAsync(token).ConfigureAwait(false);
-                try
-                {
-                    // check compaction range again because snapshot index can be modified by snapshot installation method
-                    if (IsCompactionRequired(upperBoundIndex))
-                        await ForceCompactionAsync(upperBoundIndex, builder, token).ConfigureAwait(false);
-                }
-                finally
-                {
-                    syncRoot.ReleaseCompactionLock();
-                    builder.Dispose();
-                }
-            }
-        }
-
-        private async ValueTask ForceForegroundCompactionAsync(long upperBoundIndex, CancellationToken token)
-        {
-            SnapshotBuilder? builder;
-            if (IsCompactionRequired(upperBoundIndex) && (builder = CreateSnapshotBuilder()) is not null)
-            {
-                using (builder)
-                {
-                    await ForceCompactionAsync(upperBoundIndex, builder, token).ConfigureAwait(false);
-                }
-            }
-        }
-
         // In case of background compaction we need to have 1 fully committed partition as a divider
         // between partitions produced during writes and partitions to be compacted.
         // This restriction guarantees that compaction and writer thread will not be concurrent
@@ -853,6 +821,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             return result;
+
+            async ValueTask ForceBackgroundCompactionAsync(long upperBoundIndex, CancellationToken token)
+            {
+                SnapshotBuilder? builder;
+                if (IsCompactionRequired(upperBoundIndex) && (builder = CreateSnapshotBuilder()) is not null)
+                {
+                    await syncRoot.AcquireCompactionLockAsync(token).ConfigureAwait(false);
+                    try
+                    {
+                        // check compaction range again because snapshot index can be modified by snapshot installation method
+                        if (IsCompactionRequired(upperBoundIndex))
+                            await ForceCompactionAsync(upperBoundIndex, builder, token).ConfigureAwait(false);
+                    }
+                    finally
+                    {
+                        syncRoot.ReleaseCompactionLock();
+                        builder.Dispose();
+                    }
+                }
+            }
         }
 
         private ValueTask<long> CommitAsync(long? endIndex, CancellationToken token)
@@ -887,6 +875,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     commitEvent.Set(true);
 
                 return count;
+            }
+
+            async ValueTask ForceForegroundCompactionAsync(long upperBoundIndex, CancellationToken token)
+            {
+                SnapshotBuilder? builder;
+                if (IsCompactionRequired(upperBoundIndex) && (builder = CreateSnapshotBuilder()) is not null)
+                {
+                    using (builder)
+                    {
+                        await ForceCompactionAsync(upperBoundIndex, builder, token).ConfigureAwait(false);
+                    }
+                }
             }
 
             async ValueTask<long> CommitAndCompactInBackgroundAsync(long? endIndex, CancellationToken token)

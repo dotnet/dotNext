@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Debug = System.Diagnostics.Debug;
+using Timeout = System.Threading.Timeout;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
