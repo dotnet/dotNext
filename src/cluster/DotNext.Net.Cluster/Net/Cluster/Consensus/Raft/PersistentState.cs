@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -358,8 +359,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Environment.FailFast(LogMessages.SnapshotInstallationFailed, e);
             }
 
-            this.snapshot = new Snapshot(location, snapshotBufferSize, sessionManager.Capacity, writeThrough);
-            this.snapshot.PopulateCache(sessionManager.WriteSession);
+            Volatile.Write(ref this.snapshot, CreateSnapshot());
 
             // execute deletion of replaced partitions and snapshot installation in parallel
             await Task.WhenAll(ApplySnapshotAsync(snapshotIndex, snapshot.Term), RemovePartitionsAsync(snapshotIndex)).ConfigureAwait(false);
@@ -393,6 +393,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 state.LastApplied = snapshotIndex;
                 state.Flush();
                 await FlushAsync().ConfigureAwait(false);
+            }
+
+            Snapshot CreateSnapshot()
+            {
+                var result = new Snapshot(location, snapshotBufferSize, sessionManager.Capacity, writeThrough);
+                result.PopulateCache(sessionManager.WriteSession);
+                return result;
             }
         }
 
@@ -762,22 +769,28 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool IsCompactionRequired(long upperBoundIndex)
-            => upperBoundIndex - snapshot.Index >= recordsPerPartition;
+            => upperBoundIndex - Volatile.Read(ref snapshot).Index >= recordsPerPartition;
 
         // In case of background compaction we need to have 1 fully committed partition as a divider
         // between partitions produced during writes and partitions to be compacted.
         // This restriction guarantees that compaction and writer thread will not be concurrent
         // when modifying Partition.next and Partition.previous fields need to keep sorted linked list
         // consistent and sorted.
-        private long BackgroundCompactionCount => Math.Max(((state.LastApplied - snapshot.Index) / recordsPerPartition) - 1L, 0L);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private long GetBackgroundCompactionCount(out long snapshotIndex)
+        {
+            snapshotIndex = Volatile.Read(ref snapshot).Index;
+            return Math.Max(((state.LastApplied - snapshotIndex) / recordsPerPartition) - 1L, 0L);
+        }
 
-        private long ForegroundCompactionCount => Math.Max((state.CommitIndex - snapshot.Index) / recordsPerPartition, 0L);
+        private long ForegroundCompactionCount => Math.Max((state.CommitIndex - Volatile.Read(ref snapshot).Index) / recordsPerPartition, 0L);
 
         /// <summary>
         /// Gets approximate number of partitions that can be compacted.
         /// </summary>
-        public long CompactionCount => automaticCompaction ? ForegroundCompactionCount : BackgroundCompactionCount;
+        public long CompactionCount => automaticCompaction ? ForegroundCompactionCount : GetBackgroundCompactionCount(out _);
 
         /// <summary>
         /// Forces log compaction.
@@ -816,7 +829,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             else
             {
                 // convert count to the record index
-                count = checked(recordsPerPartition * Math.Min(count, BackgroundCompactionCount));
+                count = Math.Min(count, GetBackgroundCompactionCount(out var snapshotIndex));
+                count = checked((recordsPerPartition * count) + snapshotIndex);
                 result = ForceBackgroundCompactionAsync(count, token);
             }
 
