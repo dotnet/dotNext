@@ -362,7 +362,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             this.snapshot.PopulateCache(sessionManager.WriteSession);
 
             // execute deletion of replaced partitions and snapshot installation in parallel
-            await Task.WhenAll(ApplySnapshotAsync(snapshot), RemovePartitionsAsync(snapshotIndex)).ConfigureAwait(false);
+            await Task.WhenAll(ApplySnapshotAsync(snapshotIndex, snapshot), RemovePartitionsAsync(snapshotIndex)).ConfigureAwait(false);
             commitEvent.Set(true);
 
             async Task RemovePartitionsAsync(long snapshotIndex)
@@ -383,7 +383,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             // 5. Apply snapshot to the underlying state machine
-            async Task ApplySnapshotAsync(TSnapshot snapshot)
+            async Task ApplySnapshotAsync(long snapshotIndex, TSnapshot snapshot)
             {
                 state.CommitIndex = snapshotIndex;
                 state.LastIndex = Math.Max(snapshotIndex, state.LastIndex);
