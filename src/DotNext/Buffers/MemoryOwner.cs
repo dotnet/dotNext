@@ -183,7 +183,7 @@ namespace DotNext.Buffers
         /// </summary>
         /// <param name="index">The index of the element in memory.</param>
         /// <value>The managed pointer to the item.</value>
-        public ref T this[int index]
+        public ref T this[nint index]
         {
             get
             {
@@ -201,6 +201,13 @@ namespace DotNext.Buffers
                 throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
+
+        /// <summary>
+        /// Gets managed pointer to the item in the rented memory.
+        /// </summary>
+        /// <param name="index">The index of the element in memory.</param>
+        /// <value>The managed pointer to the item.</value>
+        public ref T this[int index] => ref this[(nint)index];
 
         /// <summary>
         /// Releases rented memory.
