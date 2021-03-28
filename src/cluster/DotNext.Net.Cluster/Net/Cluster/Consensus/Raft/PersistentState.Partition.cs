@@ -129,7 +129,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return output.WriteAsync(buffer, token);
             }
 
-            private async ValueTask<LogEntry> ReadAsync(StreamSegment reader, Memory<byte> buffer, int index, bool refreshStream, CancellationToken token)
+            private async ValueTask<LogEntry> ReadAsync(StreamSegment reader, Memory<byte> buffer, nint index, bool refreshStream, CancellationToken token)
             {
                 Debug.Assert(index >= 0 && index < Capacity, $"Invalid index value {index}, offset {FirstIndex}");
 
@@ -139,7 +139,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     await reader.FlushAsync(token).ConfigureAwait(false);
                 if (lookupCache.IsEmpty)
                 {
-                    reader.BaseStream.Position = index * LogEntryMetadata.Size;
+                    reader.BaseStream.Position = (long)index * LogEntryMetadata.Size;
                     metadata = await ReadMetadataAsync(reader.BaseStream, buffer, token).ConfigureAwait(false);
                 }
                 else
@@ -156,7 +156,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (absoluteIndex)
                     index -= FirstIndex;
                 Debug.Assert(index >= 0 && index < Capacity, $"Invalid index value {index}, offset {FirstIndex}");
-                return ReadAsync(GetReadSessionStream(session), session.Buffer, (int)index, refreshStream, token);
+                return ReadAsync(GetReadSessionStream(session), session.Buffer, (nint)index, refreshStream, token);
             }
 
             private async ValueTask WriteAsync<TEntry>(TEntry entry, int index, Memory<byte> buffer)
