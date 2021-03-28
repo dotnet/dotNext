@@ -108,7 +108,7 @@ namespace DotNext.Buffers
         }
 
         /// <summary>
-        /// Gets length of the rented memory, in bytes.
+        /// Gets numbers of elements in the rented memory block.
         /// </summary>
         public int Length => length;
 
