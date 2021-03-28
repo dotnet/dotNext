@@ -116,7 +116,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal override int Take()
             {
                 // fast path attempt to obtain session ID in o(1)
-                var sessionId = (Thread.CurrentThread.ManagedThreadId & int.MaxValue) % tokens.Length;
+                var sessionId = (Environment.CurrentManagedThreadId & int.MaxValue) % tokens.Length;
                 if (tokens[sessionId].TrueToFalse())
                     goto exit;
 
