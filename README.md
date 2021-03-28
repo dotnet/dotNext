@@ -47,8 +47,11 @@ Documentation for older versions:
 # What's new
 Release Date: 03-XX-2021
 
+This release is primarily focused on improvements of stuff related to cluster programming and Raft: persistent WAL, transferring over the wire, buffering and reducing I/O overhead.
+
 <a href="https://www.nuget.org/packages/dotnext/3.1.0">DotNext 3.1.0</a>
 * Added async support to `IGrowableBuffer<T>` interface
+* Added indexer to `MemoryOwner<T>` supporting **nint** data type
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/3.1.0">DotNext.Metaprogramming 3.1.0</a>
 * Updated dependencies
@@ -68,15 +71,17 @@ Release Date: 03-XX-2021
 * Fixed bug in `StreamSegment.Position` property setter causes invalid position in the underlying stream
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/3.1.0">DotNext.Net.Cluster 3.1.0</a>
-* Added support of manual compaction of committed log entries to persistent Write-Ahead Log
+* Introduced support of background compaction of committed log entries to persistent Write-Ahead Log
 * Small performance improvements when passing log entries over the wire for TCP and UDP protocols
 * Added buffering API for log entries
 * Added optional buffering of log entries and snapshot when transferring using TCP or UDP protocols
+* Interpreter Framework: removed overhead caused by deserialization of command identifier from the log entry. Now the identifier is a part of log entry metadata which is usually pre-cached by underlying WAL implementation
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/3.1.0">DotNext.AspNetCore.Cluster 3.1.0</a>
 * Added ability to override cluster members discovery service. See `IMembersDiscoveryService` interface
 * Small performance improvements when passing log entries over the wire for HTTP/1, HTTP/2 and HTTP/3 protocols
 * Added optional buffering of log entries and snapshot when transferring over the wire. Buffering allows to reduce lock contention of persistent WAL
+* Introduced incremental compaction of committed log entries which is running by special background worker 
 
 **Incompatible Changes**: Binary format of persistent WAL has changed. `PersistentState` class from 3.1.0 release is unable to parse the log that was created by earlier versions.
 
