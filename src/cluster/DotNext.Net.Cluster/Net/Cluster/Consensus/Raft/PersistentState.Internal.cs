@@ -138,7 +138,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 else
                 {
                     foreach (ref var reader in readers.AsSpan())
-                        reader = new StreamSegment(new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, bufferSize, FileOptions.Asynchronous | FileOptions.RandomAccess), false);
+                        reader = new StreamSegment(new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, bufferSize, FileOptions.Asynchronous | FileOptions.SequentialScan), false);
                 }
             }
 
