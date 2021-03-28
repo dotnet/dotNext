@@ -28,7 +28,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             internal readonly long FirstIndex, PartitionNumber;
             internal readonly int Capacity;    // max number of entries
-            private readonly MemoryOwner<LogEntryMetadata> lookupCache;
+            private MemoryOwner<LogEntryMetadata> lookupCache;
             private Partition? previous, next;
 
             internal Partition(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, MemoryAllocator<LogEntryMetadata>? cachePool, int readersCount, bool writeThrough)
@@ -212,6 +212,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (disposing)
                 {
                     lookupCache.Dispose();
+                    lookupCache = default;
                     previous = next = null;
                 }
 
