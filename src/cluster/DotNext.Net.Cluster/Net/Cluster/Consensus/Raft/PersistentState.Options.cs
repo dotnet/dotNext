@@ -33,7 +33,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private const int MinBufferSize = 128;
             private int bufferSize = 2048;
             private int? snapshotBufferSize;
-            private int concurrencyLevel = 3;
+            private int concurrencyLevel = Math.Max(3, Environment.ProcessorCount);
             private long partitionSize;
 
             /// <summary>
