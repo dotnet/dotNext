@@ -16,7 +16,7 @@ namespace DotNext.Buffers
     {
         // Of type ArrayPool<T> or IMemoryOwner<T>.
         // If support of another type is needed then reconsider implementation
-        // of Memory, this[int index] and Expand members
+        // of Memory, this[nint index] and Expand members
         private readonly object? owner;
         private readonly T[]? array;  // not null only if owner is ArrayPool or null
         private readonly int length;
