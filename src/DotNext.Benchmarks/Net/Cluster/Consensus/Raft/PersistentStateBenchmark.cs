@@ -39,15 +39,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             }
 
-            public ValueTask<long> ReadAsync<TEntryImpl, TList>(TList entries, long? snapshotIndex, CancellationToken token)
+            public async ValueTask<long> ReadAsync<TEntryImpl, TList>(TList entries, long? snapshotIndex, CancellationToken token)
                 where TEntryImpl : notnull, IRaftLogEntry
                 where TList : notnull, IReadOnlyList<TEntryImpl>
             {
                 var result = 0L;
                 foreach (var entry in entries)
-                    result += entry.Length.GetValueOrDefault();
+                {
+                    using var buffer = await entry.ToMemoryAsync();
+                    result += buffer.Length;
+                }
 
-                return new ValueTask<long>(result);
+                return result;
             }
         }
 
