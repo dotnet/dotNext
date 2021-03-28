@@ -189,14 +189,21 @@ namespace DotNext.Buffers
             {
                 if (index < 0 || index >= length)
                     goto invalid_index;
+
+                ref var result = ref Unsafe.NullRef<T>();
                 if (array is not null)
 #if NETSTANDARD2_1
-                    return ref array[index];
+                    result = ref array[0];
 #else
-                    return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(array), index);
+                    result = ref MemoryMarshal.GetArrayDataReference(array);
 #endif
-                if (owner is not null)
-                    return ref Unsafe.Add(ref MemoryMarshal.GetReference(Unsafe.As<IMemoryOwner<T>>(owner).Memory.Span), index);
+                else if (owner is not null)
+                    result = ref MemoryMarshal.GetReference(Unsafe.As<IMemoryOwner<T>>(owner).Memory.Span);
+                else
+                    goto invalid_index;
+
+                return ref Unsafe.Add(ref result, index);
+
                 invalid_index:
                 throw new ArgumentOutOfRangeException(nameof(index));
             }
