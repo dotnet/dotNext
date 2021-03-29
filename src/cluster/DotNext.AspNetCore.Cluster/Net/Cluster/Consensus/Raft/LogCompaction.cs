@@ -9,22 +9,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     internal static class LogCompaction
     {
         internal static ValueTask ForceIncrementalCompactionAsync(this PersistentState state, CancellationToken token)
-        {
-            ValueTask result;
-            if (token.IsCancellationRequested)
-            {
-                result = new ValueTask(Task.FromCanceled(token));
-            }
-            else if (state.CompactionCount > 0L)
-            {
-                result = state.ForceCompactionAsync(1L, token);
-            }
-            else
-            {
-                result = new ValueTask();
-            }
-
-            return result;
-        }
+            => state.CompactionCount > 0L ? state.ForceCompactionAsync(1L, token) : new ValueTask();
     }
 }
