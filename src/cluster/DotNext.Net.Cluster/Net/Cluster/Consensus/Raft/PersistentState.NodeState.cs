@@ -96,12 +96,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal long Term => term.VolatileRead();
 
-            internal async ValueTask UpdateTermAsync(long value)
+            internal async ValueTask UpdateTermAsync(long value, bool resetLastVote)
             {
                 await syncRoot.AcquireAsync(CancellationToken.None).ConfigureAwait(false);
                 try
                 {
                     stateView.Write(TermOffset, value);
+                    if (resetLastVote)
+                    {
+                        stateView.Write(LastVotePresenceOffset, False);
+                        votedFor = null;
+                    }
+
                     stateView.Flush();
                     term.VolatileWrite(value);
                 }

@@ -337,9 +337,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             => ReadAsync(new LogEntryConsumer<IRaftLogEntry, TResult>(reader), startIndex, endIndex, token);
 
         /// <inheritdoc/>
-        ValueTask IPersistentState.UpdateTermAsync(long value)
+        ValueTask IPersistentState.UpdateTermAsync(long value, bool resetLastVote)
         {
             term.VolatileWrite(value);
+            if (resetLastVote)
+                votedFor = null;
+
             return new ValueTask();
         }
 

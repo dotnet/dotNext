@@ -15,7 +15,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using IO.Log;
     using Threading;
-    using static Threading.Tasks.ValueTaskSynchronization;
     using Timestamp = Diagnostics.Timestamp;
 
     /// <summary>
@@ -402,7 +401,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private async Task StepDown(long newTerm)
         {
             if (newTerm > auditTrail.Term)
-                await WhenAll(auditTrail.UpdateTermAsync(newTerm), auditTrail.UpdateVotedForAsync(null)).ConfigureAwait(false);
+                await auditTrail.UpdateTermAsync(newTerm, true).ConfigureAwait(false);
             await StepDown().ConfigureAwait(false);
         }
 
