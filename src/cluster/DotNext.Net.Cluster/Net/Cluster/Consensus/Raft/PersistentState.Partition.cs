@@ -271,7 +271,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 await WriteMetadataAsync(this, metadata, buffer, token).ConfigureAwait(false);
             }
 
-            internal ValueTask WriteAsync<TEntry>(in DataAccessSession session, TEntry entry, long index, CancellationToken token)
+            internal ValueTask WriteAsync<TEntry>(in DataAccessSession session, TEntry entry, long index, CancellationToken token = default)
                 where TEntry : notnull, IRaftLogEntry
                 => WriteAsync(entry, index, session.Buffer, token);
 
@@ -561,6 +561,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var fileName = partition.FileName;
             await partition.DisposeAsync().ConfigureAwait(false);
             File.Delete(fileName);
+        }
+
+        private async ValueTask RemovePartitionsAsync(long upperBoundIndex)
+        {
+            // 3. Identify all partitions to be replaced by snapshot and delete them
+            for (Partition? current = head, next; current is not null && current.LastIndex <= upperBoundIndex; current = next)
+            {
+                next = current.Next;
+                await RemovePartitionAsync(current).ConfigureAwait(false);
+            }
         }
     }
 }

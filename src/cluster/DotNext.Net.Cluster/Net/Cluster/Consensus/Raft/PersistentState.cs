@@ -15,6 +15,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     using static Threading.AtomicInt64;
     using AsyncManualResetEvent = Threading.AsyncManualResetEvent;
     using Timeout = Threading.Timeout;
+    using ValueTaskSynchronization = Threading.Tasks.ValueTaskSynchronization;
 
     /// <summary>
     /// Represents general purpose persistent audit trail compatible with Raft algorithm.
@@ -55,7 +56,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly MemoryAllocator<LogEntry>? entryPool;
         private readonly MemoryAllocator<LogEntryMetadata>? metadataPool;
         private readonly int bufferSize, snapshotBufferSize;
-        private readonly bool replayOnInitialize, automaticCompaction, writeThrough;
+        private readonly bool replayOnInitialize, writeThrough;
 
         // writer for this field must have exclusive async lock
         private Snapshot snapshot;
@@ -75,7 +76,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (!path.Exists)
                 path.Create();
             writeThrough = configuration.WriteThrough;
-            automaticCompaction = configuration.CompactionMode == CompactionMode.Foreground;
+            Compaction = configuration.CompactionMode;
             backupCompression = configuration.BackupCompression;
             replayOnInitialize = configuration.ReplayOnInitialize;
             bufferSize = configuration.BufferSize;
@@ -120,7 +121,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             partitionTable.Clear();
-            state = new NodeState(path, syncRoot);
+            state = new NodeState(path);
             snapshot = new Snapshot(path, snapshotBufferSize, sessionManager.Capacity, writeThrough);
             snapshot.PopulateCache(sessionManager.WriteSession);
 
@@ -146,7 +147,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Gets compaction mode.
         /// </summary>
-        public CompactionMode Compaction => automaticCompaction ? CompactionMode.Foreground : CompactionMode.Background;
+        public CompactionMode Compaction { get; }
 
         /// <inheritdoc/>
         bool IAuditTrail.IsLogEntryLengthAlwaysPresented => true;
@@ -185,12 +186,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 var listIndex = 0;
                 for (Partition? partition = null; startIndex <= endIndex; list[listIndex++] = entry, startIndex++)
                 {
-                    if (startIndex > 0L && TryGetPartition(startIndex, ref partition, out var switched))
-                    {
-                        // handle regular record
-                        entry = await partition.ReadAsync(session, startIndex, true, switched, token).ConfigureAwait(false);
-                    }
-                    else if (snapshot.Length > 0 && startIndex <= snapshot.Index)
+                    if (snapshot.Length > 0L && startIndex <= snapshot.Index)
                     {
                         // probably the record is snapshotted
                         entry = await snapshot.ReadAsync(session, token).ConfigureAwait(false);
@@ -200,6 +196,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
                         // reset search hint
                         partition = null;
+                    }
+                    else if (startIndex > 0L && TryGetPartition(startIndex, ref partition, out var switched))
+                    {
+                        // handle regular record
+                        entry = await partition.ReadAsync(session, startIndex, true, switched, token).ConfigureAwait(false);
                     }
                     else
                     {
@@ -328,17 +329,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private async ValueTask UnsafeInstallSnapshotAsync<TSnapshot>(TSnapshot snapshot, long snapshotIndex)
             where TSnapshot : notnull, IRaftLogEntry
         {
-            // 0. The snapshot can be installed only if the partitions were squashed on the sender side
-            // therefore, snapshotIndex should be a factor of recordsPerPartition
-            if ((snapshotIndex + 1) % recordsPerPartition != 0)
-                throw new ArgumentOutOfRangeException(nameof(snapshotIndex));
-
             // 1. Save the snapshot into temporary file to avoid corruption caused by network connection
             string tempSnapshotFile, snapshotFile = this.snapshot.FileName;
             await using (var tempSnapshot = new Snapshot(location, snapshotBufferSize, 0, writeThrough, true))
             {
                 tempSnapshotFile = tempSnapshot.FileName;
-                await tempSnapshot.WriteAsync(sessionManager.WriteSession, snapshot, snapshotIndex, CancellationToken.None).ConfigureAwait(false);
+                await tempSnapshot.WriteAsync(sessionManager.WriteSession, snapshot, snapshotIndex).ConfigureAwait(false);
             }
 
             // 2. Delete existing snapshot file
@@ -362,29 +358,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Volatile.Write(ref this.snapshot, CreateSnapshot());
 
             // execute deletion of replaced partitions and snapshot installation in parallel
-            await Task.WhenAll(ApplySnapshotAsync(snapshotIndex, snapshot.Term), RemovePartitionsAsync(snapshotIndex)).ConfigureAwait(false);
+            await ValueTaskSynchronization.WhenAll(ApplySnapshotAsync(snapshotIndex, snapshot.Term), RemovePartitionsAsync(snapshotIndex)).ConfigureAwait(false);
             commitEvent.Set(true);
 
-            async Task RemovePartitionsAsync(long snapshotIndex)
-            {
-                // 3. Identify all partitions to be replaced by snapshot and delete them
-                for (Partition? current = head, next; current is not null; current = next)
-                {
-                    next = current.Next;
-                    if (current.LastIndex <= snapshotIndex)
-                    {
-                        await RemovePartitionAsync(current).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-            }
-
             // 5. Apply snapshot to the underlying state machine
-            async Task ApplySnapshotAsync(long snapshotIndex, long snapshotTerm)
+            async ValueTask ApplySnapshotAsync(long snapshotIndex, long snapshotTerm)
             {
+                // forces execution of this method in another thread
+                await Task.Yield();
                 state.CommitIndex = snapshotIndex;
                 state.LastIndex = Math.Max(snapshotIndex, state.LastIndex);
 
@@ -573,7 +554,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The index of the added entry.</returns>
         /// <exception cref="ArgumentException"><paramref name="writeLock"/> is invalid.</exception>
         /// <exception cref="InvalidOperationException"><paramref name="entry"/> is the snapshot entry.</exception>
-        public ValueTask<long> AppendAsync<TEntry>(in WriteLockToken writeLock, TEntry entry, CancellationToken token)
+        public ValueTask<long> AppendAsync<TEntry>(in WriteLockToken writeLock, TEntry entry, CancellationToken token = default)
             where TEntry : notnull, IRaftLogEntry
         {
             ValueTask<long> result;
@@ -719,20 +700,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private async ValueTask ForceCompactionAsync(long upperBoundIndex, SnapshotBuilder builder, CancellationToken token)
         {
-            // 1. Find the partitions that can be compacted
-            Partition? current, next;
-            var lastPartition = -1L;
-            for (current = head; current is not null; current = current.Next, token.ThrowIfCancellationRequested())
-            {
-                if (current.LastIndex <= upperBoundIndex)
-                    lastPartition = current.PartitionNumber;
-                else
-                    break; // linked list is sorted by partition number so we don't need to enumerate over all partitions
-            }
-
             LogEntry entry;
 
-            // 2. Initialize builder with snapshot record
+            // 1. Initialize builder with snapshot record
             if (snapshot.Length > 0L)
             {
                 entry = await snapshot.ReadAsync(sessionManager.CompactionSession, token).ConfigureAwait(false);
@@ -740,33 +710,23 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 await builder.ApplyCoreAsync(entry).ConfigureAwait(false);
             }
 
-            // 3. Do compaction
-            var snapshotIndex = 0L;
-            for (current = head; current is not null && current.PartitionNumber <= lastPartition; current = current.Next)
+            // 2. Do compaction
+            Partition? current = head;
+            Debug.Assert(current is not null);
+            await current.FlushAsync(sessionManager.CompactionSession, token).ConfigureAwait(false);
+            for (var startIndex = snapshot.Index + 1L; TryGetPartition(startIndex, ref current, out var switched) && current is not null && startIndex <= upperBoundIndex; startIndex++)
             {
-                await current.FlushAsync(sessionManager.CompactionSession, token).ConfigureAwait(false);
-                for (var i = 0; i < current.Capacity; i++)
-                {
-                    entry = current.FirstIndex > 0L || i > 0L ?
-                        await current.ReadAsync(sessionManager.CompactionSession, i, false, false, token).ConfigureAwait(false) :
-                        initialEntry;
-                    entry.Reset();
-                    await builder.ApplyCoreAsync(entry).ConfigureAwait(false);
-                }
-
-                snapshotIndex = current.LastIndex;
+                entry = await current.ReadAsync(sessionManager.CompactionSession, startIndex, true, switched, token).ConfigureAwait(false);
+                entry.Reset();
+                await builder.ApplyCoreAsync(entry).ConfigureAwait(false);
             }
 
-            // 4. Persist snapshot
-            await snapshot.WriteAsync(sessionManager.CompactionSession, builder, snapshotIndex, token).ConfigureAwait(false);
-            await snapshot.FlushAsync(token).ConfigureAwait(false);
+            // 3. Persist snapshot (cannot be canceled to avoid inconsistency)
+            await snapshot.WriteAsync(sessionManager.CompactionSession, builder, upperBoundIndex).ConfigureAwait(false);
+            await snapshot.FlushAsync().ConfigureAwait(false);
 
-            // 5. Remove snapshotted partitions
-            for (current = head; current is not null && current.PartitionNumber <= lastPartition; current = next)
-            {
-                next = current.Next;
-                await RemovePartitionAsync(current).ConfigureAwait(false);
-            }
+            // 4. Remove squashed partitions
+            await RemovePartitionsAsync(upperBoundIndex).ConfigureAwait(false);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -785,12 +745,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return Math.Max(((state.LastApplied - snapshotIndex) / recordsPerPartition) - 1L, 0L);
         }
 
-        private long ForegroundCompactionCount => Math.Max((state.CommitIndex - Volatile.Read(ref snapshot).Index) / recordsPerPartition, 0L);
-
         /// <summary>
         /// Gets approximate number of partitions that can be compacted.
         /// </summary>
-        public long CompactionCount => automaticCompaction ? ForegroundCompactionCount : GetBackgroundCompactionCount(out _);
+        public long CompactionCount
+            => Compaction == CompactionMode.Background ? GetBackgroundCompactionCount(out _) : 0L;
 
         /// <summary>
         /// Forces log compaction.
@@ -822,29 +781,34 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 result = new ValueTask(Task.FromException(new ArgumentOutOfRangeException(nameof(count))));
             }
-            else if (count == 0L || automaticCompaction)
+            else if (count == 0L || Compaction != CompactionMode.Background)
             {
                 result = new ValueTask();
             }
             else
             {
-                // convert count to the record index
-                count = Math.Min(count, GetBackgroundCompactionCount(out var snapshotIndex));
-                count = checked((recordsPerPartition * count) + snapshotIndex);
                 result = ForceBackgroundCompactionAsync(count, token);
             }
 
             return result;
 
-            async ValueTask ForceBackgroundCompactionAsync(long upperBoundIndex, CancellationToken token)
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            long ComputeUpperBoundIndex(long count)
             {
-                SnapshotBuilder? builder;
-                if (IsCompactionRequired(upperBoundIndex) && (builder = CreateSnapshotBuilder()) is not null)
+                count = Math.Min(count, GetBackgroundCompactionCount(out var snapshotIndex));
+                return checked((recordsPerPartition * count) + snapshotIndex);
+            }
+
+            async ValueTask ForceBackgroundCompactionAsync(long count, CancellationToken token)
+            {
+                var builder = CreateSnapshotBuilder();
+                if (builder is not null)
                 {
                     await syncRoot.AcquireCompactionLockAsync(token).ConfigureAwait(false);
                     try
                     {
                         // check compaction range again because snapshot index can be modified by snapshot installation method
+                        var upperBoundIndex = ComputeUpperBoundIndex(count);
                         if (IsCompactionRequired(upperBoundIndex))
                             await ForceCompactionAsync(upperBoundIndex, builder, token).ConfigureAwait(false);
                     }
@@ -859,9 +823,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private ValueTask<long> CommitAsync(long? endIndex, CancellationToken token)
         {
-            // exclusive lock is required for foreground compaction;
+            // exclusive lock is required for sequential and foreground compaction;
             // otherwise - write lock which doesn't block background compaction
-            return automaticCompaction ? CommitAndCompactInForegroundAsync(endIndex, token) : CommitAndCompactInBackgroundAsync(endIndex, token);
+            return Compaction switch
+            {
+                default(CompactionMode) => CommitAndCompactInForegroundAsync(endIndex, token),
+                CompactionMode.Foreground => CommitAndCompactInParallelAsync(endIndex, token),
+                _ => CommitAndCompactInBackgroundAsync(endIndex, token),
+            };
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             long GetCommitIndexAndCount(in long? endIndex, out long count)
@@ -893,7 +862,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     {
                         state.CommitIndex = startIndex = startIndex + count - 1;
                         await ApplyAsync(token).ConfigureAwait(false);
-                        await ForceForegroundCompactionAsync(startIndex, token).ConfigureAwait(false);
+                        await ForceCompactionAsync(startIndex, false, token).ConfigureAwait(false);
                     }
                 }
                 finally
@@ -904,14 +873,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return FinalizeCommit(count);
             }
 
-            async ValueTask ForceForegroundCompactionAsync(long upperBoundIndex, CancellationToken token)
+            async ValueTask ForceCompactionAsync(long upperBoundIndex, bool yieldExecution, CancellationToken token)
             {
                 SnapshotBuilder? builder;
                 if (IsCompactionRequired(upperBoundIndex) && (builder = CreateSnapshotBuilder()) is not null)
                 {
+                    if (yieldExecution)
+                        await Task.Yield();
+
                     using (builder)
                     {
-                        await ForceCompactionAsync(upperBoundIndex, builder, token).ConfigureAwait(false);
+                        await this.ForceCompactionAsync(upperBoundIndex, builder, token).ConfigureAwait(false);
                     }
                 }
             }
@@ -932,6 +904,27 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 finally
                 {
                     syncRoot.ReleaseWriteLock();
+                }
+
+                return FinalizeCommit(count);
+            }
+
+            async ValueTask<long> CommitAndCompactInParallelAsync(long? endIndex, CancellationToken token)
+            {
+                long count;
+                await syncRoot.AcquireExclusiveLockAsync(token).ConfigureAwait(false);
+                try
+                {
+                    var startIndex = GetCommitIndexAndCount(in endIndex, out count);
+                    if (count > 0)
+                    {
+                        state.CommitIndex = startIndex + count - 1;
+                        await ValueTaskSynchronization.WhenAll(ForceCompactionAsync(snapshot.Index + count, true, token), ApplyAsync(token)).ConfigureAwait(false);
+                    }
+                }
+                finally
+                {
+                    syncRoot.ReleaseExclusiveLock();
                 }
 
                 return FinalizeCommit(count);
@@ -1088,13 +1081,49 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public long Term => state.Term;
 
         /// <inheritdoc/>
-        ValueTask<long> IPersistentState.IncrementTermAsync() => state.IncrementTermAsync();
+        async ValueTask<long> IPersistentState.IncrementTermAsync()
+        {
+            long result;
+            await syncRoot.AcquireWriteLockAsync().ConfigureAwait(false);
+            try
+            {
+                result = state.IncrementTerm();
+            }
+            finally
+            {
+                syncRoot.ReleaseWriteLock();
+            }
+
+            return result;
+        }
 
         /// <inheritdoc/>
-        ValueTask IPersistentState.UpdateTermAsync(long term) => state.UpdateTermAsync(term);
+        async ValueTask IPersistentState.UpdateTermAsync(long term, bool resetLastVote)
+        {
+            await syncRoot.AcquireWriteLockAsync().ConfigureAwait(false);
+            try
+            {
+                state.UpdateTerm(term, resetLastVote);
+            }
+            finally
+            {
+                syncRoot.ReleaseWriteLock();
+            }
+        }
 
         /// <inheritdoc/>
-        ValueTask IPersistentState.UpdateVotedForAsync(IRaftClusterMember? member) => state.UpdateVotedForAsync(member?.Id);
+        async ValueTask IPersistentState.UpdateVotedForAsync(IRaftClusterMember? member)
+        {
+            await syncRoot.AcquireWriteLockAsync().ConfigureAwait(false);
+            try
+            {
+                state.UpdateVotedFor(member?.Id);
+            }
+            finally
+            {
+                syncRoot.ReleaseWriteLock();
+            }
+        }
 
         /// <summary>
         /// Releases all resources associated with this audit trail.

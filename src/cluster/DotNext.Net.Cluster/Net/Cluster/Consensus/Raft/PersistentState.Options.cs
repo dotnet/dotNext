@@ -14,15 +14,40 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public enum CompactionMode : byte
         {
             /// <summary>
-            /// Log compaction forced automatically during commit process.
+            /// Log compaction forced automatically during the commit process
+            /// which tries to squash as many committed entries as possible.
             /// </summary>
-            Foreground = 0,
+            /// <remarks>
+            /// This mode is for backward compatibility only.
+            /// It demonstrates the worst performance of the commit procedure in
+            /// combination with most aggressive compaction that allows to minimize
+            /// usage of disk space.
+            /// </remarks>
+            [Obsolete("Use Foreground mode instead")]
+            Sequential = 0, // TODO: Remove support of this mode in the next major version of .NEXT
 
             /// <summary>
             /// Log compaction should be triggered manually with <see cref="ForceCompactionAsync(long, CancellationToken)"/>
             /// in the background.
             /// </summary>
+            /// <remarks>
+            /// Commit and log compaction don't interfere with each other so the commit
+            /// procedure demonstrates the best performance. However, this mode requires
+            /// more disk space because log compaction is executing in the background and
+            /// may be slower than commits.
+            /// </remarks>
             Background = 1,
+
+            /// <summary>
+            /// Log compaction is executing automatically in parallel with the commit process.
+            /// </summary>
+            /// <remarks>
+            /// Demonstrates the best ratio between the performance of the commit process
+            /// and the log compaction. This mode provides the best efficiency if
+            /// <see cref="ApplyAsync(CancellationToken)"/> has approx the same execution
+            /// time as <see cref="SnapshotBuilder.ApplyAsync(LogEntry)"/>.
+            /// </remarks>
+            Foreground = 2,
         }
 
         /// <summary>

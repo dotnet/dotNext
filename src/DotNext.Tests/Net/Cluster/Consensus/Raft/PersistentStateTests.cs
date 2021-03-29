@@ -107,8 +107,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     => writer.WriteAsync(currentValue, token);
             }
 
-            internal TestAuditTrail(string path, bool useCaching, bool backgroundCompaction = false)
-                : base(path, RecordsPerPartition, new Options { UseCaching = useCaching, CompactionMode = backgroundCompaction ? CompactionMode.Background : CompactionMode.Foreground })
+            internal TestAuditTrail(string path, bool useCaching, PersistentState.CompactionMode compactionMode = default)
+                : base(path, RecordsPerPartition, new Options { UseCaching = useCaching, CompactionMode = compactionMode })
             {
             }
 
@@ -159,7 +159,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             using var auditTrail = new PersistentState(dir, RecordsPerPartition);
             using (var lockToken = await auditTrail.AcquireWriteLockAsync(CancellationToken.None))
             {
-                await auditTrail.AppendAsync(in lockToken, new EmptyLogEntry(10), CancellationToken.None);
+                await auditTrail.AppendAsync(in lockToken, new EmptyLogEntry(10));
             }
 
             Equal(1, auditTrail.GetLastIndex(false));
@@ -485,15 +485,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public static async Task ForegroundCompaction(bool useCaching)
+        [InlineData(true, PersistentState.CompactionMode.Foreground)]
+        [InlineData(false, PersistentState.CompactionMode.Sequential)]
+        public static async Task AggressiveCompaction(bool useCaching, PersistentState.CompactionMode mode)
         {
             var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
             entries.ForEach((ref Int64LogEntry entry, long index) => entry = new Int64LogEntry(42L + index) { Term = index });
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
-            using (var state = new TestAuditTrail(dir, useCaching))
+            using (var state = new TestAuditTrail(dir, useCaching, mode))
             {
                 await state.AppendAsync(new LogEntryList(entries));
                 Equal(0L, state.CompactionCount);
@@ -502,20 +502,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 checker = static (readResult, snapshotIndex, token) =>
                 {
                     Equal(1, readResult.Count);
-                    Equal(7, snapshotIndex);
+                    Equal(9, snapshotIndex);
                     True(readResult[0].IsSnapshot);
                     return default;
                 };
                 await state.As<IRaftLog>().ReadAsync(checker, 1, 6, CancellationToken.None);
-                checker = static (readResult, snapshotIndex, token) =>
-                {
-                    Equal(3, readResult.Count);
-                    Equal(7, snapshotIndex);
-                    True(readResult[0].IsSnapshot);
-                    False(readResult[1].IsSnapshot);
-                    False(readResult[2].IsSnapshot);
-                    return default;
-                };
                 await state.As<IRaftLog>().ReadAsync(checker, 1, CancellationToken.None);
             }
 
@@ -532,11 +523,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Equal(0L, state.Value);
                 checker = static (readResult, snapshotIndex, token) =>
                 {
-                    Equal(3, readResult.Count);
-                    Equal(7, snapshotIndex);
-                    True(readResult[0].IsSnapshot);
-                    False(readResult[1].IsSnapshot);
-                    False(readResult[2].IsSnapshot);
+                    Equal(1, readResult.Count);
+                    Equal(9, snapshotIndex);
                     return default;
                 };
                 await state.As<IRaftLog>().ReadAsync(checker, 1, CancellationToken.None);
@@ -552,7 +540,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             entries.ForEach((ref Int64LogEntry entry, long index) => entry = new Int64LogEntry(42L + index) { Term = index });
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
-            using (var state = new TestAuditTrail(dir, useCaching, true))
+            using (var state = new TestAuditTrail(dir, useCaching, PersistentState.CompactionMode.Background))
             {
                 await state.AppendAsync(new LogEntryList(entries));
                 Equal(0L, state.CompactionCount);
@@ -562,16 +550,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 await state.ForceCompactionAsync(1L, CancellationToken.None).ConfigureAwait(false);
                 checker = static (readResult, snapshotIndex, token) =>
                 {
-                    Equal(4, readResult.Count);
-                    Equal(3, snapshotIndex);
+                    Equal(3, readResult.Count);
+                    Equal(4, snapshotIndex);
                     True(readResult[0].IsSnapshot);
+                    False(readResult[1].IsSnapshot);
+                    False(readResult[2].IsSnapshot);
                     return default;
                 };
                 await state.As<IRaftLog>().ReadAsync(checker, 1, 6, CancellationToken.None);
                 checker = static (readResult, snapshotIndex, token) =>
                 {
-                    Equal(7, readResult.Count);
-                    Equal(3, snapshotIndex);
+                    Equal(6, readResult.Count);
+                    Equal(4, snapshotIndex);
                     True(readResult[0].IsSnapshot);
                     False(readResult[1].IsSnapshot);
                     False(readResult[2].IsSnapshot);
@@ -585,7 +575,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 checker = static (readResult, snapshotIndex, token) =>
                 {
-                    Equal(4, readResult.Count);
+                    Equal(3, readResult.Count);
                     NotNull(snapshotIndex);
                     return default;
                 };
@@ -593,8 +583,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Equal(0L, state.Value);
                 checker = static (readResult, snapshotIndex, token) =>
                 {
-                    Equal(7, readResult.Count);
-                    Equal(3, snapshotIndex);
+                    Equal(6, readResult.Count);
+                    Equal(4, snapshotIndex);
                     True(readResult[0].IsSnapshot);
                     False(readResult[1].IsSnapshot);
                     False(readResult[2].IsSnapshot);
