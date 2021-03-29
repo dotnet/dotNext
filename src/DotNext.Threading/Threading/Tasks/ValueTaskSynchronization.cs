@@ -1,3 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 
 namespace DotNext.Threading.Tasks
@@ -12,6 +17,64 @@ namespace DotNext.Threading.Tasks
     /// </remarks>
     public static class ValueTaskSynchronization
     {
+        [StructLayout(LayoutKind.Auto)]
+        private struct ExceptionAggregator
+        {
+            private object? exceptionInfo;
+
+            internal void Add(Exception e)
+            {
+                switch (exceptionInfo)
+                {
+                    case null:
+                        exceptionInfo = ExceptionDispatchInfo.Capture(e);
+                        break;
+                    case ExceptionDispatchInfo info:
+                        exceptionInfo = new LinkedList<Exception>();
+                        break;
+                    case ICollection<Exception> exceptions:
+                        exceptions.Add(e);
+                        break;
+                }
+            }
+
+            internal readonly void ThrowIfNeeded()
+            {
+                switch (exceptionInfo)
+                {
+                    case ExceptionDispatchInfo info:
+                        info.Throw();
+                        break;
+                    case ICollection<Exception> exceptions:
+                        throw new AggregateException(exceptions);
+                }
+            }
+        }
+
+        private static ValueTask GetTask<T>(in T tuple, int index)
+            where T : struct, ITuple
+            => Unsafe.Add(ref Unsafe.As<T, ValueTask>(ref Unsafe.AsRef(in tuple)), index);
+
+        private static async ValueTask WhenAll<T>(T tasks)
+            where T : struct, ITuple
+        {
+            var aggregator = new ExceptionAggregator();
+
+            for (var i = 0; i < tasks.Length; i++)
+            {
+                try
+                {
+                    await GetTask(tasks, i).ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    aggregator.Add(e);
+                }
+            }
+
+            aggregator.ThrowIfNeeded();
+        }
+
         /// <summary>
         /// Creates a task that will complete when all of the passed tasks have completed.
         /// </summary>
@@ -21,11 +84,8 @@ namespace DotNext.Threading.Tasks
         /// <param name="task1">The first task to await.</param>
         /// <param name="task2">The second task to await.</param>
         /// <returns>A task that represents the completion of all of the supplied tasks.</returns>
-        public static async ValueTask WhenAll(ValueTask task1, ValueTask task2)
-        {
-            await task1.ConfigureAwait(false);
-            await task2.ConfigureAwait(false);
-        }
+        public static ValueTask WhenAll(ValueTask task1, ValueTask task2)
+            => WhenAll((task1, task2));
 
         /// <summary>
         /// Creates a task that will complete when all of the passed tasks have completed.
@@ -38,7 +98,32 @@ namespace DotNext.Threading.Tasks
         /// <param name="task1">The first task to await.</param>
         /// <param name="task2">The second task to await.</param>
         /// <returns>A task containing results of both tasks.</returns>
-        public static async ValueTask<(T1, T2)> WhenAll<T1, T2>(ValueTask<T1> task1, ValueTask<T2> task2) => (await task1.ConfigureAwait(false), await task2.ConfigureAwait(false));
+        public static async ValueTask<(T1, T2)> WhenAll<T1, T2>(ValueTask<T1> task1, ValueTask<T2> task2)
+        {
+            var aggregator = new ExceptionAggregator();
+            (T1, T2) result = default;
+
+            try
+            {
+                result.Item1 = await task1.ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                aggregator.Add(e);
+            }
+
+            try
+            {
+                result.Item2 = await task2.ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                aggregator.Add(e);
+            }
+
+            aggregator.ThrowIfNeeded();
+            return result;
+        }
 
         /// <summary>
         /// Creates a task that will complete when all of the passed tasks have completed.
@@ -50,12 +135,8 @@ namespace DotNext.Threading.Tasks
         /// <param name="task2">The second task to await.</param>
         /// <param name="task3">The third task to await.</param>
         /// <returns>A task that represents the completion of all of the supplied tasks.</returns>
-        public static async ValueTask WhenAll(ValueTask task1, ValueTask task2, ValueTask task3)
-        {
-            await task1.ConfigureAwait(false);
-            await task2.ConfigureAwait(false);
-            await task3.ConfigureAwait(false);
-        }
+        public static ValueTask WhenAll(ValueTask task1, ValueTask task2, ValueTask task3)
+            => WhenAll((task1, task2, task3));
 
         /// <summary>
         /// Creates a task that will complete when all of the passed tasks have completed.
@@ -70,7 +151,41 @@ namespace DotNext.Threading.Tasks
         /// <param name="task2">The second task to await.</param>
         /// <param name="task3">The third task to await.</param>
         /// <returns>A task containing results of all tasks.</returns>
-        public static async ValueTask<(T1, T2, T3)> WhenAll<T1, T2, T3>(ValueTask<T1> task1, ValueTask<T2> task2, ValueTask<T3> task3) => (await task1.ConfigureAwait(false), await task2.ConfigureAwait(false), await task3.ConfigureAwait(false));
+        public static async ValueTask<(T1, T2, T3)> WhenAll<T1, T2, T3>(ValueTask<T1> task1, ValueTask<T2> task2, ValueTask<T3> task3)
+        {
+            var aggregator = new ExceptionAggregator();
+            (T1, T2, T3) result = default;
+
+            try
+            {
+                result.Item1 = await task1.ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                aggregator.Add(e);
+            }
+
+            try
+            {
+                result.Item2 = await task2.ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                aggregator.Add(e);
+            }
+
+            try
+            {
+                result.Item3 = await task3.ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                aggregator.Add(e);
+            }
+
+            aggregator.ThrowIfNeeded();
+            return result;
+        }
 
         /// <summary>
         /// Creates a task that will complete when all of the passed tasks have completed.
@@ -83,13 +198,8 @@ namespace DotNext.Threading.Tasks
         /// <param name="task3">The third task to await.</param>
         /// <param name="task4">The fourth task to await.</param>
         /// <returns>A task that represents the completion of all of the supplied tasks.</returns>
-        public static async ValueTask WhenAll(ValueTask task1, ValueTask task2, ValueTask task3, ValueTask task4)
-        {
-            await task1.ConfigureAwait(false);
-            await task2.ConfigureAwait(false);
-            await task3.ConfigureAwait(false);
-            await task4.ConfigureAwait(false);
-        }
+        public static ValueTask WhenAll(ValueTask task1, ValueTask task2, ValueTask task3, ValueTask task4)
+            => WhenAll((task1, task2, task3, task4));
 
         /// <summary>
         /// Creates a task that will complete when all of the passed tasks have completed.
@@ -106,7 +216,50 @@ namespace DotNext.Threading.Tasks
         /// <param name="task3">The third task to await.</param>
         /// <param name="task4">The fourth task to await.</param>
         /// <returns>A task containing results of all tasks.</returns>
-        public static async ValueTask<(T1, T2, T3, T4)> WhenAll<T1, T2, T3, T4>(ValueTask<T1> task1, ValueTask<T2> task2, ValueTask<T3> task3, ValueTask<T4> task4) => (await task1.ConfigureAwait(false), await task2.ConfigureAwait(false), await task3.ConfigureAwait(false), await task4.ConfigureAwait(false));
+        public static async ValueTask<(T1, T2, T3, T4)> WhenAll<T1, T2, T3, T4>(ValueTask<T1> task1, ValueTask<T2> task2, ValueTask<T3> task3, ValueTask<T4> task4)
+        {
+            var aggregator = new ExceptionAggregator();
+            (T1, T2, T3, T4) result = default;
+
+            try
+            {
+                result.Item1 = await task1.ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                aggregator.Add(e);
+            }
+
+            try
+            {
+                result.Item2 = await task2.ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                aggregator.Add(e);
+            }
+
+            try
+            {
+                result.Item3 = await task3.ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                aggregator.Add(e);
+            }
+
+            try
+            {
+                result.Item4 = await task4.ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                aggregator.Add(e);
+            }
+
+            aggregator.ThrowIfNeeded();
+            return result;
+        }
 
         /// <summary>
         /// Creates a task that will complete when all of the passed tasks have completed.
@@ -120,14 +273,8 @@ namespace DotNext.Threading.Tasks
         /// <param name="task4">The fourth task to await.</param>
         /// <param name="task5">The fifth task to await.</param>
         /// <returns>A task that represents the completion of all of the supplied tasks.</returns>
-        public static async ValueTask WhenAll(ValueTask task1, ValueTask task2, ValueTask task3, ValueTask task4, ValueTask task5)
-        {
-            await task1.ConfigureAwait(false);
-            await task2.ConfigureAwait(false);
-            await task3.ConfigureAwait(false);
-            await task4.ConfigureAwait(false);
-            await task5.ConfigureAwait(false);
-        }
+        public static ValueTask WhenAll(ValueTask task1, ValueTask task2, ValueTask task3, ValueTask task4, ValueTask task5)
+            => WhenAll((task1, task2, task3, task4, task5));
 
         /// <summary>
         /// Creates a task that will complete when all of the passed tasks have completed.
@@ -146,7 +293,59 @@ namespace DotNext.Threading.Tasks
         /// <param name="task4">The fourth task to await.</param>
         /// <param name="task5">The fifth task to await.</param>
         /// <returns>A task containing results of all tasks.</returns>
-        public static async ValueTask<(T1, T2, T3, T4, T5)> WhenAll<T1, T2, T3, T4, T5>(ValueTask<T1> task1, ValueTask<T2> task2, ValueTask<T3> task3, ValueTask<T4> task4, ValueTask<T5> task5) => (await task1.ConfigureAwait(false), await task2.ConfigureAwait(false), await task3.ConfigureAwait(false), await task4.ConfigureAwait(false), await task5.ConfigureAwait(false));
+        public static async ValueTask<(T1, T2, T3, T4, T5)> WhenAll<T1, T2, T3, T4, T5>(ValueTask<T1> task1, ValueTask<T2> task2, ValueTask<T3> task3, ValueTask<T4> task4, ValueTask<T5> task5)
+        {
+            var aggregator = new ExceptionAggregator();
+            (T1, T2, T3, T4, T5) result = default;
+
+            try
+            {
+                result.Item1 = await task1.ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                aggregator.Add(e);
+            }
+
+            try
+            {
+                result.Item2 = await task2.ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                aggregator.Add(e);
+            }
+
+            try
+            {
+                result.Item3 = await task3.ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                aggregator.Add(e);
+            }
+
+            try
+            {
+                result.Item4 = await task4.ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                aggregator.Add(e);
+            }
+
+            try
+            {
+                result.Item5 = await task5.ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                aggregator.Add(e);
+            }
+
+            aggregator.ThrowIfNeeded();
+            return result;
+        }
 
         /// <summary>
         /// Creates a task that will complete when any of the supplied tasks have completed.
