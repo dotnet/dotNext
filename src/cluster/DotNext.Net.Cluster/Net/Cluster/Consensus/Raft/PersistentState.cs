@@ -826,9 +826,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             // otherwise - write lock which doesn't block background compaction
             return Compaction switch
             {
-                default(CompactionMode) => CommitAndCompactInForegroundAsync(endIndex, token),
+                default(CompactionMode) => CommitAndCompactSequentiallyAsync(endIndex, token),
                 CompactionMode.Foreground => CommitAndCompactInParallelAsync(endIndex, token),
-                _ => CommitAndCompactInBackgroundAsync(endIndex, token),
+                _ => CommitWithoutCompactionAsync(endIndex, token),
             };
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -850,7 +850,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return count;
             }
 
-            async ValueTask<long> CommitAndCompactInForegroundAsync(long? endIndex, CancellationToken token)
+            async ValueTask<long> CommitAndCompactSequentiallyAsync(long? endIndex, CancellationToken token)
             {
                 long count;
                 await syncRoot.AcquireExclusiveLockAsync(token).ConfigureAwait(false);
@@ -887,7 +887,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
             }
 
-            async ValueTask<long> CommitAndCompactInBackgroundAsync(long? endIndex, CancellationToken token)
+            async ValueTask<long> CommitWithoutCompactionAsync(long? endIndex, CancellationToken token)
             {
                 long count;
                 await syncRoot.AcquireWriteLockAsync(token).ConfigureAwait(false);
