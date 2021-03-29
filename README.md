@@ -86,7 +86,7 @@ This release is primarily focused on improvements of stuff related to cluster pr
 * Added optional buffering of log entries and snapshot when transferring over the wire. Buffering allows to reduce lock contention of persistent WAL
 * Introduced incremental compaction of committed log entries which is running by special background worker 
 
-**Incompatible Changes**: Binary format of persistent WAL has changed. `PersistentState` class from 3.1.0 release is unable to parse the log that was created by earlier versions.
+**Breaking Changes**: Binary format of persistent WAL has changed. `PersistentState` class from 3.1.0 release is unable to parse the log that was created by earlier versions.
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
