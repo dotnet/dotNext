@@ -71,7 +71,10 @@ This release is primarily focused on improvements of stuff related to cluster pr
 * Fixed bug in `StreamSegment.Position` property setter causes invalid position in the underlying stream
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/3.1.0">DotNext.Net.Cluster 3.1.0</a>
-* Introduced support of background compaction of committed log entries to persistent Write-Ahead Log
+* Added support of three log compaction modes to `PersistentState` class:
+   * _Sequential_ which is the default compaction mode in 3.0.x and earlier versions. Provides best optimization of disk space by the cost of the performance of adding new log entries
+   * _Background_ which allows to run log compaction in parallel with write operations
+   * _Foreground_ which runs log compaction in parallel with commit operation
 * Small performance improvements when passing log entries over the wire for TCP and UDP protocols
 * Added buffering API for log entries
 * Added optional buffering of log entries and snapshot when transferring using TCP or UDP protocols
