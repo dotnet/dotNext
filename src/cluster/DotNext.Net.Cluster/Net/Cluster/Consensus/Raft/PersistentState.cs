@@ -197,10 +197,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         // reset search hint
                         partition = null;
                     }
-                    else if (startIndex > 0L && TryGetPartition(startIndex, ref partition, out var switched))
+                    else if (startIndex > 0L && TryGetPartition(startIndex, ref partition))
                     {
                         // handle regular record
-                        entry = await partition.ReadAsync(session, startIndex, true, switched, token).ConfigureAwait(false);
+                        entry = await partition.ReadAsync(session, startIndex, true, token).ConfigureAwait(false);
                     }
                     else
                     {
@@ -713,10 +713,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             // 2. Do compaction
             Partition? current = head;
             Debug.Assert(current is not null);
-            await current.FlushAsync(sessionManager.CompactionSession, token).ConfigureAwait(false);
-            for (var startIndex = snapshot.Index + 1L; TryGetPartition(startIndex, ref current, out var switched) && current is not null && startIndex <= upperBoundIndex; startIndex++)
+            for (var startIndex = snapshot.Index + 1L; TryGetPartition(startIndex, ref current) && current is not null && startIndex <= upperBoundIndex; startIndex++)
             {
-                entry = await current.ReadAsync(sessionManager.CompactionSession, startIndex, true, switched, token).ConfigureAwait(false);
+                entry = await current.ReadAsync(sessionManager.CompactionSession, startIndex, true, token).ConfigureAwait(false);
                 entry.Reset();
                 await builder.ApplyCoreAsync(entry).ConfigureAwait(false);
             }
@@ -977,9 +976,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             for (Partition? partition = null; startIndex <= state.CommitIndex; state.LastApplied = startIndex++)
             {
-                if (TryGetPartition(startIndex, ref partition, out var switched))
+                if (TryGetPartition(startIndex, ref partition))
                 {
-                    var entry = await partition.ReadAsync(sessionManager.WriteSession, startIndex, true, switched, token).ConfigureAwait(false);
+                    var entry = await partition.ReadAsync(sessionManager.WriteSession, startIndex, true, token).ConfigureAwait(false);
                     entry.Reset();
                     await ApplyAsync(entry).ConfigureAwait(false);
                     lastTerm.VolatileWrite(entry.Term);

@@ -129,14 +129,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return output.WriteAsync(buffer, token);
             }
 
-            private async ValueTask<LogEntry> ReadAsync(StreamSegment reader, Memory<byte> buffer, nint index, bool refreshStream, CancellationToken token)
+            private async ValueTask<LogEntry> ReadAsync(StreamSegment reader, Memory<byte> buffer, nint index, CancellationToken token)
             {
                 Debug.Assert(index >= 0 && index < Capacity, $"Invalid index value {index}, offset {FirstIndex}");
 
                 // find pointer to the content
                 LogEntryMetadata metadata;
-                if (refreshStream)
-                    await reader.FlushAsync(token).ConfigureAwait(false);
                 if (lookupCache.IsEmpty)
                 {
                     reader.BaseStream.Position = (long)index * LogEntryMetadata.Size;
@@ -150,13 +148,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return metadata.IsValid ? new LogEntry(reader, buffer, metadata) : throw new MissingLogEntryException(index, FirstIndex, LastIndex, FileName);
             }
 
-            internal ValueTask<LogEntry> ReadAsync(in DataAccessSession session, long index, bool absoluteIndex, bool refreshStream, CancellationToken token)
+            internal ValueTask<LogEntry> ReadAsync(in DataAccessSession session, long index, bool absoluteIndex, CancellationToken token)
             {
                 // calculate relative index
                 if (absoluteIndex)
                     index -= FirstIndex;
                 Debug.Assert(index >= 0 && index < Capacity, $"Invalid index value {index}, offset {FirstIndex}");
-                return ReadAsync(GetReadSessionStream(session), session.Buffer, (nint)index, refreshStream, token);
+                return ReadAsync(GetReadSessionStream(session), session.Buffer, (nint)index, token);
             }
 
             private async ValueTask WriteAsync<TEntry>(TEntry entry, int index, Memory<byte> buffer)
@@ -498,9 +496,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         // during reads the index is growing monothonically
-        private bool TryGetPartition(long recordIndex, [NotNullWhen(true)]ref Partition? partition, out bool switched)
+        private bool TryGetPartition(long recordIndex, [NotNullWhen(true)]ref Partition? partition)
         {
-            switched = false;
             if (partition is not null && partition.Contains(recordIndex))
                 goto success;
 
@@ -512,11 +509,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             Debug.Assert(head is not null);
-            if (partition is null)
-            {
-                partition = tail;
-                switched = true;
-            }
+            partition ??= tail;
 
             var partitionNumber = PartitionOf(recordIndex);
 
@@ -540,7 +533,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         goto success;
                 }
 
-                switched = true;
                 Debug.Assert(partition is not null);
             }
 
