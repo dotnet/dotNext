@@ -17,8 +17,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             else if (state.CompactionCount > 0L)
             {
-                // cancellation may crash the state of the log so it cannot be canceled
-                result = state.ForceCompactionAsync(1L, CancellationToken.None);
+                result = state.ForceCompactionAsync(1L, token);
             }
             else
             {
