@@ -46,7 +46,9 @@ namespace DotNext.Threading.Tasks
                         info.Throw();
                         break;
                     case ICollection<Exception> exceptions:
-                        throw new AggregateException(exceptions);
+                        var e = new AggregateException(exceptions);
+                        exceptions.Clear(); // help GC
+                        throw e;
                 }
             }
         }
