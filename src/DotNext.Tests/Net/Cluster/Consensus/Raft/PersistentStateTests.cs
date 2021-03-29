@@ -485,15 +485,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         [Theory]
-        [InlineData(true, PersistentState.CompactionMode.Foreground)]
-        [InlineData(false, PersistentState.CompactionMode.Sequential)]
-        public static async Task AggressiveCompaction(bool useCaching, PersistentState.CompactionMode mode)
+        [InlineData(false)]
+        [InlineData(true)]
+        public static async Task SequentialCompaction(bool useCaching)
         {
             var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
             entries.ForEach((ref Int64LogEntry entry, long index) => entry = new Int64LogEntry(42L + index) { Term = index });
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
-            using (var state = new TestAuditTrail(dir, useCaching, mode))
+            using (var state = new TestAuditTrail(dir, useCaching, PersistentState.CompactionMode.Sequential))
             {
                 await state.AppendAsync(new LogEntryList(entries));
                 Equal(0L, state.CompactionCount);
@@ -588,6 +588,53 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     True(readResult[0].IsSnapshot);
                     False(readResult[1].IsSnapshot);
                     False(readResult[2].IsSnapshot);
+                    return default;
+                };
+                await state.As<IRaftLog>().ReadAsync(checker, 1, CancellationToken.None);
+            }
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public static async Task ForegroundCompaction(bool useCaching)
+        {
+            var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
+            entries.ForEach((ref Int64LogEntry entry, long index) => entry = new Int64LogEntry(42L + index) { Term = index });
+            var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
+            using (var state = new TestAuditTrail(dir, useCaching, PersistentState.CompactionMode.Foreground))
+            {
+                await state.AppendAsync(new LogEntryList(entries));
+                Equal(0L, state.CompactionCount);
+                await state.CommitAsync(3, CancellationToken.None);
+                await state.CommitAsync(CancellationToken.None);
+                Equal(entries.Length + 41L, state.Value);
+                checker = static (readResult, snapshotIndex, token) =>
+                {
+                    Equal(4, readResult.Count);
+                    Equal(3, snapshotIndex);
+                    True(readResult[0].IsSnapshot);
+                    return default;
+                };
+                await state.As<IRaftLog>().ReadAsync(checker, 1, 6, CancellationToken.None);
+            }
+
+            //read agian
+            using (var state = new TestAuditTrail(dir, useCaching))
+            {
+                checker = static (readResult, snapshotIndex, token) =>
+                {
+                    Equal(4, readResult.Count);
+                    NotNull(snapshotIndex);
+                    return default;
+                };
+                await state.As<IRaftLog>().ReadAsync(checker, 1, 6, CancellationToken.None);
+                Equal(0L, state.Value);
+                checker = static (readResult, snapshotIndex, token) =>
+                {
+                    Equal(7, readResult.Count);
+                    Equal(3, snapshotIndex);
                     return default;
                 };
                 await state.As<IRaftLog>().ReadAsync(checker, 1, CancellationToken.None);

@@ -826,18 +826,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             // otherwise - write lock which doesn't block background compaction
             return Compaction switch
             {
-                default(CompactionMode) => CommitAndCompactSequentiallyAsync(endIndex, token),
+                CompactionMode.Sequential => CommitAndCompactSequentiallyAsync(endIndex, token),
                 CompactionMode.Foreground => CommitAndCompactInParallelAsync(endIndex, token),
                 _ => CommitWithoutCompactionAsync(endIndex, token),
             };
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            long GetCommitIndexAndCount(in long? endIndex, out long count)
+            long GetCommitIndexAndCount(in long? endIndex, out long commitIndex)
             {
                 var startIndex = state.CommitIndex + 1L;
-                count = endIndex.HasValue ? Math.Min(state.LastIndex, endIndex.GetValueOrDefault()) : state.LastIndex;
-                count = count - startIndex + 1L;
-                return startIndex;
+                commitIndex = endIndex.HasValue ? Math.Min(state.LastIndex, endIndex.GetValueOrDefault()) : state.LastIndex;
+                return commitIndex - startIndex + 1L;
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -856,12 +855,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 await syncRoot.AcquireExclusiveLockAsync(token).ConfigureAwait(false);
                 try
                 {
-                    var startIndex = GetCommitIndexAndCount(in endIndex, out count);
+                    count = GetCommitIndexAndCount(in endIndex, out var commitIndex);
                     if (count > 0)
                     {
-                        state.CommitIndex = startIndex = startIndex + count - 1;
+                        state.CommitIndex = commitIndex;
                         await ApplyAsync(token).ConfigureAwait(false);
-                        await ForceCompactionAsync(startIndex, false, token).ConfigureAwait(false);
+                        await ForceSequentialCompactionAsync(commitIndex, token).ConfigureAwait(false);
                     }
                 }
                 finally
@@ -872,14 +871,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return FinalizeCommit(count);
             }
 
-            async ValueTask ForceCompactionAsync(long upperBoundIndex, bool yieldExecution, CancellationToken token)
+            async ValueTask ForceSequentialCompactionAsync(long upperBoundIndex, CancellationToken token)
             {
                 SnapshotBuilder? builder;
                 if (IsCompactionRequired(upperBoundIndex) && (builder = CreateSnapshotBuilder()) is not null)
                 {
-                    if (yieldExecution)
-                        await Task.Yield();
-
                     using (builder)
                     {
                         await this.ForceCompactionAsync(upperBoundIndex, builder, token).ConfigureAwait(false);
@@ -893,10 +889,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 await syncRoot.AcquireWriteLockAsync(token).ConfigureAwait(false);
                 try
                 {
-                    var startIndex = GetCommitIndexAndCount(in endIndex, out count);
+                    count = GetCommitIndexAndCount(in endIndex, out var commitIndex);
                     if (count > 0)
                     {
-                        state.CommitIndex = startIndex + count - 1;
+                        state.CommitIndex = commitIndex;
                         await ApplyAsync(token).ConfigureAwait(false);
                     }
                 }
@@ -908,17 +904,31 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return FinalizeCommit(count);
             }
 
+            async ValueTask ForceIncrementalCompactionAsync(long upperBoundIndex, CancellationToken token)
+            {
+                SnapshotBuilder? builder;
+                if (upperBoundIndex > 0L && (builder = CreateSnapshotBuilder()) is not null)
+                {
+                    await Task.Yield();
+                    using (builder)
+                    {
+                        await this.ForceCompactionAsync(upperBoundIndex, builder, token).ConfigureAwait(false);
+                    }
+                }
+            }
+
             async ValueTask<long> CommitAndCompactInParallelAsync(long? endIndex, CancellationToken token)
             {
                 long count;
                 await syncRoot.AcquireExclusiveLockAsync(token).ConfigureAwait(false);
                 try
                 {
-                    var startIndex = GetCommitIndexAndCount(in endIndex, out count);
+                    count = GetCommitIndexAndCount(in endIndex, out var commitIndex);
                     if (count > 0)
                     {
-                        state.CommitIndex = startIndex + count - 1;
-                        await ValueTaskSynchronization.WhenAll(ForceCompactionAsync(snapshot.Index + count, true, token), ApplyAsync(token)).ConfigureAwait(false);
+                        var compactionIndex = Math.Min(state.CommitIndex, snapshot.Index + count);
+                        state.CommitIndex = commitIndex;
+                        await ValueTaskSynchronization.WhenAll(ForceIncrementalCompactionAsync(compactionIndex, token), ApplyAsync(token)).ConfigureAwait(false);
                     }
                 }
                 finally

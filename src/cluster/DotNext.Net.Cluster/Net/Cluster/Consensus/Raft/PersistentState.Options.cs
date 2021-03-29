@@ -18,13 +18,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// which tries to squash as many committed entries as possible.
             /// </summary>
             /// <remarks>
-            /// This mode is for backward compatibility only.
             /// It demonstrates the worst performance of the commit procedure in
-            /// combination with most aggressive compaction that allows to minimize
+            /// combination with the most aggressive compaction that allows to minimize
             /// usage of disk space.
             /// </remarks>
-            [Obsolete("Use Foreground mode instead")]
-            Sequential = 0, // TODO: Remove support of this mode in the next major version of .NEXT
+            Sequential = 0,
 
             /// <summary>
             /// Log compaction should be triggered manually with <see cref="ForceCompactionAsync(long, CancellationToken)"/>
