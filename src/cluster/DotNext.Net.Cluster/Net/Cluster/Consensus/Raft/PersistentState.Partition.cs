@@ -157,20 +157,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return ReadAsync(GetReadSessionStream(session), session.Buffer, (nint)index, token);
             }
 
-            private async ValueTask WriteAsync<TEntry>(TEntry entry, int index, Memory<byte> buffer)
+            private async ValueTask WriteAsync<TEntry>(TEntry entry, nint index, Memory<byte> buffer)
                 where TEntry : notnull, IRaftLogEntry
             {
                 // calculate offset of the previous entry
                 long offset;
                 LogEntryMetadata metadata;
-                if (index == 0L || index == 1L && FirstIndex == 0L)
+                if (index == 0 || index == 1 && FirstIndex == 0L)
                 {
                     offset = PayloadOffset;
                 }
                 else if (lookupCache.IsEmpty)
                 {
                     // read content offset and the length of the previous entry
-                    Position = (index - 1) * LogEntryMetadata.Size;
+                    Position = (index - 1L) * LogEntryMetadata.Size;
                     metadata = await ReadMetadataAsync(this, buffer).ConfigureAwait(false);
                     Debug.Assert(metadata.Offset > 0, "Previous entry doesn't exist for unknown reason");
                     offset = metadata.Length + metadata.Offset;
@@ -188,7 +188,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 metadata = LogEntryMetadata.Create(entry, offset, Position - offset);
 
                 // record new log entry to the allocation table
-                Position = index * LogEntryMetadata.Size;
+                Position = (long)index * LogEntryMetadata.Size;
                 await WriteMetadataAsync(this, metadata, buffer).ConfigureAwait(false);
 
                 // update cache
@@ -202,7 +202,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 // calculate relative index
                 index -= FirstIndex;
                 Debug.Assert(index >= 0 && index < Capacity, $"Invalid index value {index}, offset {FirstIndex}");
-                return WriteAsync(entry, (int)index, session.Buffer);
+                return WriteAsync(entry, (nint)index, session.Buffer);
             }
 
             protected override void Dispose(bool disposing)
