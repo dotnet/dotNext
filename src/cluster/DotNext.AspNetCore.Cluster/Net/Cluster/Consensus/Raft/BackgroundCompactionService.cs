@@ -25,7 +25,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         protected override async Task ExecuteAsync(CancellationToken token)
         {
             // fail fast if log is not configured for background compaction
-            if (state.Compaction != PersistentState.CompactionMode.Background)
+            if (!state.IsBackgroundCompaction)
                 return;
 
             while (!token.IsCancellationRequested)

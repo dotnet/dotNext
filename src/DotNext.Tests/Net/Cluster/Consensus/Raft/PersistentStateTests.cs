@@ -495,6 +495,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
             using (var state = new TestAuditTrail(dir, useCaching, PersistentState.CompactionMode.Sequential))
             {
+                False(state.IsBackgroundCompaction);
                 await state.AppendAsync(new LogEntryList(entries));
                 Equal(0L, state.CompactionCount);
                 await state.CommitAsync(CancellationToken.None);
@@ -542,6 +543,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
             using (var state = new TestAuditTrail(dir, useCaching, PersistentState.CompactionMode.Background))
             {
+                True(state.IsBackgroundCompaction);
                 await state.AppendAsync(new LogEntryList(entries));
                 Equal(0L, state.CompactionCount);
                 await state.CommitAsync(CancellationToken.None);
@@ -605,6 +607,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
             using (var state = new TestAuditTrail(dir, useCaching, PersistentState.CompactionMode.Foreground))
             {
+                False(state.IsBackgroundCompaction);
                 await state.AppendAsync(new LogEntryList(entries));
                 Equal(0L, state.CompactionCount);
                 await state.CommitAsync(3, CancellationToken.None);

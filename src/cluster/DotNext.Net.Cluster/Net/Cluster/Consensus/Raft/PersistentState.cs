@@ -57,6 +57,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly MemoryAllocator<LogEntryMetadata>? metadataPool;
         private readonly int bufferSize, snapshotBufferSize;
         private readonly bool replayOnInitialize, writeThrough;
+        private readonly CompactionMode compaction;
 
         // writer for this field must have exclusive async lock
         private Snapshot snapshot;
@@ -76,7 +77,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (!path.Exists)
                 path.Create();
             writeThrough = configuration.WriteThrough;
-            Compaction = configuration.CompactionMode;
+            compaction = configuration.CompactionMode;
             backupCompression = configuration.BackupCompression;
             replayOnInitialize = configuration.ReplayOnInitialize;
             bufferSize = configuration.BufferSize;
@@ -145,9 +146,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         /// <summary>
-        /// Gets compaction mode.
+        /// Gets a value indicating that log compaction should
+        /// be called manually using <see cref="ForceCompactionAsync(long, CancellationToken)"/>
+        /// in the background.
         /// </summary>
-        public CompactionMode Compaction { get; }
+        public bool IsBackgroundCompaction => compaction == CompactionMode.Background;
 
         /// <inheritdoc/>
         bool IAuditTrail.IsLogEntryLengthAlwaysPresented => true;
@@ -156,11 +159,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Gets the buffer that can be used to perform I/O operations.
         /// </summary>
         /// <remarks>
-        /// This property always throws <see cref="InvalidOperationException"/>.
+        /// This property throws <see cref="InvalidOperationException"/> if
+        /// the configured compaction mode is not <see cref="CompactionMode.Sequential"/>.
         /// </remarks>
         /// <exception cref="InvalidOperationException">Attempt to obtain buffer without synchronization.</exception>
-        [Obsolete("This buffer should not be shared between SnapshotBuilder and overridden AppendAsync method. Use your own separated buffers.", true)]
-        protected Memory<byte> Buffer => throw new InvalidOperationException();
+        [Obsolete("This property available only if Sequential log compaction is in use. Use your own separated buffers.", true)]
+        protected Memory<byte> Buffer
+            => compaction == CompactionMode.Sequential ? sessionManager.WriteSession.Buffer : throw new InvalidOperationException();
 
         private Partition CreatePartition(long partitionNumber)
         {
@@ -748,7 +753,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Gets approximate number of partitions that can be compacted.
         /// </summary>
         public long CompactionCount
-            => Compaction == CompactionMode.Background ? GetBackgroundCompactionCount(out _) : 0L;
+            => compaction == CompactionMode.Background ? GetBackgroundCompactionCount(out _) : 0L;
 
         /// <summary>
         /// Forces log compaction.
@@ -780,7 +785,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 result = new ValueTask(Task.FromException(new ArgumentOutOfRangeException(nameof(count))));
             }
-            else if (count == 0L || Compaction != CompactionMode.Background)
+            else if (count == 0L || !IsBackgroundCompaction)
             {
                 result = new ValueTask();
             }
@@ -824,7 +829,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             // exclusive lock is required for sequential and foreground compaction;
             // otherwise - write lock which doesn't block background compaction
-            return Compaction switch
+            return compaction switch
             {
                 CompactionMode.Sequential => CommitAndCompactSequentiallyAsync(endIndex, token),
                 CompactionMode.Foreground => CommitAndCompactInParallelAsync(endIndex, token),
