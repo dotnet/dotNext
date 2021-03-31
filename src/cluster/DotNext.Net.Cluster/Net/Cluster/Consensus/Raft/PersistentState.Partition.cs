@@ -129,37 +129,47 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return output.WriteAsync(buffer, token);
             }
 
-            private async ValueTask<LogEntry> ReadAsync(StreamSegment reader, Memory<byte> buffer, nint index, CancellationToken token)
+            private async ValueTask<LogEntry> ReadAsync(StreamSegment reader, Memory<byte> buffer, nint relativeIndex, long absoluteIndex, CancellationToken token)
             {
-                Debug.Assert(index >= 0 && index < Capacity, $"Invalid index value {index}, offset {FirstIndex}");
+                Debug.Assert(relativeIndex >= 0 && relativeIndex < Capacity, $"Invalid index value {relativeIndex}, offset {FirstIndex}");
 
                 // find pointer to the content
                 LogEntryMetadata metadata;
                 if (lookupCache.IsEmpty)
                 {
-                    reader.BaseStream.Position = (long)index * LogEntryMetadata.Size;
+                    reader.BaseStream.Position = (long)relativeIndex * LogEntryMetadata.Size;
                     metadata = await ReadMetadataAsync(reader.BaseStream, buffer, token).ConfigureAwait(false);
                 }
                 else
                 {
-                    metadata = lookupCache[index];
+                    metadata = lookupCache[relativeIndex];
                 }
 
-                return metadata.IsValid ? new LogEntry(reader, buffer, metadata) : throw new MissingLogEntryException(index, FirstIndex, LastIndex, FileName);
+                return metadata.IsValid ? new LogEntry(reader, buffer, metadata, absoluteIndex) : throw new MissingLogEntryException(relativeIndex, FirstIndex, LastIndex, FileName);
             }
 
             internal ValueTask<LogEntry> ReadAsync(in DataAccessSession session, long index, bool absoluteIndex, CancellationToken token)
             {
                 // calculate relative index
+                nint relativeIndex;
                 if (absoluteIndex)
-                    index -= FirstIndex;
-                Debug.Assert(index >= 0 && index < Capacity, $"Invalid index value {index}, offset {FirstIndex}");
-                return ReadAsync(GetReadSessionStream(session), session.Buffer, (nint)index, token);
+                {
+                    relativeIndex = (nint)(index - FirstIndex);
+                }
+                else
+                {
+                    relativeIndex = (nint)index;
+                    index += FirstIndex;
+                }
+
+                return ReadAsync(GetReadSessionStream(session), session.Buffer, relativeIndex, index, token);
             }
 
             private async ValueTask WriteAsync<TEntry>(TEntry entry, nint index, Memory<byte> buffer)
                 where TEntry : notnull, IRaftLogEntry
             {
+                Debug.Assert(index >= 0 && index < Capacity, $"Invalid index value {index}, offset {FirstIndex}");
+
                 // calculate offset of the previous entry
                 long offset;
                 LogEntryMetadata metadata;
@@ -196,13 +206,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     lookupCache[index] = metadata;
             }
 
-            internal ValueTask WriteAsync<TEntry>(in DataAccessSession session, TEntry entry, long index)
+            internal ValueTask WriteAsync<TEntry>(in DataAccessSession session, TEntry entry, long absoluteIndex)
                 where TEntry : notnull, IRaftLogEntry
             {
-                // calculate relative index
-                index -= FirstIndex;
-                Debug.Assert(index >= 0 && index < Capacity, $"Invalid index value {index}, offset {FirstIndex}");
-                return WriteAsync(entry, (nint)index, session.Buffer);
+                // write operation always expects absolute index so we need to convert it to the relative index
+                return WriteAsync(entry, (nint)(absoluteIndex - FirstIndex), session.Buffer);
             }
 
             protected override void Dispose(bool disposing)

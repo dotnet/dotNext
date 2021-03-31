@@ -6,6 +6,7 @@ using System.Text.Json;
 #endif
 using System.Threading;
 using System.Threading.Tasks;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
@@ -25,24 +26,27 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private readonly StreamSegment? content;
             private readonly LogEntryMetadata metadata;
             private readonly Memory<byte> buffer;
-            internal readonly long? SnapshotIndex;
+
+            // if negative then it's a snapshot index because |snapshotIndex| > 0
+            private readonly long index;
 
             // for regular log entry
-            internal LogEntry(StreamSegment cachedContent, Memory<byte> sharedBuffer, in LogEntryMetadata metadata)
+            internal LogEntry(StreamSegment cachedContent, Memory<byte> sharedBuffer, in LogEntryMetadata metadata, long index)
             {
                 this.metadata = metadata;
                 content = cachedContent;
                 buffer = sharedBuffer;
-                SnapshotIndex = null;
+                this.index = index;
             }
 
             // for snapshot
             internal LogEntry(StreamSegment cachedContent, Memory<byte> sharedBuffer, in SnapshotMetadata metadata)
             {
+                Debug.Assert(metadata.Index > 0L);
                 this.metadata = metadata.RecordMetadata;
                 content = cachedContent;
                 buffer = sharedBuffer;
-                SnapshotIndex = metadata.Index;
+                index = -metadata.Index;
             }
 
             // for ephemeral entry
@@ -51,8 +55,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 metadata = default;
                 content = null;
                 buffer = sharedBuffer;
-                SnapshotIndex = null;
+                index = 0L;
             }
+
+            internal long? SnapshotIndex
+            {
+                get
+                {
+                    var i = -index;
+                    return i > 0L ? i : null;
+                }
+            }
+
+            /// <summary>
+            /// Gets the index of this log entry.
+            /// </summary>
+            public long Index => Math.Abs(index);
 
             /// <summary>
             /// Gets identifier of the command encapsulated by this log entry.
@@ -62,14 +80,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <summary>
             /// Gets a value indicating that this entry is a snapshot entry.
             /// </summary>
-            public bool IsSnapshot => SnapshotIndex.HasValue;
+            public bool IsSnapshot => index < 0L;
 
             /// <summary>
             /// Gets length of the log entry content, in bytes.
             /// </summary>
             public long Length => metadata.Length;
 
-            internal bool IsEmpty => metadata.Length == 0L;
+            internal bool IsEmpty => Length == 0L;
 
             internal void Reset()
                 => content?.Adjust(metadata.Offset, Length);
