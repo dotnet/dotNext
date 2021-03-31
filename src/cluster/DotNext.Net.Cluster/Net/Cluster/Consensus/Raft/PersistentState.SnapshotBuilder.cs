@@ -37,6 +37,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return entry.IsEmpty ? new ValueTask() : ApplyAsync(entry);
             }
 
+            /// <summary>
+            /// Allows to adjust the index of the current log entry to be snapshotted.
+            /// </summary>
+            /// <remarks>
+            /// If <paramref name="currentIndex"/> is modified in a way when it out of bounds
+            /// then snapshot process will be terminated immediately. Moreover,
+            /// compaction algorithm is optimized for monothonic growth of this index.
+            /// Stepping back or random access may slow down the process.
+            /// </remarks>
+            /// <param name="startIndex">The lower bound of the index, inclusive.</param>
+            /// <param name="endIndex">The upper bound of the index, inclusive.</param>
+            /// <param name="currentIndex">The currently running index.</param>
+            internal protected virtual void AdjustIndex(long startIndex, long endIndex, ref long currentIndex)
+            {
+            }
+
             /// <inheritdoc/>
             long? IDataTransferObject.Length => null;
 

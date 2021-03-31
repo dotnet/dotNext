@@ -718,9 +718,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             // 2. Do compaction
             Partition? current = head;
             Debug.Assert(current is not null);
-            for (var startIndex = snapshot.Index + 1L; TryGetPartition(startIndex, ref current) && current is not null && startIndex <= upperBoundIndex; startIndex++)
+            for (long startIndex = snapshot.Index + 1L, currentIndex = startIndex; TryGetPartition(builder, startIndex, upperBoundIndex, ref currentIndex, ref current) && current is not null && startIndex <= upperBoundIndex; currentIndex++)
             {
-                entry = await current.ReadAsync(sessionManager.CompactionSession, startIndex, true, token).ConfigureAwait(false);
+                entry = await current.ReadAsync(sessionManager.CompactionSession, currentIndex, true, token).ConfigureAwait(false);
                 entry.Reset();
                 await builder.ApplyCoreAsync(entry).ConfigureAwait(false);
             }
@@ -731,6 +731,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             // 4. Remove squashed partitions
             await RemovePartitionsAsync(upperBoundIndex).ConfigureAwait(false);
+
+            bool TryGetPartition(SnapshotBuilder builder, long startIndex, long endIndex, ref long currentIndex, ref Partition? partition)
+            {
+                builder.AdjustIndex(startIndex, endIndex, ref currentIndex);
+                return currentIndex.Between(startIndex, endIndex, BoundType.Closed) && this.TryGetPartition(currentIndex, ref partition);
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
