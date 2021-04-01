@@ -105,5 +105,15 @@ namespace DotNext.Threading
             True(acquisition.IsFaulted);
             Throws<ObjectDisposedException>(acquisition.GetAwaiter().GetResult);
         }
+
+        [Fact]
+        public static void DisposedState()
+        {
+            var l = new AsyncExclusiveLock();
+            l.Dispose();
+            var result = l.TryAcquireAsync(System.Threading.Timeout.InfiniteTimeSpan);
+            True(result.IsCompleted);
+            IsType<ObjectDisposedException>(result.Exception.InnerException);
+        }
     }
 }
