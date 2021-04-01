@@ -47,7 +47,7 @@ Documentation for older versions:
 # What's new
 Release Date: 03-XX-2021
 
-This release is primarily focused on improvements of stuff related to cluster programming and Raft: persistent WAL, transferring over the wire, buffering and reducing I/O overhead.
+This release is primarily focused on improvements of stuff related to cluster programming and Raft: persistent WAL, transferring over the wire, buffering and reducing I/O overhead. Many ideas for this release were proposed by @potrusil-osi in the issue [57](https://github.com/sakno/dotNext/issues/57).
 
 <a href="https://www.nuget.org/packages/dotnext/3.1.0">DotNext 3.1.0</a>
 * Added async support to `IGrowableBuffer<T>` interface
