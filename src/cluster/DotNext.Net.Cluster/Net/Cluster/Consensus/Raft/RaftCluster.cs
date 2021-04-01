@@ -658,13 +658,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 goto resign_denied;
 
             var lockHolder = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
-            var tokenSource = token.LinkTo(Token);
             try
             {
                 if (state is LeaderState leaderState)
                 {
                     await leaderState.StopAsync().ConfigureAwait(false);
-                    state = new FollowerState(this) { Metrics = Metrics }.StartServing(ElectionTimeout, token);
+                    state = new FollowerState(this) { Metrics = Metrics }.StartServing(ElectionTimeout, Token);
                     leaderState.Dispose();
                     Leader = null;
                     return true;
@@ -672,7 +671,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             finally
             {
-                tokenSource?.Dispose();
                 lockHolder.Dispose();
             }
 
