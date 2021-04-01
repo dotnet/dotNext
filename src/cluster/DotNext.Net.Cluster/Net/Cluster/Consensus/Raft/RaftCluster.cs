@@ -263,7 +263,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         protected async Task ChangeMembersAsync<T>(MemberCollectionMutator<T> mutator, T arg, CancellationToken token)
         {
             var tokenSource = token.LinkTo(Token);
-            var transitionLock = await transitionSync.TryAcquireAsync(token).ConfigureAwait(false);
+            var transitionLock = await transitionSync.TryAcquireAsync(token).SuppressDisposedState().SuppressCancellation().ConfigureAwait(false);
             try
             {
                 if (transitionLock)
@@ -696,7 +696,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         async void IRaftStateMachine.MoveToFollowerState(bool randomizeTimeout, long? newTerm)
         {
             Debug.Assert(state is not StandbyState);
-            using var lockHolder = await transitionSync.TryAcquireAsync(Token).SuppressDisposedState().ConfigureAwait(false);
+            using var lockHolder = await transitionSync.TryAcquireAsync(Token).SuppressDisposedState().SuppressCancellation().ConfigureAwait(false);
             if (lockHolder)
             {
                 if (randomizeTimeout)
@@ -712,7 +712,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             var currentTerm = auditTrail.Term;
             var readyForTransition = await PreVoteAsync(currentTerm).ConfigureAwait(false);
-            using var lockHolder = await transitionSync.TryAcquireAsync(Token).SuppressDisposedState().ConfigureAwait(false);
+            using var lockHolder = await transitionSync.TryAcquireAsync(Token).SuppressDisposedState().SuppressCancellation().ConfigureAwait(false);
             if (lockHolder && state is FollowerState followerState && followerState.IsExpired)
             {
                 Logger.TransitionToCandidateStateStarted();
@@ -783,7 +783,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             Debug.Assert(state is not StandbyState);
             Logger.TransitionToLeaderStateStarted();
-            using var lockHolder = await transitionSync.TryAcquireAsync(Token).SuppressDisposedState().ConfigureAwait(false);
+            using var lockHolder = await transitionSync.TryAcquireAsync(Token).SuppressDisposedState().SuppressCancellation().ConfigureAwait(false);
             long currentTerm;
             if (lockHolder && state is CandidateState candidateState && candidateState.Term == (currentTerm = auditTrail.Term))
             {
