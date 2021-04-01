@@ -15,7 +15,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     using static Threading.AtomicInt64;
     using AsyncManualResetEvent = Threading.AsyncManualResetEvent;
     using Timeout = Threading.Timeout;
-    using ValueTaskSynchronization = Threading.Tasks.ValueTaskSynchronization;
 
     /// <summary>
     /// Represents general purpose persistent audit trail compatible with Raft algorithm.
@@ -331,7 +330,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return result;
         }
 
-        private async ValueTask UnsafeInstallSnapshotAsync<TSnapshot>(TSnapshot snapshot, long snapshotIndex)
+        private async ValueTask<Partition?> UnsafeInstallSnapshotAsync<TSnapshot>(TSnapshot snapshot, long snapshotIndex)
             where TSnapshot : notnull, IRaftLogEntry
         {
             // 1. Save the snapshot into temporary file to avoid corruption caused by network connection
@@ -362,24 +361,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             Volatile.Write(ref this.snapshot, CreateSnapshot());
 
-            // execute deletion of replaced partitions and snapshot installation in parallel
-            await ValueTaskSynchronization.WhenAll(ApplySnapshotAsync(snapshotIndex, snapshot.Term), RemovePartitionsAsync(snapshotIndex)).ConfigureAwait(false);
-            commitEvent.Set(true);
-
             // 5. Apply snapshot to the underlying state machine
-            async ValueTask ApplySnapshotAsync(long snapshotIndex, long snapshotTerm)
-            {
-                // forces execution of this method in another thread
-                await Task.Yield();
-                state.CommitIndex = snapshotIndex;
-                state.LastIndex = Math.Max(snapshotIndex, state.LastIndex);
-
-                await ApplyAsync(await this.snapshot.ReadAsync(sessionManager.WriteSession, CancellationToken.None).ConfigureAwait(false)).ConfigureAwait(false);
-                lastTerm.VolatileWrite(snapshotTerm);
-                state.LastApplied = snapshotIndex;
-                state.Flush();
-                await FlushAsync().ConfigureAwait(false);
-            }
+            state.CommitIndex = snapshotIndex;
+            state.LastIndex = Math.Max(snapshotIndex, state.LastIndex);
+            await ApplyAsync(await this.snapshot.ReadAsync(sessionManager.WriteSession, CancellationToken.None).ConfigureAwait(false)).ConfigureAwait(false);
+            lastTerm.VolatileWrite(snapshot.Term);
+            state.LastApplied = snapshotIndex;
+            state.Flush();
+            await FlushAsync().ConfigureAwait(false);
+            commitEvent.Set(true);
+            return DetachPartitions(snapshotIndex);
 
             Snapshot CreateSnapshot()
             {
@@ -530,6 +521,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             async ValueTask InstallSnapshotAsync(TEntry entry, long startIndex)
             {
                 Debug.Assert(entry.IsSnapshot);
+                Partition? removedHead;
 
                 // Snapshot requires exclusive lock. However, snapshot installation is very rare operation
                 await syncRoot.AcquireExclusiveLockAsync().ConfigureAwait(false);
@@ -537,12 +529,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     if (startIndex <= state.CommitIndex)
                         throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
-                    await UnsafeInstallSnapshotAsync(entry, startIndex).ConfigureAwait(false);
+                    removedHead = await UnsafeInstallSnapshotAsync(entry, startIndex).ConfigureAwait(false);
                 }
                 finally
                 {
                     syncRoot.ReleaseExclusiveLock();
                 }
+
+                await DeletePartitionsAsync(removedHead).ConfigureAwait(false);
             }
         }
 
@@ -670,7 +664,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 for (Partition? partition = TryGetPartition(partitionNumber), next; partition is not null; partition = next)
                 {
                     next = partition.Next;
-                    await RemovePartitionAsync(partition).ConfigureAwait(false);
+                    await DropPartitionAsync(partition).ConfigureAwait(false);
                 }
             }
             finally
@@ -680,6 +674,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             exit:
             return count;
+
+            ValueTask DropPartitionAsync(Partition partition)
+            {
+                if (ReferenceEquals(head, partition))
+                    head = partition.Next;
+                if (ReferenceEquals(tail, partition))
+                    tail = partition.Previous;
+                partition.Detach();
+                return DeletePartitionAsync(partition);
+            }
         }
 
         /// <summary>
@@ -703,7 +707,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public Task<bool> WaitForCommitAsync(long index, TimeSpan timeout, CancellationToken token)
             => commitEvent.WaitForCommitAsync(NodeState.IsCommittedPredicate, state, index, timeout, token);
 
-        private async ValueTask ForceCompactionAsync(long upperBoundIndex, SnapshotBuilder builder, CancellationToken token)
+        private async ValueTask<Partition?> ForceCompactionAsync(long upperBoundIndex, SnapshotBuilder builder, CancellationToken token)
         {
             LogEntry entry;
 
@@ -730,7 +734,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             await snapshot.FlushAsync().ConfigureAwait(false);
 
             // 4. Remove squashed partitions
-            await RemovePartitionsAsync(upperBoundIndex).ConfigureAwait(false);
+            return DetachPartitions(upperBoundIndex);
 
             bool TryGetPartition(SnapshotBuilder builder, long startIndex, long endIndex, ref long currentIndex, ref Partition? partition)
             {
@@ -814,19 +818,23 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 var builder = CreateSnapshotBuilder();
                 if (builder is not null)
                 {
+                    Partition? removedHead;
                     await syncRoot.AcquireCompactionLockAsync(token).ConfigureAwait(false);
                     try
                     {
                         // check compaction range again because snapshot index can be modified by snapshot installation method
                         var upperBoundIndex = ComputeUpperBoundIndex(count);
-                        if (IsCompactionRequired(upperBoundIndex))
-                            await ForceCompactionAsync(upperBoundIndex, builder, token).ConfigureAwait(false);
+                        removedHead = IsCompactionRequired(upperBoundIndex) ?
+                            await ForceCompactionAsync(upperBoundIndex, builder, token).ConfigureAwait(false) :
+                            null;
                     }
                     finally
                     {
                         syncRoot.ReleaseCompactionLock();
                         builder.Dispose();
                     }
+
+                    await DeletePartitionsAsync(removedHead).ConfigureAwait(false);
                 }
             }
         }
@@ -862,6 +870,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             async ValueTask<long> CommitAndCompactSequentiallyAsync(long? endIndex, CancellationToken token)
             {
+                Partition? removedHead;
                 long count;
                 await syncRoot.AcquireExclusiveLockAsync(token).ConfigureAwait(false);
                 try
@@ -871,7 +880,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     {
                         state.CommitIndex = commitIndex;
                         await ApplyAsync(token).ConfigureAwait(false);
-                        await ForceSequentialCompactionAsync(commitIndex, token).ConfigureAwait(false);
+                        removedHead = await ForceSequentialCompactionAsync(commitIndex, token).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        removedHead = null;
                     }
                 }
                 finally
@@ -879,19 +892,27 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     syncRoot.ReleaseExclusiveLock();
                 }
 
+                await DeletePartitionsAsync(removedHead).ConfigureAwait(false);
                 return FinalizeCommit(count);
             }
 
-            async ValueTask ForceSequentialCompactionAsync(long upperBoundIndex, CancellationToken token)
+            async ValueTask<Partition?> ForceSequentialCompactionAsync(long upperBoundIndex, CancellationToken token)
             {
                 SnapshotBuilder? builder;
+                Partition? removedHead;
                 if (IsCompactionRequired(upperBoundIndex) && (builder = CreateSnapshotBuilder()) is not null)
                 {
                     using (builder)
                     {
-                        await ForceCompactionAsync(upperBoundIndex, builder, token).ConfigureAwait(false);
+                        removedHead = await ForceCompactionAsync(upperBoundIndex, builder, token).ConfigureAwait(false);
                     }
                 }
+                else
+                {
+                    removedHead = null;
+                }
+
+                return removedHead;
             }
 
             async ValueTask<long> CommitWithoutCompactionAsync(long? endIndex, CancellationToken token)
@@ -915,21 +936,29 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return FinalizeCommit(count);
             }
 
-            async ValueTask ForceIncrementalCompactionAsync(long upperBoundIndex, CancellationToken token)
+            async ValueTask<Partition?> ForceIncrementalCompactionAsync(long upperBoundIndex, CancellationToken token)
             {
+                Partition? removedHead;
                 SnapshotBuilder? builder;
                 if (upperBoundIndex > 0L && (builder = CreateSnapshotBuilder()) is not null)
                 {
                     await Task.Yield();
                     using (builder)
                     {
-                        await ForceCompactionAsync(upperBoundIndex, builder, token).ConfigureAwait(false);
+                        removedHead = await ForceCompactionAsync(upperBoundIndex, builder, token).ConfigureAwait(false);
                     }
                 }
+                else
+                {
+                    removedHead = null;
+                }
+
+                return removedHead;
             }
 
             async ValueTask<long> CommitAndCompactInParallelAsync(long? endIndex, CancellationToken token)
             {
+                Partition? removedHead;
                 long count;
                 await syncRoot.AcquireExclusiveLockAsync(token).ConfigureAwait(false);
                 try
@@ -939,7 +968,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     {
                         var compactionIndex = Math.Min(state.CommitIndex, snapshot.Index + count);
                         state.CommitIndex = commitIndex;
-                        await ValueTaskSynchronization.WhenAll(ForceIncrementalCompactionAsync(compactionIndex, token), ApplyAsync(token)).ConfigureAwait(false);
+                        var compaction = ForceIncrementalCompactionAsync(compactionIndex, token);
+                        try
+                        {
+                            await ApplyAsync(token).ConfigureAwait(false);
+                        }
+                        finally
+                        {
+                            removedHead = await compaction.ConfigureAwait(false);
+                        }
+                    }
+                    else
+                    {
+                        removedHead = null;
                     }
                 }
                 finally
@@ -947,6 +988,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     syncRoot.ReleaseExclusiveLock();
                 }
 
+                await DeletePartitionsAsync(removedHead).ConfigureAwait(false);
                 return FinalizeCommit(count);
             }
         }

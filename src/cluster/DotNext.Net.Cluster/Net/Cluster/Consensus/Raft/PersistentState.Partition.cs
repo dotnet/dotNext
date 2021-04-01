@@ -86,6 +86,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 next = previous = null;
             }
 
+            internal void DetachAncestor()
+            {
+                if (previous is not null)
+                    previous.next = null;
+                previous = null;
+            }
+
             private long PayloadOffset => Math.BigMul(LogEntryMetadata.Size, Capacity);
 
             internal long LastIndex => FirstIndex + Capacity - 1;
@@ -551,26 +558,39 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return false;
         }
 
-        private async ValueTask RemovePartitionAsync(Partition partition)
+        private static async ValueTask DeletePartitionAsync(Partition partition)
         {
-            if (ReferenceEquals(head, partition))
-                head = partition.Next;
-            if (ReferenceEquals(tail, partition))
-                tail = partition.Previous;
-            partition.Detach();
             var fileName = partition.FileName;
             await partition.DisposeAsync().ConfigureAwait(false);
             File.Delete(fileName);
         }
 
-        private async ValueTask RemovePartitionsAsync(long upperBoundIndex)
+        // this method should be called for detached partition head only
+        private static async ValueTask DeletePartitionsAsync(Partition? current)
         {
-            // 3. Identify all partitions to be replaced by snapshot and delete them
-            for (Partition? current = head, next; current is not null && current.LastIndex <= upperBoundIndex; current = next)
+            for (Partition? next; current is not null; current = next)
             {
                 next = current.Next;
-                await RemovePartitionAsync(current).ConfigureAwait(false);
+                await DeletePartitionAsync(current).ConfigureAwait(false);
             }
+        }
+
+        private Partition? DetachPartitions(long upperBoundIndex)
+        {
+            Partition? result = head, current;
+            for (current = result; current is not null && current.LastIndex <= upperBoundIndex; current = current.Next);
+
+            if (current is null)
+            {
+                head = tail = null;
+            }
+            else
+            {
+                current.DetachAncestor();
+                head = current;
+            }
+
+            return result;
         }
     }
 }
