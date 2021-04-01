@@ -83,11 +83,11 @@ namespace DotNext.Threading
         public static void DisposedOrCanceledState()
         {
             var t = Task.FromCanceled<AsyncLock.Holder>(new CancellationToken(true));
-            t = t.SuppressDisposedStateAndCancellation();
+            t = t.SuppressDisposedStateOrCancellation();
             False(t.IsCanceled);
             False(t.Result);
             t = Task.FromException<AsyncLock.Holder>(new ObjectDisposedException("obj"));
-            t = t.SuppressDisposedStateAndCancellation();
+            t = t.SuppressDisposedStateOrCancellation();
             False(t.IsFaulted);
             False(t.Result);
         }

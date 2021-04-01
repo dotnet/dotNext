@@ -195,7 +195,7 @@ namespace DotNext.Threading
         /// </remarks>
         /// <param name="result">The result of the lock acquisition.</param>
         /// <returns>The task representing the lock acquisition.</returns>
-        public static Task<AsyncLock.Holder> SuppressDisposedStateAndCancellation(this Task<AsyncLock.Holder> result)
+        public static Task<AsyncLock.Holder> SuppressDisposedStateOrCancellation(this Task<AsyncLock.Holder> result)
             => result.OnFaultedOrCanceled<AsyncLock.Holder, DefaultAsyncLockHolder>(IsObjectDisposedExceptionPredicate);
     }
 }
