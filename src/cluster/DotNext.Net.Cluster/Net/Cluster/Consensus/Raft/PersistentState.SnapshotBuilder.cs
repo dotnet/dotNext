@@ -49,7 +49,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <param name="startIndex">The lower bound of the index, inclusive.</param>
             /// <param name="endIndex">The upper bound of the index, inclusive.</param>
             /// <param name="currentIndex">The currently running index.</param>
-            internal protected virtual void AdjustIndex(long startIndex, long endIndex, ref long currentIndex)
+            protected internal virtual void AdjustIndex(long startIndex, long endIndex, ref long currentIndex)
             {
             }
 

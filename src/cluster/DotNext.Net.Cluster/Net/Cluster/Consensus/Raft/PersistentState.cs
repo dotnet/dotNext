@@ -889,7 +889,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     using (builder)
                     {
-                        await this.ForceCompactionAsync(upperBoundIndex, builder, token).ConfigureAwait(false);
+                        await ForceCompactionAsync(upperBoundIndex, builder, token).ConfigureAwait(false);
                     }
                 }
             }
@@ -923,7 +923,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     await Task.Yield();
                     using (builder)
                     {
-                        await this.ForceCompactionAsync(upperBoundIndex, builder, token).ConfigureAwait(false);
+                        await ForceCompactionAsync(upperBoundIndex, builder, token).ConfigureAwait(false);
                     }
                 }
             }
