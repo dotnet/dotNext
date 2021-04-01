@@ -71,11 +71,7 @@ namespace DotNext.Runtime
         /// <typeparam name="T">The type for which default value should be obtained.</typeparam>
         /// <returns>The default value of type <typeparamref name="T"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T? DefaultOf<T>()
-        {
-            Unsafe.SkipInit(out T result);
-            return result;
-        }
+        public static T? DefaultOf<T>() => default;
 
         /// <summary>
         /// Obtain a value of type <typeparamref name="TResult"/> by
