@@ -696,7 +696,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         async void IRaftStateMachine.MoveToFollowerState(bool randomizeTimeout, long? newTerm)
         {
             Debug.Assert(state is not StandbyState);
-            using var lockHolder = await transitionSync.TryAcquireAsync(Token).ConfigureAwait(false);
+            using var lockHolder = await transitionSync.TryAcquireAsync(Token).SuppressDisposedState().ConfigureAwait(false);
             if (lockHolder)
             {
                 if (randomizeTimeout)
@@ -712,7 +712,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             var currentTerm = auditTrail.Term;
             var readyForTransition = await PreVoteAsync(currentTerm).ConfigureAwait(false);
-            using var lockHolder = await transitionSync.TryAcquireAsync(Token).ConfigureAwait(false);
+            using var lockHolder = await transitionSync.TryAcquireAsync(Token).SuppressDisposedState().ConfigureAwait(false);
             if (lockHolder && state is FollowerState followerState && followerState.IsExpired)
             {
                 Logger.TransitionToCandidateStateStarted();
@@ -783,7 +783,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             Debug.Assert(state is not StandbyState);
             Logger.TransitionToLeaderStateStarted();
-            using var lockHolder = await transitionSync.TryAcquireAsync(Token).ConfigureAwait(false);
+            using var lockHolder = await transitionSync.TryAcquireAsync(Token).SuppressDisposedState().ConfigureAwait(false);
             long currentTerm;
             if (lockHolder && state is CandidateState candidateState && candidateState.Term == (currentTerm = auditTrail.Term))
             {
