@@ -78,5 +78,18 @@ namespace DotNext.Threading
             False(t.IsCanceled);
             False(t.Result);
         }
+
+        [Fact]
+        public static void DisposedOrCanceledState()
+        {
+            var t = Task.FromCanceled<AsyncLock.Holder>(new CancellationToken(true));
+            t = t.SuppressDisposedStateAndCancellation();
+            False(t.IsCanceled);
+            False(t.Result);
+            t = Task.FromException<AsyncLock.Holder>(new ObjectDisposedException("obj"));
+            t = t.SuppressDisposedStateAndCancellation();
+            False(t.IsFaulted);
+            False(t.Result);
+        }
     }
 }
