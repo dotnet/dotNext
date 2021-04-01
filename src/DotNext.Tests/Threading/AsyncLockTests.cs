@@ -58,5 +58,15 @@ namespace DotNext.Threading
             holder.Dispose();
             Equal(3, sem.CurrentCount);
         }
+
+        [Fact]
+        public static void DisposedState()
+        {
+            var l = AsyncLock.Exclusive();
+            l.Dispose();
+            var result = l.TryAcquireAsync(CancellationToken.None).SuppressDisposedState();
+            True(result.IsCompletedSuccessfully);
+            False(result.Result);
+        }
     }
 }

@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 
 namespace DotNext.Threading
 {
+    using EmptyLockTask = Tasks.CompletedTask<AsyncLock.Holder, Generic.DefaultConst<AsyncLock.Holder>>;
+
     /// <summary>
     /// Provides a set of methods to acquire different types of asynchronous lock.
     /// </summary>
@@ -146,5 +148,20 @@ namespace DotNext.Threading
         /// <returns>The acquired lock holder.</returns>
         public static Task<AsyncLock.Holder> AcquireUpgradeableReadLockAsync<T>(this T obj, CancellationToken token)
             where T : class => AsyncLock.ReadLock(obj.GetReaderWriterLock(), true).AcquireAsync(token);
+
+        /// <summary>
+        /// Suspends <see cref="ObjectDisposedException"/> if the target lock
+        /// has been disposed.
+        /// </summary>
+        /// <remarks>
+        /// This method is usually combined with <see cref="AsyncLock.TryAcquireAsync(CancellationToken)"/> or
+        /// <see cref="AsyncLock.TryAcquireAsync(TimeSpan, CancellationToken)"/> calls
+        /// and allows to avoid <see cref="ObjectDisposedException"/> if the lock is already disposed
+        /// at the time of the call. If lock is disposed then this method returns empty <see cref="AsyncLock.Holder"/>.
+        /// </remarks>
+        /// <param name="result">The result of lock acquisition.</param>
+        /// <returns>The task representing lock acquisition.</returns>
+        public static Task<AsyncLock.Holder> SuppressDisposedState(this Task<AsyncLock.Holder> result)
+            => result.IsFaulted && result.Exception?.InnerException is ObjectDisposedException ? EmptyLockTask.Task : result;
     }
 }

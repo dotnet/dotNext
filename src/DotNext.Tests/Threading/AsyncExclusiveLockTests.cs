@@ -112,7 +112,7 @@ namespace DotNext.Threading
             var l = new AsyncExclusiveLock();
             l.Dispose();
             var result = l.TryAcquireAsync(System.Threading.Timeout.InfiniteTimeSpan);
-            True(result.IsCompleted);
+            True(result.IsFaulted);
             IsType<ObjectDisposedException>(result.Exception.InnerException);
         }
     }
