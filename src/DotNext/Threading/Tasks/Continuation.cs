@@ -125,12 +125,16 @@ namespace DotNext.Threading.Tasks
             {
                 case TaskStatus.Faulted when filter(task.Exception!):
                 case TaskStatus.Canceled:
-                    return CompletedTask<T, TConstant>.Task;
+                    task = CompletedTask<T, TConstant>.Task;
+                    break;
                 case TaskStatus.RanToCompletion or TaskStatus.Faulted:
-                    return task;
+                    break;
                 default:
-                    return task.ContinueWith(Continuation<T, TConstant>.WhenFaultedOrCanceled, filter, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, scheduler ?? TaskScheduler.Current);
+                    task = task.ContinueWith(Continuation<T, TConstant>.WhenFaultedOrCanceled, filter, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, scheduler ?? TaskScheduler.Current);
+                    break;
             }
+
+            return task;
         }
 
         /// <summary>
