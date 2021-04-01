@@ -68,5 +68,15 @@ namespace DotNext.Threading
             True(result.IsCompletedSuccessfully);
             False(result.Result);
         }
+
+        [Fact]
+        public static void CanceledState()
+        {
+            var t = Task.FromCanceled<AsyncLock.Holder>(new CancellationToken(true));
+            True(t.IsCanceled);
+            t = t.SuppressCancellation();
+            False(t.IsCanceled);
+            False(t.Result);
+        }
     }
 }
