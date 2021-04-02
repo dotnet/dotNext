@@ -936,7 +936,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return FinalizeCommit(count);
             }
 
-            async ValueTask<Partition?> ForceIncrementalCompactionAsync(long upperBoundIndex, CancellationToken token)
+            async Task<Partition?> ForceIncrementalCompactionAsync(long upperBoundIndex, CancellationToken token)
             {
                 Partition? removedHead;
                 SnapshotBuilder? builder;
