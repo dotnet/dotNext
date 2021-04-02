@@ -10,7 +10,7 @@
 | Proposal | Implementation |
 | ---- | ---- |
 | [Interop between function pointer and delegate](https://github.com/dotnet/csharplang/discussions/3680) | [DelegateHelpers](https://www.fuget.org/packages/DotNext/latest/net5.0/lib/DotNext.dll/DotNext/DelegateHelpers) factory methods |
-| [Check if an instance of T is a default(T)](https://github.com/dotnet/corefx/issues/16209) | [IsDefault() method](https://www.fuget.org/packages/DotNext/latest/lib/net5.0/DotNext.dll/DotNext.Runtime/Intrinsics) |
+| [Check if an instance of T is default(T)](https://github.com/dotnet/corefx/issues/16209) | [IsDefault() method](https://www.fuget.org/packages/DotNext/latest/lib/net5.0/DotNext.dll/DotNext.Runtime/Intrinsics) |
 | [Concept Types](https://github.com/dotnet/csharplang/issues/110) | [Documentation](https://sakno.github.io/dotNext/features/concept.html) |
 | [Expression Trees covering additional language constructs](https://github.com/dotnet/csharplang/issues/158), i.e. `foreach`, `await`, patterns, multi-line lambda expressions | [Metaprogramming](https://sakno.github.io/dotNext/features/metaprogramming/index.html) |
 | [Async Locks](https://github.com/dotnet/corefx/issues/34073) | [Documentation](https://sakno.github.io/dotNext/features/threading/index.html) |
@@ -97,7 +97,7 @@ The libraries are versioned according with [Semantic Versioning 2.0](https://sem
 | ---- | ---- | ---- |
 | 0.x | .NET Standard 2.0 | Not Supported |
 | 1.x | .NET Standard 2.0 | Not Supported |
-| 2.x | .NET Standard 2.1 | Maintenance (EOL 02/28/2021) |
+| 2.x | .NET Standard 2.1 | Not Supported |
 | 3.x | .NET Standard 2.1, .NET 5 | Active Development |
 
 _Maintenance_ support level means that new releases will contain bug fixes only.
