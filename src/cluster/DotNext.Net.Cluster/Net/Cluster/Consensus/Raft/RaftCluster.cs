@@ -201,6 +201,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             this.members = collection;
             transitionSync = AsyncLock.Exclusive();
             transitionCancellation = new CancellationTokenSource();
+            Token = transitionCancellation.Token;
             auditTrail = new ConsensusOnlyState();
             heartbeatThreshold = config.HeartbeatThreshold;
             standbyNode = config.Standby;
@@ -242,8 +243,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Gets token that can be used for all internal asynchronous operations.
         /// </summary>
-        protected CancellationToken Token
-            => transitionCancellation.IsCancellationRequested ? new CancellationToken(true) : transitionCancellation.Token;
+        protected CancellationToken Token { get; } // cached to avoid ObjectDisposedException that may be caused by CTS.Token
 
         private void ChangeMembers<T>(MemberCollectionMutator<T> mutator, T arg)
         {
