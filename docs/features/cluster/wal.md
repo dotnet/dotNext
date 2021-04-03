@@ -20,13 +20,17 @@ Typically, `PersistentState` class is not used directly because it is not aware 
 Internally, persistent WAL uses files to store the state of cluster member and log entries. The journal with log entries is not continuous. Each file represents the partition of the entire journal. Each partition is a chunk of sequential log entries. The maximum number of log entries per partition depends on the settings.
 
 `PersistentState` has a rich set of tunable configuration parameters and overridable methods to achieve the best performance according with application needs:
-* `recordsPerPartition` allows to define maximum number of log entries that can be stored continuously in the single partition. Log compaction algorithm depends on this value directly. When all records from the partition are committed and applied to the underlying state machine the infrastructure calls the snapshot builder and squashed all the entries in such partition. After that, write ahead log records the snapshot into the separated file and removes the partition file from the file system. The log compaction is expensive operation. So if you want to reduce the number of compactions then you need to increase the maximum number of log entries per partition. However, the partition file will take more disk space.
-* `BufferSize` is the numbers of bytes that is allocated by persistent WAL in the memory to perform I/O operations. Set it to the maximum expected log entry size to achieve the best performance.
+* `recordsPerPartition` allows to define maximum number of log entries that can be stored continuously in the single partition. Log compaction algorithm depends on this value directly. When all records from the partition are committed and applied to the underlying state machine the infrastructure calls the snapshot builder and squashed all the entries in such partition. After that, the log writes the snapshot into the separated file and removes the partition files from the file system. Exact behavior of this procedure as well as its performance depends on chosen compaction mode.
+* `BufferSize` is the number of bytes that is allocated by persistent WAL to perform I/O operations. Set it to the maximum expected log entry size to achieve the best performance.
+* `SnapshotBufferSize` is the number of bytes that is allocated by persistent WAL to perform I/O operations related to log snapshot. By default it is equal to `BufferSize`. You can set it explicitly to the maximum expected size of the log entry to achieve the best performance.
 * `InitialPartitionSize` represents the initial pre-allocated size, in bytes, of the empty partition file. This parameter allows to avoid fragmentation of the partition file at file-system level.
 * `UseCaching` is `bool` flag that allows to enable or disable in-memory caching of log entries metadata. `true` value allows to improve the performance or read/write operations by the cost of additional heap memory. `false` reduces the memory footprint by the cost of the read/write performance
 * `GetMemoryAllocator` generic method used for renting the memory and can be overridden
 * `MaxConcurrentReads` is a number of concurrent asynchronous operations which can perform reads in parallel. Write operations are always sequential. Ideally, the value should be equal to the number of nodes. However, the larger value consumes more system resources (e.g. file handles) and heap memory.
 * `ReplayOnInitialize` is a flag indicating that state of underlying database engine should be reconstructed when `InitializeAsync` is called by infrastructure. It can be done manually using `ReplayAsync` method.
+* `WriteThrough` indicates that the WAL should write through any intermediate cache and go directly to disk. In other words, it calls _fsync_ for each written portion of data. By default this option is disabled that dramatically increases I/O performance. However, you may lost the data because OS has its own buffer for flushing written data, especially on SSD. You can enable reliable writes by the cost of the I/O performance.
+* `BackupCompression` represents compression level used by `CreateBackupAsync` method.
+* `CompactionMode` represents log compaction mode. The default is _Sequential_.
 
 Choose `recordsPerPartition` value with care because it cannot be changed for the existing persistent WAL.
 
@@ -34,6 +38,7 @@ Let's write a simple custom audit trail based on the `PersistentState` to demons
 
 The example below additionally requires **DotNext.IO** library to simplify I/O work. 
 ```csharp
+using DotNext.Buffers;
 using DotNext.IO;
 using DotNext.Net.Cluster.Consensus.Raft;
 using System.Threading.Tasks;
@@ -47,14 +52,17 @@ sealed class SimpleAuditTrail : PersistentState
 	private sealed class SimpleSnapshotBuilder : SnapshotBuilder
 	{
 		private long currentValue;
-		private readonly Memory<byte> sharedBuffer;
+		private MemoryOwner<byte> sharedBuffer;
 
-		internal SimpleSnapshotBuilder(Memory<byte> buffer) => sharedBuffer = buffer;
+		internal SimpleSnapshotBuilder(MemoryAllocator<byte> allocator)
+		{
+			sharedBuffer = allocator.Invoke(2048, false);
+		}
 
 		//2.1
 		public override ValueTask CopyToAsync(Stream output, CancellationToken token)
 		{
-			return output.WriteAsync(currentValue, buffer, token);
+			return output.WriteAsync(currentValue, sharedBuffer.Memory, token);
 		}
 
 		//2.2
@@ -65,8 +73,26 @@ sealed class SimpleAuditTrail : PersistentState
 
 		//1
 		protected override async ValueTask ApplyAsync(LogEntry entry) => currentValue = await Decode(entry);
+
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing)
+			{
+				sharedBuffer.Dispose();
+				sharedBuffer = default;
+			}
+
+			base.Dispose(disposing);
+		}
 	}
-	
+
+	private readonly MemoryAllocator<byte>? snapshotBufferAllocator;
+
+	public SimpleAuditTrail(Options options)
+	{
+		snapshotBufferAllocator = options.GetMemoryAllocator<byte>();
+	}
+
 	//3
 	private static async Task<long> Decode(LogEntry entry) => ReadInt64LittleEndian((await entry.ReadAsync(sizeof(long))).Span);
 	
@@ -74,12 +100,22 @@ sealed class SimpleAuditTrail : PersistentState
     protected override async ValueTask ApplyAsync(LogEntry entry) => Value = await Decode(entry);
 	
 	//5
-    protected override SnapshotBuilder CreateSnapshotBuilder() => new SimpleSnapshotBuilder(Buffer);
+    protected override SnapshotBuilder CreateSnapshotBuilder() => new SimpleSnapshotBuilder(snapshotBufferAllocator);
 }
 ```
 1)Aggregates the commited entry with the existing state; 2)called by infrastructure to serialize the aggregated state into stream; 3)Decodes the command from the log entry; 4) Applies the log entry to the state machine; 5)Creates snapshot builder
 
 In the reality, the state machine should persist its state in reliable way, e.g. disk. The example above ignores this requirement for simplicity and maintain its state in the form of the field of type `long`.
+
+## Log Compaction
+WAL needs to squash old committed log entries to prevent growth of disk space usage. This procedure is called _log compaction_. As a result, the snapshot is produced. _Snapshot_ is a special kind of log entry that represents all squashed log entries up to the specified index calculated by WAL automatically. Log compaction is a heavy operation that may interfere with appending and reading operations due to lock contention.
+
+`PersistentState` offers the following compaction modes:
+* _Sequential_ offers the best optimization of disk space by the cost of read/write performance. During the sequential compaction, readers and appenders should wait until the end of the compaction procedure. In this case, wait time is proportional to the partition size (the number of entries per partition). Therefore, partition size should not be large. In this mode, the compaction algorithm trying to squash as much committed entries as possible during commit process. Even if you're committing the single entry, the compaction can be started for a entire partition. However, if the current partition is not full then compaction can be omitted.
+* _Background_ doesn't block the appending of new entries. It means that appending of new entries can be done in parallel with the log compaction. Moreover, you can specify compaction factor explicitly. In this case, WAL itself is not responsible for starting the compaction. You need to do this manually using `ForceCompactionAsync` method. Disk space may grow unexpectedly if the rate of the appending of new entries is much higher than the speed of the compaction. However, this compaction mode allows to control the performance precisely. Read operations still blocked if there is an active compaction.
+* _Foreground_ is forced automatically by WAL in parallel with the commit. In contrast to sequential compaction, the snapshot is created for the number of previously committed log entries equal to the number of currently committing entries. For instance, if you're trying to commit 4 log entries then the snapshot will be constructed for the last 4 log entries. In other words, this mode offers aggressive compaction forced on every commit but has low performance overhead. Moreover, the performance doesn't depend on partition size. This is the recommended compaction mode.
+
+_Foreground_ and _Background_ compaction modes demonstrate the best I/O performance on SSD (because of parallel writes to the disk) while _Sequential_ is suitable for classic HDD.
 
 # API Surface
 `PersistentState` can be used as general purpose Write Ahead Log. Any changes in the cluster node state can be represented as a series for log entries that can be appended to the log. Newly added entries are not committed. It means that there is no confirmation from other cluster nodes about consistent state of the log. When the consistency is reached across cluster then the all appended entries marked as committed and the commands contained in the committed log entries can be applied to the underlying database engine.
@@ -90,6 +126,8 @@ The following methods allows to implement this scenario:
 * `CommitAsync` marks appended entries as committed. Optionally, it can force log compaction
 * `EnsureConsistencyAsync` suspends the caller and waits until the last committed entry is from leader's term
 * `WaitForCommitAsync` waits for the specific or any commit
+* `CreateBackupAsync` creates backup of the log packed into ZIP archive
+* `ForceCompactionAsync` manually triggers log compaction. Has no effect if compaction mode other than _Background_.
 
 `ReadAsync` method can be used to obtain committed or uncommitted entries in stream-like manner.
 
@@ -236,6 +274,15 @@ Each command handler must be decorated with `CommandHandlerAttribute` attribute 
 * The first parameter is of command type
 * The second parameter is [CancellationToken](https://docs.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken)
 * Must be public instance method
+
+The handler of the log snapshot must be decored with `CommandHandlerAttribute` as well with `IsSnapshotHandler` property assigned to **true**:
+```csharp
+[CommandHandler(IsSnapshotHandler = true)]
+public async ValueTask HandleSnapshotAsync(LogSnapshot command, CancellationToken token)
+{
+}
+```
+`LogSnapshot` here is a custom command describing a whole snapshot.
 
 `CommandInterpreter` automatically discovers all declared command handlers and associated command types. Now the log entry can be appended easily:
 ```csharp
