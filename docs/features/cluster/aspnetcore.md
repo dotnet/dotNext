@@ -328,6 +328,11 @@ Raft algorithm requires additional persistent state in order to basic audit trai
 ## Reliable State
 Information about reliable persistent state which uses disk for storing write ahead log located in the separated [article](./wal.md). However, its usage turns your microservice into stateful service because its state persisted on disk. Consider this fact if you are using containerization technologies such as Docker or LXC.
 
+# Service Discovery
+The clustered application may be deployed in various hosting environments and container orchestrators. In case of classic deployment on virtual machines or containers the configuration of cluster members supplied via configuration file or any other configuration providers with the support of hot reloading in case when you have added or removed cluster members. There is another way to do the service discovery. [IMemberServiceDiscovery](xref:DotNext.Net.Cluster.Consensus.Raft.IMemberDiscovery) interface represents extension point at which you can implement your own mechanism of tracking cluster nodes. This way is much more simplier in comparison to custom [IConfigurationProvider](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.configuration.iconfigurationprovider). All you need is to implement this interface and register it as singleton service with `UseDiscoveryService` extension method or manually.
+
+Custom discovery mechanism is applicable when your hosting environment has its own discovery mechanism. For instance, you have [Consul](https://www.consul.io/) or Kubernetes. Kubernetes has its own mechanism for service discovery if you use [Service](https://kubernetes.io/docs/concepts/services-networking/service/) abstraction configured for your nodes.
+
 # Metrics
 It is possible to measure runtime metrics of Raft node internals using [HttpMetricsCollector](xref:DotNext.Net.Cluster.Consensus.Raft.Http.HttpMetricsCollector) class. The reporting mechanism is agnostic to the underlying metrics delivery library such as [AppMetrics](https://github.com/AppMetrics/AppMetrics).
 
