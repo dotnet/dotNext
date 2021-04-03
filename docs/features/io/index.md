@@ -113,10 +113,11 @@ In other words, this class has many similarities with [FileBufferingWriteStream]
 * It doesn't depend on ASP.NET Core
 * Ability to use custom [MemoryAllocator&lt;T&gt;](xref:DotNext.Buffers.MemoryAllocator`1) for memory pooling
 * Selection between synchronous and asynchronous modes
+* Ability to read the file used as backing store after closing the writer
 * Can drain content to [IBufferWriter&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1)
 * Ability to read written content as [Stream](https://docs.microsoft.com/en-us/dotnet/api/system.io.stream)
 * Ability to represent written content as [Memory&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.memory-1)
-* Ability to represent written content as [ReadOnlySequence&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) if it's too large for representation using `Memory<byte>` data type.
+* Ability to represent written content as [ReadOnlySequence&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) if it's too large for representation in the form of `Memory<byte>` data type
 
 The last two features are very useful in situations when the size of memory is not known at the time of the call of write operations. If written content is in memory then returned [Memory&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.memory-1) just references it. Otherwise, `FileBufferingWriter` utilizes memory-mapped file feature and returned [Memory&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.memory-1) represents mapped virtual memory. It's better than using pooled memory because of memory deterministic lifetime and GC pressure.
 
@@ -159,6 +160,31 @@ writer.Write(...);
 // read data from the stream
 using (Stream reader = writer.GetWrittenContentAsStream())
 {
+}
+```
+
+By default, the writer uses temporary file as backing store if in-memory buffer limit has been reached. This file will be deleted automatically when `Dispose` called. However, there is a way to leave the file untouched and reuse its content later. To do that, you need to specify file name explicitly:
+```csharp
+using DotNext.IO;
+using System;
+
+const string pathToFile = "/absolute/path/to/file";
+var options = new FileBufferingWriter.Options
+{
+    FileName = pathToFile,
+};
+
+using var writer = new FileBufferingWriter(options);
+
+if (writer.TryGetWrittenContent(out ReadOnlyMemory<byte> block, out string fileName))
+{
+    // All written content is in memory block, file was not used as backing store.
+    // Thus, fileName is null
+}
+else
+{
+    // All written content is in file.
+    // Thus, fileName contains full path to the file with the content and memory block is empty
 }
 ```
 
