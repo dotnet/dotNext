@@ -178,13 +178,13 @@ using var writer = new FileBufferingWriter(options);
 
 if (writer.TryGetWrittenContent(out ReadOnlyMemory<byte> block, out string fileName))
 {
-    // All written content is in memory block, file was not used as backing store.
+    // All written content is in memory block, file was not used as the backing store.
     // Thus, fileName is null
 }
 else
 {
     // All written content is in file.
-    // Thus, fileName contains full path to the file with the content and memory block is empty
+    // Thus, fileName contains full path to the file with the content and the memory block is empty
 }
 ```
 
