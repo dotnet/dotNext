@@ -57,7 +57,7 @@ The configuration of the local node depends on chosen network transport. [NodeCo
 | TimeToLive | No | 64 |  Time To Live (TTL) value of Internet Protocol (IP) packets |
 | RequestTimeout | No | _UpperElectionTimeout_ | Defines request timeout for accessing cluster members across the network |
 | LoggerFactory | No | [NullLoggerFactory.Instance](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.logging.abstractions.nullloggerfactory.instance) | The logger factory |
-
+| BufferingOptions | No | **null** | Enables buffering of log entries when transferring over the wire. If defined, receiver creates a buffered copy of the log entries and the snapshot before appending them to the log. It increases response time during replication but reduces the potential lock contention in WAL between replication process and other writers |
 
 ## ASP.NET Core
 `DotNext.AspNetCore.Cluster` library is an extension for ASP.NET Core for writing microservices and supporting the following features:
