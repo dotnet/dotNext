@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Tracing;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DotNext.Buffers
 {
@@ -94,6 +96,10 @@ namespace DotNext.Buffers
             WrittenMemory.Span.CopyTo(output, out var writtenCount);
             return writtenCount;
         }
+
+        /// <inheritdoc />
+        ValueTask IGrowableBuffer<T>.CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token)
+            => IsDisposed ? new ValueTask(DisposedTask) : consumer.Invoke(WrittenMemory, token);
 
         /// <summary>
         /// Writes single element.

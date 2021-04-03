@@ -21,3 +21,4 @@ MissingLogEntry=Log entry with relative index {0} doesn't exist in partition {1}
 UnknownCommand=Command with id {0} cannot be recognized by the interpreter
 MissingCommandFormatter=Command of type {0} doesn't have registered formatter
 MissingCommandAttribute=Type {0} is not marked with CommandAttribute
+MissingCommandId=Log entry must have associated command identifier

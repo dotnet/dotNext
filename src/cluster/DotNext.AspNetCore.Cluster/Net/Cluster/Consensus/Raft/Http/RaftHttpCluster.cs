@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics;
-using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,6 +24,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private readonly bool openConnectionForEachRequest;
         private readonly string clientHandlerName;
         private readonly HttpVersion protocolVersion;
+        private readonly RaftLogEntryBufferingOptions? bufferingOptions;
         private Optional<ClusterMemberId> localMember;
 
         private RaftHttpCluster(HttpClusterMemberConfiguration config, IServiceProvider dependencies, out MemberCollectionBuilder members, Func<Action<HttpClusterMemberConfiguration, string>, IDisposable> configTracker)
@@ -48,9 +47,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             httpHandlerFactory = dependencies.GetService<IHttpMessageHandlerFactory>();
             Logger = dependencies.GetRequiredService<ILoggerFactory>().CreateLogger(GetType());
             Metrics = dependencies.GetService<MetricsCollector>();
+            bufferingOptions = dependencies.GetBufferingOptions();
+            discoveryService = dependencies.GetService<IMemberDiscoveryService>();
 
-            // track changes in configuration
-            configurationTracker = configTracker(ConfigurationChanged);
+            // track changes in configuration, do not track membership if discovery service is enabled
+            configurationTracker = configTracker(discoveryService is null ? ConfigurationAndMembershipChanged : ConfigurationChanged);
         }
 
         private RaftHttpCluster(IOptionsMonitor<HttpClusterMemberConfiguration> config, IServiceProvider dependencies, out MemberCollectionBuilder members)
@@ -84,43 +85,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         ISubscriber? IMessageBus.Leader => Leader;
 
-        private async void ConfigurationChanged(HttpClusterMemberConfiguration configuration, string name)
+        private void ConfigurationChanged(HttpClusterMemberConfiguration configuration, string name)
         {
             metadata = new MemberMetadata(configuration.Metadata);
             allowedNetworks = configuration.AllowedNetworks.ToImmutableHashSet();
-            await ChangeMembersAsync((in MemberCollectionBuilder members) =>
-            {
-                var existingMembers = new HashSet<Uri>();
+        }
 
-                // remove members
-                foreach (var holder in members)
-                {
-                    Debug.Assert(holder.Member.BaseAddress is not null);
-                    if (configuration.Members.Contains(holder.Member.BaseAddress))
-                    {
-                        existingMembers.Add(holder.Member.BaseAddress);
-                    }
-                    else
-                    {
-                        using var member = holder.Remove();
-                        MemberRemoved?.Invoke(this, member);
-                        member.CancelPendingRequests();
-                    }
-                }
-
-                // add new members
-                foreach (var memberUri in configuration.Members)
-                {
-                    if (!existingMembers.Contains(memberUri))
-                    {
-                        var member = CreateMember(memberUri);
-                        members.Add(member);
-                        MemberAdded?.Invoke(this, member);
-                    }
-                }
-
-                existingMembers.Clear();
-            }).ConfigureAwait(false);
+        private async void ConfigurationAndMembershipChanged(HttpClusterMemberConfiguration configuration, string name)
+        {
+            ConfigurationChanged(configuration, name);
+            await ChangeMembersAsync(ChangeMembers, configuration.Members, CancellationToken.None).ConfigureAwait(false);
         }
 
         IReadOnlyDictionary<string, string> IHostingContext.Metadata => metadata;
@@ -139,30 +113,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         public event ClusterChangedEventHandler? MemberRemoved;
 
-        private protected abstract Task<ICollection<EndPoint>> GetHostingAddressesAsync();
-
-        private async Task<ClusterMemberId> DetectLocalMemberAsync(CancellationToken token)
-        {
-            var selector = configurator?.LocalMemberSelector;
-            RaftClusterMember? member;
-
-            if (selector is null)
-            {
-                var addresses = await GetHostingAddressesAsync().ConfigureAwait(false);
-                member = FindMember(addresses.Contains);
-            }
-            else
-            {
-                member = await FindMemberAsync(selector, token).ConfigureAwait(false);
-            }
-
-            return member?.Id ?? throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
-        }
-
         public override async Task StartAsync(CancellationToken token)
         {
             if (raftRpcTimeout > requestTimeout)
                 throw new RaftProtocolException(ExceptionMessages.InvalidRpcTimeout);
+
+            // discover members
+            if (discoveryService is not null)
+                await DiscoverMembersAsync(discoveryService, token).ConfigureAwait(false);
 
             // detect local member
             localMember = await DetectLocalMemberAsync(token).ConfigureAwait(false);
@@ -174,13 +132,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             configurator?.Shutdown(this);
             duplicationDetector.Trim(100);
-            return base.StopAsync(token);
+            var result = base.StopAsync(token);
+            if (membershipWatch is not null)
+            {
+                membershipWatch.Dispose();
+                membershipWatch = null;
+            }
+
+            return result;
         }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
+                membershipWatch?.Dispose();
                 localMember = default;
                 configurationTracker.Dispose();
                 duplicationDetector.Dispose();

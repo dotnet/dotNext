@@ -60,7 +60,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 try
                 {
                     var result = replicationAwaiter.GetResult();
-                    replicationAwaiter = default;
 
                     // analyze result and decrease node index when it is out-of-sync with the current node
                     if (result.Value)
@@ -79,6 +78,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 catch (Exception e)
                 {
                     SetException(e);
+                }
+                finally
+                {
+                    replicationAwaiter = default;
                 }
             }
 

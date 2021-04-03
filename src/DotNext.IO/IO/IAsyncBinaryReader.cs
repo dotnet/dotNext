@@ -373,6 +373,26 @@ namespace DotNext.IO
         ValueTask ReadAsync(Memory<byte> output, CancellationToken token = default);
 
         /// <summary>
+        /// Skips the block of bytes.
+        /// </summary>
+        /// <param name="length">The length of the block to skip, in bytes.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing state of asynchronous execution.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
+        async ValueTask SkipAsync(int length, CancellationToken token = default)
+        {
+            if (length < 0)
+                throw new ArgumentOutOfRangeException(nameof(length));
+            if (length > 0)
+            {
+                using var buffer = Buffers.BufferWriter.DefaultByteAllocator.Invoke(length, true);
+                await ReadAsync(buffer.Memory, token).ConfigureAwait(false);
+            }
+        }
+
+        /// <summary>
         /// Reads length-prefixed block of bytes.
         /// </summary>
         /// <param name="lengthFormat">The format of the block length encoded in the underlying stream.</param>
@@ -495,7 +515,8 @@ namespace DotNext.IO
         /// <returns>The stream reader.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="input"/> is <see langword="null"/>.</exception>
         /// <exception cref="ArgumentException"><paramref name="buffer"/> is empty.</exception>
-        public static IAsyncBinaryReader Create(Stream input, Memory<byte> buffer) => new AsyncStreamBinaryAccessor(input, buffer);
+        public static IAsyncBinaryReader Create(Stream input, Memory<byte> buffer)
+            => ReferenceEquals(input, Stream.Null) ? Empty : new AsyncStreamBinaryAccessor(input, buffer);
 
         /// <summary>
         /// Creates default implementation of binary reader over sequence of bytes.

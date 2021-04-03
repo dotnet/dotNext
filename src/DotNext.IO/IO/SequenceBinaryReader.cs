@@ -94,6 +94,27 @@ namespace DotNext.IO
         public void Read(Memory<byte> output) => Read<Missing, MemoryReader>(new MemoryReader(output));
 
         /// <summary>
+        /// Skips the specified number of bytes.
+        /// </summary>
+        /// <param name="length">The number of bytes to skip.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of sequence.</exception>
+        public void Skip(int length)
+        {
+            if (length < 0)
+                throw new ArgumentOutOfRangeException(nameof(length));
+
+            try
+            {
+                position = sequence.GetPosition(length, position);
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                throw new EndOfStreamException(e.Message, e);
+            }
+        }
+
+        /// <summary>
         /// Reads length-prefixed block of bytes.
         /// </summary>
         /// <param name="lengthFormat">The format of the block length encoded in the underlying stream.</param>
@@ -610,6 +631,31 @@ namespace DotNext.IO
                 try
                 {
                     Read(output);
+                }
+                catch (Exception e)
+                {
+                    result = Task.FromException(e);
+                }
+            }
+
+            return new ValueTask(result);
+        }
+
+        /// <inheritdoc/>
+        ValueTask IAsyncBinaryReader.SkipAsync(int length, CancellationToken token)
+        {
+            Task result;
+
+            if (token.IsCancellationRequested)
+            {
+                result = Task.FromCanceled(token);
+            }
+            else
+            {
+                result = Task.CompletedTask;
+                try
+                {
+                    Skip(length);
                 }
                 catch (Exception e)
                 {

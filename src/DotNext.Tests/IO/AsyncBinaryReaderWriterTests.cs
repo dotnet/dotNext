@@ -316,7 +316,7 @@ namespace DotNext.IO
             }
         }
 
-        public static IEnumerable<object[]> GetSourcesForCopy()
+        public static IEnumerable<object[]> GetSources()
         {
             yield return new object[] { new StreamSource() };
             yield return new object[] { new PipeSource() };
@@ -325,7 +325,7 @@ namespace DotNext.IO
         }
 
         [Theory]
-        [MemberData(nameof(GetSourcesForCopy))]
+        [MemberData(nameof(GetSources))]
         public static async Task CopyFromStreamToStream(IAsyncBinaryReaderWriterSource source)
         {
             await using(source)
@@ -364,7 +364,7 @@ namespace DotNext.IO
         }
 
         [Theory]
-        [MemberData(nameof(GetSourcesForCopy))]
+        [MemberData(nameof(GetSources))]
         public static async Task CopyUsingSpanAction(IAsyncBinaryReaderWriterSource source)
         {
             await using(source)
@@ -383,7 +383,7 @@ namespace DotNext.IO
         }
 
         [Theory]
-        [MemberData(nameof(GetSourcesForCopy))]
+        [MemberData(nameof(GetSources))]
         public static async Task CopyToBuffer(IAsyncBinaryReaderWriterSource source)
         {
             await using(source)
@@ -402,7 +402,7 @@ namespace DotNext.IO
         }
 
         [Theory]
-        [MemberData(nameof(GetSourcesForCopy))]
+        [MemberData(nameof(GetSources))]
         public static async Task CopyUsingAsyncFunc(IAsyncBinaryReaderWriterSource source)
         {
             await using(source)
@@ -465,6 +465,29 @@ namespace DotNext.IO
             var writer = IAsyncBinaryWriter.Create(stream, new byte[64]);
             await writer.WriteAsync((array, output) => output.Write(array), bytes);
             Equal(bytes, stream.ToArray());
+        }
+
+        [Theory]
+        [MemberData(nameof(GetSources))]
+        public static async Task SkipContent(IAsyncBinaryReaderWriterSource source)
+        {
+            await using (source)
+            {
+                var writer = source.CreateWriter();
+                await writer.WriteAsync(new byte[] {1, 2, 3});
+                await writer.WriteAsync(new byte[] { 4, 5, 6});
+                if (source is PipeSource pipe)
+                    await pipe.CompleteWriterAsync();
+
+                var reader = source.CreateReader();
+                Memory<byte> buffer = new byte[3];
+                await reader.SkipAsync(3);
+                await reader.ReadAsync(buffer);
+                Equal(4, buffer.Span[0]);
+                Equal(5, buffer.Span[1]);
+                Equal(6, buffer.Span[2]);
+                await ThrowsAsync<EndOfStreamException>(() => reader.SkipAsync(3).AsTask());
+            }
         }
     }
 }

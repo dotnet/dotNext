@@ -25,17 +25,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             pipe = new Pipe(options ?? PipeOptions.Default);
         }
 
-        internal static int ParseAnnouncement(ReadOnlySpan<byte> input, out ushort remotePort, out long term, out long snapshotIndex, out long length, out long snapshotTerm, out DateTimeOffset timestamp)
+        internal static int ParseAnnouncement(ReadOnlySpan<byte> input, out ushort remotePort, out long term, out long snapshotIndex, out LogEntryMetadata metadata)
         {
             var reader = new SpanReader<byte>(input);
 
             remotePort = reader.ReadUInt16(true);
             term = reader.ReadInt64(true);
             snapshotIndex = reader.ReadInt64(true);
-            length = reader.ReadInt64(true);
-            snapshotTerm = reader.ReadInt64(true);
-            timestamp = reader.Read<DateTimeOffset>();
-
+            metadata = new LogEntryMetadata(ref reader);
             return reader.ConsumedCount;
         }
 
@@ -46,9 +43,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             writer.WriteUInt16(myPort, true);
             writer.WriteInt64(term, true);
             writer.WriteInt64(snapshotIndex, true);
-            writer.WriteInt64(snapshot.Length.GetValueOrDefault(-1), true);
-            writer.WriteInt64(snapshot.Term, true);
-            writer.Write(snapshot.Timestamp);
+            LogEntryMetadata.Create(snapshot).Serialize(ref writer);
 
             return writer.WrittenCount;
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO.Compression;
+using System.Threading;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
@@ -8,17 +9,70 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     public partial class PersistentState
     {
         /// <summary>
+        /// Represents log compaction mode.
+        /// </summary>
+        public enum CompactionMode : byte
+        {
+            /// <summary>
+            /// Log compaction forced automatically during the commit process
+            /// which tries to squash as many committed entries as possible.
+            /// </summary>
+            /// <remarks>
+            /// It demonstrates the worst performance of the commit procedure in
+            /// combination with the most aggressive compaction that allows to minimize
+            /// usage of disk space.
+            /// </remarks>
+            Sequential = 0,
+
+            /// <summary>
+            /// Log compaction should be triggered manually with <see cref="ForceCompactionAsync(long, CancellationToken)"/>
+            /// in the background.
+            /// </summary>
+            /// <remarks>
+            /// Commit and log compaction don't interfere with each other so the commit
+            /// procedure demonstrates the best performance. However, this mode requires
+            /// more disk space because log compaction is executing in the background and
+            /// may be slower than commits.
+            /// </remarks>
+            Background = 1,
+
+            /// <summary>
+            /// Log compaction is executing automatically in parallel with the commit process.
+            /// </summary>
+            /// <remarks>
+            /// Demonstrates the best ratio between the performance of the commit process
+            /// and the log compaction. This mode provides the best efficiency if
+            /// <see cref="ApplyAsync(CancellationToken)"/> has approx the same execution
+            /// time as <see cref="SnapshotBuilder.ApplyAsync(LogEntry)"/>.
+            /// </remarks>
+            Foreground = 2,
+        }
+
+        /// <summary>
         /// Represents configuration options of the persistent audit trail.
         /// </summary>
         public class Options
         {
             private const int MinBufferSize = 128;
             private int bufferSize = 2048;
-            private int concurrencyLevel = 3;
+            private int? snapshotBufferSize;
+            private int concurrencyLevel = Math.Max(3, Environment.ProcessorCount);
             private long partitionSize;
 
             /// <summary>
-            /// Gets size of in-memory buffer for I/O operations.
+            /// Gets or sets a value indicating usage of intermediate buffers during I/O.
+            /// </summary>
+            /// <value>
+            /// <see langword="true"/> to bypass intermediate buffers for disk writes.
+            /// </value>
+            public bool WriteThrough
+            {
+                get;
+                set;
+            }
+
+            /// <summary>
+            /// Gets or sets size of in-memory buffer for I/O operations.
             /// </summary>
             /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is too small.</exception>
             public int BufferSize
@@ -29,6 +83,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     if (value < MinBufferSize)
                         throw new ArgumentOutOfRangeException(nameof(value));
                     bufferSize = value;
+                }
+            }
+
+            /// <summary>
+            /// Gets or sets size of in-memory buffer for I/O operations associated with
+            /// the construction of log snapshot.
+            /// </summary>
+            /// <remarks>
+            /// By default, the value of this buffer is equal to <see cref="BufferSize"/>.
+            /// </remarks>
+            /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is too small.</exception>
+            public int SnapshotBufferSize
+            {
+                get => snapshotBufferSize ?? bufferSize;
+                set
+                {
+                    if (value < MinBufferSize)
+                        throw new ArgumentOutOfRangeException(nameof(value));
+
+                    snapshotBufferSize = value;
                 }
             }
 
@@ -60,13 +134,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <summary>
             /// Gets or sets the number of possible parallel reads.
             /// </summary>
-            /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is less than 1.</exception>
+            /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is less than 2.</exception>
             public int MaxConcurrentReads
             {
                 get => concurrencyLevel;
                 set
                 {
-                    if (concurrencyLevel < 1)
+                    if (concurrencyLevel < 2)
                         throw new ArgumentOutOfRangeException(nameof(value));
                     concurrencyLevel = value;
                 }
@@ -81,6 +155,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// The default value is <see langword="true"/>.
             /// </remarks>
             public bool ReplayOnInitialize { get; set; } = true;
+
+            /// <summary>
+            /// Gets or sets log compaction mode.
+            /// </summary>
+            public CompactionMode CompactionMode { get; set; }
 
             /// <summary>
             /// Gets or sets compression level used

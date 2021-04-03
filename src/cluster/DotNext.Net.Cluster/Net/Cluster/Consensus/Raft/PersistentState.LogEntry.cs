@@ -1,10 +1,12 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.InteropServices;
 #if !NETSTANDARD2_1
 using System.Text.Json;
 #endif
 using System.Threading;
 using System.Threading.Tasks;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
@@ -21,47 +23,90 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         [StructLayout(LayoutKind.Auto)]
         protected readonly struct LogEntry : IRaftLogEntry
         {
-            private readonly StreamSegment content;
+            private readonly StreamSegment? content;
             private readonly LogEntryMetadata metadata;
             private readonly Memory<byte> buffer;
-            internal readonly long? SnapshotIndex;
 
-            internal LogEntry(StreamSegment cachedContent, Memory<byte> sharedBuffer, in LogEntryMetadata metadata)
+            // if negative then it's a snapshot index because |snapshotIndex| > 0
+            private readonly long index;
+
+            // for regular log entry
+            internal LogEntry(StreamSegment cachedContent, Memory<byte> sharedBuffer, in LogEntryMetadata metadata, long index)
             {
                 this.metadata = metadata;
                 content = cachedContent;
                 buffer = sharedBuffer;
-                SnapshotIndex = null;
+                this.index = index;
             }
 
+            // for snapshot
             internal LogEntry(StreamSegment cachedContent, Memory<byte> sharedBuffer, in SnapshotMetadata metadata)
             {
+                Debug.Assert(metadata.Index > 0L);
                 this.metadata = metadata.RecordMetadata;
                 content = cachedContent;
                 buffer = sharedBuffer;
-                SnapshotIndex = metadata.Index;
+                index = -metadata.Index;
             }
+
+            // for ephemeral entry
+            internal LogEntry(Memory<byte> sharedBuffer)
+            {
+                metadata = default;
+                content = null;
+                buffer = sharedBuffer;
+                index = 0L;
+            }
+
+            internal long? SnapshotIndex
+            {
+                get
+                {
+                    var i = -index;
+                    return i > 0L ? i : null;
+                }
+            }
+
+            /// <summary>
+            /// Gets the index of this log entry.
+            /// </summary>
+            public long Index => Math.Abs(index);
+
+            /// <summary>
+            /// Gets identifier of the command encapsulated by this log entry.
+            /// </summary>
+            public int? CommandId => metadata.Id;
 
             /// <summary>
             /// Gets a value indicating that this entry is a snapshot entry.
             /// </summary>
-            public bool IsSnapshot => SnapshotIndex.HasValue;
+            public bool IsSnapshot => index < 0L;
 
             /// <summary>
             /// Gets length of the log entry content, in bytes.
             /// </summary>
             public long Length => metadata.Length;
 
-            internal bool IsEmpty => metadata.Length == 0L;
+            internal bool IsEmpty => Length == 0L;
 
             internal void Reset()
-                => content.Adjust(metadata.Offset, Length);
+                => content?.Adjust(metadata.Offset, Length);
 
             /// <inheritdoc/>
             ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
             {
-                Reset();
-                return new ValueTask(writer.CopyFromAsync(content, token));
+                Task result;
+                if (content is null)
+                {
+                    result = Task.CompletedTask;
+                }
+                else
+                {
+                    Reset();
+                    result = writer.CopyFromAsync(content, token);
+                }
+
+                return new ValueTask(result);
             }
 
             /// <inheritdoc/>
@@ -84,8 +129,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public ValueTask<TResult> TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
                 where TTransformation : notnull, IDataTransferObject.ITransformation<TResult>
             {
-                Reset();
-                return IDataTransferObject.TransformAsync<TResult, TTransformation>(content, transformation, false, buffer, token);
+                Stream source;
+                if (content is null)
+                {
+                    source = Stream.Null;
+                }
+                else
+                {
+                    Reset();
+                    source = content;
+                }
+
+                return IDataTransferObject.TransformAsync<TResult, TTransformation>(source, transformation, false, buffer, token);
             }
 
             /// <summary>
@@ -94,6 +149,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <returns>The binary reader providing access to the content of this log entry.</returns>
             public IAsyncBinaryReader GetReader()
             {
+                if (content is null)
+                    return IAsyncBinaryReader.Empty;
+
                 Reset();
                 return IAsyncBinaryReader.Create(content, buffer);
             }
@@ -115,8 +173,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <seealso cref="CreateJsonLogEntry"/>
             public ValueTask<object?> DeserializeFromJsonAsync(Func<string, Type>? typeLoader = null, JsonSerializerOptions? options = null, CancellationToken token = default)
             {
-                Reset();
-                return JsonLogEntry.DeserializeAsync(content, typeLoader ?? JsonLogEntry.DefaultTypeLoader, options, token);
+                Stream source;
+                if (content is null)
+                {
+                    source = Stream.Null;
+                }
+                else
+                {
+                    Reset();
+                    source = content;
+                }
+
+                return JsonLogEntry.DeserializeAsync(source, typeLoader ?? JsonLogEntry.DefaultTypeLoader, options, token);
             }
 #endif
         }

@@ -16,7 +16,7 @@ namespace DotNext.Buffers
     {
         // Of type ArrayPool<T> or IMemoryOwner<T>.
         // If support of another type is needed then reconsider implementation
-        // of Memory, this[int index] and Expand members
+        // of Memory, this[nint index] and Expand members
         private readonly object? owner;
         private readonly T[]? array;  // not null only if owner is ArrayPool or null
         private readonly int length;
@@ -108,7 +108,7 @@ namespace DotNext.Buffers
         }
 
         /// <summary>
-        /// Gets length of the rented memory, in bytes.
+        /// Gets numbers of elements in the rented memory block.
         /// </summary>
         public int Length => length;
 
@@ -183,24 +183,38 @@ namespace DotNext.Buffers
         /// </summary>
         /// <param name="index">The index of the element in memory.</param>
         /// <value>The managed pointer to the item.</value>
-        public ref T this[int index]
+        public ref T this[nint index]
         {
             get
             {
                 if (index < 0 || index >= length)
                     goto invalid_index;
+
+                ref var result = ref Unsafe.NullRef<T>();
                 if (array is not null)
 #if NETSTANDARD2_1
-                    return ref array[index];
+                    result = ref array[0];
 #else
-                    return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(array), index);
+                    result = ref MemoryMarshal.GetArrayDataReference(array);
 #endif
-                if (owner is not null)
-                    return ref Unsafe.Add(ref MemoryMarshal.GetReference(Unsafe.As<IMemoryOwner<T>>(owner).Memory.Span), index);
+                else if (owner is not null)
+                    result = ref MemoryMarshal.GetReference(Unsafe.As<IMemoryOwner<T>>(owner).Memory.Span);
+                else
+                    goto invalid_index;
+
+                return ref Unsafe.Add(ref result, index);
+
                 invalid_index:
                 throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
+
+        /// <summary>
+        /// Gets managed pointer to the item in the rented memory.
+        /// </summary>
+        /// <param name="index">The index of the element in memory.</param>
+        /// <value>The managed pointer to the item.</value>
+        public ref T this[int index] => ref this[(nint)index];
 
         /// <summary>
         /// Releases rented memory.

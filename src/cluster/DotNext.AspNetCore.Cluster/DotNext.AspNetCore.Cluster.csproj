@@ -5,11 +5,11 @@
     <RootNamespace>DotNext</RootNamespace>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
-    <Version>3.0.0</Version>
+    <Version>3.1.0</Version>
     <Authors>Roman Sakno</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>Framework for fault-tolerant clustered microservices based on ASP.NET Core</Description>
-    <Copyright>Copyright © Roman Sakno 2020</Copyright>
+    <Copyright>Copyright © Roman Sakno 2021</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://sakno.github.io/dotNext/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/sakno/dotNext.git</RepositoryUrl>
@@ -52,7 +52,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="IPNetwork2" Version="2.5.240" />
+    <PackageReference Include="IPNetwork2" Version="2.5.292" />
     <FrameworkReference Include="Microsoft.AspNetCore.App" PrivateAssets="all" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
@@ -60,8 +60,8 @@
   </ItemGroup>
 
    <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
-    <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.11" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.1.11" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.12" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.1.13" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' != 'netcoreapp3.1'">
@@ -74,7 +74,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="DotNext.Net.Cluster" Version="[3.0.0, 4)" />
+    <PackageReference Include="DotNext.Net.Cluster" Version="[3.1.0, 4)" />
   </ItemGroup>
 
   <ItemGroup>

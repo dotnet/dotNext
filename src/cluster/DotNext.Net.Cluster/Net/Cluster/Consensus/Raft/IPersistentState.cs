@@ -34,8 +34,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Persists the last actual Term.
         /// </summary>
         /// <param name="term">The term value to be persisted.</param>
+        /// <param name="resetLastVote">
+        /// <see langword="true"/> to reset information about the last vote;
+        /// <see langword="false"/> to keep information about the last vote unchanged.
+        /// </param>
         /// <returns>The task representing asynchronous execution of the operation.</returns>
-        ValueTask UpdateTermAsync(long term);
+        ValueTask UpdateTermAsync(long term, bool resetLastVote);
 
         /// <summary>
         /// Persists the item that was voted for on in the last vote.

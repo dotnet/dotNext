@@ -14,8 +14,9 @@ The list of supported features:
 * Everything is extensible
     * Custom write-ahead log
     * Custom network transport
+    * Cluster members discovery
 
 Useful links:
 * [Overview of Cluster Programming Model](https://sakno.github.io/dotNext/features/cluster/index.html)
 * [Cluster Programming using Raft](https://sakno.github.io/dotNext/features/cluster/raft.html)
-* [API Reference](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.html)
+* [API Reference](https://www.fuget.org/packages/DotNext.Net.Cluster/3.1.0/lib/net5.0/DotNext.Net.Cluster.dll/DotNext.Net.Cluster.Consensus.Raft)

@@ -9,12 +9,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Missing = System.Reflection.Missing;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using IO.Log;
     using Threading;
-    using static Threading.Tasks.ValueTaskSynchronization;
     using Timestamp = Diagnostics.Timestamp;
 
     /// <summary>
@@ -157,10 +157,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         /// <summary>
-        /// Represents mutator of collection of members.
+        /// Represents mutator of a collection of cluster members.
         /// </summary>
         /// <param name="members">The collection of members maintained by instance of <see cref="RaftCluster{TMember}"/>.</param>
+        [Obsolete("Use generic version of this delegate")]
         protected delegate void MemberCollectionMutator(in MemberCollectionBuilder members);
+
+        /// <summary>
+        /// Represents mutator of a collection of cluster members.
+        /// </summary>
+        /// <param name="members">The collection of members maintained by instance of <see cref="RaftCluster{TMember}"/>.</param>
+        /// <param name="arg">The argument to be passed to the mutator.</param>
+        /// <typeparam name="T">The type of the argument.</typeparam>
+        protected delegate void MemberCollectionMutator<T>(in MemberCollectionBuilder members, T arg);
 
         private readonly bool allowPartitioning;
         private readonly bool standbyNode;
@@ -192,6 +201,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             this.members = collection;
             transitionSync = AsyncLock.Exclusive();
             transitionCancellation = new CancellationTokenSource();
+            Token = transitionCancellation.Token;
             auditTrail = new ConsensusOnlyState();
             heartbeatThreshold = config.HeartbeatThreshold;
             standbyNode = config.Standby;
@@ -233,30 +243,31 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Gets token that can be used for all internal asynchronous operations.
         /// </summary>
-        protected CancellationToken Token
-            => transitionCancellation.IsCancellationRequested ? new CancellationToken(true) : transitionCancellation.Token;
+        protected CancellationToken Token { get; } // cached to avoid ObjectDisposedException that may be caused by CTS.Token
 
-        private void ChangeMembers(MemberCollectionMutator mutator)
+        private void ChangeMembers<T>(MemberCollectionMutator<T> mutator, T arg)
         {
             var members = new MemberCollectionBuilder(this.members);
-            mutator(in members);
+            mutator(in members, arg);
             this.members = members.Build();
         }
 
         /// <summary>
         /// Modifies collection of cluster members.
         /// </summary>
+        /// <typeparam name="T">The type of the argument to be passed to the mutator.</typeparam>
         /// <param name="mutator">The action that can be used to change set of cluster members.</param>
+        /// <param name="arg">The argument to be passed to the mutator.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous execution of this method.</returns>
-        protected async Task ChangeMembersAsync(MemberCollectionMutator mutator, CancellationToken token)
+        protected async Task ChangeMembersAsync<T>(MemberCollectionMutator<T> mutator, T arg, CancellationToken token)
         {
             var tokenSource = token.LinkTo(Token);
-            var transitionLock = await transitionSync.TryAcquireAsync(token).ConfigureAwait(false);
+            var transitionLock = await transitionSync.TryAcquireAsync(token).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
             try
             {
                 if (transitionLock)
-                    ChangeMembers(mutator);
+                    ChangeMembers(mutator, arg);
             }
             finally
             {
@@ -269,7 +280,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Modifies collection of cluster members.
         /// </summary>
         /// <param name="mutator">The action that can be used to change set of cluster members.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous execution of this method.</returns>
+        [Obsolete("Use generic version of this method")]
+        protected Task ChangeMembersAsync(MemberCollectionMutator mutator, CancellationToken token)
+            => ChangeMembersAsync((in MemberCollectionBuilder builder, Missing arg) => mutator(in builder), Missing.Value, token);
+
+        /// <summary>
+        /// Modifies collection of cluster members.
+        /// </summary>
+        /// <param name="mutator">The action that can be used to change set of cluster members.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        [Obsolete("Use generic version of this method")]
         protected Task ChangeMembersAsync(MemberCollectionMutator mutator)
             => ChangeMembersAsync(mutator, CancellationToken.None);
 
@@ -379,7 +401,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private async Task StepDown(long newTerm)
         {
             if (newTerm > auditTrail.Term)
-                await WhenAll(auditTrail.UpdateTermAsync(newTerm), auditTrail.UpdateVotedForAsync(null)).ConfigureAwait(false);
+                await auditTrail.UpdateTermAsync(newTerm, true).ConfigureAwait(false);
             await StepDown().ConfigureAwait(false);
         }
 
@@ -465,7 +487,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns><see langword="true"/> if snapshot is installed successfully; <see langword="false"/> if snapshot is outdated.</returns>
         protected async Task<Result<bool>> ReceiveSnapshotAsync<TSnapshot>(TMember sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
-            where TSnapshot : IRaftLogEntry
+            where TSnapshot : notnull, IRaftLogEntry
         {
             var tokenSource = token.LinkTo(Token);
             var transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
@@ -502,7 +524,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns><see langword="true"/> if log entry is committed successfully; <see langword="false"/> if preceding is not present in local audit trail.</returns>
         protected async Task<Result<bool>> ReceiveEntriesAsync<TEntry>(TMember sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
-            where TEntry : IRaftLogEntry
+            where TEntry : notnull, IRaftLogEntry
         {
             var tokenSource = token.LinkTo(Token);
             var transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
@@ -636,13 +658,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 goto resign_denied;
 
             var lockHolder = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
-            var tokenSource = token.LinkTo(Token);
             try
             {
                 if (state is LeaderState leaderState)
                 {
                     await leaderState.StopAsync().ConfigureAwait(false);
-                    state = new FollowerState(this) { Metrics = Metrics }.StartServing(ElectionTimeout, token);
+                    state = new FollowerState(this) { Metrics = Metrics }.StartServing(ElectionTimeout, Token);
                     leaderState.Dispose();
                     Leader = null;
                     return true;
@@ -650,7 +671,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             finally
             {
-                tokenSource?.Dispose();
                 lockHolder.Dispose();
             }
 
@@ -676,7 +696,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         async void IRaftStateMachine.MoveToFollowerState(bool randomizeTimeout, long? newTerm)
         {
             Debug.Assert(state is not StandbyState);
-            using var lockHolder = await transitionSync.TryAcquireAsync(Token).ConfigureAwait(false);
+            using var lockHolder = await transitionSync.TryAcquireAsync(Token).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
             if (lockHolder)
             {
                 if (randomizeTimeout)
@@ -692,7 +712,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             var currentTerm = auditTrail.Term;
             var readyForTransition = await PreVoteAsync(currentTerm).ConfigureAwait(false);
-            using var lockHolder = await transitionSync.TryAcquireAsync(Token).ConfigureAwait(false);
+            using var lockHolder = await transitionSync.TryAcquireAsync(Token).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
             if (lockHolder && state is FollowerState followerState && followerState.IsExpired)
             {
                 Logger.TransitionToCandidateStateStarted();
@@ -763,7 +783,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             Debug.Assert(state is not StandbyState);
             Logger.TransitionToLeaderStateStarted();
-            using var lockHolder = await transitionSync.TryAcquireAsync(Token).ConfigureAwait(false);
+            using var lockHolder = await transitionSync.TryAcquireAsync(Token).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
             long currentTerm;
             if (lockHolder && state is CandidateState candidateState && candidateState.Term == (currentTerm = auditTrail.Term))
             {

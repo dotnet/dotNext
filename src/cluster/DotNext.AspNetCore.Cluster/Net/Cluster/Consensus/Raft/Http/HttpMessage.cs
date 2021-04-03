@@ -28,6 +28,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private const string RequestIdHeader = "X-Request-ID";
 
         private protected static readonly ValueParser<long> Int64Parser = long.TryParse;
+        private protected static readonly ValueParser<int> Int32Parser = int.TryParse;
         private static readonly ValueParser<ClusterMemberId> IpAddressParser = ClusterMemberId.TryParse;
         private protected static readonly ValueParser<bool> BooleanParser = bool.TryParse;
         private static readonly Random RequestIdGenerator = new Random();
@@ -70,6 +71,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             Id = ParseHeader(RequestIdHeader, headers);
         }
 
+        /// <summary>
+        /// Interprets <see cref="HttpRequestException"/> produced by HTTP client.
+        /// </summary>
+        /// <returns><see langword="true"/> to handle the response as <see cref="MemberUnavailableException"/>.</returns>
+        internal virtual bool IsMemberUnavailable(HttpStatusCode? code)
+            => code is null || code.GetValueOrDefault() == HttpStatusCode.InternalServerError;
+
         private static string GetMessageType(HeadersReader<StringValues> headers) =>
             ParseHeader(MessageTypeHeader, headers);
 
@@ -111,6 +119,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
 
             throw new RaftProtocolException(ExceptionMessages.MissingHeader(headerName));
+        }
+
+        private protected static T? ParseHeaderAsNullable<THeaders, T>(string headerName, HeadersReader<THeaders> reader, ValueParser<T> parser)
+            where THeaders : IEnumerable<string>
+            where T : struct
+        {
+            if (reader(headerName, out var headers))
+            {
+                foreach (var header in headers)
+                {
+                    if (parser(header, out var result))
+                        return result;
+                }
+            }
+
+            return null;
         }
 
         private protected static string ParseHeader<THeaders>(string headerName, HeadersReader<THeaders> reader)

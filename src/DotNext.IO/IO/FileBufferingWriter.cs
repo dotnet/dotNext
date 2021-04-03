@@ -1,6 +1,7 @@
 using System;
 using System.Buffers;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Tracing;
 using System.IO;
 using System.IO.MemoryMappedFiles;
@@ -12,7 +13,6 @@ using static System.Runtime.InteropServices.MemoryMarshal;
 namespace DotNext.IO
 {
     using Buffers;
-    using static Runtime.Intrinsics;
     using static Threading.AsyncDelegate;
 
     /// <summary>
@@ -28,9 +28,6 @@ namespace DotNext.IO
     /// </remarks>
     public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, IGrowableBuffer<byte>, IFlushable
     {
-        internal const int DefaultMemoryThreshold = 32768;
-        private const int FileBufferSize = 1024;
-
         [StructLayout(LayoutKind.Auto)]
         private readonly struct ReadSession : IDisposable
         {
@@ -161,13 +158,13 @@ namespace DotNext.IO
             }
         }
 
+        private readonly BackingFileProvider fileProvider;
         private readonly int memoryThreshold;
-        private readonly string tempDir;
         private readonly MemoryAllocator<byte>? allocator;
-        private readonly FileOptions options;
         private MemoryOwner<byte> buffer;
         private int position;
         private FileStream? fileBackend;
+        private EventCounter? allocationCounter;
 
         // If null or .Target is null then there is no active readers.
         // Weak reference allows to track leaked readers when Dispose() was not called on them
@@ -187,39 +184,42 @@ namespace DotNext.IO
         /// <param name="asyncIO"><see langword="true"/> if you will use asynchronous methods of the instance; otherwise, <see langword="false"/>.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="memoryThreshold"/> is less than or equal to zero; or <paramref name="initialCapacity"/> is less than zero or greater than <paramref name="memoryThreshold"/>.</exception>
         /// <exception cref="DirectoryNotFoundException"><paramref name="tempDir"/> doesn't exist.</exception>
-        public FileBufferingWriter(MemoryAllocator<byte>? allocator = null, int memoryThreshold = DefaultMemoryThreshold, int initialCapacity = 0, string? tempDir = null, bool asyncIO = true)
+        public FileBufferingWriter(MemoryAllocator<byte>? allocator = null, int memoryThreshold = Options.DefaultMemoryThreshold, int initialCapacity = 0, string? tempDir = null, bool asyncIO = true)
+            : this(new Options { MemoryAllocator = allocator, MemoryThreshold = memoryThreshold, InitialCapacity = initialCapacity, TempDir = tempDir, AsyncIO = asyncIO })
         {
-            if (memoryThreshold <= 0)
-                throw new ArgumentOutOfRangeException(nameof(memoryThreshold));
-            if (initialCapacity < 0 || initialCapacity > memoryThreshold)
-                throw new ArgumentOutOfRangeException(nameof(initialCapacity));
-            if (string.IsNullOrEmpty(tempDir))
-                tempDir = Environment.GetEnvironmentVariable("ASPNETCORE_TEMP").IfNullOrEmpty(Path.GetTempPath());
-            if (!Directory.Exists(tempDir))
-                throw new DirectoryNotFoundException(ExceptionMessages.DirectoryNotFound(tempDir));
-            this.allocator = allocator;
-            this.tempDir = tempDir;
-            if (initialCapacity > 0)
+        }
+
+        /// <summary>
+        /// Initializes a new writer.
+        /// </summary>
+        /// <param name="options">Buffer writer options.</param>
+        /// <exception cref="DirectoryNotFoundException">Temporary directory for the backing file doesn't exist.</exception>
+        public FileBufferingWriter(in Options options)
+        {
+            if (options.UseTemporaryFile && !Directory.Exists(options.Path))
+                throw new DirectoryNotFoundException(ExceptionMessages.DirectoryNotFound(options.Path));
+
+            allocator = options.MemoryAllocator;
+            var memoryThreshold = options.MemoryThreshold;
+            if (options.InitialCapacity > 0)
             {
-                buffer = allocator.Invoke(initialCapacity, false);
+                buffer = allocator.Invoke(options.InitialCapacity, false);
                 if (buffer.Length > memoryThreshold)
                     memoryThreshold = buffer.Length < int.MaxValue ? buffer.Length + 1 : int.MaxValue;
             }
 
             this.memoryThreshold = memoryThreshold;
-
-            const FileOptions withAsyncIO = FileOptions.Asynchronous | FileOptions.DeleteOnClose | FileOptions.SequentialScan;
-            const FileOptions withoutAsyncIO = FileOptions.DeleteOnClose | FileOptions.SequentialScan;
-            options = asyncIO ? withAsyncIO : withoutAsyncIO;
+            fileProvider = new BackingFileProvider(in options);
+            allocationCounter = options.AllocationCounter;
         }
 
         /// <summary>
-        /// Sets the counter used to report allocation of internal buffer.
+        /// Sets the counter used to report allocation of the internal buffer.
         /// </summary>
+        [Obsolete("Use Options.AllocationCounter property instead")]
         public EventCounter? AllocationCounter
         {
-            private get;
-            set;
+            set => allocationCounter = value;
         }
 
         private static MemoryMappedFile CreateMemoryMappedFile(FileStream fileBackend)
@@ -252,7 +252,7 @@ namespace DotNext.IO
 
         /// <inheritdoc />
         void IGrowableBuffer<byte>.CopyTo<TConsumer>(TConsumer consumer)
-            => CopyTo(consumer, 1024, CancellationToken.None);
+            => CopyTo(consumer, Options.DefaultFileBufferSize, CancellationToken.None);
 
         private bool IsReading => reader?.Target is not null;
 
@@ -303,7 +303,7 @@ namespace DotNext.IO
                 case MemoryEvaluationResult.PersistExistingBuffer:
                     PersistBuffer();
                     buffer = allocator.Invoke(sizeHint, false);
-                    AllocationCounter?.WriteMetric(buffer.Length);
+                    allocationCounter?.WriteMetric(buffer.Length);
                     result = buffer.Memory.Slice(0, sizeHint);
                     break;
                 default:
@@ -342,7 +342,7 @@ namespace DotNext.IO
                 buffer.Memory.CopyTo(newBuffer.Memory);
                 buffer.Dispose();
                 buffer = newBuffer;
-                AllocationCounter?.WriteMetric(newBuffer.Length);
+                allocationCounter?.WriteMetric(newBuffer.Length);
             }
 
             output = buffer.Memory.Slice(position, size);
@@ -391,7 +391,7 @@ namespace DotNext.IO
                 case MemoryEvaluationResult.PersistExistingBuffer:
                     await PersistBufferAsync(token).ConfigureAwait(false);
                     this.buffer = allocator.Invoke(buffer.Length, false);
-                    AllocationCounter?.WriteMetric(this.buffer.Length);
+                    allocationCounter?.WriteMetric(this.buffer.Length);
                     buffer.CopyTo(this.buffer.Memory);
                     position = buffer.Length;
                     break;
@@ -419,7 +419,7 @@ namespace DotNext.IO
                 case MemoryEvaluationResult.PersistExistingBuffer:
                     PersistBuffer();
                     this.buffer = allocator.Invoke(buffer.Length, false);
-                    AllocationCounter?.WriteMetric(this.buffer.Length);
+                    allocationCounter?.WriteMetric(this.buffer.Length);
                     buffer.CopyTo(this.buffer.Memory.Span);
                     position = buffer.Length;
                     break;
@@ -432,8 +432,7 @@ namespace DotNext.IO
             }
         }
 
-        private void EnsureBackingStore()
-            => fileBackend ??= new FileStream(Path.Combine(tempDir, Path.GetRandomFileName()), FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read, FileBufferSize, options);
+        private void EnsureBackingStore() => fileBackend ??= fileProvider.Invoke();
 
         /// <inheritdoc/>
         public override void Write(byte[] buffer, int offset, int count)
@@ -452,7 +451,7 @@ namespace DotNext.IO
         {
             Task task;
 
-            if (HasFlag(options, FileOptions.Asynchronous))
+            if (fileProvider.IsAsynchronous)
             {
                 task = WriteAsync(buffer, offset, count, CancellationToken.None);
 
@@ -556,6 +555,10 @@ namespace DotNext.IO
             if (buffer.Length > 0 && position > 0)
                 await consumer.Invoke(buffer.Memory.Slice(0, position), token).ConfigureAwait(false);
         }
+
+        /// <inheritdoc />
+        ValueTask IGrowableBuffer<byte>.CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token)
+            => new ValueTask(CopyToAsync(consumer, Options.DefaultFileBufferSize, token));
 
         /// <summary>
         /// Drains the written content to the consumer synchronously.
@@ -812,6 +815,31 @@ namespace DotNext.IO
             }
 
             content = default;
+            return false;
+        }
+
+        /// <summary>
+        /// Attempts to get written content if it is located in memory.
+        /// </summary>
+        /// <remarks>
+        /// If this method returns <see langword="false"/> then
+        /// <paramref name="fileName"/> contains full path to the file containing the written content.
+        /// This method is useful only if the file was not created as temporary file.
+        /// </remarks>
+        /// <param name="content">The written content.</param>
+        /// <param name="fileName">The path to the file used as a buffer if this writer switched to the file.</param>
+        /// <returns><see langword="true"/> if whole content is in memory and available without allocation of <see cref="MemoryManager{T}"/>; otherwise, <see langword="false"/>.</returns>
+        public bool TryGetWrittenContent(out ReadOnlyMemory<byte> content, [NotNullWhen(false)] out string? fileName)
+        {
+            if (fileBackend is null)
+            {
+                content = buffer.Memory.Slice(0, position);
+                fileName = null;
+                return true;
+            }
+
+            content = default;
+            fileName = fileBackend.Name;
             return false;
         }
 

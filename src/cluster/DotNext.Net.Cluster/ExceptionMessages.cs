@@ -60,5 +60,7 @@ namespace DotNext
         internal static string MissingCommandAttribute<TCommand>()
             where TCommand : struct
             => Resources.Get().Format(typeof(TCommand));
+
+        internal static string MissingCommandId => (string)Resources.Get();
     }
 }

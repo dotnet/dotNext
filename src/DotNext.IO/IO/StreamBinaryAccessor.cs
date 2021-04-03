@@ -42,6 +42,32 @@ namespace DotNext.IO
         public ValueTask ReadAsync(Memory<byte> output, CancellationToken token = default)
             => StreamExtensions.ReadBlockAsync(stream, output, token);
 
+        private async ValueTask SkipSlowAsync(int length, CancellationToken token)
+        {
+            for (int bytesRead; length > 0; length -= bytesRead)
+            {
+                bytesRead = await stream.ReadAsync(length < buffer.Length ? buffer.Slice(0, length) : buffer, token).ConfigureAwait(false);
+                if (bytesRead == 0)
+                    throw new EndOfStreamException();
+            }
+        }
+
+        ValueTask IAsyncBinaryReader.SkipAsync(int length, CancellationToken token)
+        {
+            if (length < 0)
+                return new ValueTask(Task.FromException(new ArgumentOutOfRangeException(nameof(length))));
+
+            if (!stream.CanSeek)
+                return SkipSlowAsync(length, token);
+
+            var current = stream.Position;
+            if (current + length > stream.Length)
+                return new ValueTask(Task.FromException(new EndOfStreamException()));
+
+            stream.Position = length + current;
+            return new ValueTask();
+        }
+
         ValueTask<MemoryOwner<byte>> IAsyncBinaryReader.ReadAsync(LengthFormat lengthFormat, MemoryAllocator<byte>? allocator, CancellationToken token)
             => StreamExtensions.ReadBlockAsync(stream, lengthFormat, buffer, allocator, token);
 

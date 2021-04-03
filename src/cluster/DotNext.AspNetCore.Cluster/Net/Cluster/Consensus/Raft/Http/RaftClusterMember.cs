@@ -102,15 +102,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             catch (HttpRequestException e)
             {
 #if NETCOREAPP3_1
-                if (response is null || response.StatusCode == HttpStatusCode.InternalServerError)
+                if (response is null || message.IsMemberUnavailable(response.StatusCode))
 #else
-                if (response is null || Nullable.Equals(e.StatusCode, HttpStatusCode.InternalServerError))
+                if (response is null || message.IsMemberUnavailable(e.StatusCode))
 #endif
-                {
-                    context.Logger.MemberUnavailable(endPoint, e);
-                    ChangeStatus(ClusterMemberStatus.Unavailable);
-                    throw new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, e);
-                }
+                    throw MemberUnavailable(e);
 
                 throw new UnexpectedStatusCodeException(response, e);
             }

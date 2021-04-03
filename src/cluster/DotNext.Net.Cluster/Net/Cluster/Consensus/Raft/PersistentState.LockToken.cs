@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,12 +6,8 @@ using static System.Threading.Timeout;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    using static Threading.AtomicInt64;
-
     public partial class PersistentState
     {
-        private long lockVersion;
-
         /// <summary>
         /// Represents the token describing acquired write lock.
         /// </summary>
@@ -20,27 +15,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public readonly struct WriteLockToken : IDisposable
         {
             private readonly long version;
-            private readonly PersistentState state;
+            private readonly IWriteLock state;
 
-            internal WriteLockToken(PersistentState state)
+            internal WriteLockToken(IWriteLock state)
             {
                 this.state = state;
-                version = state.lockVersion.VolatileRead();
+                version = state.Version;
             }
 
-            internal bool IsValid(PersistentState state)
-                => ReferenceEquals(this.state, state) && state.lockVersion.VolatileRead() == version;
+            internal bool IsValid(IWriteLock state)
+                => ReferenceEquals(this.state, state) && state.Version == version;
 
             /// <summary>
             /// Releases write lock.
             /// </summary>
-            public void Dispose()
-            {
-                if (state.lockVersion.CompareAndSet(version, version + 1L))
-                    state.syncRoot.Release();
-                else
-                    Debug.Fail(ExceptionMessages.InvalidLockToken);
-            }
+            public void Dispose() => state.Release(version);
         }
 
         /// <summary>
@@ -49,10 +38,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="token">The token of acquired lock to verify.</param>
         /// <returns><see langword="true"/> if <paramref name="token"/> is valid; otherwise, <see langword="false"/>.</returns>
         public bool Validate(in WriteLockToken token)
-            => token.IsValid(this);
+            => token.IsValid(syncRoot);
 
         /// <summary>
-        /// Acquires write lock so the caller has exclusive rights to write the entries.
+        /// Acquires write lock so the caller has exclusive rights to write the entries except snapshot installation.
         /// </summary>
         /// <param name="timeout">Lock acquisition timeout.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
@@ -60,10 +49,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <exception cref="TimeoutException">The lock has not been acquired in the specified time window.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public async Task<WriteLockToken> AcquireWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
-        {
-            await syncRoot.AcquireAsync(true, timeout, token).ConfigureAwait(false);
-            return new WriteLockToken(this);
-        }
+            => await syncRoot.AcquireWriteLockAsync(timeout, token).ConfigureAwait(false) ? new WriteLockToken(syncRoot) : throw new TimeoutException();
 
         /// <summary>
         /// Acquires write lock so the caller has exclusive rights to write the entries.
