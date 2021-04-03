@@ -386,6 +386,9 @@ It is possible to derive directly from [MetricsCollector](xref:DotNext.Net.Clust
 
 Implementation of reporting method should fast as possible or asynchronous. If reporting causes I/O operations synchronously then it affects the overall performance of Cluster library internals such as communication with other cluster members which is time-critical.
 
+# Development and Debugging
+It may be hard to reproduce the real cluster on developer's machine. You may want to run your node in _Debug_ mode and ensure that the node you're running is a leader node. To do that, you need to configure only one node in the list of cluster members.
+
 # Example
 There is Raft playground represented by RaftNode application. You can find this app [here](https://github.com/sakno/dotNext/tree/develop/src/examples/RaftNode). This playground allows to test Raft consensus protocol in real world. Each instance of launched application represents cluster node. All nodes can be started using the following script:
 ```bash
