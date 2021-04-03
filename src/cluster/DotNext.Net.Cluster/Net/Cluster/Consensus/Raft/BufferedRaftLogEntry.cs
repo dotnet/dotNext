@@ -143,10 +143,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             where TEntry : notnull, IRaftLogEntry
         {
             var output = new FileStream(options.GetRandomFileName(), FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, options.BufferSize, FileOptions.Asynchronous | FileOptions.SequentialScan | FileOptions.DeleteOnClose);
-            output.SetLength(length);
             var buffer = options.RentBuffer();
             try
             {
+                output.SetLength(length);
                 await entry.WriteToAsync(output, buffer.Memory, token).ConfigureAwait(false);
                 await output.FlushAsync(token).ConfigureAwait(false);
             }
