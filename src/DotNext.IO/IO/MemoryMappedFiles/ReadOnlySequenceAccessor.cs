@@ -251,6 +251,7 @@ namespace DotNext.IO.MemoryMappedFiles
                 segment = null;
                 if (ownsFile)
                     mappedFile.Dispose();
+                current = default;
             }
 
             ptr = null;
