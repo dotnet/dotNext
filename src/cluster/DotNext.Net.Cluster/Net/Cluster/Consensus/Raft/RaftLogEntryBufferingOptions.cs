@@ -9,7 +9,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// <summary>
     /// Represents options for creating buffered Raft log entries.
     /// </summary>
-    public sealed class RaftLogEntryBufferingOptions
+    public class RaftLogEntryBufferingOptions
     {
         private const int DefaultMemoryThreshold = 32768;
         private const int DefaultFileBufferSize = 4096;

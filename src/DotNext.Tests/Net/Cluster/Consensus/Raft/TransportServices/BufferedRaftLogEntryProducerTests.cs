@@ -44,7 +44,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             var content2 = RandomBytes(4096);
 
             await using var entries = new LogEntryProducer<RaftLogEntry>(new RaftLogEntry(42L, content1, knownLength), new RaftLogEntry(43L, content2, knownLength));
-            var options = new RaftLogEntryBufferingOptions { MemoryThreshold = 1025 };
+            var options = new RaftLogEntriesBufferingOptions { MemoryThreshold = 1025 };
             await using ILogEntryProducer<BufferedRaftLogEntry> buffered = await BufferedRaftLogEntryProducer.CopyAsync(entries, options);
             Equal(2L, buffered.RemainingCount);
             True(await buffered.MoveNextAsync());

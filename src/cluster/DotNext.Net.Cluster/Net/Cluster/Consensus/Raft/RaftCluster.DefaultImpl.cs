@@ -24,7 +24,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly IPEndPoint publicEndPoint;
         private readonly Func<ILocalMember, IPEndPoint, IClientMetricsCollector?, RaftClusterMember> clientFactory;
         private readonly Func<ILocalMember, IServer> serverFactory;
-        private readonly RaftLogEntryBufferingOptions? bufferingOptions;
+        private readonly RaftLogEntriesBufferingOptions? bufferingOptions;
         private IServer? server;
 
         /// <summary>

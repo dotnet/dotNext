@@ -37,13 +37,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         /// <typeparam name="TEntry">The type of the entry in the source sequence.</typeparam>
         /// <returns>The copy of the log entries.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static async Task<BufferedRaftLogEntryProducer> CopyAsync<TEntry>(ILogEntryProducer<TEntry> producer, RaftLogEntryBufferingOptions options, CancellationToken token = default)
+        public static async Task<BufferedRaftLogEntryProducer> CopyAsync<TEntry>(ILogEntryProducer<TEntry> producer, RaftLogEntriesBufferingOptions options, CancellationToken token = default)
             where TEntry : notnull, IRaftLogEntry
         {
             var entries = new BufferedRaftLogEntry[producer.RemainingCount];
+            long bufferedBytes = 0L;
             for (nint index = 0; await producer.MoveNextAsync().ConfigureAwait(false); index++)
             {
-                entries[index] = await BufferedRaftLogEntry.CopyAsync(producer.Current, options, token).ConfigureAwait(false);
+                var current = producer.Current;
+                var buffered = await (bufferedBytes < options.MemoryLimit ?
+                    BufferedRaftLogEntry.CopyAsync(current, options, token) :
+                    BufferedRaftLogEntry.CopyToFileAsync(current, options, current.Length, token)).ConfigureAwait(false);
+
+                entries[index] = buffered;
+
+                if (buffered.InMemory)
+                    bufferedBytes += buffered.Length;
             }
 
             return new BufferedRaftLogEntryProducer(entries);

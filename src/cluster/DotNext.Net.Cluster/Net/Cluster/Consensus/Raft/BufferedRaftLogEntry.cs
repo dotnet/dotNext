@@ -31,6 +31,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             commandId = id;
             IsSnapshot = snapshot;
             content = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.None, bufferSize, FileOptions.SequentialScan | FileOptions.Asynchronous | FileOptions.DeleteOnClose);
+            InMemory = false;
         }
 
         private BufferedRaftLogEntry(FileStream file, long term, DateTimeOffset timestamp, int? id, bool snapshot)
@@ -40,6 +41,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             commandId = id;
             content = file;
             IsSnapshot = snapshot;
+            InMemory = false;
         }
 
         private BufferedRaftLogEntry(IGrowableBuffer<byte> buffer, long term, DateTimeOffset timestamp, int? id, bool snapshot)
@@ -49,6 +51,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             commandId = id;
             content = buffer;
             IsSnapshot = snapshot;
+            InMemory = true;
         }
 
         private BufferedRaftLogEntry(long term, DateTimeOffset timestamp, int? id, bool snapshot)
@@ -58,7 +61,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             commandId = id;
             content = null;
             IsSnapshot = snapshot;
+            InMemory = true;
         }
+
+        internal bool InMemory { get; }
 
         /// <summary>
         /// Gets a value indicating whether the current log entry is a snapshot.
@@ -139,14 +145,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return new BufferedRaftLogEntry(writer, entry.Term, entry.Timestamp, entry.CommandId, entry.IsSnapshot);
         }
 
-        private static async ValueTask<BufferedRaftLogEntry> CopyToFileAsync<TEntry>(TEntry entry, RaftLogEntryBufferingOptions options, long length, CancellationToken token)
+        internal static async ValueTask<BufferedRaftLogEntry> CopyToFileAsync<TEntry>(TEntry entry, RaftLogEntryBufferingOptions options, long? length, CancellationToken token)
             where TEntry : notnull, IRaftLogEntry
         {
             var output = new FileStream(options.GetRandomFileName(), FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, options.BufferSize, FileOptions.Asynchronous | FileOptions.SequentialScan | FileOptions.DeleteOnClose);
             var buffer = options.RentBuffer();
             try
             {
-                output.SetLength(length);
+                if (length.HasValue)
+                    output.SetLength(length.GetValueOrDefault());
+
                 await entry.WriteToAsync(output, buffer.Memory, token).ConfigureAwait(false);
                 await output.FlushAsync(token).ConfigureAwait(false);
             }
