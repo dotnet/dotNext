@@ -14,7 +14,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         /// The maximum amount of memory that can be allocated for the buffered log entry.
         /// </summary>
         /// <remarks>
-        /// If limit is reached then the log entries will be stored on the disk.
+        /// If the limit is reached then the log entries will be stored on the disk.
         /// </remarks>
         public int MemoryLimit
         {
