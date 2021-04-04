@@ -243,7 +243,7 @@ namespace DotNext.IO.MemoryMappedFiles
         }
 
         /// <inheritdoc/>
-        protected override void Dispose(bool disposing)
+        protected override unsafe void Dispose(bool disposing)
         {
             if (disposing)
             {
@@ -253,6 +253,7 @@ namespace DotNext.IO.MemoryMappedFiles
                     mappedFile.Dispose();
             }
 
+            ptr = null;
             base.Dispose(disposing);
         }
     }
