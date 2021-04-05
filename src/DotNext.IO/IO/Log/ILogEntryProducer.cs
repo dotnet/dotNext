@@ -56,14 +56,14 @@ namespace DotNext.IO.Log
         where TEntry : notnull, ILogEntry
     {
         private const int InitialPosition = -1;
-        private readonly IList<TEntry> source;
+        private readonly IReadOnlyList<TEntry> source;
         private int currentIndex;
 
         /// <summary>
         /// Initializes a new producer of the log entries passed as list.
         /// </summary>
         /// <param name="entries">The list of the log entries to be returned by the producer.</param>
-        public LogEntryProducer(IList<TEntry> entries)
+        public LogEntryProducer(IReadOnlyList<TEntry> entries)
         {
             currentIndex = InitialPosition;
             source = entries;
@@ -74,7 +74,7 @@ namespace DotNext.IO.Log
         /// </summary>
         /// <param name="entries">The log entries to be returned by the producer.</param>
         public LogEntryProducer(params TEntry[] entries)
-            : this(entries.As<IList<TEntry>>())
+            : this(entries.As<IReadOnlyList<TEntry>>())
         {
         }
 
@@ -108,12 +108,7 @@ namespace DotNext.IO.Log
         public void Reset() => currentIndex = InitialPosition;
 
         /// <inheritdoc/>
-        ValueTask IAsyncDisposable.DisposeAsync()
-        {
-            if (!source.IsReadOnly)
-                source.Clear();
-            return new ValueTask();
-        }
+        ValueTask IAsyncDisposable.DisposeAsync() => new ValueTask();
 
         /// <summary>
         /// Constructs producer of single log entry.
