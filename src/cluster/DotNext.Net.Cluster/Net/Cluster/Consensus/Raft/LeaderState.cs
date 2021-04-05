@@ -129,6 +129,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
+        private sealed class AsyncResultSet : LinkedList<ValueTask<Result<bool>>>
+        {
+        }
+
         private readonly long currentTerm;
         private readonly bool allowPartitioning;
         private readonly CancellationTokenSource timerCancellation;
@@ -149,10 +153,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private async Task<bool> DoHeartbeats(IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)
         {
             var timeStamp = Timestamp.Current;
-            var tasks = new LinkedList<ValueTask<Result<bool>>>();
+            var tasks = new AsyncResultSet();
 
-            long commitIndex = auditTrail.GetLastIndex(true), currentIndex = auditTrail.GetLastIndex(false);
-            var term = currentTerm;
+            long commitIndex = auditTrail.GetLastIndex(true),
+                currentIndex = auditTrail.GetLastIndex(false),
+                term = currentTerm;
 
             // send heartbeat in parallel
             foreach (var member in stateMachine.Members)
@@ -164,8 +169,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
             }
 
-            var quorum = 1;  // because we know that the entry is replicated in this node
-            var commitQuorum = 1;
+            int quorum = 1, commitQuorum = 1; // because we know that the entry is replicated in this node
             for (var task = tasks.First; task is not null; task.Value = default, task = task.Next)
             {
                 try
