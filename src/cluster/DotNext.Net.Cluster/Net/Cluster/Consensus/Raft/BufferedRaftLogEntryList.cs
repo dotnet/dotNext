@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
+namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using IO.Log;
 

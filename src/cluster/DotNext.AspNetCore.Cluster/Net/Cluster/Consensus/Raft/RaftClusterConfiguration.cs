@@ -6,7 +6,6 @@ using Microsoft.Extensions.Options;
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using IO.Log;
-    using RaftLogEntriesBufferingOptions = TransportServices.RaftLogEntriesBufferingOptions;
 
     /// <summary>
     /// Allows to setup special service used for configuration of <see cref="IRaftCluster"/> instance.

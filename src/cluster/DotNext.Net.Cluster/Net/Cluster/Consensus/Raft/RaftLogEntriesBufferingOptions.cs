@@ -1,6 +1,6 @@
 using System;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
+namespace DotNext.Net.Cluster.Consensus.Raft
 {
     /// <summary>
     /// Represents buffering options used for batch processing of log entries.

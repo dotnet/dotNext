@@ -13,7 +13,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Messaging;
     using IClientMetricsCollector = Metrics.IClientMetricsCollector;
-    using RaftLogEntriesBufferingOptions = TransportServices.RaftLogEntriesBufferingOptions;
 
     internal abstract partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IExpandableCluster, IMessageBus
     {
