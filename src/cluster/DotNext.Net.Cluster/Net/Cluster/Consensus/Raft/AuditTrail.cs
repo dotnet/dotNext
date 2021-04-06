@@ -17,6 +17,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             ValueTask<long> ILogEntryConsumer<IRaftLogEntry, long>.ReadAsync<TEntryImpl, TList>(TList entries, long? snapshotIndex, CancellationToken token)
                 => new ValueTask<long>(entries[0].Term);
+
+            LogEntryReadOptimizationHint ILogEntryConsumer<IRaftLogEntry, long>.OptimizationHint
+                => LogEntryReadOptimizationHint.MetadataOnly;
         }
 
         internal static ValueTask<long> GetTermAsync(this IAuditTrail<IRaftLogEntry> auditTrail, long index, CancellationToken token)

@@ -86,6 +86,7 @@ namespace DotNext.IO.Log
         /// Wraps the delegate instance as a reader of log entries.
         /// </summary>
         /// <param name="consumer">The delegate representing the reader.</param>
+        /// <param name="optimizationHint">Represents optimization hint for the audit trail.</param>
         public LogEntryConsumer(Func<IReadOnlyList<TEntry>, long?, CancellationToken, ValueTask<TResult>> consumer, LogEntryReadOptimizationHint optimizationHint = LogEntryReadOptimizationHint.None)
         {
             this.consumer = consumer;
