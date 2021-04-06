@@ -40,10 +40,15 @@ namespace DotNext.IO
         /// </summary>
         public void Reset() => position = sequence.Start;
 
+        /// <summary>
+        /// Gets unread part of the sequence.
+        /// </summary>
+        public ReadOnlySequence<byte> RemainingSequence => sequence.Slice(position);
+
         private TResult Read<TResult, TParser>(TParser parser)
             where TParser : struct, IBufferReader<TResult>
         {
-            parser.Append<TResult, TParser>(sequence.Slice(position), out position);
+            parser.Append<TResult, TParser>(RemainingSequence, out position);
             return parser.RemainingBytes == 0 ? parser.Complete() : throw new EndOfStreamException();
         }
 
@@ -53,7 +58,7 @@ namespace DotNext.IO
             where TDecoder : struct, ISpanDecoder<TResult>
         {
             var parser = new StringReader<TBuffer>(in context, buffer);
-            parser.Append<string, StringReader<TBuffer>>(sequence.Slice(position), out position);
+            parser.Append<string, StringReader<TBuffer>>(RemainingSequence, out position);
             return parser.RemainingBytes == 0 ? decoder.Decode(parser.Complete()) : throw new EndOfStreamException();
         }
 
@@ -1221,11 +1226,11 @@ namespace DotNext.IO
 
         /// <inheritdoc/>
         Task IAsyncBinaryReader.CopyToAsync(Stream output, CancellationToken token)
-            => output.WriteAsync(sequence.Slice(position), token).AsTask();
+            => output.WriteAsync(RemainingSequence, token).AsTask();
 
         /// <inheritdoc/>
         Task IAsyncBinaryReader.CopyToAsync(PipeWriter output, CancellationToken token)
-            => output.WriteAsync(sequence.Slice(position), token).AsTask();
+            => output.WriteAsync(RemainingSequence, token).AsTask();
 
         /// <inheritdoc/>
         Task IAsyncBinaryReader.CopyToAsync(IBufferWriter<byte> writer, CancellationToken token)
@@ -1240,7 +1245,7 @@ namespace DotNext.IO
                 result = Task.CompletedTask;
                 try
                 {
-                    writer.Write(sequence.Slice(position));
+                    writer.Write(RemainingSequence);
                 }
                 catch (Exception e)
                 {
@@ -1279,14 +1284,14 @@ namespace DotNext.IO
         /// <inheritdoc/>
         async Task IAsyncBinaryReader.CopyToAsync<TArg>(Func<TArg, ReadOnlyMemory<byte>, CancellationToken, ValueTask> reader, TArg arg, CancellationToken token)
         {
-            foreach (var segment in sequence.Slice(position))
+            foreach (var segment in RemainingSequence)
                 await reader(arg, segment, token).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
         async Task IAsyncBinaryReader.CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token)
         {
-            foreach (var segment in sequence.Slice(position))
+            foreach (var segment in RemainingSequence)
                 await consumer.Invoke(segment, token).ConfigureAwait(false);
         }
     }
