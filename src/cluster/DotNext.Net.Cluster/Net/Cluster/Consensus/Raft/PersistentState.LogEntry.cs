@@ -31,7 +31,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private readonly long index;
 
             // for regular log entry
-            internal LogEntry(StreamSegment? cachedContent, Memory<byte> sharedBuffer, in LogEntryMetadata metadata, long index)
+            internal LogEntry(StreamSegment cachedContent, Memory<byte> sharedBuffer, in LogEntryMetadata metadata, long index)
             {
                 this.metadata = metadata;
                 content = cachedContent;
