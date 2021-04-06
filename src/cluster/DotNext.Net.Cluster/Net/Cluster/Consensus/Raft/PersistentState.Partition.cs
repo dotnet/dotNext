@@ -13,6 +13,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     using Buffers;
     using IO;
     using IntegrityException = IO.Log.IntegrityException;
+    using LogEntryReadOptimizationHint = IO.Log.LogEntryReadOptimizationHint;
 
     public partial class PersistentState
     {
@@ -155,6 +156,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return metadata.IsValid ? new LogEntry(reader, buffer, metadata, absoluteIndex) : throw new MissingLogEntryException(relativeIndex, FirstIndex, LastIndex, FileName);
             }
 
+            // We don't need to analyze read optimization hint.
+            // Metadata reconstruction is cheap operation (especially if metadata cache is enabled).
             internal ValueTask<LogEntry> ReadAsync(in DataAccessSession session, long index, bool absoluteIndex, CancellationToken token)
             {
                 // calculate relative index
@@ -169,7 +172,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     index += FirstIndex;
                 }
 
-                return ReadAsync(GetReadSessionStream(session), session.Buffer, relativeIndex, index, token);
+                return ReadAsync(GetReadSessionStream(in session), session.Buffer, relativeIndex, index, token);
             }
 
             private async ValueTask WriteAsync<TEntry>(TEntry entry, nint index, Memory<byte> buffer)
@@ -297,6 +300,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return new LogEntry(reader, buffer, await ReadMetadataAsync(reader.BaseStream, buffer, token).ConfigureAwait(false));
             }
 
+            // optimization hint is not supported for snapshots
             internal ValueTask<LogEntry> ReadAsync(in DataAccessSession session, CancellationToken token)
                 => ReadAsync(GetReadSessionStream(session), session.Buffer, token);
 

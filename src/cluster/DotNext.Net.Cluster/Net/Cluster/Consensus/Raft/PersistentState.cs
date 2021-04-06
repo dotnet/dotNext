@@ -57,7 +57,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly int bufferSize, snapshotBufferSize;
         private readonly bool replayOnInitialize, writeThrough;
         private readonly CompactionMode compaction;
-        private readonly RaftLogEntriesBufferingOptions? bufferedReadOptions;
 
         // writer for this field must have exclusive async lock
         private Snapshot snapshot;
@@ -76,7 +75,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 throw new ArgumentOutOfRangeException(nameof(recordsPerPartition));
             if (!path.Exists)
                 path.Create();
-            bufferedReadOptions = configuration.CopyOnReadOptions;
+            bufferingConsumer = configuration.CreateBufferingConsumer();
             writeThrough = configuration.WriteThrough;
             compaction = configuration.CompactionMode;
             backupCompression = configuration.BackupCompression;
@@ -255,10 +254,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 result = new ValueTask<TResult>(Task.FromException<TResult>(new ArgumentOutOfRangeException(nameof(startIndex))));
             else if (endIndex < 0L)
                 result = new ValueTask<TResult>(Task.FromException<TResult>(new ArgumentOutOfRangeException(nameof(endIndex))));
-            else if (startIndex <= endIndex)
-                result = ReadAsyncCore(reader, startIndex, endIndex, token);
-            else
+            else if (startIndex > endIndex)
                 result = reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
+            else if (bufferingConsumer is null || reader.OptimizationHint == LogEntryReadOptimizationHint.MetadataOnly)
+                result = ReadUnbufferedAsync(reader, startIndex, endIndex, token);
+            else
+                result = ReadBufferedAsync(reader, startIndex, endIndex, token);
 
             return result;
         }
@@ -287,7 +288,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         ValueTask<TResult> IAuditTrail.ReadAsync<TResult>(Func<IReadOnlyList<ILogEntry>, long?, CancellationToken, ValueTask<TResult>> reader, long startIndex, long endIndex, CancellationToken token)
             => ReadAsync(new LogEntryConsumer<IRaftLogEntry, TResult>(reader), startIndex, endIndex, token);
 
-        private async ValueTask<TResult> ReadAsyncCore<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, long? endIndex, CancellationToken token)
+        // unbuffered read
+        private async ValueTask<TResult> ReadUnbufferedAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, long? endIndex, CancellationToken token)
         {
             await syncRoot.AcquireReadLockAsync(token).ConfigureAwait(false);
             var session = sessionManager.OpenSession(bufferSize);
@@ -299,6 +301,33 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 sessionManager.CloseSession(session);
                 syncRoot.ReleaseReadLock();
+            }
+        }
+
+        // buffered read
+        private async ValueTask<TResult> ReadBufferedAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, long? endIndex, CancellationToken token)
+        {
+            Debug.Assert(bufferingConsumer is not null);
+
+            // create buffered copy of all entries
+            BufferedRaftLogEntryList bufferedEntries;
+            long? snapshotIndex;
+            await syncRoot.AcquireReadLockAsync(token).ConfigureAwait(false);
+            var session = sessionManager.OpenSession(bufferSize);
+            try
+            {
+                (bufferedEntries, snapshotIndex) = await UnsafeReadAsync<(BufferedRaftLogEntryList, long?)>(new (bufferingConsumer), session, startIndex, endIndex ?? state.LastIndex, token).ConfigureAwait(false);
+            }
+            finally
+            {
+                sessionManager.CloseSession(session);
+                syncRoot.ReleaseReadLock();
+            }
+
+            // pass buffered entries to the reader
+            using (bufferedEntries)
+            {
+                return await reader.ReadAsync<BufferedRaftLogEntry, BufferedRaftLogEntryList>(bufferedEntries, snapshotIndex, token).ConfigureAwait(false);
             }
         }
 
@@ -316,10 +345,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             ValueTask<TResult> result;
             if (startIndex < 0L)
                 result = new ValueTask<TResult>(Task.FromException<TResult>(new ArgumentOutOfRangeException(nameof(startIndex))));
-            else if (startIndex <= state.LastIndex)
-                result = ReadAsyncCore(reader, startIndex, null, token);
-            else
+            else if (startIndex > state.LastIndex)
                 result = reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
+            else if (bufferingConsumer is null || reader.OptimizationHint == LogEntryReadOptimizationHint.MetadataOnly)
+                result = ReadUnbufferedAsync(reader, startIndex, null, token);
+            else
+                result = ReadBufferedAsync(reader, startIndex, null, token);
 
             return result;
         }

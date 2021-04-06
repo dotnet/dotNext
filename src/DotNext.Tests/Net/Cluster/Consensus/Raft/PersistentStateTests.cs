@@ -219,7 +219,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             var entry = new TestLogEntry("SET X = 0") { Term = 42L };
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-            IPersistentState state = new PersistentState(dir, RecordsPerPartition);
+            IPersistentState state = new PersistentState(dir, RecordsPerPartition, new (){ CopyOnReadOptions = new () });
             try
             {
                 Equal(1L, await state.AppendAsync(new LogEntryList(entry)));

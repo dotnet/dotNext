@@ -5,6 +5,7 @@ using System.Threading;
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using Buffers;
+    using IO.Log;
 
     public partial class PersistentState
     {
@@ -176,6 +177,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 get;
                 set;
             }
+
+            internal ILogEntryConsumer<IRaftLogEntry, (BufferedRaftLogEntryList, long?)>? CreateBufferingConsumer()
+                => CopyOnReadOptions is null ? null : new BufferingLogEntryConsumer(CopyOnReadOptions);
         }
     }
 }
