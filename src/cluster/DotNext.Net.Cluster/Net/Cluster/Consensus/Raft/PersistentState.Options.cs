@@ -166,6 +166,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// to create backup archive.
             /// </summary>
             public CompressionLevel BackupCompression { get; set; } = CompressionLevel.Optimal;
+
+            /// <summary>
+            /// If set then every read operations will be performed
+            /// on buffered copy of the log entries.
+            /// </summary>
+            public RaftLogEntriesBufferingOptions? CopyOnReadOptions
+            {
+                get;
+                set;
+            }
         }
     }
 }

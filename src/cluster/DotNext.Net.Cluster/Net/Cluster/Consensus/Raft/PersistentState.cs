@@ -57,6 +57,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly int bufferSize, snapshotBufferSize;
         private readonly bool replayOnInitialize, writeThrough;
         private readonly CompactionMode compaction;
+        private readonly RaftLogEntriesBufferingOptions? bufferedReadOptions;
 
         // writer for this field must have exclusive async lock
         private Snapshot snapshot;
@@ -75,6 +76,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 throw new ArgumentOutOfRangeException(nameof(recordsPerPartition));
             if (!path.Exists)
                 path.Create();
+            bufferedReadOptions = configuration.CopyOnReadOptions;
             writeThrough = configuration.WriteThrough;
             compaction = configuration.CompactionMode;
             backupCompression = configuration.BackupCompression;
@@ -246,27 +248,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The collection of log entries.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> or <paramref name="endIndex"/> is negative.</exception>
         /// <exception cref="IndexOutOfRangeException"><paramref name="endIndex"/> is greater than the index of the last added entry.</exception>
-        public async ValueTask<TResult> ReadAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, long endIndex, CancellationToken token)
+        public ValueTask<TResult> ReadAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, long endIndex, CancellationToken token)
         {
+            ValueTask<TResult> result;
             if (startIndex < 0L)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
-            if (endIndex < 0L)
-                throw new ArgumentOutOfRangeException(nameof(endIndex));
-            if (endIndex < startIndex)
-                return await reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token).ConfigureAwait(false);
+                result = new ValueTask<TResult>(Task.FromException<TResult>(new ArgumentOutOfRangeException(nameof(startIndex))));
+            else if (endIndex < 0L)
+                result = new ValueTask<TResult>(Task.FromException<TResult>(new ArgumentOutOfRangeException(nameof(endIndex))));
+            else if (startIndex <= endIndex)
+                result = ReadAsyncCore(reader, startIndex, endIndex, token);
+            else
+                result = reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
 
-            // obtain weak lock as read lock
-            await syncRoot.AcquireReadLockAsync(token).ConfigureAwait(false);
-            var session = sessionManager.OpenSession(bufferSize);
-            try
-            {
-                return await UnsafeReadAsync(reader, session, startIndex, endIndex, token).ConfigureAwait(false);
-            }
-            finally
-            {
-                sessionManager.CloseSession(session);  // return session back to the pool
-                syncRoot.ReleaseReadLock();
-            }
+            return result;
         }
 
         /// <inheritdoc />
@@ -293,13 +287,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         ValueTask<TResult> IAuditTrail.ReadAsync<TResult>(Func<IReadOnlyList<ILogEntry>, long?, CancellationToken, ValueTask<TResult>> reader, long startIndex, long endIndex, CancellationToken token)
             => ReadAsync(new LogEntryConsumer<IRaftLogEntry, TResult>(reader), startIndex, endIndex, token);
 
-        private async ValueTask<TResult> ReadAsyncCore<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, CancellationToken token)
+        private async ValueTask<TResult> ReadAsyncCore<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, long? endIndex, CancellationToken token)
         {
             await syncRoot.AcquireReadLockAsync(token).ConfigureAwait(false);
             var session = sessionManager.OpenSession(bufferSize);
             try
             {
-                return await UnsafeReadAsync(reader, session, startIndex, state.LastIndex, token).ConfigureAwait(false);
+                return await UnsafeReadAsync(reader, session, startIndex, endIndex ?? state.LastIndex, token).ConfigureAwait(false);
             }
             finally
             {
@@ -323,9 +317,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (startIndex < 0L)
                 result = new ValueTask<TResult>(Task.FromException<TResult>(new ArgumentOutOfRangeException(nameof(startIndex))));
             else if (startIndex <= state.LastIndex)
-                result = ReadAsyncCore(reader, startIndex, token);
+                result = ReadAsyncCore(reader, startIndex, null, token);
             else
-                result = reader.ReadAsync<IRaftLogEntry, IRaftLogEntry[]>(Array.Empty<IRaftLogEntry>(), null, token);
+                result = reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
 
             return result;
         }
