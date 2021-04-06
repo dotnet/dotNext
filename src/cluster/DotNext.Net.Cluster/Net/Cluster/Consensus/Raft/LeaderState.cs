@@ -106,8 +106,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return false;
         }
 
-        
-
         private async Task DoHeartbeats(TimeSpan period, IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)
         {
             using var cancellationSource = CancellationTokenSource.CreateLinkedTokenSource(token, timerCancellation.Token);

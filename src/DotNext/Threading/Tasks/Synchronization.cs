@@ -200,7 +200,7 @@ namespace DotNext.Threading.Tasks
                 result = CompletedTask<bool, BooleanConst.False>.Task;    // if timeout is zero fail fast
             else if (timeout > InfiniteTimeSpan)
                 result = WaitAsyncImpl(task, timeout, token);
-            else if(!token.CanBeCanceled && task is Task<bool> boolTask)
+            else if (!token.CanBeCanceled && task is Task<bool> boolTask)
                 result = boolTask;
             else
                 result = task.ContinueWith(TrueContinuation, token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
