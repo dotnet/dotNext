@@ -267,8 +267,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Span<byte> buffer = stackalloc byte[SnapshotMetadata.Size];
                 if (input.Read(buffer) != SnapshotMetadata.Size)
                     throw new EndOfStreamException();
-                var reader = new SpanReader<byte>(buffer);
-                return new SnapshotMetadata(ref reader);
+                return SnapshotMetadata.Deserialize(buffer);
             }
 
             private static async ValueTask<SnapshotMetadata> ReadMetadataAsync(Stream input, Memory<byte> buffer, CancellationToken token = default)

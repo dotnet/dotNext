@@ -94,7 +94,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 RecordMetadata = metadata;
             }
 
-            internal SnapshotMetadata(ref SpanReader<byte> reader)
+            private SnapshotMetadata(ref SpanReader<byte> reader)
             {
                 Index = reader.ReadInt64(true);
                 RecordMetadata = new LogEntryMetadata(ref reader);
