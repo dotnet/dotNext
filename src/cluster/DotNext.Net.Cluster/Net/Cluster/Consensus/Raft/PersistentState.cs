@@ -376,8 +376,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
              */
             try
             {
+#if NETSTANDARD2_1
                 File.Delete(snapshotFile);
                 File.Move(tempSnapshotFile, snapshotFile);
+#else
+                File.Move(tempSnapshotFile, snapshotFile, true);
+#endif
             }
             catch (Exception e)
             {
