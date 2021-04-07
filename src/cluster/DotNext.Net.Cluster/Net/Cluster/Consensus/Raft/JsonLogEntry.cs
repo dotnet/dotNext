@@ -15,9 +15,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     internal static class JsonLogEntry
     {
         private const LengthFormat LengthEncoding = LengthFormat.PlainLittleEndian;
-        internal static readonly Func<string, Type> DefaultTypeLoader = LoadType;
 
-        private static Type LoadType(string typeId) => Type.GetType(typeId, true)!;
+        private static Type LoadType(string typeId, Func<string, Type>? typeLoader)
+            => typeLoader is null ? Type.GetType(typeId, true)! : typeLoader(typeId);
 
         private static Encoding DefaultEncoding => Encoding.UTF8;
 
@@ -35,8 +35,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        internal static async ValueTask<object?> DeserializeAsync(Stream input, Func<string, Type> typeLoader, JsonSerializerOptions? options, CancellationToken token)
-            => await JsonSerializer.DeserializeAsync(input, typeLoader(await input.ReadStringAsync(LengthEncoding, DefaultEncoding, token).ConfigureAwait(false)), options, token).ConfigureAwait(false);
+        internal static async ValueTask<object?> DeserializeAsync(Stream input, Func<string, Type>? typeLoader, JsonSerializerOptions? options, CancellationToken token)
+            => await JsonSerializer.DeserializeAsync(input, LoadType(await input.ReadStringAsync(LengthEncoding, DefaultEncoding, token).ConfigureAwait(false), typeLoader), options, token).ConfigureAwait(false);
     }
 
     /// <summary>

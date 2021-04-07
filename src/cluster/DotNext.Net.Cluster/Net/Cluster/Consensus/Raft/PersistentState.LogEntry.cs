@@ -184,7 +184,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     source = content;
                 }
 
-                return JsonLogEntry.DeserializeAsync(source, typeLoader ?? JsonLogEntry.DefaultTypeLoader, options, token);
+                return JsonLogEntry.DeserializeAsync(source, typeLoader, options, token);
             }
 #endif
         }

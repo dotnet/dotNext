@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,6 +20,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             HasIdentifier = 0x01,
         }
 
+        [StructLayout(LayoutKind.Auto)]
         internal readonly struct LogEntryMetadata
         {
             internal const int Size = sizeof(LogEntryFlags) + sizeof(int) + sizeof(long) + sizeof(long) + sizeof(long) + sizeof(long);
@@ -79,6 +81,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
+        [StructLayout(LayoutKind.Auto)]
         internal readonly struct SnapshotMetadata
         {
             internal const int Size = sizeof(long) + LogEntryMetadata.Size;

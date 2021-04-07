@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.IO.Compression;
 using System.Threading;
 
@@ -128,9 +129,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// </summary>
             /// <typeparam name="T">The type of items in the pool.</typeparam>
             /// <returns>The memory allocator.</returns>
-            public virtual MemoryAllocator<T>? GetMemoryAllocator<T>()
+            public virtual MemoryAllocator<T> GetMemoryAllocator<T>()
                 where T : struct
-                => null;
+                => ArrayPool<T>.Shared.ToAllocator();
 
             /// <summary>
             /// Gets or sets the number of possible parallel reads.
