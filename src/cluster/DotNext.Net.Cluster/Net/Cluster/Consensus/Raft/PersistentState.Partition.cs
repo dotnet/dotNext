@@ -101,15 +101,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             private void PopulateCache(Span<byte> buffer, Span<LogEntryMetadata> lookupCache)
             {
-                for (int index = 0, count; index < lookupCache.Length; index += count)
+                for (int index = 0, count; index < lookupCache.Length; )
                 {
                     count = Math.Min(buffer.Length / LogEntryMetadata.Size, lookupCache.Length - index);
-                    var maxBytes = count * LogEntryMetadata.Size;
-                    var source = buffer.Slice(0, maxBytes);
-                    if (Read(source) < maxBytes)
+                    var source = buffer.Slice(0, count * LogEntryMetadata.Size);
+                    if (Read(source) < source.Length)
                         throw new EndOfStreamException();
-                    var destination = AsBytes(lookupCache.Slice(index));
-                    source.CopyTo(destination);
+                    for (var reader = new SpanReader<byte>(source); count > 0; count--, index++)
+                    {
+                        lookupCache[index] = new LogEntryMetadata(ref reader);
+                    }
                 }
             }
 
@@ -259,7 +260,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             internal override void PopulateCache(in DataAccessSession session)
-                => Index = Length > 0L ? this.Read<SnapshotMetadata>().Index : 0L;
+                => Index = Length > 0L ? ReadMetadata(this).Index : 0L;
+
+            private static SnapshotMetadata ReadMetadata(Stream input)
+            {
+                Span<byte> buffer = stackalloc byte[SnapshotMetadata.Size];
+                if (input.Read(buffer) != SnapshotMetadata.Size)
+                    throw new EndOfStreamException();
+                var reader = new SpanReader<byte>(buffer);
+                return new SnapshotMetadata(ref reader);
+            }
 
             private static async ValueTask<SnapshotMetadata> ReadMetadataAsync(Stream input, Memory<byte> buffer, CancellationToken token = default)
             {

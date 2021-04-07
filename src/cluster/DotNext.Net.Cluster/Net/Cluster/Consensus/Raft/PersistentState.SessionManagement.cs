@@ -18,7 +18,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private readonly MemoryOwner<byte> owner;
 
             // read session ctor
-            internal DataAccessSession(int sessionId, MemoryAllocator<byte>? bufferPool, int bufferSize)
+            internal DataAccessSession(int sessionId, MemoryAllocator<byte> bufferPool, int bufferSize)
             {
                 SessionId = sessionId;
                 owner = bufferPool.Invoke(bufferSize, false);
@@ -147,11 +147,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly struct DataAccessSessionManager : IDisposable
         {
             private readonly SessionIdPool sessions;
-            private readonly MemoryAllocator<byte>? bufferPool;
+            private readonly MemoryAllocator<byte> bufferPool;
             internal readonly int Capacity;
             internal readonly DataAccessSession WriteSession, CompactionSession;
 
-            internal DataAccessSessionManager(int readersCount, MemoryAllocator<byte>? sharedPool, int writeBufferSize)
+            internal DataAccessSessionManager(int readersCount, MemoryAllocator<byte> sharedPool, int writeBufferSize)
             {
                 Capacity = readersCount;
                 bufferPool = sharedPool;
