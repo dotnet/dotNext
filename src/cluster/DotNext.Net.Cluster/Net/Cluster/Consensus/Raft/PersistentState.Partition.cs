@@ -13,7 +13,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     using Buffers;
     using IO;
     using IntegrityException = IO.Log.IntegrityException;
-    using LogEntryReadOptimizationHint = IO.Log.LogEntryReadOptimizationHint;
 
     public partial class PersistentState
     {
