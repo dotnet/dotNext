@@ -61,6 +61,7 @@ namespace DotNext.Buffers
         /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
         public override ReadOnlyMemory<T> WrittenMemory => GetWrittenMemory();
 
+        /// <inheritdoc />
         Memory<T> IMemoryOwner<T>.Memory => GetWrittenMemory();
 
         /// <summary>
