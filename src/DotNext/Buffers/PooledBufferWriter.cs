@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.Runtime.CompilerServices;
 
 namespace DotNext.Buffers
@@ -7,7 +8,7 @@ namespace DotNext.Buffers
     /// Represents memory writer that uses pooled memory.
     /// </summary>
     /// <typeparam name="T">The data type that can be written.</typeparam>
-    public sealed class PooledBufferWriter<T> : BufferWriter<T>
+    public sealed class PooledBufferWriter<T> : BufferWriter<T>, IMemoryOwner<T>
     {
         private readonly MemoryAllocator<T>? allocator;
         private MemoryOwner<T> buffer;
@@ -48,18 +49,19 @@ namespace DotNext.Buffers
             }
         }
 
+        private Memory<T> GetWrittenMemory()
+        {
+            ThrowIfDisposed();
+            return buffer.Memory.Slice(0, position);
+        }
+
         /// <summary>
         /// Gets the data written to the underlying buffer so far.
         /// </summary>
         /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
-        public override ReadOnlyMemory<T> WrittenMemory
-        {
-            get
-            {
-                ThrowIfDisposed();
-                return buffer.Memory.Slice(0, position);
-            }
-        }
+        public override ReadOnlyMemory<T> WrittenMemory => GetWrittenMemory();
+
+        Memory<T> IMemoryOwner<T>.Memory => GetWrittenMemory();
 
         /// <summary>
         /// Clears the data written to the underlying memory.
