@@ -259,7 +259,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                 leader3 = host3.Services.GetRequiredService<ICluster>().Leader;
                 if (leader1 is null || leader2 is null || leader3 is null)
                     continue;
-                if (leader1.EndPoint.Equals(leader2.EndPoint) && leader1.EndPoint.Equals(leader2.EndPoint))
+                if (leader1.EndPoint.Equals(leader2.EndPoint) && leader3.EndPoint.Equals(leader2.EndPoint))
                     break;
             }
 
