@@ -55,24 +55,10 @@ namespace DotNext
         void IConsumer<T>.Invoke(T arg) => ptr(arg);
 
         /// <summary>
-        /// Determines whether the two objects contain the same pointer.
+        /// Converts this consumer to the delegate of type <see cref="Action{T}"/>.
         /// </summary>
-        /// <param name="other">The object to be compared.</param>
-        /// <returns><see langword="true"/> if this object contains the same pointer as the specified object.</returns>
-        public bool Equals(Consumer<T> other) => ptr == other.ptr;
-
-        /// <summary>
-        /// Determines whether the two objects contain the same pointer.
-        /// </summary>
-        /// <param name="other">The object to be compared.</param>
-        /// <returns><see langword="true"/> if this object contains the same pointer as the specified object.</returns>
-        public override bool Equals(object? other) => other is Consumer<T> consumer && Equals(consumer);
-
-        /// <summary>
-        /// Gets the hash code of this function pointer.
-        /// </summary>
-        /// <returns>The hash code of the function pointer.</returns>
-        public override int GetHashCode() => Runtime.Intrinsics.PointerHashCode(ptr);
+        /// <returns>The delegate representing the wrapped method.</returns>
+        public Action<T> ToDelegate() => DelegateHelpers.CreateDelegate<T>(ptr);
 
         /// <summary>
         /// Gets hexadecimal representation of this pointer.
@@ -86,26 +72,14 @@ namespace DotNext
         /// <param name="ptr">The pointer to the managed method.</param>
         /// <returns>The typed function pointer.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
-        public static implicit operator Consumer<T>(delegate*<T, void> ptr)
-            => new Consumer<T>(ptr);
+        public static implicit operator Consumer<T>(delegate*<T, void> ptr) => new (ptr);
 
         /// <summary>
-        /// Determines whether the two objects contain the same pointer.
+        /// Converts this consumer to the delegate of type <see cref="Action{T}"/>.
         /// </summary>
-        /// <param name="x">The first object to compare.</param>
-        /// <param name="y">The second object to compare.</param>
-        /// <see langword="true"/> if both objects contain the same pointer; otherwise, <see langword="false"/>.
-        public static bool operator ==(Consumer<T> x, Consumer<T> y)
-            => x.Equals(y);
-
-        /// <summary>
-        /// Determines whether the two objects contain the different pointers.
-        /// </summary>
-        /// <param name="x">The first object to compare.</param>
-        /// <param name="y">The second object to compare.</param>
-        /// <see langword="true"/> if both objects contain the different pointers; otherwise, <see langword="false"/>.
-        public static bool operator !=(Consumer<T> x, Consumer<T> y)
-            => !x.Equals(y);
+        /// <param name="consumer">The value representing the pointer to the method.</param>
+        /// <returns>The delegate representing the wrapped method.</returns>
+        public static explicit operator Action<T>(Consumer<T> consumer) => consumer.ToDelegate();
     }
 
      /// <summary>
