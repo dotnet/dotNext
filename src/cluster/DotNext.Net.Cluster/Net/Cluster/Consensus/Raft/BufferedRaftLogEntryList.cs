@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.ComponentModel;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -14,9 +15,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// from another producer.
     /// </summary>
     /// <remarks>
-    /// This class typically used by custom implementations of transport layer for Raft.
+    /// This type is intended for developing transport-layer buffering
+    /// and low level I/O optimizations when writing custom Write-Ahead Log.
+    /// It's not recommended to use the type in the application code.
     /// </remarks>
     [StructLayout(LayoutKind.Auto)]
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
     public readonly struct BufferedRaftLogEntryList : IDisposable, IReadOnlyList<BufferedRaftLogEntry>
     {
         private readonly BufferedRaftLogEntry[]? entries;

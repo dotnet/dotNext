@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -13,7 +14,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// <summary>
     /// Represents buffered log entry.
     /// </summary>
+    /// <remarks>
+    /// This type is intended for developing transport-layer buffering
+    /// and low level I/O optimizations when writing custom Write-Ahead Log.
+    /// It's not recommended to use the type in the application code.
+    /// </remarks>
     [StructLayout(LayoutKind.Auto)]
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
     public readonly struct BufferedRaftLogEntry : IRaftLogEntry, IDisposable
     {
         // possible values are:
