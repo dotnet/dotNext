@@ -31,7 +31,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             static void SerializeToJson(T obj, IBufferWriter<byte> buffer)
             {
-                using var jsonWriter = new Utf8JsonWriter(buffer, new JsonWriterOptions { SkipValidation = false, Indented = false });
+                using var jsonWriter = new Utf8JsonWriter(buffer, new () { SkipValidation = false, Indented = false });
                 JsonSerializer.Serialize(jsonWriter, obj);
             }
         }

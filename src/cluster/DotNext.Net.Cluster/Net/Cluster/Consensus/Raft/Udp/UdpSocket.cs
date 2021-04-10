@@ -41,8 +41,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                     var error = SocketError;
                     backToPool?.Invoke(this);
                     return error == SocketError.Success ?
-                        new ValueTask() :
-                        new ValueTask(System.Threading.Tasks.Task.FromException(new SocketException((int)error)));
+                        new () :
+                        new (System.Threading.Tasks.Task.FromException(new SocketException((int)error)));
                 }
             }
 
@@ -230,7 +230,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 return task.GetTask(SendToAsync(task));
             }
 
-            return new ValueTask(Task.FromException(new InvalidOperationException(ExceptionMessages.NotEnoughSenders)));
+            return new (Task.FromException(new InvalidOperationException(ExceptionMessages.NotEnoughSenders)));
         }
 
         private protected async Task<bool> SendAsync<TChannel>(CorrelationId id, TChannel channel, EndPoint endpoint)

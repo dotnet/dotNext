@@ -60,7 +60,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         ValueTask IClient.CancelPendingRequestsAsync()
         {
             channels.ClearAndDestroyChannels();
-            return new ValueTask();
+            return new ();
         }
 
         private protected override void ReportError(SocketError error)

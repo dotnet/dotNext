@@ -92,7 +92,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 control = FlowControl.None;
             }
 
-            return new ValueTask<(PacketHeaders, int, bool)>((new PacketHeaders(MessageType.Metadata, control), 0, true));
+            return new ((new PacketHeaders(MessageType.Metadata, control), 0, true));
         }
     }
 }

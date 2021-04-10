@@ -104,7 +104,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 else
                     replicationAwaiter.OnCompleted(Complete);
 
-                return new ValueTask<Result<bool>>(Task);
+                return new (Task);
 
                 static bool ContainsTerm(TList list, long term)
                 {

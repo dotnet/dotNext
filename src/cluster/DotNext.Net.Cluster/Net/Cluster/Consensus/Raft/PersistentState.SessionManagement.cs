@@ -156,12 +156,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Capacity = readersCount;
                 bufferPool = sharedPool;
                 sessions = readersCount <= FastSessionIdPool.MaxReadersCount ? new FastSessionIdPool() : new SlowSessionIdPool(readersCount);
-                WriteSession = new DataAccessSession(0, bufferPool, writeBufferSize);
-                CompactionSession = new DataAccessSession(1, bufferPool, writeBufferSize);
+                WriteSession = new (0, bufferPool, writeBufferSize);
+                CompactionSession = new (1, bufferPool, writeBufferSize);
             }
 
             internal DataAccessSession OpenSession(int bufferSize)
-                => new DataAccessSession(sessions.Take(), bufferPool, bufferSize);
+                => new (sessions.Take(), bufferPool, bufferSize);
 
             internal void CloseSession(in DataAccessSession readSession)
             {

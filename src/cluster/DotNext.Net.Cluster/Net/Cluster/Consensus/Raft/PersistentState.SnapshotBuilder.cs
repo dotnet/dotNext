@@ -35,7 +35,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 term = Math.Max(entry.Term, term);
 
                 // drop empty log entries during snapshot construction
-                return entry.IsEmpty ? new ValueTask() : ApplyAsync(entry);
+                return entry.IsEmpty ? new () : ApplyAsync(entry);
             }
 
             /// <summary>

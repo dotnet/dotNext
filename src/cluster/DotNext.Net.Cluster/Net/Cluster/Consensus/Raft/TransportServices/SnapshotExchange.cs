@@ -78,10 +78,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         public override ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint endpoint, CancellationToken token)
         {
+            ValueTask<bool> result;
             if (headers.Type == MessageType.Continue)
-                return new ValueTask<bool>(true);
-
-            TrySetResult(IExchange.ReadResult(payload.Span));
+            {
+                result = new (true);
+            }
+            else
+            {
+                TrySetResult(IExchange.ReadResult(payload.Span));
+                result = new (false);
+            }
+            
             return default;
         }
 

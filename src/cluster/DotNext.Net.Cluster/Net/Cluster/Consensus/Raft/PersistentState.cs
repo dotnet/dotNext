@@ -54,7 +54,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly long initialSize;
         private readonly BufferManager bufferManager;
         private readonly int bufferSize, snapshotBufferSize;
-        private readonly bool replayOnInitialize, writeThrough;
+        private readonly bool replayOnInitialize, writeThrough, evictOnCommit;
         private readonly CompactionMode compaction;
 
         // writer for this field must have exclusive async lock
@@ -69,7 +69,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="recordsPerPartition"/> is less than 2.</exception>
         public PersistentState(DirectoryInfo path, int recordsPerPartition, Options? configuration = null)
         {
-            configuration ??= new Options();
+            configuration ??= new ();
             if (recordsPerPartition < 2L)
                 throw new ArgumentOutOfRangeException(nameof(recordsPerPartition));
             if (!path.Exists)
@@ -84,11 +84,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             location = path;
             this.recordsPerPartition = recordsPerPartition;
             initialSize = configuration.InitialPartitionSize;
-            commitEvent = new AsyncManualResetEvent(false);
-            bufferManager = new BufferManager(configuration);
-            sessionManager = new DataAccessSessionManager(configuration.MaxConcurrentReads, bufferManager.BufferAllocator, bufferSize);
-            syncRoot = new LockManager(sessionManager.Capacity);
-            initialEntry = new LogEntry(sessionManager.WriteSession.Buffer);
+            commitEvent = new (false);
+            bufferManager = new (configuration);
+            sessionManager = new (configuration.MaxConcurrentReads, bufferManager.BufferAllocator, bufferSize);
+            syncRoot = new (sessionManager.Capacity);
+            initialEntry = new (sessionManager.WriteSession.Buffer);
+            evictOnCommit = configuration.CacheEvictionPolicy == LogEntryCacheEvictionPolicy.OnCommit;
 
             var partitionTable = new SortedSet<Partition>(Comparer<Partition>.Create(ComparePartitions));
 
@@ -120,8 +121,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             partitionTable.Clear();
-            state = new NodeState(path);
-            snapshot = new Snapshot(path, snapshotBufferSize, sessionManager.Capacity, writeThrough);
+            state = new (path);
+            snapshot = new (path, snapshotBufferSize, sessionManager.Capacity, writeThrough);
             snapshot.PopulateCache(sessionManager.WriteSession);
 
             static int ComparePartitions(Partition x, Partition y)
@@ -249,9 +250,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             ValueTask<TResult> result;
             if (startIndex < 0L)
-                result = new ValueTask<TResult>(Task.FromException<TResult>(new ArgumentOutOfRangeException(nameof(startIndex))));
+                result = new (Task.FromException<TResult>(new ArgumentOutOfRangeException(nameof(startIndex))));
             else if (endIndex < 0L)
-                result = new ValueTask<TResult>(Task.FromException<TResult>(new ArgumentOutOfRangeException(nameof(endIndex))));
+                result = new (Task.FromException<TResult>(new ArgumentOutOfRangeException(nameof(endIndex))));
             else if (startIndex > endIndex)
                 result = reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
             else if (bufferingConsumer is null || reader.OptimizationHint == LogEntryReadOptimizationHint.MetadataOnly)
@@ -342,7 +343,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             ValueTask<TResult> result;
             if (startIndex < 0L)
-                result = new ValueTask<TResult>(Task.FromException<TResult>(new ArgumentOutOfRangeException(nameof(startIndex))));
+                result = new (Task.FromException<TResult>(new ArgumentOutOfRangeException(nameof(startIndex))));
             else if (startIndex > state.LastIndex)
                 result = reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
             else if (bufferingConsumer is null || reader.OptimizationHint == LogEntryReadOptimizationHint.MetadataOnly)
@@ -498,7 +499,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             ValueTask result;
             if (entry.IsSnapshot)
             {
-                result = new ValueTask(Task.FromException(new InvalidOperationException(ExceptionMessages.SnapshotDetected)));
+                result = new (Task.FromException(new InvalidOperationException(ExceptionMessages.SnapshotDetected)));
             }
             else if (Validate(in writeLock))
             {
@@ -506,7 +507,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             else
             {
-                result = new ValueTask(Task.FromException(new ArgumentException(ExceptionMessages.InvalidLockToken, nameof(writeLock))));
+                result = new (Task.FromException(new ArgumentException(ExceptionMessages.InvalidLockToken, nameof(writeLock))));
             }
 
             return result;
@@ -586,11 +587,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             ValueTask<long> result;
             if (IsDisposed)
             {
-                result = new ValueTask<long>(GetDisposedTask<long>());
+                result = new (GetDisposedTask<long>());
             }
             else if (entry.IsSnapshot)
             {
-                result = new ValueTask<long>(Task.FromException<long>(new InvalidOperationException(ExceptionMessages.SnapshotDetected)));
+                result = new (Task.FromException<long>(new InvalidOperationException(ExceptionMessages.SnapshotDetected)));
             }
             else if (Validate(in writeLock))
             {
@@ -598,7 +599,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             else
             {
-                result = new ValueTask<long>(Task.FromException<long>(new ArgumentException(ExceptionMessages.InvalidLockToken, nameof(writeLock))));
+                result = new (Task.FromException<long>(new ArgumentException(ExceptionMessages.InvalidLockToken, nameof(writeLock))));
             }
 
             return result;
@@ -680,9 +681,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             ValueTask<long> result;
             if (IsDisposed)
-                result = new ValueTask<long>(GetDisposedTask<long>());
+                result = new (GetDisposedTask<long>());
             else if (entry.IsSnapshot)
-                result = new ValueTask<long>(Task.FromException<long>(new InvalidOperationException(ExceptionMessages.SnapshotDetected)));
+                result = new (Task.FromException<long>(new InvalidOperationException(ExceptionMessages.SnapshotDetected)));
             else if (addToCache)
                 result = AppendCachedAsync(entry, token);
             else
@@ -877,15 +878,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             ValueTask result;
             if (IsDisposed)
             {
-                result = new ValueTask(DisposedTask);
+                result = new (DisposedTask);
             }
             else if (count < 0L)
             {
-                result = new ValueTask(Task.FromException(new ArgumentOutOfRangeException(nameof(count))));
+                result = new (Task.FromException(new ArgumentOutOfRangeException(nameof(count))));
             }
             else if (count == 0L || !IsBackgroundCompaction)
             {
-                result = new ValueTask();
+                result = new ();
             }
             else
             {
@@ -1115,13 +1116,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </remarks>
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <seealso cref="Commands.CommandInterpreter"/>
-        protected virtual ValueTask ApplyAsync(LogEntry entry) => new ValueTask();
+        protected virtual ValueTask ApplyAsync(LogEntry entry) => new ();
 
         /// <summary>
         /// Flushes the underlying data storage.
         /// </summary>
         /// <returns>The task representing asynchronous execution of this method.</returns>
-        protected virtual ValueTask FlushAsync() => new ValueTask();
+        protected virtual ValueTask FlushAsync() => new ();
 
         private async ValueTask ApplyAsync(long startIndex, CancellationToken token)
         {
@@ -1133,9 +1134,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     await ApplyAsync(entry).ConfigureAwait(false);
                     lastTerm.VolatileWrite(entry.Term);
 
-                    // Remove log entry from the cache because it's content is already committed
-                    // and consumed. It's very unlikely that the entry will be requested again.
-                    partition.RemoveEntryFromCache(startIndex);
+                    // Remove log entry from the cache according to eviction policy
+                    if (entry.IsBuffered && evictOnCommit)
+                        partition.RemoveEntryFromCache(startIndex);
                 }
                 else
                 {
