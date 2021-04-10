@@ -1,9 +1,12 @@
+using System.Buffers;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using Buffers;
     using IO.Log;
 
     public partial class PersistentState
@@ -19,6 +22,47 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 where TEntry : notnull, IRaftLogEntry
                 where TList : notnull, IReadOnlyList<TEntry>
                 => (await BufferedRaftLogEntryList.CopyAsync<TEntry, TList>(entries, options, token).ConfigureAwait(false), snapshotIndex);
+        }
+
+        [StructLayout(LayoutKind.Auto)]
+        internal readonly struct BufferManager
+        {
+            private readonly MemoryAllocator<LogEntryMetadata>? metadataAllocator;
+            private readonly MemoryAllocator<IMemoryOwner<byte>?>? cacheAllocator;
+            private readonly MemoryAllocator<LogEntry> entryAllocator;
+
+            internal BufferManager(Options options)
+            {
+                if (options.UseCaching)
+                {
+                    metadataAllocator = options.GetMemoryAllocator<LogEntryMetadata>();
+                    cacheAllocator = options.GetMemoryAllocator<IMemoryOwner<byte>?>();
+                }
+                else
+                {
+                    metadataAllocator = null;
+                    cacheAllocator = null;
+                }
+
+                BufferAllocator = options.GetMemoryAllocator<byte>();
+                entryAllocator = options.GetMemoryAllocator<LogEntry>();
+            }
+
+            internal MemoryAllocator<byte> BufferAllocator { get; }
+
+            internal PooledBufferWriter<byte> CreateBufferWriter(long? length)
+            {
+                var len = length.GetValueOrDefault();
+                return len > 0L ? new (BufferAllocator, len.Truncate()) : new (BufferAllocator);
+            }
+
+            internal MemoryOwner<LogEntryMetadata> AllocMetadataCache(int recordsPerPartition)
+                => metadataAllocator is null ? default : metadataAllocator.Invoke(recordsPerPartition, true);
+
+            internal MemoryOwner<IMemoryOwner<byte>?> AllocLogEntryCache(int recordsPerPartition)
+                => cacheAllocator is null ? default : cacheAllocator.Invoke(recordsPerPartition, true);
+
+            internal MemoryOwner<LogEntry> AllocLogEntryList(int length) => entryAllocator.Invoke(length, true);
         }
 
         private readonly ILogEntryConsumer<IRaftLogEntry, (BufferedRaftLogEntryList, long?)>? bufferingConsumer;

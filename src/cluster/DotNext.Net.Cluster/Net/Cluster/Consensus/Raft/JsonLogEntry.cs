@@ -15,6 +15,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     internal static class JsonLogEntry
     {
         private const LengthFormat LengthEncoding = LengthFormat.PlainLittleEndian;
+        private static readonly JsonReaderOptions DefaultReaderOptions = new JsonSerializerOptions(JsonSerializerDefaults.General).GetReaderOptions();
 
         private static Type LoadType(string typeId, Func<string, Type>? typeLoader)
             => typeLoader is null ? Type.GetType(typeId, true)! : typeLoader(typeId);
@@ -37,6 +38,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         internal static async ValueTask<object?> DeserializeAsync(Stream input, Func<string, Type>? typeLoader, JsonSerializerOptions? options, CancellationToken token)
             => await JsonSerializer.DeserializeAsync(input, LoadType(await input.ReadStringAsync(LengthEncoding, DefaultEncoding, token).ConfigureAwait(false), typeLoader), options, token).ConfigureAwait(false);
+
+        private static JsonReaderOptions GetReaderOptions(this JsonSerializerOptions options) => new ()
+        {
+            AllowTrailingCommas = options.AllowTrailingCommas,
+            CommentHandling = options.ReadCommentHandling,
+            MaxDepth = options.MaxDepth,
+        };
+
+        internal static object? Deserialize(SequenceBinaryReader input, Func<string, Type>? typeLoader, JsonSerializerOptions? options)
+        {
+            var typeId = input.ReadString(LengthEncoding, DefaultEncoding);
+            var reader = new Utf8JsonReader(input.RemainingSequence, options?.GetReaderOptions() ?? DefaultReaderOptions);
+            return JsonSerializer.Deserialize(ref reader, LoadType(typeId, typeLoader), options);
+        }
     }
 
     /// <summary>

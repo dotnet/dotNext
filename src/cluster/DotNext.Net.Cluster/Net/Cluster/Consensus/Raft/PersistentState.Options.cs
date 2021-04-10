@@ -129,9 +129,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// </summary>
             /// <typeparam name="T">The type of items in the pool.</typeparam>
             /// <returns>The memory allocator.</returns>
-            public virtual MemoryAllocator<T> GetMemoryAllocator<T>()
-                where T : struct
-                => ArrayPool<T>.Shared.ToAllocator();
+            public virtual MemoryAllocator<T> GetMemoryAllocator<T>() => ArrayPool<T>.Shared.ToAllocator();
 
             /// <summary>
             /// Gets or sets the number of possible parallel reads.

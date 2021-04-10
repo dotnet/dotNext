@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -6,7 +7,6 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Globalization.CultureInfo;
-using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
@@ -29,15 +29,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal readonly long FirstIndex, PartitionNumber;
             internal readonly int Capacity;    // max number of entries
             private MemoryOwner<LogEntryMetadata> lookupCache;
+            private MemoryOwner<IMemoryOwner<byte>?> entryCache;
             private Partition? previous, next;
 
-            internal Partition(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, MemoryAllocator<LogEntryMetadata>? cachePool, int readersCount, bool writeThrough)
+            internal Partition(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, in BufferManager manager, int readersCount, bool writeThrough)
                 : base(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), bufferSize, readersCount, GetOptions(writeThrough))
             {
                 Capacity = recordsPerPartition;
                 FirstIndex = partitionNumber * recordsPerPartition;
                 PartitionNumber = partitionNumber;
-                lookupCache = cachePool is null ? default : cachePool(recordsPerPartition);
+                lookupCache = manager.AllocMetadataCache(recordsPerPartition);
+                entryCache = manager.AllocLogEntryCache(recordsPerPartition);
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -47,6 +49,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 const FileOptions dontSkipBufferOptions = FileOptions.RandomAccess | FileOptions.Asynchronous;
                 return writeThrough ? skipBufferOptions : dontSkipBufferOptions;
             }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private nint ToRelativeIndex(long absoluteIndex)
+                => (nint)(absoluteIndex - FirstIndex);
 
             internal bool IsHead => previous is null;
 
@@ -137,23 +143,35 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return output.WriteAsync(buffer, token);
             }
 
+            // completed synchronously if metadata is cached
             private async ValueTask<LogEntry> ReadAsync(StreamSegment reader, Memory<byte> buffer, nint relativeIndex, long absoluteIndex, CancellationToken token)
             {
                 Debug.Assert(relativeIndex >= 0 && relativeIndex < Capacity, $"Invalid index value {relativeIndex}, offset {FirstIndex}");
 
                 // find pointer to the content
                 LogEntryMetadata metadata;
+                IMemoryOwner<byte>? cachedContent;
                 if (lookupCache.IsEmpty)
                 {
                     reader.BaseStream.Position = (long)relativeIndex * LogEntryMetadata.Size;
                     metadata = await ReadMetadataAsync(reader.BaseStream, buffer, token).ConfigureAwait(false);
+                    cachedContent = null;
                 }
                 else
                 {
                     metadata = lookupCache[relativeIndex];
+                    cachedContent = entryCache[relativeIndex];
                 }
 
-                return metadata.IsValid ? new LogEntry(reader, buffer, metadata, absoluteIndex) : throw new MissingLogEntryException(relativeIndex, FirstIndex, LastIndex, FileName);
+                LogEntry result;
+                if (cachedContent is not null)
+                    result = new LogEntry(cachedContent, metadata, absoluteIndex);
+                else if (metadata.IsValid)
+                    result = new LogEntry(reader, buffer, metadata, absoluteIndex);
+                else
+                    throw new MissingLogEntryException(relativeIndex, FirstIndex, LastIndex, FileName);
+
+                return result;
             }
 
             // We don't need to analyze read optimization hint.
@@ -164,7 +182,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 nint relativeIndex;
                 if (absoluteIndex)
                 {
-                    relativeIndex = (nint)(index - FirstIndex);
+                    relativeIndex = ToRelativeIndex(index);
                 }
                 else
                 {
@@ -173,6 +191,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
 
                 return ReadAsync(GetReadSessionStream(in session), session.Buffer, relativeIndex, index, token);
+            }
+
+            private void UpdateCache(in CachedRaftLogEntry entry, nint index)
+            {
+                Debug.Assert(lookupCache.IsEmpty is false);
+                Debug.Assert(index >= 0 && index < entryCache.Length);
+
+                ref var cacheEntry = ref entryCache[index];
+                cacheEntry?.Dispose();
+                cacheEntry = entry.Content;
+            }
+
+            internal void RemoveEntryFromCache(long absoluteIndex)
+            {
+                if (!entryCache.IsEmpty)
+                {
+                    ref var cacheEntry = ref entryCache[ToRelativeIndex(absoluteIndex)];
+                    cacheEntry?.Dispose();
+                    cacheEntry = null;
+                }
             }
 
             private async ValueTask WriteAsync<TEntry>(TEntry entry, nint index, Memory<byte> buffer)
@@ -212,15 +250,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 await WriteMetadataAsync(this, metadata, buffer).ConfigureAwait(false);
 
                 // update cache
-                if (!lookupCache.IsEmpty)
+                if (lookupCache.IsEmpty is false)
+                {
+                    Debug.Assert(!entryCache.IsEmpty);
                     lookupCache[index] = metadata;
+
+                    if (typeof(TEntry) == typeof(CachedRaftLogEntry))
+                        UpdateCache(in Unsafe.As<TEntry, CachedRaftLogEntry>(ref entry), index);
+                }
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             internal ValueTask WriteAsync<TEntry>(in DataAccessSession session, TEntry entry, long absoluteIndex)
                 where TEntry : notnull, IRaftLogEntry
             {
                 // write operation always expects absolute index so we need to convert it to the relative index
-                return WriteAsync(entry, (nint)(absoluteIndex - FirstIndex), session.Buffer);
+                return WriteAsync(entry, ToRelativeIndex(absoluteIndex), session.Buffer);
             }
 
             protected override void Dispose(bool disposing)
@@ -229,6 +274,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     lookupCache.Dispose();
                     lookupCache = default;
+                    foreach (ref var cacheEntry in entryCache.Memory.Span)
+                        cacheEntry?.Dispose();
+
+                    entryCache.Dispose();
+                    entryCache = default;
                     previous = next = null;
                 }
 
