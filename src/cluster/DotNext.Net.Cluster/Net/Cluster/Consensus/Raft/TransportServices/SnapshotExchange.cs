@@ -88,7 +88,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 TrySetResult(IExchange.ReadResult(payload.Span));
                 result = new (false);
             }
-            
+
             return default;
         }
 
