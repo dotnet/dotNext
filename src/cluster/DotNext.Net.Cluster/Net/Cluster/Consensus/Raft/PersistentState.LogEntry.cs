@@ -24,12 +24,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         [StructLayout(LayoutKind.Auto)]
         protected internal readonly struct LogEntry : IRaftLogEntry
         {
-            private const byte EmptyContentType = 0;
-            private const byte StreamContentType = 1;
-            private const byte MemoryContentType = 2;
+            private enum ContentType : byte
+            {
+                None = 0,
+                Stream,
+                Memory,
+            }
 
             // this field has correlation with 'content' field
-            private readonly byte contentType;
+            private readonly ContentType contentType;
             private readonly IDisposable? content;
             private readonly LogEntryMetadata metadata;
             private readonly Memory<byte> buffer;
@@ -44,7 +47,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 content = cachedContent;
                 buffer = sharedBuffer;
                 this.index = index;
-                contentType = StreamContentType;
+                contentType = ContentType.Stream;
             }
 
             // for regular log entry cached in memory
@@ -55,7 +58,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 content = cachedContent;
                 buffer = default;
                 this.index = index;
-                contentType = MemoryContentType;
+                contentType = ContentType.Memory;
             }
 
             // for snapshot
@@ -66,7 +69,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 content = cachedContent;
                 buffer = sharedBuffer;
                 index = -metadata.Index;
-                contentType = StreamContentType;
+                contentType = ContentType.Stream;
             }
 
             // for ephemeral entry
@@ -76,7 +79,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 content = null;
                 buffer = sharedBuffer;
                 index = 0L;
-                contentType = EmptyContentType;
+                contentType = ContentType.None;
             }
 
             internal long? SnapshotIndex
@@ -87,6 +90,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     return i > 0L ? i : null;
                 }
             }
+
+            internal bool IsBuffered => contentType == ContentType.Memory;
 
             /// <summary>
             /// Gets the index of this log entry.
@@ -119,7 +124,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Debug.Assert(content is StreamSegment);
                 var segment = As<StreamSegment>(content);
                 Adjust(segment, in metadata);
-                return new ValueTask(writer.CopyFromAsync(segment, token));
+                return new (writer.CopyFromAsync(segment, token));
             }
 
             private ValueTask CopyFromMemory<TWriter>(TWriter writer, CancellationToken token)
@@ -132,9 +137,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <inheritdoc/>
             ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token) => contentType switch
             {
-                StreamContentType => CopyFromStream(writer, token),
-                MemoryContentType => CopyFromMemory(writer, token),
-                _ => new ValueTask(),
+                ContentType.Stream => CopyFromStream(writer, token),
+                ContentType.Memory => CopyFromMemory(writer, token),
+                _ => new (),
             };
 
             /// <inheritdoc/>
@@ -171,8 +176,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 where TTransformation : notnull, IDataTransferObject.ITransformation<TResult>
                 => contentType switch
                 {
-                    StreamContentType => TransformStreamAsync<TResult, TTransformation>(transformation, token),
-                    MemoryContentType => TransformMemoryAsync<TResult, TTransformation>(transformation, token),
+                    ContentType.Stream => TransformStreamAsync<TResult, TTransformation>(transformation, token),
+                    ContentType.Memory => TransformMemoryAsync<TResult, TTransformation>(transformation, token),
                     _ => transformation.TransformAsync(IAsyncBinaryReader.Empty, token),
                 };
 
@@ -196,8 +201,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <returns>The binary reader providing access to the content of this log entry.</returns>
             public IAsyncBinaryReader GetReader() => contentType switch
             {
-                StreamContentType => GetStreamReader(),
-                MemoryContentType => GetMemoryReader(),
+                ContentType.Stream => GetStreamReader(),
+                ContentType.Memory => GetMemoryReader(),
                 _ => IAsyncBinaryReader.Empty,
             };
 
@@ -226,9 +231,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <seealso cref="CreateJsonLogEntry"/>
             public ValueTask<object?> DeserializeFromJsonAsync(Func<string, Type>? typeLoader = null, JsonSerializerOptions? options = null, CancellationToken token = default) => contentType switch
             {
-                StreamContentType => DeserializeFromJsonStreamAsync(typeLoader, options, token),
-                MemoryContentType => new ValueTask<object?>(JsonLogEntry.Deserialize(GetMemoryReader(), typeLoader, options)),
-                _ => new ValueTask<object?>((object?)null),
+                ContentType.Stream => DeserializeFromJsonStreamAsync(typeLoader, options, token),
+                ContentType.Memory => new (JsonLogEntry.Deserialize(GetMemoryReader(), typeLoader, options)),
+                _ => new ((object?)null),
             };
 #endif
         }

@@ -205,12 +205,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal void RemoveEntryFromCache(long absoluteIndex)
             {
-                if (!entryCache.IsEmpty)
-                {
-                    ref var cacheEntry = ref entryCache[ToRelativeIndex(absoluteIndex)];
-                    cacheEntry?.Dispose();
-                    cacheEntry = null;
-                }
+                Debug.Assert(!entryCache.IsEmpty);
+                ref var cacheEntry = ref entryCache[ToRelativeIndex(absoluteIndex)];
+                cacheEntry?.Dispose();
+                cacheEntry = null;
             }
 
             private async ValueTask WriteAsync<TEntry>(TEntry entry, nint index, Memory<byte> buffer)

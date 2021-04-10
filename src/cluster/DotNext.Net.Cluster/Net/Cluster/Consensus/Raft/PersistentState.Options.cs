@@ -51,6 +51,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         /// <summary>
+        /// Represents eviction policy of the entries located in the cache.
+        /// </summary>
+        public enum LogEntryCacheEvictionPolicy : byte
+        {
+            /// <summary>
+            /// Cached log entry is evicted only if committed.
+            /// </summary>
+            OnCommit = 0,
+
+            /// <summary>
+            /// Cached log entry remains alive until it will be snapshotted.
+            /// </summary>
+            /// <remarks>
+            /// The commit doesn't cause cache eviction.
+            /// </remarks>
+            OnSnapshot,
+        }
+
+        /// <summary>
         /// Represents configuration options of the persistent audit trail.
         /// </summary>
         public class Options
@@ -172,6 +191,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// on buffered copy of the log entries.
             /// </summary>
             public RaftLogEntriesBufferingOptions? CopyOnReadOptions
+            {
+                get;
+                set;
+            }
+
+            /// <summary>
+            /// Gets or sets eviction policy for the cache of buffered log entries.
+            /// </summary>
+            /// <remarks>
+            /// This property has no effect is <see cref="UseCaching"/> is <see langword="false"/>.
+            /// </remarks>
+            /// <seealso cref="AppendAsync{TEntry}(TEntry, bool, CancellationToken)"/>
+            public LogEntryCacheEvictionPolicy CacheEvictionPolicy
             {
                 get;
                 set;
