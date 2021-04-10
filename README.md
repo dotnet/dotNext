@@ -78,6 +78,8 @@ This release is primarily focused on improvements of stuff related to cluster pr
 * Small performance improvements when passing log entries over the wire for TCP and UDP protocols
 * Added buffering API for log entries
 * Added optional buffering of log entries and snapshot when transferring using TCP or UDP protocols
+* Introduced _copy-on-read_ behavior to `PersistentState` class to reduce lock contention between writers and the replication process
+* Introduced in-memory cache of log entries to `PersistentState` class to eliminate I/O overhead when appending and applying new log entries
 * Interpreter Framework: removed overhead caused by deserialization of command identifier from the log entry. Now the identifier is a part of log entry metadata which is usually pre-cached by underlying WAL implementation
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/3.1.0">DotNext.AspNetCore.Cluster 3.1.0</a>
