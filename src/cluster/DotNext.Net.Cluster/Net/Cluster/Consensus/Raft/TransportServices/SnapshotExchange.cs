@@ -89,7 +89,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 result = new (false);
             }
 
-            return default;
+            return result;
         }
 
         async ValueTask IAsyncDisposable.DisposeAsync()
