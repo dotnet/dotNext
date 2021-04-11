@@ -30,7 +30,6 @@ namespace DotNext.Runtime.CompilerServices
 
         private void Complete()
         {
-            var token = registration.Token;
             registration.Dispose();
             base.Complete(null);
         }
