@@ -335,13 +335,14 @@ namespace DotNext.Runtime.CompilerServices
         private Expression RewriteCallable<TException>(TException node, Expression[] arguments, Converter<TException, Expression> visitor, Func<TException, Expression[], TException> updater)
             where TException : Expression
         {
-            var codeInsertionPoint = context.CurrentStatement.PrologueCodeInserter();
             var newNode = visitor(node);
             if (newNode is TException typedExpr)
                 node = typedExpr;
             else
                 return newNode;
+
             var hasAwait = false;
+            var codeInsertionPoint = context.CurrentStatement.PrologueCodeInserter();
             for (var i = arguments.LongLength - 1L; i >= 0L; i--)
             {
                 ref Expression arg = ref arguments[i];
