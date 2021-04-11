@@ -14,7 +14,7 @@ namespace DotNext.IO
 
             internal ReaderStream(FileBufferingWriter writer, bool useAsyncIO)
             {
-                writer.GetWrittenContentAsStream(out source, useAsyncIO);
+                source = writer.GetWrittenContentAsStream(useAsyncIO);
                 session = writer.EnterReadMode(this);
             }
 
@@ -107,18 +107,21 @@ namespace DotNext.IO
             }
         }
 
-        private void GetWrittenContentAsStream(out Stream stream, bool useAsyncIO)
+        private Stream GetWrittenContentAsStream(bool useAsyncIO)
         {
+            Stream result;
             if (fileBackend is null)
             {
-                stream = StreamSource.AsStream(buffer.Memory.Slice(0, position));
+                result = StreamSource.AsStream(buffer.Memory.Slice(0, position));
             }
             else
             {
                 const FileOptions withAsyncIO = FileOptions.Asynchronous | FileOptions.SequentialScan;
                 const FileOptions withoutAsyncIO = FileOptions.SequentialScan;
-                stream = new FileStream(fileBackend.Name, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, fileProvider.BufferSize, useAsyncIO ? withAsyncIO : withoutAsyncIO);
+                result = new FileStream(fileBackend.Name, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, fileProvider.BufferSize, useAsyncIO ? withAsyncIO : withoutAsyncIO);
             }
+
+            return result;
         }
 
         /// <summary>
