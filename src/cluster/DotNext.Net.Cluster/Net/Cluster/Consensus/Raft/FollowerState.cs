@@ -27,9 +27,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             using var tokenSource = CancellationTokenSource.CreateLinkedTokenSource(tokens);
 
             // spin loop to wait for the timeout
-            while (await refreshEvent.WaitAsync(timeout, tokenSource.Token).ConfigureAwait(false))
-            {
-            }
+            while (await refreshEvent.WaitAsync(timeout, tokenSource.Token).ConfigureAwait(false));
 
             timedOut = true;
 
