@@ -11,7 +11,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     using IO.Log;
     using TransportServices;
     using IClientMetricsCollector = Metrics.IClientMetricsCollector;
-    using ILocalMember = TransportServices.ILocalMember;
 
     /// <summary>
     /// Represents default implementation of Raft-based cluster.
@@ -24,7 +23,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly IPEndPoint publicEndPoint;
         private readonly Func<ILocalMember, IPEndPoint, IClientMetricsCollector?, RaftClusterMember> clientFactory;
         private readonly Func<ILocalMember, IServer> serverFactory;
-        private readonly RaftLogEntryBufferingOptions? bufferingOptions;
+        private readonly RaftLogEntriesBufferingOptions? bufferingOptions;
         private IServer? server;
 
         /// <summary>
@@ -103,8 +102,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             where TEntry : notnull, IRaftLogEntry
         {
             Debug.Assert(bufferingOptions is not null);
-            using var buffered = await BufferedRaftLogEntryProducer.CopyAsync(entries, bufferingOptions, token).ConfigureAwait(false);
-            return await ReceiveEntriesAsync(sender, senderTerm, buffered, prevLogIndex, prevLogTerm, commitIndex, token).ConfigureAwait(false);
+            using var buffered = await BufferedRaftLogEntryList.CopyAsync(entries, bufferingOptions, token).ConfigureAwait(false);
+            return await ReceiveEntriesAsync(sender, senderTerm, buffered.ToProducer(), prevLogIndex, prevLogTerm, commitIndex, token).ConfigureAwait(false);
         }
 
         /// <inheritdoc />

@@ -24,7 +24,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private readonly bool openConnectionForEachRequest;
         private readonly string clientHandlerName;
         private readonly HttpVersion protocolVersion;
-        private readonly RaftLogEntryBufferingOptions? bufferingOptions;
+        private readonly RaftLogEntriesBufferingOptions? bufferingOptions;
         private Optional<ClusterMemberId> localMember;
 
         private RaftHttpCluster(HttpClusterMemberConfiguration config, IServiceProvider dependencies, out MemberCollectionBuilder members, Func<Action<HttpClusterMemberConfiguration, string>, IDisposable> configTracker)

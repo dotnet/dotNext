@@ -52,7 +52,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public DateTimeOffset Timestamp { get; }
 
         /// <inheritdoc/>
-        ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token) => new ValueTask();
+        ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token) => new ();
 
         /// <inheritdoc/>
         ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token) => transformation.TransformAsync(IAsyncBinaryReader.Empty, token);

@@ -12,7 +12,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Messaging;
     using static Threading.LinkedTokenSourceFactory;
-    using BufferedRaftLogEntryProducer = TransportServices.BufferedRaftLogEntryProducer;
 
     internal partial class RaftHttpCluster : IOutputChannel
     {
@@ -265,8 +264,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                     }
                     else
                     {
-                        using var buffered = await BufferedRaftLogEntryProducer.CopyAsync(entries, bufferingOptions, token).ConfigureAwait(false);
-                        result = await ReceiveEntriesAsync(sender, message.ConsensusTerm, buffered, message.PrevLogIndex, message.PrevLogTerm, message.CommitIndex, token).ConfigureAwait(false);
+                        using var buffered = await BufferedRaftLogEntryList.CopyAsync(entries, bufferingOptions, token).ConfigureAwait(false);
+                        result = await ReceiveEntriesAsync(sender, message.ConsensusTerm, buffered.ToProducer(), message.PrevLogIndex, message.PrevLogTerm, message.CommitIndex, token).ConfigureAwait(false);
                     }
 
                     await message.SaveResponse(response, result, token).ConfigureAwait(false);

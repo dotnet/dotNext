@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -34,7 +35,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 term = Math.Max(entry.Term, term);
 
                 // drop empty log entries during snapshot construction
-                return entry.IsEmpty ? new ValueTask() : ApplyAsync(entry);
+                return entry.IsEmpty ? new () : ApplyAsync(entry);
             }
 
             /// <summary>
@@ -49,6 +50,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <param name="startIndex">The lower bound of the index, inclusive.</param>
             /// <param name="endIndex">The upper bound of the index, inclusive.</param>
             /// <param name="currentIndex">The currently running index.</param>
+            [EditorBrowsable(EditorBrowsableState.Advanced)]
             protected internal virtual void AdjustIndex(long startIndex, long endIndex, ref long currentIndex)
             {
             }

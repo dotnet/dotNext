@@ -190,15 +190,22 @@ namespace DotNext.Threading.Tasks
         {
             if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
                 throw new ArgumentOutOfRangeException(nameof(timeout));
+
+            Task<bool> result;
             if (token.IsCancellationRequested)
-                return Task.FromCanceled<bool>(token);
-            if (task.IsCompleted)
-                return CompletedTask<bool, BooleanConst.True>.Task;
-            if (timeout == TimeSpan.Zero)
-                return CompletedTask<bool, BooleanConst.False>.Task;    // if timeout is zero fail fast
-            if (timeout > InfiniteTimeSpan)
-                return WaitAsyncImpl(task, timeout, token);
-            return !token.CanBeCanceled && task is Task<bool> boolTask ? boolTask : task.ContinueWith(TrueContinuation, token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
+                result = Task.FromCanceled<bool>(token);
+            else if (task.IsCompleted)
+                result = CompletedTask<bool, BooleanConst.True>.Task;
+            else if (timeout == TimeSpan.Zero)
+                result = CompletedTask<bool, BooleanConst.False>.Task;    // if timeout is zero fail fast
+            else if (timeout > InfiniteTimeSpan)
+                result = WaitAsyncImpl(task, timeout, token);
+            else if (!token.CanBeCanceled && task is Task<bool> boolTask)
+                result = boolTask;
+            else
+                result = task.ContinueWith(TrueContinuation, token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
+
+            return result;
         }
     }
 }

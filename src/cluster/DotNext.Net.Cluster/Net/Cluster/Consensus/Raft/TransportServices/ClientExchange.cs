@@ -69,7 +69,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             Debug.Assert(headers.Control == FlowControl.Ack, "Unexpected response", $"Message type {headers.Type} control {headers.Control}");
             TrySetResult(IExchange.ReadResult(payload.Span));
-            return new ValueTask<bool>(false);
+            return new (false);
         }
     }
 }

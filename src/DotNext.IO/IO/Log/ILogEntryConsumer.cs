@@ -7,6 +7,23 @@ using System.Threading.Tasks;
 namespace DotNext.IO.Log
 {
     /// <summary>
+    /// Represents read hint that can help audit trail to optimize
+    /// read operations.
+    /// </summary>
+    public enum LogEntryReadOptimizationHint : byte
+    {
+        /// <summary>
+        /// Return log entry metadata and payload.
+        /// </summary>
+        None = 0,
+
+        /// <summary>
+        /// Return log entry metadata only.
+        /// </summary>
+        MetadataOnly = 1,
+    }
+
+    /// <summary>
     /// Represents the reader of the log entries.
     /// </summary>
     /// <remarks>
@@ -36,6 +53,11 @@ namespace DotNext.IO.Log
         ValueTask<TResult> ReadAsync<TEntryImpl, TList>(TList entries, long? snapshotIndex, CancellationToken token)
             where TEntryImpl : notnull, TEntry
             where TList : notnull, IReadOnlyList<TEntryImpl>;
+
+        /// <summary>
+        /// Gets optimization hint that may be used by the audit trail to optimize the query.
+        /// </summary>
+        LogEntryReadOptimizationHint OptimizationHint => LogEntryReadOptimizationHint.None;
     }
 
     /// <summary>
@@ -53,22 +75,38 @@ namespace DotNext.IO.Log
         /// Wraps the delegate instance as a reader of log entries.
         /// </summary>
         /// <param name="consumer">The delegate representing the reader.</param>
-        public LogEntryConsumer(Func<IReadOnlyList<ILogEntry>, long?, CancellationToken, ValueTask<TResult>> consumer)
-            => this.consumer = consumer;
+        /// <param name="optimizationHint">Represents optimization hint for the audit trail.</param>
+        public LogEntryConsumer(Func<IReadOnlyList<ILogEntry>, long?, CancellationToken, ValueTask<TResult>> consumer, LogEntryReadOptimizationHint optimizationHint = LogEntryReadOptimizationHint.None)
+        {
+            this.consumer = consumer;
+            OptimizationHint = optimizationHint;
+        }
 
         /// <summary>
         /// Wraps the delegate instance as a reader of log entries.
         /// </summary>
         /// <param name="consumer">The delegate representing the reader.</param>
-        public LogEntryConsumer(Func<IReadOnlyList<TEntry>, long?, CancellationToken, ValueTask<TResult>> consumer)
-            => this.consumer = consumer;
+        /// <param name="optimizationHint">Represents optimization hint for the audit trail.</param>
+        public LogEntryConsumer(Func<IReadOnlyList<TEntry>, long?, CancellationToken, ValueTask<TResult>> consumer, LogEntryReadOptimizationHint optimizationHint = LogEntryReadOptimizationHint.None)
+        {
+            this.consumer = consumer;
+            OptimizationHint = optimizationHint;
+        }
 
         /// <summary>
         /// Wraps the consumer as a reader of log entries.
         /// </summary>
         /// <param name="consumer">The consumer to be wrapped.</param>
         public LogEntryConsumer(ILogEntryConsumer<TEntry, TResult> consumer)
-            => this.consumer = consumer;
+        {
+            this.consumer = consumer;
+            OptimizationHint = consumer.OptimizationHint;
+        }
+
+        /// <summary>
+        /// Gets optimization hint that may be used by the audit trail to optimize the query.
+        /// </summary>
+        public LogEntryReadOptimizationHint OptimizationHint { get; }
 
         /// <summary>
         /// Reads log entries asynchronously.

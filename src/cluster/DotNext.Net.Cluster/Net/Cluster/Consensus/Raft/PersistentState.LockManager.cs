@@ -3,7 +3,6 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Debug = System.Diagnostics.Debug;
-using Timeout = System.Threading.Timeout;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
@@ -179,7 +178,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal LockManager(long concurrencyLevel)
             {
-                state = new LockState(concurrencyLevel);
+                state = new (concurrencyLevel);
                 acquireReadLock = LockState.TryAcquireReadLock;
                 releaseReadLock = LockState.ReleaseReadLock;
                 acquireWriteLock = LockState.TryAcquireWriteLock;

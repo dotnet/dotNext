@@ -252,7 +252,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             => committed ? commitIndex.VolatileRead() : index.VolatileRead();
 
         /// <inheritdoc/>
-        ValueTask<long> IPersistentState.IncrementTermAsync() => new ValueTask<long>(term.IncrementAndGet());
+        ValueTask<long> IPersistentState.IncrementTermAsync() => new (term.IncrementAndGet());
 
         /// <inheritdoc/>
         Task IAuditTrail.InitializeAsync(CancellationToken token)
@@ -343,14 +343,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (resetLastVote)
                 votedFor = null;
 
-            return new ValueTask();
+            return new ();
         }
 
         /// <inheritdoc/>
         ValueTask IPersistentState.UpdateVotedForAsync(IRaftClusterMember? member)
         {
             votedFor = member;
-            return new ValueTask();
+            return new ();
         }
 
         /// <inheritdoc/>

@@ -219,7 +219,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             var entry = new TestLogEntry("SET X = 0") { Term = 42L };
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-            IPersistentState state = new PersistentState(dir, RecordsPerPartition);
+            IPersistentState state = new PersistentState(dir, RecordsPerPartition, new (){ CopyOnReadOptions = new () });
             try
             {
                 Equal(1L, await state.AppendAsync(new LogEntryList(entry)));
@@ -413,7 +413,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             using (var state = new PersistentState(dir, RecordsPerPartition, new PersistentState.Options { UseCaching = useCaching }))
             {
-                Equal(1L, await state.AppendAsync(new LogEntryList(entry1)));
+                Equal(1L, await state.AppendAsync(entry1, true));
                 Equal(2L, await state.AppendAsync(new LogEntryList(entry2, entry3, entry4, entry5)));
 
                 Equal(1L, await state.CommitAsync(1L, CancellationToken.None));
@@ -737,8 +737,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             private readonly List<object> entries = new List<object>();
 
-            internal JsonPersistentState(string location)
-                : base(location, RecordsPerPartition)
+            internal JsonPersistentState(string location, bool caching)
+                : base(location, RecordsPerPartition, new Options { UseCaching = caching })
             {
             }
 
@@ -751,15 +751,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal IReadOnlyList<object> Entries => entries;
         }
 
-        [Fact]
-        public static async Task JsonSerialization()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public static async Task JsonSerialization(bool cached)
         {
             var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            await using var state = new JsonPersistentState(dir);
+            await using var state = new JsonPersistentState(dir, cached);
             var entry1 = state.CreateJsonLogEntry<JsonPayload>(new JsonPayload { X = 10, Y = 20, Message = "Entry1" });
             var entry2 = state.CreateJsonLogEntry<JsonPayload>(new JsonPayload { X = 50, Y = 60, Message = "Entry2" });
-            await state.AppendAsync(entry1);
-            await state.AppendAsync(entry2);
+            await state.AppendAsync(entry1, true);
+            await state.AppendAsync(entry2, true);
             await state.CommitAsync(CancellationToken.None);
             Equal(2, state.Entries.Count);
 

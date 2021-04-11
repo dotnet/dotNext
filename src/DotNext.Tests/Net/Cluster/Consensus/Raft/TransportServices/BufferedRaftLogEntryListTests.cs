@@ -8,7 +8,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
     using IO;
     using IO.Log;
 
-    public sealed class BufferedRaftLogEntryProducerTests : Test
+    public sealed class BufferedRaftLogEntryListTests : Test
     {
         private readonly struct RaftLogEntry : IRaftLogEntry
         {
@@ -44,16 +44,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             var content2 = RandomBytes(4096);
 
             await using var entries = new LogEntryProducer<RaftLogEntry>(new RaftLogEntry(42L, content1, knownLength), new RaftLogEntry(43L, content2, knownLength));
-            var options = new RaftLogEntryBufferingOptions { MemoryThreshold = 1025 };
-            await using ILogEntryProducer<BufferedRaftLogEntry> buffered = await BufferedRaftLogEntryProducer.CopyAsync(entries, options);
-            Equal(2L, buffered.RemainingCount);
-            True(await buffered.MoveNextAsync());
-            Equal(1L, buffered.RemainingCount);
-            Equal(content1, await buffered.Current.ToByteArrayAsync());
-            True(await buffered.MoveNextAsync());
-            Equal(0L, buffered.RemainingCount);
-            Equal(content2, await buffered.Current.ToByteArrayAsync());
-            False(await buffered.MoveNextAsync());
+            var options = new RaftLogEntriesBufferingOptions { MemoryThreshold = 1025 };
+            using var buffered = await BufferedRaftLogEntryList.CopyAsync(entries, options);
+            Equal(2L, buffered.Count);
+            Equal(content1, await buffered[0].ToByteArrayAsync());
+            Equal(content2, await buffered[1].ToByteArrayAsync());
         }
     }
 }

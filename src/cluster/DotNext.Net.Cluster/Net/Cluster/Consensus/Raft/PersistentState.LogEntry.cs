@@ -1,11 +1,12 @@
 ﻿using System;
-using System.IO;
+using System.Buffers;
 using System.Runtime.InteropServices;
 #if !NETSTANDARD2_1
 using System.Text.Json;
 #endif
 using System.Threading;
 using System.Threading.Tasks;
+using static System.Runtime.CompilerServices.Unsafe;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
@@ -21,9 +22,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Use <see cref="TransformAsync"/> to decode the log entry.
         /// </remarks>
         [StructLayout(LayoutKind.Auto)]
-        protected readonly struct LogEntry : IRaftLogEntry
+        protected internal readonly struct LogEntry : IRaftLogEntry
         {
-            private readonly StreamSegment? content;
+            private enum ContentType : byte
+            {
+                None = 0,
+                Stream,
+                Memory,
+            }
+
+            // this field has correlation with 'content' field
+            private readonly ContentType contentType;
+            private readonly IDisposable? content;
             private readonly LogEntryMetadata metadata;
             private readonly Memory<byte> buffer;
 
@@ -37,6 +47,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 content = cachedContent;
                 buffer = sharedBuffer;
                 this.index = index;
+                contentType = ContentType.Stream;
+            }
+
+            // for regular log entry cached in memory
+            internal LogEntry(IMemoryOwner<byte> cachedContent, in LogEntryMetadata metadata, long index)
+            {
+                Debug.Assert(cachedContent.Memory.Length == metadata.Length);
+                this.metadata = metadata;
+                content = cachedContent;
+                buffer = default;
+                this.index = index;
+                contentType = ContentType.Memory;
             }
 
             // for snapshot
@@ -47,6 +69,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 content = cachedContent;
                 buffer = sharedBuffer;
                 index = -metadata.Index;
+                contentType = ContentType.Stream;
             }
 
             // for ephemeral entry
@@ -56,6 +79,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 content = null;
                 buffer = sharedBuffer;
                 index = 0L;
+                contentType = ContentType.None;
             }
 
             internal long? SnapshotIndex
@@ -66,6 +90,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     return i > 0L ? i : null;
                 }
             }
+
+            internal bool IsBuffered => contentType == ContentType.Memory;
 
             /// <summary>
             /// Gets the index of this log entry.
@@ -89,25 +115,32 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal bool IsEmpty => Length == 0L;
 
-            internal void Reset()
-                => content?.Adjust(metadata.Offset, Length);
+            private static void Adjust(StreamSegment segment, in LogEntryMetadata metadata)
+                => segment.Adjust(metadata.Offset, metadata.Length);
+
+            private ValueTask CopyFromStream<TWriter>(TWriter writer, CancellationToken token)
+                where TWriter : notnull, IAsyncBinaryWriter
+            {
+                Debug.Assert(content is StreamSegment);
+                var segment = As<StreamSegment>(content);
+                Adjust(segment, in metadata);
+                return new (writer.CopyFromAsync(segment, token));
+            }
+
+            private ValueTask CopyFromMemory<TWriter>(TWriter writer, CancellationToken token)
+                where TWriter : notnull, IAsyncBinaryWriter
+            {
+                Debug.Assert(content is IMemoryOwner<byte>);
+                return writer.WriteAsync(As<IMemoryOwner<byte>>(content).Memory, null, token);
+            }
 
             /// <inheritdoc/>
-            ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+            ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token) => contentType switch
             {
-                Task result;
-                if (content is null)
-                {
-                    result = Task.CompletedTask;
-                }
-                else
-                {
-                    Reset();
-                    result = writer.CopyFromAsync(content, token);
-                }
-
-                return new ValueTask(result);
-            }
+                ContentType.Stream => CopyFromStream(writer, token),
+                ContentType.Memory => CopyFromMemory(writer, token),
+                _ => new (),
+            };
 
             /// <inheritdoc/>
             long? IDataTransferObject.Length => Length;
@@ -125,38 +158,63 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// </summary>
             public DateTimeOffset Timestamp => new DateTimeOffset(metadata.Timestamp, TimeSpan.Zero);
 
+            private ValueTask<TResult> TransformStreamAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
+                where TTransformation : notnull, IDataTransferObject.ITransformation<TResult>
+            {
+                Debug.Assert(content is StreamSegment);
+                var segment = As<StreamSegment>(content);
+                Adjust(segment, in metadata);
+                return IDataTransferObject.TransformAsync<TResult, TTransformation>(segment, transformation, false, buffer, token);
+            }
+
+            private ValueTask<TResult> TransformMemoryAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
+                where TTransformation : notnull, IDataTransferObject.ITransformation<TResult>
+                => transformation.TransformAsync(GetMemoryReader(), token);
+
             /// <inheritdoc/>
             public ValueTask<TResult> TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
                 where TTransformation : notnull, IDataTransferObject.ITransformation<TResult>
-            {
-                Stream source;
-                if (content is null)
+                => contentType switch
                 {
-                    source = Stream.Null;
-                }
-                else
-                {
-                    Reset();
-                    source = content;
-                }
+                    ContentType.Stream => TransformStreamAsync<TResult, TTransformation>(transformation, token),
+                    ContentType.Memory => TransformMemoryAsync<TResult, TTransformation>(transformation, token),
+                    _ => transformation.TransformAsync(IAsyncBinaryReader.Empty, token),
+                };
 
-                return IDataTransferObject.TransformAsync<TResult, TTransformation>(source, transformation, false, buffer, token);
+            private IAsyncBinaryReader GetStreamReader()
+            {
+                Debug.Assert(content is StreamSegment);
+                var segment = As<StreamSegment>(content);
+                Adjust(segment, in metadata);
+                return IAsyncBinaryReader.Create(segment, buffer);
+            }
+
+            private SequenceBinaryReader GetMemoryReader()
+            {
+                Debug.Assert(content is IMemoryOwner<byte>);
+                return IAsyncBinaryReader.Create(As<IMemoryOwner<byte>>(content).Memory);
             }
 
             /// <summary>
             /// Gets reader that can be used to deserialize the content of this log entry.
             /// </summary>
             /// <returns>The binary reader providing access to the content of this log entry.</returns>
-            public IAsyncBinaryReader GetReader()
+            public IAsyncBinaryReader GetReader() => contentType switch
             {
-                if (content is null)
-                    return IAsyncBinaryReader.Empty;
-
-                Reset();
-                return IAsyncBinaryReader.Create(content, buffer);
-            }
+                ContentType.Stream => GetStreamReader(),
+                ContentType.Memory => GetMemoryReader(),
+                _ => IAsyncBinaryReader.Empty,
+            };
 
 #if !NETSTANDARD2_1
+            private ValueTask<object?> DeserializeFromJsonStreamAsync(Func<string, Type>? typeLoader, JsonSerializerOptions? options, CancellationToken token)
+            {
+                Debug.Assert(content is StreamSegment);
+                var segment = As<StreamSegment>(content);
+                Adjust(segment, in metadata);
+                return JsonLogEntry.DeserializeAsync(segment, typeLoader, options, token);
+            }
+
             /// <summary>
             /// Deserializes JSON content represented by this log entry.
             /// </summary>
@@ -171,21 +229,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <exception cref="TypeLoadException"><paramref name="typeLoader"/> unable to resolve the type.</exception>
             /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
             /// <seealso cref="CreateJsonLogEntry"/>
-            public ValueTask<object?> DeserializeFromJsonAsync(Func<string, Type>? typeLoader = null, JsonSerializerOptions? options = null, CancellationToken token = default)
+            public ValueTask<object?> DeserializeFromJsonAsync(Func<string, Type>? typeLoader = null, JsonSerializerOptions? options = null, CancellationToken token = default) => contentType switch
             {
-                Stream source;
-                if (content is null)
-                {
-                    source = Stream.Null;
-                }
-                else
-                {
-                    Reset();
-                    source = content;
-                }
-
-                return JsonLogEntry.DeserializeAsync(source, typeLoader ?? JsonLogEntry.DefaultTypeLoader, options, token);
-            }
+                ContentType.Stream => DeserializeFromJsonStreamAsync(typeLoader, options, token),
+                ContentType.Memory => new (JsonLogEntry.Deserialize(GetMemoryReader(), typeLoader, options)),
+                _ => new ((object?)null),
+            };
 #endif
         }
 

@@ -40,6 +40,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         }
 
         public override ValueTask<(PacketHeaders, int, bool)> CreateOutboundMessageAsync(Memory<byte> payload, CancellationToken token)
-            => new ValueTask<(PacketHeaders, int, bool)>((new PacketHeaders(MessageType.PreVote, FlowControl.None), CreateOutboundMessage(payload.Span), true));
+            => new ((new PacketHeaders(MessageType.PreVote, FlowControl.None), CreateOutboundMessage(payload.Span), true));
     }
 }

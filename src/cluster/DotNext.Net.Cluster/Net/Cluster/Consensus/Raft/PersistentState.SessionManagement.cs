@@ -18,7 +18,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private readonly MemoryOwner<byte> owner;
 
             // read session ctor
-            internal DataAccessSession(int sessionId, MemoryAllocator<byte>? bufferPool, int bufferSize)
+            internal DataAccessSession(int sessionId, MemoryAllocator<byte> bufferPool, int bufferSize)
             {
                 SessionId = sessionId;
                 owner = bufferPool.Invoke(bufferSize, false);
@@ -147,21 +147,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly struct DataAccessSessionManager : IDisposable
         {
             private readonly SessionIdPool sessions;
-            private readonly MemoryAllocator<byte>? bufferPool;
+            private readonly MemoryAllocator<byte> bufferPool;
             internal readonly int Capacity;
             internal readonly DataAccessSession WriteSession, CompactionSession;
 
-            internal DataAccessSessionManager(int readersCount, MemoryAllocator<byte>? sharedPool, int writeBufferSize)
+            internal DataAccessSessionManager(int readersCount, MemoryAllocator<byte> sharedPool, int writeBufferSize)
             {
                 Capacity = readersCount;
                 bufferPool = sharedPool;
                 sessions = readersCount <= FastSessionIdPool.MaxReadersCount ? new FastSessionIdPool() : new SlowSessionIdPool(readersCount);
-                WriteSession = new DataAccessSession(0, bufferPool, writeBufferSize);
-                CompactionSession = new DataAccessSession(1, bufferPool, writeBufferSize);
+                WriteSession = new (0, bufferPool, writeBufferSize);
+                CompactionSession = new (1, bufferPool, writeBufferSize);
             }
 
             internal DataAccessSession OpenSession(int bufferSize)
-                => new DataAccessSession(sessions.Take(), bufferPool, bufferSize);
+                => new (sessions.Take(), bufferPool, bufferSize);
 
             internal void CloseSession(in DataAccessSession readSession)
             {

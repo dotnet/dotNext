@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Buffers;
 using System.IO.Compression;
 using System.Threading;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using Buffers;
+    using IO.Log;
 
     public partial class PersistentState
     {
@@ -46,6 +48,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// time as <see cref="SnapshotBuilder.ApplyAsync(LogEntry)"/>.
             /// </remarks>
             Foreground = 2,
+        }
+
+        /// <summary>
+        /// Represents eviction policy of the entries located in the cache.
+        /// </summary>
+        public enum LogEntryCacheEvictionPolicy : byte
+        {
+            /// <summary>
+            /// Cached log entry is evicted only if committed.
+            /// </summary>
+            OnCommit = 0,
+
+            /// <summary>
+            /// Cached log entry remains alive until it will be snapshotted.
+            /// </summary>
+            /// <remarks>
+            /// The commit doesn't cause cache eviction.
+            /// </remarks>
+            OnSnapshot,
         }
 
         /// <summary>
@@ -127,9 +148,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// </summary>
             /// <typeparam name="T">The type of items in the pool.</typeparam>
             /// <returns>The memory allocator.</returns>
-            public virtual MemoryAllocator<T>? GetMemoryAllocator<T>()
-                where T : struct
-                => null;
+            public virtual MemoryAllocator<T> GetMemoryAllocator<T>() => ArrayPool<T>.Shared.ToAllocator();
 
             /// <summary>
             /// Gets or sets the number of possible parallel reads.
@@ -166,6 +185,32 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// to create backup archive.
             /// </summary>
             public CompressionLevel BackupCompression { get; set; } = CompressionLevel.Optimal;
+
+            /// <summary>
+            /// If set then every read operations will be performed
+            /// on buffered copy of the log entries.
+            /// </summary>
+            public RaftLogEntriesBufferingOptions? CopyOnReadOptions
+            {
+                get;
+                set;
+            }
+
+            /// <summary>
+            /// Gets or sets eviction policy for the cache of buffered log entries.
+            /// </summary>
+            /// <remarks>
+            /// This property has no effect is <see cref="UseCaching"/> is <see langword="false"/>.
+            /// </remarks>
+            /// <seealso cref="AppendAsync{TEntry}(TEntry, bool, CancellationToken)"/>
+            public LogEntryCacheEvictionPolicy CacheEvictionPolicy
+            {
+                get;
+                set;
+            }
+
+            internal ILogEntryConsumer<IRaftLogEntry, (BufferedRaftLogEntryList, long?)>? CreateBufferingConsumer()
+                => CopyOnReadOptions is null ? null : new BufferingLogEntryConsumer(CopyOnReadOptions);
         }
     }
 }

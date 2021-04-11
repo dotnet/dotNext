@@ -203,7 +203,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// Gets or sets buffering options.
             /// </summary>
             /// <value>If <see langword="null"/> then buffering is disabled.</value>
-            public RaftLogEntryBufferingOptions? BufferingOptions
+            public RaftLogEntriesBufferingOptions? BufferingOptions
             {
                 get;
                 set;

@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -13,7 +14,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// <summary>
     /// Represents buffered log entry.
     /// </summary>
+    /// <remarks>
+    /// This type is intended for developing transport-layer buffering
+    /// and low level I/O optimizations when writing custom Write-Ahead Log.
+    /// It's not recommended to use the type in the application code.
+    /// </remarks>
     [StructLayout(LayoutKind.Auto)]
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
     public readonly struct BufferedRaftLogEntry : IRaftLogEntry, IDisposable
     {
         // possible values are:
@@ -31,6 +38,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             commandId = id;
             IsSnapshot = snapshot;
             content = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.None, bufferSize, FileOptions.SequentialScan | FileOptions.Asynchronous | FileOptions.DeleteOnClose);
+            InMemory = false;
         }
 
         private BufferedRaftLogEntry(FileStream file, long term, DateTimeOffset timestamp, int? id, bool snapshot)
@@ -40,6 +48,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             commandId = id;
             content = file;
             IsSnapshot = snapshot;
+            InMemory = false;
         }
 
         private BufferedRaftLogEntry(IGrowableBuffer<byte> buffer, long term, DateTimeOffset timestamp, int? id, bool snapshot)
@@ -49,6 +58,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             commandId = id;
             content = buffer;
             IsSnapshot = snapshot;
+            InMemory = true;
         }
 
         private BufferedRaftLogEntry(long term, DateTimeOffset timestamp, int? id, bool snapshot)
@@ -58,7 +68,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             commandId = id;
             content = null;
             IsSnapshot = snapshot;
+            InMemory = true;
         }
+
+        internal bool InMemory { get; }
 
         /// <summary>
         /// Gets a value indicating whether the current log entry is a snapshot.
@@ -139,14 +152,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return new BufferedRaftLogEntry(writer, entry.Term, entry.Timestamp, entry.CommandId, entry.IsSnapshot);
         }
 
-        private static async ValueTask<BufferedRaftLogEntry> CopyToFileAsync<TEntry>(TEntry entry, RaftLogEntryBufferingOptions options, long length, CancellationToken token)
+        internal static async ValueTask<BufferedRaftLogEntry> CopyToFileAsync<TEntry>(TEntry entry, RaftLogEntryBufferingOptions options, long? length, CancellationToken token)
             where TEntry : notnull, IRaftLogEntry
         {
-            using var buffer = options.RentBuffer();
-            var output = new FileStream(options.GetRandomFileName(), FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, options.BufferSize, FileOptions.Asynchronous | FileOptions.SequentialScan);
-            output.SetLength(length);
+            var output = new FileStream(options.GetRandomFileName(), FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, options.BufferSize, FileOptions.Asynchronous | FileOptions.SequentialScan | FileOptions.DeleteOnClose);
+            var buffer = options.RentBuffer();
             try
             {
+                if (length.HasValue)
+                    output.SetLength(length.GetValueOrDefault());
+
                 await entry.WriteToAsync(output, buffer.Memory, token).ConfigureAwait(false);
                 await output.FlushAsync(token).ConfigureAwait(false);
             }
@@ -154,6 +169,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 await output.DisposeAsync().ConfigureAwait(false);
                 throw;
+            }
+            finally
+            {
+                buffer.Dispose();
+                buffer = default;
             }
 
             return new BufferedRaftLogEntry(output, entry.Term, entry.Timestamp, entry.CommandId, entry.IsSnapshot);
@@ -175,7 +195,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (!entry.Length.TryGetValue(out var length))
                 result = CopyToMemoryOrFileAsync(entry, options, token);
             else if (length == 0L)
-                result = new ValueTask<BufferedRaftLogEntry>(new BufferedRaftLogEntry(entry.Term, entry.Timestamp, entry.CommandId, entry.IsSnapshot));
+                result = new (new BufferedRaftLogEntry(entry.Term, entry.Timestamp, entry.CommandId, entry.IsSnapshot));
             else if (length <= options.MemoryThreshold)
                 result = CopyToMemoryAsync(entry, (int)length, options.MemoryAllocator, token);
             else
@@ -192,13 +212,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 case FileStream fs:
                     fs.Position = 0L;
-                    result = new ValueTask(writer.CopyFromAsync(fs, token));
+                    result = new (writer.CopyFromAsync(fs, token));
                     break;
                 case IGrowableBuffer<byte> buffer:
                     result = buffer.CopyToAsync(writer, token);
                     break;
                 default:
-                    result = new ValueTask();
+                    result = new ();
                     break;
             }
 

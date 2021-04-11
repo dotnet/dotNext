@@ -94,10 +94,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="options">The delegate used to provide configuration options.</param>
         /// <returns>A modified collection of services.</returns>
         /// <seealso cref="TransportLevelBufferingOptionsName"/>
-        public static IServiceCollection EnableBuffering(this IServiceCollection services, Action<RaftLogEntryBufferingOptions> options)
+        public static IServiceCollection EnableBuffering(this IServiceCollection services, Action<RaftLogEntriesBufferingOptions> options)
             => services.Configure(TransportLevelBufferingOptionsName, options);
 
-        internal static RaftLogEntryBufferingOptions? GetBufferingOptions(this IServiceProvider dependencies)
-            => dependencies.GetService<IOptionsMonitor<RaftLogEntryBufferingOptions>>()?.Get(RaftClusterConfiguration.TransportLevelBufferingOptionsName);
+        internal static RaftLogEntriesBufferingOptions? GetBufferingOptions(this IServiceProvider dependencies)
+            => dependencies.GetService<IOptionsMonitor<RaftLogEntriesBufferingOptions>>()?.Get(RaftClusterConfiguration.TransportLevelBufferingOptionsName);
     }
 }
