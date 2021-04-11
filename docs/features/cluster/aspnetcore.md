@@ -389,40 +389,6 @@ Implementation of reporting method should fast as possible or asynchronous. If r
 # Development and Debugging
 It may be hard to reproduce the real cluster on developer's machine. You may want to run your node in _Debug_ mode and ensure that the node you're running is a leader node. To do that, you need to configure only one node in the list of cluster members.
 
-# Performance
-There are a few places in the current Raft implementation that can cause performance issues:
-* Network. The wire format is highly optimized for transferring of log entries during the replication process over the wire. However, if your network is unreliable or slow, the replication process may have interference with writes caused by clients of your application.
-* Disk I/O. If you are using [PersistentState](xref:DotNext.Net.Cluster.Consensus.Raft.PersistentState) or custom implementation of [IAuditTrail](xref:DotNext.IO.Log.IAuditTrail) then you need to deal with disk I/O performance. `PersistentState` provides many configuration options for that. Make sure that your infrastructure provides fast block storage device.
-* Lock contention. `PersistentState` is designed to be concurrent and thread-safe. Internally, it uses asynchronous locks to provide this safety. For instance, there are multiple readers can co-exist. However, you cannot append new entries if there are active readers. Replication process requires read access so if the network is slow then read lock acquired by the replication process forces the write operations to wait in the queue.
-
-Network configuration is the responsibility of your infrastructure provider. Another performance aspects can be improved as described below.
-
-## Log Compaction
-`PersistentState` is designed to allow log compaction and the appending of new entries in parallel. It depends on chosen compaction mode. Read more [here](./wal.md) for more information about the available modes. _Background_ compaction provides precise control over the compaction. There are several ways to control it:
-1. If you're using `UsePersistenceEngine` extension method for registering your engine based on `PersistentState` then .NEXT infrastructure automatically detects the configured compaction mode. If it is _Background_ then it will register _compaction worker_ as a background service in ASP.NET Core. This worker provides _incremental background compaction_. You can override this behavior by implementing [ILogCompactionSupport](xref:DotNext.IO.ILogCompactionSupport) in your persistence engine.
-1. If you're registering persistence engine in DI container manually, you need to implement background compaction worker manually using [BackgroundService](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.hosting.backgroundservice.startasync) class and call `ForceCompactionAsync` method in the overridden `ExecuteAsync` method.
-
-_Incremental background compaction_ is the default strategy if _Background_ compaction enabled. The worker just waits for the commit and checks whether `PersistentState.CompactionCount` property is greater than zero. If so, it calls `ForceCompactionAsync` with the compaction factor which is equal to 1. It provides minimal compaction of the log. As a result, the contention between the compaction worker and readers is minimal or close to zero.
-
-## Buffered Replication
-Replication process requires read access to the WAL. In case of `PersistentState` this means that no one can append new entries or execute log compaction. Receiver also need to write the received log entries. So the read lock time is sum of the time needed for the transfer over the wire and the time needed to persist received log entries. The time needed for disk I/O can be removed completely if buffered replication is enabled.
-
-The following example shows how to enable the buffering:
-```csharp
-using DotNext.Net.Cluster.Consensus.Raft;
-
-IServiceCollection services;
-services.EnableBuffering(options => 
-{
-    MemoryThreshold = 10 * 1024
-});
-```
-
-Each log entry which is less than 10 KB in size will be stored in memory before writing to the WAL. Log entries larger than 10 KB will be stored in the temporary files. These files will be deleted automatically in the end of the replication process.
-
-## Buffered Writes
-
-
 # Example
 There is Raft playground represented by RaftNode application. You can find this app [here](https://github.com/sakno/dotNext/tree/develop/src/examples/RaftNode). This playground allows to test Raft consensus protocol in real world. Each instance of launched application represents cluster node. All nodes can be started using the following script:
 ```bash

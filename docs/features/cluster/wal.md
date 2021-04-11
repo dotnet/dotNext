@@ -24,13 +24,15 @@ Internally, persistent WAL uses files to store the state of cluster member and l
 * `BufferSize` is the number of bytes that is allocated by persistent WAL to perform I/O operations. Set it to the maximum expected log entry size to achieve the best performance.
 * `SnapshotBufferSize` is the number of bytes that is allocated by persistent WAL to perform I/O operations related to log snapshot. By default it is equal to `BufferSize`. You can set it explicitly to the maximum expected size of the log entry to achieve the best performance.
 * `InitialPartitionSize` represents the initial pre-allocated size, in bytes, of the empty partition file. This parameter allows to avoid fragmentation of the partition file at file-system level.
-* `UseCaching` is `bool` flag that allows to enable or disable in-memory caching of log entries metadata. `true` value allows to improve the performance or read/write operations by the cost of additional heap memory. `false` reduces the memory footprint by the cost of the read/write performance
+* `UseCaching` is `bool` flag that allows to enable or disable in-memory caching of log entries. `true` value allows to improve the performance or read/write operations by the cost of additional heap memory. `false` reduces the memory footprint by the cost of the read/write performance.
 * `GetMemoryAllocator` generic method used for renting the memory and can be overridden
 * `MaxConcurrentReads` is a number of concurrent asynchronous operations which can perform reads in parallel. Write operations are always sequential. Ideally, the value should be equal to the number of nodes. However, the larger value consumes more system resources (e.g. file handles) and heap memory.
 * `ReplayOnInitialize` is a flag indicating that state of underlying database engine should be reconstructed when `InitializeAsync` is called by infrastructure. It can be done manually using `ReplayAsync` method.
 * `WriteThrough` indicates that the WAL should write through any intermediate cache and go directly to disk. In other words, it calls _fsync_ for each written portion of data. By default this option is disabled that dramatically increases I/O performance. However, you may lost the data because OS has its own buffer for flushing written data, especially on SSD. You can enable reliable writes by the cost of the I/O performance.
 * `BackupCompression` represents compression level used by `CreateBackupAsync` method.
 * `CompactionMode` represents log compaction mode. The default is _Sequential_.
+* `CopyOnReadOptions` allows to enable _copy-on-read_ behavior which allows to avoid lock contention between writers and the replication process.
+* `CacheEvictionPolicy` represents eviction policy of the cached log entries.
 
 Choose `recordsPerPartition` value with care because it cannot be changed for the existing persistent WAL.
 
@@ -107,16 +109,6 @@ sealed class SimpleAuditTrail : PersistentState
 
 In the reality, the state machine should persist its state in reliable way, e.g. disk. The example above ignores this requirement for simplicity and maintain its state in the form of the field of type `long`.
 
-## Log Compaction
-WAL needs to squash old committed log entries to prevent growth of disk space usage. This procedure is called _log compaction_. As a result, the snapshot is produced. _Snapshot_ is a special kind of log entry that represents all squashed log entries up to the specified index calculated by WAL automatically. Log compaction is a heavy operation that may interfere with appending and reading operations due to lock contention.
-
-`PersistentState` offers the following compaction modes:
-* _Sequential_ offers the best optimization of disk space by the cost of read/write performance. During the sequential compaction, readers and appenders should wait until the end of the compaction procedure. In this case, wait time is proportional to the partition size (the number of entries per partition). Therefore, partition size should not be large. In this mode, the compaction algorithm trying to squash as much committed entries as possible during commit process. Even if you're committing the single entry, the compaction can be started for a entire partition. However, if the current partition is not full then compaction can be omitted.
-* _Background_ doesn't block the appending of new entries. It means that appending of new entries can be done in parallel with the log compaction. Moreover, you can specify compaction factor explicitly. In this case, WAL itself is not responsible for starting the compaction. You need to do this manually using `ForceCompactionAsync` method. Disk space may grow unexpectedly if the rate of the appending of new entries is much higher than the speed of the compaction. However, this compaction mode allows to control the performance precisely. Read operations still blocked if there is an active compaction.
-* _Foreground_ is forced automatically by WAL in parallel with the commit. In contrast to sequential compaction, the snapshot is created for the number of previously committed log entries equal to the number of currently committing entries. For instance, if you're trying to commit 4 log entries then the snapshot will be constructed for the last 4 log entries. In other words, this mode offers aggressive compaction forced on every commit but has low performance overhead. Moreover, the performance doesn't depend on partition size. This is the recommended compaction mode.
-
-_Foreground_ and _Background_ compaction modes demonstrate the best I/O performance on SSD (because of parallel writes to the disk) while _Sequential_ is suitable for classic HDD.
-
 # API Surface
 `PersistentState` can be used as general purpose Write Ahead Log. Any changes in the cluster node state can be represented as a series for log entries that can be appended to the log. Newly added entries are not committed. It means that there is no confirmation from other cluster nodes about consistent state of the log. When the consistency is reached across cluster then the all appended entries marked as committed and the commands contained in the committed log entries can be applied to the underlying database engine.
 
@@ -133,6 +125,33 @@ The following methods allows to implement this scenario:
 
 # State Reconstruction
 `PersistentState` is designed with assumption that underlying state machine can be reconstructed through sequential interpretation of each committed log entry stored in the log. When persistent WAL used in combination with other Raft infrastructure such as extensions for ASP.NET Core provided by **DotNext.AspNetCore.Cluster** library then this action performed automatically in host initialization code. However, if WAL used separately then reconstruction process should be initiated manually. To do that you need to call `ReplayAsync` method which reads all committed log entry and pass each entry to `ApplyAsync` protected method. Usually, `ApplyAsync` method implementation implements data state machine logic so sequential processing of all committed entries can restore its state correctly.
+
+# Performance
+Raft implementation must deal with the following bottlenecks: _network_, _disk I/O_ and synchronization when accessing WAL concurrently. The current implementation of persistent WAL provides many configuration options that allows to reduce the overhead caused by the last two aspects.
+
+## Durable disk I/O
+By default, `WriteThrough` option is disabled. It means that OS is responsible to decide when to do [fsync](https://man7.org/linux/man-pages/man2/fsync.2.html). The default behavior provides the best read/write throughput when accessing disk but may lead to corrupted WAL in case of server failures. All cached data in internal buffers will be lost. To increase durability you can set this property to **true** by the cost of I/O performance. However, this overhead can be mitigated by the caching mechanism.
+
+## Caching
+`UseCaching` allows to enable caching of the log entries and their metadata. If enabled, log entry metadata is always cached in the memory for all appended log entries by the cost of increased RAM consumption. Cached metadata allows to avoid disk I/O when requesting entries. However, reading of log entry payload still requires disk I/O. This overhead can be eliminated by the calling of _AppendAsync_ or _AppendAndEnsureCommitAsync_ method with **true** argument passed to **bool** parameter. In this case, the log entry will be copied to the memory outside of the internal lock and placed to the internal cache. Of course, write operation still requires persistence on the disk. However, any subsequent reads of the cached log entry doesn't require access to the disk.
+
+The following operations have the positive impact provided by caching:
+* All reads including replication process
+* Commit process, because state machine interprets a series of log entries cached in the memory
+* Snapshotting process, because snapshot builder deals with the log entries cached in the memory
+
+## Lock contention
+_Copy-on-read_ optimization allows to reduce lock contention between the replication process that requires _read lock_ and writers. Multiple readers can co-exist in the same time. However, appending of new log entries is not allowed while read lock acquired. Replication process acquires _read lock_ and then reads the log entries to be replicated. Sending of these log entries is also protected by the _read lock_. The replication may take a long time that causes writers to wait in the queue. This overhead can be reduced by switching _copy-on-read_ behavior on using `CopyOnReadOptions` configuration property by the cost of increased RAM consumption. In this case, all necessary log entries for replication will be copied to the temporary buffer and passed to the replication process. Buffered copies can be transferred to other cluster members without _read lock_.
+
+## Log Compaction
+WAL needs to squash old committed log entries to prevent growth of disk space usage. This procedure is called _log compaction_. As a result, the snapshot is produced. _Snapshot_ is a special kind of log entry that represents all squashed log entries up to the specified index calculated by WAL automatically. Log compaction is a heavy operation that may interfere with appending and reading operations due to lock contention.
+
+`PersistentState` offers the following compaction modes:
+* _Sequential_ offers the best optimization of disk space by the cost of read/write performance. During the sequential compaction, readers and appenders should wait until the end of the compaction procedure. In this case, wait time is proportional to the partition size (the number of entries per partition). Therefore, partition size should not be large. In this mode, the compaction algorithm trying to squash as much committed entries as possible during commit process. Even if you're committing the single entry, the compaction can be started for a entire partition. However, if the current partition is not full then compaction can be omitted.
+* _Background_ doesn't block the appending of new entries. It means that appending of new entries can be done in parallel with the log compaction. Moreover, you can specify compaction factor explicitly. In this case, WAL itself is not responsible for starting the compaction. You need to do this manually using `ForceCompactionAsync` method. Disk space may grow unexpectedly if the rate of the appending of new entries is much higher than the speed of the compaction. However, this compaction mode allows to control the performance precisely. Read operations still blocked if there is an active compaction.
+* _Foreground_ is forced automatically by WAL in parallel with the commit. In contrast to sequential compaction, the snapshot is created for the number of previously committed log entries equal to the number of currently committing entries. For instance, if you're trying to commit 4 log entries then the snapshot will be constructed for the last 4 log entries. In other words, this mode offers aggressive compaction forced on every commit but has low performance overhead. Moreover, the performance doesn't depend on partition size. This is the recommended compaction mode.
+
+_Foreground_ and _Background_ compaction modes demonstrate the best I/O performance on SSD (because of parallel writes to the disk) while _Sequential_ is suitable for classic HDD.
 
 # Interpreter Framework
 `ApplyAsync` method and snapshot builder responsible for interpretation of custom log entries usually containing the commands and applying these commands to the underlying database engine. [LogEntry](xref:DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry) is a generic representation of the log entry written to persistent WAL and it has no knowledge about semantics of the command. Therefore, you need to decode and interpret it manually.
