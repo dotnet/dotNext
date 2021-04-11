@@ -76,7 +76,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         public override async ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint endpoint, CancellationToken token)
         {
             var flushResult = await Writer.WriteAsync(payload, token).ConfigureAwait(false);
-            return !(flushResult.IsCanceled | flushResult.IsCompleted | headers.Control == FlowControl.StreamEnd);
+            return !(flushResult.IsCanceled || flushResult.IsCompleted || headers.Control == FlowControl.StreamEnd);
         }
 
         public override ValueTask<(PacketHeaders, int, bool)> CreateOutboundMessageAsync(Memory<byte> payload, CancellationToken token)
