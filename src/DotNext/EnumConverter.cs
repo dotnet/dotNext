@@ -51,7 +51,7 @@ namespace DotNext
             }
             else
             {
-                Debug.Assert(method.IsStatic & method.IsPublic);
+                Debug.Assert(method.IsStatic && method.IsPublic);
                 Converter = (delegate*<TInput, TOutput>)method.MethodHandle.GetFunctionPointer();
             }
 
