@@ -3,7 +3,7 @@
 [![Build Status](https://dev.azure.com/rvsakno/dotNext/_apis/build/status/sakno.dotNext?branchName=master)](https://dev.azure.com/rvsakno/dotNext/_build/latest?definitionId=1&branchName=master)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/sakno/dotNext/blob/master/LICENSE)
 ![Test Coverage](https://img.shields.io/azure-devops/coverage/rvsakno/dotnext/1/master)
-[![Language grade: C#](https://img.shields.io/lgtm/grade/csharp/g/sakno/dotNext.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/sakno/dotNext/context:csharp)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/sakno/dotNext.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/sakno/dotNext/alerts/)
 [![Join the chat](https://badges.gitter.im/dot_next/community.svg)](https://gitter.im/dot_next/community)
 
 .NEXT (dotNext) is a set of powerful libraries aimed to improve development productivity and extend .NET API with unique features. Some of these features are planned in future releases of .NET platform but already implemented in the library:
