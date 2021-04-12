@@ -233,7 +233,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 ContentType.Stream => DeserializeFromJsonStreamAsync(typeLoader, options, token),
                 ContentType.Memory => new (JsonLogEntry.Deserialize(GetMemoryReader(), typeLoader, options)),
-                _ => new ((object?)null),
+                _ => new (default(object)),
             };
 #endif
         }
