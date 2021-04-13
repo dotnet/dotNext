@@ -57,27 +57,31 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly string path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         private IPersistentState state;
 
-        private async Task SetupStateAsync(PersistentState.Options options)
+        private async Task SetupStateAsync(PersistentState.Options options, bool addToCache)
         {
-            var state = new PersistentState(path, 10, new PersistentState.Options { UseCaching = false });
+            var state = new PersistentState(path, 10, options);
             var random = new Random();
             const int payloadSize = 2048;
             var rnd = new Random();
             var bytes = new byte[payloadSize];
             rnd.NextBytes(bytes);
-            await state.AppendAsync(new BinaryLogEntry(10L, bytes));
+            await state.AppendAsync(new BinaryLogEntry(10L, bytes), addToCache);
             rnd.NextBytes(bytes);
-            await state.AppendAsync(new BinaryLogEntry(20L, bytes));
+            await state.AppendAsync(new BinaryLogEntry(20L, bytes), addToCache);
             this.state = state;
         }
 
         [GlobalSetup(Target = nameof(ReadLogEntriesWithoutMetadataCacheAsync))]
         public Task SetupStateWithoutMetadataCacheAsync()
-            => SetupStateAsync(new PersistentState.Options { UseCaching = false });
+            => SetupStateAsync(new PersistentState.Options { UseCaching = false }, false);
 
         [GlobalSetup(Target = nameof(ReadLogEntriesWithMetadataCacheAsync))]
         public Task SetupStateWithMetadataCacheAsync()
-            => SetupStateAsync(new PersistentState.Options { UseCaching = true });
+            => SetupStateAsync(new PersistentState.Options { UseCaching = true }, false);
+
+        [GlobalSetup(Target = nameof(ReadLogEntriesWithFullCacheAsync))]
+        public Task SetupStateWithFullCacheAsync()
+            => SetupStateAsync(new PersistentState.Options { UseCaching = true }, true);
 
         [Benchmark]
         public ValueTask<long> ReadLogEntriesWithoutMetadataCacheAsync()
@@ -85,6 +89,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         [Benchmark]
         public ValueTask<long> ReadLogEntriesWithMetadataCacheAsync()
+            => state.ReadAsync(LogEntrySizeCounter.Instance, 1, 2);
+
+        [Benchmark]
+        public ValueTask<long> ReadLogEntriesWithFullCacheAsync()
             => state.ReadAsync(LogEntrySizeCounter.Instance, 1, 2);
     }
 }
