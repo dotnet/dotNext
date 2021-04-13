@@ -14,6 +14,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
     [SimpleJob(runStrategy: RunStrategy.Throughput, launchCount: 1)]
     [Orderer(SummaryOrderPolicy.FastestToSlowest)]
+    [MemoryDiagnoser]
     public class PersistentStateBenchmark
     {
         private sealed class BinaryLogEntry : BinaryTransferObject, IRaftLogEntry
