@@ -36,7 +36,7 @@ namespace DotNext.Threading
                 this.context = context;
             }
 
-            internal unsafe void Invoke()
+            internal void Invoke()
             {
                 // null when no errors
                 // Exception when single error
