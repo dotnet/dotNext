@@ -24,7 +24,7 @@ namespace DotNext.IO
             where TWriter : class, IBufferWriter<char>
         {
             IFlushable.DiscoverFlushMethods(writer, ref flush, ref flushAsync);
-            return new TextBufferWriter<TWriter>(writer, provider, flush, flushAsync);
+            return new CharBufferWriter<TWriter>(writer, provider, flush, flushAsync);
         }
 
         /// <summary>

@@ -13,7 +13,7 @@ namespace DotNext.IO
 {
     using Buffers;
 
-    internal sealed unsafe class TextBufferWriter<TWriter> : TextWriter
+    internal sealed unsafe class CharBufferWriter<TWriter> : TextWriter
         where TWriter : class, IBufferWriter<char>
     {
         private readonly delegate*<TWriter, ReadOnlySpan<char>, void> writeImpl;
@@ -21,7 +21,7 @@ namespace DotNext.IO
         private readonly Action<TWriter>? flush;
         private readonly Func<TWriter, CancellationToken, Task>? flushAsync;
 
-        internal TextBufferWriter(TWriter writer, IFormatProvider? provider, Action<TWriter>? flush, Func<TWriter, CancellationToken, Task>? flushAsync)
+        internal CharBufferWriter(TWriter writer, IFormatProvider? provider, Action<TWriter>? flush, Func<TWriter, CancellationToken, Task>? flushAsync)
             : base(provider ?? InvariantCulture)
         {
             if (writer is null)
