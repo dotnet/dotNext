@@ -76,13 +76,17 @@ namespace DotNext.IO
                     }
 
                     position = sequence.GetPosition(1L, position);
-                    if (newLineBufferPosition >= newLine.Length)
+                    if ((uint)newLineBufferPosition >= (uint)newLine.Length)
                     {
                         defaultResult = string.Empty;
                         goto exit;
                     }
                 }
             }
+
+            // add trailing characters recognized as a part of uncompleted line termination
+            if ((uint)newLineBufferPosition > 0U)
+                length += 1L + newLineBufferPosition;
 
             exit:
             return length == 0L ? defaultResult : sequence.Slice(start, length).ToString();
