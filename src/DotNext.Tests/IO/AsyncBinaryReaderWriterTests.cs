@@ -304,7 +304,7 @@ namespace DotNext.IO
         {
             await using (source)
             {
-                const string value = "Hello, world!&*(@&*(fghjwgfwffgw ������, ���!";
+                const string value = "Hello, world!&*(@&*(fghjwgfwffgw Привет, мир!";
                 var writer = source.CreateWriter();
                 await writer.WriteAsync(value.AsMemory(), encoding, lengthFormat);
 
