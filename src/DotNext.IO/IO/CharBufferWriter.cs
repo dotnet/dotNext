@@ -13,65 +13,17 @@ namespace DotNext.IO
 {
     using Buffers;
 
-    internal sealed unsafe class CharBufferWriter<TWriter> : TextWriter
+    internal sealed unsafe class CharBufferWriter<TWriter> : TextBufferWriter<char, TWriter>
         where TWriter : class, IBufferWriter<char>
     {
-        private readonly delegate*<TWriter, ReadOnlySpan<char>, void> writeImpl;
-        private readonly TWriter writer;
-        private readonly Action<TWriter>? flush;
-        private readonly Func<TWriter, CancellationToken, Task>? flushAsync;
-
         internal CharBufferWriter(TWriter writer, IFormatProvider? provider, Action<TWriter>? flush, Func<TWriter, CancellationToken, Task>? flushAsync)
-            : base(provider ?? InvariantCulture)
+            : base(writer, provider, flush, flushAsync)
         {
-            if (writer is null)
-                throw new ArgumentNullException(nameof(writer));
-
-            writeImpl = writer is IReadOnlySpanConsumer<char> ?
-                &DirectWrite :
-                &BuffersExtensions.Write<char>;
-
-            this.writer = writer;
-            this.flush = flush;
-            this.flushAsync = flushAsync;
-
-            static void DirectWrite(TWriter output, ReadOnlySpan<char> input)
-            {
-                Debug.Assert(output is IReadOnlySpanConsumer<char>);
-                Unsafe.As<IReadOnlySpanConsumer<char>>(output).Invoke(input);
-            }
         }
 
         public override Encoding Encoding => Encoding.UTF8;
 
-        public override void Flush()
-        {
-            if (flush is null)
-            {
-                if (flushAsync is not null)
-                    flushAsync(writer, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
-            }
-            else
-            {
-                flush(writer);
-            }
-        }
-
-        public override Task FlushAsync()
-        {
-            if (flushAsync is null)
-            {
-                return flush is null ?
-                    Task.CompletedTask
-                    : Task.Factory.StartNew(() => flush(writer), CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Current);
-            }
-            else
-            {
-                return flushAsync(writer, CancellationToken.None);
-            }
-        }
-
-        public override void Write(ReadOnlySpan<char> buffer) => writeImpl(writer, buffer);
+        public override void Write(ReadOnlySpan<char> buffer) => WriteCore(buffer);
 
         public override void WriteLine() => Write(new ReadOnlySpan<char>(CoreNewLine));
 
