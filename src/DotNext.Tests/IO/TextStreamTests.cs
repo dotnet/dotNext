@@ -14,7 +14,7 @@ namespace DotNext.IO
     public sealed class TextStreamTests : Test
     {
         [Fact]
-        public static void WriteText()
+        public static void WriteTextToCharBuffer()
         {
             using var writer = new PooledArrayBufferWriter<char>();
             using var actual = writer.AsTextWriter();

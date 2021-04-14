@@ -1,6 +1,7 @@
 using System;
 using System.Buffers;
 using System.IO;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -47,6 +48,24 @@ namespace DotNext.IO
         {
             foreach (var segment in chars)
                 await writer.WriteAsync(segment, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Creates text writer backed by the byte buffer writer.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <param name="encoding">The encoding used to converts chars to bytes.</param>
+        /// <param name="provider">The object that controls formatting.</param>
+        /// <param name="flush">The optional implementation of <see cref="TextWriter.Flush"/> method.</param>
+        /// <param name="flushAsync">The optional implementation of <see cref="TextWriter.FlushAsync"/> method.</param>
+        /// <typeparam name="TWriter">The type of the char buffer writer.</typeparam>
+        /// <returns>The text writer backed by the buffer writer.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="encoding"/> is <see langword="null"/>.</exception>
+        public static TextWriter AsTextWriter<TWriter>(this TWriter writer, Encoding encoding, IFormatProvider? provider = null, Action<TWriter>? flush = null, Func<TWriter, CancellationToken, Task>? flushAsync = null)
+            where TWriter : class, IBufferWriter<byte>
+        {
+            IFlushable.DiscoverFlushMethods(writer, ref flush, ref flushAsync);
+            return new EncodingTextWriter<TWriter>(writer, encoding, provider, flush, flushAsync);
         }
     }
 }
