@@ -1,8 +1,6 @@
 using System;
 using System.Buffers;
-using System.Diagnostics;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,13 +9,10 @@ using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.IO
 {
-    using Buffers;
-
-    internal abstract unsafe class TextBufferWriter<T, TWriter> : TextWriter
+    internal abstract class TextBufferWriter<T, TWriter> : TextWriter
         where T : struct, IEquatable<T>, IConvertible, IComparable<T>
         where TWriter : class, IBufferWriter<T>
     {
-        private readonly delegate*<TWriter, ReadOnlySpan<T>, void> writeImpl;
         private protected readonly TWriter writer;
         private readonly Action<TWriter>? flush;
         private readonly Func<TWriter, CancellationToken, Task>? flushAsync;
@@ -28,22 +23,10 @@ namespace DotNext.IO
             if (writer is null)
                 throw new ArgumentNullException(nameof(writer));
 
-            writeImpl = writer is IReadOnlySpanConsumer<T> ?
-                &DirectWrite :
-                &BuffersExtensions.Write<T>;
-
             this.writer = writer;
             this.flush = flush;
             this.flushAsync = flushAsync;
-
-            static void DirectWrite(TWriter output, ReadOnlySpan<T> input)
-            {
-                Debug.Assert(output is IReadOnlySpanConsumer<T>);
-                Unsafe.As<IReadOnlySpanConsumer<T>>(output).Invoke(input);
-            }
         }
-
-        private protected void WriteCore(ReadOnlySpan<T> data) => writeImpl(writer, data);
 
         public sealed override void Write(bool value) => Write(value ? bool.TrueString : bool.FalseString);
 
