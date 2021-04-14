@@ -56,6 +56,7 @@ namespace DotNext.IO
             var start = position;
             var length = 0L;
             var newLine = Environment.NewLine;
+            string? defaultResult = null;
 
             // this variable is needed to save temporary the length of characters that are candidates for line termination string
             var newLineBufferPosition = 0;
@@ -76,12 +77,15 @@ namespace DotNext.IO
 
                     position = sequence.GetPosition(1L, position);
                     if (newLineBufferPosition >= newLine.Length)
+                    {
+                        defaultResult = string.Empty;
                         goto exit;
+                    }
                 }
             }
 
             exit:
-            return length == 0L ? null : sequence.Slice(start, length).ToString();
+            return length == 0L ? defaultResult : sequence.Slice(start, length).ToString();
         }
 
         /// <inheritdoc />
