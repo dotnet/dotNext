@@ -1,18 +1,14 @@
 using System;
 using System.Buffers;
 using System.IO;
-using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace DotNext.IO
 {
     /// <summary>
     /// Represents <see cref="TextReader"/> wrapper for <see cref="ReadOnlySequence{T}"/> type.
     /// </summary>
-    internal sealed class CharBufferReader : TextReader
+    internal sealed class CharBufferReader : TextBufferReader
     {
-        private const int InvalidChar = -1;
         private readonly ReadOnlySequence<char> sequence;
         private SequencePosition position;
 
@@ -26,16 +22,8 @@ namespace DotNext.IO
             position = sequence.Start;
         }
 
-        /// <inheritdoc />
         public override int Peek()
             => sequence.TryGet(ref position, out var block, false) && !block.IsEmpty ? block.Span[0] : InvalidChar;
-
-        /// <inheritdoc />
-        public override int Read()
-        {
-            var result = default(char);
-            return Read(MemoryMarshal.CreateSpan(ref result, 1)) > 0 ? result : InvalidChar;
-        }
 
         /// <inheritdoc />
         public override int Read(Span<char> buffer)
@@ -55,103 +43,11 @@ namespace DotNext.IO
         }
 
         /// <inheritdoc />
-        public override int Read(char[] buffer, int index, int count)
-            => Read(buffer.AsSpan(index, count));
-
-        /// <inheritdoc />
-        public override int ReadBlock(Span<char> buffer)
-        {
-            int count, total = 0;
-            do
-            {
-                count = Read(buffer.Slice(total));
-                total += count;
-            }
-            while (count > 0);
-
-            return total;
-        }
-
-        /// <inheritdoc />
-        public override int ReadBlock(char[] buffer, int index, int count)
-            => ReadBlock(buffer.AsSpan(index, count));
-
-        /// <inheritdoc />
-        public override ValueTask<int> ReadAsync(Memory<char> buffer, CancellationToken token = default)
-        {
-            Task<int> result;
-            if (token.IsCancellationRequested)
-            {
-                result = Task.FromCanceled<int>(token);
-            }
-            else
-            {
-                try
-                {
-                    return new ValueTask<int>(Read(buffer.Span));
-                }
-                catch (Exception e)
-                {
-                    result = Task.FromException<int>(e);
-                }
-            }
-
-            return new ValueTask<int>(result);
-        }
-
-        /// <inheritdoc />
-        public override Task<int> ReadAsync(char[] buffer, int index, int count)
-            => ReadAsync(buffer.AsMemory(index, count)).AsTask();
-
-        /// <inheritdoc />
-        public override ValueTask<int> ReadBlockAsync(Memory<char> buffer, CancellationToken token = default)
-        {
-            Task<int> result;
-            if (token.IsCancellationRequested)
-            {
-                result = Task.FromCanceled<int>(token);
-            }
-            else
-            {
-                try
-                {
-                    return new ValueTask<int>(ReadBlock(buffer.Span));
-                }
-                catch (Exception e)
-                {
-                    result = Task.FromException<int>(e);
-                }
-            }
-
-            return new ValueTask<int>(result);
-        }
-
-        /// <inheritdoc />
-        public override Task<int> ReadBlockAsync(char[] buffer, int index, int count)
-            => ReadBlockAsync(buffer.AsMemory(index, count)).AsTask();
-
-        /// <inheritdoc />
         public override string ReadToEnd()
         {
             var tail = sequence.Slice(position);
             position = sequence.End;
             return tail.ToString();
-        }
-
-        /// <inheritdoc />
-        public override Task<string> ReadToEndAsync()
-        {
-            Task<string> result;
-            try
-            {
-                result = Task.FromResult<string>(ReadToEnd());
-            }
-            catch (Exception e)
-            {
-                result = Task.FromException<string>(e);
-            }
-
-            return result;
         }
 
         /// <inheritdoc />
@@ -186,22 +82,6 @@ namespace DotNext.IO
 
             exit:
             return length == 0L ? null : sequence.Slice(start, length).ToString();
-        }
-
-        /// <inheritdoc />
-        public override Task<string?> ReadLineAsync()
-        {
-            Task<string?> result;
-            try
-            {
-                result = Task.FromResult<string?>(ReadLine());
-            }
-            catch (Exception e)
-            {
-                result = Task.FromException<string?>(e);
-            }
-
-            return result;
         }
 
         /// <inheritdoc />
