@@ -33,7 +33,7 @@ namespace DotNext.IO
         /// <param name="sequence">The sequence of characters.</param>
         /// <returns>The reader over the sequence of characters.</returns>
         public static TextReader AsTextReader(this ReadOnlySequence<char> sequence)
-            => new TextBufferReader(sequence);
+            => new CharBufferReader(sequence);
 
         /// <summary>
         /// Asynchronously writes a linked regions of characters to the text stream.

@@ -10,7 +10,7 @@ namespace DotNext.IO
     /// <summary>
     /// Represents <see cref="TextReader"/> wrapper for <see cref="ReadOnlySequence{T}"/> type.
     /// </summary>
-    internal sealed class TextBufferReader : TextReader
+    internal sealed class CharBufferReader : TextReader
     {
         private const int InvalidChar = -1;
         private readonly ReadOnlySequence<char> sequence;
@@ -20,7 +20,7 @@ namespace DotNext.IO
         /// Initializes a new reader for the buffer containing characters.
         /// </summary>
         /// <param name="sequence">The buffer containing characters.</param>
-        internal TextBufferReader(ReadOnlySequence<char> sequence)
+        internal CharBufferReader(ReadOnlySequence<char> sequence)
         {
             this.sequence = sequence;
             position = sequence.Start;
