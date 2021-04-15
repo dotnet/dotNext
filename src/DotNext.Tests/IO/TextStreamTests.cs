@@ -10,6 +10,7 @@ using static System.Globalization.CultureInfo;
 namespace DotNext.IO
 {
     using Buffers;
+    using static Text.EncodingExtensions;
 
     [ExcludeFromCodeCoverage]
     public sealed class TextStreamTests : Test
@@ -94,7 +95,7 @@ namespace DotNext.IO
         [InlineData("UTF-16LE", 16)]
         [InlineData("UTF-32BE", 16)]
         [InlineData("UTF-32LE", 16)]
-        public static void DecodingWriterSparseBuffer(string encodingName, int bufferSize)
+        public static void DecodingSparseBuffer(string encodingName, int bufferSize)
         {
             var enc = Encoding.GetEncoding(encodingName);
             var block = ToReadOnlySequence<byte>(enc.GetBytes("Hello, world!&*(@&*(fghjwgfwffgw Привет, мир!").AsMemory(), 1);
@@ -108,7 +109,21 @@ namespace DotNext.IO
         [InlineData("UTF-16LE", 16)]
         [InlineData("UTF-32BE", 16)]
         [InlineData("UTF-32LE", 16)]
-        public static void EncodingDecodingWriter(string encodingName, int bufferSize)
+        public static void DecodingSingleSegment(string encodingName, int bufferSize)
+        {
+            var enc = Encoding.GetEncoding(encodingName);
+            var bytes = enc.GetBytes("Hello, world!&*(@&*(fghjwgfwffgw Привет, мир!").AsMemory();
+            using var reader = new ReadOnlySequence<byte>(bytes).AsTextReader(enc, bufferSize);
+            Equal("Hello, world!&*(@&*(fghjwgfwffgw Привет, мир!", reader.ReadLine());
+        }
+
+        [Theory]
+        [InlineData("UTF-8", 16)]
+        [InlineData("UTF-16BE", 16)]
+        [InlineData("UTF-16LE", 16)]
+        [InlineData("UTF-32BE", 16)]
+        [InlineData("UTF-32LE", 16)]
+        public static void EncodingWriterDecodingReader(string encodingName, int bufferSize)
         {
             using var buffer = new SparseBufferWriter<byte>(32, SparseBufferGrowth.Linear);
             var enc = Encoding.GetEncoding(encodingName);
