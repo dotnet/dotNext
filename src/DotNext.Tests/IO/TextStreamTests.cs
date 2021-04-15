@@ -73,7 +73,7 @@ namespace DotNext.IO
             using var reader = new ReadOnlySequence<char>(line).AsTextReader();
             Equal(string.Empty, reader.ReadLine());
             Equal("a", reader.ReadLine());
-            Equal(null, reader.ReadLine());
+            Null(reader.ReadLine());
         }
 
         [Fact]

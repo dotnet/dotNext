@@ -86,7 +86,7 @@ namespace DotNext.IO
 
             // add trailing characters recognized as a part of uncompleted line termination
             if ((uint)newLineBufferPosition > 0U)
-                length += 1L + newLineBufferPosition;
+                length += newLineBufferPosition;
 
             exit:
             return length == 0L ? defaultResult : sequence.Slice(start, length).ToString();
