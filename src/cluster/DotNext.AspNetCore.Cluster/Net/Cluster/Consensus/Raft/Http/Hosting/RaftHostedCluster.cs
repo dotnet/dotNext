@@ -107,7 +107,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
 
         protected override async ValueTask DisposeAsyncCore()
         {
-            await base.DisposeAsync().ConfigureAwait(false);
+            await base.DisposeAsyncCore().ConfigureAwait(false);
 
             if (host is IAsyncDisposable disposable)
                 await disposable.DisposeAsync().ConfigureAwait(false);
