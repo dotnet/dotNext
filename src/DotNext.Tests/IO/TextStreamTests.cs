@@ -95,6 +95,24 @@ namespace DotNext.IO
         [InlineData("UTF-16LE", 16)]
         [InlineData("UTF-32BE", 16)]
         [InlineData("UTF-32LE", 16)]
+        public static void InvalidLineTermination2(string encodingName, int bufferSize)
+        {
+            var newLine = Environment.NewLine;
+            var str = string.Concat("a", newLine[0].ToString());
+            if (newLine.Length > 1)
+            {
+                var enc = Encoding.GetEncoding(encodingName);
+                using var reader = new ReadOnlySequence<byte>(enc.GetBytes(str).AsMemory()).AsTextReader(enc, bufferSize);
+                Equal(str, reader.ReadLine());
+            }
+        }
+
+        [Theory]
+        [InlineData("UTF-8", 16)]
+        [InlineData("UTF-16BE", 16)]
+        [InlineData("UTF-16LE", 16)]
+        [InlineData("UTF-32BE", 16)]
+        [InlineData("UTF-32LE", 16)]
         public static void DecodingSparseBuffer(string encodingName, int bufferSize)
         {
             var enc = Encoding.GetEncoding(encodingName);
