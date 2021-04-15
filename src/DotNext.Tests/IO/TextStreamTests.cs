@@ -2,6 +2,7 @@ using System;
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using static System.Globalization.CultureInfo;
@@ -63,6 +64,94 @@ namespace DotNext.IO
             actual.Flush();
             Equal(expected.ToString(), writer.ToString());
             Equal(expected.ToString(), actual.ToString());
+        }
+
+        [Fact]
+        public static void EmptyLines()
+        {
+            var line = string.Concat(Environment.NewLine, "a", Environment.NewLine).AsMemory();
+            using var reader = new ReadOnlySequence<char>(line).AsTextReader();
+            Equal(string.Empty, reader.ReadLine());
+            Equal("a", reader.ReadLine());
+            Equal(null, reader.ReadLine());
+        }
+
+        [Fact]
+        public static void InvalidLineTermination()
+        {
+            var newLine = Environment.NewLine;
+            var str = string.Concat("a", newLine[0].ToString());
+            if (newLine.Length > 1)
+            {
+                using var reader = new ReadOnlySequence<char>(str.AsMemory()).AsTextReader();
+                Equal(str, reader.ReadLine());
+            }
+        }
+
+        [Theory]
+        [InlineData("UTF-8", 16)]
+        [InlineData("UTF-16BE", 16)]
+        [InlineData("UTF-16LE", 16)]
+        [InlineData("UTF-32BE", 16)]
+        [InlineData("UTF-32LE", 16)]
+        public static void DecodingWriterSparseBuffer(string encodingName, int bufferSize)
+        {
+            var enc = Encoding.GetEncoding(encodingName);
+            var block = ToReadOnlySequence<byte>(enc.GetBytes("Hello, world!&*(@&*(fghjwgfwffgw Привет, мир!").AsMemory(), 1);
+            using var reader = block.AsTextReader(enc, bufferSize);
+            Equal("Hello, world!&*(@&*(fghjwgfwffgw Привет, мир!", reader.ReadToEnd());
+        }
+
+        [Theory]
+        [InlineData("UTF-8", 16)]
+        [InlineData("UTF-16BE", 16)]
+        [InlineData("UTF-16LE", 16)]
+        [InlineData("UTF-32BE", 16)]
+        [InlineData("UTF-32LE", 16)]
+        public static void EncodingDecodingWriter(string encodingName, int bufferSize)
+        {
+            using var buffer = new SparseBufferWriter<byte>(32, SparseBufferGrowth.Linear);
+            var enc = Encoding.GetEncoding(encodingName);
+
+            // write data
+            using (var writer = buffer.AsTextWriter(enc, InvariantCulture))
+            {
+                writer.WriteLine("Привет, мир!");
+                writer.WriteLine("Hello, world!&*(@&*(fghjwgfwffgw Привет, мир!");
+                writer.WriteLine('c');
+                writer.WriteLine(decimal.MaxValue);
+                writer.WriteLine(0D);
+                writer.WriteLine(1F);
+                writer.WriteLine(42);
+                writer.WriteLine(43U);
+                writer.WriteLine(44L);
+                writer.WriteLine(45UL);
+                writer.WriteLine(true);
+            }
+
+            // decode data
+            using (var reader = buffer.ToReadOnlySequence().AsTextReader(enc, bufferSize))
+            {
+                Equal('П', reader.Peek());
+                Equal("Привет, мир!", reader.ReadLine());
+                Equal("Hello, world!&*(@&*(fghjwgfwffgw Привет, мир!", reader.ReadLine());
+                Equal('c', reader.Read());
+                var newLine = Environment.NewLine;
+                for (var i = 0; i < newLine.Length; i++)
+                    Equal(newLine[i], reader.Read());
+                Equal(decimal.MaxValue.ToString(InvariantCulture), reader.ReadLine());
+                Equal(0D.ToString(InvariantCulture), reader.ReadLine());
+                Equal(1F.ToString(InvariantCulture), reader.ReadLine());
+                Equal(42.ToString(InvariantCulture), reader.ReadLine());
+                Equal(43U.ToString(InvariantCulture), reader.ReadLine());
+                Equal(44L.ToString(InvariantCulture), reader.ReadLine());
+                Equal(45UL.ToString(InvariantCulture), reader.ReadLine());
+                Equal(bool.TrueString, reader.ReadLine());
+                Null(reader.ReadLine());
+                Equal(string.Empty, reader.ReadToEnd());
+                Equal(-1, reader.Peek());
+                Equal(-1, reader.Read());
+            }
         }
 
         [Fact]

@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace DotNext.IO
 {
+    using Buffers;
+
     /// <summary>
     /// Represents various extension methods for <see cref="TextWriter"/> and <see cref="TextReader"/> classes.
     /// </summary>
@@ -35,6 +37,18 @@ namespace DotNext.IO
         /// <returns>The reader over the sequence of characters.</returns>
         public static TextReader AsTextReader(this ReadOnlySequence<char> sequence)
             => new CharBufferReader(sequence);
+
+        /// <summary>
+        /// Creates <see cref="TextReader"/> over the sequence of encoded characters.
+        /// </summary>
+        /// <param name="sequence">The sequence of bytes representing encoded characters.</param>
+        /// <param name="encoding">The encoding of the characters in the sequence.</param>
+        /// <param name="bufferSize">The size of the internal <see cref="char"/> buffer used to decode characters.</param>
+        /// <param name="allocator">The allocator of the internal buffer.</param>
+        /// <returns>The reader over the sequence of encoded characters.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="encoding"/> is <see langword="null"/>.</exception>
+        public static TextReader AsTextReader(this ReadOnlySequence<byte> sequence, Encoding encoding, int bufferSize = 1024, MemoryAllocator<char>? allocator = null)
+            => new DecodingTextReader(sequence, encoding, bufferSize, allocator);
 
         /// <summary>
         /// Asynchronously writes a linked regions of characters to the text stream.
