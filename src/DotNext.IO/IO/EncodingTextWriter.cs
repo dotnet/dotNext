@@ -23,6 +23,7 @@ namespace DotNext.IO
 
         public override void Write(ReadOnlySpan<char> chars)
         {
+#if NETSTANDARD2_1
             const int maxInputElements = 1024;
             int byteCount;
             Span<byte> output;
@@ -49,6 +50,9 @@ namespace DotNext.IO
                     chars = chars.Slice(charsProduced);
                 }
             }
+#else
+            Encoding.GetBytes(chars, writer);
+#endif
         }
 
         public override void Write(decimal value)
