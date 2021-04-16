@@ -135,39 +135,29 @@ namespace DotNext.IO
         {
             if (sequence.IsEmpty)
                 return string.Empty;
-#if NETSTANDARD
-            var writer = new BufferWriterSlim<char>(charLen - charPos, allocator);
-#else
-            var length = sequence.Length.Truncate();
 
-            var writer = length <= MemoryRental<char>.StackallocThreshold ?
-                new BufferWriterSlim<char>(stackalloc char[length]) :
-                new BufferWriterSlim<char>(length);
-#endif
+            var length = sequence.Length;
+            if (length > int.MaxValue)
+                throw new InsufficientMemoryException();
 
-            try
+            using var output = allocator.Invoke((int)length, false);
+            var writer = new SpanWriter<char>(output.Memory.Span);
+            if (charPos < charLen)
             {
-                if (charPos < charLen)
-                {
-                    writer.Write(Buffer.Slice(charPos, charLen - charPos));
-                    charPos = charLen;
-                }
-
-                // a little optimization here - don't use internal buffer and write directly to a local buffer
-                for (int count; ; writer.Advance(count))
-                {
-                    var localBuf = writer.GetSpan();
-                    count = ReadBuffer(localBuf);
-                    if (count == 0)
-                        break;
-                }
-
-                return new string(writer.WrittenSpan);
+                writer.Write(Buffer.Slice(charPos, charLen - charPos));
+                charPos = charLen;
             }
-            finally
+
+            // a little optimization here - don't use internal buffer and write directly to a local buffer
+            for (int count; ; writer.Advance(count))
             {
-                writer.Dispose();
+                var localBuf = writer.RemainingSpan;
+                count = ReadBuffer(localBuf);
+                if (count == 0)
+                    break;
             }
+
+            return new string(writer.WrittenSpan);
         }
 
         protected override void Dispose(bool disposing)
