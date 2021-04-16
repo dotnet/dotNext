@@ -22,8 +22,11 @@ namespace DotNext.Buffers
         public static unsafe bool TryRead<T>(this ref SpanReader<byte> reader, out T result)
             where T : unmanaged
         {
-            if (reader.TryRead(sizeof(T), out var block))
-                return MemoryMarshal.TryRead(block, out result);
+            if (MemoryMarshal.TryRead(reader.RemainingSpan, out result))
+            {
+                reader.Advance(sizeof(T));
+                return true;
+            }
 
             result = default;
             return false;
@@ -39,7 +42,20 @@ namespace DotNext.Buffers
         /// <exception cref="EndOfStreamException">The end of memory block is reached.</exception>
         public static unsafe T Read<T>(this ref SpanReader<byte> reader)
             where T : unmanaged
-            => MemoryMarshal.Read<T>(reader.Read(sizeof(T)));
+        {
+            var result = MemoryMarshal.Read<T>(reader.RemainingSpan);
+            reader.Advance(sizeof(T));
+            return result;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static unsafe T Read<T>(this ref SpanReader<byte> reader, delegate*<ReadOnlySpan<byte>, T> parser)
+            where T : unmanaged
+        {
+            var result = parser(reader.RemainingSpan);
+            reader.Advance(sizeof(T));
+            return result;
+        }
 
         /// <summary>
         /// Decodes 16-bit signed integer.
@@ -50,7 +66,7 @@ namespace DotNext.Buffers
         /// <exception cref="EndOfStreamException">The end of memory block is reached.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe short ReadInt16(this ref SpanReader<byte> reader, bool isLittleEndian)
-            => reader.Read<short>(isLittleEndian ? &ReadInt16LittleEndian : &ReadInt16BigEndian, sizeof(short));
+            => reader.Read<short>(isLittleEndian ? &ReadInt16LittleEndian : &ReadInt16BigEndian);
 
         /// <summary>
         /// Decodes 16-bit unsigned integer.
@@ -62,7 +78,7 @@ namespace DotNext.Buffers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
         public static unsafe ushort ReadUInt16(this ref SpanReader<byte> reader, bool isLittleEndian)
-            => reader.Read<ushort>(isLittleEndian ? &ReadUInt16LittleEndian : &ReadUInt16BigEndian, sizeof(ushort));
+            => reader.Read<ushort>(isLittleEndian ? &ReadUInt16LittleEndian : &ReadUInt16BigEndian);
 
         /// <summary>
         /// Decodes 32-bit signed integer.
@@ -73,7 +89,7 @@ namespace DotNext.Buffers
         /// <exception cref="EndOfStreamException">The end of memory block is reached.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int ReadInt32(this ref SpanReader<byte> reader, bool isLittleEndian)
-            => reader.Read<int>(isLittleEndian ? &ReadInt32LittleEndian : &ReadInt32BigEndian, sizeof(int));
+            => reader.Read<int>(isLittleEndian ? &ReadInt32LittleEndian : &ReadInt32BigEndian);
 
         /// <summary>
         /// Decodes 32-bit unsigned integer.
@@ -85,7 +101,7 @@ namespace DotNext.Buffers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
         public static unsafe uint ReadUInt32(this ref SpanReader<byte> reader, bool isLittleEndian)
-            => reader.Read<uint>(isLittleEndian ? &ReadUInt32LittleEndian : &ReadUInt32BigEndian, sizeof(uint));
+            => reader.Read<uint>(isLittleEndian ? &ReadUInt32LittleEndian : &ReadUInt32BigEndian);
 
         /// <summary>
         /// Decodes 64-bit signed integer.
@@ -96,7 +112,7 @@ namespace DotNext.Buffers
         /// <exception cref="EndOfStreamException">The end of memory block is reached.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe long ReadInt64(this ref SpanReader<byte> reader, bool isLittleEndian)
-            => reader.Read<long>(isLittleEndian ? &ReadInt64LittleEndian : &ReadInt64BigEndian, sizeof(long));
+            => reader.Read<long>(isLittleEndian ? &ReadInt64LittleEndian : &ReadInt64BigEndian);
 
         /// <summary>
         /// Decodes 64-bit unsigned integer.
@@ -108,7 +124,7 @@ namespace DotNext.Buffers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
         public static unsafe ulong ReadUInt64(this ref SpanReader<byte> reader, bool isLittleEndian)
-            => reader.Read<ulong>(isLittleEndian ? &ReadUInt64LittleEndian : &ReadUInt64BigEndian, sizeof(ulong));
+            => reader.Read<ulong>(isLittleEndian ? &ReadUInt64LittleEndian : &ReadUInt64BigEndian);
 
 #if !NETSTANDARD2_1
         /// <summary>
@@ -120,7 +136,7 @@ namespace DotNext.Buffers
         /// <exception cref="EndOfStreamException">The end of memory block is reached.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe float ReadSingle(this ref SpanReader<byte> reader, bool isLittleEndian)
-            => reader.Read<float>(isLittleEndian ? &ReadSingleLittleEndian : &ReadSingleBigEndian, sizeof(float));
+            => reader.Read<float>(isLittleEndian ? &ReadSingleLittleEndian : &ReadSingleBigEndian);
 
         /// <summary>
         /// Decodes double-precision floating-point number.
@@ -131,7 +147,7 @@ namespace DotNext.Buffers
         /// <exception cref="EndOfStreamException">The end of memory block is reached.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe double ReadDouble(this ref SpanReader<byte> reader, bool isLittleEndian)
-            => reader.Read<double>(isLittleEndian ? &ReadDoubleLittleEndian : &ReadDoubleBigEndian, sizeof(double));
+            => reader.Read<double>(isLittleEndian ? &ReadDoubleLittleEndian : &ReadDoubleBigEndian);
 #endif
     }
 }
