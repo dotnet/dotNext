@@ -4,6 +4,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Serialization;
 using Xunit;
 using static System.Globalization.CultureInfo;
 
@@ -15,6 +17,29 @@ namespace DotNext.IO
     [ExcludeFromCodeCoverage]
     public sealed class TextStreamTests : Test
     {
+        public sealed class XmlSerializableType
+        {
+            private byte[] byteArray;
+            private string[] stringArray;
+
+            [XmlElement("Value")]
+            public string Value { get; set; }
+
+            [XmlArray("ByteItem")]
+            public byte[] ByteArray
+            {
+                get => byteArray ?? Array.Empty<byte>();
+                set => byteArray = value;
+            }
+
+            [XmlArray("StringItem")]
+            public string[] StringArray
+            {
+                get => stringArray ?? Array.Empty<string>();
+                set => stringArray = value;
+            }
+        }
+
         [Fact]
         public static void WriteTextToCharBuffer()
         {
@@ -219,6 +244,45 @@ namespace DotNext.IO
             await using var writer = new StringWriter();
             await writer.WriteAsync(sequence);
             Equal("abcdefg", writer.ToString());
+        }
+
+        [Theory]
+        [InlineData("UTF-8", 128)]
+        [InlineData("UTF-16BE", 128)]
+        [InlineData("UTF-16LE", 128)]
+        [InlineData("UTF-32BE", 128)]
+        [InlineData("UTF-32LE", 128)]
+        public static void StressTest(string encodingName, int bufferSize)
+        {
+            var enc = Encoding.GetEncoding(encodingName);
+            var expected = new XmlSerializableType
+            {
+                Value = "Привет, мир!",
+                StringArray = new []
+                {
+                    "String1",
+                    "Strin2"
+                },
+                ByteArray = RandomBytes(128),
+            };
+
+            using var buffer = new SparseBufferWriter<byte>(1024, SparseBufferGrowth.Linear);
+            var serializer = new XmlSerializer(typeof(XmlSerializableType));
+
+            using (var writer = buffer.AsTextWriter(enc, InvariantCulture))
+            {
+                serializer.Serialize(writer, expected);
+            }
+
+            XmlSerializableType actual;
+            using (var reader = buffer.ToReadOnlySequence().AsTextReader(enc, bufferSize))
+            {
+                actual = (XmlSerializableType)serializer.Deserialize(reader);
+            }
+
+            Equal(expected.Value, actual.Value);
+            Equal(expected.StringArray, actual.StringArray);
+            Equal(expected.ByteArray, actual.ByteArray);
         }
     }
 }
