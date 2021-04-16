@@ -227,6 +227,6 @@ namespace DotNext.Buffers
         /// Gets the textual representation of the written content.
         /// </summary>
         /// <returns>The textual representation of the written content.</returns>
-        public override string ToString() => ConsumedSpan.ToString();
+        public readonly override string ToString() => ConsumedSpan.ToString();
     }
 }
