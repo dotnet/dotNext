@@ -54,7 +54,7 @@ namespace DotNext.Buffers
         /// <summary>
         /// Gets the remaining part of the span.
         /// </summary>
-        public readonly Span<T> Rest => span.Slice(position);
+        public readonly Span<T> RemainingSpan => span.Slice(position);
 
         /// <summary>
         /// Advances the position of this writer.
@@ -109,7 +109,7 @@ namespace DotNext.Buffers
         /// <returns>The number of written elements.</returns>
         public int Write(ReadOnlySpan<T> input)
         {
-            input.CopyTo(Rest, out var writtenCount);
+            input.CopyTo(RemainingSpan, out var writtenCount);
             position += writtenCount;
             return writtenCount;
         }
@@ -216,7 +216,7 @@ namespace DotNext.Buffers
 
             bool result;
 
-            if (result = action(arg, Rest, out var writtenCount))
+            if (result = action(arg, RemainingSpan, out var writtenCount))
                 position += writtenCount;
 
             return result;

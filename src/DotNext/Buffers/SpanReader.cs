@@ -65,7 +65,7 @@ namespace DotNext.Buffers
         /// <summary>
         /// Gets the remaining part of the span.
         /// </summary>
-        public readonly ReadOnlySpan<T> Rest => span.Slice(position);
+        public readonly ReadOnlySpan<T> RemainingSpan => span.Slice(position);
 
         /// <summary>
         /// Advances the position of this reader.
@@ -145,7 +145,7 @@ namespace DotNext.Buffers
         /// <returns>The number of obtained elements.</returns>
         public int Read(Span<T> output)
         {
-            span.Slice(position).CopyTo(output, out var writtenCount);
+            RemainingSpan.CopyTo(output, out var writtenCount);
             position += writtenCount;
             return writtenCount;
         }
@@ -218,7 +218,7 @@ namespace DotNext.Buffers
         /// <returns>The rest of the memory block.</returns>
         public ReadOnlySpan<T> ReadToEnd()
         {
-            var result = span.Slice(position);
+            var result = RemainingSpan;
             position = span.Length;
             return result;
         }
