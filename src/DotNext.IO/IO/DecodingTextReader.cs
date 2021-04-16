@@ -133,20 +133,11 @@ namespace DotNext.IO
             }
         }
 
-        public override string ReadToEnd()
+        private string ReadToEnd(int bufferSize, bool bufferNotEmpty)
         {
-            var length = sequence.Length;
-            switch (length)
-            {
-                case > int.MaxValue:
-                    throw new InsufficientMemoryException();
-                case 0:
-                    return string.Empty;
-            }
-
-            using var output = allocator.Invoke((int)length, false);
+            using var output = allocator.Invoke(bufferSize, false);
             var writer = new SpanWriter<char>(output.Memory.Span);
-            if (charPos < charLen)
+            if (bufferNotEmpty)
             {
                 writer.Write(ReadyToReadChars);
                 charPos = charLen;
@@ -162,6 +153,22 @@ namespace DotNext.IO
             }
 
             return new string(writer.WrittenSpan);
+        }
+
+        public override string ReadToEnd()
+        {
+            var bufferNotEmpty = charPos < charLen;
+            var length = sequence.Length;
+
+            // the rest of the sequence is already decoded
+            if (length == 0L)
+                return bufferNotEmpty ? new string(ReadyToReadChars) : string.Empty;
+
+            if (length > int.MaxValue)
+                throw new InsufficientMemoryException();
+
+            // slow path - decoding required
+            return ReadToEnd((int)length, bufferNotEmpty);
         }
 
         protected override void Dispose(bool disposing)
