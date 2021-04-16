@@ -19,7 +19,7 @@ namespace DotNext.Buffers
         // of Memory, this[nint index] and Expand members
         private readonly object? owner;
         private readonly T[]? array;  // not null only if owner is ArrayPool or null
-        private readonly int length;
+        private readonly int length; //TODO: must be native integer in .NET 6
 
         internal MemoryOwner(ArrayPool<T>? pool, T[] array, int length)
         {
