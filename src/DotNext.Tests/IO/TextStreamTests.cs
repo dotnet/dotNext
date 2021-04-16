@@ -12,7 +12,6 @@ using static System.Globalization.CultureInfo;
 namespace DotNext.IO
 {
     using Buffers;
-    using static Text.EncodingExtensions;
 
     [ExcludeFromCodeCoverage]
     public sealed class TextStreamTests : Test
