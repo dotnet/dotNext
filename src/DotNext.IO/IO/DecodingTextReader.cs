@@ -37,9 +37,9 @@ namespace DotNext.IO
 
         private int ReadBuffer(Span<char> output)
         {
-            int result = 0, maxBytes = encoding.GetMaxByteCount(output.Length);
+            var result = 0;
 
-            for (int bytesConsumed, charsProduced; !sequence.IsEmpty && !output.IsEmpty; maxBytes -= bytesConsumed, result += charsProduced)
+            for (int maxBytes = encoding.GetMaxByteCount(output.Length), bytesConsumed, charsProduced; !sequence.IsEmpty && !output.IsEmpty; maxBytes -= bytesConsumed, result += charsProduced)
             {
                 var input = sequence.FirstSpan;
                 decoder.Convert(input, output, maxBytes <= input.Length, out bytesConsumed, out charsProduced, out _);
