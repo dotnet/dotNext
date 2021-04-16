@@ -63,6 +63,24 @@ namespace DotNext.Buffers
         public readonly ReadOnlySpan<T> ConsumedSpan => span.Slice(0, position);
 
         /// <summary>
+        /// Gets the remaining part of the span.
+        /// </summary>
+        public readonly ReadOnlySpan<T> Rest => span.Slice(position);
+
+        /// <summary>
+        /// Advances the position of this reader.
+        /// </summary>
+        /// <param name="count">The number of consumed elements.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is greater than the available space in the rest of the memory block.</exception>
+        public void Advance(int count)
+        {
+            var newPosition = checked(position + count);
+            if (newPosition > span.Length)
+                throw new ArgumentOutOfRangeException(nameof(count));
+            position = newPosition;
+        }
+
+        /// <summary>
         /// Sets reader position to the first element.
         /// </summary>
         public void Reset() => position = 0;

@@ -52,6 +52,24 @@ namespace DotNext.Buffers
         public readonly int WrittenCount => position;
 
         /// <summary>
+        /// Gets the remaining part of the span.
+        /// </summary>
+        public readonly Span<T> Rest => span.Slice(position);
+
+        /// <summary>
+        /// Advances the position of this writer.
+        /// </summary>
+        /// <param name="count">The number of written elements.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is greater than the available space in the rest of the memory block.</exception>
+        public void Advance(int count)
+        {
+            var newPosition = checked(position + count);
+            if (newPosition > span.Length)
+                throw new ArgumentOutOfRangeException(nameof(count));
+            position = newPosition;
+        }
+
+        /// <summary>
         /// Sets writer position to the first element.
         /// </summary>
         public void Reset() => position = 0;
@@ -91,7 +109,7 @@ namespace DotNext.Buffers
         /// <returns>The number of written elements.</returns>
         public int Write(ReadOnlySpan<T> input)
         {
-            input.CopyTo(span.Slice(position), out var writtenCount);
+            input.CopyTo(Rest, out var writtenCount);
             position += writtenCount;
             return writtenCount;
         }
@@ -196,10 +214,9 @@ namespace DotNext.Buffers
             if (action == null)
                 throw new ArgumentNullException(nameof(action));
 
-            var output = span.Slice(position);
             bool result;
 
-            if (result = action(arg, output, out var writtenCount))
+            if (result = action(arg, Rest, out var writtenCount))
                 position += writtenCount;
 
             return result;
