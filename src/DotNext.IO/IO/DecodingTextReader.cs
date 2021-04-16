@@ -51,12 +51,7 @@ namespace DotNext.IO
         }
 
         public override int Peek()
-        {
-            if (charPos == charLen && ReadBuffer() == 0)
-                return InvalidChar;
-
-            return buffer[charPos];
-        }
+            => charPos == charLen && ReadBuffer() == 0 ? InvalidChar : buffer[charPos];
 
         public override int Read(Span<char> buffer)
         {
