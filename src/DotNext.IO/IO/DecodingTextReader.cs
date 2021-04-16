@@ -29,6 +29,8 @@ namespace DotNext.IO
 
         private Span<char> Buffer => buffer.Memory.Span;
 
+        private Span<char> ReadyToReadChars => Buffer.Slice(charPos, charLen - charPos);
+
         private int ReadBuffer()
         {
             charPos = 0;
@@ -58,7 +60,7 @@ namespace DotNext.IO
             int writtenCount, result = 0;
             if (charPos < charLen)
             {
-                Buffer.Slice(charPos, charLen - charPos).CopyTo(buffer, out writtenCount);
+                ReadyToReadChars.CopyTo(buffer, out writtenCount);
                 charPos += writtenCount;
                 buffer = buffer.Slice(writtenCount);
                 result += writtenCount;
@@ -146,7 +148,7 @@ namespace DotNext.IO
             var writer = new SpanWriter<char>(output.Memory.Span);
             if (charPos < charLen)
             {
-                writer.Write(Buffer.Slice(charPos, charLen - charPos));
+                writer.Write(ReadyToReadChars);
                 charPos = charLen;
             }
 
