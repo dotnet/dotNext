@@ -133,12 +133,14 @@ namespace DotNext.IO
 
         public override string ReadToEnd()
         {
-            if (sequence.IsEmpty)
-                return string.Empty;
-
             var length = sequence.Length;
-            if (length > int.MaxValue)
-                throw new InsufficientMemoryException();
+            switch (length)
+            {
+                case > int.MaxValue:
+                    throw new InsufficientMemoryException();
+                case 0:
+                    return string.Empty;
+            }
 
             using var output = allocator.Invoke((int)length, false);
             var writer = new SpanWriter<char>(output.Memory.Span);
