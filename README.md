@@ -53,6 +53,7 @@ This release is primarily focused on improvements of stuff related to cluster pr
 <a href="https://www.nuget.org/packages/dotnext/3.1.0">DotNext 3.1.0</a>
 * Added async support to `IGrowableBuffer<T>` interface
 * Added indexer to `MemoryOwner<T>` supporting **nint** data type
+* Added more members to `SpanReader<T>` and `SpanWriter<T>` types
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/3.1.0">DotNext.Metaprogramming 3.1.0</a>
 * Updated dependencies
