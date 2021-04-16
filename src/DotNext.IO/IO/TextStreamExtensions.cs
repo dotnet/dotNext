@@ -46,7 +46,7 @@ namespace DotNext.IO
         /// <param name="bufferSize">The size of the internal <see cref="char"/> buffer used to decode characters.</param>
         /// <param name="allocator">The allocator of the internal buffer.</param>
         /// <returns>The reader over the sequence of encoded characters.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="encoding"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="encoding"/> is <see langword="null"/>; or <paramref name="bufferSize"/> is less than or equal to zero.</exception>
         public static TextReader AsTextReader(this ReadOnlySequence<byte> sequence, Encoding encoding, int bufferSize = 1024, MemoryAllocator<char>? allocator = null)
             => new DecodingTextReader(sequence, encoding, bufferSize, allocator);
 
