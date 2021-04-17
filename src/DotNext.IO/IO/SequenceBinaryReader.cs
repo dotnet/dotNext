@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Pipelines;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Missing = System.Reflection.Missing;
@@ -19,6 +20,7 @@ namespace DotNext.IO
     /// <summary>
     /// Represents binary reader for the sequence of bytes.
     /// </summary>
+    [StructLayout(LayoutKind.Auto)]
     public struct SequenceBinaryReader : IAsyncBinaryReader
     {
         private readonly ReadOnlySequence<byte> sequence;
