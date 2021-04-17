@@ -625,6 +625,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private async ValueTask<long> AppendCachedAsync<TEntry>(TEntry entry, CancellationToken token)
             where TEntry : notnull, IRaftLogEntry
         {
+            Debug.Assert(bufferManager.IsCachingEnabled);
+
             // copy log entry to the memory
             var writer = bufferManager.CreateBufferWriter(entry.Length ?? bufferSize);
 
@@ -684,7 +686,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 result = new (GetDisposedTask<long>());
             else if (entry.IsSnapshot)
                 result = new (Task.FromException<long>(new InvalidOperationException(ExceptionMessages.SnapshotDetected)));
-            else if (addToCache)
+            else if (addToCache && bufferManager.IsCachingEnabled)
                 result = AppendCachedAsync(entry, token);
             else
                 result = AppendUncachedAsync(entry, token);

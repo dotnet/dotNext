@@ -49,6 +49,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 entryAllocator = options.GetMemoryAllocator<LogEntry>();
             }
 
+            internal bool IsCachingEnabled => cacheAllocator is not null;
+
             internal MemoryAllocator<byte> BufferAllocator { get; }
 
             internal PooledBufferWriter<byte> CreateBufferWriter(long length)
