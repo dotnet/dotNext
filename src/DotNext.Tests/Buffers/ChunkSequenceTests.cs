@@ -41,5 +41,31 @@ namespace DotNext.Buffers
             block1 = new byte[] {3, 4};
             Equal(new byte[] {1, 2, 3, 4}, new[] {block2, block1}.ToReadOnlySequence().ToArray());
         }
+
+        [Fact]
+        public static void CopyFromSequence()
+        {
+            var sequence = new ReadOnlySequence<byte>(new byte[] { 1, 2, 3 }.AsMemory());
+            Span<byte> dest = new byte[3];
+            sequence.CopyTo(dest, out var writtenCount);
+            Equal(3, writtenCount);
+            Equal(sequence.ToArray(), dest.ToArray());
+
+            sequence = ToReadOnlySequence<byte>(RandomBytes(64), 16);
+            dest = new byte[64];
+            sequence.CopyTo(dest, out writtenCount);
+            Equal(64, writtenCount);
+            Equal(sequence.ToArray(), dest.ToArray());
+
+            dest = new byte[100];
+            sequence.CopyTo(dest, out writtenCount);
+            Equal(64, writtenCount);
+            Equal(sequence.ToArray(), dest.Slice(0, 64).ToArray());
+
+            dest = new byte[10];
+            sequence.CopyTo(dest, out writtenCount);
+            Equal(10, writtenCount);
+            Equal(sequence.Slice(0, 10).ToArray(), dest.ToArray());
+        }
     }
 }

@@ -645,39 +645,6 @@ namespace DotNext
         public static void CopyTo<T>(this Span<T> source, Span<T> destination, out int writtenCount)
             => CopyTo((ReadOnlySpan<T>)source, destination, out writtenCount);
 
-        /// <summary>
-        /// Copies the contents from the source sequence into a destination span.
-        /// </summary>
-        /// <param name="source">Source sequence.</param>
-        /// <param name="destination">Destination memory.</param>
-        /// <param name="writtenCount">The number of copied elements.</param>
-        /// <typeparam name="T">The type of the elements in the sequence.</typeparam>
-#if !NETSTANDARD2_1
-        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-#endif
-        public static void CopyTo<T>(this in ReadOnlySequence<T> source, Span<T> destination, out int writtenCount)
-        {
-            if (source.IsSingleSegment)
-            {
-                // fast path - single-segment sequence
-                source.FirstSpan.CopyTo(destination, out writtenCount);
-            }
-            else
-            {
-                // slow path - multisegment sequence
-                writtenCount = 0;
-
-                for (var position = source.Start; !destination.IsEmpty && source.TryGet(ref position, out var block); writtenCount += block.Length)
-                {
-                    if (block.Length > destination.Length)
-                        block = block.Slice(0, destination.Length);
-
-                    block.Span.CopyTo(destination);
-                    destination = destination.Slice(block.Length);
-                }
-            }
-        }
-
         private static Span<T> TupleToSpan<T, TTuple>(ref TTuple tuple)
             where TTuple : struct, ITuple
             => MemoryMarshal.CreateSpan(ref As<TTuple, T>(ref tuple), tuple.Length);
