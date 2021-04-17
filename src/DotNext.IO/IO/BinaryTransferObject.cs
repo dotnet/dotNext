@@ -72,5 +72,9 @@ namespace DotNext.IO
         /// <inheritdoc/>
         ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
             => new ValueTask(writer.WriteAsync(Content, token));
+
+        /// <inheritdoc/>
+        ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
+            => transformation.TransformAsync(new SequenceBinaryReader(Content), token);
     }
 }
