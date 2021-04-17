@@ -47,11 +47,13 @@ namespace DotNext.IO
     /// </summary>
     public class BinaryTransferObject : IDataTransferObject, ISupplier<ReadOnlySequence<byte>>
     {
+        private readonly ReadOnlySequence<byte> content;
+
         /// <summary>
         /// Initializes a new binary DTO.
         /// </summary>
         /// <param name="content">The content of the object.</param>
-        public BinaryTransferObject(ReadOnlySequence<byte> content) => Content = content;
+        public BinaryTransferObject(ReadOnlySequence<byte> content) => this.content = content;
 
         /// <summary>
         /// Initializes a new binary object.
@@ -65,23 +67,23 @@ namespace DotNext.IO
         /// <summary>
         /// Gets stream representing content.
         /// </summary>
-        public ReadOnlySequence<byte> Content { get; }
+        public ref readonly ReadOnlySequence<byte> Content => ref content;
 
         /// <inheritdoc/>
-        ReadOnlySequence<byte> ISupplier<ReadOnlySequence<byte>>.Invoke() => Content;
+        ReadOnlySequence<byte> ISupplier<ReadOnlySequence<byte>>.Invoke() => content;
 
         /// <inheritdoc/>
         bool IDataTransferObject.IsReusable => true;
 
         /// <inheritdoc/>
-        long? IDataTransferObject.Length => Content.Length;
+        long? IDataTransferObject.Length => content.Length;
 
         /// <inheritdoc/>
         ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
-            => new ValueTask(writer.WriteAsync(Content, token));
+            => new ValueTask(writer.WriteAsync(content, token));
 
         /// <inheritdoc/>
         ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
-            => transformation.TransformAsync(new SequenceBinaryReader(Content), token);
+            => transformation.TransformAsync(new SequenceBinaryReader(content), token);
     }
 }
