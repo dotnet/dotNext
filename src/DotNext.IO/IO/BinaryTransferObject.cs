@@ -33,6 +33,13 @@ namespace DotNext.IO
         /// <inheritdoc/>
         ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
             => writer.WriteAsync(content, token);
+
+        /// <inheritdoc/>
+        ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
+        {
+            ReadOnlyMemory<byte> memory = Span.AsReadOnlyBytes(in content).ToArray();
+            return transformation.TransformAsync(new SequenceBinaryReader(memory), token);
+        }
     }
 
     /// <summary>
