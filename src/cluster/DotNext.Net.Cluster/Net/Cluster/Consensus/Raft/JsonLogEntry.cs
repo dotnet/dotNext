@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using IO;
+    using static Buffers.BufferWriter;
 
     internal static class JsonLogEntry
     {
@@ -22,17 +23,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private static Encoding DefaultEncoding => Encoding.UTF8;
 
-        internal static async ValueTask SerializeAsync<T, TWriter>(TWriter writer, string typeId, T obj, CancellationToken token)
+        internal static ValueTask SerializeAsync<T, TWriter>(TWriter writer, string typeId, T obj, CancellationToken token)
             where TWriter : notnull, IAsyncBinaryWriter
         {
-            // serialize type identifier
-            await writer.WriteAsync(typeId.AsMemory(), DefaultEncoding, LengthEncoding, token).ConfigureAwait(false);
-            await writer.WriteAsync(SerializeToJson, obj, token).ConfigureAwait(false);
+            return writer.WriteAsync(SerializeToJson, (typeId, obj), token);
 
-            static void SerializeToJson(T obj, IBufferWriter<byte> buffer)
+            static void SerializeToJson((string TypeId, T Value) arg, IBufferWriter<byte> buffer)
             {
+                // serialize type identifier
+                buffer.WriteString(arg.TypeId, DefaultEncoding, lengthFormat: LengthEncoding);
+
+                // serialize object to JSON
                 using var jsonWriter = new Utf8JsonWriter(buffer, new () { SkipValidation = false, Indented = false });
-                JsonSerializer.Serialize(jsonWriter, obj);
+                JsonSerializer.Serialize(jsonWriter, arg.Value);
             }
         }
 
