@@ -1,3 +1,4 @@
+using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -50,11 +51,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal MemoryAllocator<byte> BufferAllocator { get; }
 
-            internal PooledBufferWriter<byte> CreateBufferWriter(long? length)
-            {
-                var len = length.GetValueOrDefault();
-                return len > 0L ? new (BufferAllocator, len.Truncate()) : new (BufferAllocator);
-            }
+            internal PooledBufferWriter<byte> CreateBufferWriter(long length)
+                => length <= int.MaxValue ? new (BufferAllocator, (int)length) : throw new InsufficientMemoryException();
 
             internal MemoryOwner<LogEntryMetadata> AllocMetadataCache(int recordsPerPartition)
                 => metadataAllocator is null ? default : metadataAllocator.Invoke(recordsPerPartition, true);
