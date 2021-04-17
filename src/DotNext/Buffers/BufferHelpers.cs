@@ -110,19 +110,20 @@ namespace DotNext.Buffers
             else
             {
                 // slow path - multisegment sequence
-                CopyToSlow(in source, destination, out writtenCount);
+                writtenCount = CopyToSlow(in source, destination);
             }
 
-            static void CopyToSlow(in ReadOnlySequence<T> source, Span<T> destination, out int writtenCount)
+            static int CopyToSlow(in ReadOnlySequence<T> source, Span<T> destination)
             {
-                writtenCount = 0;
+                int result = 0, subcount;
 
-                int subcount;
-                for (var position = source.Start; !destination.IsEmpty && source.TryGet(ref position, out var block); writtenCount += subcount)
+                for (var position = source.Start; !destination.IsEmpty && source.TryGet(ref position, out var block); result += subcount)
                 {
                     block.Span.CopyTo(destination, out subcount);
                     destination = destination.Slice(subcount);
                 }
+
+                return result;
             }
         }
 
