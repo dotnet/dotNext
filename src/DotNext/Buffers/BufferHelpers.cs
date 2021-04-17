@@ -76,7 +76,7 @@ namespace DotNext.Buffers
         public static void Write<T>(this IBufferWriter<T> writer, T value)
         {
             const int count = 1;
-            writer.GetSpan(count)[0] = value;
+            writer.GetSpan()[0] = value;
             writer.Advance(count);
         }
 
