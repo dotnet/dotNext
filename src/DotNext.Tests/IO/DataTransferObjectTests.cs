@@ -77,6 +77,7 @@ namespace DotNext.IO
             await dto.WriteToAsync(writer);
             Equal(sizeof(long), writer.WrittenCount);
             Equal(42L, BitConverter.ToInt64(writer.WrittenSpan));
+            Equal(42L, await dto.ToTypeAsync<long, IDataTransferObject>());
         }
 
         [Fact]
