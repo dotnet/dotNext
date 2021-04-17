@@ -99,9 +99,7 @@ namespace DotNext.Buffers
         /// <param name="destination">Destination memory.</param>
         /// <param name="writtenCount">The number of copied elements.</param>
         /// <typeparam name="T">The type of the elements in the sequence.</typeparam>
-#if !NETSTANDARD2_1
-        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-#endif
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CopyTo<T>(this in ReadOnlySequence<T> source, Span<T> destination, out int writtenCount)
         {
             if (source.IsSingleSegment)
@@ -112,15 +110,18 @@ namespace DotNext.Buffers
             else
             {
                 // slow path - multisegment sequence
+                CopyToSlow(in source, destination, out writtenCount);
+            }
+
+            static void CopyToSlow(in ReadOnlySequence<T> source, Span<T> destination, out int writtenCount)
+            {
                 writtenCount = 0;
 
-                for (var position = source.Start; !destination.IsEmpty && source.TryGet(ref position, out var block); writtenCount += block.Length)
+                int subcount;
+                for (var position = source.Start; !destination.IsEmpty && source.TryGet(ref position, out var block); writtenCount += subcount)
                 {
-                    if (block.Length > destination.Length)
-                        block = block.Slice(0, destination.Length);
-
-                    block.Span.CopyTo(destination);
-                    destination = destination.Slice(block.Length);
+                    block.Span.CopyTo(destination, out subcount);
+                    destination = destination.Slice(subcount);
                 }
             }
         }
