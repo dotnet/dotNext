@@ -52,7 +52,7 @@ namespace DotNext.Threading.Tasks
 
             /// <inheritdoc />
             void ICriticalNotifyCompletion.UnsafeOnCompleted(Action continuation)
-                => awaiter.OnCompleted(continuation);
+                => awaiter.UnsafeOnCompleted(continuation);
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private static bool IsTaskWithResult(Type type)
