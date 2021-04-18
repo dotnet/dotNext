@@ -96,8 +96,12 @@ namespace DotNext.Buffers
 
             protected override void Dispose(bool disposing)
             {
-                owner.Dispose();
-                owner = default;
+                if (disposing)
+                {
+                    owner.Dispose();
+                    owner = default;
+                }
+
                 writtenCount = 0;
                 base.Dispose(disposing);
             }
