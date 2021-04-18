@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using MemoryMarshal = System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.Collections.Generic
 {
@@ -285,8 +286,15 @@ namespace DotNext.Collections.Generic
         /// <seealso cref="System.Runtime.InteropServices.MemoryMarshal.ToEnumerable{T}(ReadOnlyMemory{T})"/>
         public static IEnumerator<T> ToEnumerator<T>(ReadOnlyMemory<T> memory)
         {
-            for (var i = 0; i < memory.Length; i++)
-                yield return memory.Span[i];
+            return MemoryMarshal.TryGetArray(memory, out var segment) ?
+                segment.GetEnumerator() :
+                ToEnumeratorSlow(memory);
+
+            static IEnumerator<T> ToEnumeratorSlow(ReadOnlyMemory<T> memory)
+            {
+                for (var i = 0; i < memory.Length; i++)
+                    yield return memory.Span[i];
+            }
         }
     }
 }
