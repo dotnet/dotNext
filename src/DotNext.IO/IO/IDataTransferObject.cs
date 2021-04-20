@@ -153,7 +153,7 @@ namespace DotNext.IO
         private async ValueTask<TResult> GetSmallObjectDataAsync<TResult, TTransformation>(TTransformation parser, long length, CancellationToken token)
             where TTransformation : notnull, ITransformation<TResult>
         {
-            using PooledArrayBufferWriter<byte> writer = new PooledArrayBufferWriter<byte>((int)length);
+            using var writer = length <= int.MaxValue ? new PooledArrayBufferWriter<byte>((int)length) : throw new InsufficientMemoryException();
 
             await WriteToAsync(new AsyncBufferWriter(writer), token).ConfigureAwait(false);
             return await parser.TransformAsync(new SequenceBinaryReader(writer.WrittenMemory), token).ConfigureAwait(false);
