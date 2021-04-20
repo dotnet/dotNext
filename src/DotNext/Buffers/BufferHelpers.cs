@@ -86,10 +86,23 @@ namespace DotNext.Buffers
         /// <typeparam name="T">The type of the elements in the sequence.</typeparam>
         /// <param name="writer">The buffer writer.</param>
         /// <param name="value">The sequence of elements to be written.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Write<T>(this IBufferWriter<T> writer, ReadOnlySequence<T> value)
         {
-            foreach (var segment in value)
-                writer.Write(segment.Span);
+            if (value.IsSingleSegment)
+            {
+                writer.Write(value.FirstSpan);
+            }
+            else
+            {
+                WriteSlow(writer, in value);
+            }
+
+            static void WriteSlow(IBufferWriter<T> writer, in ReadOnlySequence<T> value)
+            {
+                foreach (var segment in value)
+                    writer.Write(segment.Span);
+            }
         }
 
         /// <summary>
