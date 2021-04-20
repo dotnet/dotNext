@@ -196,34 +196,33 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             async ValueTask<TResult> ReadEntriesAsync(LogEntryConsumer<IRaftLogEntry, TResult> reader, DataAccessSession session, long startIndex, long endIndex, int length, CancellationToken token)
             {
                 LogEntry entry;
+                int listIndex;
                 using var list = bufferManager.AllocLogEntryList(length);
-                var listIndex = 0;
-                for (Partition? partition = null; startIndex <= endIndex; list[listIndex++] = entry, startIndex++)
+
+                // try to read snapshot out of the loop
+                if (snapshot.Length > 0L && startIndex <= snapshot.Index)
                 {
-                    if (snapshot.Length > 0L && startIndex <= snapshot.Index)
-                    {
-                        // probably the record is snapshotted
-                        entry = await snapshot.ReadAsync(session, token).ConfigureAwait(false);
+                    entry = await snapshot.ReadAsync(session, token).ConfigureAwait(false);
+                    list[(nint)0] = entry;
 
-                        // skip squashed log entries
-                        startIndex = snapshot.Index;
-
-                        // reset search hint
-                        partition = null;
-                    }
-                    else if (startIndex > 0L && TryGetPartition(startIndex, ref partition))
-                    {
-                        // handle regular record
-                        entry = await partition.ReadAsync(session, startIndex, true, token).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        Debug.Assert(startIndex == 0L);
-
-                        // handle ephemeral entity
-                        entry = initialEntry;
-                    }
+                    // skip squashed log entries
+                    startIndex = snapshot.Index + 1L;
+                    listIndex = 1;
                 }
+                else if (startIndex == 0L)
+                {
+                    list[(nint)0] = initialEntry;
+                    startIndex = 1L;
+                    listIndex = 1;
+                }
+                else
+                {
+                    listIndex = 0;
+                }
+
+                // enumerate over partitions in search of log entries
+                for (Partition? partition = null; startIndex <= endIndex && TryGetPartition(startIndex, ref partition); list[listIndex++] = entry, startIndex++)
+                    entry = await partition.ReadAsync(session, startIndex, true, token).ConfigureAwait(false);
 
                 return await reader.ReadAsync<LogEntry, InMemoryList<LogEntry>>(list.Memory.Slice(0, listIndex), list[0].SnapshotIndex, token).ConfigureAwait(false);
             }
