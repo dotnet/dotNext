@@ -210,6 +210,17 @@ namespace DotNext.Buffers
         public virtual Span<T> GetSpan(int sizeHint = 0) => GetMemory(sizeHint).Span;
 
         /// <summary>
+        /// Transfers ownership of the written memory from this writer to the caller.
+        /// </summary>
+        /// <remarks>
+        /// The caller is responsible for the lifetime of the returned buffer. The current
+        /// state of this writer will be reset.
+        /// </remarks>
+        /// <returns>The object representing all written content.</returns>
+        /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
+        public abstract MemoryOwner<T> DetachBuffer();
+
+        /// <summary>
         /// Reallocates internal buffer.
         /// </summary>
         /// <param name="newSize">A new size of internal buffer.</param>

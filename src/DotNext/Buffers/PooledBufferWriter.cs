@@ -99,6 +99,16 @@ namespace DotNext.Buffers
             return buffer.Memory.Slice(position);
         }
 
+        /// <inheritdoc />
+        public override MemoryOwner<T> DetachBuffer()
+        {
+            ThrowIfDisposed();
+            var result = buffer.Truncate(position);
+            buffer = default;
+            position = 0;
+            return result;
+        }
+
         /// <inheritdoc/>
         private protected override void Resize(int newSize)
         {

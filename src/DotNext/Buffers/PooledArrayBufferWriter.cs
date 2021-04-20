@@ -317,6 +317,24 @@ namespace DotNext.Buffers
             position = 0;
         }
 
+        /// <inheritdoc />
+        public override MemoryOwner<T> DetachBuffer()
+        {
+            ThrowIfDisposed();
+            MemoryOwner<T> result;
+            if (GetLength(buffer) > 0)
+            {
+                result = new MemoryOwner<T>(pool, buffer, position);
+                buffer = Array.Empty<T>();
+            }
+            else
+            {
+                result = default;
+            }
+
+            return result;
+        }
+
         /// <summary>
         /// Returns the memory to write to that is at least the requested size.
         /// </summary>

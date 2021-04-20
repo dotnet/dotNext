@@ -23,6 +23,7 @@ namespace DotNext.Buffers
 
         internal MemoryOwner(ArrayPool<T>? pool, T[] array, int length)
         {
+            Debug.Assert(array.Length >= length);
             this.array = array;
             owner = pool;
             this.length = length;
@@ -112,6 +113,9 @@ namespace DotNext.Buffers
         /// </summary>
         public int Length => length;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void UnsafeSetLength(int value) => Unsafe.AsRef(in this.length) = length;
+
         // WARNING: This is mutable method and should be used with care
         internal void Expand()
         {
@@ -124,10 +128,21 @@ namespace DotNext.Buffers
             else
                 goto exit;
 
-            Unsafe.AsRef(in this.length) = length;
+            UnsafeSetLength(length);
 
             exit:
             return;
+        }
+
+        internal MemoryOwner<T> Truncate(int newLength)
+        {
+            MemoryOwner<T> result = this;
+            if (newLength < length)
+            {
+                result.UnsafeSetLength(newLength);
+            }
+
+            return result;
         }
 
         /// <summary>
