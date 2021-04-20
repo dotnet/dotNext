@@ -60,9 +60,17 @@ namespace DotNext.IO
             }
 
             private BufferWriter<byte> CreateBuffer()
-                => this.initialCapacity.TryGetValue(out var initialCapacity) && initialCapacity > 0L ?
-                    new PooledBufferWriter<byte>(allocator, initialCapacity.Truncate()) :
-                    new PooledBufferWriter<byte>(allocator);
+            {
+                BufferWriter<byte> result;
+                if (!initialCapacity.TryGetValue(out var length))
+                    result = new PooledBufferWriter<byte>(allocator);
+                else if (length <= int.MaxValue)
+                    result = new PooledBufferWriter<byte>(allocator, (int)length);
+                else
+                    throw new InsufficientMemoryException();
+
+                return result;
+            }
 
             async ValueTask<MemoryOwner<byte>> IDataTransferObject.ITransformation<MemoryOwner<byte>>.TransformAsync<TReader>(TReader reader, CancellationToken token)
             {
