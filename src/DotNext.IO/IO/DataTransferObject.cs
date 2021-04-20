@@ -33,15 +33,10 @@ namespace DotNext.IO
                 this.allocator = allocator;
             }
 
-            private BufferWriter<byte> CreateBuffer()
-                => capacity.TryGetValue(out var initialCapacity) && initialCapacity > 0L ?
-                    new PooledBufferWriter<byte>(allocator, initialCapacity.Truncate()) :
-                    new PooledBufferWriter<byte>(allocator);
-
             public async ValueTask<string> TransformAsync<TReader>(TReader reader, CancellationToken token)
                 where TReader : IAsyncBinaryReader
             {
-                using var writer = CreateBuffer();
+                using var writer = CreateBuffer(capacity, allocator);
                 await reader.CopyToAsync(writer, token).ConfigureAwait(false);
                 return writer.WrittenCount == 0 ? string.Empty : encoding.GetString(writer.WrittenMemory.Span);
             }
@@ -51,49 +46,24 @@ namespace DotNext.IO
         private readonly struct MemoryDecoder : IDataTransferObject.ITransformation<MemoryOwner<byte>>, IDataTransferObject.ITransformation<byte[]>
         {
             private readonly MemoryAllocator<byte>? allocator;
-            private readonly long? initialCapacity;
+            private readonly long? capacity;
 
             internal MemoryDecoder(MemoryAllocator<byte>? allocator, long? length)
             {
                 this.allocator = allocator;
-                initialCapacity = length;
-            }
-
-            private BufferWriter<byte> CreateBuffer()
-            {
-                BufferWriter<byte> result;
-                if (!initialCapacity.TryGetValue(out var length))
-                    result = new PooledBufferWriter<byte>(allocator);
-                else if (length <= int.MaxValue)
-                    result = new PooledBufferWriter<byte>(allocator, (int)length);
-                else
-                    throw new InsufficientMemoryException();
-
-                return result;
+                capacity = length;
             }
 
             async ValueTask<MemoryOwner<byte>> IDataTransferObject.ITransformation<MemoryOwner<byte>>.TransformAsync<TReader>(TReader reader, CancellationToken token)
             {
-                using var writer = CreateBuffer();
+                using var writer = CreateBuffer(capacity, allocator);
                 await reader.CopyToAsync(writer, token).ConfigureAwait(false);
-
-                MemoryOwner<byte> result;
-                if (writer.WrittenCount > 0)
-                {
-                    result = allocator.Invoke(writer.WrittenCount, true);
-                    writer.WrittenMemory.CopyTo(result.Memory);
-                }
-                else
-                {
-                    result = default;
-                }
-
-                return result;
+                return writer.DetachBuffer();
             }
 
             async ValueTask<byte[]> IDataTransferObject.ITransformation<byte[]>.TransformAsync<TReader>(TReader reader, CancellationToken token)
             {
-                using var writer = CreateBuffer();
+                using var writer = CreateBuffer(capacity, allocator);
                 await reader.CopyToAsync(writer, token).ConfigureAwait(false);
                 return writer.WrittenMemory.ToArray();
             }
@@ -118,6 +88,19 @@ namespace DotNext.IO
 
             ValueTask<T> IDataTransferObject.ITransformation<T>.TransformAsync<TReader>(TReader reader, CancellationToken token)
                 => decoder(reader, token);
+        }
+
+        private static BufferWriter<byte> CreateBuffer(long? length, MemoryAllocator<byte>? allocator)
+        {
+            BufferWriter<byte> result;
+            if (!length.TryGetValue(out var len))
+                result = new PooledBufferWriter<byte>(allocator);
+            else if (length <= int.MaxValue)
+                result = new PooledBufferWriter<byte>(allocator, (int)len);
+            else
+                throw new InsufficientMemoryException();
+
+            return result;
         }
 
         /// <summary>
