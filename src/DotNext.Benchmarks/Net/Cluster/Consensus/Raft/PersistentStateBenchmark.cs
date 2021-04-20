@@ -61,7 +61,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private async Task SetupStateAsync(PersistentState.Options options, bool addToCache)
         {
             var state = new PersistentState(path, 10, options);
-            var random = new Random();
             const int payloadSize = 2048;
             var rnd = new Random();
             var bytes = new byte[payloadSize];
