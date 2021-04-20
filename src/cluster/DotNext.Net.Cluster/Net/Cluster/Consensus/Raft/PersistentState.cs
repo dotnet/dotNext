@@ -175,22 +175,23 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private ValueTask<TResult> UnsafeReadAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, DataAccessSession session, long startIndex, long endIndex, CancellationToken token)
         {
-            long length;
-            ValueTask<TResult> result;
             if (startIndex > state.LastIndex)
-                result = new (Task.FromException<TResult>(new IndexOutOfRangeException(ExceptionMessages.InvalidEntryIndex(startIndex))));
-            else if (endIndex > state.LastIndex)
-                result = new (Task.FromException<TResult>(new IndexOutOfRangeException(ExceptionMessages.InvalidEntryIndex(endIndex))));
-            else if ((length = endIndex - startIndex + 1L) > int.MaxValue)
-                result = new (Task.FromException<TResult>(new InternalBufferOverflowException(ExceptionMessages.RangeTooBig)));
-            else if (HasPartitions)
-                result = ReadEntriesAsync(reader, session, startIndex, endIndex, (int)length, token);
-            else if (snapshot.Length > 0L)
-                result = ReadSnapshotAsync(reader, session, token);
-            else
-                result = ReadInitialOrEmptyEntryAsync(in reader, startIndex == 0L, token);
+                return new (Task.FromException<TResult>(new IndexOutOfRangeException(ExceptionMessages.InvalidEntryIndex(startIndex))));
 
-            return result;
+            if (endIndex > state.LastIndex)
+                return new (Task.FromException<TResult>(new IndexOutOfRangeException(ExceptionMessages.InvalidEntryIndex(endIndex))));
+
+            var length = endIndex - startIndex + 1L;
+            if (length > int.MaxValue)
+                return new (Task.FromException<TResult>(new InternalBufferOverflowException(ExceptionMessages.RangeTooBig)));
+
+            if (HasPartitions)
+                return ReadEntriesAsync(reader, session, startIndex, endIndex, (int)length, token);
+
+            if (snapshot.Length > 0L)
+                return ReadSnapshotAsync(reader, session, token);
+
+            return ReadInitialOrEmptyEntryAsync(in reader, startIndex == 0L, token);
 
             async ValueTask<TResult> ReadEntriesAsync(LogEntryConsumer<IRaftLogEntry, TResult> reader, DataAccessSession session, long startIndex, long endIndex, int length, CancellationToken token)
             {
