@@ -90,10 +90,10 @@ namespace DotNext.IO
                 => decoder(reader, token);
         }
 
-        private static BufferWriter<byte> CreateBuffer(long? length, MemoryAllocator<byte>? allocator)
+        private static BufferWriter<byte> CreateBuffer(long? capacity, MemoryAllocator<byte>? allocator)
         {
             BufferWriter<byte> result;
-            if (!length.TryGetValue(out var len))
+            if (!capacity.TryGetValue(out var len) || len == 0L)
                 result = new PooledBufferWriter<byte>(allocator);
             else if (len <= int.MaxValue)
                 result = new PooledBufferWriter<byte>(allocator, (int)len);
