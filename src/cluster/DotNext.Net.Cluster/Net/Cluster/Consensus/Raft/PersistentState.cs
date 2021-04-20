@@ -224,7 +224,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 for (Partition? partition = null; startIndex <= endIndex && TryGetPartition(startIndex, ref partition); list[listIndex++] = entry, startIndex++)
                     entry = await partition.ReadAsync(session, startIndex, true, token).ConfigureAwait(false);
 
-                return await reader.ReadAsync<LogEntry, InMemoryList<LogEntry>>(list.Memory.Slice(0, listIndex), list[0].SnapshotIndex, token).ConfigureAwait(false);
+                return await reader.ReadAsync<LogEntry, InMemoryList<LogEntry>>(list.Memory.Slice(0, listIndex), list[(nint)0].SnapshotIndex, token).ConfigureAwait(false);
             }
 
             async ValueTask<TResult> ReadSnapshotAsync(LogEntryConsumer<IRaftLogEntry, TResult> reader, DataAccessSession session, CancellationToken token)
