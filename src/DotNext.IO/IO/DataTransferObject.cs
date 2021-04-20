@@ -95,7 +95,7 @@ namespace DotNext.IO
             BufferWriter<byte> result;
             if (!length.TryGetValue(out var len))
                 result = new PooledBufferWriter<byte>(allocator);
-            else if (length <= int.MaxValue)
+            else if (len <= int.MaxValue)
                 result = new PooledBufferWriter<byte>(allocator, (int)len);
             else
                 throw new InsufficientMemoryException();
