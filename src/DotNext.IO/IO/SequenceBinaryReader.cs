@@ -91,7 +91,7 @@ namespace DotNext.IO
         /// <returns>The decoded value.</returns>
         /// <exception cref="EndOfStreamException">Unexpected end of sequence.</exception>
         public T Read<T>()
-            where T : unmanaged => Read<T, ValueReader<T>>(new ValueReader<T>());
+            where T : unmanaged => Read<T, ValueReader<T>>(new ());
 
         /// <summary>
         /// Copies the bytes from the sequence into contiguous block of memory.
@@ -612,7 +612,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    return new ValueTask<T>(Read<T>());
+                    return new (Read<T>());
                 }
                 catch (Exception e)
                 {
@@ -620,7 +620,7 @@ namespace DotNext.IO
                 }
             }
 
-            return new ValueTask<T>(result);
+            return new (result);
         }
 
         /// <inheritdoc/>
@@ -645,7 +645,7 @@ namespace DotNext.IO
                 }
             }
 
-            return new ValueTask(result);
+            return new (result);
         }
 
         /// <inheritdoc/>
@@ -670,7 +670,7 @@ namespace DotNext.IO
                 }
             }
 
-            return new ValueTask(result);
+            return new (result);
         }
 
         /// <inheritdoc/>
@@ -686,7 +686,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    return new ValueTask<MemoryOwner<byte>>(Read(lengthFormat, allocator));
+                    return new (Read(lengthFormat, allocator));
                 }
                 catch (Exception e)
                 {
@@ -694,7 +694,7 @@ namespace DotNext.IO
                 }
             }
 
-            return new ValueTask<MemoryOwner<byte>>(result);
+            return new (result);
         }
 
         /// <inheritdoc/>
@@ -709,7 +709,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    return new ValueTask<long>(ReadInt64(littleEndian));
+                    return new (ReadInt64(littleEndian));
                 }
                 catch (Exception e)
                 {
@@ -717,7 +717,7 @@ namespace DotNext.IO
                 }
             }
 
-            return new ValueTask<long>(result);
+            return new (result);
         }
 
         /// <inheritdoc/>
@@ -732,7 +732,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    return new ValueTask<long>(ReadInt64(lengthFormat, in context, style, provider));
+                    return new (ReadInt64(lengthFormat, in context, style, provider));
                 }
                 catch (Exception e)
                 {
@@ -740,7 +740,7 @@ namespace DotNext.IO
                 }
             }
 
-            return new ValueTask<long>(result);
+            return new (result);
         }
 
         /// <inheritdoc/>
@@ -755,7 +755,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    return new ValueTask<int>(ReadInt32(littleEndian));
+                    return new (ReadInt32(littleEndian));
                 }
                 catch (Exception e)
                 {
@@ -763,7 +763,7 @@ namespace DotNext.IO
                 }
             }
 
-            return new ValueTask<int>(result);
+            return new (result);
         }
 
         /// <inheritdoc/>
@@ -778,7 +778,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    return new ValueTask<int>(ReadInt32(lengthFormat, in context, style, provider));
+                    return new (ReadInt32(lengthFormat, in context, style, provider));
                 }
                 catch (Exception e)
                 {
@@ -786,7 +786,7 @@ namespace DotNext.IO
                 }
             }
 
-            return new ValueTask<int>(result);
+            return new (result);
         }
 
         /// <inheritdoc/>
@@ -801,7 +801,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    return new ValueTask<short>(ReadInt16(littleEndian));
+                    return new (ReadInt16(littleEndian));
                 }
                 catch (Exception e)
                 {
@@ -809,7 +809,7 @@ namespace DotNext.IO
                 }
             }
 
-            return new ValueTask<short>(result);
+            return new (result);
         }
 
         /// <inheritdoc/>
@@ -824,7 +824,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    return new ValueTask<short>(ReadInt16(lengthFormat, in context, style, provider));
+                    return new (ReadInt16(lengthFormat, in context, style, provider));
                 }
                 catch (Exception e)
                 {
@@ -832,7 +832,7 @@ namespace DotNext.IO
                 }
             }
 
-            return new ValueTask<short>(result);
+            return new (result);
         }
 
         /// <inheritdoc/>
@@ -847,7 +847,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    return new ValueTask<byte>(ReadByte(lengthFormat, in context, style, provider));
+                    return new (ReadByte(lengthFormat, in context, style, provider));
                 }
                 catch (Exception e)
                 {
@@ -855,7 +855,7 @@ namespace DotNext.IO
                 }
             }
 
-            return new ValueTask<byte>(result);
+            return new (result);
         }
 
         /// <inheritdoc/>
@@ -870,7 +870,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    return new ValueTask<float>(ReadSingle(lengthFormat, in context, style, provider));
+                    return new (ReadSingle(lengthFormat, in context, style, provider));
                 }
                 catch (Exception e)
                 {
@@ -878,7 +878,7 @@ namespace DotNext.IO
                 }
             }
 
-            return new ValueTask<float>(result);
+            return new (result);
         }
 
         /// <inheritdoc/>
@@ -893,7 +893,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    return new ValueTask<double>(ReadDouble(lengthFormat, in context, style, provider));
+                    return new (ReadDouble(lengthFormat, in context, style, provider));
                 }
                 catch (Exception e)
                 {
@@ -901,7 +901,7 @@ namespace DotNext.IO
                 }
             }
 
-            return new ValueTask<double>(result);
+            return new (result);
         }
 
         /// <inheritdoc/>
@@ -916,7 +916,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    return new ValueTask<decimal>(ReadDecimal(lengthFormat, in context, style, provider));
+                    return new (ReadDecimal(lengthFormat, in context, style, provider));
                 }
                 catch (Exception e)
                 {
@@ -924,7 +924,7 @@ namespace DotNext.IO
                 }
             }
 
-            return new ValueTask<decimal>(result);
+            return new (result);
         }
 
         /// <inheritdoc/>
@@ -939,7 +939,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    return new ValueTask<BigInteger>(ReadBigInteger(lengthFormat, in context, style, provider));
+                    return new (ReadBigInteger(lengthFormat, in context, style, provider));
                 }
                 catch (Exception e)
                 {
@@ -947,7 +947,7 @@ namespace DotNext.IO
                 }
             }
 
-            return new ValueTask<BigInteger>(result);
+            return new (result);
         }
 
         /// <inheritdoc/>
@@ -962,7 +962,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    return new ValueTask<DateTime>(ReadDateTime(lengthFormat, in context, style, provider));
+                    return new (ReadDateTime(lengthFormat, in context, style, provider));
                 }
                 catch (Exception e)
                 {
@@ -970,7 +970,7 @@ namespace DotNext.IO
                 }
             }
 
-            return new ValueTask<DateTime>(result);
+            return new (result);
         }
 
         /// <inheritdoc/>
@@ -985,7 +985,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    return new ValueTask<DateTime>(ReadDateTime(lengthFormat, in context, formats, style, provider));
+                    return new (ReadDateTime(lengthFormat, in context, formats, style, provider));
                 }
                 catch (Exception e)
                 {
@@ -993,7 +993,7 @@ namespace DotNext.IO
                 }
             }
 
-            return new ValueTask<DateTime>(result);
+            return new (result);
         }
 
         /// <inheritdoc/>
@@ -1008,7 +1008,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    return new ValueTask<DateTimeOffset>(ReadDateTimeOffset(lengthFormat, in context, style, provider));
+                    return new (ReadDateTimeOffset(lengthFormat, in context, style, provider));
                 }
                 catch (Exception e)
                 {
@@ -1016,7 +1016,7 @@ namespace DotNext.IO
                 }
             }
 
-            return new ValueTask<DateTimeOffset>(result);
+            return new (result);
         }
 
         /// <inheritdoc/>
@@ -1031,7 +1031,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    return new ValueTask<DateTimeOffset>(ReadDateTimeOffset(lengthFormat, in context, formats, style, provider));
+                    return new (ReadDateTimeOffset(lengthFormat, in context, formats, style, provider));
                 }
                 catch (Exception e)
                 {
@@ -1039,7 +1039,7 @@ namespace DotNext.IO
                 }
             }
 
-            return new ValueTask<DateTimeOffset>(result);
+            return new (result);
         }
 
         /// <inheritdoc/>
@@ -1054,7 +1054,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    return new ValueTask<Guid>(ReadGuid(lengthFormat, in context));
+                    return new (ReadGuid(lengthFormat, in context));
                 }
                 catch (Exception e)
                 {
@@ -1062,7 +1062,7 @@ namespace DotNext.IO
                 }
             }
 
-            return new ValueTask<Guid>(result);
+            return new (result);
         }
 
         /// <inheritdoc/>
@@ -1077,7 +1077,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    return new ValueTask<Guid>(ReadGuid(lengthFormat, in context, format));
+                    return new (ReadGuid(lengthFormat, in context, format));
                 }
                 catch (Exception e)
                 {
@@ -1085,7 +1085,7 @@ namespace DotNext.IO
                 }
             }
 
-            return new ValueTask<Guid>(result);
+            return new (result);
         }
 
         /// <inheritdoc/>
@@ -1100,7 +1100,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    return new ValueTask<TimeSpan>(ReadTimeSpan(lengthFormat, context, provider));
+                    return new (ReadTimeSpan(lengthFormat, context, provider));
                 }
                 catch (Exception e)
                 {
@@ -1108,7 +1108,7 @@ namespace DotNext.IO
                 }
             }
 
-            return new ValueTask<TimeSpan>(result);
+            return new (result);
         }
 
         /// <inheritdoc/>
@@ -1123,7 +1123,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    return new ValueTask<TimeSpan>(ReadTimeSpan(lengthFormat, context, formats, style, provider));
+                    return new (ReadTimeSpan(lengthFormat, context, formats, style, provider));
                 }
                 catch (Exception e)
                 {
@@ -1131,7 +1131,7 @@ namespace DotNext.IO
                 }
             }
 
-            return new ValueTask<TimeSpan>(result);
+            return new (result);
         }
 
         /// <inheritdoc/>
@@ -1146,7 +1146,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    return new ValueTask<string>(ReadString(length, context));
+                    return new (ReadString(length, context));
                 }
                 catch (Exception e)
                 {
@@ -1154,7 +1154,7 @@ namespace DotNext.IO
                 }
             }
 
-            return new ValueTask<string>(result);
+            return new (result);
         }
 
         /// <inheritdoc/>
@@ -1169,7 +1169,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    return new ValueTask<string>(ReadString(lengthFormat, context));
+                    return new (ReadString(lengthFormat, context));
                 }
                 catch (Exception e)
                 {
@@ -1177,7 +1177,7 @@ namespace DotNext.IO
                 }
             }
 
-            return new ValueTask<string>(result);
+            return new (result);
         }
 
         /// <inheritdoc/>
@@ -1192,7 +1192,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    return new ValueTask<BigInteger>(ReadBigInteger(length, littleEndian));
+                    return new (ReadBigInteger(length, littleEndian));
                 }
                 catch (Exception e)
                 {
@@ -1200,7 +1200,7 @@ namespace DotNext.IO
                 }
             }
 
-            return new ValueTask<BigInteger>(result);
+            return new (result);
         }
 
         /// <inheritdoc/>
@@ -1215,7 +1215,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    return new ValueTask<BigInteger>(ReadBigInteger(lengthFormat, littleEndian));
+                    return new (ReadBigInteger(lengthFormat, littleEndian));
                 }
                 catch (Exception e)
                 {
@@ -1223,7 +1223,7 @@ namespace DotNext.IO
                 }
             }
 
-            return new ValueTask<BigInteger>(result);
+            return new (result);
         }
 
         /// <inheritdoc/>
