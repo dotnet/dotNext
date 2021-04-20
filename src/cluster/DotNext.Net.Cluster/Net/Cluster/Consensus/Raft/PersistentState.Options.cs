@@ -75,7 +75,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public class Options
         {
             private const int MinBufferSize = 128;
-            private int bufferSize = 2048;
+            private int bufferSize = 4096;
             private int? snapshotBufferSize;
             private int concurrencyLevel = Math.Max(3, Environment.ProcessorCount);
             private long partitionSize;
