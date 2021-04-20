@@ -114,7 +114,7 @@ namespace DotNext.Buffers
         public int Length => length;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void UnsafeSetLength(int value) => Unsafe.AsRef(in this.length) = length;
+        private void UnsafeSetLength(int value) => Unsafe.AsRef(in length) = value;
 
         // WARNING: This is mutable method and should be used with care
         internal void Expand()
@@ -136,6 +136,7 @@ namespace DotNext.Buffers
 
         internal MemoryOwner<T> Truncate(int newLength)
         {
+            Debug.Assert(newLength > 0);
             MemoryOwner<T> result = this;
             if (newLength < length)
             {
