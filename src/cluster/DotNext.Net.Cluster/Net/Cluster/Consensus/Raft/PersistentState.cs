@@ -173,20 +173,29 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return result;
         }
 
-        private async ValueTask<TResult> UnsafeReadAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, DataAccessSession session, long startIndex, long endIndex, CancellationToken token)
+        private ValueTask<TResult> UnsafeReadAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, DataAccessSession session, long startIndex, long endIndex, CancellationToken token)
         {
-            if (startIndex > state.LastIndex)
-                throw new IndexOutOfRangeException(ExceptionMessages.InvalidEntryIndex(endIndex));
-            if (endIndex > state.LastIndex)
-                throw new IndexOutOfRangeException(ExceptionMessages.InvalidEntryIndex(endIndex));
-            var length = endIndex - startIndex + 1L;
-            if (length > int.MaxValue)
-                throw new InternalBufferOverflowException(ExceptionMessages.RangeTooBig);
-            LogEntry entry;
+            long length;
             ValueTask<TResult> result;
-            if (HasPartitions)
+            if (startIndex > state.LastIndex)
+                result = new (Task.FromException<TResult>(new IndexOutOfRangeException(ExceptionMessages.InvalidEntryIndex(startIndex))));
+            else if (endIndex > state.LastIndex)
+                result = new (Task.FromException<TResult>(new IndexOutOfRangeException(ExceptionMessages.InvalidEntryIndex(endIndex))));
+            else if ((length = endIndex - startIndex + 1L) > int.MaxValue)
+                result = new (Task.FromException<TResult>(new InternalBufferOverflowException(ExceptionMessages.RangeTooBig)));
+            else if (HasPartitions)
+                result = ReadEntriesAsync(reader, session, startIndex, endIndex, (int)length, token);
+            else if (snapshot.Length > 0L)
+                result = ReadSnapshotAsync(reader, session, token);
+            else
+                result = ReadInitialOrEmptyEntryAsync(in reader, startIndex, token);
+
+            return result;
+
+            async ValueTask<TResult> ReadEntriesAsync(LogEntryConsumer<IRaftLogEntry, TResult> reader, DataAccessSession session, long startIndex, long endIndex, int length, CancellationToken token)
             {
-                using var list = bufferManager.AllocLogEntryList((int)length);
+                LogEntry entry;
+                using var list = bufferManager.AllocLogEntryList(length);
                 var listIndex = 0;
                 for (Partition? partition = null; startIndex <= endIndex; list[listIndex++] = entry, startIndex++)
                 {
@@ -217,17 +226,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
                 return await reader.ReadAsync<LogEntry, InMemoryList<LogEntry>>(list.Memory.Slice(0, listIndex), list[0].SnapshotIndex, token).ConfigureAwait(false);
             }
-            else if (snapshot.Length > 0)
+
+            async ValueTask<TResult> ReadSnapshotAsync(LogEntryConsumer<IRaftLogEntry, TResult> reader, DataAccessSession session, CancellationToken token)
             {
-                entry = await snapshot.ReadAsync(session, token).ConfigureAwait(false);
-                result = reader.ReadAsync<LogEntry, SingletonEntryList<LogEntry>>(new SingletonEntryList<LogEntry>(entry), entry.SnapshotIndex, token);
-            }
-            else
-            {
-                result = startIndex == 0L ? reader.ReadAsync<LogEntry, SingletonEntryList<LogEntry>>(new SingletonEntryList<LogEntry>(initialEntry), null, token) : reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
+                var entry = await snapshot.ReadAsync(session, token).ConfigureAwait(false);
+                return await reader.ReadAsync<LogEntry, SingletonEntryList<LogEntry>>(new (entry), entry.SnapshotIndex, token).ConfigureAwait(false);
             }
 
-            return await result.ConfigureAwait(false);
+            ValueTask<TResult> ReadInitialOrEmptyEntryAsync(in LogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, CancellationToken token)
+                => startIndex == 0L ? reader.ReadAsync<LogEntry, SingletonEntryList<LogEntry>>(new (initialEntry), null, token) : reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
         }
 
         /// <summary>
