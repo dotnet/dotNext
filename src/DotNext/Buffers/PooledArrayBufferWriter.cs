@@ -322,10 +322,11 @@ namespace DotNext.Buffers
         {
             ThrowIfDisposed();
             MemoryOwner<T> result;
-            if (GetLength(buffer) > 0)
+            if (position > 0)
             {
                 result = new MemoryOwner<T>(pool, buffer, position);
                 buffer = Array.Empty<T>();
+                position = 0;
             }
             else
             {

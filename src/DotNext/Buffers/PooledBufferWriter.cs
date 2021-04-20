@@ -103,9 +103,18 @@ namespace DotNext.Buffers
         public override MemoryOwner<T> DetachBuffer()
         {
             ThrowIfDisposed();
-            var result = buffer.Truncate(position);
-            buffer = default;
-            position = 0;
+            MemoryOwner<T> result;
+            if (position > 0)
+            {
+                result = buffer.Truncate(position);
+                buffer = default;
+                position = 0;
+            }
+            else
+            {
+                result = default;
+            }
+
             return result;
         }
 
