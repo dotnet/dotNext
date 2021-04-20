@@ -3,6 +3,7 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
@@ -12,21 +13,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     public partial class PersistentState
     {
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct DataAccessSession : IDisposable
+        private readonly struct DataAccessSession
         {
             internal readonly int SessionId;
-            private readonly MemoryOwner<byte> owner;
+            internal readonly Memory<byte> Buffer;
 
-            // read session ctor
-            internal DataAccessSession(int sessionId, MemoryAllocator<byte> bufferPool, int bufferSize)
+            internal DataAccessSession(int sessionId, Memory<byte> buffer)
             {
                 SessionId = sessionId;
-                owner = bufferPool.Invoke(bufferSize, false);
+                Buffer = buffer;
             }
-
-            internal readonly Memory<byte> Buffer => owner.Memory;
-
-            public void Dispose() => owner.Dispose();
         }
 
         /// <summary>
@@ -144,39 +140,56 @@ namespace DotNext.Net.Cluster.Consensus.Raft
          * which dramatically improves the performance
          */
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct DataAccessSessionManager : IDisposable
+        private struct DataAccessSessionManager : IDisposable
         {
             private readonly SessionIdPool sessions;
-            private readonly MemoryAllocator<byte> bufferPool;
+            private readonly int bufferSize;
             internal readonly int Capacity;
             internal readonly DataAccessSession WriteSession, CompactionSession;
+            private MemoryOwner<byte> writeBuffer, compactionBuffer, readBuffer;
 
-            internal DataAccessSessionManager(int readersCount, MemoryAllocator<byte> sharedPool, int writeBufferSize)
+            internal DataAccessSessionManager(int readersCount, MemoryAllocator<byte> sharedPool, int bufferSize)
             {
                 Capacity = readersCount;
-                bufferPool = sharedPool;
                 sessions = readersCount <= FastSessionIdPool.MaxReadersCount ? new FastSessionIdPool() : new SlowSessionIdPool(readersCount);
-                WriteSession = new (0, bufferPool, writeBufferSize);
-                CompactionSession = new (1, bufferPool, writeBufferSize);
+
+                writeBuffer = sharedPool.Invoke(bufferSize, false);
+                WriteSession = new (0, writeBuffer.Memory);
+
+                compactionBuffer = sharedPool.Invoke(bufferSize, false);
+                CompactionSession = new (1, compactionBuffer.Memory);
+
+                readBuffer = sharedPool.Invoke(checked(readersCount * bufferSize), false);
+                this.bufferSize = bufferSize;
             }
 
-            internal DataAccessSession OpenSession(int bufferSize)
-                => new (sessions.Take(), bufferPool, bufferSize);
-
-            internal void CloseSession(in DataAccessSession readSession)
+            internal readonly DataAccessSession OpenSession()
             {
-                readSession.Dispose();
-                sessions.Return(readSession.SessionId);
+                var id = sessions.Take();
+                Debug.Assert(id >= 0 && id < Capacity);
+
+                // renting buffer for read session is trivial here:
+                // just compute offset in a shared buffer for all readers
+                return new DataAccessSession(id, readBuffer.Memory.Slice(bufferSize * id, bufferSize));
             }
+
+            internal readonly void CloseSession(in DataAccessSession readSession)
+                => sessions.Return(readSession.SessionId);
 
             public void Dispose()
             {
-                WriteSession.Dispose();
-                CompactionSession.Dispose();
+                writeBuffer.Dispose();
+                writeBuffer = default;
+
+                compactionBuffer.Dispose();
+                compactionBuffer = default;
+
+                readBuffer.Dispose();
+                readBuffer = default;
             }
         }
 
         // concurrent read sessions management
-        private readonly DataAccessSessionManager sessionManager;
+        private DataAccessSessionManager sessionManager;
     }
 }

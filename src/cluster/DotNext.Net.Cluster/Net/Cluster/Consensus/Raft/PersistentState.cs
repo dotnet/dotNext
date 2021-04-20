@@ -291,7 +291,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private async ValueTask<TResult> ReadUnbufferedAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, long? endIndex, CancellationToken token)
         {
             await syncRoot.AcquireReadLockAsync(token).ConfigureAwait(false);
-            var session = sessionManager.OpenSession(bufferSize);
+            var session = sessionManager.OpenSession();
             try
             {
                 return await UnsafeReadAsync(reader, session, startIndex, endIndex ?? state.LastIndex, token).ConfigureAwait(false);
@@ -312,7 +312,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             BufferedRaftLogEntryList bufferedEntries;
             long? snapshotIndex;
             await syncRoot.AcquireReadLockAsync(token).ConfigureAwait(false);
-            var session = sessionManager.OpenSession(bufferSize);
+            var session = sessionManager.OpenSession();
             try
             {
                 (bufferedEntries, snapshotIndex) = await UnsafeReadAsync<(BufferedRaftLogEntryList, long?)>(new (bufferingConsumer), session, startIndex, endIndex ?? state.LastIndex, token).ConfigureAwait(false);
