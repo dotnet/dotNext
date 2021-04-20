@@ -188,7 +188,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             else if (snapshot.Length > 0L)
                 result = ReadSnapshotAsync(reader, session, token);
             else
-                result = ReadInitialOrEmptyEntryAsync(in reader, startIndex, token);
+                result = ReadInitialOrEmptyEntryAsync(in reader, startIndex == 0L, token);
 
             return result;
 
@@ -233,8 +233,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return await reader.ReadAsync<LogEntry, SingletonEntryList<LogEntry>>(new (entry), entry.SnapshotIndex, token).ConfigureAwait(false);
             }
 
-            ValueTask<TResult> ReadInitialOrEmptyEntryAsync(in LogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, CancellationToken token)
-                => startIndex == 0L ? reader.ReadAsync<LogEntry, SingletonEntryList<LogEntry>>(new (initialEntry), null, token) : reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
+            ValueTask<TResult> ReadInitialOrEmptyEntryAsync(in LogEntryConsumer<IRaftLogEntry, TResult> reader, bool readEphemeralEntry, CancellationToken token)
+                => readEphemeralEntry ? reader.ReadAsync<LogEntry, SingletonEntryList<LogEntry>>(new (initialEntry), null, token) : reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
         }
 
         /// <summary>
