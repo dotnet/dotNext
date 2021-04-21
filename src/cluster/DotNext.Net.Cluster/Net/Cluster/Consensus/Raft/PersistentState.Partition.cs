@@ -349,10 +349,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             private static async ValueTask<LogEntry> ReadAsync(StreamSegment reader, Memory<byte> buffer, CancellationToken token)
             {
-                reader.BaseStream.Position = 0;
-
-                // snapshot reader stream may be out of sync with writer stream
-                await reader.FlushAsync(token).ConfigureAwait(false);
+                reader.BaseStream.Position = 0L;
                 return new LogEntry(reader, buffer, await ReadMetadataAsync(reader.BaseStream, buffer, token).ConfigureAwait(false));
             }
 
