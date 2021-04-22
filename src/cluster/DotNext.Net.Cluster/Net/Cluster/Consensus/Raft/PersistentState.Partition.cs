@@ -103,6 +103,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal long LastIndex => FirstIndex + Capacity - 1;
 
+            // TODO: Replace with allocationSize in FileStream::.ctor in .NET 6
             internal void Allocate(long initialSize) => SetLength(initialSize + PayloadOffset);
 
             private void PopulateCache(Span<byte> buffer, Span<LogEntryMetadata> lookupCache)
