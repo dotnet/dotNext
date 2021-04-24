@@ -172,11 +172,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         protected delegate void MemberCollectionMutator<T>(in MemberCollectionBuilder members, T arg);
 
         private readonly bool allowPartitioning;
-        private readonly bool standbyNode;
         private readonly ElectionTimeout electionTimeoutProvider;
         private readonly CancellationTokenSource transitionCancellation;
         private readonly double heartbeatThreshold;
         private volatile IMemberCollection members;
+        private bool standbyNode;
 
         private AsyncLock transitionSync;  // used to synchronize state transitions
 
@@ -343,11 +343,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
+        private RaftState CreateInitialState()
+            => state = new FollowerState(this) { Metrics = Metrics }.StartServing(ElectionTimeout, Token);
+
         /// <summary>
         /// Starts serving local member.
         /// </summary>
         /// <param name="token">The token that can be used to cancel initialization process.</param>
-        /// <returns>The task representing asynchronous execution of the method.</returns>
+        /// <returns>The task representing asynchronous execution of the methodC.</returns>
         public virtual async Task StartAsync(CancellationToken token)
         {
             await auditTrail.InitializeAsync(token).ConfigureAwait(false);
@@ -356,7 +359,38 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             // otherwise use ephemeral state
             state = standbyNode ?
                 new StandbyState(this) :
-                new FollowerState(this) { Metrics = Metrics }.StartServing(ElectionTimeout, Token);
+                CreateInitialState();
+        }
+
+        /// <summary>
+        /// Turns this node into regular state when the node can be elected as leader.
+        /// </summary>
+        /// <remarks>
+        /// Initially, the node can be started in standby mode when it cannot be elected as a leader.
+        /// This can be helpful if you need to wait for full replication with existing leader node.
+        /// When replication finished, you can turn this node into regular state.
+        /// </remarks>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing asynchronous execution of this operation.</returns>
+        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+        public async ValueTask TurnIntoRegularNodeAsync(CancellationToken token)
+        {
+            ThrowIfDisposed();
+            if (standbyNode && state is StandbyState)
+            {
+                var tokenSource = token.LinkTo(Token);
+                var transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
+                try
+                {
+                    standbyNode = false;
+                    state = CreateInitialState();
+                }
+                finally
+                {
+                    transitionSync.Dispose();
+                    tokenSource?.Dispose();
+                }
+            }
         }
 
         private async Task CancelPendingRequestsAsync()
@@ -654,7 +688,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns><see langword="true"/>, if leadership is revoked successfully; otherwise, <see langword="false"/>.</returns>
         protected async Task<bool> ReceiveResignAsync(CancellationToken token)
         {
-            if (standbyNode)
+            if (state is StandbyState)
                 goto resign_denied;
 
             var lockHolder = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
