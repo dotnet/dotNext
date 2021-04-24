@@ -15,6 +15,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using IO.Log;
     using Threading;
+    using ReplicationCompletedEventHandler = Replication.ReplicationCompletedEventHandler;
     using Timestamp = Diagnostics.Timestamp;
 
     /// <summary>
@@ -326,6 +327,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         public event ClusterLeaderChangedEventHandler? LeaderChanged;
 
+        /// <summary>
+        /// Represents an event raised when the local node completes its replication with another
+        /// node.
+        /// </summary>
+        public event ReplicationCompletedEventHandler? ReplicationCompleted;
+
         /// <inheritdoc/>
         IClusterMember? ICluster.Leader => Leader;
 
@@ -581,7 +588,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         * If it is 'false' then the method will throw the exception and the node becomes unavailable in each replication cycle.
                         */
                         await auditTrail.AppendAsync(entries, prevLogIndex + 1L, true, token).ConfigureAwait(false);
-                        result = commitIndex <= auditTrail.GetLastIndex(true) || await auditTrail.CommitAsync(commitIndex, token).ConfigureAwait(false) > 0;
+
+                        if (commitIndex <= auditTrail.GetLastIndex(true))
+                        {
+                            // This node is in sync with the leader
+                            ReplicationCompleted?.Invoke(this, sender);
+                            result = true;
+                        }
+                        else
+                        {
+                            result = await auditTrail.CommitAsync(commitIndex, token).ConfigureAwait(false) > 0;
+                        }
                     }
                 }
 
