@@ -601,7 +601,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         }
                         else
                         {
-                            result = await auditTrail.CommitAsync(commitIndex, token).ConfigureAwait(false) > 0;
+                            result = await auditTrail.CommitAsync(commitIndex, token).ConfigureAwait(false) > 0L;
                         }
                     }
                 }
