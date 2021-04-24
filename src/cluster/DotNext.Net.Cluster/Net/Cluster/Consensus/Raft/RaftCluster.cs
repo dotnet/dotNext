@@ -580,6 +580,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     Leader = sender;
                     if (await auditTrail.ContainsAsync(prevLogIndex, prevLogTerm, token).ConfigureAwait(false))
                     {
+                        var emptySet = entries.RemainingCount > 0L;
+
                         /*
                         * AppendAsync is called with skipCommitted=true because HTTP response from the previous
                         * replication might fail but the log entry was committed by the local node.
@@ -591,8 +593,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
                         if (commitIndex <= auditTrail.GetLastIndex(true))
                         {
-                            // This node is in sync with the leader
-                            ReplicationCompleted?.Invoke(this, sender);
+                            // This node is in sync with the leader and no entries arrived
+                            if (emptySet)
+                                ReplicationCompleted?.Invoke(this, sender);
+
                             result = true;
                         }
                         else
