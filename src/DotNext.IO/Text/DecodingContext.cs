@@ -35,7 +35,7 @@ namespace DotNext.Text
         /// in separated async flow or thread.
         /// </summary>
         /// <returns>The independent copy of this context.</returns>
-        public DecodingContext Copy() => new DecodingContext(encoding, decoder is not null);
+        public DecodingContext Copy() => new (encoding, decoder is not null);
 
         /// <inheritdoc/>
         object ICloneable.Clone() => Copy();
@@ -56,6 +56,6 @@ namespace DotNext.Text
         /// Creates decoding context.
         /// </summary>
         /// <param name="encoding">The text encoding.</param>
-        public static implicit operator DecodingContext(Encoding encoding) => new DecodingContext(encoding, false);
+        public static implicit operator DecodingContext(Encoding encoding) => new (encoding, false);
     }
 }

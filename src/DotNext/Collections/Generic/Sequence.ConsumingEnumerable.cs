@@ -62,7 +62,7 @@ namespace DotNext.Collections.Generic
             /// Gets consumer enumerator.
             /// </summary>
             /// <returns>The enumerator wrapping method <see cref="IProducerConsumerCollection{T}.TryTake(out T)"/>.</returns>
-            public Enumerator GetEnumerator() => new Enumerator(collection);
+            public Enumerator GetEnumerator() => new (collection);
 
             /// <inheritdoc />
             IEnumerator<T> IEnumerable<T>.GetEnumerator() => GetEnumerator();
@@ -78,6 +78,6 @@ namespace DotNext.Collections.Generic
         /// <typeparam name="T">The type of elements in the collection.</typeparam>
         /// <returns>The consumer in the form of enumerable collection.</returns>
         public static ConsumingEnumerable<T> GetConsumer<T>(this IProducerConsumerCollection<T> collection)
-            => new ConsumingEnumerable<T>(collection ?? throw new ArgumentNullException(nameof(collection)));
+            => new (collection ?? throw new ArgumentNullException(nameof(collection)));
     }
 }

@@ -80,7 +80,7 @@ namespace DotNext
         /// <returns>The typed function pointer.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
         public static implicit operator Supplier<T1, T2, TResult>(delegate*<T1, T2, TResult> ptr)
-            => new Supplier<T1, T2, TResult>(ptr);
+            => new (ptr);
 
         /// <summary>
         /// Converts this supplier to the delegate of type <see cref="Func{T1, T2, TResult}"/>.

@@ -85,7 +85,7 @@ namespace DotNext
         [Fact]
         public static void UserDataStorageGetOrSet()
         {
-            string ToStr(int value) => value.ToString();
+            static string ToStr(int value) => value.ToString();
 
             var obj = new object();
             var slot = UserDataSlot<string>.Allocate();
@@ -95,7 +95,7 @@ namespace DotNext
         [Fact]
         public static void UserDataStorageGetOrSetSimpleFactory()
         {
-            string CreateString() => "Hello, world!";
+            static string CreateString() => "Hello, world!";
 
             var obj = new object();
             var slot = UserDataSlot<string>.Allocate();

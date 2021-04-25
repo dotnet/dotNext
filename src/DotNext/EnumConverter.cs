@@ -260,6 +260,7 @@ namespace DotNext
         /// <param name="value">The value to compare with other.</param>
         /// <param name="values">Candidate objects.</param>
         /// <returns><see langword="true"/>, if <paramref name="value"/> is equal to one of <paramref name="values"/>.</returns>
+        [Obsolete("Use pattern-matching expression in C#")]
         public static bool IsOneOf<T>(this T value, params T[] values)
             where T : struct, Enum
         {

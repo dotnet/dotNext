@@ -54,7 +54,7 @@ namespace DotNext.Runtime.InteropServices
             public Pointer<T> Pointer
             {
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                get => new Pointer<T>(ptr + index);
+                get => new (ptr + index);
             }
 
             /// <summary>

@@ -27,7 +27,7 @@ namespace DotNext.Reflection
             public int IndexOf => source.IndexOf(character, startIndex);
         }
 
-        private static readonly IndexOfCalculator IndexOfCalc = new IndexOfCalculator("Hello, world!", 'd', 0);
+        private static readonly IndexOfCalculator IndexOfCalc = new ("Hello, world!", 'd', 0);
         private static readonly ObjectAccessor Accessor = ObjectAccessor.Create(IndexOfCalc);
         private static readonly MethodInfo ReflectedGetter = IndexOfCalc.GetType().GetProperty(nameof(IndexOfCalculator.IndexOf)).GetMethod;
         private static readonly MemberGetter<IndexOfCalculator, int> StaticallyReflected = Type<IndexOfCalculator>.Property<int>.RequireGetter(nameof(IndexOfCalculator.IndexOf));

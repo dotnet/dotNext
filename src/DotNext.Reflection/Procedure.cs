@@ -65,7 +65,7 @@ namespace DotNext
         /// <returns>Allocated list of arguments.</returns>
         public static TArgs ArgList<TArgs>(this Procedure<TArgs> procedure)
             where TArgs : struct
-            => new TArgs();
+            => new ();
 
         /// <summary>
         /// Allocates list of arguments on the stack.
@@ -76,7 +76,7 @@ namespace DotNext
         /// <returns>Allocated list of arguments.</returns>
         public static TArgs ArgList<T, TArgs>(this Procedure<T, TArgs> procedure)
             where TArgs : struct
-            => new TArgs();
+            => new ();
 
         /// <summary>
         /// Invokes procedure.

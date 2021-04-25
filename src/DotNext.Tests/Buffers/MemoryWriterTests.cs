@@ -376,10 +376,13 @@ namespace DotNext.Buffers
         [Fact]
         public static void RemoveTailElements()
         {
-            using var writer = new PooledArrayBufferWriter<string>();
-            writer.Add("a");
-            writer.Add("b");
-            writer.Add("c");
+            using var writer = new PooledArrayBufferWriter<string>()
+            {
+                "a",
+                "b",
+                "c",
+            };
+
             writer.RemoveLast(2);
             Equal(1, writer.WrittenCount);
             Equal("a", writer[0]);
@@ -391,10 +394,13 @@ namespace DotNext.Buffers
         [Fact]
         public static void RemoveHeadElements()
         {
-            using var writer = new PooledArrayBufferWriter<string>();
-            writer.Add("a");
-            writer.Add("b");
-            writer.Add("c");
+            using var writer = new PooledArrayBufferWriter<string>()
+            {
+                "a",
+                "b",
+                "c",
+            };
+
             writer.RemoveFirst(2);
             Equal(1, writer.WrittenCount);
             Equal("c", writer[0]);

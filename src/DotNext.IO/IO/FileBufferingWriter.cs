@@ -516,7 +516,11 @@ namespace DotNext.IO
 
         /// <inheritdoc/>
         public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken token)
-            => new ValueTask<int>(Task.FromException<int>(new NotSupportedException()));
+#if NETSTANDARD2_1
+            => new (Task.FromException<int>(new NotSupportedException()));
+#else
+            => ValueTask.FromException<int>(new NotSupportedException());
+#endif
 
         /// <inheritdoc/>
         public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
@@ -558,7 +562,7 @@ namespace DotNext.IO
 
         /// <inheritdoc />
         ValueTask IGrowableBuffer<byte>.CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token)
-            => new ValueTask(CopyToAsync(consumer, Options.DefaultFileBufferSize, token));
+            => new (CopyToAsync(consumer, Options.DefaultFileBufferSize, token));
 
         /// <summary>
         /// Drains the written content to the consumer synchronously.

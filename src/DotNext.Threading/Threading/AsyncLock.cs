@@ -110,7 +110,7 @@ namespace DotNext.Threading
             this.owner = owner;
         }
 
-        private readonly Holder CreateHolder() => new Holder(lockedObject, type);
+        private readonly Holder CreateHolder() => new (lockedObject, type);
 
         /// <summary>
         /// Creates exclusive asynchronous lock but doesn't acquire it.
@@ -120,21 +120,21 @@ namespace DotNext.Threading
         /// </remarks>
         /// <returns>Exclusive asynchronous lock.</returns>
         /// <seealso cref="AsyncExclusiveLock"/>
-        public static AsyncLock Exclusive() => new AsyncLock(new AsyncExclusiveLock(), Type.Exclusive, true);
+        public static AsyncLock Exclusive() => new (new AsyncExclusiveLock(), Type.Exclusive, true);
 
         /// <summary>
         /// Wraps exclusive lock into the unified representation of asynchronous lock.
         /// </summary>
         /// <param name="lock">The lock object to be wrapped.</param>
         /// <returns>Exclusive asynchronous lock.</returns>
-        public static AsyncLock Exclusive(AsyncExclusiveLock @lock) => new AsyncLock(@lock ?? throw new ArgumentNullException(nameof(@lock)), Type.Exclusive, false);
+        public static AsyncLock Exclusive(AsyncExclusiveLock @lock) => new (@lock ?? throw new ArgumentNullException(nameof(@lock)), Type.Exclusive, false);
 
         /// <summary>
         /// Wraps semaphore instance into the unified representation of the lock.
         /// </summary>
         /// <param name="semaphore">The semaphore to wrap into lock object.</param>
         /// <returns>The lock representing semaphore.</returns>
-        public static AsyncLock Semaphore(SemaphoreSlim semaphore) => new AsyncLock(semaphore ?? throw new ArgumentNullException(nameof(semaphore)), Type.Semaphore, false);
+        public static AsyncLock Semaphore(SemaphoreSlim semaphore) => new (semaphore ?? throw new ArgumentNullException(nameof(semaphore)), Type.Semaphore, false);
 
         /// <summary>
         /// Creates semaphore-based lock but doesn't acquire the lock.
@@ -145,7 +145,7 @@ namespace DotNext.Threading
         /// <param name="initialCount">The initial number of requests for the semaphore that can be granted concurrently.</param>
         /// <param name="maxCount">The maximum number of requests for the semaphore that can be granted concurrently.</param>
         /// <returns>The lock representing semaphore.</returns>
-        public static AsyncLock Semaphore(int initialCount, int maxCount) => new AsyncLock(new SemaphoreSlim(initialCount, maxCount), Type.Semaphore, true);
+        public static AsyncLock Semaphore(int initialCount, int maxCount) => new (new SemaphoreSlim(initialCount, maxCount), Type.Semaphore, true);
 
         /// <summary>
         /// Creates read lock but doesn't acquire it.
@@ -154,7 +154,7 @@ namespace DotNext.Threading
         /// <param name="upgradeable"><see langword="true"/> to create upgradeable read lock wrapper.</param>
         /// <returns>Reader lock.</returns>
         public static AsyncLock ReadLock(AsyncReaderWriterLock rwLock, bool upgradeable)
-            => new AsyncLock(rwLock ?? throw new ArgumentNullException(nameof(rwLock)), upgradeable ? Type.UpgradeableReadLock : Type.ReadLock, false);
+            => new (rwLock ?? throw new ArgumentNullException(nameof(rwLock)), upgradeable ? Type.UpgradeableReadLock : Type.ReadLock, false);
 
         /// <summary>
         /// Creates write lock but doesn't acquire it.
@@ -162,21 +162,21 @@ namespace DotNext.Threading
         /// <param name="rwLock">Read/write lock source.</param>
         /// <returns>Write-only lock.</returns>
         public static AsyncLock WriteLock(AsyncReaderWriterLock rwLock)
-            => new AsyncLock(rwLock ?? throw new ArgumentNullException(nameof(rwLock)), Type.WriteLock, false);
+            => new (rwLock ?? throw new ArgumentNullException(nameof(rwLock)), Type.WriteLock, false);
 
         /// <summary>
         /// Creates strong (exclusive) lock but doesn't acquire it.
         /// </summary>
         /// <param name="lock">The shared lock instance.</param>
         /// <returns>Exclusive lock.</returns>
-        public static AsyncLock Exclusive(AsyncSharedLock @lock) => new AsyncLock(@lock, Type.Strong, false);
+        public static AsyncLock Exclusive(AsyncSharedLock @lock) => new (@lock, Type.Strong, false);
 
         /// <summary>
         /// Creates weak lock but doesn't acquire it.
         /// </summary>
         /// <param name="lock">The shared lock instance.</param>
         /// <returns>Weak lock.</returns>
-        public static AsyncLock Weak(AsyncSharedLock @lock) => new AsyncLock(@lock, Type.Weak, false);
+        public static AsyncLock Weak(AsyncSharedLock @lock) => new (@lock, Type.Weak, false);
 
         /// <summary>
         /// Acquires the lock asynchronously.

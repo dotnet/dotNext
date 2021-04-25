@@ -108,7 +108,7 @@ namespace DotNext.IO.Log
         public void Reset() => currentIndex = InitialPosition;
 
         /// <inheritdoc/>
-        ValueTask IAsyncDisposable.DisposeAsync() => new ValueTask();
+        ValueTask IAsyncDisposable.DisposeAsync() => new ();
 
         /// <summary>
         /// Constructs producer of single log entry.

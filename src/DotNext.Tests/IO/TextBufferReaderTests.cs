@@ -162,7 +162,7 @@ namespace DotNext.IO
         public static void ReadLines(ReadOnlySequence<char> charData)
         {
             using var tr = charData.AsTextReader();
-            string valueString = new string(charData.ToArray());
+            string valueString = new (charData.ToArray());
             var data = tr.ReadLine();
             Equal("Char data \r\u3190 with", data);
 
@@ -180,7 +180,7 @@ namespace DotNext.IO
         public static async Task ReadLinesAsync(ReadOnlySequence<char> charData)
         {
             using var tr = charData.AsTextReader();
-            string valueString = new string(charData.ToArray());
+            string valueString = new (charData.ToArray());
             var data = await tr.ReadLineAsync();
             Equal("Char data \r\u3190 with", data);
 

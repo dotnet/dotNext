@@ -67,7 +67,7 @@ namespace DotNext.IO
                     => writer.WriteAsync(input, lengthFormat, token);
             }
 
-            private readonly MemoryStream stream = new MemoryStream();
+            private readonly MemoryStream stream = new ();
             private readonly byte[] buffer = new byte[512];
 
             public IAsyncBinaryReader CreateReader()
@@ -98,7 +98,7 @@ namespace DotNext.IO
 
         private sealed class StreamSource : IAsyncBinaryReaderWriterSource
         {
-            private readonly MemoryStream stream = new MemoryStream(1024);
+            private readonly MemoryStream stream = new (1024);
             private readonly byte[] buffer = new byte[512];
 
             public IAsyncBinaryWriter CreateWriter() => IAsyncBinaryWriter.Create(stream, buffer);
@@ -114,7 +114,7 @@ namespace DotNext.IO
 
         private sealed class PipeSource : IAsyncBinaryReaderWriterSource
         {
-            private readonly Pipe pipe = new Pipe();
+            private readonly Pipe pipe = new ();
 
             public IAsyncBinaryWriter CreateWriter() => IAsyncBinaryWriter.Create(pipe.Writer);
 
@@ -132,7 +132,7 @@ namespace DotNext.IO
 
         private sealed class PipeSourceWithSettings : IAsyncBinaryReaderWriterSource
         {
-            private readonly Pipe pipe = new Pipe();
+            private readonly Pipe pipe = new ();
 
             public IAsyncBinaryWriter CreateWriter() => IAsyncBinaryWriter.Create(pipe.Writer, 1024, 128);
 
@@ -148,7 +148,7 @@ namespace DotNext.IO
 
         private sealed class ReadOnlySequenceSource : IAsyncBinaryReaderWriterSource
         {
-            private readonly MemoryStream stream = new MemoryStream(1024);
+            private readonly MemoryStream stream = new (1024);
             private readonly byte[] buffer = new byte[512];
 
             public IAsyncBinaryWriter CreateWriter() => IAsyncBinaryWriter.Create(stream, buffer);
@@ -360,7 +360,7 @@ namespace DotNext.IO
             }
 
             internal static ValueTask<ReadOnlyMemory<byte>> SupplyContent(MemorySource supplier, CancellationToken token)
-                => new ValueTask<ReadOnlyMemory<byte>>(supplier.ReadContent());
+                => new (supplier.ReadContent());
         }
 
         [Theory]

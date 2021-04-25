@@ -90,7 +90,7 @@ namespace DotNext
         where T : new()
     {
         /// <inheritdoc />
-        T ISupplier<T>.Invoke() => new T();
+        T ISupplier<T>.Invoke() => new ();
     }
 
     /// <summary>

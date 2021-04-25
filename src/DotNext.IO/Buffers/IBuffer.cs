@@ -27,7 +27,7 @@ namespace DotNext.Buffers
 
         int IBuffer<T>.Length => length;
 
-        Span<T> IBuffer<T>.Span => new Span<T>(ptr, length);
+        Span<T> IBuffer<T>.Span => new (ptr, length);
     }
 
     [StructLayout(LayoutKind.Auto)]

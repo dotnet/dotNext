@@ -9,7 +9,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
     internal sealed class TestDiscoveryService : HashSet<Uri>, IMemberDiscoveryService, IDisposable
     {
-        private readonly AsyncAutoResetEvent trigger = new AsyncAutoResetEvent(false);
+        private readonly AsyncAutoResetEvent trigger = new (false);
 
         private sealed class Watcher : Disposable
         {
@@ -45,7 +45,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         }
 
         public ValueTask<IReadOnlyCollection<Uri>> DiscoverAsync(CancellationToken token)
-            => new ValueTask<IReadOnlyCollection<Uri>>(this);
+            => new (this);
 
         internal void FinishEditing() => trigger.Set();
 

@@ -316,7 +316,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 }
             }
 
-            private ValueTask WriteMetadataAsync(Stream output, Memory<byte> buffer, TEntry entry, CancellationToken token)
+            private static ValueTask WriteMetadataAsync(Stream output, Memory<byte> buffer, TEntry entry, CancellationToken token)
             {
                 var metadata = LogEntryMetadata.Create(entry);
                 buffer = buffer.Slice(0, LogEntryMetadata.Size);

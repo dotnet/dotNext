@@ -63,7 +63,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
             }
         }
 
-        private static readonly Uri Root = new Uri("/", UriKind.Relative);
+        private static readonly Uri Root = new ("/", UriKind.Relative);
         private readonly IHost host;
 
         public RaftHostedCluster(IServiceProvider services)

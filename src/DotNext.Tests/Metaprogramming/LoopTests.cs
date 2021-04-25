@@ -34,7 +34,7 @@ namespace DotNext.Metaprogramming
 
         public sealed class CustomEnumerable
         {
-            public CustomEnumerator GetEnumerator() => new CustomEnumerator();
+            public CustomEnumerator GetEnumerator() => new ();
         }
 
         [Fact]

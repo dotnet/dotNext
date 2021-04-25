@@ -14,7 +14,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
     internal abstract class UdpSocket : Socket, INetworkTransport
     {
-        private protected static readonly IPEndPoint AnyRemoteEndpoint = new IPEndPoint(IPAddress.Any, 0);
+        private protected static readonly IPEndPoint AnyRemoteEndpoint = new (IPAddress.Any, 0);
 
         private sealed class SendEventArgs : SocketAsyncEventSource
         {

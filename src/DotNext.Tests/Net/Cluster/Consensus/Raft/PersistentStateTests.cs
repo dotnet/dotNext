@@ -37,7 +37,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             ref long IRaftClusterMember.NextIndex => throw new NotImplementedException();
 
-            ValueTask IRaftClusterMember.CancelPendingRequestsAsync() => new ValueTask(Task.FromException(new NotImplementedException()));
+            ValueTask IRaftClusterMember.CancelPendingRequestsAsync() => new (Task.FromException(new NotImplementedException()));
 
             public EndPoint EndPoint { get; }
 
@@ -735,7 +735,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private sealed class JsonPersistentState : PersistentState
         {
-            private readonly List<object> entries = new List<object>();
+            private readonly List<object> entries = new ();
 
             internal JsonPersistentState(string location, bool caching)
                 : base(location, RecordsPerPartition, new Options { UseCaching = caching })

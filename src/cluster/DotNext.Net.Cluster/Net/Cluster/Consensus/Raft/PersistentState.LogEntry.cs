@@ -156,7 +156,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <summary>
             /// Gets timestamp of this log entry.
             /// </summary>
-            public DateTimeOffset Timestamp => new DateTimeOffset(metadata.Timestamp, TimeSpan.Zero);
+            public DateTimeOffset Timestamp => new (metadata.Timestamp, TimeSpan.Zero);
 
             private ValueTask<TResult> TransformStreamAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
                 where TTransformation : notnull, IDataTransferObject.ITransformation<TResult>
@@ -252,7 +252,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The log entry representing JSON-serializable content.</returns>
         /// <seealso cref="LogEntry.DeserializeFromJsonAsync"/>
         public JsonLogEntry<T> CreateJsonLogEntry<T>(T content, string? typeId = null, JsonSerializerOptions? options = null)
-            => new JsonLogEntry<T>(Term, content, typeId, options);
+            => new (Term, content, typeId, options);
 #endif
     }
 }

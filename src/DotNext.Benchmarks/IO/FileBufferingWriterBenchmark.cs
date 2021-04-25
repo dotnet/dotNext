@@ -14,7 +14,6 @@ namespace DotNext.IO
     public class FileBufferingWriterBenchmark
     {
         private const int MemoryThreshold = 500 * 1024; // 500 KB
-        private const int ChunkSize = 1024; //1 KB
         private readonly byte[] content;
 
         public FileBufferingWriterBenchmark()

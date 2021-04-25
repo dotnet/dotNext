@@ -24,7 +24,7 @@ namespace DotNext.Buffers
 
         public readonly int RemainingBytes => length;
 
-        readonly BigInteger IBufferReader<BigInteger>.Complete() => new BigInteger(Complete(), isBigEndian: !littleEndian);
+        readonly BigInteger IBufferReader<BigInteger>.Complete() => new (Complete(), isBigEndian: !littleEndian);
 
         internal readonly Span<byte> Complete() => result.Span.Slice(0, resultOffset);
 

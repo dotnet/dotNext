@@ -79,8 +79,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         }
 
-        private readonly AsyncReaderWriterLock syncRoot = new AsyncReaderWriterLock();
-        private readonly AsyncManualResetEvent commitEvent = new AsyncManualResetEvent(false);
+        private readonly AsyncReaderWriterLock syncRoot = new ();
+        private readonly AsyncManualResetEvent commitEvent = new (false);
         private long term, commitIndex, lastTerm, index;
         private volatile IRaftClusterMember? votedFor;
         private volatile long[] log = Array.Empty<long>();    // log of uncommitted entries

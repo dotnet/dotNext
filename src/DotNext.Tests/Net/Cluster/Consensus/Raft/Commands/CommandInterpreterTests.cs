@@ -53,7 +53,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
 
         private sealed class Formatter : IFormatter<BinaryOperationCommand>, IFormatter<UnaryOperationCommand>, IFormatter<AssignCommand>, IFormatter<SnapshotCommand>
         {
-            public static readonly Formatter Instance = new Formatter();
+            public static readonly Formatter Instance = new ();
 
             async ValueTask IFormatter<BinaryOperationCommand>.SerializeAsync<TWriter>(BinaryOperationCommand command, TWriter writer, CancellationToken token)
             {
@@ -125,7 +125,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
                     _ => throw new NotSupportedException()
                 };
 
-                return new ValueTask();
+                return token.IsCancellationRequested ? new ValueTask(Task.FromCanceled(token)) : new ValueTask();
             }
 
             [CommandHandler]
@@ -141,7 +141,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
                     _ => throw new NotSupportedException()
                 };
 
-                return new ValueTask();
+                return token.IsCancellationRequested ? new ValueTask(Task.FromCanceled(token)) : new ValueTask();
             }
 
             [CommandHandler]
@@ -152,7 +152,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
             public ValueTask ApplySnapshot(SnapshotCommand command, CancellationToken token)
             {
                 Value = command.Value;
-                return new ValueTask();
+                return token.IsCancellationRequested ? new ValueTask(Task.FromCanceled(token)) : new ValueTask();
             }
         }
 
@@ -173,7 +173,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
                 => interpreter.CreateLogEntry(command, Term);
 
             protected override ValueTask ApplyAsync(LogEntry entry)
-                => new ValueTask(interpreter.InterpretAsync(entry).AsTask());
+                => new (interpreter.InterpretAsync(entry).AsTask());
 
             protected override void Dispose(bool disposing)
             {

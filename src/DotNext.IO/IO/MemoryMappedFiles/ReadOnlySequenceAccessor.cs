@@ -34,7 +34,7 @@ namespace DotNext.IO.MemoryMappedFiles
                 Offset = offset;
             }
 
-            internal Segment Next(int length) => new Segment(Length + Offset, length);
+            internal Segment Next(int length) => new (Length + Offset, length);
 
             private bool Equals(in Segment other)
                 => Length == other.Length && Offset == other.Offset;
@@ -66,12 +66,12 @@ namespace DotNext.IO.MemoryMappedFiles
             }
 
             public override unsafe Span<byte> GetSpan()
-                => new Span<byte>(Cursor.GetMemory(Segment), Segment.Length);
+                => new (Cursor.GetMemory(Segment), Segment.Length);
 
             public override Memory<byte> Memory => CreateMemory(Segment.Length);
 
             public override unsafe MemoryHandle Pin(int index)
-                => new MemoryHandle(Cursor.GetMemory(Segment) + index);
+                => new (Cursor.GetMemory(Segment) + index);
 
             public override void Unpin()
             {

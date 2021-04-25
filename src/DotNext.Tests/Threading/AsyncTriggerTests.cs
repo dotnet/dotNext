@@ -38,18 +38,18 @@ namespace DotNext.Threading
         {
             var state = new State { Value = 0 };
             using var trigger = new AsyncTrigger();
-            Predicate<State> condition = static i =>
+            static bool Condition(State state)
             {
-                if (i.Value == 42)
+                if (state.Value == 42)
                 {
-                    i.Value = 14;
+                    state.Value = 14;
                     return true;
                 }
 
                 return false;
             };
-            var valueNode = trigger.WaitAsync(state, condition);
-            var valueNode2 = trigger.WaitAsync(state, condition);
+            var valueNode = trigger.WaitAsync(state, Condition);
+            var valueNode2 = trigger.WaitAsync(state, Condition);
             False(valueNode.IsCompleted);
             False(valueNode2.IsCompleted);
             trigger.Signal(state, static s => s.Value = 14);

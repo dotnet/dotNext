@@ -29,6 +29,6 @@ namespace DotNext.Buffers
         }
 
         internal static ReadOnlySequence<T> CreateSequence(Chunk<T> head, Chunk<T> tail)
-            => new ReadOnlySequence<T>(head, 0, tail, tail.Memory.Length);
+            => new (head, 0, tail, tail.Memory.Length);
     }
 }

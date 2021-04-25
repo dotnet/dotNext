@@ -24,7 +24,7 @@ namespace DotNext.Net.Cluster.Messaging
                 where TReader : notnull, IAsyncBinaryReader
             {
                 var writer = new PooledArrayBufferWriter<byte>(initialSize);
-                await reader.CopyToAsync(writer).ConfigureAwait(false);
+                await reader.CopyToAsync(writer, token).ConfigureAwait(false);
                 return writer;
             }
         }

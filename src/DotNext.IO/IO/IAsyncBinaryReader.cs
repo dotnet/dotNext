@@ -523,14 +523,14 @@ namespace DotNext.IO
         /// </summary>
         /// <param name="sequence">The sequence of bytes.</param>
         /// <returns>The binary reader for the sequence of bytes.</returns>
-        public static SequenceBinaryReader Create(ReadOnlySequence<byte> sequence) => new SequenceBinaryReader(sequence);
+        public static SequenceBinaryReader Create(ReadOnlySequence<byte> sequence) => new (sequence);
 
         /// <summary>
         /// Creates default implementation of binary reader over contiguous memory block.
         /// </summary>
         /// <param name="memory">The block of memory.</param>
         /// <returns>The binary reader for the memory block.</returns>
-        public static SequenceBinaryReader Create(ReadOnlyMemory<byte> memory) => new SequenceBinaryReader(memory);
+        public static SequenceBinaryReader Create(ReadOnlyMemory<byte> memory) => new (memory);
 
         /// <summary>
         /// Creates default implementation of binary reader for the specifed pipe reader.

@@ -157,7 +157,7 @@ namespace DotNext
         /// <param name="value">The value to be wrapped.</param>
         /// <typeparam name="T">The type of the value.</typeparam>
         /// <returns>The optional container.</returns>
-        public static Optional<T> Some<T>(T value) => new Optional<T>(value);
+        public static Optional<T> Some<T>(T value) => new (value);
 
         /// <summary>
         /// Wraps <see langword="null"/> value to <see cref="Optional{T}"/> container.

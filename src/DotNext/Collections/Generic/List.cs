@@ -189,7 +189,7 @@ namespace DotNext.Collections.Generic
         /// <typeparam name="TOutput">Type of items in the target list.</typeparam>
         /// <returns>Lazily converted read-only list.</returns>
         public static ReadOnlyListView<TInput, TOutput> Convert<TInput, TOutput>(this IReadOnlyList<TInput> list, Converter<TInput, TOutput> converter)
-            => new ReadOnlyListView<TInput, TOutput>(list, converter);
+            => new (list, converter);
 
         /// <summary>
         /// Constructs read-only list with single item in it.
@@ -302,6 +302,6 @@ namespace DotNext.Collections.Generic
         /// <param name="range">The range of elements in the list.</param>
         /// <returns>The section of the list.</returns>
         public static ListSegment<T> Slice<T>(this IList<T> list, Range range)
-            => new ListSegment<T>(list, range);
+            => new (list, range);
     }
 }

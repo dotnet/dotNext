@@ -275,7 +275,7 @@ namespace DotNext.Collections.Generic
         /// <param name="leaveOpen"><see langword="false"/> to dispose <paramref name="enumerator"/>; otherwise, <see langword="true"/>.</param>
         /// <returns>The enumerator which is limited by count.</returns>
         public static LimitedEnumerator<T> Limit<T>(this IEnumerator<T> enumerator, int count, bool leaveOpen = false)
-            => new LimitedEnumerator<T>(enumerator, count, leaveOpen);
+            => new (enumerator, count, leaveOpen);
 
         /// <summary>
         /// Gets enumerator over all elements in the memory.

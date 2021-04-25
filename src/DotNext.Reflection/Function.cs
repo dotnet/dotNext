@@ -119,7 +119,7 @@ namespace DotNext
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TArgs ArgList<TArgs, TResult>(this Function<TArgs, TResult> function)
             where TArgs : struct
-            => new TArgs();
+            => new ();
 
         /// <summary>
         /// Allocates list of arguments on the stack.
@@ -132,7 +132,7 @@ namespace DotNext
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TArgs ArgList<T, TArgs, TResult>(this Function<T, TArgs, TResult> function)
             where TArgs : struct
-            => new TArgs();
+            => new ();
 
         /// <summary>
         /// Invokes function.

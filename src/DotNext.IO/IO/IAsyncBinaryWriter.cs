@@ -352,7 +352,7 @@ namespace DotNext.IO
             do
             {
                 result = await input.ReadAsync(token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested();
+                result.ThrowIfCancellationRequested(token);
                 var buffer = result.Buffer;
                 for (SequencePosition position = buffer.Start; buffer.TryGet(ref position, out var block); input.AdvanceTo(position))
                     await WriteAsync(block, null, token).ConfigureAwait(false);

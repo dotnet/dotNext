@@ -30,10 +30,10 @@ namespace DotNext.Net
         }
 
         internal static IPEndPoint ToEndPoint(this IPAddress address, int port)
-            => new IPEndPoint(address, port);
+            => new (address, port);
 
         internal static DnsEndPoint ToEndPoint(this string name, int port)
-            => new DnsEndPoint(name, port);
+            => new (name, port);
 
         // TODO: Return type must be changed to IReadOnlySet<EndPoint> in .NET 6
         internal static async Task<ICollection<EndPoint>> GetHostingAddressesAsync(this IServer server)

@@ -73,7 +73,7 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="value">A value.</param>
         /// <returns>A reference to a value.</returns>
-        public static implicit operator Ref<T>(T value) => new Ref<T> { Value = value };
+        public static implicit operator Ref<T>(T value) => new () { Value = value };
 
         /// <summary>
         /// Identifies that two references point to the same location.

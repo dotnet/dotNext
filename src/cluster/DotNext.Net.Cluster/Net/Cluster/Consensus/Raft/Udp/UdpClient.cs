@@ -41,7 +41,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         // I/O management
         private readonly long applicationId;
         private readonly INetworkTransport.ChannelPool<Channel> channels;
-        private readonly RefAction<Channel, CorrelationId> cancellationInvoker;
         private readonly IPEndPoint localEndPoint;
         private long streamNumber;
 
@@ -50,10 +49,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         {
             channels = new INetworkTransport.ChannelPool<Channel>(backlog);
             cancellationHandler = channels.CancellationRequested;
-
             applicationId = appIdGenerator();
             streamNumber = long.MinValue;
-            cancellationInvoker = channels.CancellationRequested;
             this.localEndPoint = localEndPoint;
         }
 

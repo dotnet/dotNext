@@ -261,6 +261,6 @@ namespace DotNext.Threading
         /// Terminates timer gracefully.
         /// </summary>
         /// <returns>The task representing graceful shutdown.</returns>
-        public ValueTask DisposeAsync() => new ValueTask(IsDisposed ? Task.CompletedTask : DisposeAsyncImpl());
+        public ValueTask DisposeAsync() => new (IsDisposed ? Task.CompletedTask : DisposeAsyncImpl());
     }
 }

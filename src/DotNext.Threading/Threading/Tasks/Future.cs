@@ -72,7 +72,7 @@ namespace DotNext.Threading.Tasks
         /// Converts this future to the task.
         /// </summary>
         /// <returns>The task representing this future.</returns>
-        public ValueTask AsTask() => new ValueTask(this, source.Version);
+        public ValueTask AsTask() => new (this, source.Version);
 
         /// <inheritdoc />
         void IValueTaskSource.GetResult(short token) => source.GetResult(token);
@@ -155,7 +155,7 @@ namespace DotNext.Threading.Tasks
         /// Converts this future to the task.
         /// </summary>
         /// <returns>The task representing this future.</returns>
-        public ValueTask<TResult> AsTask() => new ValueTask<TResult>(this, source.Version);
+        public ValueTask<TResult> AsTask() => new (this, source.Version);
 
         /// <inheritdoc />
         TResult IValueTaskSource<TResult>.GetResult(short token) => source.GetResult(token);

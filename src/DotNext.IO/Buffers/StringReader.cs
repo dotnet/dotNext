@@ -28,7 +28,7 @@ namespace DotNext.Buffers
 
         public readonly int RemainingBytes => length;
 
-        readonly string IBufferReader<string>.Complete() => new string(Complete());
+        readonly string IBufferReader<string>.Complete() => new (Complete());
 
         internal readonly Span<char> Complete() => result.Span.Slice(0, resultOffset);
 

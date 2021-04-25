@@ -69,7 +69,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             static void SetState(ServerExchange server, State state) => server.SetState(state);
         }
 
-        private readonly AsyncTrigger transmissionStateTrigger = new AsyncTrigger();
+        private readonly AsyncTrigger transmissionStateTrigger = new ();
         private int remainingCount, lookupIndex;
         private ReceivedLogEntry currentEntry;
 
@@ -79,12 +79,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         private void SetState(State newState) => state = newState;
 
-        private bool IsReadyToReadEntry() => state.IsOneOf(State.ReceivingEntry, State.EntryReceived);
+        private bool IsReadyToReadEntry() => state is State.ReceivingEntry or State.EntryReceived;
 
         private bool IsValidStateForResponse()
-            => state.IsOneOf(State.ReceivingEntriesFinished, State.ReadyToReceiveEntry, State.ReceivingEntry);
+            => state is State.ReceivingEntriesFinished or State.ReadyToReceiveEntry or State.ReceivingEntry;
 
-        private bool IsValidForTransition() => state.IsOneOf(State.AppendEntriesReceived, State.EntryReceived);
+        private bool IsValidForTransition() => state is State.AppendEntriesReceived or State.EntryReceived;
 
         async ValueTask<bool> IAsyncEnumerator<ReceivedLogEntry>.MoveNextAsync()
         {

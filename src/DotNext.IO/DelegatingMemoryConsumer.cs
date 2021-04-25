@@ -30,6 +30,6 @@ namespace DotNext
         }
 
         ValueTask ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<byte> input, CancellationToken token)
-            => new ValueTask(token.IsCancellationRequested ? Task.FromCanceled(token) : Task.CompletedTask);
+            => new (token.IsCancellationRequested ? Task.FromCanceled(token) : Task.CompletedTask);
     }
 }

@@ -143,10 +143,10 @@ namespace DotNext.Runtime.InteropServices
         /// <summary>
         /// Gets the pointer to the first element of the pinned array.
         /// </summary>
-        public unsafe Pointer<T> Pointer => new Pointer<T>((T*)RawPointer);
+        public unsafe Pointer<T> Pointer => new ((T*)RawPointer);
 
         /// <inheritdoc />
-        unsafe Pointer<byte> IUnmanagedMemory.Pointer => new Pointer<byte>((byte*)RawPointer);
+        unsafe Pointer<byte> IUnmanagedMemory.Pointer => new ((byte*)RawPointer);
 
         /// <summary>
         /// Gets length of the pinned array.

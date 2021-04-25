@@ -17,6 +17,6 @@ namespace DotNext.Resources
         /// <returns>The resource entry.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="manager"/> or <paramref name="name"/> is <see langword="null"/>.</exception>
         public static ResourceEntry Get(this ResourceManager manager, [CallerMemberName]string name = "")
-            => new ResourceEntry(manager, name);
+            => new (manager, name);
     }
 }

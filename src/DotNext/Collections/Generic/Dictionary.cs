@@ -353,6 +353,6 @@ namespace DotNext.Collections.Generic
         /// <param name="mapper">Mapping function.</param>
         /// <returns>Read-only view of the dictionary where each value is converted in lazy manner.</returns>
         public static ReadOnlyDictionaryView<TKey, TValue, TResult> ConvertValues<TKey, TValue, TResult>(this IReadOnlyDictionary<TKey, TValue> dictionary, Converter<TValue, TResult> mapper)
-            => new ReadOnlyDictionaryView<TKey, TValue, TResult>(dictionary, mapper);
+            => new (dictionary, mapper);
     }
 }

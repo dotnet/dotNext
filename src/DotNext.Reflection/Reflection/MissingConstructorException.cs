@@ -33,6 +33,6 @@ namespace DotNext.Reflection
 
         internal static MissingConstructorException Create<T, TArgs>()
             where TArgs : struct
-            => new MissingConstructorException(typeof(T), Signature.Reflect(typeof(TArgs)).Parameters);
+            => new (typeof(T), Signature.Reflect(typeof(TArgs)).Parameters);
     }
 }

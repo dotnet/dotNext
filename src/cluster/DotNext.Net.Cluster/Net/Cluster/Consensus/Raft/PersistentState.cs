@@ -637,7 +637,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             // copy log entry to the memory
             var writer = bufferManager.CreateBufferWriter(entry.Length ?? bufferSize);
 
-            await entry.WriteToAsync(writer).ConfigureAwait(false);
+            await entry.WriteToAsync(writer, token).ConfigureAwait(false);
             var cachedEntry = new CachedRaftLogEntry(writer, entry.Term, entry.Timestamp, entry.CommandId);
 
             await syncRoot.AcquireWriteLockAsync(token).ConfigureAwait(false);

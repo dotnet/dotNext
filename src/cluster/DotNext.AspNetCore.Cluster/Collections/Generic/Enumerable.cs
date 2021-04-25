@@ -38,7 +38,7 @@ namespace DotNext.Collections.Generic
 
         internal readonly int Count => list.Count;
 
-        public readonly Enumerator GetEnumerator() => new Enumerator(list);
+        public readonly Enumerator GetEnumerator() => new (list);
 
         readonly IEnumerator<T> IEnumerable<T>.GetEnumerator() => GetEnumerator();
 

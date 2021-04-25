@@ -61,7 +61,7 @@ namespace DotNext.Linq.Expressions
         /// <param name="checkConditionFirst"><see langword="true"/> to check condition before loop body; <see langword="false"/> to use do-while style.</param>
         /// <returns>The constructed loop expression.</returns>
         public static WhileExpression Create(Expression test, Expression body, bool checkConditionFirst)
-            => new WhileExpression(test, checkConditionFirst) { Body = body };
+            => new (test, checkConditionFirst) { Body = body };
 
         /// <summary>
         /// Gets label that is used by the loop body as a break statement target.
@@ -97,7 +97,7 @@ namespace DotNext.Linq.Expressions
         /// </summary>
         /// <param name="body">The body of the loop.</param>
         /// <returns>Updated loop expression.</returns>
-        public WhileExpression Update(Expression body) => new WhileExpression(Test, conditionFirst) { Body = body };
+        public WhileExpression Update(Expression body) => new (Test, conditionFirst) { Body = body };
 
         /// <summary>
         /// Translates this expression into predefined set of expressions

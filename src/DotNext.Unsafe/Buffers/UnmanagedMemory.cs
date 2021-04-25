@@ -62,10 +62,10 @@ namespace DotNext.Buffers
                 GC.RemoveMemoryPressure(Math.Abs(diff));
         }
 
-        public sealed override unsafe Span<T> GetSpan() => new Span<T>(Address.ToPointer(), Length);
+        public sealed override unsafe Span<T> GetSpan() => new (Address.ToPointer(), Length);
 
         public sealed override unsafe MemoryHandle Pin(int elementIndex = 0)
-            => new MemoryHandle((T*)Address.ToPointer() + elementIndex);
+            => new ((T*)Address.ToPointer() + elementIndex);
 
         public sealed override void Unpin()
         {

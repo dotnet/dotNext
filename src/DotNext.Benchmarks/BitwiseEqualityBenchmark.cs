@@ -39,7 +39,7 @@ namespace DotNext
         }
 
         private static readonly Guid NonEmptyGuid = Guid.NewGuid();
-        private static readonly LargeStruct NonEmptyLargeStruct = new LargeStruct { C = 30 };
+        private static readonly LargeStruct NonEmptyLargeStruct = new (){ C = 30 };
 
         [Benchmark]
         public bool GuidEqualsMethod() => NonEmptyGuid.Equals(default);

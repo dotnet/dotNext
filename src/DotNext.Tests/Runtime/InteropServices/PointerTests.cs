@@ -138,10 +138,10 @@ namespace DotNext.Runtime.InteropServices
             Equal(12UL, ptr.Value);
             False(ptr.CompareAndSetValue(10, 20));
             Equal(12UL, ptr.Value);
-            Func<ulong, ulong, ulong> sum = static (x, y) => x + y;
-            Equal(32UL, ptr.AccumulateAndGetValue(20L, sum));
+            static ulong Sum(ulong x, ulong y) => x + y;
+            Equal(32UL, ptr.AccumulateAndGetValue(20L, Sum));
             Equal(32UL, ptr.Value);
-            Equal(32UL, ptr.GetAndAccumulateValue(8L, sum));
+            Equal(32UL, ptr.GetAndAccumulateValue(8L, &Sum));
             Equal(40UL, ptr.Value);
         }
 
@@ -161,10 +161,10 @@ namespace DotNext.Runtime.InteropServices
             Equal(12U, ptr.Value);
             False(ptr.CompareAndSetValue(10, 20));
             Equal(12U, ptr.Value);
-            Func<uint, uint, uint> sum = static (x, y) => x + y;
-            Equal(32U, ptr.AccumulateAndGetValue(20, sum));
+            static uint Sum(uint x, uint y) => x + y;
+            Equal(32U, ptr.AccumulateAndGetValue(20, Sum));
             Equal(32U, ptr.Value);
-            Equal(32U, ptr.GetAndAccumulateValue(8, sum));
+            Equal(32U, ptr.GetAndAccumulateValue(8, &Sum));
             Equal(40U, ptr.Value);
         }
 #endif
@@ -187,10 +187,10 @@ namespace DotNext.Runtime.InteropServices
             Equal(12, ptr.Value);
             False(ptr.CompareAndSetValue(10, 20));
             Equal(12, ptr.Value);
-            Func<long, long, long> sum = static (x, y) => x + y;
-            Equal(32L, ptr.AccumulateAndGetValue(20L, sum));
+            static long Sum(long x, long y) => x + y;
+            Equal(32L, ptr.AccumulateAndGetValue(20L, Sum));
             Equal(32L, ptr.Value);
-            Equal(32L, ptr.GetAndAccumulateValue(8L, sum));
+            Equal(32L, ptr.GetAndAccumulateValue(8L, &Sum));
             Equal(40L, ptr.Value);
         }
 
@@ -210,10 +210,10 @@ namespace DotNext.Runtime.InteropServices
             Equal(12, ptr.Value);
             False(ptr.CompareAndSetValue(10, 20));
             Equal(12, ptr.Value);
-            Func<int, int, int> sum = static (x, y) => x + y;
-            Equal(32, ptr.AccumulateAndGetValue(20, sum));
+            static int Sum(int x, int y) => x + y;
+            Equal(32, ptr.AccumulateAndGetValue(20, Sum));
             Equal(32, ptr.Value);
-            Equal(32, ptr.GetAndAccumulateValue(8, sum));
+            Equal(32, ptr.GetAndAccumulateValue(8, &Sum));
             Equal(40, ptr.Value);
         }
 
@@ -233,10 +233,10 @@ namespace DotNext.Runtime.InteropServices
             Equal(new IntPtr(12), ptr.Value);
             False(ptr.CompareAndSetValue(new IntPtr(10), new IntPtr(20)));
             Equal(new IntPtr(12), ptr.Value);
-            Func<nint, nint, nint> sum = static (x, y) => x + y;
-            Equal(new IntPtr(32), ptr.AccumulateAndGetValue(new IntPtr(20), sum));
+            static nint Sum(nint x, nint y) => x + y;
+            Equal(new IntPtr(32), ptr.AccumulateAndGetValue(new IntPtr(20), Sum));
             Equal(new IntPtr(32), ptr.Value);
-            Equal(new IntPtr(32), ptr.GetAndAccumulateValue(new IntPtr(8), sum));
+            Equal(new IntPtr(32), ptr.GetAndAccumulateValue(new IntPtr(8), &Sum));
             Equal(new IntPtr(40), ptr.Value);
         }
 
