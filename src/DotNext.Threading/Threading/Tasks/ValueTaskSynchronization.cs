@@ -30,11 +30,19 @@ namespace DotNext.Threading.Tasks
                         exceptionInfo = ExceptionDispatchInfo.Capture(e);
                         break;
                     case ExceptionDispatchInfo info:
-                        exceptionInfo = new LinkedList<Exception>();
+                        exceptionInfo = CreateList(info.SourceException, e);
                         break;
                     case ICollection<Exception> exceptions:
                         exceptions.Add(e);
                         break;
+                }
+
+                static ICollection<Exception> CreateList(Exception first, Exception second)
+                {
+                    ICollection<Exception> result = new LinkedList<Exception>();
+                    result.Add(first);
+                    result.Add(second);
+                    return result;
                 }
             }
 
