@@ -31,7 +31,7 @@ namespace DotNext
         /// Allocates a new data slot.
         /// </summary>
         /// <returns>Allocated data slot.</returns>
-        public static UserDataSlot<TValue> Allocate() => new UserDataSlot<TValue>(UserDataSlot.NewId);
+        public static UserDataSlot<TValue> Allocate() => new (UserDataSlot.NewId);
 
         [return: NotNullIfNotNull("defaultValue")]
         internal TValue? GetUserData(IDictionary<long, object?> storage, TValue? defaultValue)

@@ -10,7 +10,7 @@ namespace DotNext.Text
     /// </summary>
     public static class EncodingExtensions
     {
-        private static readonly UTF8Encoding Utf8WithoutPreamble = new UTF8Encoding(false);
+        private static readonly UTF8Encoding Utf8WithoutPreamble = new (false);
 
         /// <summary>
         /// Returns <see cref="Encoding"/> that doesn't generate BOM.

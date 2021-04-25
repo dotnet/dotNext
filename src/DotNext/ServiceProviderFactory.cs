@@ -132,7 +132,7 @@ namespace DotNext
         }
 
         private static CompiledServiceProvider Create(this Func<Type, object?[], object?> resolver, object?[] services)
-            => new CompiledServiceProvider(resolver, services);
+            => new (resolver, services);
 
         /// <summary>
         /// Creates factory that can be used to construct the service provider.
@@ -159,7 +159,7 @@ namespace DotNext
         }
 
         private static DelegatingServiceProvider Create(this Func<Type, object?[], IServiceProvider, object?> resolver, object?[] services, IServiceProvider fallback)
-            => new DelegatingServiceProvider(resolver, services, fallback);
+            => new (resolver, services, fallback);
 
         /// <summary>
         /// Creates factory that can be used to construct delegating service provider.
@@ -319,7 +319,7 @@ namespace DotNext
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static KeyValuePair<Type, object?> Registration<T>(T service)
-            => new KeyValuePair<Type, object?>(typeof(T), service);
+            => new (typeof(T), service);
 
         /// <summary>
         /// Creates service provider containing the single service.

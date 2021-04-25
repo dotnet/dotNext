@@ -91,12 +91,12 @@ namespace DotNext.Threading.Tasks
         /// </summary>
         /// <param name="continueOnCapturedContext"><see langword="true"/> to attempt to marshal the continuation back to the original context captured; otherwise, <see langword="false"/>.</param>
         /// <returns>An object used to await this task.</returns>
-        public DynamicTaskAwaitable ConfigureAwait(bool continueOnCapturedContext) => new DynamicTaskAwaitable(task, continueOnCapturedContext);
+        public DynamicTaskAwaitable ConfigureAwait(bool continueOnCapturedContext) => new (task, continueOnCapturedContext);
 
         /// <summary>
         /// Gets an awaiter used to await this task.
         /// </summary>
         /// <returns>An awaiter instance.</returns>
-        public Awaiter GetAwaiter() => new Awaiter(task, continueOnCapturedContext);
+        public Awaiter GetAwaiter() => new (task, continueOnCapturedContext);
     }
 }
