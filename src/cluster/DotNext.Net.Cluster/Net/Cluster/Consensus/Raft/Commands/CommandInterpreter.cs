@@ -158,6 +158,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
             where TEntry : struct, IRaftLogEntry
             => TryGetCommandId(ref entry, out var id) ?
                 entry.TransformAsync<int, InterpretingTransformation>(new InterpretingTransformation(id, interpreters), token) :
+#if NETSTANDARD2_1
                 new (Task.FromException<int>(new ArgumentException(ExceptionMessages.MissingCommandId, nameof(entry))));
+#else
+                ValueTask.FromException<int>(new ArgumentException(ExceptionMessages.MissingCommandId, nameof(entry)));
+#endif
     }
 }

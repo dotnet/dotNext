@@ -33,25 +33,33 @@ namespace DotNext.Buffers
         /// <inheritdoc />
         ValueTask ISupplier<ReadOnlyMemory<T>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<T> input, CancellationToken token)
         {
-            Task result;
+            ValueTask result;
             if (token.IsCancellationRequested)
             {
-                result = Task.FromCanceled(token);
+#if NETSTANDARD2_1
+                result = new (Task.FromCanceled(token));
+#else
+                result = ValueTask.FromCanceled(token);
+#endif
             }
             else
             {
-                result = Task.CompletedTask;
+                result = new ();
                 try
                 {
                     Invoke(input.Span);
                 }
                 catch (Exception e)
                 {
-                    result = Task.FromException(e);
+#if NETSTANDARD2_1
+                    result = new (Task.FromException(e));
+#else
+                    result = ValueTask.FromException(e);
+#endif
                 }
             }
 
-            return new ValueTask(result);
+            return result;
         }
     }
 
@@ -126,25 +134,33 @@ namespace DotNext.Buffers
         /// <inheritdoc />
         ValueTask ISupplier<ReadOnlyMemory<T>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<T> input, CancellationToken token)
         {
-            Task result;
+            ValueTask result;
             if (token.IsCancellationRequested)
             {
-                result = Task.FromCanceled(token);
+#if NETSTANDARD2_1
+                result = new (Task.FromCanceled(token));
+#else
+                result = ValueTask.FromCanceled(token);
+#endif
             }
             else
             {
-                result = Task.CompletedTask;
+                result = new ();
                 try
                 {
                     action(input.Span, arg);
                 }
                 catch (Exception e)
                 {
-                    result = Task.FromException(e);
+#if NETSTANDARD2_1
+                    result = new (Task.FromException(e));
+#else
+                    result = ValueTask.FromException(e);
+#endif
                 }
             }
 
-            return new ValueTask(result);
+            return result;
         }
     }
 
@@ -176,25 +192,33 @@ namespace DotNext.Buffers
         /// <inheritdoc />
         ValueTask ISupplier<ReadOnlyMemory<T>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<T> input, CancellationToken token)
         {
-            Task result;
+            ValueTask result;
             if (token.IsCancellationRequested)
             {
-                result = Task.FromCanceled(token);
+#if NETSTANDARD2_1
+                result = new (Task.FromCanceled(token));
+#else
+                result = ValueTask.FromCanceled(token);
+#endif
             }
             else
             {
-                result = Task.CompletedTask;
+                result = new ();
                 try
                 {
                     output.Write(input.Span);
                 }
                 catch (Exception e)
                 {
-                    result = Task.FromException(e);
+#if NETSTANDARD2_1
+                    result = new (Task.FromException(e));
+#else
+                    result = ValueTask.FromException(e);
+#endif
                 }
             }
 
-            return new ValueTask(result);
+            return result;
         }
 
         /// <summary>

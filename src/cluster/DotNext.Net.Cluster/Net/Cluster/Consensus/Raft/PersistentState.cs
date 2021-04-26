@@ -176,14 +176,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private ValueTask<TResult> UnsafeReadAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, DataAccessSession session, long startIndex, long endIndex, CancellationToken token)
         {
             if (startIndex > state.LastIndex)
+#if NETSTANDARD2_1
                 return new (Task.FromException<TResult>(new IndexOutOfRangeException(ExceptionMessages.InvalidEntryIndex(startIndex))));
+#else
+                return ValueTask.FromException<TResult>(new IndexOutOfRangeException(ExceptionMessages.InvalidEntryIndex(startIndex)));
+#endif
 
             if (endIndex > state.LastIndex)
+#if NETSTANDARD2_1
                 return new (Task.FromException<TResult>(new IndexOutOfRangeException(ExceptionMessages.InvalidEntryIndex(endIndex))));
+#else
+                return ValueTask.FromException<TResult>(new IndexOutOfRangeException(ExceptionMessages.InvalidEntryIndex(endIndex)));
+#endif
 
             var length = endIndex - startIndex + 1L;
             if (length > int.MaxValue)
+#if NETSTANDARD2_1
                 return new (Task.FromException<TResult>(new InternalBufferOverflowException(ExceptionMessages.RangeTooBig)));
+#else
+                return ValueTask.FromException<TResult>(new InternalBufferOverflowException(ExceptionMessages.RangeTooBig));
+#endif
 
             if (HasPartitions)
                 return ReadEntriesAsync(reader, session, startIndex, endIndex, (int)length, token);
@@ -257,9 +269,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             ValueTask<TResult> result;
             if (startIndex < 0L)
+#if NETSTANDARD2_1
                 result = new (Task.FromException<TResult>(new ArgumentOutOfRangeException(nameof(startIndex))));
+#else
+                result = ValueTask.FromException<TResult>(new ArgumentOutOfRangeException(nameof(startIndex)));
+#endif
             else if (endIndex < 0L)
+#if NETSTANDARD2_1
                 result = new (Task.FromException<TResult>(new ArgumentOutOfRangeException(nameof(endIndex))));
+#else
+                result = ValueTask.FromException<TResult>(new ArgumentOutOfRangeException(nameof(endIndex)));
+#endif
             else if (startIndex > endIndex)
                 result = reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
             else if (bufferingConsumer is null || reader.OptimizationHint == LogEntryReadOptimizationHint.MetadataOnly)
@@ -350,7 +370,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             ValueTask<TResult> result;
             if (startIndex < 0L)
+#if NETSTANDARD2_1
                 result = new (Task.FromException<TResult>(new ArgumentOutOfRangeException(nameof(startIndex))));
+#else
+                result = ValueTask.FromException<TResult>(new ArgumentOutOfRangeException(nameof(startIndex)));
+#endif
             else if (startIndex > state.LastIndex)
                 result = reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
             else if (bufferingConsumer is null || reader.OptimizationHint == LogEntryReadOptimizationHint.MetadataOnly)
@@ -506,7 +530,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             ValueTask result;
             if (entry.IsSnapshot)
             {
+#if NETSTANDARD2_1
                 result = new (Task.FromException(new InvalidOperationException(ExceptionMessages.SnapshotDetected)));
+#else
+                result = ValueTask.FromException(new InvalidOperationException(ExceptionMessages.SnapshotDetected));
+#endif
             }
             else if (Validate(in writeLock))
             {
@@ -514,7 +542,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             else
             {
+#if NETSTANDARD2_1
                 result = new (Task.FromException(new ArgumentException(ExceptionMessages.InvalidLockToken, nameof(writeLock))));
+#else
+                result = ValueTask.FromException(new ArgumentException(ExceptionMessages.InvalidLockToken, nameof(writeLock)));
+#endif
             }
 
             return result;
@@ -598,7 +630,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             else if (entry.IsSnapshot)
             {
+#if NETSTANDARD2_1
                 result = new (Task.FromException<long>(new InvalidOperationException(ExceptionMessages.SnapshotDetected)));
+#else
+                result = ValueTask.FromException<long>(new InvalidOperationException(ExceptionMessages.SnapshotDetected));
+#endif
             }
             else if (Validate(in writeLock))
             {
@@ -606,7 +642,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             else
             {
+#if NETSTANDARD2_1
                 result = new (Task.FromException<long>(new ArgumentException(ExceptionMessages.InvalidLockToken, nameof(writeLock))));
+#else
+                result = ValueTask.FromException<long>(new ArgumentException(ExceptionMessages.InvalidLockToken, nameof(writeLock)));
+#endif
             }
 
             return result;
@@ -692,7 +732,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (IsDisposed)
                 result = new (GetDisposedTask<long>());
             else if (entry.IsSnapshot)
+#if NETSTANDARD2_1
                 result = new (Task.FromException<long>(new InvalidOperationException(ExceptionMessages.SnapshotDetected)));
+#else
+                result = ValueTask.FromException<long>(new InvalidOperationException(ExceptionMessages.SnapshotDetected));
+#endif
             else if (addToCache && bufferManager.IsCachingEnabled)
                 result = AppendCachedAsync(entry, token);
             else
@@ -891,7 +935,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             else if (count < 0L)
             {
+#if NETSTANDARD2_1
                 result = new (Task.FromException(new ArgumentOutOfRangeException(nameof(count))));
+#else
+                result = ValueTask.FromException(new ArgumentOutOfRangeException(nameof(count)));
+#endif
             }
             else if (count == 0L || !IsBackgroundCompaction)
             {

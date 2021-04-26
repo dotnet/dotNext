@@ -55,14 +55,22 @@ namespace DotNext.IO
         ValueTask IAsyncBinaryReader.SkipAsync(int length, CancellationToken token)
         {
             if (length < 0)
+#if NETSTANDARD2_1
                 return new ValueTask(Task.FromException(new ArgumentOutOfRangeException(nameof(length))));
+#else
+                return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(length)));
+#endif
 
             if (!stream.CanSeek)
                 return SkipSlowAsync(length, token);
 
             var current = stream.Position;
             if (current + length > stream.Length)
+#if NETSTANDARD2_1
                 return new ValueTask(Task.FromException(new EndOfStreamException()));
+#else
+                return ValueTask.FromException(new EndOfStreamException());
+#endif
 
             stream.Position = length + current;
             return new ValueTask();

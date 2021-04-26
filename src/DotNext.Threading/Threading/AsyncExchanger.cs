@@ -72,7 +72,11 @@ namespace DotNext.Threading
             }
             else if (termination is not null)
             {
+#if NETSTANDARD2_1
                 result = new ValueTask<T>(Task.FromException<T>(termination));
+#else
+                result = ValueTask.FromException<T>(termination);
+#endif
             }
             else if (point is null)
             {

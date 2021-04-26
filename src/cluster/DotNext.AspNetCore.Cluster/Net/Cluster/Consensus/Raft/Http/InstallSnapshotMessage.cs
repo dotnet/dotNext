@@ -44,18 +44,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
             {
-                Task result;
+                ValueTask result;
                 if (touched)
                 {
-                    result = Task.FromException(new InvalidOperationException(ExceptionMessages.ReadLogEntryTwice));
+#if NETCOREAPP3_1
+                    result = new (Task.FromException(new InvalidOperationException(ExceptionMessages.ReadLogEntryTwice)));
+#else
+                    result = ValueTask.FromException(new InvalidOperationException(ExceptionMessages.ReadLogEntryTwice));
+#endif
                 }
                 else
                 {
                     touched = true;
-                    result = reader.CopyToAsync(writer, token);
+                    result = new (reader.CopyToAsync(writer, token));
                 }
 
-                return new ValueTask(result);
+                return result;
             }
         }
 
