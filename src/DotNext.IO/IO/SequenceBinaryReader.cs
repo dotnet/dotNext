@@ -602,628 +602,844 @@ namespace DotNext.IO
         /// <inheritdoc/>
         ValueTask<T> IAsyncBinaryReader.ReadAsync<T>(CancellationToken token)
         {
-            Task<T> result;
+            ValueTask<T> result;
 
             if (token.IsCancellationRequested)
             {
-                result = Task.FromCanceled<T>(token);
+#if NETSTANDARD2_1
+                result = new (Task.FromCanceled<T>(token));
+#else
+                result = ValueTask.FromCanceled<T>(token);
+#endif
             }
             else
             {
                 try
                 {
-                    return new (Read<T>());
+                    result = new (Read<T>());
                 }
                 catch (Exception e)
                 {
-                    result = Task.FromException<T>(e);
+#if NETSTANDARD2_1
+                    result = new (Task.FromException<T>(e));
+#else
+                    result = ValueTask.FromException<T>(e);
+#endif
                 }
             }
 
-            return new (result);
+            return result;
         }
 
         /// <inheritdoc/>
         ValueTask IAsyncBinaryReader.ReadAsync(Memory<byte> output, CancellationToken token)
         {
-            Task result;
+            ValueTask result;
 
             if (token.IsCancellationRequested)
             {
-                result = Task.FromCanceled(token);
+#if NETSTANDARD2_1
+                result = new (Task.FromCanceled(token));
+#else
+                result = ValueTask.FromCanceled(token);
+#endif
             }
             else
             {
-                result = Task.CompletedTask;
+                result = new ValueTask();
                 try
                 {
                     Read(output);
                 }
                 catch (Exception e)
                 {
-                    result = Task.FromException(e);
+#if NETSTANDARD2_1
+                    result = new (Task.FromException(e));
+#else
+                    result = ValueTask.FromException(e);
+#endif
                 }
             }
 
-            return new (result);
+            return result;
         }
 
         /// <inheritdoc/>
         ValueTask IAsyncBinaryReader.SkipAsync(int length, CancellationToken token)
         {
-            Task result;
+            ValueTask result;
 
             if (token.IsCancellationRequested)
             {
-                result = Task.FromCanceled(token);
+#if NETSTANDARD2_1
+                result = new (Task.FromCanceled(token));
+#else
+                result = ValueTask.FromCanceled(token);
+#endif
             }
             else
             {
-                result = Task.CompletedTask;
+                result = new ValueTask();
                 try
                 {
                     Skip(length);
                 }
                 catch (Exception e)
                 {
-                    result = Task.FromException(e);
+#if NETSTANDARD2_1
+                    result = new (Task.FromException(e));
+#else
+                    result = ValueTask.FromException(e);
+#endif
                 }
             }
 
-            return new (result);
+            return result;
         }
 
         /// <inheritdoc/>
         ValueTask<MemoryOwner<byte>> IAsyncBinaryReader.ReadAsync(LengthFormat lengthFormat, MemoryAllocator<byte>? allocator, CancellationToken token)
         {
-            Task<MemoryOwner<byte>> result;
+            ValueTask<MemoryOwner<byte>> result;
 
             if (token.IsCancellationRequested)
             {
-                result = Task.FromCanceled<MemoryOwner<byte>>(token);
+#if NETSTANDARD2_1
+                result = new (Task.FromCanceled<MemoryOwner<byte>>(token));
+#else
+                result = ValueTask.FromCanceled<MemoryOwner<byte>>(token);
+#endif
             }
             else
             {
                 try
                 {
-                    return new (Read(lengthFormat, allocator));
+                    result = new (Read(lengthFormat, allocator));
                 }
                 catch (Exception e)
                 {
-                    result = Task.FromException<MemoryOwner<byte>>(e);
+#if NETSTANDARD2_1
+                    result = new (Task.FromException<MemoryOwner<byte>>(e));
+#else
+                    result = ValueTask.FromException<MemoryOwner<byte>>(e);
+#endif
                 }
             }
 
-            return new (result);
+            return result;
         }
 
         /// <inheritdoc/>
         ValueTask<long> IAsyncBinaryReader.ReadInt64Async(bool littleEndian, CancellationToken token)
         {
-            Task<long> result;
+            ValueTask<long> result;
             if (token.IsCancellationRequested)
             {
-                result = Task.FromCanceled<long>(token);
+#if NETSTANDARD2_1
+                result = new (Task.FromCanceled<long>(token));
+#else
+                result = ValueTask.FromCanceled<long>(token);
+#endif
             }
             else
             {
                 try
                 {
-                    return new (ReadInt64(littleEndian));
+                    result = new (ReadInt64(littleEndian));
                 }
                 catch (Exception e)
                 {
-                    result = Task.FromException<long>(e);
+#if NETSTANDARD2_1
+                    result = new (Task.FromException<long>(e));
+#else
+                    result = ValueTask.FromException<long>(e);
+#endif
                 }
             }
 
-            return new (result);
+            return result;
         }
 
         /// <inheritdoc/>
         ValueTask<long> IAsyncBinaryReader.ReadInt64Async(LengthFormat lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
         {
-            Task<long> result;
+            ValueTask<long> result;
             if (token.IsCancellationRequested)
             {
-                result = Task.FromCanceled<long>(token);
+#if NETSTANDARD2_1
+                result = new (Task.FromCanceled<long>(token));
+#else
+                result = ValueTask.FromCanceled<long>(token);
+#endif
             }
             else
             {
                 try
                 {
-                    return new (ReadInt64(lengthFormat, in context, style, provider));
+                    result = new (ReadInt64(lengthFormat, in context, style, provider));
                 }
                 catch (Exception e)
                 {
-                    result = Task.FromException<long>(e);
+#if NETSTANDARD2_1
+                    result = new (Task.FromException<long>(e));
+#else
+                    result = ValueTask.FromException<long>(e);
+#endif
                 }
             }
 
-            return new (result);
+            return result;
         }
 
         /// <inheritdoc/>
         ValueTask<int> IAsyncBinaryReader.ReadInt32Async(bool littleEndian, CancellationToken token)
         {
-            Task<int> result;
+            ValueTask<int> result;
             if (token.IsCancellationRequested)
             {
-                result = Task.FromCanceled<int>(token);
+#if NETSTANDARD2_1
+                result = new (Task.FromCanceled<int>(token));
+#else
+                result = ValueTask.FromCanceled<int>(token);
+#endif
             }
             else
             {
                 try
                 {
-                    return new (ReadInt32(littleEndian));
+                    result = new (ReadInt32(littleEndian));
                 }
                 catch (Exception e)
                 {
-                    result = Task.FromException<int>(e);
+#if NETSTANDARD2_1
+                    result = new (Task.FromException<int>(e));
+#else
+                    result = ValueTask.FromException<int>(e);
+#endif
                 }
             }
 
-            return new (result);
+            return result;
         }
 
         /// <inheritdoc/>
         ValueTask<int> IAsyncBinaryReader.ReadInt32Async(LengthFormat lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
         {
-            Task<int> result;
+            ValueTask<int> result;
             if (token.IsCancellationRequested)
             {
-                result = Task.FromCanceled<int>(token);
+#if NETSTANDARD2_1
+                result = new (Task.FromCanceled<int>(token));
+#else
+                result = ValueTask.FromCanceled<int>(token);
+#endif
             }
             else
             {
                 try
                 {
-                    return new (ReadInt32(lengthFormat, in context, style, provider));
+                    result = new (ReadInt32(lengthFormat, in context, style, provider));
                 }
                 catch (Exception e)
                 {
-                    result = Task.FromException<int>(e);
+#if NETSTANDARD2_1
+                    result = new (Task.FromException<int>(e));
+#else
+                    result = ValueTask.FromException<int>(e);
+#endif
                 }
             }
 
-            return new (result);
+            return result;
         }
 
         /// <inheritdoc/>
         ValueTask<short> IAsyncBinaryReader.ReadInt16Async(bool littleEndian, CancellationToken token)
         {
-            Task<short> result;
+            ValueTask<short> result;
             if (token.IsCancellationRequested)
             {
-                result = Task.FromCanceled<short>(token);
+#if NETSTANDARD2_1
+                result = new (Task.FromCanceled<short>(token));
+#else
+                result = ValueTask.FromCanceled<short>(token);
+#endif
             }
             else
             {
                 try
                 {
-                    return new (ReadInt16(littleEndian));
+                    result = new (ReadInt16(littleEndian));
                 }
                 catch (Exception e)
                 {
-                    result = Task.FromException<short>(e);
+#if NETSTANDARD2_1
+                    result = new (Task.FromException<short>(e));
+#else
+                    result = ValueTask.FromException<short>(e);
+#endif
                 }
             }
 
-            return new (result);
+            return result;
         }
 
         /// <inheritdoc/>
         ValueTask<short> IAsyncBinaryReader.ReadInt16Async(LengthFormat lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
         {
-            Task<short> result;
+            ValueTask<short> result;
             if (token.IsCancellationRequested)
             {
-                result = Task.FromCanceled<short>(token);
+#if NETSTANDARD2_1
+                result = new (Task.FromCanceled<short>(token));
+#else
+                result = ValueTask.FromCanceled<short>(token);
+#endif
             }
             else
             {
                 try
                 {
-                    return new (ReadInt16(lengthFormat, in context, style, provider));
+                    result = new (ReadInt16(lengthFormat, in context, style, provider));
                 }
                 catch (Exception e)
                 {
-                    result = Task.FromException<short>(e);
+#if NETSTANDARD2_1
+                    result = new (Task.FromException<short>(e));
+#else
+                    result = ValueTask.FromException<short>(e);
+#endif
                 }
             }
 
-            return new (result);
+            return result;
         }
 
         /// <inheritdoc/>
         ValueTask<byte> IAsyncBinaryReader.ReadByteAsync(LengthFormat lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
         {
-            Task<byte> result;
+            ValueTask<byte> result;
             if (token.IsCancellationRequested)
             {
-                result = Task.FromCanceled<byte>(token);
+#if NETSTANDARD2_1
+                result = new (Task.FromCanceled<byte>(token));
+#else
+                result = ValueTask.FromCanceled<byte>(token);
+#endif
             }
             else
             {
                 try
                 {
-                    return new (ReadByte(lengthFormat, in context, style, provider));
+                    result = new (ReadByte(lengthFormat, in context, style, provider));
                 }
                 catch (Exception e)
                 {
-                    result = Task.FromException<byte>(e);
+#if NETSTANDARD2_1
+                    result = new (Task.FromException<byte>(e));
+#else
+                    result = ValueTask.FromException<byte>(e);
+#endif
                 }
             }
 
-            return new (result);
+            return result;
         }
 
         /// <inheritdoc/>
         ValueTask<float> IAsyncBinaryReader.ReadSingleAsync(LengthFormat lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
         {
-            Task<float> result;
+            ValueTask<float> result;
             if (token.IsCancellationRequested)
             {
-                result = Task.FromCanceled<float>(token);
+#if NETSTANDARD2_1
+                result = new (Task.FromCanceled<float>(token));
+#else
+                result = ValueTask.FromCanceled<float>(token);
+#endif
             }
             else
             {
                 try
                 {
-                    return new (ReadSingle(lengthFormat, in context, style, provider));
+                    result = new (ReadSingle(lengthFormat, in context, style, provider));
                 }
                 catch (Exception e)
                 {
-                    result = Task.FromException<float>(e);
+#if NETSTANDARD2_1
+                    result = new (Task.FromException<float>(e));
+#else
+                    result = ValueTask.FromException<float>(e);
+#endif
                 }
             }
 
-            return new (result);
+            return result;
         }
 
         /// <inheritdoc/>
         ValueTask<double> IAsyncBinaryReader.ReadDoubleAsync(LengthFormat lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
         {
-            Task<double> result;
+            ValueTask<double> result;
             if (token.IsCancellationRequested)
             {
-                result = Task.FromCanceled<double>(token);
+#if NETSTANDARD2_1
+                result = new (Task.FromCanceled<double>(token));
+#else
+                result = ValueTask.FromCanceled<double>(token);
+#endif
             }
             else
             {
                 try
                 {
-                    return new (ReadDouble(lengthFormat, in context, style, provider));
+                    result = new (ReadDouble(lengthFormat, in context, style, provider));
                 }
                 catch (Exception e)
                 {
-                    result = Task.FromException<double>(e);
+#if NETSTANDARD2_1
+                    result = new (Task.FromException<double>(e));
+#else
+                    result = ValueTask.FromException<double>(e);
+#endif
                 }
             }
 
-            return new (result);
+            return result;
         }
 
         /// <inheritdoc/>
         ValueTask<decimal> IAsyncBinaryReader.ReadDecimalAsync(LengthFormat lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
         {
-            Task<decimal> result;
+            ValueTask<decimal> result;
             if (token.IsCancellationRequested)
             {
-                result = Task.FromCanceled<decimal>(token);
+#if NETSTANDARD2_1
+                result = new (Task.FromCanceled<decimal>(token));
+#else
+                result = ValueTask.FromCanceled<decimal>(token);
+#endif
             }
             else
             {
                 try
                 {
-                    return new (ReadDecimal(lengthFormat, in context, style, provider));
+                    result = new (ReadDecimal(lengthFormat, in context, style, provider));
                 }
                 catch (Exception e)
                 {
-                    result = Task.FromException<decimal>(e);
+#if NETSTANDARD2_1
+                    result = new (Task.FromException<decimal>(e));
+#else
+                    result = ValueTask.FromException<decimal>(e);
+#endif
                 }
             }
 
-            return new (result);
+            return result;
         }
 
         /// <inheritdoc/>
         ValueTask<BigInteger> IAsyncBinaryReader.ReadBigIntegerAsync(LengthFormat lengthFormat, DecodingContext context, NumberStyles style, IFormatProvider? provider, CancellationToken token)
         {
-            Task<BigInteger> result;
+            ValueTask<BigInteger> result;
             if (token.IsCancellationRequested)
             {
-                result = Task.FromCanceled<BigInteger>(token);
+#if NETSTANDARD2_1
+                result = new (Task.FromCanceled<BigInteger>(token));
+#else
+                result = ValueTask.FromCanceled<BigInteger>(token);
+#endif
             }
             else
             {
                 try
                 {
-                    return new (ReadBigInteger(lengthFormat, in context, style, provider));
+                    result = new (ReadBigInteger(lengthFormat, in context, style, provider));
                 }
                 catch (Exception e)
                 {
-                    result = Task.FromException<BigInteger>(e);
+#if NETSTANDARD2_1
+                    result = new (Task.FromException<BigInteger>(e));
+#else
+                    result = ValueTask.FromException<BigInteger>(e);
+#endif
                 }
             }
 
-            return new (result);
+            return result;
         }
 
         /// <inheritdoc/>
         ValueTask<DateTime> IAsyncBinaryReader.ReadDateTimeAsync(LengthFormat lengthFormat, DecodingContext context, DateTimeStyles style, IFormatProvider? provider, CancellationToken token)
         {
-            Task<DateTime> result;
+            ValueTask<DateTime> result;
             if (token.IsCancellationRequested)
             {
-                result = Task.FromCanceled<DateTime>(token);
+#if NETSTANDARD2_1
+                result = new (Task.FromCanceled<DateTime>(token));
+#else
+                result = ValueTask.FromCanceled<DateTime>(token);
+#endif
             }
             else
             {
                 try
                 {
-                    return new (ReadDateTime(lengthFormat, in context, style, provider));
+                    result = new (ReadDateTime(lengthFormat, in context, style, provider));
                 }
                 catch (Exception e)
                 {
-                    result = Task.FromException<DateTime>(e);
+#if NETSTANDARD2_1
+                    result = new (Task.FromException<DateTime>(e));
+#else
+                    result = ValueTask.FromException<DateTime>(e);
+#endif
                 }
             }
 
-            return new (result);
+            return result;
         }
 
         /// <inheritdoc/>
         ValueTask<DateTime> IAsyncBinaryReader.ReadDateTimeAsync(LengthFormat lengthFormat, DecodingContext context, string[] formats, DateTimeStyles style, IFormatProvider? provider, CancellationToken token)
         {
-            Task<DateTime> result;
+            ValueTask<DateTime> result;
             if (token.IsCancellationRequested)
             {
-                result = Task.FromCanceled<DateTime>(token);
+#if NETSTANDARD2_1
+                result = new (Task.FromCanceled<DateTime>(token));
+#else
+                result = ValueTask.FromCanceled<DateTime>(token);
+#endif
             }
             else
             {
                 try
                 {
-                    return new (ReadDateTime(lengthFormat, in context, formats, style, provider));
+                    result = new (ReadDateTime(lengthFormat, in context, formats, style, provider));
                 }
                 catch (Exception e)
                 {
-                    result = Task.FromException<DateTime>(e);
+#if NETSTANDARD2_1
+                    result = new (Task.FromException<DateTime>(e));
+#else
+                    result = ValueTask.FromException<DateTime>(e);
+#endif
                 }
             }
 
-            return new (result);
+            return result;
         }
 
         /// <inheritdoc/>
         ValueTask<DateTimeOffset> IAsyncBinaryReader.ReadDateTimeOffsetAsync(LengthFormat lengthFormat, DecodingContext context, DateTimeStyles style, IFormatProvider? provider, CancellationToken token)
         {
-            Task<DateTimeOffset> result;
+            ValueTask<DateTimeOffset> result;
             if (token.IsCancellationRequested)
             {
-                result = Task.FromCanceled<DateTimeOffset>(token);
+#if NETSTANDARD2_1
+                result = new (Task.FromCanceled<DateTimeOffset>(token));
+#else
+                result = ValueTask.FromCanceled<DateTimeOffset>(token);
+#endif
             }
             else
             {
                 try
                 {
-                    return new (ReadDateTimeOffset(lengthFormat, in context, style, provider));
+                    result = new (ReadDateTimeOffset(lengthFormat, in context, style, provider));
                 }
                 catch (Exception e)
                 {
-                    result = Task.FromException<DateTimeOffset>(e);
+#if NETSTANDARD2_1
+                    result = new (Task.FromException<DateTimeOffset>(e));
+#else
+                    result = ValueTask.FromException<DateTimeOffset>(e);
+#endif
                 }
             }
 
-            return new (result);
+            return result;
         }
 
         /// <inheritdoc/>
         ValueTask<DateTimeOffset> IAsyncBinaryReader.ReadDateTimeOffsetAsync(LengthFormat lengthFormat, DecodingContext context, string[] formats, DateTimeStyles style, IFormatProvider? provider, CancellationToken token)
         {
-            Task<DateTimeOffset> result;
+            ValueTask<DateTimeOffset> result;
             if (token.IsCancellationRequested)
             {
-                result = Task.FromCanceled<DateTimeOffset>(token);
+#if NETSTANDARD2_1
+                result = new (Task.FromCanceled<DateTimeOffset>(token));
+#else
+                result = ValueTask.FromCanceled<DateTimeOffset>(token);
+#endif
             }
             else
             {
                 try
                 {
-                    return new (ReadDateTimeOffset(lengthFormat, in context, formats, style, provider));
+                    result = new (ReadDateTimeOffset(lengthFormat, in context, formats, style, provider));
                 }
                 catch (Exception e)
                 {
-                    result = Task.FromException<DateTimeOffset>(e);
+#if NETSTANDARD2_1
+                    result = new (Task.FromException<DateTimeOffset>(e));
+#else
+                    result = ValueTask.FromException<DateTimeOffset>(e);
+#endif
                 }
             }
 
-            return new (result);
+            return result;
         }
 
         /// <inheritdoc/>
         ValueTask<Guid> IAsyncBinaryReader.ReadGuidAsync(LengthFormat lengthFormat, DecodingContext context, CancellationToken token)
         {
-            Task<Guid> result;
+            ValueTask<Guid> result;
             if (token.IsCancellationRequested)
             {
-                result = Task.FromCanceled<Guid>(token);
+#if NETSTANDARD2_1
+                result = new (Task.FromCanceled<Guid>(token));
+#else
+                result = ValueTask.FromCanceled<Guid>(token);
+#endif
             }
             else
             {
                 try
                 {
-                    return new (ReadGuid(lengthFormat, in context));
+                    result = new (ReadGuid(lengthFormat, in context));
                 }
                 catch (Exception e)
                 {
-                    result = Task.FromException<Guid>(e);
+#if NETSTANDARD2_1
+                    result = new (Task.FromException<Guid>(e));
+#else
+                    result = ValueTask.FromException<Guid>(e);
+#endif
                 }
             }
 
-            return new (result);
+            return result;
         }
 
         /// <inheritdoc/>
         ValueTask<Guid> IAsyncBinaryReader.ReadGuidAsync(LengthFormat lengthFormat, DecodingContext context, string format, CancellationToken token)
         {
-            Task<Guid> result;
+            ValueTask<Guid> result;
             if (token.IsCancellationRequested)
             {
-                result = Task.FromCanceled<Guid>(token);
+#if NETSTANDARD2_1
+                result = new (Task.FromCanceled<Guid>(token));
+#else
+                result = ValueTask.FromCanceled<Guid>(token);
+#endif
             }
             else
             {
                 try
                 {
-                    return new (ReadGuid(lengthFormat, in context, format));
+                    result = new (ReadGuid(lengthFormat, in context, format));
                 }
                 catch (Exception e)
                 {
-                    result = Task.FromException<Guid>(e);
+#if NETSTANDARD2_1
+                    result = new (Task.FromException<Guid>(e));
+#else
+                    result = ValueTask.FromException<Guid>(e);
+#endif
                 }
             }
 
-            return new (result);
+            return result;
         }
 
         /// <inheritdoc/>
         ValueTask<TimeSpan> IAsyncBinaryReader.ReadTimeSpanAsync(LengthFormat lengthFormat, DecodingContext context, IFormatProvider? provider, CancellationToken token)
         {
-            Task<TimeSpan> result;
+            ValueTask<TimeSpan> result;
             if (token.IsCancellationRequested)
             {
-                result = Task.FromCanceled<TimeSpan>(token);
+#if NETSTANDARD2_1
+                result = new (Task.FromCanceled<TimeSpan>(token));
+#else
+                result = ValueTask.FromCanceled<TimeSpan>(token);
+#endif
             }
             else
             {
                 try
                 {
-                    return new (ReadTimeSpan(lengthFormat, context, provider));
+                    result = new (ReadTimeSpan(lengthFormat, context, provider));
                 }
                 catch (Exception e)
                 {
-                    result = Task.FromException<TimeSpan>(e);
+#if NETSTANDARD2_1
+                    result = new (Task.FromException<TimeSpan>(e));
+#else
+                    result = ValueTask.FromException<TimeSpan>(e);
+#endif
                 }
             }
 
-            return new (result);
+            return result;
         }
 
         /// <inheritdoc/>
         ValueTask<TimeSpan> IAsyncBinaryReader.ReadTimeSpanAsync(LengthFormat lengthFormat, DecodingContext context, string[] formats, TimeSpanStyles style, IFormatProvider? provider, CancellationToken token)
         {
-            Task<TimeSpan> result;
+            ValueTask<TimeSpan> result;
             if (token.IsCancellationRequested)
             {
-                result = Task.FromCanceled<TimeSpan>(token);
+#if NETSTANDARD2_1
+                result = new (Task.FromCanceled<TimeSpan>(token));
+#else
+                result = ValueTask.FromCanceled<TimeSpan>(token);
+#endif
             }
             else
             {
                 try
                 {
-                    return new (ReadTimeSpan(lengthFormat, context, formats, style, provider));
+                    result = new (ReadTimeSpan(lengthFormat, context, formats, style, provider));
                 }
                 catch (Exception e)
                 {
-                    result = Task.FromException<TimeSpan>(e);
+#if NETSTANDARD2_1
+                    result = new (Task.FromException<TimeSpan>(e));
+#else
+                    result = ValueTask.FromException<TimeSpan>(e);
+#endif
                 }
             }
 
-            return new (result);
+            return result;
         }
 
         /// <inheritdoc/>
         ValueTask<string> IAsyncBinaryReader.ReadStringAsync(int length, DecodingContext context, CancellationToken token)
         {
-            Task<string> result;
+            ValueTask<string> result;
             if (token.IsCancellationRequested)
             {
-                result = Task.FromCanceled<string>(token);
+#if NETSTANDARD2_1
+                result = new (Task.FromCanceled<string>(token));
+#else
+                result = ValueTask.FromCanceled<string>(token);
+#endif
             }
             else
             {
                 try
                 {
-                    return new (ReadString(length, context));
+                    result = new (ReadString(length, context));
                 }
                 catch (Exception e)
                 {
-                    result = Task.FromException<string>(e);
+#if NETSTANDARD2_1
+                    result = new (Task.FromException<string>(e));
+#else
+                    result = ValueTask.FromException<string>(e);
+#endif
                 }
             }
 
-            return new (result);
+            return result;
         }
 
         /// <inheritdoc/>
         ValueTask<string> IAsyncBinaryReader.ReadStringAsync(LengthFormat lengthFormat, DecodingContext context, CancellationToken token)
         {
-            Task<string> result;
+            ValueTask<string> result;
             if (token.IsCancellationRequested)
             {
-                result = Task.FromCanceled<string>(token);
+#if NETSTANDARD2_1
+                result = new (Task.FromCanceled<string>(token));
+#else
+                result = ValueTask.FromCanceled<string>(token);
+#endif
             }
             else
             {
                 try
                 {
-                    return new (ReadString(lengthFormat, context));
+                    result = new (ReadString(lengthFormat, context));
                 }
                 catch (Exception e)
                 {
-                    result = Task.FromException<string>(e);
+#if NETSTANDARD2_1
+                    result = new (Task.FromException<string>(e));
+#else
+                    result = ValueTask.FromException<string>(e);
+#endif
                 }
             }
 
-            return new (result);
+            return result;
         }
 
         /// <inheritdoc/>
         ValueTask<BigInteger> IAsyncBinaryReader.ReadBigIntegerAsync(int length, bool littleEndian, CancellationToken token)
         {
-            Task<BigInteger> result;
+            ValueTask<BigInteger> result;
             if (token.IsCancellationRequested)
             {
-                result = Task.FromCanceled<BigInteger>(token);
+#if NETSTANDARD2_1
+                result = new (Task.FromCanceled<BigInteger>(token));
+#else
+                result = ValueTask.FromCanceled<BigInteger>(token);
+#endif
             }
             else
             {
                 try
                 {
-                    return new (ReadBigInteger(length, littleEndian));
+                    result = new (ReadBigInteger(length, littleEndian));
                 }
                 catch (Exception e)
                 {
-                    result = Task.FromException<BigInteger>(e);
+#if NETSTANDARD2_1
+                    result = new (Task.FromException<BigInteger>(e));
+#else
+                    result = ValueTask.FromException<BigInteger>(e);
+#endif
                 }
             }
 
-            return new (result);
+            return result;
         }
 
         /// <inheritdoc/>
         ValueTask<BigInteger> IAsyncBinaryReader.ReadBigIntegerAsync(LengthFormat lengthFormat, bool littleEndian, CancellationToken token)
         {
-            Task<BigInteger> result;
+            ValueTask<BigInteger> result;
             if (token.IsCancellationRequested)
             {
-                result = Task.FromCanceled<BigInteger>(token);
+#if NETSTANDARD2_1
+                result = new (Task.FromCanceled<BigInteger>(token));
+#else
+                result = ValueTask.FromCanceled<BigInteger>(token);
+#endif
             }
             else
             {
                 try
                 {
-                    return new (ReadBigInteger(lengthFormat, littleEndian));
+                    result = new (ReadBigInteger(lengthFormat, littleEndian));
                 }
                 catch (Exception e)
                 {
-                    result = Task.FromException<BigInteger>(e);
+#if NETSTANDARD2_1
+                    result = new (Task.FromException<BigInteger>(e));
+#else
+                    result = ValueTask.FromException<BigInteger>(e);
+#endif
                 }
             }
 
-            return new (result);
+            return result;
         }
 
         /// <inheritdoc/>
