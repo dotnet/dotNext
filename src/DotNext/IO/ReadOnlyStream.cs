@@ -35,24 +35,32 @@ namespace DotNext.IO
 
         public sealed override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken token)
         {
-            Task<int> result;
+            ValueTask<int> result;
             if (token.IsCancellationRequested)
             {
-                result = Task.FromCanceled<int>(token);
+#if NETSTANDARD2_1
+                result = new (Task.FromCanceled<int>(token));
+#else
+                result = ValueTask.FromCanceled<int>(token);
+#endif
             }
             else
             {
                 try
                 {
-                    return new ValueTask<int>(Read(buffer.Span));
+                    result = new (Read(buffer.Span));
                 }
                 catch (Exception e)
                 {
-                    result = Task.FromException<int>(e);
+#if NETSTANDARD2_1
+                    result = new (Task.FromException<int>(e));
+#else
+                    result = ValueTask.FromException<int>(e);
+#endif
                 }
             }
 
-            return new ValueTask<int>(result);
+            return result;
         }
 
         public sealed override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken token)

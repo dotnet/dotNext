@@ -37,24 +37,32 @@ namespace DotNext.IO
 
         public sealed override ValueTask<int> ReadAsync(Memory<char> buffer, CancellationToken token = default)
         {
-            Task<int> result;
+            ValueTask<int> result;
             if (token.IsCancellationRequested)
             {
-                result = Task.FromCanceled<int>(token);
+#if NETSTANDARD2_1
+                result = new (Task.FromCanceled<int>(token));
+#else
+                result = ValueTask.FromCanceled<int>(token);
+#endif
             }
             else
             {
                 try
                 {
-                    return new ValueTask<int>(Read(buffer.Span));
+                    result = new (Read(buffer.Span));
                 }
                 catch (Exception e)
                 {
-                    result = Task.FromException<int>(e);
+#if NETSTANDARD2_1
+                    result = new (Task.FromException<int>(e));
+#else
+                    result = ValueTask.FromException<int>(e);
+#endif
                 }
             }
 
-            return new ValueTask<int>(result);
+            return result;
         }
 
         public sealed override Task<int> ReadAsync(char[] buffer, int index, int count)
@@ -62,24 +70,32 @@ namespace DotNext.IO
 
         public sealed override ValueTask<int> ReadBlockAsync(Memory<char> buffer, CancellationToken token = default)
         {
-            Task<int> result;
+            ValueTask<int> result;
             if (token.IsCancellationRequested)
             {
-                result = Task.FromCanceled<int>(token);
+#if NETSTANDARD2_1
+                result = new (Task.FromCanceled<int>(token));
+#else
+                result = ValueTask.FromCanceled<int>(token);
+#endif
             }
             else
             {
                 try
                 {
-                    return new ValueTask<int>(ReadBlock(buffer.Span));
+                    result = new (ReadBlock(buffer.Span));
                 }
                 catch (Exception e)
                 {
-                    result = Task.FromException<int>(e);
+#if NETSTANDARD2_1
+                    result = new (Task.FromException<int>(e));
+#else
+                    result = ValueTask.FromException<int>(e);
+#endif
                 }
             }
 
-            return new ValueTask<int>(result);
+            return result;
         }
 
         public sealed override Task<int> ReadBlockAsync(char[] buffer, int index, int count)
