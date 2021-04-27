@@ -15,13 +15,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Represents buffered Raft log entry.
         /// </summary>
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct CachedRaftLogEntry : IRaftLogEntry
+        private readonly struct CachedLogEntry : IRaftLogEntry
         {
             private readonly long term;
             private readonly int? commandId;
             private readonly DateTimeOffset timestamp;
 
-            internal CachedRaftLogEntry(IMemoryOwner<byte> content, long term, DateTimeOffset timestamp, int? commandId)
+            internal CachedLogEntry(IMemoryOwner<byte> content, long term, DateTimeOffset timestamp, int? commandId)
             {
                 Content = content;
                 this.term = term;

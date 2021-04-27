@@ -194,7 +194,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return ReadAsync(GetReadSessionStream(in session), session.Buffer, relativeIndex, index, token);
             }
 
-            private void UpdateCache(in CachedRaftLogEntry entry, nint index)
+            private void UpdateCache(in CachedLogEntry entry, nint index)
             {
                 Debug.Assert(lookupCache.IsEmpty is false);
                 Debug.Assert(index >= 0 && index < entryCache.Length);
@@ -254,8 +254,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     Debug.Assert(!entryCache.IsEmpty);
                     lookupCache[index] = metadata;
 
-                    if (typeof(TEntry) == typeof(CachedRaftLogEntry))
-                        UpdateCache(in Unsafe.As<TEntry, CachedRaftLogEntry>(ref entry), index);
+                    if (typeof(TEntry) == typeof(CachedLogEntry))
+                        UpdateCache(in Unsafe.As<TEntry, CachedLogEntry>(ref entry), index);
                 }
             }
 
