@@ -204,7 +204,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return result;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
         {
             ValueTask result;
@@ -223,6 +223,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             return result;
+        }
+
+        /// <inheritdoc/>
+        bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
+        {
+            memory = default;
+            return false;
         }
 
         /// <summary>

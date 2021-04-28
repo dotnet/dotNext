@@ -86,6 +86,19 @@ namespace DotNext.IO
             where TTransformation : IDataTransferObject.ITransformation<TResult>
             => IDataTransferObject.TransformAsync<TResult, TTransformation>(content, transformation, IsReusable, token);
 
+        /// <inheritdoc/>
+        bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
+        {
+            if (content is MemoryStream ms && ms.TryGetBuffer(out var buffer))
+            {
+                memory = buffer;
+                return true;
+            }
+
+            memory = default;
+            return false;
+        }
+
         /// <summary>
         /// Releases resources associated with this object.
         /// </summary>

@@ -219,5 +219,16 @@ namespace DotNext.IO
 
             return GetUnknownObjectDataAsync<TResult, TTransformation>(transformation, token);
         }
+
+        /// <summary>
+        /// Attempts to retrieve contents of this object as a memory block synchronously.
+        /// </summary>
+        /// <param name="memory">The memory block containing contents of this object.</param>
+        /// <returns><see langword="true"/> if this object is representable as a memory block; otherwise, <see langword="false"/>.</returns>
+        bool TryGetMemory(out ReadOnlyMemory<byte> memory)
+        {
+            memory = default;
+            return false;
+        }
     }
 }

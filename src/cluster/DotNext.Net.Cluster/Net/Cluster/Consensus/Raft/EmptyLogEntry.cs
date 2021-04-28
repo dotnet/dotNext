@@ -41,6 +41,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <inheritdoc/>
         bool IDataTransferObject.IsReusable => true;
 
+        /// <inheritdoc/>
+        bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
+        {
+            memory = ReadOnlyMemory<byte>.Empty;
+            return true;
+        }
+
         /// <summary>
         /// Gets or sets log entry term.
         /// </summary>

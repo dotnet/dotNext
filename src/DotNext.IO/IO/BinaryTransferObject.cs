@@ -34,11 +34,19 @@ namespace DotNext.IO
         ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
             => writer.WriteAsync(content, token);
 
+        private ReadOnlyMemory<byte> ToMemory() => Span.AsReadOnlyBytes(in content).ToArray();
+
         /// <inheritdoc/>
         ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
         {
-            ReadOnlyMemory<byte> memory = Span.AsReadOnlyBytes(in content).ToArray();
-            return transformation.TransformAsync(new SequenceBinaryReader(memory), token);
+            return transformation.TransformAsync(new SequenceBinaryReader(ToMemory()), token);
+        }
+
+        /// <inheritdoc/>
+        bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
+        {
+            memory = ToMemory();
+            return true;
         }
     }
 
@@ -85,5 +93,18 @@ namespace DotNext.IO
         /// <inheritdoc/>
         ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
             => transformation.TransformAsync(new SequenceBinaryReader(content), token);
+
+        /// <inheritdoc/>
+        bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
+        {
+            if (content.IsSingleSegment)
+            {
+                memory = content.First;
+                return true;
+            }
+
+            memory = default;
+            return false;
+        }
     }
 }

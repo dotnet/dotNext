@@ -46,6 +46,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
                 => transformation.TransformAsync(IAsyncBinaryReader.Create(Content.Memory), token);
+
+            bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
+            {
+                memory = Content.Memory;
+                return true;
+            }
         }
     }
 }
