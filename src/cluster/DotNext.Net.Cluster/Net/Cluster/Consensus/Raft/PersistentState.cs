@@ -501,16 +501,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             state.Flush();
         }
 
-        private async ValueTask<long> UnsafeAppendAsync<TEntry>(TEntry entry, CancellationToken token)
+        private async ValueTask<long> UnsafeAppendAsync<TEntry>(TEntry entry, bool flush, CancellationToken token)
             where TEntry : notnull, IRaftLogEntry
         {
             var startIndex = state.LastIndex + 1L;
             Partition? partition = null;
             GetOrCreatePartition(startIndex, ref partition);
             await partition.WriteAsync(sessionManager.WriteSession, entry, startIndex).ConfigureAwait(false);
-            await partition.FlushAsync(token).ConfigureAwait(false);
             state.LastIndex = startIndex;
-            state.Flush();
+            if (flush)
+            {
+                await partition.FlushAsync(token).ConfigureAwait(false);
+                state.Flush();
+            }
+
             return startIndex;
         }
 
@@ -638,7 +642,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             else if (Validate(in writeLock))
             {
-                result = UnsafeAppendAsync(entry, token);
+                result = UnsafeAppendAsync(entry, true, token);
             }
             else
             {
@@ -659,7 +663,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             long startIndex;
             try
             {
-                startIndex = await UnsafeAppendAsync(entry, token).ConfigureAwait(false);
+                startIndex = await UnsafeAppendAsync(entry, true, token).ConfigureAwait(false);
             }
             finally
             {
@@ -685,7 +689,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             try
             {
                 // append it to the log
-                startIndex = await UnsafeAppendAsync(cachedEntry, token).ConfigureAwait(false);
+                startIndex = await UnsafeAppendAsync(cachedEntry, false, token).ConfigureAwait(false);
             }
             finally
             {
@@ -1192,8 +1196,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     lastTerm.VolatileWrite(entry.Term);
 
                     // Remove log entry from the cache according to eviction policy
-                    if (entry.IsBuffered && evictOnCommit)
-                        partition.RemoveEntryFromCache(startIndex);
+                    if (entry.IsBuffered)
+                        await partition.PersistCachedEntryAsync(startIndex, evictOnCommit).ConfigureAwait(false);
                 }
                 else
                 {

@@ -50,6 +50,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 identifier = reader.ReadInt32(true);
             }
 
+            internal long End => Length + Offset;
+
             internal bool IsValid => Offset > 0;
 
             internal int? Id => (flags & LogEntryFlags.HasIdentifier) != 0U ? identifier : null;
@@ -57,6 +59,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal static LogEntryMetadata Create<TLogEntry>(TLogEntry entry, long offset, long length)
                 where TLogEntry : IRaftLogEntry
                 => new(entry.Timestamp, entry.Term, offset, length, entry.CommandId);
+
+            internal static LogEntryMetadata Create(in CachedLogEntry entry, long offset)
+                => new(entry.Timestamp, entry.Term, offset, entry.Length, entry.CommandId);
 
             internal void Serialize(ref SpanWriter<byte> writer)
             {

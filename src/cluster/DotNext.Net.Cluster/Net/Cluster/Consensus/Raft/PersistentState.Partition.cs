@@ -194,7 +194,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return ReadAsync(GetReadSessionStream(in session), session.Buffer, relativeIndex, index, token);
             }
 
-            private void UpdateCache(in CachedLogEntry entry, nint index)
+            private void UpdateCache(in CachedLogEntry entry, nint index, long offset)
             {
                 Debug.Assert(lookupCache.IsEmpty is false);
                 Debug.Assert(index >= 0 && index < entryCache.Length);
@@ -202,25 +202,70 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 ref var cacheEntry = ref entryCache[index];
                 cacheEntry?.Dispose();
                 cacheEntry = entry.Content;
+                lookupCache[index] = LogEntryMetadata.Create(entry, offset, entry.Length);
             }
 
-            internal void RemoveEntryFromCache(long absoluteIndex)
+            internal async ValueTask PersistCachedEntryAsync(long absoluteIndex, bool removeFromMemory)
             {
-                Debug.Assert(!entryCache.IsEmpty);
-                ref var cacheEntry = ref entryCache[ToRelativeIndex(absoluteIndex)];
-                cacheEntry?.Dispose();
-                cacheEntry = null;
+                Debug.Assert(entryCache.IsEmpty is false);
+                Debug.Assert(lookupCache.IsEmpty is false);
+
+                var index = ToRelativeIndex(absoluteIndex);
+                Debug.Assert(index >= 0 && index < entryCache.Length);
+
+                var content = entryCache[index];
+                if (content is not null)
+                {
+                    try
+                    {
+                        Position = lookupCache[index].Offset;
+                        await WriteAsync(content.Memory).ConfigureAwait(false);
+                    }
+                    finally
+                    {
+                        if (removeFromMemory)
+                        {
+                            entryCache[index] = null;
+                            content.Dispose();
+                        }
+                    }
+                }
             }
 
-            private async ValueTask WriteAsync<TEntry>(TEntry entry, nint index, Memory<byte> buffer)
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private bool IsFirstEntry(nint index)
+                => index == 0 || index == 1 && FirstIndex == 0L;
+
+            private ValueTask WriteFastAsync(in CachedLogEntry entry, nint index)
+            {
+                var result = new ValueTask();
+                try
+                {
+                    var offset = IsFirstEntry(index) ? PayloadOffset : lookupCache[index - 1].End;
+                    ref var cacheEntry = ref entryCache[index];
+                    cacheEntry?.Dispose();
+                    cacheEntry = entry.Content;
+                    lookupCache[index] = LogEntryMetadata.Create(in entry, offset);
+                }
+                catch (Exception e)
+                {
+#if NETSTANDARD2_1
+                    result = new(Task.FromException(e));
+#else
+                    result = ValueTask.FromException(e);
+#endif
+                }
+
+                return result;
+            }
+
+            private async ValueTask WriteSlowAsync<TEntry>(TEntry entry, nint index, Memory<byte> buffer)
                 where TEntry : notnull, IRaftLogEntry
             {
-                Debug.Assert(index >= 0 && index < Capacity, $"Invalid index value {index}, offset {FirstIndex}");
-
                 // calculate offset of the previous entry
                 long offset;
                 LogEntryMetadata metadata;
-                if (index == 0 || index == 1 && FirstIndex == 0L)
+                if (IsFirstEntry(index))
                 {
                     offset = PayloadOffset;
                 }
@@ -229,14 +274,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     // read content offset and the length of the previous entry
                     Position = (index - 1L) * LogEntryMetadata.Size;
                     metadata = await ReadMetadataAsync(this, buffer).ConfigureAwait(false);
-                    Debug.Assert(metadata.Offset > 0, "Previous entry doesn't exist for unknown reason");
-                    offset = metadata.Length + metadata.Offset;
+                    Debug.Assert(metadata.IsValid, "Previous entry doesn't exist for unknown reason");
+                    offset = metadata.End;
                 }
                 else
                 {
                     metadata = lookupCache[index - 1];
-                    Debug.Assert(metadata.Offset > 0, "Previous entry doesn't exist for unknown reason");
-                    offset = metadata.Length + metadata.Offset;
+                    Debug.Assert(metadata.IsValid, "Previous entry doesn't exist for unknown reason");
+                    offset = metadata.End;
                 }
 
                 // write content
@@ -250,13 +295,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
                 // update cache
                 if (lookupCache.IsEmpty is false)
-                {
-                    Debug.Assert(!entryCache.IsEmpty);
                     lookupCache[index] = metadata;
-
-                    if (typeof(TEntry) == typeof(CachedLogEntry))
-                        UpdateCache(in Unsafe.As<TEntry, CachedLogEntry>(ref entry), index);
-                }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -264,7 +303,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 where TEntry : notnull, IRaftLogEntry
             {
                 // write operation always expects absolute index so we need to convert it to the relative index
-                return WriteAsync(entry, ToRelativeIndex(absoluteIndex), session.Buffer);
+                var relativeIndex = ToRelativeIndex(absoluteIndex);
+                Debug.Assert(relativeIndex >= 0 && relativeIndex < Capacity, $"Invalid index value {relativeIndex}, offset {FirstIndex}");
+
+                return typeof(TEntry) == typeof(CachedLogEntry) ?
+                    WriteFastAsync(in Unsafe.As<TEntry, CachedLogEntry>(ref entry), relativeIndex) :
+                    WriteSlowAsync(entry, relativeIndex, session.Buffer);
             }
 
             protected override void Dispose(bool disposing)
