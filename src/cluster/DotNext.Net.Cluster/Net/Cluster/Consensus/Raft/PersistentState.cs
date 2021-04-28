@@ -1192,7 +1192,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private async ValueTask ApplyAsync(long startIndex, CancellationToken token)
         {
-            for (Partition? partition = null; startIndex <= state.CommitIndex; state.LastApplied = startIndex++)
+            var commitIndex = state.CommitIndex;
+            for (Partition? partition = null; startIndex <= commitIndex; state.LastApplied = startIndex++)
             {
                 if (TryGetPartition(startIndex, ref partition))
                 {
@@ -1202,7 +1203,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
                     // Remove log entry from the cache according to eviction policy
                     if (entry.IsBuffered)
+                    {
                         await partition.PersistCachedEntryAsync(startIndex, evictOnCommit).ConfigureAwait(false);
+
+                        // Flush partition if we are finished or at the last entry in it.
+                        // This allows to optimize access to disk especially when cached entries are small entries
+                        if (startIndex == commitIndex || startIndex == partition.LastIndex)
+                            await partition.FlushAsync().ConfigureAwait(false);
+                    }
                 }
                 else
                 {
