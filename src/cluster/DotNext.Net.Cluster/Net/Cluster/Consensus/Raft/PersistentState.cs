@@ -1011,9 +1011,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             long FinalizeCommit(long count)
             {
-                count = Math.Max(count, 0L);
                 if (count > 0L)
+                {
                     commitEvent.Set(true);
+                }
+                else
+                {
+                    count = 0L;
+                }
 
                 return count;
             }
