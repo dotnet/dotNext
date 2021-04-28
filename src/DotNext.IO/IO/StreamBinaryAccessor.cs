@@ -265,6 +265,8 @@ namespace DotNext.IO
 
         Task IAsyncBinaryWriter.CopyFromAsync<TArg>(Func<TArg, CancellationToken, ValueTask<ReadOnlyMemory<byte>>> supplier, TArg arg, CancellationToken token)
             => stream.WriteAsync(supplier, arg, token);
+
+        IBufferWriter<byte>? IAsyncBinaryWriter.TryGetBufferWriter() => null;
         #endregion
     }
 }

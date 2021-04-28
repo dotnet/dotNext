@@ -342,5 +342,7 @@ namespace DotNext.IO.Pipelines
 
         Task IAsyncBinaryWriter.CopyFromAsync<TArg>(Func<TArg, CancellationToken, ValueTask<ReadOnlyMemory<byte>>> supplier, TArg arg, CancellationToken token)
             => output.WriteAsync(supplier, arg, token);
+
+        IBufferWriter<byte>? IAsyncBinaryWriter.TryGetBufferWriter() => output;
     }
 }

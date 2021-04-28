@@ -309,6 +309,12 @@ namespace DotNext.IO
         }
 
         /// <summary>
+        /// Attempts to get synchronous writer.
+        /// </summary>
+        /// <returns>Synchronous writer wrapped by this asynchronous writer; or <see langword="null"/> if underlying I/O is fully asynchronous.</returns>
+        IBufferWriter<byte>? TryGetBufferWriter() => null;
+
+        /// <summary>
         /// Encodes a block of characters using the specified encoding.
         /// </summary>
         /// <param name="chars">The characters to encode.</param>

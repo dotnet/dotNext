@@ -619,5 +619,7 @@ namespace DotNext.IO
 
             return result;
         }
+
+        IBufferWriter<byte>? IAsyncBinaryWriter.TryGetBufferWriter() => writer;
     }
 }
