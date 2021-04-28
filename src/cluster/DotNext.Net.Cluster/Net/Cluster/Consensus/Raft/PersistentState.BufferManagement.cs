@@ -54,7 +54,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal MemoryAllocator<byte> BufferAllocator { get; }
 
             internal PooledBufferWriter<byte> CreateBufferWriter(long length)
-                => length <= int.MaxValue ? new (BufferAllocator, (int)length) : throw new InsufficientMemoryException();
+                => length <= int.MaxValue ? new(BufferAllocator, (int)length) : throw new InsufficientMemoryException();
 
             internal MemoryOwner<LogEntryMetadata> AllocMetadataCache(int recordsPerPartition)
                 => metadataAllocator is null ? default : metadataAllocator.Invoke(recordsPerPartition, true);

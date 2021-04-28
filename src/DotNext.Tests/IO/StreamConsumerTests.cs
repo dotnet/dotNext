@@ -34,9 +34,9 @@ namespace DotNext.IO
         {
             using var ms = new MemoryStream();
             IReadOnlySpanConsumer<byte> consumer = new StreamConsumer(ms);
-            consumer.Invoke(new ReadOnlySpan<byte>(new byte[] { 1, 2}));
+            consumer.Invoke(new ReadOnlySpan<byte>(new byte[] { 1, 2 }));
             consumer.Invoke(new ReadOnlyMemory<byte>(new byte[] { 3, 4 }), default);
-            Equal(new byte[] { 1, 2, 3, 4}, ms.ToArray());
+            Equal(new byte[] { 1, 2, 3, 4 }, ms.ToArray());
         }
     }
 }

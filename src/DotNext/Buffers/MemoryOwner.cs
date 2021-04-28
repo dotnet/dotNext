@@ -130,7 +130,7 @@ namespace DotNext.Buffers
 
             UnsafeSetLength(length);
 
-            exit:
+        exit:
             return;
         }
 
@@ -220,7 +220,7 @@ namespace DotNext.Buffers
 
                 return ref Unsafe.Add(ref result, index);
 
-                invalid_index:
+            invalid_index:
                 throw new ArgumentOutOfRangeException(nameof(index));
             }
         }

@@ -72,7 +72,7 @@ namespace DotNext
         /// <param name="ptr">The pointer to the managed method.</param>
         /// <returns>The typed function pointer.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
-        public static implicit operator Consumer<T>(delegate*<T, void> ptr) => new (ptr);
+        public static implicit operator Consumer<T>(delegate*<T, void> ptr) => new(ptr);
 
         /// <summary>
         /// Converts this consumer to the delegate of type <see cref="Action{T}"/>.
@@ -82,7 +82,7 @@ namespace DotNext
         public static explicit operator Action<T>(Consumer<T> consumer) => consumer.ToDelegate();
     }
 
-     /// <summary>
+    /// <summary>
     /// Represents implementation of <see cref="IConsumer{T}"/> interface
     /// with the support of closure that is not allocated on the heap.
     /// </summary>

@@ -80,7 +80,7 @@ namespace DotNext
         /// <returns>The typed function pointer.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
         public static implicit operator Supplier<T1, T2, TResult>(delegate*<T1, T2, TResult> ptr)
-            => new (ptr);
+            => new(ptr);
 
         /// <summary>
         /// Converts this supplier to the delegate of type <see cref="Func{T1, T2, TResult}"/>.
@@ -182,7 +182,7 @@ namespace DotNext
         /// <param name="func">The delegate instance.</param>
         /// <returns>The supplier represented by the delegate.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
-        public static implicit operator DelegatingSupplier<T1, T2, TResult>(Func<T1, T2, TResult> func) => new (func);
+        public static implicit operator DelegatingSupplier<T1, T2, TResult>(Func<T1, T2, TResult> func) => new(func);
 
         /// <summary>
         /// Determines whether the two objects contain references to the same delegate instance.
@@ -217,7 +217,7 @@ namespace DotNext
         /// <inheritdoc />
         int IComparer<T>.Compare(T? x, T? y) => comparison(x, y);
 
-        public static implicit operator DelegatingComparer<T>(Comparison<T?> comparison) => new (comparison);
+        public static implicit operator DelegatingComparer<T>(Comparison<T?> comparison) => new(comparison);
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -232,6 +232,6 @@ namespace DotNext
 
         int IComparer<T>.Compare(T? x, T? y) => ptr(x, y);
 
-        public static implicit operator ComparerWrapper<T>(delegate*<T?, T?, int> ptr) => new (ptr);
+        public static implicit operator ComparerWrapper<T>(delegate*<T?, T?, int> ptr) => new(ptr);
     }
 }

@@ -16,9 +16,9 @@ namespace DotNext.Metaprogramming
             this.conditionFirst = conditionFirst;
         }
 
-        internal static WhileStatement While(Expression condition) => new (condition, true);
+        internal static WhileStatement While(Expression condition) => new(condition, true);
 
-        internal static WhileStatement Until(Expression condition) => new (condition, false);
+        internal static WhileStatement Until(Expression condition) => new(condition, false);
 
         WhileExpression ILexicalScope<WhileExpression, Action>.Build(Action scope)
         {

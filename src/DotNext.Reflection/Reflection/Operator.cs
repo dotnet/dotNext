@@ -53,7 +53,7 @@ namespace DotNext.Reflection
             public override int GetHashCode() => overloaded ? (int)operatorType + 100 : (int)operatorType;
 
             private InvalidOperationException OperatorNotExists()
-                => new (ExceptionMessages.MissingOperator(operatorType));
+                => new(ExceptionMessages.MissingOperator(operatorType));
 
             internal UnaryExpression MakeUnary<TResult>(in Operand operand)
             {
@@ -77,7 +77,7 @@ namespace DotNext.Reflection
 
             internal Operand(ParameterExpression supplier, Type expectedType) => Argument = Expression.Convert(Source = supplier, expectedType);
 
-            public static implicit operator Operand(ParameterExpression operand) => new (operand);
+            public static implicit operator Operand(ParameterExpression operand) => new(operand);
         }
 
         internal static bool Upcast(this ref Operand operand)

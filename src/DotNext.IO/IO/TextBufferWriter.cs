@@ -285,7 +285,7 @@ namespace DotNext.IO
             return result;
         }
 
-        #if !NETSTANDARD2_1
+#if !NETSTANDARD2_1
         public override void Write(StringBuilder? sb)
         {
             if (sb.IsNullOrEmpty())

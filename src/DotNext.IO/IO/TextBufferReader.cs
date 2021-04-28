@@ -50,7 +50,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    result = new (Read(buffer.Span));
+                    result = new(Read(buffer.Span));
                 }
                 catch (Exception e)
                 {
@@ -83,7 +83,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    result = new (ReadBlock(buffer.Span));
+                    result = new(ReadBlock(buffer.Span));
                 }
                 catch (Exception e)
                 {

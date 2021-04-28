@@ -72,7 +72,7 @@ namespace DotNext.IO
             }
             else
             {
-                result = new ();
+                result = new();
                 try
                 {
                     writer.Write(in value);
@@ -103,7 +103,7 @@ namespace DotNext.IO
             }
             else
             {
-                result = new ();
+                result = new();
                 try
                 {
                     if (lengthFormat.HasValue)
@@ -137,7 +137,7 @@ namespace DotNext.IO
             }
             else
             {
-                result = new ();
+                result = new();
                 try
                 {
                     writer.WriteBigInteger(in value, littleEndian, lengthFormat);
@@ -168,7 +168,7 @@ namespace DotNext.IO
             }
             else
             {
-                result = new ();
+                result = new();
                 try
                 {
                     writer.Write(input.Span);
@@ -199,7 +199,7 @@ namespace DotNext.IO
             }
             else
             {
-                result = new ();
+                result = new();
                 try
                 {
                     writer.WriteString(chars.Span, in context, lengthFormat: lengthFormat);
@@ -230,7 +230,7 @@ namespace DotNext.IO
             }
             else
             {
-                result = new ();
+                result = new();
                 try
                 {
                     writer.WriteByte(value, lengthFormat, in context, format, provider);
@@ -261,7 +261,7 @@ namespace DotNext.IO
             }
             else
             {
-                result = new ();
+                result = new();
                 try
                 {
                     writer.WriteInt16(value, lengthFormat, in context, format, provider);
@@ -292,7 +292,7 @@ namespace DotNext.IO
             }
             else
             {
-                result = new ();
+                result = new();
                 try
                 {
                     writer.WriteInt32(value, lengthFormat, in context, format, provider);
@@ -323,7 +323,7 @@ namespace DotNext.IO
             }
             else
             {
-                result = new ();
+                result = new();
                 try
                 {
                     writer.WriteInt64(value, lengthFormat, in context, format, provider);
@@ -354,7 +354,7 @@ namespace DotNext.IO
             }
             else
             {
-                result = new ();
+                result = new();
                 try
                 {
                     writer.WriteSingle(value, lengthFormat, in context, format, provider);
@@ -385,7 +385,7 @@ namespace DotNext.IO
             }
             else
             {
-                result = new ();
+                result = new();
                 try
                 {
                     writer.WriteDouble(value, lengthFormat, in context, format, provider);
@@ -416,7 +416,7 @@ namespace DotNext.IO
             }
             else
             {
-                result = new ();
+                result = new();
                 try
                 {
                     writer.WriteDecimal(value, lengthFormat, in context, format, provider);
@@ -447,7 +447,7 @@ namespace DotNext.IO
             }
             else
             {
-                result = new ();
+                result = new();
                 try
                 {
                     writer.WriteDateTime(value, lengthFormat, in context, format, provider);
@@ -478,7 +478,7 @@ namespace DotNext.IO
             }
             else
             {
-                result = new ();
+                result = new();
                 try
                 {
                     writer.WriteDateTimeOffset(value, lengthFormat, in context, format, provider);
@@ -509,7 +509,7 @@ namespace DotNext.IO
             }
             else
             {
-                result = new ();
+                result = new();
                 try
                 {
                     writer.WriteGuid(value, lengthFormat, in context, format);
@@ -540,7 +540,7 @@ namespace DotNext.IO
             }
             else
             {
-                result = new ();
+                result = new();
                 try
                 {
                     writer.WriteTimeSpan(value, lengthFormat, in context, format, provider);
@@ -571,7 +571,7 @@ namespace DotNext.IO
             }
             else
             {
-                result = new ();
+                result = new();
                 try
                 {
                     writer.WriteBigInteger(value, lengthFormat, in context, format, provider);
@@ -602,7 +602,7 @@ namespace DotNext.IO
             }
             else
             {
-                result = new ();
+                result = new();
                 try
                 {
                     writer(arg, this.writer);

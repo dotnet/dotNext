@@ -14,7 +14,7 @@ namespace DotNext.Reflection
     {
         private static bool Is(Type type) => type.IsConstructedGenericType && type.GetGenericTypeDefinition() == typeof(Ref<>);
 
-        internal static bool Reflect(Type byRefType, [MaybeNullWhen(false)]out Type underlyingType, [MaybeNullWhen(false)]out FieldInfo valueField)
+        internal static bool Reflect(Type byRefType, [MaybeNullWhen(false)] out Type underlyingType, [MaybeNullWhen(false)] out FieldInfo valueField)
         {
             if (Is(byRefType))
             {
@@ -73,7 +73,7 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="value">A value.</param>
         /// <returns>A reference to a value.</returns>
-        public static implicit operator Ref<T>(T value) => new () { Value = value };
+        public static implicit operator Ref<T>(T value) => new() { Value = value };
 
         /// <summary>
         /// Identifies that two references point to the same location.

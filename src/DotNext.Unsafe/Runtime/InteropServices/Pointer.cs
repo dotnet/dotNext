@@ -54,7 +54,7 @@ namespace DotNext.Runtime.InteropServices
             public Pointer<T> Pointer
             {
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                get => new (ptr + index);
+                get => new(ptr + index);
             }
 
             /// <summary>
@@ -212,7 +212,7 @@ namespace DotNext.Runtime.InteropServices
         }
 
         internal unsafe MemoryHandle Pin(long elementIndex)
-            => new (value + elementIndex);
+            => new(value + elementIndex);
 
         /// <inheritdoc />
         MemoryHandle IPinnable.Pin(int elementIndex) => Pin(elementIndex);
@@ -832,7 +832,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="value">The pointer value.</param>
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe implicit operator Pointer<T>(T* value) => new (value);
+        public static unsafe implicit operator Pointer<T>(T* value) => new(value);
 
         /// <summary>
         /// Converts CLS-compliant pointer into its non CLS-compliant representation.
@@ -889,7 +889,7 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="handle">The memory handle.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe explicit operator Pointer<T>(in MemoryHandle handle) => new ((nint)handle.Pointer);
+        public static unsafe explicit operator Pointer<T>(in MemoryHandle handle) => new((nint)handle.Pointer);
 
         /// <summary>
         /// Checks whether this pointer is not zero.

@@ -99,7 +99,7 @@ namespace DotNext
         /// <param name="operand">Unary plus operand.</param>
         /// <returns>The result of unary plus operation.</returns>
         public static Number<T> operator +(Number<T> operand)
-            => new (UnaryPlus(operand));
+            => new(UnaryPlus(operand));
 
         /// <summary>
         /// Arithmetic unary minus operation.
@@ -107,7 +107,7 @@ namespace DotNext
         /// <param name="operand">Unary minus operand.</param>
         /// <returns>The result of unary minus operation.</returns>
         public static Number<T> operator -(Number<T> operand)
-            => new (UnaryMinus(operand));
+            => new(UnaryMinus(operand));
 
         /// <summary>
         /// Arithmetic addition operation.
@@ -116,7 +116,7 @@ namespace DotNext
         /// <param name="right">The right operand.</param>
         /// <returns>The result of addition.</returns>
         public static Number<T> operator +(Number<T> left, T right)
-            => new (BinaryPlus(in left.value, in right));
+            => new(BinaryPlus(in left.value, in right));
 
         /// <summary>
         /// Arithmetic subtraction operation.
@@ -125,7 +125,7 @@ namespace DotNext
         /// <param name="right">The right operand.</param>
         /// <returns>The result of subtraction.</returns>
         public static Number<T> operator -(Number<T> left, T right)
-            => new (BinaryMinus(in left.value, in right));
+            => new(BinaryMinus(in left.value, in right));
 
         /// <summary>
         /// Arithmetic multiplication operation.
@@ -134,7 +134,7 @@ namespace DotNext
         /// <param name="right">The right operand.</param>
         /// <returns>The result of multiplication operation.</returns>
         public static Number<T> operator *(Number<T> left, T right)
-            => new (Multiply(in left.value, in right));
+            => new(Multiply(in left.value, in right));
 
         /// <summary>
         /// Arithmetic division operation.
@@ -143,7 +143,7 @@ namespace DotNext
         /// <param name="right">The right operand.</param>
         /// <returns>The result of division operation.</returns>
         public static Number<T> operator /(Number<T> left, T right)
-            => new (Divide(in left.value, in right));
+            => new(Divide(in left.value, in right));
 
         /// <summary>
         /// Performs equality check.
@@ -218,7 +218,7 @@ namespace DotNext
             var args = TryParseMethod.ArgList();
             args.text = text;
             var success = TryParseMethod(args);
-            value = new (args.result);
+            value = new(args.result);
             return success;
         }
 
@@ -237,7 +237,7 @@ namespace DotNext
             args.styles = styles;
             args.text = text;
             var success = AdvancedTryParseMethod(args);
-            value = new (args.result);
+            value = new(args.result);
             return success;
         }
 
@@ -248,6 +248,6 @@ namespace DotNext
         /// <returns>Parsed number.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="text"/> is <see langword="null"/>.</exception>
         /// <exception cref="FormatException"><paramref name="text"/> is not in the correct format.</exception>
-        public static Number<T> Parse(string text) => new (ParseMethod(text));
+        public static Number<T> Parse(string text) => new(ParseMethod(text));
     }
 }

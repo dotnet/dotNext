@@ -25,7 +25,7 @@ namespace DotNext
     /// <typeparam name="TArgs">Type of structure with function arguments allocated on the stack.</typeparam>
     /// <typeparam name="TResult">Type of function return value.</typeparam>
     /// <returns>Function return value.</returns>
-    public delegate TResult? Function<T, TArgs, out TResult>([DisallowNull]in T @this, in TArgs arguments)
+    public delegate TResult? Function<T, TArgs, out TResult>([DisallowNull] in T @this, in TArgs arguments)
         where TArgs : struct;
 
     /// <summary>
@@ -40,7 +40,7 @@ namespace DotNext
             [NotNull]
             private readonly T target;
 
-            internal Closure(Function<T, TArgs, TResult> function, [DisallowNull]T target)
+            internal Closure(Function<T, TArgs, TResult> function, [DisallowNull] T target)
             {
                 this.function = function;
                 this.target = target;
@@ -59,7 +59,7 @@ namespace DotNext
         /// <param name="function">The function to be converted.</param>
         /// <param name="this">The first argument to be captured.</param>
         /// <returns>The function instance.</returns>
-        public static Function<TArgs, TResult> Bind<T, TArgs, TResult>(this Function<T, TArgs, TResult> function, [DisallowNull]T @this)
+        public static Function<TArgs, TResult> Bind<T, TArgs, TResult>(this Function<T, TArgs, TResult> function, [DisallowNull] T @this)
             where TArgs : struct
             => new Closure<T, TArgs, TResult>(function, @this).Invoke;
 
@@ -96,7 +96,7 @@ namespace DotNext
         /// <typeparam name="TResult">Type of function return value.</typeparam>
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Result<TResult?> TryInvoke<T, TArgs, TResult>(this Function<T, TArgs, TResult> function, [DisallowNull]in T @this, in TArgs arguments)
+        public static Result<TResult?> TryInvoke<T, TArgs, TResult>(this Function<T, TArgs, TResult> function, [DisallowNull] in T @this, in TArgs arguments)
             where TArgs : struct
         {
             try
@@ -119,7 +119,7 @@ namespace DotNext
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TArgs ArgList<TArgs, TResult>(this Function<TArgs, TResult> function)
             where TArgs : struct
-            => new ();
+            => new();
 
         /// <summary>
         /// Allocates list of arguments on the stack.
@@ -132,7 +132,7 @@ namespace DotNext
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TArgs ArgList<T, TArgs, TResult>(this Function<T, TArgs, TResult> function)
             where TArgs : struct
-            => new ();
+            => new();
 
         /// <summary>
         /// Invokes function.
@@ -143,7 +143,7 @@ namespace DotNext
         /// <param name="instance">Explicit <c>this</c> argument.</param>
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static TResult? Invoke<T, TResult>(this Function<T, ValueTuple, TResult> function, [DisallowNull]in T instance)
+        public static TResult? Invoke<T, TResult>(this Function<T, ValueTuple, TResult> function, [DisallowNull] in T instance)
             => function(in instance, default);
 
         /// <summary>
@@ -179,7 +179,7 @@ namespace DotNext
         /// <param name="arg">The first function argument.</param>
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static TResult? Invoke<T, TParam, TResult>(this Function<T, ValueTuple<TParam>, TResult> function, [DisallowNull]in T instance, TParam arg)
+        public static TResult? Invoke<T, TParam, TResult>(this Function<T, ValueTuple<TParam>, TResult> function, [DisallowNull] in T instance, TParam arg)
             => function(in instance, new ValueTuple<TParam>(arg));
 
         /// <summary>
@@ -209,7 +209,7 @@ namespace DotNext
         /// <param name="arg2">The second function argument.</param>
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static TResult? Invoke<T, T1, T2, TResult>(this Function<T, (T1, T2), TResult> function, [DisallowNull]in T instance, T1 arg1, T2 arg2)
+        public static TResult? Invoke<T, T1, T2, TResult>(this Function<T, (T1, T2), TResult> function, [DisallowNull] in T instance, T1 arg1, T2 arg2)
             => function(in instance, (arg1, arg2));
 
         /// <summary>
@@ -227,7 +227,7 @@ namespace DotNext
         /// <param name="arg3">The third function argument.</param>
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static TResult? Invoke<T, T1, T2, T3, TResult>(this Function<T, (T1, T2, T3), TResult> function, [DisallowNull]in T instance, T1 arg1, T2 arg2, T3 arg3)
+        public static TResult? Invoke<T, T1, T2, T3, TResult>(this Function<T, (T1, T2, T3), TResult> function, [DisallowNull] in T instance, T1 arg1, T2 arg2, T3 arg3)
             => function(in instance, (arg1, arg2, arg3));
 
         /// <summary>
@@ -263,7 +263,7 @@ namespace DotNext
         /// <param name="arg4">The fourth function argument.</param>
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static TResult? Invoke<T, T1, T2, T3, T4, TResult>(this Function<T, (T1, T2, T3, T4), TResult> function, [DisallowNull]in T instance, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
+        public static TResult? Invoke<T, T1, T2, T3, T4, TResult>(this Function<T, (T1, T2, T3, T4), TResult> function, [DisallowNull] in T instance, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
             => function(in instance, (arg1, arg2, arg3, arg4));
 
         /// <summary>
@@ -303,7 +303,7 @@ namespace DotNext
         /// <param name="arg5">The fifth function argument.</param>
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static TResult? Invoke<T, T1, T2, T3, T4, T5, TResult>(this Function<T, (T1, T2, T3, T4, T5), TResult> function, [DisallowNull]in T instance, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
+        public static TResult? Invoke<T, T1, T2, T3, T4, T5, TResult>(this Function<T, (T1, T2, T3, T4, T5), TResult> function, [DisallowNull] in T instance, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
             => function(in instance, (arg1, arg2, arg3, arg4, arg5));
 
         /// <summary>
@@ -347,7 +347,7 @@ namespace DotNext
         /// <param name="arg6">The sixth function argument.</param>
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static TResult? Invoke<T, T1, T2, T3, T4, T5, T6, TResult>(this Function<T, (T1, T2, T3, T4, T5, T6), TResult> function, [DisallowNull]in T instance, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6)
+        public static TResult? Invoke<T, T1, T2, T3, T4, T5, T6, TResult>(this Function<T, (T1, T2, T3, T4, T5, T6), TResult> function, [DisallowNull] in T instance, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6)
             => function(in instance, (arg1, arg2, arg3, arg4, arg5, arg6));
 
         /// <summary>
@@ -395,7 +395,7 @@ namespace DotNext
         /// <param name="arg7">The seventh function argument.</param>
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static TResult? Invoke<T, T1, T2, T3, T4, T5, T6, T7, TResult>(this Function<T, (T1, T2, T3, T4, T5, T6, T7), TResult> function, [DisallowNull]in T instance, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7)
+        public static TResult? Invoke<T, T1, T2, T3, T4, T5, T6, T7, TResult>(this Function<T, (T1, T2, T3, T4, T5, T6, T7), TResult> function, [DisallowNull] in T instance, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7)
             => function(in instance, (arg1, arg2, arg3, arg4, arg5, arg6, arg7));
 
         /// <summary>
@@ -447,7 +447,7 @@ namespace DotNext
         /// <param name="arg8">The eighth function argument.</param>
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static TResult? Invoke<T, T1, T2, T3, T4, T5, T6, T7, T8, TResult>(this Function<T, (T1, T2, T3, T4, T5, T6, T7, T8), TResult> function, [DisallowNull]in T instance, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8)
+        public static TResult? Invoke<T, T1, T2, T3, T4, T5, T6, T7, T8, TResult>(this Function<T, (T1, T2, T3, T4, T5, T6, T7, T8), TResult> function, [DisallowNull] in T instance, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8)
             => function(in instance, (arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8));
 
         /// <summary>
@@ -503,7 +503,7 @@ namespace DotNext
         /// <param name="arg9">The ninth function argument.</param>
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static TResult? Invoke<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult>(this Function<T, (T1, T2, T3, T4, T5, T6, T7, T8, T9), TResult> function, [DisallowNull]in T instance, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9)
+        public static TResult? Invoke<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult>(this Function<T, (T1, T2, T3, T4, T5, T6, T7, T8, T9), TResult> function, [DisallowNull] in T instance, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9)
             => function(in instance, (arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9));
 
         /// <summary>
@@ -563,7 +563,7 @@ namespace DotNext
         /// <param name="arg10">The tenth function argument.</param>
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static TResult? Invoke<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult>(this Function<T, (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10), TResult> function, [DisallowNull]in T instance, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10)
+        public static TResult? Invoke<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult>(this Function<T, (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10), TResult> function, [DisallowNull] in T instance, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10)
             => function(in instance, (arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10));
 
         /// <summary>

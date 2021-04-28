@@ -252,7 +252,7 @@ namespace DotNext
         /// Gets boxed representation of the result.
         /// </summary>
         /// <returns>The boxed representation of the result.</returns>
-        public Result<object?> Box() => exception is null ? new (value) : new (exception);
+        public Result<object?> Box() => exception is null ? new(value) : new(exception);
 
         /// <summary>
         /// Extracts actual result.
@@ -264,7 +264,7 @@ namespace DotNext
         /// Converts the result into <see cref="Optional{T}"/>.
         /// </summary>
         /// <returns>Option monad representing value in this monad.</returns>
-        public Optional<T> TryGet() => exception is null ? new (value) : Optional<T>.None;
+        public Optional<T> TryGet() => exception is null ? new(value) : Optional<T>.None;
 
         /// <summary>
         /// Converts the result into <see cref="Optional{T}"/>.
@@ -277,7 +277,7 @@ namespace DotNext
         /// </summary>
         /// <param name="result">The result to be converted.</param>
         /// <returns>The result representing <paramref name="result"/> value.</returns>
-        public static implicit operator Result<T>(T result) => new (result);
+        public static implicit operator Result<T>(T result) => new(result);
 
         /// <summary>
         /// Converts <see cref="Optional{T}"/> to <see cref="Result{T}"/>.

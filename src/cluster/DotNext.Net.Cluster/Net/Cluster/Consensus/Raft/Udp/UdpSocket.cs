@@ -14,7 +14,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
     internal abstract class UdpSocket : Socket, INetworkTransport
     {
-        private protected static readonly IPEndPoint AnyRemoteEndpoint = new (IPAddress.Any, 0);
+        private protected static readonly IPEndPoint AnyRemoteEndpoint = new(IPAddress.Any, 0);
 
         private sealed class SendEventArgs : SocketAsyncEventSource
         {
@@ -235,7 +235,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 return task.GetTask(SendToAsync(task));
             }
 
-            return new (Task.FromException(new InvalidOperationException(ExceptionMessages.NotEnoughSenders)));
+            return new(Task.FromException(new InvalidOperationException(ExceptionMessages.NotEnoughSenders)));
         }
 
         private protected async Task<bool> SendAsync<TChannel>(CorrelationId id, TChannel channel, EndPoint endpoint)

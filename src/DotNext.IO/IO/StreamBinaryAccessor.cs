@@ -34,7 +34,7 @@ namespace DotNext.IO
 
         Task IFlushable.FlushAsync(CancellationToken token) => stream.FlushAsync(token);
 
-#region Reader
+        #region Reader
         public ValueTask<T> ReadAsync<T>(CancellationToken token = default)
             where T : unmanaged
             => StreamExtensions.ReadAsync<T>(stream, buffer, token);
@@ -177,9 +177,9 @@ namespace DotNext.IO
 
         Task IAsyncBinaryReader.CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token)
             => stream.CopyToAsync(consumer, buffer, token);
-#endregion
+        #endregion
 
-#region Writer
+        #region Writer
         public ValueTask WriteAsync<T>(T value, CancellationToken token)
             where T : unmanaged
             => stream.WriteAsync(value, buffer, token);
@@ -265,6 +265,6 @@ namespace DotNext.IO
 
         Task IAsyncBinaryWriter.CopyFromAsync<TArg>(Func<TArg, CancellationToken, ValueTask<ReadOnlyMemory<byte>>> supplier, TArg arg, CancellationToken token)
             => stream.WriteAsync(supplier, arg, token);
-#endregion
+        #endregion
     }
 }

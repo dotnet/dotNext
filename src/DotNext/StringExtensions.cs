@@ -81,7 +81,7 @@ namespace DotNext
         /// <param name="placeholder">The placeholder in the template.</param>
         /// <returns>The compiled template that can be used to replace all placeholders with their original values.</returns>
         public static StringTemplate AsTemplate(this string template, string placeholder)
-            => new (template.AsMemory(), placeholder);
+            => new(template.AsMemory(), placeholder);
 
         /// <summary>
         /// Compiles string template.
@@ -90,7 +90,7 @@ namespace DotNext
         /// <param name="placeholder">The placeholder in the template.</param>
         /// <returns>The compiled template that can be used to replace all placeholders with their original values.</returns>
         public static StringTemplate AsTemplate(this string template, char placeholder)
-            => new (template.AsMemory(), CreateReadOnlySpan(ref placeholder, 1));
+            => new(template.AsMemory(), CreateReadOnlySpan(ref placeholder, 1));
 
         /// <summary>
         /// Checks whether the growable string is <see langword="null"/> or empty.

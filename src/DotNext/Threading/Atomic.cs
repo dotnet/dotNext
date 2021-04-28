@@ -99,7 +99,7 @@ namespace DotNext.Threading
         public readonly void Read(out T result)
         {
             var spinner = new SpinWait();
-            spin_loop:
+        spin_loop:
             var stamp = version;
             Copy(in value, out result);
             if (stamp != version || lockState.Value)

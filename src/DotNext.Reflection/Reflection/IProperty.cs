@@ -45,6 +45,6 @@ namespace DotNext.Reflection
         /// <param name="this">The object whose property value will be set or returned.</param>
         /// <returns>Property value.</returns>
         [MaybeNull]
-        TValue this[[DisallowNull]in T @this] { get; set; }
+        TValue this[[DisallowNull] in T @this] { get; set; }
     }
 }

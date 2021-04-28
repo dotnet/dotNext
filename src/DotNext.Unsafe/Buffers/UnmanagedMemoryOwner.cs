@@ -30,19 +30,19 @@ namespace DotNext.Buffers
             return copy;
         }
 
-        Pointer<byte> IUnmanagedMemory.Pointer => new (Address);
+        Pointer<byte> IUnmanagedMemory.Pointer => new(Address);
 
         /// <summary>
         /// Gets a span of bytes from the current instance.
         /// </summary>
         /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
-        public unsafe Span<byte> Bytes => new (Address.ToPointer(), checked((int)Size));
+        public unsafe Span<byte> Bytes => new(Address.ToPointer(), checked((int)Size));
 
         /// <summary>
         /// Gets a pointer to the allocated unmanaged memory.
         /// </summary>
         /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
-        public Pointer<T> Pointer => new (Address);
+        public Pointer<T> Pointer => new(Address);
 
         Span<T> IUnmanagedArray<T>.Span => GetSpan();
 

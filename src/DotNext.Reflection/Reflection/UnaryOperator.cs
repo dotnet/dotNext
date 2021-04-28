@@ -123,7 +123,7 @@ namespace DotNext.Reflection
                 _ => resultType.IsPrimitive && operand.NormalizePrimitive()
             };
 
-            tail_call: // C# doesn't support tail calls so replace it with label/goto
+        tail_call: // C# doesn't support tail calls so replace it with label/goto
             overloaded = null;
             try
             {

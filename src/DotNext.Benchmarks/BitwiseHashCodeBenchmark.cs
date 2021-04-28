@@ -11,7 +11,7 @@ namespace DotNext.Benchmarks
     public class BitwiseHashCodeBenchmark
     {
         private static readonly Guid NonEmptyGuid = Guid.NewGuid();
-        private static readonly BitwiseEqualityBenchmark.LargeStruct NonEmptyLargeStruct = new (){ X = 10M, C = 42M };
+        private static readonly BitwiseEqualityBenchmark.LargeStruct NonEmptyLargeStruct = new() { X = 10M, C = 42M };
 
         [Benchmark]
         public int GuidHashCode() => NonEmptyGuid.GetHashCode();

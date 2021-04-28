@@ -31,7 +31,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private protected static readonly ValueParser<int> Int32Parser = int.TryParse;
         private static readonly ValueParser<ClusterMemberId> IpAddressParser = ClusterMemberId.TryParse;
         private protected static readonly ValueParser<bool> BooleanParser = bool.TryParse;
-        private static readonly Random RequestIdGenerator = new ();
+        private static readonly Random RequestIdGenerator = new();
 
         private protected class OutboundTransferObject : HttpContent
         {

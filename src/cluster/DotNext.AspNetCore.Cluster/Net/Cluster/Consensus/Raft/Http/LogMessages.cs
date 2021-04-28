@@ -10,7 +10,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
     internal static class LogMessages
     {
-        private static readonly ResourceManager Resources = new ("DotNext.Net.Cluster.Consensus.Raft.Http.LogMessages", Assembly.GetExecutingAssembly());
+        private static readonly ResourceManager Resources = new("DotNext.Net.Cluster.Consensus.Raft.Http.LogMessages", Assembly.GetExecutingAssembly());
 
         internal static void SendingRequestToMember(this ILogger logger, EndPoint member, string messageType)
             => logger.LogDebug((string)Resources.Get(), messageType, member);

@@ -91,7 +91,7 @@ namespace DotNext.IO
         /// <returns>The decoded value.</returns>
         /// <exception cref="EndOfStreamException">Unexpected end of sequence.</exception>
         public T Read<T>()
-            where T : unmanaged => Read<T, ValueReader<T>>(new ());
+            where T : unmanaged => Read<T, ValueReader<T>>(new());
 
         /// <summary>
         /// Copies the bytes from the sequence into contiguous block of memory.
@@ -616,7 +616,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    result = new (Read<T>());
+                    result = new(Read<T>());
                 }
                 catch (Exception e)
                 {
@@ -714,7 +714,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    result = new (Read(lengthFormat, allocator));
+                    result = new(Read(lengthFormat, allocator));
                 }
                 catch (Exception e)
                 {
@@ -745,7 +745,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    result = new (ReadInt64(littleEndian));
+                    result = new(ReadInt64(littleEndian));
                 }
                 catch (Exception e)
                 {
@@ -776,7 +776,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    result = new (ReadInt64(lengthFormat, in context, style, provider));
+                    result = new(ReadInt64(lengthFormat, in context, style, provider));
                 }
                 catch (Exception e)
                 {
@@ -807,7 +807,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    result = new (ReadInt32(littleEndian));
+                    result = new(ReadInt32(littleEndian));
                 }
                 catch (Exception e)
                 {
@@ -838,7 +838,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    result = new (ReadInt32(lengthFormat, in context, style, provider));
+                    result = new(ReadInt32(lengthFormat, in context, style, provider));
                 }
                 catch (Exception e)
                 {
@@ -869,7 +869,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    result = new (ReadInt16(littleEndian));
+                    result = new(ReadInt16(littleEndian));
                 }
                 catch (Exception e)
                 {
@@ -900,7 +900,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    result = new (ReadInt16(lengthFormat, in context, style, provider));
+                    result = new(ReadInt16(lengthFormat, in context, style, provider));
                 }
                 catch (Exception e)
                 {
@@ -931,7 +931,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    result = new (ReadByte(lengthFormat, in context, style, provider));
+                    result = new(ReadByte(lengthFormat, in context, style, provider));
                 }
                 catch (Exception e)
                 {
@@ -962,7 +962,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    result = new (ReadSingle(lengthFormat, in context, style, provider));
+                    result = new(ReadSingle(lengthFormat, in context, style, provider));
                 }
                 catch (Exception e)
                 {
@@ -993,7 +993,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    result = new (ReadDouble(lengthFormat, in context, style, provider));
+                    result = new(ReadDouble(lengthFormat, in context, style, provider));
                 }
                 catch (Exception e)
                 {
@@ -1024,7 +1024,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    result = new (ReadDecimal(lengthFormat, in context, style, provider));
+                    result = new(ReadDecimal(lengthFormat, in context, style, provider));
                 }
                 catch (Exception e)
                 {
@@ -1055,7 +1055,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    result = new (ReadBigInteger(lengthFormat, in context, style, provider));
+                    result = new(ReadBigInteger(lengthFormat, in context, style, provider));
                 }
                 catch (Exception e)
                 {
@@ -1086,7 +1086,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    result = new (ReadDateTime(lengthFormat, in context, style, provider));
+                    result = new(ReadDateTime(lengthFormat, in context, style, provider));
                 }
                 catch (Exception e)
                 {
@@ -1117,7 +1117,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    result = new (ReadDateTime(lengthFormat, in context, formats, style, provider));
+                    result = new(ReadDateTime(lengthFormat, in context, formats, style, provider));
                 }
                 catch (Exception e)
                 {
@@ -1148,7 +1148,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    result = new (ReadDateTimeOffset(lengthFormat, in context, style, provider));
+                    result = new(ReadDateTimeOffset(lengthFormat, in context, style, provider));
                 }
                 catch (Exception e)
                 {
@@ -1179,7 +1179,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    result = new (ReadDateTimeOffset(lengthFormat, in context, formats, style, provider));
+                    result = new(ReadDateTimeOffset(lengthFormat, in context, formats, style, provider));
                 }
                 catch (Exception e)
                 {
@@ -1210,7 +1210,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    result = new (ReadGuid(lengthFormat, in context));
+                    result = new(ReadGuid(lengthFormat, in context));
                 }
                 catch (Exception e)
                 {
@@ -1241,7 +1241,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    result = new (ReadGuid(lengthFormat, in context, format));
+                    result = new(ReadGuid(lengthFormat, in context, format));
                 }
                 catch (Exception e)
                 {
@@ -1272,7 +1272,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    result = new (ReadTimeSpan(lengthFormat, context, provider));
+                    result = new(ReadTimeSpan(lengthFormat, context, provider));
                 }
                 catch (Exception e)
                 {
@@ -1303,7 +1303,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    result = new (ReadTimeSpan(lengthFormat, context, formats, style, provider));
+                    result = new(ReadTimeSpan(lengthFormat, context, formats, style, provider));
                 }
                 catch (Exception e)
                 {
@@ -1334,7 +1334,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    result = new (ReadString(length, context));
+                    result = new(ReadString(length, context));
                 }
                 catch (Exception e)
                 {
@@ -1365,7 +1365,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    result = new (ReadString(lengthFormat, context));
+                    result = new(ReadString(lengthFormat, context));
                 }
                 catch (Exception e)
                 {
@@ -1396,7 +1396,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    result = new (ReadBigInteger(length, littleEndian));
+                    result = new(ReadBigInteger(length, littleEndian));
                 }
                 catch (Exception e)
                 {
@@ -1427,7 +1427,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    result = new (ReadBigInteger(lengthFormat, littleEndian));
+                    result = new(ReadBigInteger(lengthFormat, littleEndian));
                 }
                 catch (Exception e)
                 {

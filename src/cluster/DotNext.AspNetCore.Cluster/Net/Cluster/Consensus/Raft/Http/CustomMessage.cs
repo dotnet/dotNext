@@ -71,7 +71,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
 
             ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
-                => new (writer.CopyFromAsync(requestStream, token));
+                => new(writer.CopyFromAsync(requestStream, token));
 
             ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
                 => IDataTransferObject.TransformAsync<TResult, TTransformation>(requestStream, transformation, false, token);

@@ -154,10 +154,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 sessions = readersCount <= FastSessionIdPool.MaxReadersCount ? new FastSessionIdPool() : new SlowSessionIdPool(readersCount);
 
                 writeBuffer = sharedPool.Invoke(bufferSize, false);
-                WriteSession = new (0, writeBuffer.Memory);
+                WriteSession = new(0, writeBuffer.Memory);
 
                 compactionBuffer = sharedPool.Invoke(bufferSize, false);
-                CompactionSession = new (1, compactionBuffer.Memory);
+                CompactionSession = new(1, compactionBuffer.Memory);
 
                 readBuffer = sharedPool.Invoke(checked(readersCount * bufferSize), false);
                 this.bufferSize = bufferSize;

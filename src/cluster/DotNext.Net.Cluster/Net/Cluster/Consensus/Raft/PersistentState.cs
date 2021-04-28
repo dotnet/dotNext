@@ -69,7 +69,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="recordsPerPartition"/> is less than 2.</exception>
         public PersistentState(DirectoryInfo path, int recordsPerPartition, Options? configuration = null)
         {
-            configuration ??= new ();
+            configuration ??= new();
             if (recordsPerPartition < 2L)
                 throw new ArgumentOutOfRangeException(nameof(recordsPerPartition));
             if (!path.Exists)
@@ -84,11 +84,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             location = path;
             this.recordsPerPartition = recordsPerPartition;
             initialSize = configuration.InitialPartitionSize;
-            commitEvent = new (false);
-            bufferManager = new (configuration);
-            sessionManager = new (configuration.MaxConcurrentReads, bufferManager.BufferAllocator, bufferSize);
-            syncRoot = new (sessionManager.Capacity);
-            initialEntry = new (sessionManager.WriteSession.Buffer);
+            commitEvent = new(false);
+            bufferManager = new(configuration);
+            sessionManager = new(configuration.MaxConcurrentReads, bufferManager.BufferAllocator, bufferSize);
+            syncRoot = new(sessionManager.Capacity);
+            initialEntry = new(sessionManager.WriteSession.Buffer);
             evictOnCommit = configuration.CacheEvictionPolicy == LogEntryCacheEvictionPolicy.OnCommit;
 
             var partitionTable = new SortedSet<Partition>(Comparer<Partition>.Create(ComparePartitions));
@@ -121,8 +121,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             partitionTable.Clear();
-            state = new (path);
-            snapshot = new (path, snapshotBufferSize, sessionManager.Capacity, writeThrough);
+            state = new(path);
+            snapshot = new(path, snapshotBufferSize, sessionManager.Capacity, writeThrough);
             snapshot.PopulateCache(sessionManager.WriteSession);
 
             static int ComparePartitions(Partition x, Partition y)
@@ -242,11 +242,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             async ValueTask<TResult> ReadSnapshotAsync(LogEntryConsumer<IRaftLogEntry, TResult> reader, DataAccessSession session, CancellationToken token)
             {
                 var entry = await snapshot.ReadAsync(session, token).ConfigureAwait(false);
-                return await reader.ReadAsync<LogEntry, SingletonEntryList<LogEntry>>(new (entry), entry.SnapshotIndex, token).ConfigureAwait(false);
+                return await reader.ReadAsync<LogEntry, SingletonEntryList<LogEntry>>(new(entry), entry.SnapshotIndex, token).ConfigureAwait(false);
             }
 
             ValueTask<TResult> ReadInitialOrEmptyEntryAsync(in LogEntryConsumer<IRaftLogEntry, TResult> reader, bool readEphemeralEntry, CancellationToken token)
-                => readEphemeralEntry ? reader.ReadAsync<LogEntry, SingletonEntryList<LogEntry>>(new (initialEntry), null, token) : reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
+                => readEphemeralEntry ? reader.ReadAsync<LogEntry, SingletonEntryList<LogEntry>>(new(initialEntry), null, token) : reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
         }
 
         /// <summary>
@@ -342,7 +342,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var session = sessionManager.OpenSession();
             try
             {
-                (bufferedEntries, snapshotIndex) = await UnsafeReadAsync<(BufferedRaftLogEntryList, long?)>(new (bufferingConsumer), session, startIndex, endIndex ?? state.LastIndex, token).ConfigureAwait(false);
+                (bufferedEntries, snapshotIndex) = await UnsafeReadAsync<(BufferedRaftLogEntryList, long?)>(new(bufferingConsumer), session, startIndex, endIndex ?? state.LastIndex, token).ConfigureAwait(false);
             }
             finally
             {
@@ -626,7 +626,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             ValueTask<long> result;
             if (IsDisposed)
             {
-                result = new (GetDisposedTask<long>());
+                result = new(GetDisposedTask<long>());
             }
             else if (entry.IsSnapshot)
             {
@@ -730,7 +730,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             ValueTask<long> result;
             if (IsDisposed)
-                result = new (GetDisposedTask<long>());
+                result = new(GetDisposedTask<long>());
             else if (entry.IsSnapshot)
 #if NETSTANDARD2_1
                 result = new (Task.FromException<long>(new InvalidOperationException(ExceptionMessages.SnapshotDetected)));
@@ -816,7 +816,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 syncRoot.ReleaseWriteLock();
             }
 
-            exit:
+        exit:
             return count;
 
             ValueTask DropPartitionAsync(Partition partition)
@@ -931,7 +931,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             ValueTask result;
             if (IsDisposed)
             {
-                result = new (DisposedTask);
+                result = new(DisposedTask);
             }
             else if (count < 0L)
             {
@@ -943,7 +943,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             else if (count == 0L || !IsBackgroundCompaction)
             {
-                result = new ();
+                result = new();
             }
             else
             {
@@ -1173,13 +1173,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </remarks>
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <seealso cref="Commands.CommandInterpreter"/>
-        protected virtual ValueTask ApplyAsync(LogEntry entry) => new ();
+        protected virtual ValueTask ApplyAsync(LogEntry entry) => new();
 
         /// <summary>
         /// Flushes the underlying data storage.
         /// </summary>
         /// <returns>The task representing asynchronous execution of this method.</returns>
-        protected virtual ValueTask FlushAsync() => new ();
+        protected virtual ValueTask FlushAsync() => new();
 
         private async ValueTask ApplyAsync(long startIndex, CancellationToken token)
         {

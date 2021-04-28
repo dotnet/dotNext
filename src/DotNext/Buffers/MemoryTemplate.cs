@@ -103,7 +103,7 @@ namespace DotNext.Buffers
         {
             Placeholder? head = null, tail = null;
 
-            for (var offset = 0; offset < source.Length - placeholder.Length + 1; )
+            for (var offset = 0; offset < source.Length - placeholder.Length + 1;)
             {
                 if (source.Slice(offset, placeholder.Length).SequenceEqual(placeholder))
                 {

@@ -108,7 +108,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             private void PopulateCache(Span<byte> buffer, Span<LogEntryMetadata> lookupCache)
             {
-                for (int index = 0, count; index < lookupCache.Length; )
+                for (int index = 0, count; index < lookupCache.Length;)
                 {
                     count = Math.Min(buffer.Length / LogEntryMetadata.Size, lookupCache.Length - index);
                     var source = buffer.Slice(0, count * LogEntryMetadata.Size);
@@ -494,7 +494,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Debug.Assert(partition is not null);
             }
 
-            exit:
+        exit:
             return;
 
             Partition Prepend(long partitionNumber, Partition partition)
@@ -512,7 +512,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        private Task GetOrCreatePartitionAsync(long recordIndex, [NotNull]ref Partition? partition)
+        private Task GetOrCreatePartitionAsync(long recordIndex, [NotNull] ref Partition? partition)
         {
             var flushTask = Task.CompletedTask;
 
@@ -564,12 +564,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Debug.Assert(result is not null);
             }
 
-            exit:
+        exit:
             return result;
         }
 
         // during reads the index is growing monothonically
-        private bool TryGetPartition(long recordIndex, [NotNullWhen(true)]ref Partition? partition)
+        private bool TryGetPartition(long recordIndex, [NotNullWhen(true)] ref Partition? partition)
         {
             if (partition is not null && partition.Contains(recordIndex))
                 goto success;
@@ -609,10 +609,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Debug.Assert(partition is not null);
             }
 
-            success:
+        success:
             return true;
 
-            fail:
+        fail:
             return false;
         }
 

@@ -23,13 +23,13 @@ namespace DotNext
 
     internal sealed class SkippingConsumer : ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
     {
-        internal static readonly SkippingConsumer Instance = new ();
+        internal static readonly SkippingConsumer Instance = new();
 
         private SkippingConsumer()
         {
         }
 
         ValueTask ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<byte> input, CancellationToken token)
-            => new (token.IsCancellationRequested ? Task.FromCanceled(token) : Task.CompletedTask);
+            => new(token.IsCancellationRequested ? Task.FromCanceled(token) : Task.CompletedTask);
     }
 }

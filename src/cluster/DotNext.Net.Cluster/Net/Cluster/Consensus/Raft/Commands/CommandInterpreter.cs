@@ -61,7 +61,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
 
             internal static FormatterInfo Create<TCommand>(IFormatter<TCommand> formatter, int id)
                 where TCommand : struct
-                => new (formatter, id);
+                => new(formatter, id);
 
             internal bool IsEmpty => Id == 0 && formatter is null;
 

@@ -562,7 +562,7 @@ namespace DotNext.IO
 
         /// <inheritdoc />
         ValueTask IGrowableBuffer<byte>.CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token)
-            => new (CopyToAsync(consumer, Options.DefaultFileBufferSize, token));
+            => new(CopyToAsync(consumer, Options.DefaultFileBufferSize, token));
 
         /// <summary>
         /// Drains the written content to the consumer synchronously.

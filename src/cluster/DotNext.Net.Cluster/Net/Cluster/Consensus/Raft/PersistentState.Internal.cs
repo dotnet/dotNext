@@ -56,7 +56,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal static LogEntryMetadata Create<TLogEntry>(TLogEntry entry, long offset, long length)
                 where TLogEntry : IRaftLogEntry
-                => new (entry.Timestamp, entry.Term, offset, length, entry.CommandId);
+                => new(entry.Timestamp, entry.Term, offset, length, entry.CommandId);
 
             internal void Serialize(ref SpanWriter<byte> writer)
             {
@@ -77,7 +77,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal static LogEntryMetadata Deserialize(ReadOnlySpan<byte> input)
             {
                 var reader = new SpanReader<byte>(input);
-                return new (ref reader);
+                return new(ref reader);
             }
         }
 
@@ -97,12 +97,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private SnapshotMetadata(ref SpanReader<byte> reader)
             {
                 Index = reader.ReadInt64(true);
-                RecordMetadata = new (ref reader);
+                RecordMetadata = new(ref reader);
             }
 
             internal static SnapshotMetadata Create<TLogEntry>(TLogEntry snapshot, long index, long length)
                 where TLogEntry : IRaftLogEntry
-                => new (LogEntryMetadata.Create(snapshot, Size, length), index);
+                => new(LogEntryMetadata.Create(snapshot, Size, length), index);
 
             internal void Serialize(ref SpanWriter<byte> writer)
             {
@@ -119,7 +119,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal static SnapshotMetadata Deserialize(ReadOnlySpan<byte> input)
             {
                 var reader = new SpanReader<byte>(input);
-                return new (ref reader);
+                return new(ref reader);
             }
         }
 
@@ -132,16 +132,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             private protected ConcurrentStorageAccess(string fileName, int bufferSize, int readersCount, FileOptions options)
             {
-                fs = new (fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, bufferSize, options);
+                fs = new(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, bufferSize, options);
                 readers = new StreamSegment[readersCount];
                 if (readersCount == 1)
                 {
-                    readers[0] = new (fs, true);
+                    readers[0] = new(fs, true);
                 }
                 else
                 {
                     foreach (ref var reader in readers.AsSpan())
-                        reader = new (new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, bufferSize, FileOptions.Asynchronous | FileOptions.SequentialScan), false);
+                        reader = new(new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, bufferSize, FileOptions.Asynchronous | FileOptions.SequentialScan), false);
                 }
             }
 

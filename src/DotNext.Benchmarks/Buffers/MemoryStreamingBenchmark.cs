@@ -14,7 +14,7 @@ namespace DotNext.Buffers
     [MemoryDiagnoser]
     public class MemoryStreamingBenchmark
     {
-        private static readonly RecyclableMemoryStreamManager manager = new ();
+        private static readonly RecyclableMemoryStreamManager manager = new();
         private readonly byte[] chunk = new byte[2048];
 
         [Params(100, 1000, 10_000, 100_000, 1000_000)]

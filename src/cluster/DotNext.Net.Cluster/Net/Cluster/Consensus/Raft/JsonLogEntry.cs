@@ -34,7 +34,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 buffer.WriteString(arg.TypeId, DefaultEncoding, lengthFormat: LengthEncoding);
 
                 // serialize object to JSON
-                using var jsonWriter = new Utf8JsonWriter(buffer, new () { SkipValidation = false, Indented = false });
+                using var jsonWriter = new Utf8JsonWriter(buffer, new() { SkipValidation = false, Indented = false });
                 JsonSerializer.Serialize(jsonWriter, arg.Value);
             }
         }
@@ -42,7 +42,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         internal static async ValueTask<object?> DeserializeAsync(Stream input, Func<string, Type>? typeLoader, JsonSerializerOptions? options, CancellationToken token)
             => await JsonSerializer.DeserializeAsync(input, LoadType(await input.ReadStringAsync(LengthEncoding, DefaultEncoding, token).ConfigureAwait(false), typeLoader), options, token).ConfigureAwait(false);
 
-        private static JsonReaderOptions GetReaderOptions(this JsonSerializerOptions options) => new ()
+        private static JsonReaderOptions GetReaderOptions(this JsonSerializerOptions options) => new()
         {
             AllowTrailingCommas = options.AllowTrailingCommas,
             CommentHandling = options.ReadCommentHandling,

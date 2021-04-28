@@ -21,7 +21,7 @@ namespace DotNext.Reflection
         }
 
         internal static MissingPropertyException Create<T, TValue>(string propertyName)
-            => new (typeof(T), propertyName, typeof(TValue));
+            => new(typeof(T), propertyName, typeof(TValue));
 
         /// <summary>
         /// Gets type of the missing property.

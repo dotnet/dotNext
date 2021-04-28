@@ -63,6 +63,6 @@ namespace DotNext.Threading.Tasks
         /// </remarks>
         /// <param name="task">The arbitrary task of type <see cref="Task{TResult}"/>.</param>
         /// <returns>The dynamically typed task.</returns>
-        public static DynamicTaskAwaitable AsDynamic(this Task task) => new (task);
+        public static DynamicTaskAwaitable AsDynamic(this Task task) => new(task);
     }
 }

@@ -124,7 +124,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Debug.Assert(content is StreamSegment);
                 var segment = As<StreamSegment>(content);
                 Adjust(segment, in metadata);
-                return new (writer.CopyFromAsync(segment, token));
+                return new(writer.CopyFromAsync(segment, token));
             }
 
             private ValueTask CopyFromMemory<TWriter>(TWriter writer, CancellationToken token)
@@ -139,7 +139,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 ContentType.Stream => CopyFromStream(writer, token),
                 ContentType.Memory => CopyFromMemory(writer, token),
-                _ => new (),
+                _ => new(),
             };
 
             /// <inheritdoc/>
@@ -156,7 +156,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <summary>
             /// Gets timestamp of this log entry.
             /// </summary>
-            public DateTimeOffset Timestamp => new (metadata.Timestamp, TimeSpan.Zero);
+            public DateTimeOffset Timestamp => new(metadata.Timestamp, TimeSpan.Zero);
 
             private ValueTask<TResult> TransformStreamAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
                 where TTransformation : notnull, IDataTransferObject.ITransformation<TResult>
@@ -232,8 +232,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public ValueTask<object?> DeserializeFromJsonAsync(Func<string, Type>? typeLoader = null, JsonSerializerOptions? options = null, CancellationToken token = default) => contentType switch
             {
                 ContentType.Stream => DeserializeFromJsonStreamAsync(typeLoader, options, token),
-                ContentType.Memory => new (JsonLogEntry.Deserialize(GetMemoryReader(), typeLoader, options)),
-                _ => new (default(object)),
+                ContentType.Memory => new(JsonLogEntry.Deserialize(GetMemoryReader(), typeLoader, options)),
+                _ => new(default(object)),
             };
 #endif
         }
@@ -252,7 +252,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The log entry representing JSON-serializable content.</returns>
         /// <seealso cref="LogEntry.DeserializeFromJsonAsync"/>
         public JsonLogEntry<T> CreateJsonLogEntry<T>(T content, string? typeId = null, JsonSerializerOptions? options = null)
-            => new (Term, content, typeId, options);
+            => new(Term, content, typeId, options);
 #endif
     }
 }

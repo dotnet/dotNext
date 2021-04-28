@@ -75,7 +75,7 @@ namespace DotNext.IO
         /// <param name="output">The writable stream.</param>
         /// <returns>The wrapped stream.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="output"/> is <see langword="null"/>.</exception>
-        public static implicit operator StreamConsumer(Stream output) => new (output);
+        public static implicit operator StreamConsumer(Stream output) => new(output);
 
         /// <summary>
         /// Determines whether the two objects contain references to the same stream instance.

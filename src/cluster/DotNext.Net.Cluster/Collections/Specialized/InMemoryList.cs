@@ -22,6 +22,6 @@ namespace DotNext.Collections.Specialized
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        public static implicit operator InMemoryList<T>(Memory<T> memory) => new (memory);
+        public static implicit operator InMemoryList<T>(Memory<T> memory) => new(memory);
     }
 }

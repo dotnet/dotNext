@@ -192,7 +192,7 @@ namespace DotNext.Buffers
             items.CopyTo(buffer.AsSpan(index));
             position += items.Length;
 
-            exit:
+        exit:
             return;
         }
 

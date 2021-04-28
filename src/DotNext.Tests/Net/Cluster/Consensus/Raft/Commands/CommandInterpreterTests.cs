@@ -53,7 +53,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
 
         private sealed class Formatter : IFormatter<BinaryOperationCommand>, IFormatter<UnaryOperationCommand>, IFormatter<AssignCommand>, IFormatter<SnapshotCommand>
         {
-            public static readonly Formatter Instance = new ();
+            public static readonly Formatter Instance = new();
 
             async ValueTask IFormatter<BinaryOperationCommand>.SerializeAsync<TWriter>(BinaryOperationCommand command, TWriter writer, CancellationToken token)
             {
@@ -173,7 +173,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
                 => interpreter.CreateLogEntry(command, Term);
 
             protected override ValueTask ApplyAsync(LogEntry entry)
-                => new (interpreter.InterpretAsync(entry).AsTask());
+                => new(interpreter.InterpretAsync(entry).AsTask());
 
             protected override void Dispose(bool disposing)
             {
@@ -196,7 +196,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
         public static async Task MethodsAsHandlers()
         {
             using var interpreter = new CustomInterpreter();
-            var entry1 = interpreter.CreateLogEntry(new BinaryOperationCommand { X = 40, Y = 2, Type = BinaryOperation.Add}, 1L);
+            var entry1 = interpreter.CreateLogEntry(new BinaryOperationCommand { X = 40, Y = 2, Type = BinaryOperation.Add }, 1L);
             Equal(1L, entry1.Term);
             Equal(0, interpreter.Value);
             Equal(0, await interpreter.InterpretAsync(entry1));
@@ -226,7 +226,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
                 .Add(assignOp, new Formatter())
                 .Build();
 
-            var entry1 = interpreter.CreateLogEntry(new BinaryOperationCommand { X = 40, Y = 2, Type = BinaryOperation.Add}, 1L);
+            var entry1 = interpreter.CreateLogEntry(new BinaryOperationCommand { X = 40, Y = 2, Type = BinaryOperation.Add }, 1L);
             Equal(1L, entry1.Term);
             Equal(0, state.Value);
             Equal(0, await interpreter.InterpretAsync(entry1));
@@ -247,7 +247,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands
         public static async Task InterpreterWithPersistentState()
         {
             await using var wal = new TestPersistenceState();
-            var entry1 = wal.CreateLogEntry(new BinaryOperationCommand { X = 44, Y = 2, Type = BinaryOperation.Subtract});
+            var entry1 = wal.CreateLogEntry(new BinaryOperationCommand { X = 44, Y = 2, Type = BinaryOperation.Subtract });
             await wal.AppendAsync(entry1);
             Equal(0, wal.Value);
             await wal.CommitAsync(CancellationToken.None);

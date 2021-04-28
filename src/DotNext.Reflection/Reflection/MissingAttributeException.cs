@@ -25,6 +25,6 @@ namespace DotNext.Reflection
 
         internal static MissingAttributeException Create<T, TArgs>()
             where TArgs : Attribute
-            => new (typeof(T), typeof(TArgs));
+            => new(typeof(T), typeof(TArgs));
     }
 }

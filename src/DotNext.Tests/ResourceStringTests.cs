@@ -9,7 +9,7 @@ namespace DotNext
         [Fact]
         public static void CheckResourceStrings()
         {
-            foreach(var asm in AppDomain.CurrentDomain.GetAssemblies())
+            foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
             {
                 if (asm.FullName.StartsWith("DotNext"))
                 {

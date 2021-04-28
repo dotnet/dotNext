@@ -56,7 +56,7 @@ namespace DotNext.Metaprogramming
             switchValue = expression;
         }
 
-        internal CaseStatement Case(IEnumerable<Expression> testValues) => new (this, testValues);
+        internal CaseStatement Case(IEnumerable<Expression> testValues) => new(this, testValues);
 
         /// <summary>
         /// Specifies a pattern to compare to the match expression
@@ -94,7 +94,7 @@ namespace DotNext.Metaprogramming
             return this;
         }
 
-        internal DefaultStatement Default() => new (this);
+        internal DefaultStatement Default() => new(this);
 
         private protected override SwitchExpression Build() => Expression.Switch(Type, switchValue, defaultExpression, null, cases);
 

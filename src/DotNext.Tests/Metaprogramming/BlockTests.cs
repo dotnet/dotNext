@@ -19,7 +19,7 @@ namespace DotNext.Metaprogramming
             public new bool IsDisposed => base.IsDisposed;
 
             ValueTask IAsyncDisposable.DisposeAsync()
-                => new (Task.Run(Dispose)); 
+                => new(Task.Run(Dispose));
         }
 
         private struct DisposableStruct
@@ -117,6 +117,6 @@ namespace DotNext.Metaprogramming
             False(disposable.IsDisposed);
             Equal(42L, await lambda(disposable));
             True(disposable.IsDisposed);
-        } 
+        }
     }
 }

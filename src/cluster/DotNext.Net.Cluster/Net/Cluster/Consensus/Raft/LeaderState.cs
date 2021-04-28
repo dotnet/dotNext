@@ -27,9 +27,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             currentTerm = term;
             this.allowPartitioning = allowPartitioning;
-            timerCancellation = new ();
-            replicationEvent = new ();
-            replicationQueue = new ();
+            timerCancellation = new();
+            replicationEvent = new();
+            replicationQueue = new();
         }
 
         private async Task<bool> DoHeartbeats(IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)

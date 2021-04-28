@@ -131,7 +131,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 /// <summary>
                 /// Gets holder of the member holder at the current position of enumerator.
                 /// </summary>
-                public readonly MemberHolder Current => new (current);
+                public readonly MemberHolder Current => new(current);
             }
 
             private readonly MemberCollection members;
@@ -152,7 +152,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// Returns enumerator over cluster members.
             /// </summary>
             /// <returns>The enumerator over cluster members.</returns>
-            public Enumerator GetEnumerator() => new (members);
+            public Enumerator GetEnumerator() => new(members);
 
             internal IMemberCollection Build() => members;
         }
@@ -698,7 +698,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 tokenSource?.Dispose();
             }
 
-            exit:
+        exit:
             return new Result<bool>(currentTerm, result);
         }
 
@@ -729,7 +729,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 lockHolder.Dispose();
             }
 
-            resign_denied:
+        resign_denied:
             return false;
         }
 

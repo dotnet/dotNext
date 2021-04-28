@@ -223,6 +223,6 @@ namespace DotNext.Threading
         /// </summary>
         /// <returns>The task representing state of asynchronous graceful shutdown.</returns>
         public ValueTask DisposeAsync()
-            => new (IsDisposed ? Task.CompletedTask : DisposeAsyncImpl());
+            => new(IsDisposed ? Task.CompletedTask : DisposeAsyncImpl());
     }
 }

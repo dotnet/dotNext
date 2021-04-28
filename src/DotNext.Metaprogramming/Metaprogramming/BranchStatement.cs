@@ -13,9 +13,9 @@ namespace DotNext.Metaprogramming
             this.branchType = branchType;
         }
 
-        internal static BranchStatement Positive(ConditionalBuilder builder) => new (builder, true);
+        internal static BranchStatement Positive(ConditionalBuilder builder) => new(builder, true);
 
-        internal static BranchStatement Negative(ConditionalBuilder builder) => new (builder, false);
+        internal static BranchStatement Negative(ConditionalBuilder builder) => new(builder, false);
 
         public ConditionalBuilder Build(Action body)
         {

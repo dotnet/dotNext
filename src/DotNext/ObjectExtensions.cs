@@ -32,7 +32,7 @@ namespace DotNext
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UserDataStorage GetUserData<T>(this T obj)
             where T : class
-            => new (obj);
+            => new(obj);
 
         /// <summary>
         /// Checks whether the specified object is equal to one

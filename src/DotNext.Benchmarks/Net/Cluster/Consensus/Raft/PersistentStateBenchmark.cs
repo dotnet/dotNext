@@ -33,7 +33,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private sealed class LogEntrySizeCounter : ILogEntryConsumer<IRaftLogEntry, long>
         {
-            internal static readonly LogEntrySizeCounter Instance = new ();
+            internal static readonly LogEntrySizeCounter Instance = new();
 
             private LogEntrySizeCounter()
             {

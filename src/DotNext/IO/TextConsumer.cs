@@ -36,7 +36,7 @@ namespace DotNext.IO
 
         /// <inheritdoc />
         ValueTask ISupplier<ReadOnlyMemory<char>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<char> input, CancellationToken token)
-            => new (output.WriteAsync(input, token));
+            => new(output.WriteAsync(input, token));
 
         /// <inheritdoc />
         void IFlushable.Flush() => output.Flush();
@@ -77,7 +77,7 @@ namespace DotNext.IO
         /// <param name="output">The text writer.</param>
         /// <returns>The wrapped text writer.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="output"/> is <see langword="null"/>.</exception>
-        public static implicit operator TextConsumer(TextWriter output) => new (output);
+        public static implicit operator TextConsumer(TextWriter output) => new(output);
 
         /// <summary>
         /// Determines whether the two objects contain references to the same text writer.

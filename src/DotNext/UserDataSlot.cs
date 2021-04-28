@@ -31,13 +31,13 @@ namespace DotNext
         /// Allocates a new data slot.
         /// </summary>
         /// <returns>Allocated data slot.</returns>
-        public static UserDataSlot<TValue> Allocate() => new (UserDataSlot.NewId);
+        public static UserDataSlot<TValue> Allocate() => new(UserDataSlot.NewId);
 
         [return: NotNullIfNotNull("defaultValue")]
         internal TValue? GetUserData(IDictionary<long, object?> storage, TValue? defaultValue)
             => storage.TryGetValue(id, out var userData) && userData is TValue result ? result : defaultValue;
 
-        internal bool GetUserData(IDictionary<long, object?> storage, [MaybeNullWhen(false)]out TValue userData)
+        internal bool GetUserData(IDictionary<long, object?> storage, [MaybeNullWhen(false)] out TValue userData)
         {
             if (storage.TryGetValue(id, out var value) && value is TValue typedValue)
             {
@@ -59,7 +59,7 @@ namespace DotNext
         internal bool RemoveUserData(IDictionary<long, object?> storage)
             => storage.Remove(id);
 
-        internal bool RemoveUserData(Dictionary<long, object?> storage, [MaybeNullWhen(false)]out TValue userData)
+        internal bool RemoveUserData(Dictionary<long, object?> storage, [MaybeNullWhen(false)] out TValue userData)
         {
             if (storage.Remove(id, out var value) && value is TValue typedValue)
             {

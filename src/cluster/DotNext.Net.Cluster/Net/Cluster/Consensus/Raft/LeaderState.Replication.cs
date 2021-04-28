@@ -104,7 +104,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 else
                     replicationAwaiter.OnCompleted(Complete);
 
-                return new (Task);
+                return new(Task);
 
                 static bool ContainsTerm(TList list, long term)
                 {
@@ -130,7 +130,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private volatile WaitNode replicationEvent, replicationQueue;
 
         private void DrainReplicationQueue()
-            => Interlocked.Exchange(ref replicationQueue, new ()).SetResult(true);
+            => Interlocked.Exchange(ref replicationQueue, new()).SetResult(true);
 
         private Task<bool> WaitForReplicationAsync(TimeSpan period, CancellationToken token)
         {
@@ -140,7 +140,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var current = replicationEvent.Task;
             if (current.IsCompleted)
             {
-                replicationEvent = new ();
+                replicationEvent = new();
             }
             else
             {

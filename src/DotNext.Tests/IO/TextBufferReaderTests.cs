@@ -116,7 +116,7 @@ namespace DotNext.IO
             using var tr = data.AsTextReader();
             var array = new char[data.Length];
             Equal(3, tr.Read(array, 0, array.Length));
-            Equal(new[] { 'H', 'E', 'L'}, array[0..3]);
+            Equal(new[] { 'H', 'E', 'L' }, array[0..3]);
 
             Array.Clear(array, 0, array.Length);
             Equal(2, tr.Read(array, 0, array.Length));
@@ -140,7 +140,7 @@ namespace DotNext.IO
             using var tr = data.AsTextReader();
             var array = new char[data.Length];
             Equal(3, await tr.ReadAsync(array, 0, array.Length));
-            Equal(new[] { 'H', 'E', 'L'}, array[0..3]);
+            Equal(new[] { 'H', 'E', 'L' }, array[0..3]);
 
             Array.Clear(array, 0, array.Length);
             Equal(2, await tr.ReadAsync(array, 0, array.Length));
@@ -162,7 +162,7 @@ namespace DotNext.IO
         public static void ReadLines(ReadOnlySequence<char> charData)
         {
             using var tr = charData.AsTextReader();
-            string valueString = new (charData.ToArray());
+            string valueString = new(charData.ToArray());
             var data = tr.ReadLine();
             Equal("Char data \r\u3190 with", data);
 
@@ -180,7 +180,7 @@ namespace DotNext.IO
         public static async Task ReadLinesAsync(ReadOnlySequence<char> charData)
         {
             using var tr = charData.AsTextReader();
-            string valueString = new (charData.ToArray());
+            string valueString = new(charData.ToArray());
             var data = await tr.ReadLineAsync();
             Equal("Char data \r\u3190 with", data);
 

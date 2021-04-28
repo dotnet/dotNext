@@ -91,7 +91,7 @@ namespace DotNext.Linq.Expressions
         /// <param name="body">The body of the statement.</param>
         /// <returns>The constructed expression.</returns>
         public static UsingExpression Create(Expression resource, Expression body)
-            => new (resource) { Body = body };
+            => new(resource) { Body = body };
 
         /// <summary>
         /// Creates a block of code associated with asynchronously disposable resource.
@@ -102,7 +102,7 @@ namespace DotNext.Linq.Expressions
         /// <returns>The constructed expression.</returns>
         /// <seealso cref="IsAwaitable"/>
         public static UsingExpression Create(Expression resource, bool configureAwait, Expression body)
-            => new (resource, configureAwait) { Body = body };
+            => new(resource, configureAwait) { Body = body };
 
         /// <summary>
         /// Indicates that this <c>using</c> block is asynchronous.

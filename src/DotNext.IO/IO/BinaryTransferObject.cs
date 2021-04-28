@@ -80,7 +80,7 @@ namespace DotNext.IO
 
         /// <inheritdoc/>
         ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
-            => new (writer.WriteAsync(content, token));
+            => new(writer.WriteAsync(content, token));
 
         /// <inheritdoc/>
         ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)

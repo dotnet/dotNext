@@ -66,7 +66,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             var headers = new PacketHeaders(datagram, out consumedBytes);
             datagram = datagram.Slice(consumedBytes);
 
-            request_channel:
+        request_channel:
             if (!channels.TryGetValue(correlationId, out var channel))
             {
                 // channel doesn't exist in the list of active channel but rented successfully

@@ -44,14 +44,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             return new X509Certificate2(ms.ToArray(), "1234");
         }
 
-        private static SslServerAuthenticationOptions CreateServerSslOptions() => new ()
+        private static SslServerAuthenticationOptions CreateServerSslOptions() => new()
         {
             AllowRenegotiation = true,
             EncryptionPolicy = EncryptionPolicy.RequireEncryption,
             ServerCertificate = LoadCertificate()
         };
 
-        private static SslClientAuthenticationOptions CreateClientSslOptions() => new ()
+        private static SslClientAuthenticationOptions CreateClientSslOptions() => new()
         {
             AllowRenegotiation = true,
             TargetHost = "localhost",
@@ -66,7 +66,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         [InlineData(false)]
         public Task RequestResponse(bool useSsl)
         {
-            TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new (address, 2, DefaultAllocator, ServerExchangeFactory(member), NullLoggerFactory.Instance)
+            TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new(address, 2, DefaultAllocator, ServerExchangeFactory(member), NullLoggerFactory.Instance)
             {
                 ReceiveTimeout = timeout,
                 TransmissionBlockSize = 65535,
@@ -74,7 +74,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 SslOptions = useSsl ? CreateServerSslOptions() : null
             };
 
-            TcpClient CreateClient(IPEndPoint address) => new (address, DefaultAllocator, NullLoggerFactory.Instance)
+            TcpClient CreateClient(IPEndPoint address) => new(address, DefaultAllocator, NullLoggerFactory.Instance)
             {
                 TransmissionBlockSize = 65535,
                 SslOptions = useSsl ? CreateClientSslOptions() : null
@@ -85,13 +85,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         [Fact]
         public Task StressTest()
         {
-            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new (address, 100, DefaultAllocator, ServerExchangeFactory(member), NullLoggerFactory.Instance)
+            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new(address, 100, DefaultAllocator, ServerExchangeFactory(member), NullLoggerFactory.Instance)
             {
                 ReceiveTimeout = timeout,
                 TransmissionBlockSize = 65535,
                 GracefulShutdownTimeout = 2000
             };
-            static TcpClient CreateClient(IPEndPoint address) => new (address, DefaultAllocator, NullLoggerFactory.Instance)
+            static TcpClient CreateClient(IPEndPoint address) => new(address, DefaultAllocator, NullLoggerFactory.Instance)
             {
                 TransmissionBlockSize = 65535
             };
@@ -103,13 +103,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         [InlineData(false)]
         public Task MetadataRequestResponse(bool smallAmountOfMetadata)
         {
-            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new (address, 100, DefaultAllocator, ServerExchangeFactory(member), NullLoggerFactory.Instance)
+            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new(address, 100, DefaultAllocator, ServerExchangeFactory(member), NullLoggerFactory.Instance)
             {
                 ReceiveTimeout = timeout,
                 TransmissionBlockSize = 300,
                 GracefulShutdownTimeout = 2000
             };
-            static TcpClient CreateClient(IPEndPoint address) => new (address, DefaultAllocator, NullLoggerFactory.Instance)
+            static TcpClient CreateClient(IPEndPoint address) => new(address, DefaultAllocator, NullLoggerFactory.Instance)
             {
                 TransmissionBlockSize = 300
             };
@@ -131,13 +131,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         [InlineData(50, ReceiveEntriesBehavior.DropFirst)]
         public Task SendingLogEntries(int payloadSize, ReceiveEntriesBehavior behavior)
         {
-            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new (address, 100, DefaultAllocator, ServerExchangeFactory(member), NullLoggerFactory.Instance)
+            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new(address, 100, DefaultAllocator, ServerExchangeFactory(member), NullLoggerFactory.Instance)
             {
                 TransmissionBlockSize = 400,
                 ReceiveTimeout = timeout,
                 GracefulShutdownTimeout = 2000
             };
-            static TcpClient CreateClient(IPEndPoint address) => new (address, DefaultAllocator, NullLoggerFactory.Instance)
+            static TcpClient CreateClient(IPEndPoint address) => new(address, DefaultAllocator, NullLoggerFactory.Instance)
             {
                 TransmissionBlockSize = 400
             };
@@ -149,13 +149,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         [InlineData(50)]
         public Task SendingSnapshot(int payloadSize)
         {
-            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new (address, 100, DefaultAllocator, ServerExchangeFactory(member), NullLoggerFactory.Instance)
+            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new(address, 100, DefaultAllocator, ServerExchangeFactory(member), NullLoggerFactory.Instance)
             {
                 TransmissionBlockSize = 350,
                 ReceiveTimeout = timeout,
                 GracefulShutdownTimeout = 2000
             };
-            static TcpClient CreateClient(IPEndPoint address) => new (address, DefaultAllocator, NullLoggerFactory.Instance)
+            static TcpClient CreateClient(IPEndPoint address) => new(address, DefaultAllocator, NullLoggerFactory.Instance)
             {
                 TransmissionBlockSize = 350
             };

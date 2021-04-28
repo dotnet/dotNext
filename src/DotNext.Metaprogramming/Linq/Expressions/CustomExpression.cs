@@ -24,7 +24,7 @@ namespace DotNext.Linq.Expressions
         /// </summary>
         public sealed override bool CanReduce => true;
 
-         /// <summary>
+        /// <summary>
         /// Translates this expression into predefined set of expressions
         /// using Lowering technique.
         /// </summary>

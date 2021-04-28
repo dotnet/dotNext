@@ -56,7 +56,7 @@ namespace DotNext.Linq.Expressions
         /// <param name="body">The body of the expression.</param>
         /// <returns>The constructed expression.</returns>
         public static WithExpression Create(Expression obj, Expression body)
-            => new (obj) { Body = body };
+            => new(obj) { Body = body };
 
         /// <summary>
         /// The expression representing referred object inside of <see cref="Body"/>.
@@ -82,7 +82,7 @@ namespace DotNext.Linq.Expressions
         /// </summary>
         /// <param name="body">A new body to be placed into this expression.</param>
         /// <returns>The expression updated with the given body.</returns>
-        public WithExpression Update(Expression body) => new (assignment is null ? Variable : assignment.Right) { Body = body };
+        public WithExpression Update(Expression body) => new(assignment is null ? Variable : assignment.Right) { Body = body };
 
         /// <summary>
         /// Translates this expression into predefined set of expressions

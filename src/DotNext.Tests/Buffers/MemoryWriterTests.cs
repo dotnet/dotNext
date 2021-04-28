@@ -219,7 +219,7 @@ namespace DotNext.Buffers
             using var writer = new PooledArrayBufferWriter<int>();
             IReadOnlyList<int> collection = writer;
             Empty(collection);
-            
+
             writer.Add(42);
             Equal(1, writer.WrittenCount);
             Equal(1, collection.Count);
@@ -228,7 +228,7 @@ namespace DotNext.Buffers
             Equal(42, Enumerable.First(collection));
             Equal(1, Enumerable.Count(collection));
 
-            writer.AddAll(new[] {43, 44});
+            writer.AddAll(new[] { 43, 44 });
             Equal(3, writer.WrittenCount);
             Equal(3, collection.Count);
             Equal(42, collection[0]);
@@ -236,7 +236,7 @@ namespace DotNext.Buffers
             Equal(44, collection[2]);
             Throws<IndexOutOfRangeException>(() => collection[3]);
             Equal(3, Enumerable.Count(collection));
-            Equal(new[] {42, 43, 44}, Enumerable.ToArray(collection));
+            Equal(new[] { 42, 43, 44 }, Enumerable.ToArray(collection));
         }
 
         [Fact]
@@ -291,7 +291,7 @@ namespace DotNext.Buffers
             Equal(56, list[0]);
 
             //check insertion with overflow
-            for (var i = writer.Capacity; i > 0 ; i--)
+            for (var i = writer.Capacity; i > 0; i--)
             {
                 list.Insert(0, i + 100);
             }
@@ -368,7 +368,7 @@ namespace DotNext.Buffers
         public static void BufferSizeCallback()
         {
             var counter = new AllocationEventCounter();
-            using (var writer = new PooledArrayBufferWriter<byte> { BufferSizeCallback = counter.WriteMetric})
+            using (var writer = new PooledArrayBufferWriter<byte> { BufferSizeCallback = counter.WriteMetric })
                 writer.Write(new byte[] { 1, 2, 3 });
             True(counter.Value >= 3);
         }

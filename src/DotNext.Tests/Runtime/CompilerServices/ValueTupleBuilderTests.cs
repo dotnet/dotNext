@@ -25,7 +25,7 @@ namespace DotNext.Runtime.CompilerServices
             var tupleType = builder.Build();
             Equal(typeof(ValueTuple<,,,,,,,>), tupleType.GetGenericTypeDefinition());
         }
-        
+
         [Fact]
         public static void TupleRestTypeConstructionTest()
         {
@@ -40,7 +40,7 @@ namespace DotNext.Runtime.CompilerServices
             for (int i = 0; i < 5; i++)
                 builder.Add<bool>();
             Equal(8, builder.Count);
-            
+
             var tupleType = builder.Build();
             const string restFieldName = nameof(ValueTuple<bool, bool, bool, bool, bool, bool, bool, bool>.Rest);
             Equal(typeof(ValueTuple<bool>), tupleType.GetField(restFieldName)?.FieldType);

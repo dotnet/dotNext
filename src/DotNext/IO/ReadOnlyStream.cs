@@ -48,7 +48,7 @@ namespace DotNext.IO
             {
                 try
                 {
-                    result = new (Read(buffer.Span));
+                    result = new(Read(buffer.Span));
                 }
                 catch (Exception e)
                 {

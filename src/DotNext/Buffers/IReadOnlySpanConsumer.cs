@@ -44,7 +44,7 @@ namespace DotNext.Buffers
             }
             else
             {
-                result = new ();
+                result = new();
                 try
                 {
                     Invoke(input.Span);
@@ -145,7 +145,7 @@ namespace DotNext.Buffers
             }
             else
             {
-                result = new ();
+                result = new();
                 try
                 {
                     action(input.Span, arg);
@@ -203,7 +203,7 @@ namespace DotNext.Buffers
             }
             else
             {
-                result = new ();
+                result = new();
                 try
                 {
                     output.Write(input.Span);

@@ -24,7 +24,7 @@ namespace DotNext.IO.MemoryMappedFiles
 
         long IUnmanagedMemory.Size => length;
 
-        public Pointer<byte> Pointer => new (ptr + accessor.PointerOffset);
+        public Pointer<byte> Pointer => new(ptr + accessor.PointerOffset);
 
         Span<byte> IUnmanagedMemory.Bytes => GetSpan();
 

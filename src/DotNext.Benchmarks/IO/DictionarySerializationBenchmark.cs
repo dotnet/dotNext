@@ -18,7 +18,7 @@ namespace DotNext.IO
     public class DictionarySerializationBenchmark
     {
         private const int DictionarySize = 100;
-        private readonly Dictionary<string, string> data = new (DictionarySize);
+        private readonly Dictionary<string, string> data = new(DictionarySize);
         private readonly byte[] buffer = new byte[512];
 
         [GlobalSetup]

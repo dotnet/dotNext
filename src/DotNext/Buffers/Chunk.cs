@@ -14,7 +14,7 @@ namespace DotNext.Buffers
         {
             var index = RunningIndex;
             Chunk<T> chunk;
-            base.Next = chunk = new (segment) { RunningIndex = index + Memory.Length };
+            base.Next = chunk = new(segment) { RunningIndex = index + Memory.Length };
             return chunk;
         }
 
@@ -29,6 +29,6 @@ namespace DotNext.Buffers
         }
 
         internal static ReadOnlySequence<T> CreateSequence(Chunk<T> head, Chunk<T> tail)
-            => new (head, 0, tail, tail.Memory.Length);
+            => new(head, 0, tail, tail.Memory.Length);
     }
 }

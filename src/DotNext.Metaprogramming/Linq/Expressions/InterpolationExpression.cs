@@ -49,7 +49,7 @@ namespace DotNext.Linq.Expressions
         /// <param name="str">Formatting pattern and actual arguments.</param>
         /// <returns>String interpolation expression.</returns>
         public static InterpolationExpression FormattableString(FormattableString str)
-            => new (str, Kind.FormattableString);
+            => new(str, Kind.FormattableString);
 
         /// <summary>
         /// Returns string interpolation expression which produces
@@ -58,7 +58,7 @@ namespace DotNext.Linq.Expressions
         /// <param name="str">Formatting pattern and actual arguments.</param>
         /// <returns>String interpolation expression.</returns>
         public static InterpolationExpression PlainString(FormattableString str)
-            => new (str, Kind.PlainString);
+            => new(str, Kind.PlainString);
 
         /// <summary>
         /// Returns a collection that contains one or more objects to format.

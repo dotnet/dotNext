@@ -21,7 +21,7 @@ namespace DotNext.Diagnostics
         /// <summary>
         /// Gets the current point in time.
         /// </summary>
-        public static Timestamp Current => new (GetTimestamp());
+        public static Timestamp Current => new(GetTimestamp());
 
         private static long ToTicks(double duration)
             => (long)(TimeSpan.TicksPerSecond * duration / Frequency);
@@ -29,12 +29,12 @@ namespace DotNext.Diagnostics
         /// <summary>
         /// Gets <see cref="TimeSpan"/> representing this timestamp.
         /// </summary>
-        public TimeSpan Value => new (ToTicks(ticks));
+        public TimeSpan Value => new(ToTicks(ticks));
 
         /// <summary>
         /// Gets precise difference between the current point in time and this timestamp.
         /// </summary>
-        public TimeSpan Elapsed => new (ToTicks(Math.Max(0L, GetTimestamp() - ticks)));
+        public TimeSpan Elapsed => new(ToTicks(Math.Max(0L, GetTimestamp() - ticks)));
 
         /// <summary>
         /// Gets <see cref="TimeSpan"/> representing the given timestamp.

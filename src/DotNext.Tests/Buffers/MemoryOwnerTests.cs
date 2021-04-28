@@ -45,7 +45,7 @@ namespace DotNext.Buffers
         [Fact]
         public static void RentFromMemoryPool3()
         {
-            Func<int, IMemoryOwner<byte>> provider = MemoryPool<byte>.Shared.Rent; 
+            Func<int, IMemoryOwner<byte>> provider = MemoryPool<byte>.Shared.Rent;
             using var owner = provider.ToAllocator().Invoke(10);
             Equal(10, owner.Memory.Length);
             owner[1] = 42;

@@ -56,7 +56,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 else
                 {
                     touched = true;
-                    result = new (reader.CopyToAsync(writer, token));
+                    result = new(reader.CopyToAsync(writer, token));
                 }
 
                 return result;

@@ -44,7 +44,7 @@ namespace DotNext.IO
         {
             using var writer = new PooledArrayBufferWriter<char>();
             using var actual = writer.AsTextWriter();
-            
+
             using TextWriter expected = new StringWriter(InvariantCulture);
 
             actual.Write("Hello, world!");
@@ -216,7 +216,7 @@ namespace DotNext.IO
         {
             var writer = new ArrayBufferWriter<char>();
             using var actual = writer.AsTextWriter();
-            
+
             using TextWriter expected = new StringWriter(InvariantCulture);
 
             await actual.WriteAsync("Hello, world!");
@@ -239,7 +239,7 @@ namespace DotNext.IO
         [Fact]
         public static async Task WriteSequence()
         {
-            var sequence = new [] { "abc".AsMemory(), "def".AsMemory(), "g".AsMemory() }.ToReadOnlySequence();
+            var sequence = new[] { "abc".AsMemory(), "def".AsMemory(), "g".AsMemory() }.ToReadOnlySequence();
             await using var writer = new StringWriter();
             await writer.WriteAsync(sequence);
             Equal("abcdefg", writer.ToString());
@@ -257,7 +257,7 @@ namespace DotNext.IO
             var expected = new XmlSerializableType
             {
                 Value = "Привет, мир!",
-                StringArray = new []
+                StringArray = new[]
                 {
                     "String1",
                     "Strin2"

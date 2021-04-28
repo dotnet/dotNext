@@ -16,12 +16,12 @@ namespace DotNext.Buffers
             Equal(0, writer.WrittenCount);
             Equal(5, writer.FreeCapacity);
             ref int current = ref writer.Current;
-            
+
             writer.Add(10);
             Equal(1, writer.WrittenCount);
             Equal(4, writer.FreeCapacity);
             Equal(10, current);
-            
+
             var segment = writer.Slide(4);
             segment[0] = 20;
             segment[1] = 30;
@@ -72,7 +72,7 @@ namespace DotNext.Buffers
 
             reader.Reset();
             Equal(0, reader.ConsumedCount);
-            
+
             var actual = new byte[3];
             Equal(3, reader.Read(actual));
             Equal(expected, actual);
@@ -180,7 +180,7 @@ namespace DotNext.Buffers
             Equal(new[] { 10, 20, 30 }, reader.ReadToEnd().ToArray());
             reader.Reset();
             Equal(10, reader.Read());
-            Equal(new[] { 20, 30}, reader.ReadToEnd().ToArray());
+            Equal(new[] { 20, 30 }, reader.ReadToEnd().ToArray());
         }
 
         [Fact]

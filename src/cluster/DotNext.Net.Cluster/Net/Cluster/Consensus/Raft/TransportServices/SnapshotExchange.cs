@@ -81,12 +81,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             ValueTask<bool> result;
             if (headers.Type == MessageType.Continue)
             {
-                result = new (true);
+                result = new(true);
             }
             else
             {
                 TrySetResult(IExchange.ReadResult(payload.Span));
-                result = new (false);
+                result = new(false);
             }
 
             return result;

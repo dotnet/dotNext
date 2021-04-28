@@ -178,7 +178,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal LockManager(long concurrencyLevel)
             {
-                state = new (concurrencyLevel);
+                state = new(concurrencyLevel);
                 acquireReadLock = LockState.TryAcquireReadLock;
                 releaseReadLock = LockState.ReleaseReadLock;
                 acquireWriteLock = LockState.TryAcquireWriteLock;

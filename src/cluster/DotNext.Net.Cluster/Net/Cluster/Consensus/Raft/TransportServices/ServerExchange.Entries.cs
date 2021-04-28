@@ -45,7 +45,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         bool IDataTransferObject.IsReusable => false;
 
         ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
-            => new (writer.CopyFromAsync(reader, token));
+            => new(writer.CopyFromAsync(reader, token));
 
         ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
             => IDataTransferObject.TransformAsync<TResult, TTransformation>(reader, transformation, token);
@@ -69,7 +69,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             static void SetState(ServerExchange server, State state) => server.SetState(state);
         }
 
-        private readonly AsyncTrigger transmissionStateTrigger = new ();
+        private readonly AsyncTrigger transmissionStateTrigger = new();
         private int remainingCount, lookupIndex;
         private ReceivedLogEntry currentEntry;
 
@@ -211,7 +211,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             remainingCount = -1;
             GC.SuppressFinalize(this);
-            return new ();
+            return new();
         }
     }
 }

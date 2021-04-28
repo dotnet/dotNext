@@ -83,7 +83,7 @@ namespace DotNext.Text
             const int maxInputBlockSize = 340; // 340 chars can be decoded as 255 bytes which is <= DecodingBufferSize
             Span<byte> buffer = stackalloc byte[DecodingBufferSize];
 
-            consume_next_chunk:
+        consume_next_chunk:
             if (Decode(chars.TrimLength(maxInputBlockSize), buffer, out var consumed, out var produced))
             {
                 reservedBufferSize = 0;

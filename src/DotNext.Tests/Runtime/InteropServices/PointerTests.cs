@@ -98,7 +98,7 @@ namespace DotNext.Runtime.InteropServices
                 var dest = new ushort[array.LongLength];
                 Equal(1L, ptr.WriteTo(dest, 2L, 1L));
                 NotEqual(array, dest);
-                Equal(new ushort[] { 0, 0, 1}, dest);
+                Equal(new ushort[] { 0, 0, 1 }, dest);
                 dest[2] = 50;
                 Equal(1L, ptr.ReadFrom(dest, 2L, 1L));
                 Equal(50, ptr.Value);

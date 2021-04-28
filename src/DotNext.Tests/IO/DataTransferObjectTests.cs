@@ -43,7 +43,7 @@ namespace DotNext.IO
         [Fact]
         public static async Task MemoryDTO()
         {
-            byte[] content = {1, 2, 3};
+            byte[] content = { 1, 2, 3 };
             IDataTransferObject dto = new BinaryTransferObject(content);
             Equal(3L, dto.Length);
             True(dto.IsReusable);

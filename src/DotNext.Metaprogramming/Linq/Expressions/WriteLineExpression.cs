@@ -43,21 +43,21 @@ namespace DotNext.Linq.Expressions
         /// </summary>
         /// <param name="value">The value to be written into the stdout.</param>
         /// <returns>A new instance of <see cref="WriteLineExpression"/>.</returns>
-        public static WriteLineExpression Out(Expression value) => new (value, Kind.Out);
+        public static WriteLineExpression Out(Expression value) => new(value, Kind.Out);
 
         /// <summary>
         /// Creates an expression that writes the object into <see cref="Console.Error"/>.
         /// </summary>
         /// <param name="value">The value to be written into the stderr.</param>
         /// <returns>A new instance of <see cref="WriteLineExpression"/>.</returns>
-        public static WriteLineExpression Error(Expression value) => new (value, Kind.Error);
+        public static WriteLineExpression Error(Expression value) => new(value, Kind.Error);
 
         /// <summary>
         /// Creates an expression that writes the object using <see cref="System.Diagnostics.Debug.WriteLine(object)"/>.
         /// </summary>
         /// <param name="value">The value to be written into the stderr.</param>
         /// <returns>A new instance of <see cref="WriteLineExpression"/>.</returns>
-        public static WriteLineExpression Debug(Expression value) => new (value, Kind.Debug);
+        public static WriteLineExpression Debug(Expression value) => new(value, Kind.Debug);
 
 #if !NETSTANDARD2_1
         [DynamicDependency(DynamicallyAccessedMemberTypes.PublicMethods, typeof(TextWriter))]
