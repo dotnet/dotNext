@@ -241,11 +241,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 var result = new ValueTask();
                 try
                 {
-                    var offset = IsFirstEntry(index) ? PayloadOffset : lookupCache[index - 1].End;
                     ref var cacheEntry = ref entryCache[index];
                     cacheEntry?.Dispose();
                     cacheEntry = entry.Content;
-                    lookupCache[index] = LogEntryMetadata.Create(in entry, offset);
+                    lookupCache[index] = LogEntryMetadata.Create(in entry, IsFirstEntry(index) ? PayloadOffset : lookupCache[index - 1].End);
                 }
                 catch (Exception e)
                 {
