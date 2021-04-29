@@ -247,14 +247,21 @@ namespace DotNext.Threading
         private protected static unsafe ValueTask DisposeAsync<T>(T synchronizer, delegate*<T, bool> lockStateChecker)
             where T : QueuedSynchronizer
         {
+            ValueTask result;
             lock (synchronizer)
             {
                 if (lockStateChecker(synchronizer))
-                    return new ValueTask(synchronizer.DisposeAsync());
-
-                synchronizer.Dispose();
-                return new ValueTask();
+                {
+                    result = new(synchronizer.DisposeAsync());
+                }
+                else
+                {
+                    synchronizer.Dispose();
+                    result = new();
+                }
             }
+
+            return result;
         }
 
         /// <summary>
