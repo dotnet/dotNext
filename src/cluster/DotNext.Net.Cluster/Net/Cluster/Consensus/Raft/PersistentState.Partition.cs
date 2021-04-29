@@ -315,12 +315,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (disposing)
                 {
                     lookupCache.Dispose();
-                    lookupCache = default;
-                    foreach (ref var cacheEntry in entryCache.Memory.Span)
-                        cacheEntry?.Dispose();
-
-                    entryCache.Dispose();
-                    entryCache = default;
+                    entryCache.ReleaseAll();
                     previous = next = null;
                 }
 

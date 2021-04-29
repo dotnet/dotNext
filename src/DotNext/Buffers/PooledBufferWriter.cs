@@ -45,7 +45,7 @@ namespace DotNext.Buffers
             get
             {
                 ThrowIfDisposed();
-                return buffer.Memory.Length;
+                return buffer.Length;
             }
         }
 
@@ -76,7 +76,6 @@ namespace DotNext.Buffers
             if (!reuseBuffer)
             {
                 buffer.Dispose();
-                buffer = default;
             }
             else if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
             {
@@ -135,7 +134,6 @@ namespace DotNext.Buffers
             {
                 BufferSizeCallback?.Invoke(buffer.Length);
                 buffer.Dispose();
-                buffer = default;
             }
 
             base.Dispose(disposing);

@@ -70,7 +70,6 @@ namespace DotNext.IO
             if (disposing)
             {
                 owner.Dispose();
-                owner = default;
             }
 
             base.Dispose(disposing);

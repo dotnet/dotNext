@@ -179,13 +179,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public void Dispose()
             {
                 writeBuffer.Dispose();
-                writeBuffer = default;
-
                 compactionBuffer.Dispose();
-                compactionBuffer = default;
-
                 readBuffer.Dispose();
-                readBuffer = default;
             }
         }
 

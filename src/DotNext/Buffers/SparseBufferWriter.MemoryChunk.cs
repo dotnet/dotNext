@@ -99,7 +99,6 @@ namespace DotNext.Buffers
                 if (disposing)
                 {
                     owner.Dispose();
-                    owner = default;
                 }
 
                 writtenCount = 0;

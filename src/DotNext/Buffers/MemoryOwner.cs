@@ -12,14 +12,14 @@ namespace DotNext.Buffers
     /// </summary>
     /// <typeparam name="T">The type of the items in the memory pool.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>
+    public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>
     {
         // Of type ArrayPool<T> or IMemoryOwner<T>.
         // If support of another type is needed then reconsider implementation
         // of Memory, this[nint index] and Expand members
         private readonly object? owner;
         private readonly T[]? array;  // not null only if owner is ArrayPool or null
-        private readonly int length; // TODO: must be native integer in .NET 6
+        private int length; // TODO: must be native integer in .NET 6
 
         internal MemoryOwner(ArrayPool<T>? pool, T[] array, int length)
         {
@@ -111,12 +111,8 @@ namespace DotNext.Buffers
         /// <summary>
         /// Gets numbers of elements in the rented memory block.
         /// </summary>
-        public int Length => length;
+        public readonly int Length => length;
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void UnsafeSetLength(int value) => Unsafe.AsRef(in length) = value;
-
-        // WARNING: This is mutable method and should be used with care
         internal void Expand()
         {
             int length;
@@ -128,7 +124,7 @@ namespace DotNext.Buffers
             else
                 goto exit;
 
-            UnsafeSetLength(length);
+            this.length = length;
 
         exit:
             return;
@@ -140,7 +136,7 @@ namespace DotNext.Buffers
             MemoryOwner<T> result = this;
             if (newLength < length)
             {
-                result.UnsafeSetLength(newLength);
+                length = newLength;
             }
 
             return result;
@@ -149,13 +145,13 @@ namespace DotNext.Buffers
         /// <summary>
         /// Determines whether this memory is empty.
         /// </summary>
-        public bool IsEmpty => length == 0;
+        public readonly bool IsEmpty => length == 0;
 
         /// <summary>
         /// Gets the memory belonging to this owner.
         /// </summary>
         /// <value>The memory belonging to this owner.</value>
-        public Memory<T> Memory
+        public readonly Memory<T> Memory
         {
             get
             {
@@ -176,7 +172,7 @@ namespace DotNext.Buffers
         /// </summary>
         /// <param name="segment">The array segment retrieved from the underlying memory buffer.</param>
         /// <returns><see langword="true"/> if the method call succeeds; <see langword="false"/> otherwise.</returns>
-        public bool TryGetArray(out ArraySegment<T> segment)
+        public readonly bool TryGetArray(out ArraySegment<T> segment)
         {
             if (array is not null)
             {
@@ -192,14 +188,14 @@ namespace DotNext.Buffers
         }
 
         /// <inheritdoc/>
-        Memory<T> ISupplier<Memory<T>>.Invoke() => Memory;
+        readonly Memory<T> ISupplier<Memory<T>>.Invoke() => Memory;
 
         /// <summary>
         /// Gets managed pointer to the item in the rented memory.
         /// </summary>
         /// <param name="index">The index of the element in memory.</param>
         /// <value>The managed pointer to the item.</value>
-        public ref T this[nint index]
+        public readonly ref T this[nint index]
         {
             get
             {
@@ -230,12 +226,9 @@ namespace DotNext.Buffers
         /// </summary>
         /// <param name="index">The index of the element in memory.</param>
         /// <value>The managed pointer to the item.</value>
-        public ref T this[int index] => ref this[(nint)index];
+        public readonly ref T this[int index] => ref this[(nint)index];
 
-        /// <summary>
-        /// Releases rented memory.
-        /// </summary>
-        public void Dispose()
+        internal void Dispose(bool clearBuffer)
         {
             switch (owner)
             {
@@ -244,9 +237,16 @@ namespace DotNext.Buffers
                     break;
                 case ArrayPool<T> pool:
                     Debug.Assert(array is not null);
-                    pool.Return(array, RuntimeHelpers.IsReferenceOrContainsReferences<T>());
+                    pool.Return(array, clearBuffer);
                     break;
             }
+
+            this = default;
         }
+
+        /// <summary>
+        /// Releases rented memory.
+        /// </summary>
+        public void Dispose() => Dispose(RuntimeHelpers.IsReferenceOrContainsReferences<T>());
     }
 }

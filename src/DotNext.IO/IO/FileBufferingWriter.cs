@@ -282,7 +282,6 @@ namespace DotNext.IO
                 throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
 
             buffer.Dispose();
-            buffer = default;
             fileBackend?.Dispose();
             fileBackend = null;
             position = 0;
@@ -357,7 +356,6 @@ namespace DotNext.IO
                 Debug.Assert(fileBackend is not null);
                 await fileBackend.WriteAsync(buffer.Memory.Slice(0, position), token).ConfigureAwait(false);
                 buffer.Dispose();
-                buffer = default;
                 position = 0;
             }
         }
@@ -370,7 +368,6 @@ namespace DotNext.IO
                 Debug.Assert(fileBackend is not null);
                 fileBackend.Write(buffer.Memory.Span.Slice(0, position));
                 buffer.Dispose();
-                buffer = default;
                 position = 0;
             }
         }
@@ -859,7 +856,6 @@ namespace DotNext.IO
                 fileBackend?.Dispose();
                 fileBackend = null;
                 buffer.Dispose();
-                buffer = default;
                 reader = null;
             }
 
@@ -876,7 +872,6 @@ namespace DotNext.IO
             }
 
             buffer.Dispose();
-            buffer = default;
             await base.DisposeAsync().ConfigureAwait(false);
         }
     }

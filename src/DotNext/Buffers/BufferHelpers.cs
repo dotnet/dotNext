@@ -140,6 +140,27 @@ namespace DotNext.Buffers
             }
         }
 
+        /// <summary>
+        /// Releases all resources encapsulated by the container.
+        /// </summary>
+        /// <remarks>
+        /// This method calls <see cref="IDisposable.Dispose"/> for each
+        /// object in the rented block.
+        /// </remarks>
+        /// <typeparam name="T">The type of items in the rented memory.</typeparam>
+        /// <param name="owner">The rented memory.</param>
+        public static void ReleaseAll<T>(this ref MemoryOwner<T?> owner)
+            where T : class, IDisposable
+        {
+            foreach (ref var item in owner.Memory.Span)
+            {
+                item?.Dispose();
+                item = null;
+            }
+
+            owner.Dispose(false);
+        }
+
 #if !NETSTANDARD2_1
         /// <summary>
         /// Writes the contents of string builder to the buffer.
