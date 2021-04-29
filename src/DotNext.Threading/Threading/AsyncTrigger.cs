@@ -102,15 +102,12 @@ namespace DotNext.Threading
             for (WaitNode? current = head, next; current is not null; current = next)
             {
                 next = current.Next;
-                if (current is ConditionalNode conditional)
+                if (current is ConditionalNode conditional && !conditional.Invoke(state))
                 {
-                    if (!conditional.Invoke(state))
-                    {
-                        if (fairness)
-                            break;
-                        else
-                            continue;
-                    }
+                    if (fairness)
+                        break;
+                    else
+                        continue;
                 }
 
                 ResumeAndRemove(current);
