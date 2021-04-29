@@ -248,7 +248,8 @@ namespace DotNext.Threading
             where T : QueuedSynchronizer
         {
             ValueTask result;
-            lock (synchronizer)
+            Monitor.Enter(synchronizer);
+            try
             {
                 if (lockStateChecker(synchronizer))
                 {
@@ -259,6 +260,18 @@ namespace DotNext.Threading
                     synchronizer.Dispose();
                     result = new();
                 }
+            }
+            catch (Exception e)
+            {
+#if NETSTANDARD2_1
+                result = new(Task.FromException(e));
+#else
+                result = ValueTask.FromException(e);
+#endif
+            }
+            finally
+            {
+                Monitor.Exit(synchronizer);
             }
 
             return result;
