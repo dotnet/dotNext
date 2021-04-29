@@ -77,7 +77,9 @@ namespace DotNext.Threading
             }
         }
 
+#if !NETSTANDARD2_1
         private ulong contentionCount;
+#endif
         private protected WaitNode? head, tail;
 
         private protected QueuedSynchronizer()
@@ -155,17 +157,21 @@ namespace DotNext.Threading
             else
                 tail = manager.CreateNode(tail);
 
-            contentionCount += 1UL;
+#if !NETSTANDARD2_1
+            Interlocked.Increment(ref contentionCount);
+#endif
             return timeout == InfiniteTimeSpan ?
                 token.CanBeCanceled ? WaitAsync(tail, token) : tail.Task
                 : WaitAsync(tail, timeout, token);
         }
 
+#if !NETSTANDARD2_1
         /// <summary>
         /// Gets the number of times there was contention when trying to take the asynchronous lock.
         /// </summary>
         [CLSCompliant(false)]
-        public ulong LockContentionCount => contentionCount;
+        public ulong LockContentionCount => contentionCount.VolatileRead();
+#endif
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private protected static bool TryAcquire<TNode, TManager>(ref TManager manager)
