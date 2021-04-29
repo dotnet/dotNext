@@ -105,8 +105,9 @@ namespace DotNext.Buffers
             MemoryOwner<T> result;
             if (position > 0)
             {
-                result = buffer.Truncate(position);
+                result = buffer;
                 buffer = default;
+                result.Truncate(position);
                 position = 0;
             }
             else

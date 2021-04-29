@@ -130,16 +130,13 @@ namespace DotNext.Buffers
             return;
         }
 
-        internal MemoryOwner<T> Truncate(int newLength)
+        internal void Truncate(int newLength)
         {
             Debug.Assert(newLength > 0);
-            MemoryOwner<T> result = this;
             if (newLength < length)
             {
                 length = newLength;
             }
-
-            return result;
         }
 
         /// <summary>
